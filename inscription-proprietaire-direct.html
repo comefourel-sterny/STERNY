@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Propriétaire - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: #F9FAFB;
+            min-height: 100vh;
+        }
+        
+        /* Hero violet */
+        .hero-inscription {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .hero-inscription h1 {
+            font-size: 42px;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .inscription-container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #E0E7FF;
+            transition: all 0.3s;
+        }
+        
+        .inscription-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 24px rgba(102,126,234,0.15);
+        }
+        
+        .inscription-header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #F3F4F6;
+        }
+        
+        .inscription-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 15px;
+        }
+        
+        .etape-info {
+            font-size: 14px;
+            color: var(--gray-600);
+            background: #F0F9FF;
+            border-left: 4px solid #3B82F6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-900);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E7FF;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+        }
+        
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #a5b4fc;
+        }
+        
+        .submit-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+        }
+        
+        /* Style pour bouton retour */
+        a[href="choix-inscription.html"]:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #FEE2E2;
+            border: 1px solid #EF4444;
+            color: #991B1B;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero-inscription">
+        <h1>Inscription Propriétaire</h1>
+    </section>
+
+    <div class="inscription-container">
+        <div class="inscription-header">
+            <h2>Formulaire d'inscription</h2>
+        </div>
+        
+        <div id="errorMessage" class="error-message"></div>
+        
+        <form id="inscriptionForm">
+            <div class="form-group">
+                <label for="nom">Nom <span style="color: #EF4444;">*</span></label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="prenom">Prénom <span style="color: #EF4444;">*</span></label>
+                <input type="text" id="prenom" name="prenom" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email <span style="color: #EF4444;">*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="telephone">Téléphone <span style="color: #EF4444;">*</span></label>
+                <input type="tel" id="telephone" name="telephone" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe <span style="color: #EF4444;">*</span></label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe <span style="color: #EF4444;">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            
+            <p class="etape-info" style="margin-top: 30px; margin-bottom: 20px;">On complétera ton profil plus tard</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
+                <a href="choix-inscription.html" style="padding: 14px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s;">Retour</a>
+                <button type="submit" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Créer mon compte</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('inscriptionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            const email = document.getElementById('email').value;
+            const telephone = document.getElementById('telephone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Vérification mot de passe
+            if (password !== confirmPassword) {
+                errorMessage.textContent = "Les mots de passe ne correspondent pas";
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // 1. Créer l'utilisateur dans Supabase Auth
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (authError) throw authError;
+                
+                // 2. Créer le profil utilisateur
+                const { error: profileError } = await supabaseClient
+                    .from('users')
+                    .insert([{
+                        id: authData.user.id,
+                        nom: nom,
+                        prenom: prenom,
+                        email: email,
+                        telephone: telephone,
+                        type_user: 'hote'
+                    }]);
+                
+                if (profileError) throw profileError;
+                
+                // Redirection vers le dashboard
+                window.location.href = 'dashboard-hote.html';
+                
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

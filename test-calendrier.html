@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier AlternHome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 30px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667EEA;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .selector-section {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .instruction {
+            margin: 20px 0;
+            color: #666;
+            font-size: 15px;
+        }
+        
+        /* Calendrier */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr 1px 1fr;
+            gap: 20px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .month-separator {
+            background: #E5E7EB;
+            width: 1px;
+        }
+        
+        .month-calendar {
+            min-width: 0;
+        }
+        
+        .calendar-header {
+            background: #667EEA;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: 8px 8px 0 0;
+            margin: -10px -10px 10px -10px;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .weekday {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            padding: 8px 0;
+        }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-radius: 50%;
+        }
+        
+        .calendar-day:hover:not(.empty):not(.period-start):not(.period-middle):not(.period-end) {
+            background: #F3F4F6;
+        }
+        
+        .calendar-day.empty {
+            cursor: default;
+        }
+        
+        .calendar-day.period-start {
+            background: #4F46E5;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .calendar-day.period-middle {
+            background: #A5B4FC;
+            color: #1E293B;
+            font-weight: 500;
+        }
+        
+        .calendar-day.period-end {
+            background: #4F46E5;
+            color: white;
+            font-weight: 700;
+        }
+        
+        /* Infos en bas */
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #EEF2FF;
+            border-radius: 12px;
+            border-left: 4px solid #667EEA;
+        }
+        
+        .info-box p {
+            margin: 8px 0;
+            color: #4C51BF;
+            font-size: 15px;
+        }
+        
+        .info-box strong {
+            color: #312E81;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗓️ Calendrier AlternHome</h1>
+        
+        <div class="selector-section">
+            <label>🔄 Choisis ton rythme d'alternance :</label>
+            <select id="rythme">
+                <option value="">Sélectionne un rythme...</option>
+                <option value="1">1 semaine / 1 semaine (très classique)</option>
+                <option value="2">2 semaines / 2 semaines</option>
+                <option value="3">3 semaines / 3 semaines</option>
+                <option value="4">4 semaines / 4 semaines</option>
+                <option value="5">5 semaines / 5 semaines</option>
+                <option value="6">6 semaines / 6 semaines</option>
+                <option value="8">8 semaines / 8 semaines</option>
+            </select>
+        </div>
+        
+        <p class="instruction">📍 Clique sur une date de début :</p>
+        
+        <div class="calendar-wrapper">
+            <div class="month-calendar">
+                <div class="calendar-header">JANVIER</div>
+                <div class="weekdays">
+                    <div class="weekday">L</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">J</div>
+                    <div class="weekday">V</div>
+                    <div class="weekday">S</div>
+                    <div class="weekday">D</div>
+                </div>
+                <div class="days-grid" id="january"></div>
+            </div>
+            
+            <div class="month-separator"></div>
+            
+            <div class="month-calendar">
+                <div class="calendar-header">FÉVRIER</div>
+                <div class="weekdays">
+                    <div class="weekday">L</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">J</div>
+                    <div class="weekday">V</div>
+                    <div class="weekday">S</div>
+                    <div class="weekday">D</div>
+                </div>
+                <div class="days-grid" id="february"></div>
+            </div>
+            
+            <div class="month-separator"></div>
+            
+            <div class="month-calendar">
+                <div class="calendar-header">MARS</div>
+                <div class="weekdays">
+                    <div class="weekday">L</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">J</div>
+                    <div class="weekday">V</div>
+                    <div class="weekday">S</div>
+                    <div class="weekday">D</div>
+                </div>
+                <div class="days-grid" id="march"></div>
+            </div>
+        </div>
+        
+        <div class="info-box" id="infoBox">
+            <p>⚠️ Sélectionne d'abord un rythme d'alternance</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedRhythm = null;
+        let selectedDates = [];
+        let startDate = null;
+        
+        const rythmeSelect = document.getElementById('rythme');
+        const infoBox = document.getElementById('infoBox');
+        
+        function generateMonth(monthIndex, containerId) {
+            const container = document.getElementById(containerId);
+            const year = 2026;
+            const firstDay = new Date(year, monthIndex, 1);
+            const lastDay = new Date(year, monthIndex + 1, 0);
+            const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
+            
+            // Cases vides avant le 1er jour
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day empty';
+                container.appendChild(emptyCell);
+            }
+            
+            // Jours du mois
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(year, monthIndex, day);
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                dayCell.dataset.date = date.toISOString().split('T')[0];
+                dayCell.addEventListener('click', function() {
+                    handleDateClick(date);
+                });
+                container.appendChild(dayCell);
+            }
+        }
+        
+        function handleDateClick(date) {
+            if (!selectedRhythm) {
+                alert('Choisis d\'abord un rythme d\'alternance !');
+                return;
+            }
+            
+            document.querySelectorAll('.calendar-day').forEach(function(d) {
+                d.classList.remove('period-start', 'period-middle', 'period-end');
+            });
+            
+            startDate = date;
+            selectedDates = genererPattern(date, selectedRhythm);
+            
+            const periods = organiserParPeriodes(selectedDates, selectedRhythm);
+            
+            periods.forEach(function(period) {
+                period.forEach(function(d, index) {
+                    const dateStr = d.toISOString().split('T')[0];
+                    const dayCell = document.querySelector('[data-date="' + dateStr + '"]');
+                    if (dayCell) {
+                        if (index === 0) {
+                            dayCell.classList.add('period-start');
+                        } else if (index === period.length - 1) {
+                            dayCell.classList.add('period-end');
+                        } else {
+                            dayCell.classList.add('period-middle');
+                        }
+                    }
+                });
+            });
+            
+            updateInfo();
+        }
+        
+        function genererPattern(dateDebut, semaines) {
+            const dates = [];
+            let currentDate = new Date(dateDebut);
+            const endDate = new Date(dateDebut);
+            endDate.setMonth(endDate.getMonth() + 3);
+            
+            let isPeriodeOn = true;
+            
+            while (currentDate <= endDate) {
+                if (isPeriodeOn) {
+                    for (let jour = 0; jour < semaines * 7; jour++) {
+                        const nouvelleDate = new Date(currentDate);
+                        nouvelleDate.setDate(nouvelleDate.getDate() + jour);
+                        if (nouvelleDate <= endDate) {
+                            dates.push(new Date(nouvelleDate));
+                        }
+                    }
+                }
+                
+                currentDate.setDate(currentDate.getDate() + semaines * 7);
+                isPeriodeOn = !isPeriodeOn;
+            }
+            
+            return dates;
+        }
+        
+        function organiserParPeriodes(dates, semaines) {
+            const periods = [];
+            const joursParPeriode = semaines * 7;
+            
+            for (let i = 0; i < dates.length; i += joursParPeriode) {
+                const period = dates.slice(i, i + joursParPeriode);
+                periods.push(period);
+            }
+            
+            return periods;
+        }
+        
+        function updateInfo() {
+            if (!startDate || selectedDates.length === 0) return;
+            
+            const lastDate = selectedDates[selectedDates.length - 1];
+            
+            infoBox.innerHTML = '<p><strong>✅ Pattern généré !</strong></p>' +
+                '<p>📅 <strong>Date de début :</strong> ' + startDate.toLocaleDateString('fr-FR') + '</p>' +
+                '<p>🔄 <strong>Rythme :</strong> ' + selectedRhythm + ' semaine(s) / ' + selectedRhythm + ' semaine(s)</p>' +
+                '<p>📊 <strong>Nombre de jours sélectionnés :</strong> ' + selectedDates.length + '</p>' +
+                '<p>🏁 <strong>Dernière date :</strong> ' + lastDate.toLocaleDateString('fr-FR') + '</p>';
+        }
+        
+        rythmeSelect.addEventListener('change', function(e) {
+            selectedRhythm = e.target.value ? parseInt(e.target.value) : null;
+            
+            document.querySelectorAll('.calendar-day').forEach(function(d) {
+                d.classList.remove('period-start', 'period-middle', 'period-end');
+            });
+            selectedDates = [];
+            startDate = null;
+            
+            if (selectedRhythm) {
+                infoBox.innerHTML = '<p>📍 Clique sur une date de début pour générer le pattern</p>';
+            } else {
+                infoBox.innerHTML = '<p>⚠️ Sélectionne d\'abord un rythme d\'alternance</p>';
+            }
+        });
+        
+        generateMonth(0, 'january');
+        generateMonth(1, 'february');
+        generateMonth(2, 'march');
+    </script>
+</body>
+</html>

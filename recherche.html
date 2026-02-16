@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechercher un logement - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="matching.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+        
+        /* HEADER DE RECHERCHE */
+        .search-header {
+            background: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-header .container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .search-header select,
+        .search-header input {
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-header select:focus,
+        .search-header input:focus {
+            border-color: var(--primary);
+        }
+        
+        /* Style des options dans les selects */
+        .search-header select option {
+            padding: 10px 15px;
+            background: #f9fafb;
+            color: #374151;
+            margin: 2px 0;
+        }
+        
+        .search-header select option:first-child {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #9ca3af;
+        }
+        
+        .search-header select option:hover {
+            background: #e5e7eb;
+        }
+        
+        .search-header .btn-primary {
+            padding: 12px 24px;
+        }
+        
+        /* LAYOUT PRINCIPAL */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 30px auto 40px auto;
+            padding: 0 20px;
+        }
+        
+        /* SIDEBAR FILTRES */
+        .filters-sidebar {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 16px;
+            padding: 30px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.12);
+            border: 2px solid #667eea40;
+        }
+        
+        .filters-sidebar h3 {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            font-weight: 700;
+        }
+        
+        .filter-group {
+            margin-bottom: 30px;
+        }
+        
+        .filter-group h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            font-size: 14px;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+        
+        .filter-count {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-left: auto;
+        }
+        
+        .clear-filters {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .clear-filters:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+        }
+        
+        /* RÉSULTATS */
+        .results-section {
+            min-height: 70vh;
+            padding-top: 20px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .results-count {
+            font-size: 16px;
+            color: var(--gray-700);
+        }
+        
+        .sort-select {
+            padding: 10px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            min-height: 60vh;
+        }
+        
+        /* CARTE LOGEMENT */
+        .logement-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .logement-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+        
+        .logement-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            position: relative;
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: none;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.is-favorite {
+            background: #FEE2E2;
+        }
+        
+        .logement-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .logement-content {
+            padding: 20px;
+        }
+        
+        .logement-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .logement-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+        
+        .logement-location {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .logement-features {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .feature-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            color: var(--gray-700);
+        }
+
+        .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    grid-column: 1 / -1;
+}
+
+    
+        
+        .no-results h3 {
+            font-size: 24px;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+        
+        .no-results p {
+            font-size: 16px;
+            color: var(--gray-600);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-sidebar {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-header .container {
+                flex-direction: column;
+            }
+            
+            .search-header select,
+            .search-header input,
+            .search-header .btn-primary {
+                width: 100%;
+            }
+        }
+        
+        /* ============ BOUTONS NAVIGATION CALENDRIER ============ */
+        .month-nav-btn:hover {
+            background: #5a67d8 !important;
+            transform: scale(1.05);
+        }
+        
+        /* ============ STYLES CALENDRIER ============ */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .month-calendar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+            border: 2px solid #667eea30;
+            min-width: 0;
+            height: 100%;
+        }
+        
+        .month-calendar h4 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: 700;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea20;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            min-height: 180px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 500;
+            max-height: 26px;
+            line-height: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calendar-day:hover {
+            background: #f3f4f6;
+        }
+        
+        .calendar-day.empty {
+            cursor: default;
+        }
+        
+        .calendar-day.selected {
+            background: #a5b4fc;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.period-start {
+            background: #4f46e5;
+        }
+        
+        .calendar-day.period-middle {
+            background: #a5b4fc;
+        }
+        
+        .calendar-day.period-end {
+            background: #4f46e5;
+        }
+
+        /* ============ STYLES CALENDRIER ============ */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .month-calendar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+            border: 2px solid #667eea30;
+            min-width: 0;
+            height: 100%;
+        }
+        
+        .month-calendar h4 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #4C51BF;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            min-height: 180px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 500;
+            max-height: 26px;
+            line-height: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .calendar-day:hover {
+            background: #f3f4f6;
+        }
+        
+        .calendar-day.empty {
+            cursor: default;
+        }
+        
+        .calendar-day.selected {
+            background: #a5b4fc;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.period-start {
+            background: #4f46e5;
+        }
+        
+        .calendar-day.period-middle {
+            background: #a5b4fc;
+        }
+        
+        .calendar-day.period-end {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+    <div class="container">
+        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#">Comment ça marche</a></li>
+            <li><a href="#">Devenir hôte</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <!-- BARRE DE RECHERCHE HEADER -->
+    <div class="search-header">
+        <div class="container">
+            <select id="ville">
+                <option value="" disabled selected>Ville</option>
+                <option value="rennes">   Rennes</option>
+                <option value="nantes">   Nantes</option>
+                <option value="brest">   Brest</option>
+            </select>
+            
+            <select id="budget">
+                <option value="" disabled selected>Budget</option>
+                <option value="400">   Moins de 400€</option>
+                <option value="500">   400€ - 500€</option>
+                <option value="600">   500€ - 600€</option>
+                <option value="700">   Plus de 600€</option>
+            </select>
+            
+            <select id="rythme">
+                <option value="" disabled selected>Catégorie de rythme</option>
+                <option value="hebdo">Hebdomadaire</option>
+                <option value="bloc">Par blocs</option>
+                <option value="jour">Par jour</option>
+                <option value="longs">Longues périodes</option>
+                <option value="perso">Personnalisé</option>
+            </select>
+
+            <select id="monRythmeRecherche" style="display: none; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
+                <option value="" disabled selected>Mes disponibilités</option>
+                <option value="1">   1 semaine / 1 semaine</option>
+                <option value="2">   2 semaines / 2 semaines</option>
+                <option value="3">   3 semaines / 3 semaines</option>
+                <option value="4">   4 semaines / 4 semaines</option>
+                <option value="6">   6 semaines / 6 semaines</option>
+                <option value="8">   8 semaines / 8 semaines</option>
+            </select>
+            
+            <button class="btn btn-primary" onclick="filtrerLogements()">
+                🔍 Rechercher
+            </button>
+            
+            
+        </div>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="main-content">
+        <!-- SIDEBAR FILTRES -->
+        <aside class="filters-sidebar">
+            <h3>Filtres</h3>
+
+            <!-- Prix -->
+            <div class="filter-group">
+                <h4>Prix</h4>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prix1" value="400" onchange="filtrerLogements()">
+                    <label for="prix1">Moins de 400€</label>
+                    <span class="filter-count">(2)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prix2" value="500" onchange="filtrerLogements()">
+                    <label for="prix2">400€ - 500€</label>
+                    <span class="filter-count">(8)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prix3" value="600" onchange="filtrerLogements()">
+                    <label for="prix3">500€ - 600€</label>
+                    <span class="filter-count">(5)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="prix4" value="700" onchange="filtrerLogements()">
+                    <label for="prix4">Plus de 600€</label>
+                    <span class="filter-count">(3)</span>
+                </div>
+            </div>
+            
+            <!-- Type de logement -->
+            <div class="filter-group">
+                <h4>Type de logement</h4>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="type1" value="studio" onchange="filtrerLogements()">
+                    <label for="type1">Studio</label>
+                    <span class="filter-count">(7)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="type2" value="t1" onchange="filtrerLogements()">
+                    <label for="type2">T1</label>
+                    <span class="filter-count">(5)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="type3" value="coloc" onchange="filtrerLogements()">
+                    <label for="type3">Colocation</label>
+                    <span class="filter-count">(6)</span>
+                </div>
+            </div>
+            
+            <!-- Rythme alternance -->
+            <div class="filter-group">
+                <h4>Rythme alternance</h4>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rythme1" value="hebdo" onchange="filtrerLogements()">
+                    <label for="rythme1">Hebdomadaire</label>
+                    <span class="filter-count">(0)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rythme2" value="blocs" onchange="filtrerLogements()">
+                    <label for="rythme2">Par blocs</label>
+                    <span class="filter-count">(0)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rythme3" value="longs" onchange="filtrerLogements()">
+                    <label for="rythme3">Longues périodes</label>
+                    <span class="filter-count">(0)</span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rythme4" value="perso" onchange="filtrerLogements()">
+                    <label for="rythme4">Personnalisé</label>
+                    <span class="filter-count">(0)</span>
+                </div>
+            </div>
+            
+            <!-- Équipements -->
+            <div class="filter-group">
+                <h4>Équipements</h4>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="equip1" value="wifi" onchange="filtrerLogements()">
+                    <label for="equip1">Wifi</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="equip2" value="meuble" onchange="filtrerLogements()">
+                    <label for="equip2">Meublé</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="equip3" value="parking" onchange="filtrerLogements()">
+                    <label for="equip3">Parking</label>
+                </div>
+            </div>
+            
+        
+
+            <button class="clear-filters" onclick="reinitialiserFiltres()">
+                Effacer les filtres
+            </button>
+
+
+        </aside>
+
+        <!-- ZONE PRINCIPALE (CALENDRIER + RÉSULTATS) -->
+        <div style="display: flex; flex-direction: column; gap: 0;">
+            
+            <!-- CALENDRIER DE DISPONIBILITÉS -->
+            <div id="calendrierRecherche" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%); padding: 30px; margin-bottom: 25px; border-radius: 16px; box-shadow: 0 4px 16px rgba(102,126,234,0.12); border: 2px solid #667eea40;">
+                
+                <!-- NAVIGATION AVEC TITRE AU CENTRE -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <button type="button" id="prevMonthBtnSearch" class="month-nav-btn" style="padding: 12px 24px; background: #667EEA; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                        ← Précédent
+                    </button>
+                    <h3 style="margin: 0; font-size: 22px; font-weight: 700; color: #667eea;">Tes disponibilités</h3>
+                    <button type="button" id="nextMonthBtnSearch" class="month-nav-btn" style="padding: 12px 24px; background: #667EEA; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
+                        Suivant →
+                    </button>
+                </div>
+                
+                <!-- CALENDRIER 3 MOIS -->
+                <div class="calendar-wrapper">
+                    <div class="month-calendar">
+                        <h4 id="month-title-search-0">Janvier 2026</h4>
+                        <div class="calendar-grid" id="calendar-grid-search-0"></div>
+                    </div>
+                    <div class="month-calendar">
+                        <h4 id="month-title-search-1">Février 2026</h4>
+                        <div class="calendar-grid" id="calendar-grid-search-1"></div>
+                    </div>
+                    <div class="month-calendar">
+                        <h4 id="month-title-search-2">Mars 2026</h4>
+                        <div class="calendar-grid" id="calendar-grid-search-2"></div>
+                    </div>
+                </div>
+                
+                <!-- CHAMPS DE DATES - MIS EN VALEUR -->
+                <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 12px; border: 2px solid #667eea50; box-shadow: 0 4px 12px rgba(102,126,234,0.15);">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Date de début
+                            </label>
+                            <input 
+                                type="text" 
+                                id="dateDebutRecherche" 
+                                style="width: 100%; padding: 12px 15px; border: 2px solid #667eea; border-radius: 10px; font-size: 15px; background: white; color: #9CA3AF;"
+                            />
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Date de fin
+                            </label>
+                            <input 
+                                type="text" 
+                                id="dateFinRecherche" 
+                                style="width: 100%; padding: 12px 15px; border: 2px solid #667eea; border-radius: 10px; font-size: 15px; background: white; color: #9CA3AF;"
+                            />
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- RÉSULTATS -->
+            <section class="results-section">
+            <div class="results-header">
+                <div class="results-count" id="resultsCount">
+                    <strong>18 logements</strong> disponibles
+                </div>
+                <select class="sort-select" onchange="trierLogements(this.value)">
+                    <option value="pertinence">Pertinence</option>
+                    <option value="prix-asc">Prix croissant</option>
+                    <option value="prix-desc">Prix décroissant</option>
+                    <option value="recent">Plus récents</option>
+                </select>
+            </div>
+            
+            <div class="results-grid" id="resultsGrid">
+                <!-- Les logements seront ajoutés ici par JavaScript -->
+            </div>
+        </section>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p><a href="/cdn-cgi/l/email-protection#1d7e7273697c7e695d7c7169786f7371727a7870787369337b6f"><span class="__cf_email__" data-cfemail="1e7d71706a7f7d6a5e7f726a7b6c707271797b737b706a30786c">[email&#160;protected]</span></a></p>
+        </div>
+    </footer>
+
+    <script>
+        // VARIABLES GLOBALES
+let logements = [];
+let logementsAffiches = [];
+let currentUser = null;
+let userFavoris = [];
+
+// CHARGER L'UTILISATEUR CONNECTÉ
+async function chargerUtilisateur() {
+    try {
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        if (error) throw error;
+        currentUser = user;
+        console.log('👤 Utilisateur:', currentUser);
+    } catch (error) {
+        console.log('Pas d\'utilisateur connecté');
+        currentUser = null;
+    }
+}
+
+// RÉCUPÉRER LES VRAIES ANNONCES DEPUIS SUPABASE
+async function chargerAnnonces() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('annonces')
+            .select('*')
+            .eq('disponible', true)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        logements = data || [];
+        logementsAffiches = [...logements];
+        afficherLogements(logementsAffiches);
+        mettreAJourCompteursFiltres();
+        
+        // Charger les favoris de l'utilisateur
+        await chargerFavoris();
+        
+        console.log('✅ Annonces chargées:', logements.length);
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        document.getElementById('resultsGrid').innerHTML = `
+            <div class="no-results">
+                <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+                <h3>Erreur de chargement</h3>
+                <p>Impossible de charger les logements.</p>
+            </div>
+        `;
+    }
+} 
+
+    // Mettre à jour les compteurs des filtres
+function mettreAJourCompteursFiltres() {
+    // PRIX
+    const moins400 = logements.filter(l => l.prix < 400).length;
+    const entre400et500 = logements.filter(l => l.prix >= 400 && l.prix < 500).length;
+    const entre500et600 = logements.filter(l => l.prix >= 500 && l.prix < 600).length;
+    const plus600 = logements.filter(l => l.prix >= 600).length;
+    
+    // Mettre à jour SEULEMENT les chiffres (pas tout le label)
+    document.querySelector('label[for="prix1"]').nextElementSibling.textContent = `(${moins400})`;
+    document.querySelector('label[for="prix2"]').nextElementSibling.textContent = `(${entre400et500})`;
+    document.querySelector('label[for="prix3"]').nextElementSibling.textContent = `(${entre500et600})`;
+    document.querySelector('label[for="prix4"]').nextElementSibling.textContent = `(${plus600})`;
+    
+    // TYPE DE LOGEMENT
+    const studios = logements.filter(l => l.type_logement === 'studio').length;
+    const t1 = logements.filter(l => l.type_logement === 't1').length;
+    const coloc = logements.filter(l => l.type_logement === 'colocation').length;
+    
+    document.querySelector('label[for="type1"]').nextElementSibling.textContent = `(${studios})`;
+    document.querySelector('label[for="type2"]').nextElementSibling.textContent = `(${t1})`;
+    document.querySelector('label[for="type3"]').nextElementSibling.textContent = `(${coloc})`;
+
+    // RYTHME ALTERNANCE
+    const hebdo = logements.filter(l => l.rythme_alternance === 'hebdo').length;
+    const blocs = logements.filter(l => l.rythme_alternance === 'blocs').length;
+    const longs = logements.filter(l => l.rythme_alternance === 'longs').length;
+    const perso = logements.filter(l => l.rythme_alternance === 'perso').length;
+
+    document.querySelector('label[for="rythme1"]').nextElementSibling.textContent = `(${hebdo})`;
+    document.querySelector('label[for="rythme2"]').nextElementSibling.textContent = `(${blocs})`;
+    document.querySelector('label[for="rythme3"]').nextElementSibling.textContent = `(${longs})`;
+    document.querySelector('label[for="rythme4"]').nextElementSibling.textContent = `(${perso})`;
+    }
+    
+
+        chargerAnnonces() 
+        
+
+     
+        // Afficher les logements
+        function afficherLogements(liste) {
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = '';
+            
+            
+        if (liste.length === 0) {
+    grid.innerHTML = `
+        <div class="no-results">
+            <div style="font-size: 64px; margin-bottom: 20px;">😕</div>
+            <h3>Désolé, nous n'avons pas encore de logement correspondant</h3>
+            <p style="margin-bottom: 30px;">Mais ne t'inquiète pas ! Laisse-nous ton email et on te préviendra dès qu'un logement comme celui-ci sera disponible.</p>
+            
+            <div style="max-width: 500px; margin: 0 auto;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input 
+                        type="email" 
+                        id="alertEmail" 
+                        placeholder="ton.email@exemple.com"
+                        style="flex: 1; padding: 14px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;"
+                    >
+                    <button 
+                        onclick="creerAlerte()"
+                        style="padding: 14px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;"
+                    >
+                        🔔 Me prévenir
+                    </button>
+                </div>
+                <p id="alertMessage" style="font-size: 14px; margin-top: 10px;"></p>
+                
+                <p style="font-size: 14px; color: var(--gray-600); margin-top: 20px;">
+                    En attendant, tu peux <a href="#" onclick="reinitialiserFiltres(); return false;" style="color: var(--primary); font-weight: 600;">élargir ta recherche</a>
+                </p>
+            </div>
+        </div>
+    `;
+    return;
+}
+            
+            liste.forEach(logement => {
+    // Générer un emoji basé sur le type de logement (fallback si pas de photo)
+    let emoji = '🏠';
+    if (logement.type_logement === 'studio') emoji = '🏢';
+    else if (logement.type_logement === 't1') emoji = '🏡';
+    else if (logement.type_logement === 't2') emoji = '🏘️';
+    else if (logement.type_logement === 'colocation') emoji = '👥';
+    
+    // Utiliser la première photo si disponible, sinon emoji
+    const imageStyle = logement.photos && logement.photos.length > 0 
+        ? `background-image: url('${logement.photos[0]}'); background-size: cover; background-position: center;`
+        : '';
+    
+    const imageContent = logement.photos && logement.photos.length > 0 
+        ? '' 
+        : emoji;
+    
+    // Créer les tags à partir des équipements
+    const tags = [];
+    if (logement.surface) tags.push(`${logement.surface}m²`);
+    if (logement.equipements && logement.equipements.length > 0) {
+        tags.push(...logement.equipements.slice(0, 2));
+    }
+    
+    const card = `
+        <a href="logement.html?id=${logement.id}&date_debut=${encodeURIComponent(document.getElementById('dateDebutRecherche')?.value || '')}&date_fin=${encodeURIComponent(document.getElementById('dateFinRecherche')?.value || '')}" class="logement-card">
+            <div class="logement-image" style="${imageStyle}">
+                ${imageContent}
+                ${logement.matchScore && logement.matchScore > 0.95 ? '<span class="logement-badge" style="background: #10b981;">🎯 Match parfait !</span>' : ''}
+                <button class="favorite-btn" data-annonce-id="${logement.id}" onclick="event.preventDefault(); toggleFavorite('${logement.id}')">
+                    🤍
+                </button>
+            </div>
+            <div class="logement-content">
+                <div class="logement-price">${logement.prix}€ / mois</div>
+                <div class="logement-title">${logement.titre}</div>
+                <div class="logement-location">${logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1)}</div>
+                <div class="logement-features">
+                    ${tags.map(tag => `<span class="feature-tag">${tag}</span>`).join('')}
+                </div>
+            </div>
+        </a>
+    `;
+    grid.innerHTML += card;
+});
+            
+            document.getElementById('resultsCount').innerHTML = `<strong>${liste.length} logement${liste.length > 1 ? 's' : ''}</strong> disponible${liste.length > 1 ? 's' : ''}`;
+        }
+
+        // Filtrer les logements
+function filtrerLogements() {
+    let resultats = [...logements];
+    
+    // Filtre ville
+    const ville = document.getElementById('ville').value;
+    if (ville) {
+        resultats = resultats.filter(l => l.ville === ville);
+    }
+    
+    // Filtre budget (select en haut)
+    const budget = document.getElementById('budget').value;
+    if (budget) {
+        const maxBudget = parseInt(budget);
+        resultats = resultats.filter(l => l.prix <= maxBudget);
+    }
+    
+    // Filtre rythme (select en haut)
+    const rythme = document.getElementById('rythme').value;
+    if (rythme) {
+        // Pour l'instant on ne filtre pas sur rythme car pas dans les données
+        // On pourra l'ajouter plus tard
+    }
+    
+    // Filtre prix (checkboxes sidebar)
+    const prixSelectionnes = [];
+    if (document.getElementById('prix1').checked) prixSelectionnes.push(400);
+    if (document.getElementById('prix2').checked) prixSelectionnes.push(500);
+    if (document.getElementById('prix3').checked) prixSelectionnes.push(600);
+    if (document.getElementById('prix4').checked) prixSelectionnes.push(700);
+    
+    if (prixSelectionnes.length > 0) {
+        resultats = resultats.filter(l => {
+            // Le logement doit être dans AU MOINS une des tranches sélectionnées
+            if (prixSelectionnes.includes(400) && l.prix < 400) return true;
+            if (prixSelectionnes.includes(500) && l.prix >= 400 && l.prix < 500) return true;
+            if (prixSelectionnes.includes(600) && l.prix >= 500 && l.prix < 600) return true;
+            if (prixSelectionnes.includes(700) && l.prix >= 600) return true;
+            return false;
+        });
+    }
+    
+    // Filtre type (checkboxes sidebar)
+    const typesSelectionnes = [];
+    if (document.getElementById('type1').checked) typesSelectionnes.push('studio');
+    if (document.getElementById('type2').checked) typesSelectionnes.push('t1');
+    if (document.getElementById('type3').checked) typesSelectionnes.push('coloc');
+    
+    if (typesSelectionnes.length > 0) {
+       resultats = resultats.filter(l => typesSelectionnes.includes(l.type_logement));
+    }
+    
+    // Filtre rythme (checkboxes sidebar)
+    const rythmesSelectionnes = [];
+    if (document.getElementById('rythme1').checked) rythmesSelectionnes.push('hebdo');
+    if (document.getElementById('rythme2').checked) rythmesSelectionnes.push('blocs');
+    if (document.getElementById('rythme3').checked) rythmesSelectionnes.push('longs');
+    if (document.getElementById('rythme4').checked) rythmesSelectionnes.push('perso');
+    
+    // Pour l'instant pas de filtrage car pas dans les données
+    // On affiche juste dans la console pour debug
+    if (rythmesSelectionnes.length > 0) {
+        console.log('Filtres rythme sélectionnés:', rythmesSelectionnes);
+    }
+    
+    // Sauvegarder et afficher
+    // Calculer les scores de matching si l'utilisateur a saisi ses disponibilités
+    if (mesDisponibilites.length > 0) {
+        resultats = resultats.map(logement => {
+            // Calculer le score de compatibilité
+            const score = logement.disponibilites_pattern && logement.disponibilites_pattern.length > 0
+                ? calculerCompatibilite(mesDisponibilites, logement.disponibilites_pattern)
+                : 0;
+            
+            return { ...logement, matchScore: score };
+        });
+        
+        // Trier par score décroissant (meilleurs matchs en premier)
+        resultats.sort((a, b) => b.matchScore - a.matchScore);
+    }
+    
+    // Sauvegarder et afficher
+    logementsAffiches = resultats;
+    afficherLogements(logementsAffiches);
+}
+
+        // Réinitialiser les filtres
+        function reinitialiserFiltres() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('ville').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('rythme').value = '';
+            logementsAffiches = [...logements];
+            afficherLogements(logementsAffiches);
+        }
+
+        // Toggle favoris
+        // ========== SYSTÈME DE FAVORIS ==========
+        
+        // Charger les favoris de l'utilisateur
+        async function chargerFavoris() {
+            console.log('Chargement des favoris...');
+            console.log('Current user:', currentUser);
+            
+            if (!currentUser) {
+                console.log('Pas d\'utilisateur connecté, pas de favoris à charger');
+                return;
+            }
+            
+            const { data, error } = await supabaseClient
+                .from('favoris')
+                .select('annonce_id')
+                .eq('user_id', currentUser.id);
+            
+            console.log('Réponse favoris:', { data, error });
+            
+            if (error) {
+                console.error('Erreur chargement favoris:', error);
+            } else if (data) {
+                userFavoris = data.map(f => f.annonce_id);
+                console.log('Favoris chargés:', userFavoris);
+                mettreAJourBoutonsFavoris();
+            }
+        }
+        
+        // Mettre à jour l'affichage des boutons favoris
+        function mettreAJourBoutonsFavoris() {
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const annonceId = btn.getAttribute('data-annonce-id');
+                if (userFavoris.includes(annonceId)) {
+                    btn.textContent = '🩷';
+                    btn.classList.add('is-favorite');
+                } else {
+                    btn.textContent = '🤍';
+                    btn.classList.remove('is-favorite');
+                }
+            });
+        }
+        
+        // Toggle favori
+        async function toggleFavorite(annonceId) {
+            if (!currentUser) {
+                alert('❌ Connecte-toi pour ajouter des favoris !');
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            console.log('Toggle favori pour:', annonceId);
+            console.log('User ID:', currentUser.id);
+            console.log('Favoris actuels:', userFavoris);
+            
+            const isFavorite = userFavoris.includes(annonceId);
+            
+            if (isFavorite) {
+                // Retirer des favoris
+                console.log('Retrait du favori...');
+                const { error } = await supabaseClient
+                    .from('favoris')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('annonce_id', annonceId);
+                
+                if (error) {
+                    console.error('Erreur retrait favori:', error);
+                    alert('❌ Erreur lors du retrait du favori');
+                } else {
+                    console.log('✅ Favori retiré avec succès');
+                    userFavoris = userFavoris.filter(id => id !== annonceId);
+                    mettreAJourBoutonsFavoris();
+                }
+            } else {
+                // Ajouter aux favoris
+                console.log('Ajout du favori...');
+                const { error } = await supabaseClient
+                    .from('favoris')
+                    .insert([{
+                        user_id: currentUser.id,
+                        annonce_id: annonceId
+                    }]);
+                
+                if (error) {
+                    console.error('Erreur ajout favori:', error);
+                    alert('❌ Erreur lors de l\'ajout du favori');
+                } else {
+                    console.log('✅ Favori ajouté avec succès');
+                    userFavoris.push(annonceId);
+                    mettreAJourBoutonsFavoris();
+                }
+            }
+        }
+
+        // Créer une alerte pour nouveaux logements
+function creerAlerte() {
+    const email = document.getElementById('alertEmail').value;
+    const messageDiv = document.getElementById('alertMessage');
+    
+    // Validation
+    if (!email) {
+        messageDiv.innerHTML = '<span style="color: var(--error);">❌ Merci de renseigner ton email</span>';
+        return;
+    }
+    
+    if (!email.includes('@')) {
+        messageDiv.innerHTML = '<span style="color: var(--error);">❌ Email invalide</span>';
+        return;
+    }
+    
+    // Récupération des critères de recherche
+    const ville = document.getElementById('ville').value || 'toutes villes';
+    const budget = document.getElementById('budget').value || 'tous budgets';
+    
+    // Simulation de sauvegarde (plus tard : vraie base de données)
+    console.log('Alerte créée pour:', email, 'Critères:', { ville, budget });
+    
+    // Message de succès
+    messageDiv.innerHTML = '<span style="color: var(--success);">✅ Parfait ! On te préviendra dès qu\'un logement correspondant sera disponible</span>';
+    
+    // Vider le champ
+    document.getElementById('alertEmail').value = '';
+    
+    // Masquer le message après 5 secondes
+    setTimeout(() => {
+        messageDiv.innerHTML = '';
+    }, 5000);
+}
+       
+// ============ MATCHING ============
+
+let mesDisponibilites = [];
+let selectedRhythmRecherche = null;
+let selectedDatesRecherche = [];
+let calendarStartDateRecherche = null;
+let currentMonthOffsetRecherche = 0;
+
+// Générer un mois du calendrier
+function generateMonthRecherche(year, monthIndex, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const firstDay = new Date(year, monthIndex, 1);
+    const lastDay = new Date(year, monthIndex + 1, 0);
+    const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
+    
+    // Cases vides avant le 1er jour
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        container.appendChild(emptyCell);
+    }
+    
+    // Jours du mois
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, monthIndex, day);
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        dayCell.textContent = day;
+        dayCell.dataset.date = date.toISOString().split('T')[0];
+        dayCell.addEventListener('click', () => handleCalendarDateClickRecherche(date));
+        container.appendChild(dayCell);
+    }
+}
+
+function initCalendarRecherche() {
+    const today = new Date();
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    
+    for (let i = 0; i < 3; i++) {
+        const monthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche + i, 1);
+        const monthIndex = monthDate.getMonth();
+        const year = monthDate.getFullYear();
+        
+        // Mettre à jour le titre du mois
+        const titleElement = document.getElementById(`month-title-search-${i}`);
+        if (titleElement) {
+            titleElement.textContent = `${monthNames[monthIndex]} ${year}`;
+        }
+        
+        // Générer le calendrier
+        generateMonthRecherche(year, monthIndex, `calendar-grid-search-${i}`);
+    }
+}
+
+function handleCalendarDateClickRecherche(clickedDate) {
+    if (!selectedRhythmRecherche) return;
+    
+    calendarStartDateRecherche = clickedDate;
+    selectedDatesRecherche = genererPatternCalendrierRecherche(clickedDate, selectedRhythmRecherche);
+    
+    // Réinitialiser toutes les cellules
+    document.querySelectorAll('#calendrierRecherche .calendar-day').forEach(cell => {
+        cell.classList.remove('selected', 'period-start', 'period-middle', 'period-end');
+    });
+    
+    // Organiser par périodes
+    const periods = organiserParPeriodesCalendrierRecherche(selectedDatesRecherche, selectedRhythmRecherche);
+    
+    // Colorier les dates
+    selectedDatesRecherche.forEach(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const dayCell = document.querySelector(`#calendrierRecherche [data-date="${dateStr}"]`);
+        if (dayCell) {
+            const isStart = periods.some(p => p.start.toISOString().split('T')[0] === dateStr);
+            const isEnd = periods.some(p => p.end.toISOString().split('T')[0] === dateStr);
+            
+            if (isStart || isEnd) {
+                dayCell.classList.add('selected', 'period-start');
+            } else {
+                dayCell.classList.add('selected', 'period-middle');
+            }
+        }
+    });
+    
+    // Mettre à jour les champs de dates
+    if (selectedDatesRecherche.length > 0) {
+        const firstDate = selectedDatesRecherche[0];
+        const lastDate = selectedDatesRecherche[selectedDatesRecherche.length - 1];
+        
+        const dateDebutInput = document.getElementById('dateDebutRecherche');
+        const dateFinInput = document.getElementById('dateFinRecherche');
+        
+        // Fonction pour formater en jj/mm/aaaa
+        const formatDate = (date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+        
+        if (dateDebutInput) {
+            dateDebutInput.value = formatDate(firstDate);
+            dateDebutInput.style.color = '#374151'; // Passer au noir
+        }
+        if (dateFinInput) {
+            dateFinInput.value = formatDate(lastDate);
+            dateFinInput.style.color = '#374151'; // Passer au noir
+        }
+    }
+    
+    // Mettre à jour mesDisponibilites et filtrer
+    mesDisponibilites = selectedDatesRecherche.map(d => d.toISOString().split('T')[0]);
+    filtrerLogements();
+}
+
+function genererPatternCalendrierRecherche(startDate, weeksPerPeriod) {
+    const dates = [];
+    const dayInMs = 24 * 60 * 60 * 1000;
+    const periodLengthDays = weeksPerPeriod * 7;
+    const cycleLengthDays = periodLengthDays * 2;
+    
+    for (let i = 0; i < 84; i++) {
+        const daysSinceStart = i;
+        const positionInCycle = daysSinceStart % cycleLengthDays;
+        
+        if (positionInCycle < periodLengthDays) {
+            const date = new Date(startDate.getTime() + (i * dayInMs));
+            dates.push(date);
+        }
+    }
+    
+    return dates;
+}
+
+function organiserParPeriodesCalendrierRecherche(dates, weeksPerPeriod) {
+    if (!dates || dates.length === 0) return [];
+    
+    const periods = [];
+    const periodLengthDays = weeksPerPeriod * 7;
+    
+    dates.sort((a, b) => a - b);
+    
+    let currentPeriod = { start: dates[0], end: dates[0] };
+    
+    for (let i = 1; i < dates.length; i++) {
+        const dayDiff = Math.round((dates[i] - currentPeriod.end) / (24 * 60 * 60 * 1000));
+        
+        if (dayDiff === 1) {
+            currentPeriod.end = dates[i];
+        } else {
+            periods.push(currentPeriod);
+            currentPeriod = { start: dates[i], end: dates[i] };
+        }
+    }
+    
+    periods.push(currentPeriod);
+    return periods;
+}
+
+
+
+function genererDatesSimulees(rythme) {
+    // Génère 12 semaines de dates selon le rythme
+    const dates = [];
+    const startDate = new Date('2026-01-05'); // Lundi 5 janvier
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    
+    for (let i = 0; i < 12; i += rythme * 2) {
+        for (let j = 0; j < rythme * 7; j++) {
+            const date = new Date(startDate.getTime() + (i * weekInMs) + (j * 24 * 60 * 60 * 1000));
+            dates.push(date.toISOString().split('T')[0]);
+        }
+    }
+    
+    return dates;
+}
+
+function organiserParPeriodesCalendrierRecherche(dates, weeksPerPeriod) {
+    if (!dates || dates.length === 0) return [];
+    
+    const periods = [];
+    
+    dates.sort((a, b) => a - b);
+    
+    let currentPeriod = { start: dates[0], end: dates[0] };
+    
+    for (let i = 1; i < dates.length; i++) {
+        const dayDiff = Math.round((dates[i] - currentPeriod.end) / (24 * 60 * 60 * 1000));
+        
+        if (dayDiff === 1) {
+            currentPeriod.end = dates[i];
+        } else {
+            periods.push(currentPeriod);
+            currentPeriod = { start: dates[i], end: dates[i] };
+        }
+    }
+    
+    periods.push(currentPeriod);
+    return periods;
+}
+
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', async function() {
+    // Initialiser les champs de dates avec la date du jour (format jj/mm/aaaa)
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const todayStr = `${day}/${month}/${year}`;
+    
+    const dateDebutInput = document.getElementById('dateDebutRecherche');
+    const dateFinInput = document.getElementById('dateFinRecherche');
+    
+    if (dateDebutInput && !dateDebutInput.value) {
+        dateDebutInput.value = todayStr;
+    }
+    if (dateFinInput && !dateFinInput.value) {
+        dateFinInput.value = todayStr;
+    }
+    
+    // 1. Charger l'utilisateur d'abord
+    await chargerUtilisateur();
+    
+    // 2. Puis charger les annonces (qui charge aussi les favoris)
+    await chargerAnnonces();
+    
+    // Initialiser le calendrier au chargement
+    initCalendarRecherche();
+    
+    // Navigation calendrier : mois précédents
+    const prevBtn = document.getElementById('prevMonthBtnSearch');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentMonthOffsetRecherche -= 3;
+            initCalendarRecherche();
+        });
+    }
+    
+    // Navigation calendrier : mois suivants
+    const nextBtn = document.getElementById('nextMonthBtnSearch');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentMonthOffsetRecherche += 3;
+            initCalendarRecherche();
+        });
+    }
+    
+    // Afficher/masquer "Mes disponibilités" selon le rythme sélectionné
+    const rythmeSelect = document.getElementById('rythme');
+    const mesDispoSelect = document.getElementById('monRythmeRecherche');
+    
+    rythmeSelect.addEventListener('change', function() {
+        const rythmeValue = this.value;
+        
+        // Afficher "Mes disponibilités" UNIQUEMENT pour ces rythmes
+        if (rythmeValue === 'hebdo' || rythmeValue === 'bloc' || rythmeValue === 'jour' || rythmeValue === 'longs') {
+            mesDispoSelect.style.display = 'block';
+        } else {
+            // Pour "perso" ou aucun rythme → Masquer
+            mesDispoSelect.style.display = 'none';
+            mesDispoSelect.value = ''; // Réinitialiser la sélection
+            selectedRhythmRecherche = null; // Réinitialiser aussi la variable
+        }
+    });
+    
+    // Afficher le calendrier quand on sélectionne les disponibilités
+    mesDispoSelect.addEventListener('change', function() {
+        const rythme = parseInt(this.value);
+        if (rythme) {
+            selectedRhythmRecherche = rythme;
+            initCalendarRecherche();
+            // Réinitialiser
+            selectedDatesRecherche = [];
+            calendarStartDateRecherche = null;
+            mesDisponibilites = [];
+        } else {
+            mesDisponibilites = [];
+            filtrerLogements();
+        }
+    });
+    
+    // Récupérer TOUS les paramètres de l'URL si on vient de la page d'accueil
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('ville')) {
+        document.getElementById('ville').value = urlParams.get('ville');
+    }
+    if (urlParams.has('budget')) {
+        document.getElementById('budget').value = urlParams.get('budget');
+    }
+    if (urlParams.has('rythme')) {
+        document.getElementById('rythme').value = urlParams.get('rythme');
+        // Si un rythme est présent, afficher le champ "Mes disponibilités"
+        const mesDispoSelect = document.getElementById('monRythmeRecherche');
+        if (mesDispoSelect) {
+            mesDispoSelect.style.display = 'block';
+        }
+    }
+    if (urlParams.has('disponibilites')) {
+        const mesDispoSelect = document.getElementById('monRythmeRecherche');
+        if (mesDispoSelect) {
+            mesDispoSelect.value = urlParams.get('disponibilites');
+            // IMPORTANT : Définir la variable pour que le calendrier fonctionne
+            selectedRhythmRecherche = parseInt(urlParams.get('disponibilites'));
+        }
+    }
+    
+    // Si au moins un paramètre est présent, lancer la recherche automatiquement
+    if (urlParams.has('ville') || urlParams.has('budget') || urlParams.has('rythme') || urlParams.has('disponibilites')) {
+        filtrerLogements();
+    }
+});
+    </script>
+
+    <script>
+// Gérer le lien "Mon espace"
+async function gererLienMonEspace() {
+    const lien = document.getElementById('monEspaceLink');
+    if (!lien) return;
+    
+    // Vérifier si connecté
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (user) {
+        // Connecté : récupérer le type d'utilisateur
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', user.id)
+            .single();
+        
+        if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-hote.html';
+        } else {
+            lien.href = 'dashboard-locataire.html';
+        }
+    } else {
+        // Pas connecté : rediriger vers connexion
+        lien.href = 'connexion.html';
+    }
+}
+
+// Charger au démarrage
+if (typeof supabaseClient !== 'undefined') {
+    gererLienMonEspace();
+}
+</script>
+</body>
+</html>

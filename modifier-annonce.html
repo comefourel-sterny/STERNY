@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier mon annonce - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+        
+        /* CONTAINER FORMULAIRE */
+        .form-container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 40px 50px 40px; /* Plus de padding en bas */
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .form-header h1 {
+            font-size: 32px;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+        
+        /* FORMULAIRE */
+        .form-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: var(--error);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* CHECKBOX GROUP */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        /* COLOCATION ALTERNÉE */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .highlight-box h3 {
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .highlight-box p {
+            color: var(--gray-700);
+            margin-bottom: 15px;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: 0.4s;
+            border-radius: 28px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        /* BOUTONS */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 30px;
+            border-top: 2px solid var(--gray-100);
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 15px;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel:hover {
+            background: var(--gray-300);
+        }
+        
+        .btn-submit {
+            flex: 2;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* MESSAGE */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ===== CALENDRIER STYLES ===== */
+        
+        /* Navigation mois */
+        .month-nav-btn:hover {
+            background: #5568D3 !important;
+            transform: translateY(-1px);
+            transition: all 0.2s;
+        }
+
+        .month-nav-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Calendrier grid */
+        .calendar-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 0;
+            width: 100%;
+            max-width: 100%;
+            align-items: start;
+        }
+
+        .month-calendar {
+            background: #F9FAFB;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #E5E7EB;
+            min-width: 0;
+            height: 100%;
+        }
+
+        .month-calendar h4 {
+            text-align: center;
+            margin: 0 0 6px 0;
+            color: #4C51BF;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            width: 100%;
+            min-height: 180px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 500;
+            transition: all 0.2s;
+            width: 100%;
+            max-height: 26px;
+            line-height: 1;
+        }
+
+        .calendar-day:not(.empty):hover {
+            background: #EEF2FF;
+            transform: scale(1.1);
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+        }
+
+        .calendar-day.period-start,
+        .calendar-day.period-end {
+            background: #4F46E5;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.period-middle {
+            background: #A5B4FC;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+    <div class="container">
+        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#">Comment ça marche</a></li>
+            <li><a href="#">Devenir hôte</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <!-- FORMULAIRE CRÉATION ANNONCE -->
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>Modifier mon annonce</h1>
+                <p>Renseignez les informations de votre logement</p>
+            </div>
+            
+            <div id="messageBox" class="message"></div>
+            
+             <form id="annonceForm" onsubmit="soumettreAnnonce(event)">   
+                <!-- INFORMATIONS DE BASE -->
+                <div class="form-section">
+                    <h3 class="section-title">📋 Informations de base</h3>
+                    
+                    <div class="form-group">
+                        <label>Titre de l'annonce <span class="required">*</span></label>
+                        <input type="text" id="titre" placeholder="Ex: Studio meublé centre-ville" required>
+                        <small>Soyez clair et attractif (max 60 caractères)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description <span class="required">*</span></label>
+                        <textarea id="description" placeholder="Décrivez votre logement en détail..." required></textarea>
+                        <small>Points à mentionner : localisation, équipements, proximités, règles...</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type de logement <span class="required">*</span></label>
+                            <select id="type" required>
+                                <option value="" disabled selected>🏠 Sélectionne le type</option>
+                                <option value="studio">Studio</option>
+                                <option value="t1">T1</option>
+                                <option value="t2">T2</option>
+                                <option value="colocation">Colocation</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Surface (m²) <span class="required">*</span></label>
+                            <input type="number" id="surface" placeholder="25" min="10" max="200" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- LOCALISATION -->
+                <div class="form-section">
+                    <h3 class="section-title">📍 Localisation</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ville <span class="required">*</span></label>
+                            <select id="ville" required>
+                                <option value="" disabled selected>📍 Sélectionne ta ville</option>
+                                <option value="rennes">Rennes</option>
+                                <option value="nantes">Nantes</option>
+                                <option value="lyon">Lyon</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Quartier</label>
+                            <input type="text" id="adresse" placeholder="Centre-ville, Villejean...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PRIX -->
+                <div class="form-section">
+                    <h3 class="section-title">💰 Prix</h3>
+                    
+                    <div class="form-group">
+                        <label>Loyer mensuel (€) <span class="required">*</span></label>
+                        <input type="number" id="prix" placeholder="450" min="100" max="2000" required>
+                        <small>Indiquez le loyer charges comprises</small>
+                    </div>
+                </div>
+                
+                <!-- COLOCATION ALTERNÉE -->
+            
+<div class="form-section">
+    <h3 class="section-title">🔄 Colocation alternée</h3>
+    
+    <div class="highlight-box">
+        <h3>💡 Le principe de la plateforme</h3>
+        <p>Tous les logements sur AlternLogement sont en colocation alternée. Cela permet de diviser le loyer par 2 !</p>
+    </div>
+    
+    <div class="form-group">
+        <label>Situation du logement <span class="required">*</span></label>
+        <select id="situationLogement" onchange="updateRythmeOptions()" required>
+            <option value="" disabled selected>🏘️ Sélectionne ta situation</option>
+            <option value="occupe">J'occupe déjà ce logement (je cherche 1 colocataire)</option>
+            <option value="vide">Le logement est vide (je cherche 2 alternants à matcher)</option>
+        </select>
+        <small>Cela détermine combien de personnes pourront réserver</small>
+    </div>
+    
+    <div id="rythmeSection" style="display: none;">
+        <div class="form-group" id="rythmeOccupe" style="display: none;">
+            <label>Ton rythme d'alternance *</label>
+<div style="display: flex; gap: 10px; margin-top: 8px;">
+    <select id="categorieRythme" style="flex: 1;" required onchange="updateRythmeOptions()">
+    <option value="" disabled selected>📊 Catégorie de rythme</option>
+        <option value="hebdo">🔄 Hebdomadaire</option>
+        <option value="blocs">📅 Par blocs</option>
+        <option value="longs">🧳 Longues périodes</option>
+        <option value="perso">✏️ Personnalisé</option>
+    </select>
+    
+    <select id="rythmeHote" style="flex: 1; display: none;" required>
+        <option value="" disabled selected>Sélectionne ton rythme</option>
+    </select>
+</div>
+<p style="font-size: 0.9em; color: #666; margin-top: 5px;">On matchera avec un alternant qui a le rythme complémentaire !</p>
+        </div>
+        
+        <div id="rythmeVide" style="display: none;">
+            <div style="padding: 15px; background: var(--gray-50); border-radius: 8px; margin-top: 10px;">
+                <p style="margin: 0; color: var(--gray-700); font-size: 15px;">
+                    ✅ On matchera automatiquement 2 alternants avec des rythmes complémentaires<br>
+                    📅 Exemple : Alternant A (semaines impaires) + Alternant B (semaines paires)
+                </p>
+            </div>
+            <input type="hidden" id="rythmeAuto" value="auto-match">
+        </div>
+    </div>
+</div>
+
+        <!-- CALENDRIER DE DISPONIBILITÉS -->
+<div id="calendrierSection" style="display: none;">
+    <div class="form-section">
+        <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
+            📍 Clique sur une date de début dans le calendrier
+        </p>
+
+        <!-- NAVIGATION AVEC TITRE AU CENTRE -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <button type="button" id="prevMonthBtn" class="month-nav-btn" style="padding: 10px 20px; background: #667EEA; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600;">
+                ←
+            </button>
+            <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #1F2937;">📅 Ton calendrier d'occupation</h3>
+            <button type="button" id="nextMonthBtn" class="month-nav-btn" style="padding: 10px 20px; background: #667EEA; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600;">
+                →
+            </button>
+        </div>
+
+        <!-- CALENDRIER 3 MOIS -->
+        <div class="calendar-wrapper">
+            <div class="month-calendar">
+                <h4 id="month-title-0">Janvier 2026</h4>
+                <div class="calendar-grid" id="calendar-grid-0"></div>
+            </div>
+            <div class="month-calendar">
+                <h4 id="month-title-1">Février 2026</h4>
+                <div class="calendar-grid" id="calendar-grid-1"></div>
+            </div>
+            <div class="month-calendar">
+                <h4 id="month-title-2">Mars 2026</h4>
+                <div class="calendar-grid" id="calendar-grid-2"></div>
+            </div>
+        </div>
+
+        <!-- CHAMPS DE DATES (EN DESSOUS) -->
+        <div style="margin-top: 20px; padding: 15px; background: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB;">
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #4B5563; margin-bottom: 6px;">
+                        Date de début
+                    </label>
+                    <input 
+                        type="date" 
+                        id="dateDebut" 
+                        style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; font-size: 14px;"
+                    />
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #4B5563; margin-bottom: 6px;">
+                        Date de fin
+                    </label>
+                    <input 
+                        type="date" 
+                        id="dateFin" 
+                        style="width: 100%; padding: 10px; border: 2px solid #E5E7EB; border-radius: 6px; font-size: 14px;"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                        
+                <!-- ÉQUIPEMENTS -->
+                <div class="form-section">
+                    <h3 class="section-title">⚡ Équipements</h3>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wifi" value="Wifi">
+                            <label for="wifi">📶 Wifi</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cuisine" value="Cuisine équipée">
+                            <label for="cuisine">🍳 Cuisine équipée</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="lave-linge" value="Lave-linge">
+                            <label for="lave-linge">👕 Lave-linge</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="parking" value="Parking">
+                            <label for="parking">🚗 Parking</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="balcon" value="Balcon/Terrasse">
+                            <label for="balcon">🌿 Balcon/Terrasse</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="meuble" value="Meublé">
+                            <label for="meuble">🛋️ Meublé</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ACTIONS -->
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="annuler()">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+                    </button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 80px;">
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p><a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a></p>
+        </div>
+    </footer>
+
+    <script>
+    let currentUser = null;
+let selectedRhythm = null;
+let selectedDates = [];
+let calendarStartDate = null;
+let currentMonthOffset = 0;
+
+
+/* ========================================== */
+/* CALENDRIER - CODE PROPRE ET FONCTIONNEL */
+/* ========================================== */
+
+const monthNames = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+];
+
+// FONCTION UTILITAIRE : Parser une date ISO en heure locale (évite les problèmes de timezone)
+function parseLocalDate(dateString) {
+    // dateString format: "2026-02-15"
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day); // mois - 1 car janvier = 0
+}
+
+// FONCTION UTILITAIRE : Formater une date en string ISO local (YYYY-MM-DD)
+function formatLocalDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Fonction pour générer UN mois
+function generateMonth(monthIndex, containerId, titleId) {
+    const container = document.getElementById(containerId);
+    const titleElement = document.getElementById(titleId);
+    
+    if (!container) {
+        console.error(`Conteneur ${containerId} non trouvé`);
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    // Calculer l'année et le mois avec l'offset
+    const today = new Date();
+    const targetMonth = today.getMonth() + currentMonthOffset + monthIndex;
+    const year = today.getFullYear() + Math.floor(targetMonth / 12);
+    const month = ((targetMonth % 12) + 12) % 12;
+    
+    // Mettre à jour le titre
+    if (titleElement) {
+        titleElement.textContent = `${monthNames[month]} ${year}`;
+    }
+    
+    // Premier et dernier jour du mois
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const firstDayOfWeek = (firstDay.getDay() + 6) % 7; // Lundi = 0
+    
+    // Cases vides avant le 1er jour
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        container.appendChild(emptyCell);
+    }
+    
+    // Jours du mois
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(year, month, day);
+        const dateStr = formatLocalDate(date); // Utiliser formatLocalDate au lieu de toISOString
+        
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        dayCell.textContent = day;
+        dayCell.dataset.date = dateStr;
+        
+        // Appliquer le style si la date est sélectionnée
+        if (selectedDates.includes(dateStr)) {
+            const index = selectedDates.indexOf(dateStr);
+            if (index === 0) {
+                dayCell.classList.add('period-start');
+            } else if (index === selectedDates.length - 1) {
+                dayCell.classList.add('period-end');
+            } else {
+                dayCell.classList.add('period-middle');
+            }
+        }
+        
+        // Event listener
+        dayCell.addEventListener('click', () => handleCalendarDateClick(date));
+        container.appendChild(dayCell);
+    }
+}
+
+// Initialiser le calendrier (afficher 3 mois)
+function initCalendar() {
+    generateMonth(0, 'calendar-grid-0', 'month-title-0');
+    generateMonth(1, 'calendar-grid-1', 'month-title-1');
+    generateMonth(2, 'calendar-grid-2', 'month-title-2');
+}
+
+// Gérer le clic sur une date
+function handleCalendarDateClick(date) {
+    if (!selectedRhythm) {
+        alert('Sélectionne d\'abord un rythme d\'alternance !');
+        return;
+    }
+    
+    // MODE PERSONNALISÉ : clic individuel sur les dates
+    if (selectedRhythm === 'perso') {
+        const dateStr = formatLocalDate(date);
+        
+        // Toggle : ajouter ou retirer la date
+        const index = selectedDates.indexOf(dateStr);
+        if (index > -1) {
+            // Date déjà sélectionnée → la retirer
+            selectedDates.splice(index, 1);
+        } else {
+            // Date pas sélectionnée → l'ajouter
+            selectedDates.push(dateStr);
+        }
+        
+        // Trier les dates
+        selectedDates.sort();
+        
+        // Mettre à jour le champ dateDebut avec la première date
+        if (selectedDates.length > 0) {
+            calendarStartDate = parseLocalDate(selectedDates[0]);
+            document.getElementById('dateDebut').value = selectedDates[0];
+            document.getElementById('dateFin').value = selectedDates[selectedDates.length - 1];
+        }
+        
+        // Rafraîchir le calendrier
+        initCalendar();
+        return;
+    }
+    
+    // MODE AUTOMATIQUE : générer le pattern
+    calendarStartDate = date;
+    selectedDates = [];
+    
+    // Remplir le champ dateDebut
+    document.getElementById('dateDebut').value = formatLocalDate(date);
+    
+    // Calculer une date de fin par défaut (3 mois plus tard)
+    const defaultEndDate = new Date(date);
+    defaultEndDate.setMonth(defaultEndDate.getMonth() + 3);
+    
+    // Générer le pattern avec la date de fin
+    const pattern = generatePattern(date, selectedRhythm, defaultEndDate);
+    selectedDates = pattern.map(d => formatLocalDate(d));
+    
+    // Remplir le champ dateFin avec la dernière date
+    if (selectedDates.length > 0) {
+        document.getElementById('dateFin').value = selectedDates[selectedDates.length - 1];
+    }
+    
+    // Rafraîchir l'affichage
+    initCalendar();
+}
+
+// Générer le pattern de dates selon le rythme
+function generatePattern(startDate, weeksPerPeriod, endDate = null) {
+    const dates = [];
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const daysPerPeriod = weeksPerPeriod * 7;
+    
+    // Si pas de date de fin, générer 1 an par défaut
+    let maxDate;
+    if (endDate) {
+        maxDate = new Date(endDate);
+    } else {
+        maxDate = new Date(startDate);
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+    }
+    
+    let currentDate = new Date(startDate);
+    let dayIndex = 0;
+    
+    while (currentDate <= maxDate) {
+        const periodNumber = Math.floor(dayIndex / daysPerPeriod);
+        
+        // Alternance : période paire = occupé, période impaire = vide
+        if (periodNumber % 2 === 0) {
+            dates.push(new Date(currentDate));
+        }
+        
+        currentDate = new Date(currentDate.getTime() + millisecondsPerDay);
+        dayIndex++;
+    }
+    
+    return dates;
+}
+
+// Mettre à jour l'info-box (DÉSACTIVÉ - on utilise les champs de dates maintenant)
+function updateCalendarInfo() {
+    // Cette fonction n'est plus utilisée
+    return;
+}
+
+
+
+    // Vérifier si l'utilisateur est connecté
+
+    
+    // Vérifier si l'utilisateur est connecté
+    // Récupérer l'ID de l'annonce depuis l'URL
+function getAnnonceIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+}
+
+// Charger l'annonce existante
+async function chargerAnnonce() {
+    const annonceId = getAnnonceIdFromURL();
+    
+    if (!annonceId) {
+        alert('Aucune annonce spécifiée');
+        window.location.href = 'dashboard-hote.html';
+        return;
+    }
+    
+    // Récupérer l'annonce depuis Supabase
+    const { data: annonce, error } = await supabaseClient
+        .from('annonces')
+        .select('*')
+        .eq('id', annonceId)
+        .single();
+    
+    if (error || !annonce) {
+        alert('Erreur lors du chargement de l\'annonce');
+        console.error(error);
+        return;
+    }
+    
+    // Pré-remplir tous les champs du formulaire
+    document.getElementById('titre').value = annonce.titre || '';
+    document.getElementById('ville').value = annonce.ville || '';
+    document.getElementById('adresse').value = annonce.adresse || '';
+    // document.getElementById('code_postal').value = annonce.code_postal || '';  // ← COMMENTER
+    document.getElementById('surface').value = annonce.surface || '';
+    // document.getElementById('nb_chambres').value = annonce.nb_chambres || '';  // ← COMMENTER
+    document.getElementById('prix').value = annonce.prix || '';
+    // document.getElementById('caution').value = annonce.caution || '';  // ← COMMENTER
+    // document.getElementById('charges').value = annonce.charges || '';  // ← COMMENTER
+    document.getElementById('description').value = annonce.description || '';
+
+
+    // Sélectionner le type de logement
+if (annonce.type_logement) {
+    document.getElementById('type').value = annonce.type_logement;
+}
+
+// Sélectionner la situation du logement
+if (annonce.semaines_disponibles) {
+    document.getElementById('situationLogement').value = annonce.semaines_disponibles;
+}
+
+    // Cocher les équipements
+    if (annonce.equipements) {
+        annonce.equipements.forEach(eq => {
+            const checkbox = document.querySelector(`input[value="${eq}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+    }
+    
+    // Charger les disponibilités si elles existent
+    if (annonce.disponibilites_debut && annonce.disponibilites_pattern && annonce.disponibilites_pattern.length > 0) {
+        // Charger la date de début (string)
+        calendarStartDate = parseLocalDate(annonce.disponibilites_debut);
+        
+        // Charger toutes les dates (array de strings)
+        selectedDates = annonce.disponibilites_pattern;
+        
+        // Remplir les champs de dates
+        if (document.getElementById('dateDebut')) {
+            document.getElementById('dateDebut').value = annonce.disponibilites_debut;
+        }
+        if (document.getElementById('dateFin')) {
+            document.getElementById('dateFin').value = selectedDates[selectedDates.length - 1];
+        }
+        
+        // Déterminer le rythme depuis le formulaire
+        const rythmeValue = parseInt(annonce.rythme_alternance);
+        if (rythmeValue) {
+            selectedRhythm = rythmeValue;
+            
+            // Mapper le rythme vers une catégorie
+            const categorieMap = {
+                1: 'hebdo',
+                2: 'blocs', 3: 'blocs', 4: 'blocs',
+                8: 'longs', 12: 'longs', 16: 'longs'
+            };
+            
+            const categorie = categorieMap[rythmeValue];
+            if (categorie && document.getElementById('categorieRythme')) {
+                // Pré-sélectionner la catégorie
+                document.getElementById('categorieRythme').value = categorie;
+                
+                // Déclencher updateRythmeOptions pour créer les options
+                updateRythmeOptions();
+                
+                // Puis pré-sélectionner le rythme
+                if (document.getElementById('rythmeHote')) {
+                    document.getElementById('rythmeHote').value = rythmeValue;
+                }
+                
+                // Afficher le calendrier après un délai
+                setTimeout(() => {
+                    const calendrierSection = document.getElementById('calendrierSection');
+                    if (calendrierSection) {
+                        calendrierSection.style.display = 'block';
+                        initCalendar(); // Le calendrier se colorera automatiquement grâce à selectedDates
+                    }
+                }, 200);
+            }
+        }
+    } else {
+        // Pas de disponibilités : juste déclencher updateRythmeOptions
+        updateRythmeOptions();
+    }
+
+}
+
+async function checkAuth() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (!user) {
+        window.location.href = 'connexion.html';
+        return;
+    }
+    
+    currentUser = user;
+}
+    
+// Mettre à jour les options de rythme selon la situation
+function updateRythmeOptions() {
+    const situation = document.getElementById('situationLogement').value;
+    const categorie = document.getElementById('categorieRythme')?.value;
+    const rythmeSection = document.getElementById('rythmeSection');
+    const rythmeOccupe = document.getElementById('rythmeOccupe');
+    const rythmeVide = document.getElementById('rythmeVide');
+    const rythmeHote = document.getElementById('rythmeHote');
+    const calendrierSection = document.getElementById('calendrierSection');
+
+    // Sécurité
+    if (!rythmeSection || !rythmeHote || !calendrierSection) return;
+
+    // reset affichage
+    rythmeSection.style.display = 'none';
+    rythmeOccupe.style.display = 'none';
+    rythmeVide.style.display = 'none';
+    calendrierSection.style.display = 'none';
+
+    // reset options rythme
+    rythmeHote.innerHTML = '<option value="" disabled selected>Sélectionne ton rythme</option>';
+    rythmeHote.value = '';
+
+    // CAS : logement occupé
+    if (situation === 'occupe') {
+        rythmeSection.style.display = 'block';
+        rythmeOccupe.style.display = 'block';
+
+        if (!categorie) return;
+
+        if (categorie === 'hebdo') {
+            rythmeHote.innerHTML += `<option value="1">1 semaine / 1 semaine</option>`;
+        }
+
+        if (categorie === 'blocs') {
+            rythmeHote.innerHTML += `
+                <option value="2">2 semaines / 2 semaines</option>
+                <option value="3">3 semaines / 3 semaines</option>
+                <option value="4">4 semaines / 4 semaines</option>
+            `;
+        }
+
+        if (categorie === 'longs') {
+            rythmeHote.innerHTML += `
+                <option value="8">2 mois / 2 mois</option>
+                <option value="12">3 mois / 3 mois</option>
+                <option value="16">4 mois / 4 mois</option>
+            `;
+        }
+
+        if (categorie === 'perso') {
+            // Mode personnalisé : afficher directement le calendrier
+            selectedRhythm = 'perso';
+            calendrierSection.style.display = 'block';
+            initCalendar();
+            return; // Pas besoin du select rythmeHote
+        }
+
+        rythmeHote.style.display = 'block';
+
+        // 👉 calendrier UNIQUEMENT après choix du rythme
+        rythmeHote.onchange = () => {
+            const value = rythmeHote.value;
+            if (value) {
+                selectedRhythm = parseInt(value);
+                calendrierSection.style.display = 'block';
+                initCalendar(); // 👈 LIGNE ESSENTIELLE !
+            } else {
+                calendrierSection.style.display = 'none';
+            }
+        };
+    }
+
+    // CAS : logement vide
+    if (situation === 'vide') {
+        rythmeSection.style.display = 'block';
+        rythmeVide.style.display = 'block';
+    }
+}
+    
+    // Créer l'annonce
+        async function soumettreAnnonce(event) {
+        event.preventDefault();
+        
+        const submitBtn = event.target.querySelector('button[type="submit"]');
+        const messageBox = document.getElementById('messageBox');
+        
+        // Désactiver le bouton
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enregistrement en cours...';
+        
+        try {
+            // Récupérer les équipements sélectionnés
+            const equipements = [];
+            ['wifi', 'cuisine', 'lave-linge', 'parking', 'balcon', 'meuble'].forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    equipements.push(checkbox.value);
+                }
+            });
+            
+            // Récupérer le rythme selon la situation
+            const situation = document.getElementById('situationLogement').value;
+            let rythme = null;
+            
+            if (situation === 'occupe') {
+                rythme = document.getElementById('rythmeHote').value;
+            } else if (situation === 'vide') {
+                rythme = 'auto-match';
+            }
+            
+            // Préparer les données
+            const annonceData = {
+                titre: document.getElementById('titre').value,
+                description: document.getElementById('description').value,
+                type_logement: document.getElementById('type').value,
+                surface: parseInt(document.getElementById('surface').value),
+                ville: document.getElementById('ville').value,
+                adresse: document.getElementById('adresse').value || null,
+                prix: parseFloat(document.getElementById('prix').value),
+                colocation_alternee: true,
+                rythme_alternance: rythme,
+                semaines_disponibles: situation,
+                equipements: equipements,
+                disponible: true,
+                disponibilites_debut: calendarStartDate ? formatLocalDate(calendarStartDate) : null,
+                disponibilites_pattern: selectedDates.length > 0 ? selectedDates : null
+            };
+            
+            // Récupérer l'ID de l'annonce
+            const annonceId = getAnnonceIdFromURL();
+            
+            // Modifier l'annonce
+            const { data, error } = await supabaseClient
+                .from('annonces')
+                .update(annonceData)
+                .eq('id', annonceId)
+                .select();
+            
+            if (error) throw error;
+            
+            // Succès !
+            showMessage('success', '✅ Annonce modifiée avec succès ! Redirection...');
+            
+            // Redirection après 2 secondes
+            setTimeout(() => {
+                window.location.href = 'dashboard-hote.html';
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Erreur modification annonce:', error);
+            showMessage('error', '❌ Erreur : ' + error.message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enregistrer les modifications';
+        }
+    }
+    
+    // Afficher un message
+    function showMessage(type, text) {
+        const messageBox = document.getElementById('messageBox');
+        messageBox.className = 'message ' + type;
+        messageBox.textContent = text;
+        
+        // Scroll vers le message
+        messageBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // Annuler
+    function annuler() {
+        if (confirm('Es-tu sûr de vouloir annuler ? Les données ne seront pas sauvegardées.')) {
+            window.location.href = 'dashboard-hote.html';
+        }
+    }
+    
+    // Déconnexion
+    async function seDeconnecter() {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'index.html';
+    }
+
+// Gérer le lien "Mon espace"
+async function gererLienMonEspace() {
+    const lien = document.getElementById('monEspaceLink');
+    if (!lien) return;
+    
+    // Vérifier si connecté
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (user) {
+        // Connecté : récupérer le type d'utilisateur
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', user.id)
+            .single();
+        
+        if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-hote.html';
+        } else {
+            lien.href = 'dashboard-locataire.html';
+        }
+    } else {
+        // Pas connecté : rediriger vers connexion
+        lien.href = 'connexion.html';
+    }
+}
+
+// Charger au démarrage
+if (typeof supabaseClient !== 'undefined') {
+    gererLienMonEspace();
+    checkAuth();
+    chargerAnnonce();
+}
+</script>
+</body>
+</html>

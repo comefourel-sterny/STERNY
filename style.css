@@ -1,0 +1,275 @@
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    color: #1a202c;
+    line-height: 1.6;
+}
+
+/* VARIABLES DE COULEURS (Design System) */
+:root {
+    --primary: #667eea;
+    --primary-dark: #5568d3;
+    --secondary: #764ba2;
+    --success: #51cf66;
+    --error: #ff6b6b;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-900: #111827;
+}
+
+/* NAVIGATION */
+nav {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    color: var(--gray-900);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: var(--primary);
+}
+
+/* BUTTONS */
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* SECTIONS */
+section {
+    padding: 80px 20px;
+}
+
+/* FOOTER */
+footer {
+    background: var(--gray-900);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    nav ul {
+        gap: 15px;
+    }
+    
+    nav a {
+        font-size: 14px;
+    }
+    
+    section {
+        padding: 60px 20px;
+    }
+}
+
+/* ========== CALENDRIER - STYLE UNIFIÉ ========== */
+
+.calendar-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 30px 0;
+  align-items: start;
+}
+
+
+/* Chaque mois */
+.month-calendar {
+  background: white;
+  border: 2px solid #4F46E5;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* === CALENDRIER === */
+
+.calendar-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.month-calendar {
+  border: 2px solid #667EEA;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.month-calendar h4 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Ligne des jours L M M J V S D */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* Grille des jours */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+/* Case jour */
+.calendar-day {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: #EDF2FF;
+}
+
+.calendar-day.selected {
+  background: #667EEA;
+  color: white;
+}
+
+/* Grille des jours du mois */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Jour individuel */
+.calendar-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Hover */
+.calendar-day:hover {
+  background-color: #eef2ff;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.calendar-header {
+  font-weight: 600;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: #eef2ff;
+}

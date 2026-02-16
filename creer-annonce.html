@@ -1,0 +1,4359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une annonce - STERNY</title>
+    <!-- <link rel="stylesheet" href="style.css"> --> <!-- Désactivé : couleurs STERNY dans le fichier -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1E293B;
+        }
+        
+        /* NAVIGATION */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E293B;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo .bird {
+            color: #FF6B35;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover {
+            color: #FF6B35;
+        }
+        
+        /* CONTAINER PRINCIPAL */
+        .create-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+        
+        /* HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+        
+        .page-header p {
+            font-size: 16px;
+            color: #6b7280;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* PROGRESS BAR */
+        .progress-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: #9CA3AF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+        }
+        
+        .progress-step.active .step-number {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .progress-step.completed .step-number {
+            background: #FF6B35;
+            color: white;
+        }
+        
+        .progress-step.completed .step-number::before {
+            content: '✓';
+        }
+        
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        
+        .progress-step.active .step-label {
+            color: #1E293B;
+        }
+        
+        .progress-step.completed .step-label {
+            color: #FF6B35;
+        }
+        
+        .progress-bar-track {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1E293B 0%, #334155 100%);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        
+        /* SECTIONS */
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .form-section.hidden-for-user-type {
+            display: none !important;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-header {
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .section-description {
+            font-size: 15px;
+            color: #6b7280;
+            margin-left: 44px;
+        }
+        
+        /* FORM GROUPS */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .form-grid.full-width {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: #EF4444;
+            margin-left: 2px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        /* Style pour les options disabled */
+        select option:disabled {
+            color: #9CA3AF;
+        }
+        
+        /* Masquer les flèches pour les input number */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1E293B;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .input-suffix {
+            position: relative;
+        }
+        
+        .input-suffix input {
+            padding-right: 16px;
+        }
+        
+        .input-suffix::after {
+            content: attr(data-suffix);
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            font-weight: 500;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        
+        .privacy-note {
+            font-size: 13px;
+            color: #6B7280;
+            font-style: italic;
+            margin-top: 4px;
+        }
+        
+        /* PHOTOS */
+        .photos-upload-container {
+            margin-bottom: 24px;
+        }
+        
+        /* Bloc upload simple (état initial) */
+        .upload-zone-simple {
+            border: 2px dashed #D1D5DB;
+            border-radius: 16px;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #F9FAFB;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-zone-simple:hover {
+            border-color: #1E293B;
+            background: #F8FAFC;
+        }
+        
+        .upload-icon-large {
+            font-size: 72px;
+            margin-bottom: 20px;
+            color: #9CA3AF;
+        }
+        
+        .upload-text-large {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext-large {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        
+        /* Preview style annonce */
+        .photos-preview-main {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .main-photo-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .main-photo-wrapper.drag-over {
+            box-shadow: 0 0 0 4px #1E293B;
+        }
+        
+        .main-photo-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-placeholder {
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            padding: 60px 40px;
+        }
+        
+        .upload-placeholder .upload-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .upload-placeholder .upload-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .upload-placeholder .upload-subtext {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .thumbnail-grid {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 16px 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Scrollbar personnalisée */
+        .thumbnail-grid::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .thumbnail-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .thumbnail-grid::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 2px;
+        }
+        
+        .thumbnail-grid::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
+        
+        .thumbnail-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 4 / 3;
+            width: 140px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .thumbnail-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+        }
+        
+        .thumbnail-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        
+        .thumbnail-item.drag-over {
+            box-shadow: 0 0 0 3px #1E293B;
+        }
+        
+        .thumbnail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Numérotation des photos */
+        .photo-number {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #1E293B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            z-index: 5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Badge photo principale */
+        .photo-main-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #1E293B;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 5;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .thumbnail-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: #E5E7EB;
+            color: #9CA3AF;
+            font-size: 32px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .thumbnail-placeholder:hover {
+            background: #D1D5DB;
+        }
+        
+        .photo-delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        
+        .photo-delete-btn:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+        
+        .btn-add-photos {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #1E293B, #334155);
+            border: 2px solid #1E293B;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(30, 41, 59, 0.15);
+        }
+        
+        .btn-add-photos:hover {
+            background: linear-gradient(135deg, #FF6B35, #FF5722);
+            border-color: #FF6B35;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* CROP MODAL */
+        .crop-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .crop-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .crop-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .crop-modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        
+        .crop-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #F3F4F6;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .crop-close:hover {
+            background: #E5E7EB;
+        }
+        
+        .crop-container {
+            padding: 24px;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            position: relative;
+            background: white;
+        }
+        
+        .crop-container img {
+            display: block;
+            max-width: 100%;
+            max-height: 60vh;
+            margin: 0 auto;
+        }
+        
+        /* Forcer le centrage de Cropper.js */
+        .crop-container .cropper-container {
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            background: white !important;
+        }
+        
+        .crop-container .cropper-wrap-box,
+        .crop-container .cropper-canvas {
+            text-align: center;
+        }
+        
+        /* Supprimer le damier transparent et mettre fond blanc */
+        .crop-container .cropper-modal {
+            background: white !important;
+            opacity: 1 !important;
+        }
+        
+        .crop-container .cropper-bg {
+            background: white !important;
+        }
+        
+        .crop-modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .photos-counter {
+            text-align: center;
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 16px;
+        }
+        
+        .photos-counter #photoCount {
+            font-weight: 700;
+            color: #1E293B;
+            font-size: 18px;
+        }
+        
+        .photos-tips {
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+            border-left: 4px solid #FF6B35;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            color: #1E293B;
+        }
+        
+        /* Checkmark dans les champs input */
+        .input-checkmark {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FF6B35;
+            font-size: 22px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .input-checkmark.show {
+            opacity: 1;
+        }
+        
+        .ville-detectee {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 6px;
+            display: none;
+        }
+        
+        .ville-detectee.show {
+            display: block;
+        }
+        
+        .ville-detectee.valide {
+            color: #FF6B35;
+        }
+        
+        .ville-detectee.invalide {
+            color: #DC2626;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .ville-detectee.warning {
+            color: #F59E0B;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .ville-detectee.info {
+            color: #1E293B;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .input-hint {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+        
+        /* EQUIPEMENTS GRID */
+        .equipements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        /* ÉQUIPEMENTS */
+        .equipements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .equipement-checkbox {
+            position: relative;
+        }
+        
+        .equipement-checkbox input {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .equipement-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 14px;
+            background: white;
+            text-align: center;
+        }
+        
+        .equipement-label:hover {
+            border-color: #FF6B35;
+            background: #FFF4ED;
+        }
+        
+        .equipement-checkbox input:checked + .equipement-label {
+            border-color: #FF6B35;
+            background: #FFF4ED;
+            color: #1E293B;
+            font-weight: 600;
+        }
+        
+        /* REGLES */
+        .regles-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .regle-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .regle-label-clickable {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .regle-label-clickable:hover {
+            background: #FFF4ED;
+        }
+        
+        .regle-label-clickable input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #E5E7EB;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: white;
+            position: relative;
+            transition: all 0.2s;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        .regle-label-clickable input[type="checkbox"]:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        .regle-label-clickable input[type="checkbox"]:hover {
+            border-color: #FF6B35;
+        }
+        
+        .regle-label-clickable input[type="checkbox"]:checked {
+            background: #FF6B35;
+            border-color: #FF6B35;
+            transform: scale(1.1);
+        }
+        
+        .regle-label-clickable input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            font-weight: normal;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            line-height: 1;
+        }
+        
+        .regle-label-clickable span {
+            font-size: 15px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        /* PRIX & CHARGES */
+        /* RADIO OPTIONS - MODE CHARGES */
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px 20px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .radio-option:hover {
+            border-color: #FF6B35;
+            background: #FFF4ED;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.12);
+        }
+        
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .radio-option:has(input:checked) {
+            border-color: #FF6B35;
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+        }
+        
+        .radio-option:has(input:checked) .card-check {
+            background: #FF6B35;
+            border-color: #FF6B35;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .radio-option-content {
+            flex: 1;
+        }
+        
+        .radio-option-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        
+        .radio-option-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        
+        .radio-badge-green {
+            display: inline-block;
+            background: #FF6B35;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .radio-option-description {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+        
+        .charge-form {
+            display: none;
+            margin-top: 24px;
+        }
+        
+        .charge-form.active {
+            display: block;
+        }
+        
+        /* APERÇU DU PRIX */
+        .price-preview {
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            border-left: 4px solid #FF6B35;
+        }
+        
+        .price-preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 16px;
+        }
+        
+        .price-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .price-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            color: #1E293B;
+        }
+        
+        .price-line.commission {
+            padding-left: 16px;
+            font-size: 14px;
+            color: #1E293B;
+        }
+        
+        .price-line.total {
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 2px solid rgba(255, 107, 53, 0.3);
+            font-weight: 700;
+            font-size: 18px;
+            color: #1E293B;
+        }
+        
+        .price-note {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(67, 56, 202, 0.2);
+            font-size: 13px;
+            color: #1E293B;
+            font-style: italic;
+        }
+        
+        .charge-type-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            background: white;
+        }
+        
+        .charge-type-checkbox:hover {
+            border-color: #FF6B35;
+            background: #FFF4ED;
+            transform: translateY(-1px);
+        }
+        
+        .charge-type-checkbox input {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .charge-type-checkbox input:checked + span,
+        .charge-type-checkbox:has(input:checked) {
+            border-color: #FF6B35;
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+            color: #1E293B;
+            font-weight: 600;
+        }
+        
+        /* MODALE DE CONFIRMATION */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content-confirm {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: modalAppear 0.3s ease;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header-confirm {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF5722 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .modal-header-confirm h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .modal-body-confirm {
+            padding: 32px 24px;
+        }
+        
+        .modal-body-confirm p {
+            margin: 0 0 16px 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #4B5563;
+        }
+        
+        .modal-body-confirm p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-body-confirm strong {
+            color: #1E293B;
+        }
+        
+        .modal-footer-confirm {
+            padding: 20px 24px;
+            background: #F9FAFB;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .modal-footer-confirm .btn {
+            min-width: 140px;
+        }
+        
+        /* CALENDRIER MODERNE - 3 MOIS */
+        .calendar-instructions {
+            background: #F1F5F9;
+            border-left: 4px solid #1E293B;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #1E293B;
+            line-height: 1.6;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .calendar-nav-btn {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+        }
+        
+        .calendar-nav-btn:hover {
+            border-color: #1E293B;
+            background: #F8FAFC;
+            color: #1E293B;
+        }
+        
+        .calendar-period {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        
+        .calendar-months-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .calendar-month {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .month-header {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 16px;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9CA3AF;
+            padding: 8px 0;
+        }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .day-cell.empty {
+            visibility: hidden;
+        }
+        
+        .day-cell.past {
+            color: #D1D5DB;
+            cursor: not-allowed;
+        }
+        
+        .day-cell.available:hover {
+            background: #F3F4F6;
+        }
+        
+        .day-cell.selected {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            font-weight: 700;
+        }
+        
+        .day-cell.range-start {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .day-cell.range-end {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .day-cell.in-range {
+            background: #E2E8F0;
+            color: #1E293B;
+            font-weight: 600;
+            border-radius: 0;
+        }
+        
+        .selected-dates-summary {
+            background: #F9FAFB;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .summary-header span {
+            font-weight: 600;
+            color: #1F2937;
+        }
+        
+        .clear-dates-btn {
+            background: none;
+            border: none;
+            color: #DC2626;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .clear-dates-btn:hover {
+            background: #FEE2E2;
+        }
+        
+        .dates-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .date-pill {
+            background: white;
+            border: 1px solid #D1D5DB;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .date-pill button {
+            background: none;
+            border: none;
+            color: #9CA3AF;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .date-pill button:hover {
+            color: #DC2626;
+        }
+            padding: 20px;
+            background: #F9FAFB;
+            border-radius: 12px;
+        }
+        
+        .selected-dates-count {
+            font-size: 15px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+        
+        .dates-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .date-tag {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        
+        /* NAVIGATION FORMULAIRE */
+        .form-navigation {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .form-navigation-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+        }
+        
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF5722 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-primary:active {
+            background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* MESSAGES D'ERREUR */
+        .error-message {
+            display: none;
+            padding: 14px 18px;
+            background: #FEE2E2;
+            border: 2px solid #EF4444;
+            border-radius: 12px;
+            color: #991B1B;
+            font-size: 14px;
+            font-weight: 500;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .error-message.show {
+            display: flex;
+        }
+        
+        .error-icon {
+            font-size: 18px;
+        }
+        
+        /* VÉRIFICATION D'ADRESSE */
+        .address-validation-message {
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            display: none;
+            border: 1px solid;
+            font-weight: 500;
+        }
+        
+        .address-validation-message.show {
+            display: block;
+        }
+        
+        .address-validation-message.error {
+            background: #FEE2E2;
+            border-color: #EF4444;
+            color: #991B1B;
+        }
+        
+        .address-validation-message.warning {
+            background: #FEF3C7;
+            border-color: #F59E0B;
+            color: #92400E;
+        }
+        
+        .address-validation-message.success {
+            background: #D1FAE5;
+            border-color: #FF6B35;
+            color: #065F46;
+        }
+        
+        .address-validation-message.info {
+            background: #DBEAFE;
+            border-color: #1E293B;
+            color: #1E293B;
+        }
+
+        /* ÉCRAN SÉLECTION TYPE UTILISATEUR */
+        .user-type-screen {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F9FAFB;
+            padding: 40px 20px;
+        }
+
+        .user-type-container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-type-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .user-type-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 8px;
+        }
+
+        .user-type-header p {
+            font-size: 15px;
+            color: #6B7280;
+        }
+
+        .user-type-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .user-type-card {
+            position: relative;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-type-card:hover {
+            border-color: #FF6B35;
+            background: #FFF4ED;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+        }
+
+        .user-type-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .user-type-card:has(input:checked) {
+            border-color: #FF6B35;
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+            box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+
+        .user-type-card:has(input:checked) .card-title {
+            color: #1E293B;
+            font-weight: 700;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+
+        .card-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #E5E7EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .user-type-card:has(input:checked) .card-check {
+            background: #FF6B35;
+            border-color: #FF6B35;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .btn-large {
+            width: 100%;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-large:disabled {
+            background: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* CARTES DE RYTHME */
+        .rhythm-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rhythm-card {
+            position: relative;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .rhythm-card:hover {
+            border-color: #1E293B;
+            background: #F8FAFC;
+        }
+
+        .rhythm-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .rhythm-card:has(input:checked) {
+            border-color: #1E293B;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        }
+
+        .rhythm-content {
+            flex: 1;
+        }
+
+        .rhythm-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .rhythm-card:has(input:checked) .rhythm-title {
+            color: #1E293B;
+        }
+
+        .rhythm-description {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .rhythm-check {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #E5E7EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .rhythm-card:has(input:checked) .rhythm-check {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            border-color: #1E293B;
+            color: white;
+        }
+        /* NOTIFICATIONS CUSTOM */
+        .custom-notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .custom-notification.show {
+            display: flex;
+        }
+        
+        .notification-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            text-align: center;
+        }
+        
+        .notification-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .notification-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 12px;
+        }
+        
+        .notification-message {
+            font-size: 15px;
+            color: #64748B;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .notification-btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .notification-btn:hover {
+            background: #E55A2B;
+            transform: translateY(-2px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo"><span class="bird">🐦</span> STERNY</a>
+            <ul>
+                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+                <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ÉCRAN DE SÉLECTION TYPE UTILISATEUR -->
+    <div id="userTypeSelection" class="user-type-screen" style="display: none;">
+        <div class="user-type-container">
+            <div class="user-type-header">
+                <h1>Créer une annonce</h1>
+                <p>Pour commencer, indique-nous ton profil</p>
+            </div>
+
+            <div class="user-type-options">
+                <label class="user-type-card" for="typeProprietaire">
+                    <input type="radio" name="userType" id="typeProprietaire" value="proprietaire">
+                    <div class="card-content">
+                        <div class="card-title">Propriétaire</div>
+                        <div class="card-description">Je possède un logement et je souhaite le louer à deux alternants</div>
+                    </div>
+                    <div class="card-check">✓</div>
+                </label>
+
+                <label class="user-type-card" for="typeLocataire">
+                    <input type="radio" name="userType" id="typeLocataire" value="locataire">
+                    <div class="card-content">
+                        <div class="card-title">Locataire</div>
+                        <div class="card-description">Je loue déjà un logement et je cherche quelqu'un pour partager selon nos rythmes</div>
+                    </div>
+                    <div class="card-check">✓</div>
+                </label>
+            </div>
+
+            <button class="btn btn-primary btn-large" id="btnConfirmUserType" disabled>
+                Continuer
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="create-container" id="mainFormContainer" style="display: none;">
+        <!-- HEADER -->
+        <div class="page-header">
+            <div style="display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 8px;">
+                <h1 style="margin: 0;">Créer une annonce</h1>
+                <span id="userTypeBadge" style="display: none; background: #F3F4F6; color: #6B7280; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;"></span>
+            </div>
+            <p>Trouve ton alternant idéal en quelques étapes simples</p>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Informations</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Détails</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Photos</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Prix</div>
+                </div>
+                <div class="progress-step" data-step="5" style="display: none;">
+                    <div class="step-number">5</div>
+                    <div class="step-label">Disponibilités</div>
+                </div>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 1: INFORMATIONS DE BASE -->
+        <div class="form-section active" id="section1">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-number">1</span>
+                    Informations de base
+                </div>
+                <div class="section-description">
+                    Commence par les informations essentielles de ton logement
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Type de logement <span class="required">*</span></label>
+                    <select id="type">
+                        <option value="" disabled selected>Sélectionne le type</option>
+                        <option value="Studio">Studio</option>
+                        <option value="T1">T1</option>
+                        <option value="T2">T2</option>
+                        <option value="T3">T3</option>
+                        <option value="T4+">T4+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Surface <span class="required">*</span></label>
+                    <div style="position: relative; width: 100%;">
+                        <input type="number" id="surface" min="10" max="200" placeholder="45" style="width: 100%; padding-right: 50px;">
+                        <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 600; font-size: 16px; pointer-events: none;">m²</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Code postal <span class="required">*</span></label>
+                    <div style="position: relative; width: 100%;">
+                        <input type="text" id="codePostal" placeholder="Ex: 35000" maxlength="5" pattern="[0-9]{5}" style="width: 100%; padding-right: 45px;">
+                        <span id="codePostalCheckmark" class="input-checkmark">✓</span>
+                    </div>
+                    
+                    <!-- Message d'erreur si ville non disponible -->
+                    <div id="villeDetectee" class="ville-detectee"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Adresse <span class="required">*</span></label>
+                    <div style="position: relative; width: 100%;">
+                        <input type="text" id="adresse" placeholder="Ex: 15 rue de la République" style="width: 100%; padding-right: 45px;">
+                        <span id="adresseCheckmark" class="input-checkmark">✓</span>
+                    </div>
+                    
+                    <!-- Message de validation automatique -->
+                    <div id="addressValidationMessage" class="address-validation-message"></div>
+                </div>
+            </div>
+            
+            <div class="form-grid full-width">
+                <div style="font-size: 13px; color: #1E293B; font-weight: 500; font-style: italic; margin-top: -12px;">
+                    L'adresse complète sera visible uniquement après réservation confirmée
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <div class="error-message" id="errorSection1">
+                    <span id="errorMessageSection1"></span>
+                </div>
+                <div class="form-navigation-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2: DÉTAILS & ÉQUIPEMENTS (NOUVELLE) -->
+        <div class="form-section" id="section2">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-number">2</span>
+                    Détails & Équipements
+                </div>
+                <div class="section-description">
+                    Décris ton logement et ses équipements
+                </div>
+            </div>
+
+            <!-- TITRE ET DESCRIPTION -->
+            <div class="form-grid full-width">
+                <div class="form-group">
+                    <label>Titre de l'annonce <span class="required">*</span></label>
+                    <input type="text" id="titre" placeholder="Ex: Studio lumineux proche campus" maxlength="80">
+                </div>
+            </div>
+
+            <div class="form-grid full-width">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" placeholder="Décris ton logement : ambiance, points forts..."></textarea>
+                    <div style="font-size: 13px; color: #1E293B; font-weight: 500; font-style: italic; margin-top: 8px;">
+                        Les informations de proximité (transports, commerces, écoles) seront calculées et affichées automatiquement
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Étage</label>
+                    <input type="number" id="etage" placeholder="Ex: 3" min="0" max="99">
+                    <small style="font-size: 13px; color: #6b7280; margin-top: 4px; display: block;">Entrez juste le chiffre (sera affiché "3ème étage")</small>
+                </div>
+            </div>
+
+            <!-- ÉQUIPEMENTS -->
+            <h3 style="font-size: 16px; font-weight: 600; margin: 32px 0 16px; color: #1E293B;">Équipements disponibles</h3>
+            <div class="equipements-grid">
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="wifi" value="WiFi">
+                    <label for="wifi" class="equipement-label">
+                        WiFi
+                    </label>
+                </div>
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="meuble" value="Meublé">
+                    <label for="meuble" class="equipement-label">
+                        Meublé
+                    </label>
+                </div>
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="parking" value="Parking">
+                    <label for="parking" class="equipement-label">
+                        Parking
+                    </label>
+                </div>
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="cuisine" value="Cuisine équipée">
+                    <label for="cuisine" class="equipement-label">
+                        Cuisine équipée
+                    </label>
+                </div>
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="lave-linge" value="Lave-linge">
+                    <label for="lave-linge" class="equipement-label">
+                        Lave-linge
+                    </label>
+                </div>
+                <div class="equipement-checkbox">
+                    <input type="checkbox" id="balcon" value="Balcon/Terrasse">
+                    <label for="balcon" class="equipement-label">
+                        Balcon/Terrasse
+                    </label>
+                </div>
+            </div>
+
+            <!-- RÈGLES -->
+            <h3 style="font-size: 16px; font-weight: 600; margin: 32px 0 16px; color: #1E293B;">Règles du logement</h3>
+            <div class="regles-grid">
+                <div class="regle-item">
+                    <label for="animaux" class="regle-label-clickable">
+                        <input type="checkbox" id="animaux" value="animaux">
+                        <span>Animaux acceptés</span>
+                    </label>
+                </div>
+                <div class="regle-item">
+                    <label for="fumeur" class="regle-label-clickable">
+                        <input type="checkbox" id="fumeur" value="fumeur">
+                        <span>Non-fumeur</span>
+                    </label>
+                </div>
+                <div class="regle-item">
+                    <label for="fetes" class="regle-label-clickable">
+                        <input type="checkbox" id="fetes" value="fetes">
+                        <span>Fêtes autorisées (avec modération)</span>
+                    </label>
+                </div>
+                <div class="regle-item">
+                    <label for="autres-regles-checkbox" class="regle-label-clickable">
+                        <input type="checkbox" id="autres-regles-checkbox" value="autres" onchange="toggleAutresRegles()">
+                        <span>Autres</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Zone de texte pour "Autres règles" -->
+            <div id="autres-regles-container" style="display: none; margin-top: 16px;">
+                <div class="form-group">
+                    <label>Précise tes autres règles</label>
+                    <textarea id="autres-regles" placeholder="Ex: Calme après 22h, pas de visiteurs en semaine..." style="min-height: 80px;"></textarea>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <div class="error-message" id="errorSection2">
+                    <span id="errorMessageSection2"></span>
+                </div>
+                <div class="form-navigation-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3: PHOTOS (NOUVELLE) -->
+        <div class="form-section" id="section3">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-number">3</span>
+                    Photos du logement
+                </div>
+                <div class="section-description">
+                    Ajoute au moins 5 photos de qualité de ton logement
+                </div>
+            </div>
+
+            <!-- ZONE UPLOAD -->
+            <div class="photos-upload-container">
+                <!-- Bloc upload simple (visible quand 0 photo) -->
+                <div class="upload-zone-simple" id="uploadZoneSimple" onclick="document.getElementById('photoInput').click()">
+                    <div class="upload-icon-large">+</div>
+                    <div class="upload-text-large">Clique pour ajouter des photos</div>
+                    <div class="upload-subtext-large">JPG, PNG ou WEBP • Max 5 MB par photo</div>
+                </div>
+                
+                <!-- Preview style annonce (visible dès qu'il y a des photos) -->
+                <div class="photos-preview-main" id="photosPreviewMain" style="display: none;">
+                    <div class="main-photo-wrapper" id="mainPhotoWrapper"></div>
+                    <div class="thumbnail-grid" id="thumbnailGrid"></div>
+                </div>
+                
+                <!-- Input caché -->
+                <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;" onchange="handlePhotoUpload(event)">
+                
+                <!-- Bouton d'ajout si < 10 photos -->
+                <button class="btn-add-photos" id="btnAddPhotos" onclick="document.getElementById('photoInput').click()" style="display: none;">
+                    + Ajouter d'autres photos
+                </button>
+            </div>
+
+            <div class="photos-counter" id="photosCounter">
+                <span id="photoCount">0</span> / 10 photos • <strong>Minimum 5 photos requis</strong>
+            </div>
+
+            <div class="photos-tips">
+                <div style="font-weight: 600; margin-bottom: 8px;">Conseils pour de bonnes photos :</div>
+                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #6B7280;">
+                    <span>• La première photo sera la photo principale de ton annonce</span>
+                    <span>• Photographie toutes les pièces (chambre, cuisine, salle de bain...)</span>
+                    <span>• Privilégie la lumière naturelle</span>
+                    <span>• Range un peu avant de photographier</span>
+                </div>
+            </div>
+
+            <!-- MODAL DE CROP -->
+            <div class="crop-modal" id="cropModal" style="display: none;">
+                <div class="crop-modal-content">
+                    <div class="crop-modal-header">
+                        <h3>Recadrer la photo</h3>
+                        <button class="crop-close" onclick="closeCropModal()">×</button>
+                    </div>
+                    <div class="crop-container">
+                        <img id="cropImage" src="">
+                    </div>
+                    <div class="crop-modal-footer">
+                        <button class="btn btn-secondary" onclick="closeCropModal()">Annuler</button>
+                        <button class="btn btn-primary" onclick="confirmCrop()">Valider</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <div class="error-message" id="errorSection3">
+                    <span id="errorMessageSection3"></span>
+                </div>
+                <div class="form-navigation-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 4: PRIX & CHARGES (DÉPLACÉE) -->
+        <div class="form-section" id="section4">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-number">4</span>
+                    Prix & Charges
+                </div>
+                <div class="section-description">
+                    Définis ton prix et le mode de gestion des charges
+                </div>
+            </div>
+
+            <!-- MODE DE GESTION DES CHARGES -->
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #1E293B;">Mode de gestion des charges</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
+                <!-- OPTION 1: FORFAITAIRE -->
+                <label class="radio-option" for="forfaitaire">
+                    <input type="radio" name="chargeMode" id="forfaitaire" value="forfaitaire" checked onchange="selectChargeMode('forfaitaire')">
+                    <div class="radio-option-content">
+                        <div class="radio-option-header">
+                            <span class="radio-option-title">Charges forfaitaires</span>
+                            <span class="radio-badge-green">Recommandé</span>
+                        </div>
+                        <div class="radio-option-description">Prix fixe tout compris. Simple et sans surprises pour l'alternant.</div>
+                    </div>
+                    <div class="card-check">✓</div>
+                </label>
+
+                <!-- OPTION 2: RÉEL AVEC PLAFOND -->
+                <label class="radio-option" for="plafond">
+                    <input type="radio" name="chargeMode" id="plafond" value="plafond" onchange="selectChargeMode('plafond')">
+                    <div class="radio-option-content">
+                        <div class="radio-option-header">
+                            <span class="radio-option-title">Charges au réel avec plafond</span>
+                        </div>
+                        <div class="radio-option-description">L'alternant paye sa consommation réelle, mais limitée à un plafond.</div>
+                    </div>
+                    <div class="card-check">✓</div>
+                </label>
+
+                <!-- OPTION 3: SÉPARÉ -->
+                <label class="radio-option" for="separe">
+                    <input type="radio" name="chargeMode" id="separe" value="separe" onchange="selectChargeMode('separe')">
+                    <div class="radio-option-content">
+                        <div class="radio-option-header">
+                            <span class="radio-option-title">Charges séparées</span>
+                        </div>
+                        <div class="radio-option-description">L'alternant paye exactement ce qu'il consomme chaque mois.</div>
+                    </div>
+                    <div class="card-check">✓</div>
+                </label>
+            </div>
+
+            <!-- FORMULAIRES SELON L'OPTION -->
+            <div id="forfaitaireForm" class="charge-form active">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Loyer mensuel actuel (charges comprises) <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="prixForfaitaire" min="100" max="3000" oninput="calculatePriceDisplay()" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                        <div class="input-hint">Ton loyer complet avec eau, électricité, internet...</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durée minimum de location</label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="dureeMin" min="1" max="12" value="3" style="width: 100%; padding-right: 55px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">mois</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Montant de la caution <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="caution" min="0" max="5000" placeholder="Ex: 800" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                        <div class="input-hint">Généralement équivalent à 1 mois de loyer</div>
+                    </div>
+                </div>
+
+                <!-- APERÇU DU PRIX FORFAITAIRE -->
+                <div class="price-preview" id="pricePreview" style="display: none;">
+                    <div class="price-preview-title">Prix affiché sur l'annonce</div>
+                    <div class="price-breakdown">
+                        <div class="price-line">
+                            <span>Loyer divisé par 2</span>
+                            <span id="prixBaseDivise">-</span>
+                        </div>
+                        <div class="price-line commission">
+                            <span>+ Commission STERNY (5%)</span>
+                            <span id="commission">-</span>
+                        </div>
+                        <div class="price-line total">
+                            <span>Prix par alternant</span>
+                            <span id="prixFinal">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="plafondForm" class="charge-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Loyer de base (hors charges) <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="prixBasePlafond" min="100" max="3000" oninput="calculatePlafondPrice()" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Charges moyennes mensuelles <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="chargesMoyennes" min="0" max="500" oninput="calculatePlafondPrice()" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Plafond des charges (protection)</label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="plafondCharges" min="0" max="1000" oninput="calculatePlafondPrice()" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                        <div class="input-hint">Le montant maximum que l'alternant payera en charges</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durée minimum de location</label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="dureeMinPlafond" min="1" max="12" value="3" style="width: 100%; padding-right: 55px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">mois</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Montant de la caution <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="cautionPlafond" min="0" max="5000" placeholder="Ex: 800" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                        <div class="input-hint">Généralement équivalent à 1 mois de loyer</div>
+                    </div>
+                </div>
+
+                <!-- APERÇU DU PRIX PLAFOND -->
+                <div class="price-preview" id="pricePreviewPlafond" style="display: none;">
+                    <div class="price-preview-title">Prix affiché sur l'annonce</div>
+                    <div class="price-breakdown">
+                        <div class="price-line">
+                            <span>Loyer + charges divisés par 2</span>
+                            <span id="chargesDivisees">-</span>
+                        </div>
+                        <div class="price-line commission">
+                            <span>+ Commission STERNY (5%)</span>
+                            <span id="commissionPlafond">-</span>
+                        </div>
+                        <div class="price-line total">
+                            <span>Prix par alternant</span>
+                            <span id="prixFinalPlafond">-</span>
+                        </div>
+                    </div>
+                    <div class="price-note">
+                        Plafond maximum des charges par personne : <span id="plafondParPersonne">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="separeForm" class="charge-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Loyer de base (hors charges) <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="prixBaseSepare" min="100" max="3000" oninput="calculateSeparePrice()" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durée minimum de location</label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="dureeMinSepare" min="1" max="12" value="3" style="width: 100%; padding-right: 55px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">mois</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Montant de la caution <span class="required">*</span></label>
+                        <div style="position: relative; width: 100%;">
+                            <input type="number" id="cautionSepare" min="0" max="5000" placeholder="Ex: 800" style="width: 100%; padding-right: 40px;">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-weight: 500; font-size: 15px; pointer-events: none;">€</span>
+                        </div>
+                        <div class="input-hint">Généralement équivalent à 1 mois de loyer</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Types de charges à la consommation</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+                        <label class="charge-type-checkbox">
+                            <input type="checkbox" id="chargeEau" value="eau" checked>
+                            <span>Eau</span>
+                        </label>
+                        <label class="charge-type-checkbox">
+                            <input type="checkbox" id="chargeElec" value="electricite" checked>
+                            <span>Électricité</span>
+                        </label>
+                        <label class="charge-type-checkbox">
+                            <input type="checkbox" id="chargeInternet" value="internet" checked>
+                            <span>Internet</span>
+                        </label>
+                        <label class="charge-type-checkbox">
+                            <input type="checkbox" id="chargeChauffage" value="chauffage">
+                            <span>Chauffage</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- APERÇU DU PRIX SÉPARÉ -->
+                <div class="price-preview" id="pricePreviewSepare" style="display: none;">
+                    <div class="price-preview-title">Prix affiché sur l'annonce</div>
+                    <div class="price-breakdown">
+                        <div class="price-line">
+                            <span>Loyer divisé par 2</span>
+                            <span id="prixBaseDiviseSepare">-</span>
+                        </div>
+                        <div class="price-line commission">
+                            <span>+ Commission STERNY (5%)</span>
+                            <span id="commissionSepare">-</span>
+                        </div>
+                        <div class="price-line total">
+                            <span>Prix de base par alternant</span>
+                            <span id="prixFinalSepare">-</span>
+                        </div>
+                    </div>
+                    <div class="price-note">
+                        + Charges variables selon consommation réelle
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <div class="error-message" id="errorSection4">
+                    <span id="errorMessageSection4"></span>
+                </div>
+                <div class="form-navigation-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 5: TON RYTHME (LOCATAIRE) -->
+        <div class="form-section" id="section5">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-number">5</span>
+                    Ton rythme d'alternance
+                </div>
+                <div class="section-description">
+                    Indique les périodes où tu occupes le logement
+                </div>
+            </div>
+
+            <!-- Sélection du rythme -->
+            <div style="margin-bottom: 32px;">
+                <h3 style="font-size: 16px; font-weight: 600; color: #1F2937; margin-bottom: 24px;">
+                    Quel est ton rythme d'alternance ?
+                </h3>
+                
+                <!-- Type d'alternance -->
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Type d'alternance</label>
+                    <select id="rhythmType" style="width: 100%; padding: 14px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 15px; background: white; cursor: pointer;" onchange="updateRhythmOptions()">
+                        <option value="" disabled selected>Choisis ton type</option>
+                        <option value="symmetric">Symétrique (même durée)</option>
+                        <option value="asymmetric">Asymétrique (durées différentes)</option>
+                        <option value="custom">Personnalisé (sélection manuelle)</option>
+                    </select>
+                </div>
+
+                <!-- Rythme spécifique (apparaît selon le type) -->
+                <div class="form-group" id="rhythmPatternGroup" style="display: none; margin-bottom: 20px;">
+                    <label>Rythme</label>
+                    <select id="rhythmPattern" style="width: 100%; padding: 14px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 15px; background: white; cursor: pointer;">
+                        <option value="" disabled selected>Choisis la durée</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dates de début et fin -->
+            <div class="form-grid" style="margin-bottom: 24px;">
+                <div class="form-group">
+                    <label>Date de début <span class="required">*</span></label>
+                    <input type="text" id="rhythmStartDate" placeholder="JJ/MM/AAAA" style="width: 100%; padding: 14px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 15px; color: #1F2937;">
+                    <div class="input-hint">Première date où tu occupes le logement</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Date de fin <span class="required">*</span></label>
+                    <input type="text" id="rhythmEndDate" placeholder="JJ/MM/AAAA" style="width: 100%; padding: 14px 16px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 15px; color: #1F2937;">
+                    <div class="input-hint">Dernière date de ton alternance</div>
+                </div>
+            </div>
+
+            <!-- Bouton générer -->
+            <button class="btn btn-primary" onclick="generateRhythmDates()" style="width: 100%; margin-bottom: 24px;">
+                Générer mon calendrier
+            </button>
+
+            <!-- Calendrier d'édition (après génération OU si personnalisé) -->
+            <div id="editCalendarContainer" style="display: none;">
+                <div style="border-top: 2px solid #E5E7EB; padding-top: 24px; margin-top: 24px;">
+                    <div style="background: #F1F5F9; border-left: 4px solid #1E293B; padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <strong style="color: #1E293B;">Modifie ton calendrier</strong><br>
+                        <span style="color: #6B7280; font-size: 14px;">Clique sur les jours pour ajouter ou retirer des dates</span>
+                    </div>
+                    
+                    <div class="calendar-header">
+                        <button class="calendar-nav-btn" onclick="shiftMonths(-3)">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <div class="calendar-period" id="calendarPeriod"></div>
+                        <button class="calendar-nav-btn" onclick="shiftMonths(3)">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="calendar-months-grid" id="calendarMonthsGrid"></div>
+                </div>
+            </div>
+
+            <!-- Résumé des dates générées -->
+            <div class="selected-dates-summary" id="selectedDatesSummary" style="display: none;">
+                <div class="summary-header">
+                    <span id="selectedDatesCount"></span>
+                    <button class="clear-dates-btn" onclick="clearAllDates()">Tout effacer</button>
+                </div>
+                <div class="dates-pills" id="datesPills"></div>
+            </div>
+
+            <div class="form-navigation">
+                <div class="error-message" id="errorSection5">
+                    <span id="errorMessageSection5"></span>
+                </div>
+                <div class="form-navigation-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
+                    <button class="btn btn-primary" id="btnPublier" onclick="showConfirmationModal()">Publier l'annonce</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE DE CONFIRMATION -->
+    <div id="confirmationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content-confirm">
+            <div class="modal-header-confirm">
+                <h3>📢 Prêt à publier ton annonce ?</h3>
+            </div>
+            <div class="modal-body-confirm">
+                <p>Tu es sur le point de publier ton annonce sur STERNY.</p>
+                <p>Une fois publiée, elle sera visible par tous les alternants à la recherche d'un logement.</p>
+                <p><strong>Tu pourras toujours modifier ou supprimer ton annonce plus tard depuis ton dashboard.</strong></p>
+            </div>
+            <div class="modal-footer-confirm">
+                <button class="btn btn-secondary" onclick="closeConfirmationModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmPublication()">Publier l'annonce</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VARIABLES GLOBALES
+        let currentStep = 1;
+        let chargeMode = 'forfaitaire';
+        let selectedDates = [];
+        let userType = null; // 'proprietaire' ou 'locataire'
+        let addressVerified = false;
+        let verifiedCoordinates = null;
+        let uploadedPhotos = []; // Stockage des photos
+
+        // ==========================================
+        // SYSTÈME DE NOTIFICATIONS CUSTOM
+        // ==========================================
+        
+        function showNotification(title, message, icon = '✓', isSuccess = true) {
+            const notification = document.getElementById('customNotification');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const iconEl = document.getElementById('notificationIcon');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            iconEl.textContent = icon;
+            
+            notification.classList.add('show');
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('customNotification');
+            notification.classList.remove('show');
+        }
+
+        // ==========================================
+        // SYSTÈME DE VÉRIFICATION D'ADRESSES
+        // ==========================================
+        
+        // Mapping Code Postal → Ville (Bretagne)
+        const CODE_POSTAL_VILLE = {
+            // Rennes
+            '35000': 'Rennes',
+            '35200': 'Rennes',
+            '35700': 'Rennes',
+            
+            // Nantes
+            '44000': 'Nantes',
+            '44100': 'Nantes',
+            '44200': 'Nantes',
+            '44300': 'Nantes',
+            
+            // Brest
+            '29200': 'Brest',
+            
+            // Quimper
+            '29000': 'Quimper',
+            
+            // Lorient
+            '56100': 'Lorient',
+            
+            // Vannes
+            '56000': 'Vannes',
+            
+            // Saint-Malo
+            '35400': 'Saint-Malo',
+            
+            // Saint-Brieuc
+            '22000': 'Saint-Brieuc',
+            
+            // Fougères
+            '35300': 'Fougères',
+            
+            // Vitré
+            '35500': 'Vitré'
+        };
+        
+        // Variable pour stocker la ville détectée
+        let villeDetectee = null;
+        let codePostalOriginal = '';
+        
+        // Détecter la ville à partir du code postal
+        function detecterVille(codePostal) {
+            const codePostalInput = document.getElementById('codePostal');
+            const codePostalCheckmark = document.getElementById('codePostalCheckmark');
+            const villeDiv = document.getElementById('villeDetectee');
+            
+            // Extraire uniquement les chiffres pour la détection
+            const chiffresSeuls = codePostal.replace(/[^0-9]/g, '');
+            
+            if (!chiffresSeuls || chiffresSeuls.length !== 5) {
+                villeDiv.className = 'ville-detectee';
+                codePostalCheckmark.classList.remove('show');
+                villeDetectee = null;
+                codePostalOriginal = chiffresSeuls;
+                return;
+            }
+            
+            const ville = CODE_POSTAL_VILLE[chiffresSeuls];
+            
+            if (ville) {
+                // Ville trouvée - afficher dans le champ
+                codePostalInput.value = `${chiffresSeuls} - ${ville}`;
+                codePostalCheckmark.classList.add('show'); // Checkmark dans le champ
+                villeDiv.className = 'ville-detectee'; // Masquer le message
+                villeDetectee = ville;
+                codePostalOriginal = chiffresSeuls;
+            } else {
+                // Ville non disponible
+                codePostalInput.value = chiffresSeuls;
+                codePostalCheckmark.classList.remove('show');
+                villeDiv.textContent = 'STERNY arrive bientôt dans ta région !';
+                villeDiv.className = 'ville-detectee warning show';
+                villeDetectee = null;
+                codePostalOriginal = chiffresSeuls;
+            }
+        }
+        
+        // Gérer le focus sur le champ code postal
+        function handleCodePostalFocus() {
+            const codePostalInput = document.getElementById('codePostal');
+            const codePostalCheckmark = document.getElementById('codePostalCheckmark');
+            
+            if (villeDetectee && codePostalOriginal) {
+                // Afficher seulement le code postal quand on édite
+                codePostalInput.value = codePostalOriginal;
+                codePostalCheckmark.classList.remove('show'); // Masquer pendant l'édition
+            }
+        }
+        
+        // Gérer la perte de focus
+        function handleCodePostalBlur() {
+            const codePostalInput = document.getElementById('codePostal');
+            const codePostalCheckmark = document.getElementById('codePostalCheckmark');
+            const chiffresSeuls = codePostalInput.value.replace(/[^0-9]/g, '');
+            
+            if (chiffresSeuls.length === 5 && CODE_POSTAL_VILLE[chiffresSeuls]) {
+                // Réafficher avec la ville
+                codePostalInput.value = `${chiffresSeuls} - ${CODE_POSTAL_VILLE[chiffresSeuls]}`;
+                codePostalCheckmark.classList.add('show'); // Réafficher le checkmark
+            }
+            
+            // Lancer la vérification d'adresse
+            autoVerifyAddress();
+        }
+        
+        const VILLES_CODES_POSTAUX = {
+            'rennes': ['35000', '35200', '35700'],
+            'nantes': ['44000', '44100', '44200', '44300'],
+            'brest': ['29200'],
+            'quimper': ['29000'],
+            'lorient': ['56100'],
+            'vannes': ['56000'],
+            'saint-malo': ['35400'],
+            'saint-brieuc': ['22000'],
+            'fougeres': ['35300'],
+            'vitre': ['35500']
+        };
+        
+        const SUSPICIOUS_KEYWORDS = [
+            'test', 'fake', 'exemple', 'sample', 'xxx', 'zzz', 'aaa',
+            'rue de test', 'avenue test', 'inconnu', 'à définir'
+        ];
+        
+        function validateAddressFormat(address) {
+            if (!address || address.trim().length < 5) {
+                return { valid: false, message: 'L\'adresse est trop courte', severity: 'error' };
+            }
+            
+            const hasNumber = /^\d+/.test(address.trim());
+            if (!hasNumber) {
+                return { valid: false, message: 'L\'adresse doit commencer par un numéro (ex: 15 rue...)', severity: 'error' };
+            }
+            
+            const addressLower = address.toLowerCase();
+            for (const keyword of SUSPICIOUS_KEYWORDS) {
+                if (addressLower.includes(keyword)) {
+                    return { valid: false, message: 'Cette adresse semble suspecte ou fictive', severity: 'error' };
+                }
+            }
+            
+            return { valid: true, message: 'Format d\'adresse valide', severity: 'success' };
+        }
+        
+        function extractPostalCode(address) {
+            const match = address.match(/\b\d{5}\b/);
+            return match ? match[0] : null;
+        }
+        
+        function verifyPostalCodeCity(address, codePostal) {
+            if (!codePostal || codePostal.length !== 5) {
+                return { valid: false, message: 'Code postal invalide', severity: 'error' };
+            }
+            
+            if (!villeDetectee) {
+                return { valid: false, message: 'Cette ville n\'est pas encore disponible', severity: 'error' };
+            }
+            
+            return { valid: true, message: 'Ville vérifiée', severity: 'success' };
+        }
+        
+        async function geocodeAddress(address, codePostal) {
+            try {
+                if (!villeDetectee) {
+                    return { valid: false, message: 'Ville non disponible', severity: 'error', coordinates: null };
+                }
+                
+                const fullAddress = `${address}, ${codePostal}, ${villeDetectee}, France`;
+                const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(fullAddress)}&limit=1`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!data.features || data.features.length === 0) {
+                    return { valid: false, message: 'Adresse non trouvée dans la base nationale', severity: 'error', coordinates: null };
+                }
+                
+                const result = data.features[0];
+                const score = result.properties.score;
+                
+                if (score < 0.5) {
+                    return { valid: false, message: 'Adresse introuvable ou imprécise', severity: 'error', coordinates: null };
+                }
+                
+                if (score < 0.7) {
+                    return { 
+                        valid: true, 
+                        message: 'Adresse trouvée mais peu précise. Vérifie l\'orthographe.', 
+                        severity: 'warning',
+                        coordinates: result.geometry.coordinates,
+                        formattedAddress: result.properties.label
+                    };
+                }
+                
+                return {
+                    valid: true,
+                    message: 'Adresse vérifiée et validée ✓',
+                    severity: 'success',
+                    coordinates: result.geometry.coordinates,
+                    formattedAddress: result.properties.label,
+                    score: score
+                };
+                
+            } catch (error) {
+                console.error('Erreur géolocalisation:', error);
+                return { valid: false, message: 'Impossible de vérifier l\'adresse actuellement', severity: 'warning', coordinates: null };
+            }
+        }
+        
+        async function validateAddress(address, codePostal) {
+            const formatCheck = validateAddressFormat(address);
+            if (!formatCheck.valid) return formatCheck;
+            
+            const postalCheck = verifyPostalCodeCity(address, codePostal);
+            if (!postalCheck.valid && postalCheck.severity === 'error') return postalCheck;
+            
+            const geoCheck = await geocodeAddress(address, codePostal);
+            return geoCheck;
+        }
+        
+        function showAddressMessage(message, severity) {
+            const messageDiv = document.getElementById('addressValidationMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `address-validation-message ${severity} show`;
+        }
+        
+        function hideAddressMessage() {
+            const messageDiv = document.getElementById('addressValidationMessage');
+            messageDiv.className = 'address-validation-message';
+        }
+        
+        // Vérification automatique de l'adresse
+        async function autoVerifyAddress() {
+            const adresse = document.getElementById('adresse').value.trim();
+            const checkmark = document.getElementById('adresseCheckmark');
+            
+            // Réinitialiser
+            addressVerified = false;
+            verifiedCoordinates = null;
+            checkmark.classList.remove('show');
+            
+            // Si les champs sont vides, ne rien faire
+            if (!adresse || !codePostalOriginal || !villeDetectee) {
+                hideAddressMessage();
+                return;
+            }
+            
+            // Vérifier que le code postal a 5 chiffres
+            if (codePostalOriginal.length !== 5 || !/^\d+$/.test(codePostalOriginal)) {
+                showAddressMessage('Le code postal doit contenir 5 chiffres', 'error');
+                return;
+            }
+            
+            // Masquer les messages pendant la vérification
+            hideAddressMessage();
+            
+            try {
+                const result = await validateAddress(adresse, codePostalOriginal);
+                
+                if (result.valid && result.severity === 'success') {
+                    addressVerified = true;
+                    verifiedCoordinates = result.coordinates;
+                    checkmark.classList.add('show'); // Afficher le checkmark dans le champ
+                    hideAddressMessage(); // Pas de message en dessous
+                } else if (result.valid && result.severity === 'warning') {
+                    addressVerified = true;
+                    verifiedCoordinates = result.coordinates;
+                    checkmark.classList.add('show'); // Afficher le checkmark
+                    showAddressMessage('⚠️ ' + result.message, 'warning'); // Seulement si warning
+                } else {
+                    addressVerified = false;
+                    verifiedCoordinates = null;
+                    checkmark.classList.remove('show');
+                    showAddressMessage(result.message, 'error'); // Seulement si erreur
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAddressMessage('Impossible de vérifier l\'adresse', 'warning');
+                checkmark.classList.remove('show');
+            }
+        }
+
+        // GESTION DES MODES DE CHARGES
+        function selectChargeMode(mode) {
+            chargeMode = mode;
+            
+            // Mise à jour visuelle des options
+            document.querySelectorAll('.charge-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Afficher le bon formulaire
+            document.querySelectorAll('.charge-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (mode === 'forfaitaire') {
+                document.getElementById('forfaitaireForm').classList.add('active');
+            } else if (mode === 'plafond') {
+                document.getElementById('plafondForm').classList.add('active');
+            } else if (mode === 'separe') {
+                document.getElementById('separeForm').classList.add('active');
+            }
+            
+            // Recalculer les prix affichés
+            calculatePriceDisplay();
+            calculatePlafondPrice();
+            calculateSeparePrice();
+        }
+
+        // GESTION DE LA ZONE "AUTRES RÈGLES"
+        function toggleAutresRegles() {
+            const checkbox = document.getElementById('autres-regles-checkbox');
+            const container = document.getElementById('autres-regles-container');
+            
+            if (checkbox.checked) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                document.getElementById('autres-regles').value = ''; // Réinitialiser le texte
+            }
+        }
+
+        // CALCUL DU PRIX POUR OPTION FORFAITAIRE
+        function calculatePriceDisplay() {
+            const prixTotal = parseFloat(document.getElementById('prixForfaitaire').value);
+            
+            if (!prixTotal || prixTotal <= 0) {
+                document.getElementById('pricePreview').style.display = 'none';
+                return;
+            }
+            
+            const prixBaseDivise = prixTotal / 2;
+            const commission = prixBaseDivise * 0.05;
+            const prixFinal = prixBaseDivise + commission;
+            
+            document.getElementById('pricePreview').style.display = 'block';
+            document.getElementById('prixBaseDivise').textContent = prixBaseDivise.toFixed(2) + '€';
+            document.getElementById('commission').textContent = commission.toFixed(2) + '€';
+            document.getElementById('prixFinal').textContent = prixFinal.toFixed(2) + '€';
+        }
+
+        // CALCUL DU PRIX POUR OPTION PLAFOND
+        function calculatePlafondPrice() {
+            const prixBase = parseFloat(document.getElementById('prixBasePlafond').value);
+            const charges = parseFloat(document.getElementById('chargesMoyennes').value);
+            const plafond = parseFloat(document.getElementById('plafondCharges').value);
+            
+            if (!prixBase || prixBase <= 0 || !charges || charges < 0) {
+                document.getElementById('pricePreviewPlafond').style.display = 'none';
+                return;
+            }
+            
+            const chargesDivisees = (prixBase + charges) / 2;
+            const commission = chargesDivisees * 0.05;
+            const prixFinal = chargesDivisees + commission;
+            const plafondParPersonne = plafond ? plafond / 2 : charges / 2;
+            
+            document.getElementById('pricePreviewPlafond').style.display = 'block';
+            document.getElementById('chargesDivisees').textContent = chargesDivisees.toFixed(2) + '€';
+            document.getElementById('commissionPlafond').textContent = commission.toFixed(2) + '€';
+            document.getElementById('prixFinalPlafond').textContent = prixFinal.toFixed(2) + '€';
+            document.getElementById('plafondParPersonne').textContent = plafondParPersonne.toFixed(2) + '€';
+        }
+
+        // CALCUL DU PRIX POUR OPTION SÉPARÉE
+        function calculateSeparePrice() {
+            const prixBase = parseFloat(document.getElementById('prixBaseSepare').value);
+            
+            if (!prixBase || prixBase <= 0) {
+                document.getElementById('pricePreviewSepare').style.display = 'none';
+                return;
+            }
+            
+            const prixBaseDivise = prixBase / 2;
+            const commission = prixBaseDivise * 0.05;
+            const prixFinal = prixBaseDivise + commission;
+            
+            document.getElementById('pricePreviewSepare').style.display = 'block';
+            document.getElementById('prixBaseDiviseSepare').textContent = prixBaseDivise.toFixed(2) + '€';
+            document.getElementById('commissionSepare').textContent = commission.toFixed(2) + '€';
+            document.getElementById('prixFinalSepare').textContent = prixFinal.toFixed(2) + '€';
+        }
+
+        // NAVIGATION ENTRE ÉTAPES
+        function nextStep() {
+            console.log('🔍 nextStep appelée - Étape actuelle:', currentStep);
+            
+            if (!validateStep(currentStep)) {
+                console.log('❌ Validation échouée pour étape', currentStep);
+                return;
+            }
+            
+            console.log('✅ Validation OK pour étape', currentStep);
+            
+            // Propriétaires : étape 4 est la dernière
+            const maxStep = (userType === 'proprietaire') ? 4 : 5;
+            
+            if (currentStep < maxStep) {
+                document.getElementById(`section${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`section${currentStep}`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                console.log('➡️ Passage à l\'étape', currentStep);
+            }
+        }
+
+        function prevStep() {
+            console.log('🔙 prevStep appelée - currentStep:', currentStep);
+            
+            if (currentStep === 1) {
+                // On est à l'étape 1, on veut retourner à la sélection du type
+                console.log('📋 Affichage écran sélection type');
+                
+                const mainContainer = document.getElementById('mainFormContainer');
+                const selectionScreen = document.getElementById('userTypeSelection');
+                
+                console.log('mainContainer:', mainContainer);
+                console.log('selectionScreen:', selectionScreen);
+                
+                if (mainContainer && selectionScreen) {
+                    mainContainer.style.display = 'none';
+                    selectionScreen.style.display = 'flex';
+                    
+                    // Réinitialiser
+                    userType = null;
+                    
+                    // Décocher les radios
+                    const radios = document.querySelectorAll('input[name="userType"]');
+                    radios.forEach(r => {
+                        r.checked = false;
+                    });
+                    
+                    // Désactiver le bouton Continuer
+                    const btnConfirm = document.getElementById('btnConfirmUserType');
+                    if (btnConfirm) {
+                        btnConfirm.disabled = true;
+                    }
+                    
+                    console.log('✅ Retour effectué');
+                } else {
+                    console.error('❌ Éléments non trouvés');
+                }
+                
+                return; // Important : sortir de la fonction
+            }
+            
+            // Navigation normale entre les étapes
+            if (currentStep > 1) {
+                console.log('⬅️ Navigation étape', currentStep, '→', currentStep - 1);
+                document.getElementById(`section${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`section${currentStep}`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ==========================================
+        // GESTION DES PHOTOS AVEC CROP
+        // ==========================================
+        
+        let currentCropper = null;
+        let pendingFiles = [];
+        let currentFileIndex = 0;
+        
+        function handlePhotoUpload(event) {
+            const files = Array.from(event.target.files);
+            
+            // Vérifier le nombre total de photos
+            if (uploadedPhotos.length + files.length > 10) {
+                showNotification('Limite atteinte', 'Maximum 10 photos autorisées', '⚠️');
+                event.target.value = '';
+                return;
+            }
+            
+            // Vérifier chaque fichier
+            const validFiles = [];
+            for (const file of files) {
+                // Vérifier le type de fichier
+                if (!file.type.match('image/(jpeg|png|webp)')) {
+                    showNotification('Format non supporté', `${file.name} n'est pas un format supporté (JPG, PNG, WEBP)`, '⚠️');
+                    continue;
+                }
+                
+                // Vérifier la taille (5 MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Fichier trop volumineux', `${file.name} est trop volumineux (max 5 MB)`, '⚠️');
+                    continue;
+                }
+                
+                validFiles.push(file);
+            }
+            
+            if (validFiles.length > 0) {
+                pendingFiles = validFiles;
+                currentFileIndex = 0;
+                openCropModal(pendingFiles[0]);
+            }
+            
+            // Réinitialiser l'input
+            event.target.value = '';
+        }
+        
+        function openCropModal(file) {
+            const modal = document.getElementById('cropModal');
+            const image = document.getElementById('cropImage');
+            
+            // Lire le fichier
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                image.src = e.target.result;
+                modal.style.display = 'flex';
+                
+                // Initialiser Cropper.js
+                if (currentCropper) {
+                    currentCropper.destroy();
+                }
+                
+                currentCropper = new Cropper(image, {
+                    aspectRatio: 4 / 3, // Format paysage
+                    viewMode: 3, // Mode 3 = zone de crop ne peut pas sortir du conteneur
+                    dragMode: 'move',
+                    autoCropArea: 1, // Zone de crop à 100%
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    background: false, // Pas de damier
+                    modal: false, // Pas de zone sombre autour
+                    minContainerWidth: 100,
+                    minContainerHeight: 100,
+                    checkOrientation: true, // Corrige l'orientation EXIF
+                    ready() {
+                        // Centrer l'image une fois chargée
+                        this.cropper.reset();
+                        this.cropper.center();
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function closeCropModal() {
+            const modal = document.getElementById('cropModal');
+            modal.style.display = 'none';
+            
+            if (currentCropper) {
+                currentCropper.destroy();
+                currentCropper = null;
+            }
+            
+            // Réinitialiser
+            pendingFiles = [];
+            currentFileIndex = 0;
+        }
+        
+        function confirmCrop() {
+            if (!currentCropper) return;
+            
+            // Récupérer l'image croppée
+            currentCropper.getCroppedCanvas({
+                width: 1200,
+                height: 900,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            }).toBlob((blob) => {
+                // Créer une URL de l'image croppée
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedPhotos.push({
+                        file: blob,
+                        dataUrl: e.target.result,
+                        id: Date.now() + Math.random()
+                    });
+                    
+                    renderPhotos();
+                    
+                    // Passer à la photo suivante
+                    currentFileIndex++;
+                    if (currentFileIndex < pendingFiles.length) {
+                        openCropModal(pendingFiles[currentFileIndex]);
+                    } else {
+                        closeCropModal();
+                    }
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.95);
+        }
+        
+        function renderPhotos() {
+            const uploadZoneSimple = document.getElementById('uploadZoneSimple');
+            const photosPreviewMain = document.getElementById('photosPreviewMain');
+            const mainWrapper = document.getElementById('mainPhotoWrapper');
+            const thumbnailGrid = document.getElementById('thumbnailGrid');
+            const counter = document.getElementById('photoCount');
+            const btnAdd = document.getElementById('btnAddPhotos');
+            
+            counter.textContent = uploadedPhotos.length;
+            
+            if (uploadedPhotos.length === 0) {
+                // Aucune photo - afficher le bloc upload simple
+                uploadZoneSimple.style.display = 'flex';
+                photosPreviewMain.style.display = 'none';
+                btnAdd.style.display = 'none';
+            } else {
+                // Il y a des photos - afficher le preview
+                uploadZoneSimple.style.display = 'none';
+                photosPreviewMain.style.display = 'flex';
+                
+                // Photo principale (index 0)
+                mainWrapper.innerHTML = `
+                    <img src="${uploadedPhotos[0].dataUrl}" alt="Photo principale" id="mainPhotoImg" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="photo-main-badge">Photo principale</div>
+                    <div class="photo-number">1</div>
+                    <button class="photo-delete-btn" onclick="deletePhoto(0)">×</button>
+                `;
+                
+                // Rendre la photo principale droppable
+                mainWrapper.ondragover = handleDragOver;
+                mainWrapper.ondrop = (e) => handleDrop(e, 0);
+                mainWrapper.ondragleave = (e) => {
+                    e.currentTarget.classList.remove('drag-over');
+                };
+                
+                // Miniatures (toutes les photos de 1 à 9)
+                thumbnailGrid.innerHTML = '';
+                const maxThumbnails = Math.min(uploadedPhotos.length - 1, 9);
+                
+                for (let i = 1; i <= maxThumbnails; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'thumbnail-item';
+                    div.draggable = true;
+                    div.dataset.index = i;
+                    div.ondragstart = (e) => handleDragStart(e, i);
+                    div.ondragover = handleDragOver;
+                    div.ondrop = (e) => handleDrop(e, i);
+                    div.ondragend = handleDragEnd;
+                    div.onclick = () => previewPhoto(i);
+                    
+                    div.innerHTML = `
+                        <img src="${uploadedPhotos[i].dataUrl}" alt="Photo ${i+1}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="photo-number">${i+1}</div>
+                        <button class="photo-delete-btn" onclick="event.stopPropagation(); deletePhoto(${i})">×</button>
+                    `;
+                    
+                    thumbnailGrid.appendChild(div);
+                }
+                
+                // Bouton ajouter si < 10 photos
+                if (uploadedPhotos.length < 10) {
+                    btnAdd.style.display = 'block';
+                } else {
+                    btnAdd.style.display = 'none';
+                }
+            }
+        }
+        
+        // Preview d'une photo en grand (temporaire)
+        function previewPhoto(index) {
+            const mainImg = document.getElementById('mainPhotoImg');
+            if (mainImg && uploadedPhotos[index]) {
+                mainImg.src = uploadedPhotos[index].dataUrl;
+            }
+        }
+        
+        // Variables pour le drag & drop
+        let draggedPhotoIndex = null;
+        
+        function handleDragStart(e, index) {
+            draggedPhotoIndex = index;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            // Ajouter l'effet visuel sur l'élément survolé
+            const target = e.currentTarget;
+            if (!target.classList.contains('drag-over')) {
+                target.classList.add('drag-over');
+            }
+        }
+        
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            
+            // Retirer l'effet visuel
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+            
+            if (draggedPhotoIndex !== null && draggedPhotoIndex !== targetIndex) {
+                // Réorganiser les photos
+                const draggedPhoto = uploadedPhotos[draggedPhotoIndex];
+                uploadedPhotos.splice(draggedPhotoIndex, 1);
+                uploadedPhotos.splice(targetIndex, 0, draggedPhoto);
+                renderPhotos();
+            }
+        }
+        
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            document.querySelectorAll('.drag-over').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            draggedPhotoIndex = null;
+        }
+        
+        function deletePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        function updateProgress() {
+            const userType = document.querySelector('input[name="userType"]:checked')?.value;
+            const totalSteps = (userType === 'proprietaire') ? 4 : 5; // Propriétaire: 4 étapes, Locataire: 5 étapes
+            
+            // Masquer/afficher l'étape 5 selon le type
+            const step5 = document.querySelector('.progress-step[data-step="5"]');
+            if (step5) {
+                if (userType === 'proprietaire') {
+                    step5.style.display = 'none';
+                } else {
+                    step5.style.display = 'flex';
+                }
+            }
+            
+            // Mettre à jour les steps
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                
+                // Ignorer l'étape 5 pour les propriétaires
+                if (userType === 'proprietaire' && stepNum === 5) {
+                    return;
+                }
+                
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+            
+            // Mettre à jour la barre de progression
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function validateStep(step) {
+            // Masquer les anciennes erreurs
+            hideError(step);
+            
+            if (step === 1) {
+                const type = document.getElementById('type').value;
+                const surface = document.getElementById('surface').value;
+                const adresse = document.getElementById('adresse').value.trim();
+                
+                if (!type || !surface) {
+                    showError(1, 'Merci de remplir tous les champs obligatoires');
+                    return false;
+                }
+                
+                // Vérifier le code postal
+                if (!codePostalOriginal || codePostalOriginal.length !== 5) {
+                    showError(1, 'Merci de saisir un code postal valide (5 chiffres)');
+                    return false;
+                }
+                
+                // Vérifier que la ville est détectée et disponible
+                if (!villeDetectee) {
+                    showError(1, 'STERNY arrive bientôt dans ta région ! Actuellement disponible en Bretagne uniquement.');
+                    return false;
+                }
+                
+                // Vérifier l'adresse si remplie
+                if (!adresse) {
+                    showError(1, 'Merci de saisir une adresse');
+                    return false;
+                }
+            }
+            
+            if (step === 2) {
+                const titre = document.getElementById('titre').value;
+                
+                if (!titre) {
+                    showError(2, 'Merci de remplir le titre de l\'annonce');
+                    return false;
+                }
+            }
+            
+            if (step === 3) {
+                // Validation des photos (minimum 5)
+                if (uploadedPhotos.length < 5) {
+                    showError(3, `Ajoute au moins 5 photos (actuellement : ${uploadedPhotos.length})`);
+                    return false;
+                }
+            }
+            
+            if (step === 4) {
+                // Validation selon le mode de charges
+                if (chargeMode === 'forfaitaire') {
+                    const prix = document.getElementById('prixForfaitaire').value;
+                    const caution = document.getElementById('caution').value;
+                    if (!prix || prix <= 0) {
+                        showError(4, 'Merci d\'indiquer le loyer mensuel');
+                        return false;
+                    }
+                    if (!caution || caution < 0) {
+                        showError(4, 'Merci d\'indiquer le montant de la caution');
+                        return false;
+                    }
+                } else if (chargeMode === 'plafond') {
+                    const prixBase = document.getElementById('prixBasePlafond').value;
+                    const charges = document.getElementById('chargesMoyennes').value;
+                    const caution = document.getElementById('cautionPlafond').value;
+                    if (!prixBase || prixBase <= 0) {
+                        showError(4, 'Merci d\'indiquer le loyer de base');
+                        return false;
+                    }
+                    if (!charges || charges < 0) {
+                        showError(4, 'Merci d\'indiquer les charges moyennes');
+                        return false;
+                    }
+                    if (!caution || caution < 0) {
+                        showError(4, 'Merci d\'indiquer le montant de la caution');
+                        return false;
+                    }
+                } else if (chargeMode === 'separe') {
+                    const prixBase = document.getElementById('prixBaseSepare').value;
+                    const caution = document.getElementById('cautionSepare').value;
+                    if (!prixBase || prixBase <= 0) {
+                        showError(4, 'Merci d\'indiquer le loyer de base');
+                        return false;
+                    }
+                    if (!caution || caution < 0) {
+                        showError(4, 'Merci d\'indiquer le montant de la caution');
+                        return false;
+                    }
+                }
+            }
+            
+            if (step === 5) {
+                // Validation disponibilités (seulement pour locataires)
+                const userType = document.querySelector('input[name="userType"]:checked')?.value;
+                if (userType === 'locataire') {
+                    if (!selectedDates || selectedDates.length === 0) {
+                        showError(5, 'Merci de sélectionner au moins une date de disponibilité');
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }
+
+        function showError(step, message) {
+            const errorDiv = document.getElementById(`errorSection${step}`);
+            const errorMessage = document.getElementById(`errorMessageSection${step}`);
+            
+            errorMessage.textContent = message;
+            errorDiv.classList.add('show');
+            
+            // Auto-masquer après 5 secondes
+            setTimeout(() => {
+                hideError(step);
+            }, 5000);
+        }
+
+        function hideError(step) {
+            const errorDiv = document.getElementById(`errorSection${step}`);
+            errorDiv.classList.remove('show');
+        }
+
+        // CALENDRIER 3 MOIS
+        const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                           'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        const dayNames = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+        let startMonthIndex = new Date().getMonth();
+        let startYear = new Date().getFullYear();
+
+        function initializeCalendar() {
+            renderCalendar();
+        }
+
+        function shiftMonths(offset) {
+            startMonthIndex += offset;
+            if (startMonthIndex < 0) {
+                startMonthIndex += 12;
+                startYear--;
+            } else if (startMonthIndex >= 12) {
+                startMonthIndex -= 12;
+                startYear++;
+            }
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendarMonthsGrid');
+            const periodEl = document.getElementById('calendarPeriod');
+            
+            if (!container || !periodEl) return;
+            
+            container.innerHTML = '';
+            
+            // Afficher la période
+            const endMonth = (startMonthIndex + 2) % 12;
+            const endYear = startYear + Math.floor((startMonthIndex + 2) / 12);
+            periodEl.textContent = `${monthNames[startMonthIndex]} - ${monthNames[endMonth]} ${endYear}`;
+            
+            // Générer 3 mois
+            for (let i = 0; i < 3; i++) {
+                const monthIndex = (startMonthIndex + i) % 12;
+                const year = startYear + Math.floor((startMonthIndex + i) / 12);
+                container.appendChild(createMonthGrid(monthIndex, year));
+            }
+            
+            updateSelectedDisplay();
+        }
+
+        function createMonthGrid(monthIndex, year) {
+            const monthDiv = document.createElement('div');
+            monthDiv.className = 'calendar-month';
+            
+            // Header du mois
+            const header = document.createElement('div');
+            header.className = 'month-header';
+            header.textContent = `${monthNames[monthIndex]} ${year}`;
+            monthDiv.appendChild(header);
+            
+            // Jours de la semaine
+            const weekdays = document.createElement('div');
+            weekdays.className = 'weekdays';
+            dayNames.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'weekday';
+                dayEl.textContent = day;
+                weekdays.appendChild(dayEl);
+            });
+            monthDiv.appendChild(weekdays);
+            
+            // Grid des jours
+            const daysGrid = document.createElement('div');
+            daysGrid.className = 'days-grid';
+            
+            // Premier jour du mois
+            const firstDay = new Date(year, monthIndex, 1);
+            let startingDay = firstDay.getDay();
+            startingDay = startingDay === 0 ? 6 : startingDay - 1;
+            
+            // Jours vides
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day-cell empty';
+                daysGrid.appendChild(emptyDay);
+            }
+            
+            // Jours du mois
+            const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDate = new Date(year, monthIndex, day);
+                dayDate.setHours(0, 0, 0, 0);
+                
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day-cell';
+                dayEl.textContent = day;
+                
+                const dateStr = dayDate.toISOString().split('T')[0];
+                
+                // Jours passés
+                if (dayDate < today) {
+                    dayEl.classList.add('past');
+                } else {
+                    dayEl.classList.add('available');
+                    dayEl.onclick = () => selectDate(dateStr, dayDate);
+                    
+                    // Date sélectionnée
+                    if (selectedDates.includes(dateStr)) {
+                        dayEl.classList.add('selected');
+                    }
+                }
+                
+                daysGrid.appendChild(dayEl);
+            }
+            
+            monthDiv.appendChild(daysGrid);
+            return monthDiv;
+        }
+
+        function selectDate(dateStr, dateObj) {
+            const index = selectedDates.indexOf(dateStr);
+            
+            if (index > -1) {
+                // Désélectionner
+                selectedDates.splice(index, 1);
+            } else {
+                // Sélectionner
+                selectedDates.push(dateStr);
+            }
+            
+            // Trier les dates
+            selectedDates.sort();
+            
+            renderCalendar();
+        }
+
+        function updateSelectedDisplay() {
+            const summary = document.getElementById('selectedDatesSummary');
+            const count = document.getElementById('selectedDatesCount');
+            const pills = document.getElementById('datesPills');
+            
+            if (!summary || !count || !pills) return;
+            
+            if (selectedDates.length === 0) {
+                summary.style.display = 'none';
+                return;
+            }
+            
+            summary.style.display = 'block';
+            count.textContent = `${selectedDates.length} date${selectedDates.length > 1 ? 's' : ''} sélectionnée${selectedDates.length > 1 ? 's' : ''}`;
+            
+            // Grouper par plages
+            const ranges = groupDatesIntoRanges(selectedDates);
+            
+            pills.innerHTML = '';
+            ranges.forEach((range, idx) => {
+                const pill = document.createElement('div');
+                pill.className = 'date-pill';
+                
+                if (range.start === range.end) {
+                    pill.innerHTML = `
+                        ${formatDateDisplay(range.start)}
+                        <button onclick="removeDateRange(${idx})">×</button>
+                    `;
+                } else {
+                    pill.innerHTML = `
+                        ${formatDateDisplay(range.start)} → ${formatDateDisplay(range.end)}
+                        <button onclick="removeDateRange(${idx})">×</button>
+                    `;
+                }
+                
+                pills.appendChild(pill);
+            });
+        }
+
+        function groupDatesIntoRanges(dates) {
+            if (dates.length === 0) return [];
+            
+            const ranges = [];
+            let start = dates[0];
+            let end = dates[0];
+            
+            for (let i = 1; i < dates.length; i++) {
+                const prev = new Date(dates[i - 1]);
+                const curr = new Date(dates[i]);
+                const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+                
+                if (diff === 1) {
+                    end = dates[i];
+                } else {
+                    ranges.push({ start, end });
+                    start = dates[i];
+                    end = dates[i];
+                }
+            }
+            
+            ranges.push({ start, end });
+            return ranges;
+        }
+
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function removeDateRange(rangeIndex) {
+            const ranges = groupDatesIntoRanges(selectedDates);
+            const range = ranges[rangeIndex];
+            
+            selectedDates = selectedDates.filter(date => {
+                return date < range.start || date > range.end;
+            });
+            
+            renderCalendar();
+        }
+
+        function clearAllDates() {
+            if (confirm('Effacer toutes les dates sélectionnées ?')) {
+                selectedDates = [];
+                renderCalendar();
+            }
+        }
+
+        // FORMATAGE AUTOMATIQUE DES DATES
+        function formatDateInput(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Garder que les chiffres
+            
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
+            }
+            if (value.length >= 5) {
+                value = value.slice(0, 5) + '/' + value.slice(5);
+            }
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+            
+            e.target.value = value;
+        }
+        
+        // Parser une date au format JJ/MM/AAAA vers objet Date
+        function parseDate(dateStr) {
+            const parts = dateStr.split('/');
+            if (parts.length !== 3) return null;
+            
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]) - 1; // Mois commence à 0
+            const year = parseInt(parts[2]);
+            
+            if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+            if (day < 1 || day > 31) return null;
+            if (month < 0 || month > 11) return null;
+            if (year < 2020 || year > 2100) return null;
+            
+            return new Date(year, month, day);
+        }
+        
+        // GESTION DES OPTIONS DE RYTHME
+        function updateRhythmOptions() {
+            const type = document.getElementById('rhythmType').value;
+            const patternGroup = document.getElementById('rhythmPatternGroup');
+            const patternSelect = document.getElementById('rhythmPattern');
+            
+            if (!type) {
+                patternGroup.style.display = 'none';
+                return;
+            }
+            
+            if (type === 'custom') {
+                patternGroup.style.display = 'none';
+                return;
+            }
+            
+            patternGroup.style.display = 'block';
+            patternSelect.innerHTML = '<option value="" disabled selected>Choisis la durée</option>';
+            
+            if (type === 'symmetric') {
+                patternSelect.innerHTML += `
+                    <option value="1-1">1 semaine / 1 semaine</option>
+                    <option value="2-2">2 semaines / 2 semaines</option>
+                    <option value="3-3">3 semaines / 3 semaines</option>
+                    <option value="4-4">4 semaines / 4 semaines</option>
+                    <option value="5-5">5 semaines / 5 semaines</option>
+                    <option value="6-6">6 semaines / 6 semaines</option>
+                    <option value="8-8">8 semaines / 8 semaines</option>
+                `;
+            } else if (type === 'asymmetric') {
+                patternSelect.innerHTML += `
+                    <option value="2-1">2 semaines entreprise / 1 semaine école</option>
+                    <option value="1-2">1 semaine entreprise / 2 semaines école</option>
+                    <option value="3-1">3 semaines entreprise / 1 semaine école</option>
+                    <option value="1-3">1 semaine entreprise / 3 semaines école</option>
+                    <option value="4-2">4 semaines entreprise / 2 semaines école</option>
+                    <option value="2-4">2 semaines entreprise / 4 semaines école</option>
+                    <option value="3-2">3 semaines entreprise / 2 semaines école</option>
+                    <option value="2-3">2 semaines entreprise / 3 semaines école</option>
+                `;
+            }
+        }
+        
+        // GÉNÉRATION DE DATES SELON LE RYTHME
+        function generateRhythmDates() {
+            const rhythmType = document.getElementById('rhythmType').value;
+            const rhythmPattern = document.getElementById('rhythmPattern').value;
+            const startDateStr = document.getElementById('rhythmStartDate').value;
+            const endDateStr = document.getElementById('rhythmEndDate').value;
+            
+            if (!rhythmType) {
+                showNotification('Type d\'alternance manquant', 'Merci de choisir un type d\'alternance', '⚠️');
+                return;
+            }
+            
+            if (rhythmType !== 'custom' && !rhythmPattern) {
+                showNotification('Rythme manquant', 'Merci de choisir un rythme', '⚠️');
+                return;
+            }
+            
+            if (!startDateStr || !endDateStr) {
+                showNotification('Dates manquantes', 'Merci de renseigner les dates de début et de fin', '⚠️');
+                return;
+            }
+            
+            // Parser les dates
+            const start = parseDate(startDateStr);
+            const end = parseDate(endDateStr);
+            
+            if (!start) {
+                showNotification('Date invalide', 'Date de début invalide. Format attendu : JJ/MM/AAAA', '⚠️');
+                return;
+            }
+            
+            if (!end) {
+                showNotification('Date invalide', 'Date de fin invalide. Format attendu : JJ/MM/AAAA', '⚠️');
+                return;
+            }
+            
+            if (start >= end) {
+                showNotification('Dates incorrectes', 'La date de fin doit être après la date de début', '⚠️');
+                return;
+            }
+            
+            selectedDates = [];
+            
+            if (rhythmType === 'custom') {
+                // Afficher le calendrier pour sélection manuelle
+                document.getElementById('editCalendarContainer').style.display = 'block';
+                renderCalendar();
+                return;
+            }
+            
+            // Parser le rythme (ex: "2-1" = 2 semaines en entreprise, 1 semaine école)
+            const [workWeeks, schoolWeeks] = rhythmPattern.split('-').map(Number);
+            
+            const dayInMs = 1000 * 60 * 60 * 24;
+            let currentDate = new Date(start);
+            let isWorkPeriod = true; // On commence par la période en entreprise (= présent au logement)
+            
+            while (currentDate <= end) {
+                const weeksInPeriod = isWorkPeriod ? workWeeks : schoolWeeks;
+                
+                if (isWorkPeriod) {
+                    // Ajouter les dates de présence (entreprise = au logement)
+                    for (let i = 0; i < weeksInPeriod * 7 && currentDate <= end; i++) {
+                        const dateStr = currentDate.toISOString().split('T')[0];
+                        selectedDates.push(dateStr);
+                        currentDate = new Date(currentDate.getTime() + dayInMs);
+                    }
+                } else {
+                    // Sauter cette période (école = binôme au logement)
+                    for (let i = 0; i < weeksInPeriod * 7 && currentDate <= end; i++) {
+                        currentDate = new Date(currentDate.getTime() + dayInMs);
+                    }
+                }
+                
+                isWorkPeriod = !isWorkPeriod;
+            }
+            
+            selectedDates.sort();
+            
+            // Afficher le calendrier éditable
+            document.getElementById('editCalendarContainer').style.display = 'block';
+            renderCalendar();
+            
+            // Afficher le résumé
+            updateSelectedDisplay();
+            
+            // Message de confirmation
+            const rhythmLabels = {
+                '1-1': '1 semaine / 1 semaine',
+                '2-2': '2 semaines / 2 semaines',
+                '3-3': '3 semaines / 3 semaines',
+                '2-1': '2 semaines entreprise / 1 semaine école',
+                '1-2': '1 semaine entreprise / 2 semaines école',
+                '3-1': '3 semaines entreprise / 1 semaine école',
+                '1-3': '1 semaine entreprise / 3 semaines école'
+            };
+            
+            const rhythmText = rhythmLabels[rhythmPattern] || rhythmPattern;
+            showNotification(
+                'Calendrier généré !', 
+                `Rythme : ${rhythmText}\n${selectedDates.length} jours sélectionnés\n\nTu peux maintenant modifier manuellement en cliquant sur les jours du calendrier.`, 
+                '✓'
+            );
+        }
+
+        // Gérer l'affichage du calendrier selon le rythme choisi
+        document.addEventListener('DOMContentLoaded', () => {
+            const rhythmTypeSelect = document.getElementById('rhythmType');
+            if (rhythmTypeSelect) {
+                rhythmTypeSelect.addEventListener('change', () => {
+                    // Masquer le calendrier quand on change de type
+                    const editCal = document.getElementById('editCalendarContainer');
+                    if (editCal) {
+                        editCal.style.display = 'none';
+                    }
+                    // Réinitialiser les dates
+                    selectedDates = [];
+                    updateSelectedDisplay();
+                });
+            }
+        });
+
+        // MODALE DE CONFIRMATION
+        function showConfirmationModal() {
+            // Valider l'étape actuelle avant d'afficher la modale
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeConfirmationModal() {
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function confirmPublication() {
+            // Fermer la modale
+            closeConfirmationModal();
+            
+            // Publier l'annonce
+            publierAnnonce();
+        }
+
+        // PUBLIER L'ANNONCE
+        async function publierAnnonce() {
+            if (!validateStep(4)) {
+                return;
+            }
+            
+            const btn = document.getElementById('btnPublier');
+            btn.disabled = true;
+            btn.textContent = 'Publication en cours...';
+            
+            try {
+                // Récupérer l'utilisateur
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    alert('Tu dois être connecté pour publier une annonce');
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                
+                // VÉRIFICATION DE L'ADRESSE (NOUVEAU)
+                const adresse = document.getElementById('adresse').value.trim();
+                
+                // Construire l'adresse complète si les champs sont remplis
+                const adresseComplete = (adresse && codePostalOriginal) ? `${adresse}, ${codePostalOriginal}` : null;
+                
+                if (adresseComplete && !addressVerified) {
+                    const confirmer = confirm(
+                        '⚠️ Ton adresse n\'a pas été vérifiée automatiquement.\n\n' +
+                        'Cela peut indiquer une adresse invalide ou suspecte.\n\n' +
+                        'Veux-tu quand même publier ? (Non recommandé)'
+                    );
+                    
+                    if (!confirmer) {
+                        btn.disabled = false;
+                        btn.textContent = 'Publier l\'annonce';
+                        alert('Vérifie ton adresse à l\'étape 1 et corrige-la si nécessaire');
+                        return;
+                    }
+                }
+                
+                // Collecter les équipements
+                const equipements = [];
+                document.querySelectorAll('.equipement-checkbox input:checked').forEach(checkbox => {
+                    equipements.push(checkbox.value);
+                });
+                
+                // Collecter les règles
+                const regles = [];
+                if (document.getElementById('animaux').checked) regles.push('Animaux acceptés');
+                if (document.getElementById('fumeur').checked) regles.push('Non-fumeur');
+                if (document.getElementById('fetes').checked) regles.push('Fêtes autorisées');
+                
+                // Ajouter les "autres règles" si renseignées
+                const autresReglesCheckbox = document.getElementById('autres-regles-checkbox');
+                const autresReglesText = document.getElementById('autres-regles').value.trim();
+                if (autresReglesCheckbox.checked && autresReglesText) {
+                    regles.push('Autres: ' + autresReglesText);
+                }
+                
+                // Calculer le prix selon le mode
+                let prixFinal, prixBase = 0, chargesInfo = {};
+                
+                if (chargeMode === 'forfaitaire') {
+                    const prixTotal = parseFloat(document.getElementById('prixForfaitaire').value);
+                    const caution = parseFloat(document.getElementById('caution').value);
+                    prixBase = prixTotal / 2;
+                    prixFinal = prixBase + (prixBase * 0.05);
+                    chargesInfo = {
+                        mode: 'forfaitaire',
+                        prix_total_hote: prixTotal,
+                        prix_par_alternant: prixFinal,
+                        caution: caution
+                    };
+                } else if (chargeMode === 'plafond') {
+                    const loyer = parseFloat(document.getElementById('prixBasePlafond').value);
+                    const charges = parseFloat(document.getElementById('chargesMoyennes').value);
+                    const plafond = parseFloat(document.getElementById('plafondCharges').value);
+                    const caution = parseFloat(document.getElementById('cautionPlafond').value);
+                    prixBase = (loyer + charges) / 2;
+                    prixFinal = prixBase + (prixBase * 0.05);
+                    chargesInfo = {
+                        mode: 'plafond',
+                        loyer_base: loyer,
+                        charges_moyennes: charges,
+                        plafond_charges: plafond,
+                        prix_par_alternant: prixFinal,
+                        caution: caution
+                    };
+                } else if (chargeMode === 'separe') {
+                    const loyer = parseFloat(document.getElementById('prixBaseSepare').value);
+                    const caution = parseFloat(document.getElementById('cautionSepare').value);
+                    prixBase = loyer / 2;
+                    prixFinal = prixBase + (prixBase * 0.05);
+                    
+                    const chargesTypes = [];
+                    if (document.getElementById('chargeEau').checked) chargesTypes.push('eau');
+                    if (document.getElementById('chargeElec').checked) chargesTypes.push('electricite');
+                    if (document.getElementById('chargeInternet').checked) chargesTypes.push('internet');
+                    if (document.getElementById('chargeChauffage').checked) chargesTypes.push('chauffage');
+                    
+                    chargesInfo = {
+                        mode: 'separe',
+                        loyer_base: loyer,
+                        charges_types: chargesTypes,
+                        prix_base_par_alternant: prixFinal,
+                        caution: caution
+                    };
+                }
+                
+                // Récupérer la durée min selon le mode
+                let dureeMin = 3;
+                if (chargeMode === 'forfaitaire') {
+                    dureeMin = parseInt(document.getElementById('dureeMin').value);
+                } else if (chargeMode === 'plafond') {
+                    dureeMin = parseInt(document.getElementById('dureeMinPlafond').value);
+                } else {
+                    dureeMin = parseInt(document.getElementById('dureeMinSepare').value);
+                }
+                
+                // Fonction pour formater l'étage
+                function formatEtage(numero) {
+                    if (!numero || numero === '') return null;
+                    const num = parseInt(numero);
+                    if (isNaN(num)) return null;
+                    
+                    if (num === 0) return 'Rez-de-chaussée';
+                    if (num === 1) return '1er étage';
+                    return num + 'ème étage';
+                }
+                
+                // Vérification des disponibilités sélectionnées
+                console.log('📅 Dates sélectionnées:', selectedDates);
+                console.log('📅 Nombre de dates:', selectedDates.length);
+                
+                // Vérifier qu'au moins une date est sélectionnée
+                if (!selectedDates || selectedDates.length === 0) {
+                    showNotification('Disponibilités manquantes', 'Tu dois sélectionner au moins une date de disponibilité', '⚠️');
+                    btn.disabled = false;
+                    btn.textContent = 'Publier l\'annonce';
+                    return;
+                }
+                
+                // Données de l'annonce
+                const annonce = {
+                    user_id: user.id,
+                    type: document.getElementById('type').value,
+                    ville: villeDetectee,
+                    surface: parseInt(document.getElementById('surface').value),
+                    etage: formatEtage(document.getElementById('etage').value),
+                    adresse: adresseComplete || null,
+                    prix: Math.round(prixFinal),
+                    duree_min: dureeMin,
+                    titre: document.getElementById('titre').value,
+                    description: document.getElementById('description').value || null,
+                    equipements: equipements,
+                    regles: regles,
+                    charges_info: chargesInfo,
+                    // Disponibilités - format correct pour Supabase
+                    disponibilites_debut: selectedDates.length > 0 ? selectedDates[0] : null,
+                    disponibilites_pattern: selectedDates.length > 0 ? selectedDates : null,
+                    // Coordonnées GPS si l'adresse a été vérifiée
+                    adresse_verifiee: addressVerified,
+                    latitude: verifiedCoordinates ? verifiedCoordinates[1] : null,
+                    longitude: verifiedCoordinates ? verifiedCoordinates[0] : null,
+                    adresse_verification_date: addressVerified ? new Date().toISOString() : null
+                };
+                
+                console.log('📤 Données à envoyer:', annonce);
+                
+                // Insertion dans Supabase
+                const { data, error } = await supabaseClient
+                    .from('annonces')
+                    .insert([annonce])
+                    .select();
+                
+                if (error) {
+                    console.error('❌ Erreur Supabase détaillée:', error);
+                    throw new Error(`Erreur base de données: ${error.message || error.toString()}`);
+                }
+                
+                console.log('✅ Annonce créée avec succès:', data);
+                showNotification('Annonce publiée !', 'Ton annonce a été publiée avec succès !', '🎉');
+                setTimeout(() => {
+                    window.location.href = 'dashboard-locataire.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showNotification('Erreur', 'Erreur lors de la publication : ' + error.message, '❌');
+                btn.disabled = false;
+                btn.textContent = 'Publier l\'annonce';
+            }
+        }
+
+        // ==========================================
+        // GESTION TYPE UTILISATEUR
+        // ==========================================
+        
+        async function checkUserType() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                
+                // Toujours afficher l'écran de sélection sur cette page
+                // (même si le user_type existe déjà dans Supabase)
+                showUserTypeSelection();
+                
+            } catch (error) {
+                console.error('Erreur checkUserType:', error);
+                window.location.href = 'connexion.html';
+            }
+        }
+        
+        function showUserTypeSelection() {
+            document.getElementById('userTypeSelection').style.display = 'flex';
+            document.getElementById('mainFormContainer').style.display = 'none';
+            
+            // Attacher les événements APRÈS l'affichage
+            setTimeout(() => {
+                const radioButtons = document.querySelectorAll('input[name="userType"]');
+                const btnConfirm = document.getElementById('btnConfirmUserType');
+                
+                console.log('📻 Radio buttons trouvés:', radioButtons.length);
+                console.log('🔘 Bouton confirm:', btnConfirm);
+                
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        console.log('✅ Radio changé:', radio.value);
+                        if (btnConfirm) {
+                            btnConfirm.disabled = false;
+                        }
+                    });
+                });
+                
+                if (btnConfirm) {
+                    btnConfirm.addEventListener('click', () => {
+                        const selectedType = document.querySelector('input[name="userType"]:checked');
+                        console.log('🎯 Type sélectionné:', selectedType?.value);
+                        if (selectedType) {
+                            saveUserType(selectedType.value);
+                        }
+                    });
+                }
+            }, 100);
+        }
+        
+        function showMainForm() {
+            document.getElementById('userTypeSelection').style.display = 'none';
+            document.getElementById('mainFormContainer').style.display = 'block';
+            
+            // Afficher le badge de profil
+            const badge = document.getElementById('userTypeBadge');
+            if (badge) {
+                badge.textContent = userType === 'proprietaire' ? 'Propriétaire' : 'Locataire';
+                badge.style.display = 'inline-block';
+            }
+            
+            // Adapter le formulaire selon le type
+            const section5 = document.getElementById('section5');
+            const step5 = document.querySelector('.progress-step[data-step="5"]');
+            const progressSteps = document.querySelector('.progress-steps');
+            
+            if (userType === 'proprietaire') {
+                console.log('🏠 Mode propriétaire - 4 étapes');
+                // Masquer la section 5 (disponibilités)
+                if (section5) {
+                    section5.classList.add('hidden-for-user-type');
+                }
+                // Masquer l'étape 5 dans la progress bar
+                if (step5) {
+                    step5.style.display = 'none';
+                }
+                // Grid 4 colonnes
+                if (progressSteps) {
+                    progressSteps.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                }
+                // Changer le texte du bouton à l'étape 4
+                const btnPublier = document.getElementById('btnPublier');
+                if (btnPublier) {
+                    btnPublier.textContent = 'Publier l\'annonce';
+                }
+            } else {
+                console.log('👤 Mode locataire - 5 étapes');
+                // Locataire : section 5 visible
+                if (section5) {
+                    section5.classList.remove('hidden-for-user-type');
+                }
+                // Afficher l'étape 5 dans la progress bar
+                if (step5) {
+                    step5.style.display = 'flex';
+                }
+                // Grid 5 colonnes
+                if (progressSteps) {
+                    progressSteps.style.gridTemplateColumns = 'repeat(5, 1fr)';
+                }
+            }
+        }
+        
+        function changeUserType() {
+            if (confirm('Es-tu sûr de vouloir changer de profil ? Les données du formulaire seront perdues.')) {
+                userType = null;
+                // Réinitialiser le formulaire
+                window.location.reload();
+            }
+        }
+        
+        async function saveUserType(type) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                
+                if (!user) {
+                    throw new Error('Utilisateur non connecté');
+                }
+                
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .upsert({
+                        id: user.id,
+                        user_type: type,
+                        updated_at: new Date().toISOString()
+                    });
+                
+                if (error) throw error;
+                
+                userType = type;
+                showMainForm();
+                
+            } catch (error) {
+                console.error('Erreur sauvegarde type:', error);
+                alert('Erreur lors de la sauvegarde. Réessaye.');
+            }
+        }
+        
+        // INITIALISATION
+        window.addEventListener('DOMContentLoaded', () => {
+            // Vérifier le type d'utilisateur d'abord
+            checkUserType();
+            
+            // Formatage automatique des dates
+            const startDateInput = document.getElementById('rhythmStartDate');
+            const endDateInput = document.getElementById('rhythmEndDate');
+            
+            if (startDateInput) {
+                startDateInput.addEventListener('input', formatDateInput);
+            }
+            if (endDateInput) {
+                endDateInput.addEventListener('input', formatDateInput);
+            }
+            
+            initializeCalendar();
+            updateProgress();
+            
+            const codePostalInput = document.getElementById('codePostal');
+            
+            // Détection automatique de la ville pendant la saisie
+            codePostalInput.addEventListener('input', function() {
+                const chiffresSeuls = this.value.replace(/[^0-9]/g, '');
+                if (chiffresSeuls.length === 5) {
+                    detecterVille(chiffresSeuls);
+                }
+            });
+            
+            // Au focus : afficher seulement les chiffres pour édition
+            codePostalInput.addEventListener('focus', handleCodePostalFocus);
+            
+            // Au blur : réafficher avec la ville + vérification adresse
+            codePostalInput.addEventListener('blur', handleCodePostalBlur);
+            
+            // Vérification automatique de l'adresse
+            document.getElementById('adresse').addEventListener('blur', () => {
+                // Si le code postal est déjà rempli, vérifier
+                if (codePostalOriginal && codePostalOriginal.length === 5) {
+                    autoVerifyAddress();
+                }
+            });
+            
+            // Masquer le checkmark quand l'utilisateur modifie l'adresse
+            document.getElementById('adresse').addEventListener('input', () => {
+                document.getElementById('adresseCheckmark').classList.remove('show');
+                hideAddressMessage();
+            });
+            
+            console.log('✅ Page initialisée');
+        });
+
+        // Navigation "Mon espace"
+        document.getElementById('monEspaceLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (supabaseClient) {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (user) {
+                    window.location.href = 'dashboard-locataire.html';
+                } else {
+                    window.location.href = 'connexion.html';
+                }
+            }
+        });
+    </script>
+    <!-- NOTIFICATION CUSTOM -->
+    <div class="custom-notification" id="customNotification">
+        <div class="notification-content">
+            <div class="notification-icon" id="notificationIcon">✓</div>
+            <div class="notification-title" id="notificationTitle">Notification</div>
+            <div class="notification-message" id="notificationMessage">Message</div>
+            <button class="notification-btn" onclick="closeNotification()">OK</button>
+        </div>
+    </div>
+</body>
+</html>

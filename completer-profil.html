@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complète ton profil - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+        
+        /* FIX SAFARI */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: white;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+            padding-right: 40px;
+        }
+        
+        .form-container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .form-header h1 {
+            font-size: 32px;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: var(--gray-600);
+            font-size: 16px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+        
+        .info-box p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+        
+        /* CARTE D'IDENTITÉ */
+        .identity-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .photo-section {
+            flex-shrink: 0;
+        }
+        
+        .photo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .photo-circle:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+        
+        .photo-circle .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .photo-circle .placeholder .icon {
+            font-size: 48px;
+        }
+        
+        .photo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .identity-info {
+            flex: 1;
+        }
+        
+        .identity-info .name-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .identity-info .name-row > div {
+            flex: 1;
+        }
+        
+        .identity-info .info-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .identity-info .info-row > div {
+            flex: 1;
+        }
+        
+        .identity-info label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            font-weight: normal;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .identity-info input[type="text"],
+        .identity-info input[type="date"],
+        .identity-info select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: normal;
+            transition: all 0.2s;
+        }
+        
+        .identity-info input:focus,
+        .identity-info select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* SECTION ÉTUDES */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: normal;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .required {
+            color: #dc3545;
+            font-weight: 700;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .identity-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .identity-info .name-row,
+            .identity-info .info-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#">Comment ça marche</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>👤 Complète ton profil</h1>
+                <p>Ces informations permettent de rassurer tes futurs colocataires</p>
+            </div>
+            
+            <div id="messageBox" class="message"></div>
+            
+            <div class="info-box">
+                <h3>🔒 Confidentialité et sécurité</h3>
+                <p>Tes informations ne seront visibles que par les personnes intéressées par ton logement</p>
+            </div>
+            
+            <form id="profilForm">
+                <div class="identity-card">
+                    <div class="photo-section">
+                        <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                        <div class="photo-circle" id="photoCircle">
+                            <div class="placeholder">
+                                <div class="icon">📸</div>
+                            </div>
+                            <img id="photoPreview" src="" alt="Photo de profil" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="identity-info">
+                        <div class="name-row">
+                            <div>
+                                <label>Prénom <span class="required">*</span></label>
+                                <input type="text" id="prenom" placeholder="Prénom" required>
+                            </div>
+                            <div>
+                                <label>Nom <span class="required">*</span></label>
+                                <input type="text" id="nom" placeholder="Nom" required>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div>
+                                <label>Date de naissance <span class="required">*</span></label>
+                                <input type="date" id="dateNaissance" required max="2008-01-01">
+                            </div>
+                            <div>
+                                <label>Sexe <span class="required">*</span></label>
+                                <select id="sexe" required>
+                                    <option value="" disabled selected>Sélectionne</option>
+                                    <option value="homme">Homme</option>
+                                    <option value="femme">Femme</option>
+                                    <option value="autre">Autre</option>
+                                    <option value="non-precise">Non précisé</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">📚 Études</h2>
+                
+                <div class="form-group">
+                    <label>École / Université <span class="required">*</span></label>
+                    <input type="text" id="ecole" placeholder="ex: Université de Rennes, ENSAI..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Année d'études <span class="required">*</span></label>
+                    <select id="anneeEtudes" required>
+                        <option value="" disabled selected>📚 Sélectionne ton année</option>
+                        <option value="L1">L1 (Licence 1)</option>
+                        <option value="L2">L2 (Licence 2)</option>
+                        <option value="L3">L3 (Licence 3)</option>
+                        <option value="M1">M1 (Master 1)</option>
+                        <option value="M2">M2 (Master 2)</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Filière / Domaine d'études <span class="required">*</span></label>
+                    <input type="text" id="filiere" placeholder="ex: Architecture, Informatique, Commerce..." required>
+                </div>
+                
+                <!-- SECTION CENTRES D'INTÉRÊTS -->
+                <h2 class="section-title" style="margin-top: 40px;">💬 À propos de moi</h2>
+                
+                <div class="form-group">
+                    <label>Mes centres d'intérêts</label>
+                    <textarea id="centresInterets" placeholder="ex: Sport, Musique, Cinéma, Voyages, Lecture..." maxlength="150" rows="3" style="resize: vertical; min-height: 80px; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 15px; font-family: inherit; width: 100%; transition: all 0.2s;"></textarea>
+                    <small style="color: var(--gray-500); font-size: 13px; margin-top: 6px; display: block;">Optionnel - Max 150 caractères</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Enregistrer mon profil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+let currentUser = null;
+let photoFile = null;
+
+async function checkAuth() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (!user) {
+        window.location.href = 'connexion.html';
+        return;
+    }
+    
+    currentUser = user;
+    
+    const { data: userData } = await supabaseClient
+        .from('users')
+        .select('prenom, nom, profil_complet, type_user')
+        .eq('id', user.id)
+        .single();
+    
+    if (userData) {
+        document.getElementById('prenom').value = userData.prenom || '';
+        document.getElementById('nom').value = userData.nom || '';
+        
+        if (userData.profil_complet) {
+            if (userData.type_user === 'hote') {
+                window.location.href = 'dashboard-hote.html';
+            } else {
+                window.location.href = 'dashboard-locataire.html';
+            }
+        }
+    }
+}
+
+const photoCircle = document.getElementById('photoCircle');
+const photoInput = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+
+photoCircle.addEventListener('click', () => {
+    photoInput.click();
+});
+
+photoInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handlePhotoSelect(e.target.files[0]);
+    }
+});
+
+photoCircle.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    photoCircle.style.borderColor = 'var(--primary-color)';
+});
+
+photoCircle.addEventListener('dragleave', () => {
+    photoCircle.style.borderColor = 'white';
+});
+
+photoCircle.addEventListener('drop', (e) => {
+    e.preventDefault();
+    photoCircle.style.borderColor = 'white';
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handlePhotoSelect(files[0]);
+    }
+});
+
+function handlePhotoSelect(file) {
+    if (!file.type.match('image.*')) {
+        showMessage('error', 'Le fichier doit être une image (JPG, PNG, WEBP)');
+        return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+        showMessage('error', 'La photo ne doit pas dépasser 5MB');
+        return;
+    }
+    
+    photoFile = file;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        photoPreview.src = e.target.result;
+        photoPreview.style.display = 'block';
+        photoCircle.querySelector('.placeholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+document.getElementById('profilForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enregistrement...';
+    
+    try {
+        const prenom = document.getElementById('prenom').value.trim();
+        const nom = document.getElementById('nom').value.trim();
+        const sexe = document.getElementById('sexe').value;
+        const dateNaissance = document.getElementById('dateNaissance').value;
+        const ecole = document.getElementById('ecole').value.trim();
+        const anneeEtudes = document.getElementById('anneeEtudes').value;
+        const filiere = document.getElementById('filiere').value.trim();
+        const centresInterets = document.getElementById('centresInterets').value.trim();
+        
+        const birthDate = new Date(dateNaissance);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        if (age < 18) {
+            showMessage('error', 'Tu dois avoir au moins 18 ans pour utiliser AlternHome');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enregistrer mon profil';
+            return;
+        }
+        
+        let photoUrl = null;
+        if (photoFile) {
+            const fileExt = photoFile.name.split('.').pop();
+            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+            
+            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                .from('profils')
+                .upload(fileName, photoFile, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+            
+            if (uploadError) {
+                console.error('Erreur upload photo:', uploadError);
+            } else {
+                const { data: urlData } = supabaseClient.storage
+                    .from('profils')
+                    .getPublicUrl(fileName);
+                
+                photoUrl = urlData.publicUrl;
+            }
+        }
+        
+        const { error } = await supabaseClient
+            .from('users')
+            .update({
+                prenom: prenom,
+                nom: nom,
+                sexe: sexe,
+                date_naissance: dateNaissance,
+                photo_profil_url: photoUrl,
+                ecole: ecole,
+                annee_etudes: anneeEtudes,
+                filiere: filiere,
+                bio: centresInterets || null,
+                profil_complet: true
+            })
+            .eq('id', currentUser.id);
+        
+        if (error) {
+            console.error('Erreur enregistrement profil:', error);
+            showMessage('error', 'Erreur lors de l\'enregistrement du profil');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enregistrer mon profil';
+            return;
+        }
+        
+        showMessage('success', 'Profil enregistré avec succès ! Redirection...');
+        
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', currentUser.id)
+            .single();
+        
+        setTimeout(() => {
+            if (userData.type_user === 'hote') {
+                window.location.href = 'dashboard-hote.html';
+            } else {
+                window.location.href = 'dashboard-locataire.html';
+            }
+        }, 1000);
+        
+    } catch (err) {
+        console.error('Erreur:', err);
+        showMessage('error', 'Une erreur est survenue');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enregistrer mon profil';
+    }
+});
+
+function showMessage(type, text) {
+    const messageBox = document.getElementById('messageBox');
+    messageBox.className = `message ${type}`;
+    messageBox.textContent = text;
+    messageBox.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+if (typeof supabaseClient !== 'undefined') {
+    checkAuth();
+}
+</script>
+</body>
+</html>

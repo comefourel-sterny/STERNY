@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propriétaires - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--gray-900);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .hero .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        /* ===== VIDEO SECTION ===== */
+        .video-section {
+            padding: 100px 20px;
+            background: white;
+        }
+
+        .video-section .container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 100px 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .video-placeholder:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 70px rgba(102, 126, 234, 0.4);
+        }
+
+        .video-placeholder::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .video-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .video-icon {
+            font-size: 80px;
+            display: block;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .video-placeholder h3 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* ===== AVANTAGES ===== */
+        .avantages-section {
+            padding: 100px 20px;
+            background: #f9fafb;
+        }
+
+        .avantages-section .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .avantages-section h2 {
+            font-size: 38px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 70px;
+            color: #1a202c;
+        }
+
+        .avantages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .avantage-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .avantage-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .avantage-icon {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .avantage-icon .number {
+            font-size: 72px;
+            font-weight: 800;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .avantage-content {
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+        .avantage-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            line-height: 1.4;
+        }
+
+        /* ===== CTA BUTTON ===== */
+        .cta-section {
+            text-align: center;
+            padding-bottom: 80px;
+            background: #f9fafb;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 20px 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 17px;
+            }
+
+            .video-placeholder {
+                padding: 60px 30px;
+            }
+
+            .video-icon {
+                font-size: 60px;
+            }
+
+            .video-placeholder h3 {
+                font-size: 22px;
+            }
+
+            .avantages-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            nav ul {
+                gap: 15px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+
+            .cta-button {
+                padding: 16px 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <h1>Rentabilisez votre logement<br>différemment</h1>
+        </div>
+    </section>
+
+    <!-- VIDEO SECTION -->
+    <section class="video-section">
+        <div class="container">
+            <h2 style="font-size: 38px; font-weight: 700; text-align: center; margin-bottom: 50px; color: #1a202c;">Comment ça marche ?</h2>
+            
+            <div class="video-placeholder">
+                <div class="video-content">
+                    <span class="video-icon">▶️</span>
+                    <h3>Vidéo explicative</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AVANTAGES -->
+    <section class="avantages-section">
+        <div class="container">
+            <h2>Pourquoi AlternHome ?</h2>
+
+            <div class="avantages-grid">
+                <div class="avantage-card">
+                    <div class="avantage-icon">
+                        <div class="number">+5%</div>
+                    </div>
+                    <div class="avantage-content">
+                        <h3>de revenus<br>par mois</h3>
+                    </div>
+                </div>
+
+                <div class="avantage-card">
+                    <div class="avantage-icon">
+                        <div class="number">100%</div>
+                    </div>
+                    <div class="avantage-content">
+                        <h3>d'occupation<br>toute l'année</h3>
+                    </div>
+                </div>
+
+                <div class="avantage-card">
+                    <div class="avantage-icon">
+                        <div class="number">1</div>
+                    </div>
+                    <div class="avantage-content">
+                        <h3>seul contact,<br>tout géré</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-section">
+                <a href="inscription-proprietaire-direct.html" class="cta-button" id="ctaButton">Je suis intéressé !</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Détecter si l'utilisateur vient d'un lien de parrainage
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasParrainage = urlParams.has('parrainage') || urlParams.has('ref');
+        
+        // Modifier le lien du bouton CTA en fonction
+        const ctaButton = document.getElementById('ctaButton');
+        if (ctaButton && hasParrainage) {
+            // Vient d'un lien de parrainage → passer par verification-code.html
+            ctaButton.href = 'verification-code.html';
+            
+            // Transmettre le code de parrainage s'il existe
+            const codeParrainage = urlParams.get('parrainage') || urlParams.get('ref');
+            if (codeParrainage) {
+                ctaButton.href = 'verification-code.html?code=' + codeParrainage;
+            }
+        }
+        // Sinon, reste sur inscription-proprietaire-direct.html (défaut)
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace propriétaire - EASWAP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+        
+        /* NAVIGATION */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover {
+            color: #667eea;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* HEADER PROFIL */
+        .profile-header {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-details {
+            font-size: 15px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-profile {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        /* ACTIONS RAPIDES */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .action-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .action-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #EF4444;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* SECTION LOCATAIRE HÔTE */
+        .locataire-hote-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 2px solid #E0E7FF;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            font-size: 28px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .hote-card {
+            display: flex;
+            gap: 20px;
+            padding: 24px;
+            background: #F8F9FC;
+            border-radius: 16px;
+        }
+
+        .hote-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .hote-info {
+            flex: 1;
+        }
+
+        .hote-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .hote-role {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .hote-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .hote-detail {
+            font-size: 14px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hote-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-hote {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-hote-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-hote-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-hote-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #E0E7FF;
+        }
+
+        .btn-hote-secondary:hover {
+            background: #F8F9FC;
+        }
+
+        /* CONTENT SECTION */
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+
+        .section-header-main {
+            margin-bottom: 24px;
+        }
+
+        .section-header-main h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        /* CANDIDATURES */
+        .candidature-card {
+            background: #F8F9FC;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .candidature-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .candidature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .candidat-info {
+            flex: 1;
+        }
+
+        .candidat-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .candidat-details {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .candidat-date {
+            font-size: 13px;
+            color: #9CA3AF;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-en-attente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-acceptee {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-refusee {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .candidature-message {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .candidature-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-candidature {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-accept {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: #F3F4F6;
+            color: #6b7280;
+        }
+
+        .btn-reject:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-contact {
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-contact:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        /* ANNONCES */
+        .annonces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* ANNONCE UNIQUE (card large) */
+        .annonce-single {
+            border: 2px solid #E5E7EB;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .annonce-single:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .annonce-single-container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .annonce-single-image {
+            width: 300px;
+            height: 240px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .annonce-single-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .annonce-single-content {
+            flex: 1;
+            padding: 24px;
+            padding-left: 0;
+        }
+
+        .annonce-single-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .annonce-single-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .annonce-single-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .annonce-single-location {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .annonce-single-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .annonce-single-detail {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .annonce-single-detail strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .annonce-single-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-annonce {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-view {
+            background: #F3F4F6;
+            color: #4a5568;
+        }
+
+        .btn-view:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-toggle-status {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .btn-toggle-status:hover {
+            background: #FDE68A;
+        }
+
+        .annonces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .annonce-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid #E5E7EB;
+        }
+
+        .annonce-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+
+        .annonce-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .annonce-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .annonce-status {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-inactive {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .annonce-content {
+            padding: 20px;
+        }
+
+        .annonce-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .annonce-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .annonce-location {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav .container {
+                padding: 0 20px;
+            }
+
+            .dashboard-container {
+                padding: 24px 16px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn-profile {
+                width: 100%;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .hote-card {
+                flex-direction: column;
+            }
+
+            .candidature-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .candidature-actions {
+                flex-direction: column;
+            }
+
+            .annonces-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .annonce-single-container {
+                flex-direction: column;
+            }
+
+            .annonce-single-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .annonce-single-content {
+                padding: 24px;
+            }
+
+            .annonce-single-details {
+                grid-template-columns: 1fr;
+            }
+
+            .annonce-single-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            color: #10B981;
+        }
+
+        #refuseModal .modal-icon {
+            color: #EF4444;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            background: #F8F9FC;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .modal-info:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .modal-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .modal-next-steps {
+            background: linear-gradient(135deg, #E0F2FE 0%, #E0E7FF 100%);
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .modal-next-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .modal-step {
+            font-size: 13px;
+            color: #4a5568;
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .modal-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-step::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10B981;
+            font-weight: 700;
+        }
+
+        .modal-refuse-note {
+            margin-bottom: 24px;
+        }
+
+        .modal-refuse-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .modal-refuse-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        .modal-refuse-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-refuse-textarea::placeholder {
+            color: #9CA3AF;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-modal {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-cancel {
+            background: #F3F4F6;
+            color: #6b7280;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-modal-confirm {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-modal-confirm:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-modal-refuse {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-modal-refuse:hover {
+            background: #DC2626;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 EASWAP</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="dashboard-container">
+        <!-- HEADER PROFIL -->
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Chargement...</div>
+                <div class="profile-details" id="profileDetails">Propriétaire</div>
+            </div>
+            <div class="profile-actions">
+                <a href="modifier-profil-proprietaire.html" class="btn-profile btn-secondary">
+                    Modifier le profil
+                </a>
+                <button class="btn-profile btn-primary" onclick="deconnexion()">
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+
+        <!-- ACTIONS RAPIDES -->
+        <div class="quick-actions">
+            <a href="creer-annonce.html" class="action-card">
+                <div class="action-icon">➕</div>
+                <h3>Créer une annonce</h3>
+            </a>
+            <a href="messages.html" class="action-card">
+                <div class="action-icon">💬</div>
+                <h3>Messages</h3>
+                <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
+            </a>
+        </div>
+
+        <!-- SECTION LOCATAIRE HÔTE (Cachée par défaut) -->
+        <div class="locataire-hote-section" id="section-locataire-hote" style="display: none;">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Votre locataire actuel (Hôte)</div>
+                    <div class="section-subtitle">Invité vous a parrainé sur EASWAP</div>
+                </div>
+            </div>
+            
+            <div class="hote-card">
+                <div class="hote-avatar" id="hoteAvatar">👤</div>
+                
+                <div class="hote-info">
+                    <div class="hote-name" id="hoteNom">Chargement...</div>
+                    <div class="hote-role">Hôte / Locataire en alternance</div>
+                    
+                    <div class="hote-details">
+                        <div class="hote-detail">
+                            <span>📧</span>
+                            <span id="hoteEmail">email@example.com</span>
+                        </div>
+                        <div class="hote-detail">
+                            <span>📞</span>
+                            <span id="hoteTelephone">06 12 34 56 78</span>
+                        </div>
+                        <div class="hote-detail">
+                            <span>🏫</span>
+                            <span id="hoteEcole">École • Filière</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hote-actions">
+                        <a href="#" class="btn-hote btn-hote-primary" id="btnContacterHote">
+                            <span>💬</span>
+                            <span>Contacter</span>
+                        </a>
+                        <a href="#" class="btn-hote btn-hote-secondary" id="btnVoirAnnonceHote">
+                            <span>👁️</span>
+                            <span>Voir l'annonce swap</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CANDIDATURES -->
+        <div class="content-section">
+            <div class="section-header-main">
+                <h2>Candidatures reçues</h2>
+            </div>
+            
+            <div id="candidaturesContainer">
+                <div class="empty-state" id="emptyCandidatures">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-text">Aucune candidature pour le moment</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MES ANNONCES -->
+        <div class="content-section">
+            <div class="section-header-main">
+                <h2 id="annoncesTitle">Mes annonces</h2>
+            </div>
+            
+            <div id="annoncesContainer">
+                <div class="empty-state" id="emptyAnnonces">
+                    <div class="empty-icon">🏘️</div>
+                    <div class="empty-text">Aucune annonce pour le moment</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL D'ACCEPTATION -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">✓</div>
+                <div class="modal-title">Valider cette candidature</div>
+                <div class="modal-subtitle">Vérifiez les informations avant de confirmer</div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-info">
+                    <span class="modal-label">Candidat</span>
+                    <span class="modal-value" id="modalNom">-</span>
+                </div>
+                <div class="modal-info">
+                    <span class="modal-label">Email</span>
+                    <span class="modal-value" id="modalEmail">-</span>
+                </div>
+                <div class="modal-info">
+                    <span class="modal-label">Logement</span>
+                    <span class="modal-value" id="modalLogement">-</span>
+                </div>
+                <div class="modal-info">
+                    <span class="modal-label">Loyer</span>
+                    <span class="modal-value" id="modalLoyer">-</span>
+                </div>
+            </div>
+
+            <div class="modal-next-steps">
+                <div class="modal-next-title">Prochaines étapes</div>
+                <div class="modal-step">Signature du contrat de location</div>
+                <div class="modal-step">Paiement sécurisé (caution + 1er mois)</div>
+                <div class="modal-step">État des lieux d'entrée</div>
+                <div class="modal-step">Location active</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal btn-modal-cancel" onclick="closeModal()">
+                    Annuler
+                </button>
+                <button class="btn-modal btn-modal-confirm" onclick="confirmerAcceptation()">
+                    Valider la candidature
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE REFUS -->
+    <div class="modal-overlay" id="refuseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">✕</div>
+                <div class="modal-title">Refuser cette candidature</div>
+                <div class="modal-subtitle">Cette action est définitive</div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-info">
+                    <span class="modal-label">Candidat</span>
+                    <span class="modal-value" id="modalNomRefus">-</span>
+                </div>
+                <div class="modal-info">
+                    <span class="modal-label">Email</span>
+                    <span class="modal-value" id="modalEmailRefus">-</span>
+                </div>
+                <div class="modal-info">
+                    <span class="modal-label">Logement</span>
+                    <span class="modal-value" id="modalLogementRefus">-</span>
+                </div>
+            </div>
+
+            <div class="modal-refuse-note">
+                <div class="modal-refuse-title">Message au candidat (optionnel)</div>
+                <textarea class="modal-refuse-textarea" id="messageRefus" placeholder="Vous pouvez expliquer brièvement la raison du refus..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal btn-modal-cancel" onclick="closeRefuseModal()">
+                    Annuler
+                </button>
+                <button class="btn-modal btn-modal-refuse" onclick="confirmerRefus()">
+                    Confirmer le refus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction de déconnexion
+        async function deconnexion() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Charger le profil
+        async function chargerProfil() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (userData) {
+                    document.getElementById('profileName').textContent = 
+                        `${userData.prenom} ${userData.nom}`;
+                    document.getElementById('profileDetails').textContent = 
+                        `${userData.age} ans • ${userData.sexe}`;
+                    
+                    const initials = `${userData.prenom[0]}${userData.nom[0]}`.toUpperCase();
+                    document.getElementById('profileAvatar').textContent = initials;
+
+                    // Vérifier parrain hôte
+                    if (userData.parrain_id) {
+                        await chargerParrainHote(userData.parrain_id);
+                    }
+                }
+
+                await chargerCandidatures(user.id);
+                await chargerAnnonces(user.id);
+                await chargerNotifications(user.id);
+
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        }
+
+        // Charger parrain hôte
+        async function chargerParrainHote(parrainId) {
+            try {
+                const { data: parrain } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', parrainId)
+                    .single();
+
+                if (parrain && parrain.type_user === 'hote') {
+                    afficherSectionParrainHote(parrain);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Afficher section parrain hôte
+        function afficherSectionParrainHote(hote) {
+            document.getElementById('section-locataire-hote').style.display = 'block';
+            document.getElementById('hoteNom').textContent = `${hote.prenom} ${hote.nom}`;
+            document.getElementById('hoteEmail').textContent = hote.email;
+            document.getElementById('hoteTelephone').textContent = hote.telephone || 'Non renseigné';
+            
+            if (hote.ecole && hote.filiere) {
+                document.getElementById('hoteEcole').textContent = `${hote.ecole} • ${hote.filiere}`;
+            }
+
+            const initials = `${hote.prenom[0]}${hote.nom[0]}`.toUpperCase();
+            document.getElementById('hoteAvatar').textContent = initials;
+
+            document.getElementById('btnContacterHote').href = `conversation.html?user_id=${hote.id}`;
+            
+            chargerAnnonceHote(hote.id);
+        }
+
+        // Charger annonce hôte
+        async function chargerAnnonceHote(hoteId) {
+            try {
+                const { data: annonce } = await supabaseClient
+                    .from('annonces')
+                    .select('id')
+                    .eq('user_id', hoteId)
+                    .eq('disponible', true)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (annonce) {
+                    document.getElementById('btnVoirAnnonceHote').href = `logement.html?id=${annonce.id}`;
+                } else {
+                    document.getElementById('btnVoirAnnonceHote').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('btnVoirAnnonceHote').style.display = 'none';
+            }
+        }
+
+        // Charger candidatures
+        async function chargerCandidatures(userId) {
+            try {
+                const { data: annonces } = await supabaseClient
+                    .from('annonces')
+                    .select('id')
+                    .eq('user_id', userId);
+
+                if (!annonces || annonces.length === 0) return;
+
+                const annonceIds = annonces.map(a => a.id);
+
+                const { data: candidatures } = await supabaseClient
+                    .from('candidatures')
+                    .select(`
+                        *,
+                        annonces (titre, ville, prix),
+                        users (id, nom, prenom, email, telephone)
+                    `)
+                    .in('annonce_id', annonceIds)
+                    .order('created_at', { ascending: false });
+
+                if (candidatures && candidatures.length > 0) {
+                    afficherCandidatures(candidatures);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        }
+
+        // Afficher candidatures
+        function afficherCandidatures(candidatures) {
+            document.getElementById('emptyCandidatures').style.display = 'none';
+            
+            const container = document.getElementById('candidaturesContainer');
+            container.innerHTML = candidatures.map(c => {
+                const statusClass = {
+                    'en_attente': 'status-en-attente',
+                    'acceptee': 'status-acceptee',
+                    'refusee': 'status-refusee'
+                }[c.statut] || 'status-en-attente';
+
+                const statusText = {
+                    'en_attente': '⏳ En attente',
+                    'acceptee': '✅ Acceptée',
+                    'refusee': '❌ Refusée'
+                }[c.statut] || 'En attente';
+
+                const date = new Date(c.created_at).toLocaleDateString('fr-FR');
+
+                return `
+                    <div class="candidature-card">
+                        <div class="candidature-header">
+                            <div class="candidat-info">
+                                <div class="candidat-name">${c.users.prenom} ${c.users.nom}</div>
+                                <div class="candidat-details">
+                                    📧 ${c.users.email} • 
+                                    📞 ${c.users.telephone || 'Non renseigné'}
+                                </div>
+                                <div class="candidat-details">
+                                    🏠 ${c.annonces.titre} • ${c.annonces.ville} • ${c.annonces.prix}€/mois
+                                </div>
+                                <div class="candidat-date">Postulé le ${date}</div>
+                            </div>
+                            <div class="status-badge ${statusClass}">${statusText}</div>
+                        </div>
+                        
+                        <div class="candidature-message">
+                            "${c.message}"
+                        </div>
+                        
+                        ${c.statut === 'en_attente' ? `
+                            <div class="candidature-actions">
+                                <a href="conversation.html?user_id=${c.users.id}" class="btn-candidature btn-contact" style="text-decoration: none;">
+                                    💬 Contacter
+                                </a>
+                                <button class="btn-candidature btn-accept" onclick="showConfirmModal('${c.id}', '${c.users.prenom} ${c.users.nom}', '${c.users.email}', '${c.annonces.titre}', '${c.annonces.prix}')">
+                                    ✅ Accepter
+                                </button>
+                                <button class="btn-candidature btn-reject" onclick="showRefuseModal('${c.id}', '${c.users.prenom} ${c.users.nom}', '${c.users.email}', '${c.annonces.titre}')">
+                                    ❌ Refuser
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Variables globales pour les modals
+        let currentCandidatureId = null;
+
+        // Afficher la modal d'acceptation
+        function showConfirmModal(candidatureId, nom, email, logement, loyer) {
+            currentCandidatureId = candidatureId;
+            document.getElementById('modalNom').textContent = nom;
+            document.getElementById('modalEmail').textContent = email;
+            document.getElementById('modalLogement').textContent = logement;
+            document.getElementById('modalLoyer').textContent = loyer + '€/mois';
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Fermer la modal d'acceptation
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            currentCandidatureId = null;
+        }
+
+        // Afficher la modal de refus
+        function showRefuseModal(candidatureId, nom, email, logement) {
+            currentCandidatureId = candidatureId;
+            document.getElementById('modalNomRefus').textContent = nom;
+            document.getElementById('modalEmailRefus').textContent = email;
+            document.getElementById('modalLogementRefus').textContent = logement;
+            document.getElementById('messageRefus').value = '';
+            document.getElementById('refuseModal').classList.add('active');
+        }
+
+        // Fermer la modal de refus
+        function closeRefuseModal() {
+            document.getElementById('refuseModal').classList.remove('active');
+            currentCandidatureId = null;
+        }
+
+        // Fermer si clic en dehors
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('confirmModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            document.getElementById('refuseModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeRefuseModal();
+                }
+            });
+        });
+
+        // Confirmer l'acceptation
+        async function confirmerAcceptation() {
+            if (!currentCandidatureId) return;
+            
+            try {
+                await supabaseClient
+                    .from('candidatures')
+                    .update({ statut: 'acceptee' })
+                    .eq('id', currentCandidatureId);
+                
+                closeModal();
+                window.location.href = `match-confirmation.html?match_id=${currentCandidatureId}`;
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('Erreur lors de l\'acceptation');
+            }
+        }
+
+        // Confirmer le refus
+        async function confirmerRefus() {
+            if (!currentCandidatureId) return;
+            
+            const message = document.getElementById('messageRefus').value;
+            
+            try {
+                await supabaseClient
+                    .from('candidatures')
+                    .update({ statut: 'refusee' })
+                    .eq('id', currentCandidatureId);
+                
+                // TODO: Envoyer email au candidat avec le message si fourni
+                
+                closeRefuseModal();
+                location.reload();
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('Erreur lors du refus');
+            }
+        }
+
+        // Charger annonces
+        async function chargerAnnonces(userId) {
+            try {
+                const { data: annonces } = await supabaseClient
+                    .from('annonces')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                if (annonces && annonces.length > 0) {
+                    afficherAnnonces(annonces);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+            }
+        }
+
+        // Afficher annonces
+        function afficherAnnonces(annonces) {
+            document.getElementById('emptyAnnonces').style.display = 'none';
+            
+            const container = document.getElementById('annoncesContainer');
+            const titleElement = document.getElementById('annoncesTitle');
+            
+            // Titre dynamique
+            titleElement.textContent = annonces.length === 1 ? 'Mon annonce' : 'Mes annonces';
+            
+            // Affichage selon le nombre d'annonces
+            if (annonces.length === 1) {
+                // UNE SEULE ANNONCE → Affichage en card large
+                const a = annonces[0];
+                const statusClass = a.disponible ? 'status-active' : 'status-inactive';
+                const statusText = a.disponible ? '✅ Active' : '⏸️ Pause';
+                const imageHtml = a.photos && a.photos.length > 0 
+                    ? `<img src="${a.photos[0]}" alt="${a.titre}">`
+                    : '<div style="font-size: 80px; color: white;">🏠</div>';
+
+                container.innerHTML = `
+                    <div class="annonce-single">
+                        <div class="annonce-single-container">
+                            <div class="annonce-single-image">
+                                ${imageHtml}
+                            </div>
+                            <div class="annonce-single-content">
+                                <div class="annonce-single-header">
+                                    <div>
+                                        <div class="annonce-single-price">${a.prix}€/mois</div>
+                                        <div class="annonce-single-title">${a.titre}</div>
+                                        <div class="annonce-single-location">${a.ville}</div>
+                                    </div>
+                                    <div class="annonce-status ${statusClass}">${statusText}</div>
+                                </div>
+                                
+                                <div class="annonce-single-details">
+                                    <div class="annonce-single-detail">
+                                        <strong>Surface :</strong> ${a.surface || '-'} m²
+                                    </div>
+                                    <div class="annonce-single-detail">
+                                        <strong>Type :</strong> ${a.type_logement || '-'}
+                                    </div>
+                                    <div class="annonce-single-detail">
+                                        <strong>Chambres :</strong> ${a.nb_chambres || '-'}
+                                    </div>
+                                    <div class="annonce-single-detail">
+                                        <strong>Disponible :</strong> ${a.disponible ? 'Oui' : 'Non'}
+                                    </div>
+                                </div>
+                                
+                                <div class="annonce-single-actions">
+                                    <a href="modifier-annonce.html?id=${a.id}" class="btn-annonce btn-edit">
+                                        Modifier l'annonce
+                                    </a>
+                                    <a href="logement.html?id=${a.id}" class="btn-annonce btn-view">
+                                        Voir l'annonce
+                                    </a>
+                                    <button class="btn-annonce btn-toggle-status" onclick="toggleStatut('${a.id}', ${a.disponible})">
+                                        ${a.disponible ? '⏸️ Mettre en pause' : '▶️ Réactiver'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // PLUSIEURS ANNONCES → Affichage en grid
+                container.innerHTML = `
+                    <div class="annonces-grid">
+                        ${annonces.map(a => {
+                            const statusClass = a.disponible ? 'status-active' : 'status-inactive';
+                            const statusText = a.disponible ? '✅ Active' : '⏸️ Pause';
+                            const imageHtml = a.photos && a.photos.length > 0 
+                                ? `<img src="${a.photos[0]}" alt="${a.titre}">`
+                                : '🏠';
+
+                            return `
+                                <a href="logement.html?id=${a.id}" class="annonce-card">
+                                    <div class="annonce-image">
+                                        ${imageHtml}
+                                        <div class="annonce-status ${statusClass}">${statusText}</div>
+                                    </div>
+                                    <div class="annonce-content">
+                                        <div class="annonce-price">${a.prix}€/mois</div>
+                                        <div class="annonce-title">${a.titre}</div>
+                                        <div class="annonce-location">${a.ville}</div>
+                                    </div>
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // Toggle statut annonce
+        async function toggleStatut(annonceId, currentStatus) {
+            const newStatus = !currentStatus;
+            const action = newStatus ? 'réactiver' : 'mettre en pause';
+            
+            if (!confirm(`Voulez-vous ${action} cette annonce ?`)) return;
+            
+            try {
+                await supabaseClient
+                    .from('annonces')
+                    .update({ disponible: newStatus })
+                    .eq('id', annonceId);
+                
+                location.reload();
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la mise à jour');
+            }
+        }
+
+        // Charger notifications
+        async function chargerNotifications(userId) {
+            try {
+                const { data: messages } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .eq('destinataire_id', userId)
+                    .eq('lu', false);
+
+                if (messages && messages.length > 0) {
+                    const badge = document.getElementById('notificationBadge');
+                    badge.textContent = messages.length;
+                    badge.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Init
+        if (typeof supabaseClient !== 'undefined') {
+            chargerProfil();
+        }
+    </script>
+</body>
+</html>

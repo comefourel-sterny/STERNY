@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Matching</title>
+</head>
+<body>
+    <h1>Test de l'algorithme de matching</h1>
+    <div id="resultats"></div>
+
+    <script src="matching.js"></script>
+    <script>
+        // Test 1 : Complémentaires parfaits (Paul et Sophie)
+        const paulDates = ["2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26"];
+        const sophieDates = ["2026-01-08", "2026-01-15", "2026-01-22", "2026-01-29"];
+        const score1 = calculerCompatibilite(paulDates, sophieDates);
+        
+        // Test 2 : Totalement incompatibles (mêmes dates)
+        const marie = ["2026-01-05", "2026-01-12"];
+        const lucas = ["2026-01-05", "2026-01-12"];
+        const score2 = calculerCompatibilite(marie, lucas);
+        
+        // Test 3 : Partiellement compatibles
+        const alice = ["2026-01-05", "2026-01-12", "2026-01-19"];
+        const bob = ["2026-01-12", "2026-01-19", "2026-01-26"];
+        const score3 = calculerCompatibilite(alice, bob);
+        
+        // Afficher les résultats
+        const resultats = document.getElementById('resultats');
+        resultats.innerHTML = `
+            <h2>Résultats des tests :</h2>
+            <p><strong>Test 1 - Complémentaires parfaits :</strong> Score = ${score1.toFixed(2)} ${score1 === 1 ? '✅ Match parfait !' : '❌'}</p>
+            <p><strong>Test 2 - Incompatibles totaux :</strong> Score = ${score2.toFixed(2)} ${score2 === 0 ? '✅ Correct' : '❌'}</p>
+            <p><strong>Test 3 - Partiellement compatibles :</strong> Score = ${score3.toFixed(2)} ${score3 > 0 && score3 < 1 ? '✅ Correct' : '❌'}</p>
+        `;
+    </script>
+</body>
+</html>

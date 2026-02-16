@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>État des lieux d'entrée - EASWAP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            border: 1px solid #E5E7EB;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* PROGRESS */
+        .progress-container {
+            padding: 30px 40px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 100%;
+            transition: width 0.5s;
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            flex: 1;
+        }
+
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .progress-circle,
+        .progress-step.completed .progress-circle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 40px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .alert-text {
+            color: #1e40af;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* SECTIONS */
+        .section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .section-toggle {
+            font-size: 24px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+        }
+
+        .section.collapsed .section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            transition: max-height 0.3s;
+        }
+
+        .section.collapsed .section-content {
+            display: none;
+        }
+
+        /* CHECKLIST */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .checklist-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .checklist-item-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .state-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .state-btn {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: #6b7280;
+        }
+
+        .state-btn:hover {
+            border-color: #667eea;
+        }
+
+        .state-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* PHOTOS */
+        .photos-section {
+            background: white;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .photos-section:hover {
+            border-color: #667eea;
+            background: #f9fafb;
+        }
+
+        .photos-section input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .photos-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f3f4f6;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .photo-remove:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        /* COMPTEURS */
+        .compteurs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .compteur-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .compteur-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compteur-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .compteur-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* OBSERVATIONS */
+        .observations-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            background: white;
+        }
+
+        .observations-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* SIGNATURES */
+        .signatures-section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .signature-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .signature-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .signature-checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .signature-checkbox-container:hover {
+            background: #f3f4f6;
+        }
+
+        .signature-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .signature-label {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .signature-date {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        /* ACTIONS */
+        .actions-container {
+            padding: 30px 40px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .btn-back {
+            background: white;
+            color: #6b7280;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header, .content, .actions-container {
+                padding: 25px;
+            }
+
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .signatures-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-container {
+                flex-direction: column-reverse;
+            }
+
+            .btn-back, .btn-primary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 EASWAP</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📸 État des lieux d'entrée</h1>
+            <p>Inspectez le logement et prenez des photos avant l'emménagement</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill"></div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">✓</div>
+                    <div class="progress-label">Match</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">✓</div>
+                    <div class="progress-label">Contrat</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">✓</div>
+                    <div class="progress-label">Paiement</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">État des lieux</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- ALERT -->
+            <div class="alert-info">
+                <div class="alert-icon">ℹ️</div>
+                <div class="alert-content">
+                    <div class="alert-title">À faire le jour de la remise des clés</div>
+                    <div class="alert-text">
+                        Inspectez chaque pièce ensemble (locataire et propriétaire). Prenez des photos et notez l'état de chaque élément. Cet état des lieux servira de référence à la sortie.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION SALON -->
+            <div class="section" id="section-salon">
+                <div class="section-header" onclick="toggleSection('salon')">
+                    <div class="section-title">
+                        <span class="section-icon">🛋️</span>
+                        Salon
+                    </div>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Sol</div>
+                            <div class="state-buttons" data-piece="salon" data-element="sol">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Murs</div>
+                            <div class="state-buttons" data-piece="salon" data-element="murs">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Plafond</div>
+                            <div class="state-buttons" data-piece="salon" data-element="plafond">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Fenêtres</div>
+                            <div class="state-buttons" data-piece="salon" data-element="fenetres">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION CUISINE -->
+            <div class="section" id="section-cuisine">
+                <div class="section-header" onclick="toggleSection('cuisine')">
+                    <div class="section-title">
+                        <span class="section-icon">🍳</span>
+                        Cuisine
+                    </div>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Sol</div>
+                            <div class="state-buttons" data-piece="cuisine" data-element="sol">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Plaques de cuisson</div>
+                            <div class="state-buttons" data-piece="cuisine" data-element="plaques">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Réfrigérateur</div>
+                            <div class="state-buttons" data-piece="cuisine" data-element="frigo">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Évier & robinetterie</div>
+                            <div class="state-buttons" data-piece="cuisine" data-element="evier">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION CHAMBRE -->
+            <div class="section" id="section-chambre">
+                <div class="section-header" onclick="toggleSection('chambre')">
+                    <div class="section-title">
+                        <span class="section-icon">🛏️</span>
+                        Chambre
+                    </div>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Sol</div>
+                            <div class="state-buttons" data-piece="chambre" data-element="sol">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Murs</div>
+                            <div class="state-buttons" data-piece="chambre" data-element="murs">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Lit</div>
+                            <div class="state-buttons" data-piece="chambre" data-element="lit">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Armoire/Placard</div>
+                            <div class="state-buttons" data-piece="chambre" data-element="armoire">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION SALLE DE BAIN -->
+            <div class="section" id="section-sdb">
+                <div class="section-header" onclick="toggleSection('sdb')">
+                    <div class="section-title">
+                        <span class="section-icon">🚿</span>
+                        Salle de bain
+                    </div>
+                    <span class="section-toggle">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Sol</div>
+                            <div class="state-buttons" data-piece="sdb" data-element="sol">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Douche/Baignoire</div>
+                            <div class="state-buttons" data-piece="sdb" data-element="douche">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Lavabo & robinetterie</div>
+                            <div class="state-buttons" data-piece="sdb" data-element="lavabo">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-item-label">Miroir</div>
+                            <div class="state-buttons" data-piece="sdb" data-element="miroir">
+                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPTEURS -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">⚡</span>
+                        Relevés des compteurs
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="compteurs-grid">
+                        <div class="compteur-item">
+                            <div class="compteur-label">⚡ Électricité</div>
+                            <input type="number" class="compteur-input" id="compteur-elec" placeholder="12345">
+                        </div>
+                        <div class="compteur-item">
+                            <div class="compteur-label">🔥 Gaz</div>
+                            <input type="number" class="compteur-input" id="compteur-gaz" placeholder="6789">
+                        </div>
+                        <div class="compteur-item">
+                            <div class="compteur-label">💧 Eau</div>
+                            <input type="number" class="compteur-input" id="compteur-eau" placeholder="4567">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHOTOS -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">📸</span>
+                        Photos du logement
+                    </div>
+                </div>
+                <div class="section-content">
+                    <label for="photosInput" class="photos-section">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Ajouter des photos</div>
+                        <div class="upload-subtext">Prenez des photos de chaque pièce et équipement</div>
+                        <input type="file" id="photosInput" accept="image/*" multiple onchange="handlePhotos(event)">
+                    </label>
+                    <div class="photos-preview" id="photosPreview"></div>
+                </div>
+            </div>
+
+            <!-- OBSERVATIONS -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">📝</span>
+                        Observations générales
+                    </div>
+                </div>
+                <div class="section-content">
+                    <textarea class="observations-textarea" id="observations" placeholder="Notez ici toute observation particulière (rayures, taches, défauts visibles...)"></textarea>
+                </div>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div class="signatures-section">
+                <h3 style="text-align: center; font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">✍️ Signatures</h3>
+                <p style="text-align: center; color: #6b7280; margin-bottom: 20px;">Les deux parties doivent signer pour valider l'état des lieux</p>
+                
+                <div class="signatures-grid">
+                    <div class="signature-box">
+                        <div class="signature-title">Locataire</div>
+                        <div class="signature-checkbox-container" onclick="toggleCheckbox('signatureLocataire')">
+                            <input type="checkbox" class="signature-checkbox" id="signatureLocataire">
+                            <label for="signatureLocataire" class="signature-label">Je certifie avoir inspecté le logement</label>
+                        </div>
+                        <div class="signature-date" id="dateLocataire">--/--/----</div>
+                    </div>
+                    
+                    <div class="signature-box">
+                        <div class="signature-title">Propriétaire</div>
+                        <div class="signature-checkbox-container" onclick="toggleCheckbox('signatureProprietaire')">
+                            <input type="checkbox" class="signature-checkbox" id="signatureProprietaire">
+                            <label for="signatureProprietaire" class="signature-label">Je certifie l'état du logement</label>
+                        </div>
+                        <div class="signature-date" id="dateProprietaire">--/--/----</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions-container">
+            <a href="paiement-initial.html?match_id=xxx" class="btn-back" id="btnRetour">
+                ← Retour
+            </a>
+            <button class="btn-primary" id="btnValider" disabled onclick="validerEtatDesLieux()">
+                ✅ Valider et finaliser
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 40px;">
+        <div class="container">
+            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const matchId = urlParams.get('match_id');
+
+        let checklistData = {};
+        let photosData = [];
+
+        // Toggle section
+        function toggleSection(sectionId) {
+            const section = document.getElementById('section-' + sectionId);
+            section.classList.toggle('collapsed');
+        }
+
+        // Select state
+        function selectState(button, state) {
+            const container = button.parentElement;
+            const piece = container.getAttribute('data-piece');
+            const element = container.getAttribute('data-element');
+            
+            // Désélectionner tous
+            container.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Sélectionner celui-ci
+            button.classList.add('active');
+            
+            // Sauvegarder
+            if (!checklistData[piece]) checklistData[piece] = {};
+            checklistData[piece][element] = state;
+            
+            console.log('Checklist:', checklistData);
+            verifierFormulaire();
+        }
+
+        // Toggle checkbox
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            checkbox.checked = !checkbox.checked;
+            
+            // Mettre à jour la date
+            if (checkbox.checked) {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('fr-FR');
+                if (id === 'signatureLocataire') {
+                    document.getElementById('dateLocataire').textContent = dateStr;
+                } else {
+                    document.getElementById('dateProprietaire').textContent = dateStr;
+                }
+            }
+            
+            verifierFormulaire();
+        }
+
+        // Handle photos
+        function handlePhotos(event) {
+            const files = Array.from(event.target.files);
+            const preview = document.getElementById('photosPreview');
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photosData.push({
+                        name: file.name,
+                        data: e.target.result
+                    });
+                    
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'photo-preview';
+                    photoDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <div class="photo-remove" onclick="removePhoto(${photosData.length - 1})">×</div>
+                    `;
+                    preview.appendChild(photoDiv);
+                    
+                    verifierFormulaire();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Remove photo
+        function removePhoto(index) {
+            photosData.splice(index, 1);
+            const preview = document.getElementById('photosPreview');
+            preview.innerHTML = '';
+            photosData.forEach((photo, i) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-preview';
+                photoDiv.innerHTML = `
+                    <img src="${photo.data}" alt="${photo.name}">
+                    <div class="photo-remove" onclick="removePhoto(${i})">×</div>
+                `;
+                preview.appendChild(photoDiv);
+            });
+            verifierFormulaire();
+        }
+
+        // Vérifier formulaire
+        function verifierFormulaire() {
+            const signLocataire = document.getElementById('signatureLocataire').checked;
+            const signProprietaire = document.getElementById('signatureProprietaire').checked;
+            const btnValider = document.getElementById('btnValider');
+            
+            // Pour valider : au moins les 2 signatures
+            btnValider.disabled = !(signLocataire && signProprietaire);
+        }
+
+        // Valider état des lieux
+        async function validerEtatDesLieux() {
+            const btnValider = document.getElementById('btnValider');
+            btnValider.disabled = true;
+            btnValider.textContent = '⏳ Validation en cours...';
+            
+            try {
+                // Récupérer compteurs
+                const compteurs = {
+                    electricite: document.getElementById('compteur-elec').value || null,
+                    gaz: document.getElementById('compteur-gaz').value || null,
+                    eau: document.getElementById('compteur-eau').value || null
+                };
+                
+                // Récupérer observations
+                const observations = document.getElementById('observations').value;
+                
+                // TODO: Sauvegarder dans Supabase
+                // Table: etats_des_lieux
+                // Champs: candidature_id, type='entree', checklist, photos, compteurs, observations, signatures
+                
+                console.log('État des lieux:', {
+                    checklist: checklistData,
+                    photos: photosData.length + ' photos',
+                    compteurs,
+                    observations
+                });
+                
+                // Simuler sauvegarde
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // TODO: Mettre à jour statut candidature -> 'actif'
+                
+                // Redirection vers match actif
+                window.location.href = `match-actif.html?match_id=${matchId}`;
+                
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur lors de la validation');
+                btnValider.disabled = false;
+                btnValider.textContent = '✅ Valider et finaliser';
+            }
+        }
+
+        // Gérer dashboard
+        async function gererDashboard() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (userData?.type_user === 'hote') {
+                    dashboardLink.href = 'dashboard-hote.html';
+                } else if (userData?.type_user === 'proprietaire') {
+                    dashboardLink.href = 'dashboard-proprietaire.html';
+                } else {
+                    dashboardLink.href = 'dashboard-locataire.html';
+                }
+            }
+        }
+
+        // Init
+        if (typeof supabaseClient !== 'undefined') {
+            gererDashboard();
+        }
+
+        // Mettre à jour liens
+        if (matchId) {
+            document.getElementById('btnRetour').href = `paiement-initial.html?match_id=${matchId}`;
+        }
+    </script>
+</body>
+</html>

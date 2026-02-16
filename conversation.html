@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation - EASWAP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+        
+        /* NAVIGATION */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        
+        .btn-back {
+            padding: 10px 20px;
+            background: #F3F4F6;
+            color: #4a5568;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #E5E7EB;
+        }
+
+        /* CONTAINER */
+        .conversation-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+            height: calc(100vh - 72px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER CONVERSATION */
+        .conversation-header {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 20px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .contact-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .contact-status {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* MESSAGES AREA */
+        .messages-area {
+            background: white;
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.received .message-bubble {
+            background: #F3F4F6;
+            color: #1a1a1a;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .message.sent .message-time {
+            text-align: right;
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 20px 24px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            resize: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-send {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* EMPTY STATE */
+        .empty-messages {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9CA3AF;
+        }
+
+        .empty-messages-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-messages-text {
+            font-size: 16px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav .container {
+                padding: 0 20px;
+            }
+
+            .conversation-container {
+                padding: 0;
+                height: calc(100vh - 72px);
+            }
+
+            .conversation-header {
+                border-radius: 0;
+            }
+
+            .input-area {
+                border-radius: 0;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">EASWAP</a>
+            <a href="javascript:history.back()" class="btn-back">← Retour</a>
+        </div>
+    </nav>
+
+    <!-- CONVERSATION -->
+    <div class="conversation-container">
+        <!-- HEADER -->
+        <div class="conversation-header">
+            <div class="contact-avatar" id="contactAvatar">?</div>
+            <div class="contact-info">
+                <div class="contact-name" id="contactName">Chargement...</div>
+                <div class="contact-status" id="contactStatus">En ligne</div>
+            </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="messages-area" id="messagesArea">
+            <div class="empty-messages">
+                <div class="empty-messages-icon"></div>
+                <div class="empty-messages-text">Aucun message pour le moment</div>
+            </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-area">
+            <div class="input-container">
+                <textarea 
+                    class="input-field" 
+                    id="messageInput" 
+                    placeholder="Écrivez votre message..."
+                    rows="1"></textarea>
+                <button class="btn-send" id="btnSend" onclick="envoyerMessage()">
+                    Envoyer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let contactUser = null;
+        let conversationId = null;
+
+        // Initialisation
+        async function init() {
+            try {
+                // Récupérer l'utilisateur connecté
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+
+                // Récupérer les infos de l'utilisateur connecté
+                const { data: currentUserData } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                currentUser = currentUserData;
+
+                // Récupérer l'ID du contact depuis l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const contactId = urlParams.get('user_id');
+
+                if (!contactId) {
+                    alert('Aucun contact spécifié');
+                    window.history.back();
+                    return;
+                }
+
+                // Charger les infos du contact
+                await chargerContact(contactId);
+
+                // Charger les messages
+                await chargerMessages();
+
+                // Auto-resize du textarea
+                setupTextareaAutoResize();
+
+                // Enter pour envoyer
+                setupEnterToSend();
+
+            } catch (error) {
+                console.error('❌ Erreur init:', error);
+            }
+        }
+
+        // Charger les infos du contact
+        async function chargerContact(contactId) {
+            try {
+                const { data: contact } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', contactId)
+                    .single();
+
+                if (contact) {
+                    contactUser = contact;
+                    document.getElementById('contactName').textContent = 
+                        `${contact.prenom} ${contact.nom}`;
+                    
+                    const initials = `${contact.prenom[0]}${contact.nom[0]}`.toUpperCase();
+                    document.getElementById('contactAvatar').textContent = initials;
+                }
+            } catch (error) {
+                console.error('❌ Erreur chargement contact:', error);
+            }
+        }
+
+        // Charger les messages
+        async function chargerMessages() {
+            try {
+                // Récupérer tous les messages entre les 2 utilisateurs
+                const { data: messages } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(`and(expediteur_id.eq.${currentUser.id},destinataire_id.eq.${contactUser.id}),and(expediteur_id.eq.${contactUser.id},destinataire_id.eq.${currentUser.id})`)
+                    .order('created_at', { ascending: true });
+
+                if (messages && messages.length > 0) {
+                    afficherMessages(messages);
+                }
+
+                // Marquer les messages comme lus
+                await marquerMessagesLus();
+
+            } catch (error) {
+                console.error('❌ Erreur chargement messages:', error);
+            }
+        }
+
+        // Afficher les messages
+        function afficherMessages(messages) {
+            const container = document.getElementById('messagesArea');
+            container.innerHTML = '';
+
+            messages.forEach(msg => {
+                const isSent = msg.expediteur_id === currentUser.id;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+
+                const avatar = isSent 
+                    ? `${currentUser.prenom[0]}${currentUser.nom[0]}`.toUpperCase()
+                    : `${contactUser.prenom[0]}${contactUser.nom[0]}`.toUpperCase();
+
+                const time = new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${msg.contenu}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+
+                container.appendChild(messageDiv);
+            });
+
+            // Scroll vers le bas
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Envoyer un message
+        async function envoyerMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            try {
+                // Désactiver le bouton
+                document.getElementById('btnSend').disabled = true;
+
+                // Insérer le message
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .insert([{
+                        expediteur_id: currentUser.id,
+                        destinataire_id: contactUser.id,
+                        contenu: message,
+                        lu: false
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // Vider l'input
+                input.value = '';
+                input.style.height = 'auto';
+
+                // Recharger les messages
+                await chargerMessages();
+
+            } catch (error) {
+                console.error('❌ Erreur envoi:', error);
+                alert('Erreur lors de l\'envoi du message');
+            } finally {
+                // Réactiver le bouton
+                document.getElementById('btnSend').disabled = false;
+                input.focus();
+            }
+        }
+
+        // Marquer les messages comme lus
+        async function marquerMessagesLus() {
+            try {
+                await supabaseClient
+                    .from('messages')
+                    .update({ lu: true })
+                    .eq('destinataire_id', currentUser.id)
+                    .eq('expediteur_id', contactUser.id)
+                    .eq('lu', false);
+            } catch (error) {
+                console.error('Erreur marquer lus:', error);
+            }
+        }
+
+        // Auto-resize textarea
+        function setupTextareaAutoResize() {
+            const textarea = document.getElementById('messageInput');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+        }
+
+        // Enter pour envoyer
+        function setupEnterToSend() {
+            const textarea = document.getElementById('messageInput');
+            textarea.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    envoyerMessage();
+                }
+            });
+        }
+
+        // Init au chargement
+        if (typeof supabaseClient !== 'undefined') {
+            init();
+        }
+    </script>
+</body>
+</html>

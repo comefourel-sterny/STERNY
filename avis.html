@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avis & Évaluations - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        /* HEADER DASHBOARD — identique dashboard-hote */
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 0;
+        }
+        .dashboard-header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-logout {
+            padding: 10px 20px;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-logout:hover { background: var(--gray-300); }
+
+        /* GRANDE BARRE VIOLETTE PROFIL — identique dashboard-hote */
+        .profile-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+        .profile-hero .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-photo .initials {
+            font-weight: 700;
+            color: #667eea;
+        }
+        .profile-info { flex: 1; }
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .profile-details {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+
+        /* Moyenne étoiles dans le hero */
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .hero-stars { color: #fbbf24; font-size: 20px; letter-spacing: 2px; }
+        .hero-rating-text { font-size: 15px; opacity: 0.9; }
+
+        .profile-actions { display: flex; gap: 12px; }
+        .btn-profile {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+
+        /* CONTENU — même max-width 1200px */
+        .content-section {
+            max-width: 1200px;
+            margin: 30px auto 50px;
+            padding: 0 20px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { background: var(--gray-100); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* CARTE FORMULAIRE — design structuré avec sections */
+        .avis-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .avis-card-header {
+            background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05));
+            padding: 24px 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .avis-card-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 6px;
+        }
+        .avis-card-header p {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin: 0;
+        }
+        
+        .avis-card-body {
+            padding: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title-icon {
+            font-size: 16px;
+        }
+
+        /* Labels + champs */
+        .field-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .field-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--gray-900);
+            background: white;
+            margin-bottom: 22px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .field-select:focus { outline: none; border-color: #667eea; }
+
+        .field-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--gray-900);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 22px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .field-textarea:focus { outline: none; border-color: #667eea; }
+        .field-textarea::placeholder { color: var(--gray-400); }
+
+        /* ÉTOILES INTERACTIVES — design moderne plus gros et visible */
+        .stars-section { margin: 0; }
+        .stars-container {
+            background: #fafbfc;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .stars-interactive {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .star-btn {
+            background: none;
+            border: none;
+            width: 56px;
+            height: 56px;
+            cursor: pointer;
+            transition: transform 0.15s;
+            padding: 0;
+            position: relative;
+        }
+        .star-btn:hover { transform: scale(1.15); }
+        .star-btn svg {
+            width: 100%;
+            height: 100%;
+            stroke: #d1d5db;
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.2s;
+        }
+        .star-btn.active svg {
+            fill: #fbbf24;
+            stroke: #f59e0b;
+        }
+        .star-btn:hover svg {
+            stroke: #fbbf24;
+        }
+        .stars-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            min-height: 24px;
+        }
+        .stars-label-empty {
+            color: var(--gray-500);
+            font-weight: 400;
+        }
+
+        /* Bouton submit — même btn-primary que dashboard-hote */
+        .btn-primary {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-submit-full { width: 100%; text-align: center; }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Message succès */
+        .success-msg {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 18px;
+        }
+        .success-msg.show { display: block; }
+
+        /* LISTE AVIS — même style que conversation-item du dashboard */
+        .avis-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .avis-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+        .avis-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+        .avis-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .avis-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .avis-content { flex: 1; min-width: 0; }
+        .avis-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .avis-name { font-weight: 600; color: var(--gray-900); font-size: 15px; }
+        .avis-date { font-size: 13px; color: var(--gray-600); }
+        .avis-stars { color: #fbbf24; font-size: 16px; margin-top: 5px; letter-spacing: 1px; }
+        .avis-comment { font-size: 14px; color: var(--gray-600); margin-top: 6px; line-height: 1.5; }
+        .avis-annonce { font-size: 13px; color: var(--primary); margin-top: 6px; font-weight: 600; }
+
+        /* ÉTAT VIDE — identique dashboard-hote */
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .empty-icon { font-size: 72px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-title { font-size: 20px; font-weight: 600; color: var(--gray-900); margin-bottom: 10px; }
+        .empty-text { color: var(--gray-600); margin-bottom: 25px; }
+
+        /* Loading */
+        .loading { text-align: center; padding: 50px 20px; color: var(--gray-600); font-size: 16px; }
+
+        /* RESPONSIVE — identique dashboard-hote */
+        @media (max-width: 768px) {
+            .profile-hero .container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-profile { width: 100%; }
+            .avis-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .avis-header { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="dashboard-header">
+    <div class="container">
+        <a href="index.html" class="header-logo">🏠 AlternHome</a>
+        <div class="header-actions">
+            <a href="javascript:history.back()" class="btn-logout">← Retour</a>
+        </div>
+    </div>
+</div>
+
+<!-- BARRE VIOLETTE PROFIL -->
+<div class="profile-hero">
+    <div class="container">
+        <div class="profile-photo" id="heroPhoto">
+            <div class="initials" id="heroInitials">?</div>
+        </div>
+        <div class="profile-info">
+            <div class="profile-name" id="heroName">Chargement...</div>
+            <div class="profile-details" id="heroSchool">...</div>
+            <div class="hero-rating" id="heroRating" style="display:none;">
+                <span class="hero-stars" id="heroStars">☆☆☆☆☆</span>
+                <span class="hero-rating-text" id="heroRatingText">Aucun avis</span>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <a href="javascript:history.back()" class="btn-profile">← Retour</a>
+            <a href="#" id="btnVoirProfil" class="btn-profile">👤 Voir le profil</a>
+        </div>
+    </div>
+</div>
+
+<!-- CONTENU -->
+<div class="content-section">
+
+    <!-- TABS -->
+    <div class="tabs" id="tabsContainer">
+        <button class="tab-btn active" onclick="switchTab('donner')" id="tabDonner">✏️ Laisser un avis</button>
+        <button class="tab-btn" onclick="switchTab('voir')" id="tabVoir">👀 Avis reçus</button>
+    </div>
+
+    <!-- PANEL : DONNER UN AVIS -->
+    <div id="panelDonner">
+        <div class="avis-card">
+            <div class="avis-card-header">
+                <h3>✏️ Laisser un avis</h3>
+                <p>Évalue ton expérience de colocation</p>
+            </div>
+            
+            <div class="avis-card-body">
+                <!-- SECTION 1 : ANNONCE -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-title-icon">🏠</span>
+                        Annonce concernée
+                    </div>
+                    <select class="field-select" id="selectAnnonce">
+                        <option value="">Chargement des annonces...</option>
+                    </select>
+                </div>
+
+                <!-- SECTION 2 : NOTE -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-title-icon">⭐</span>
+                        Ta note globale
+                    </div>
+                    <div class="stars-container">
+                        <div class="stars-interactive" id="starsInteractive">
+                            <button class="star-btn" data-value="1" onclick="setNote(1)">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                            <button class="star-btn" data-value="2" onclick="setNote(2)">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                            <button class="star-btn" data-value="3" onclick="setNote(3)">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                            <button class="star-btn" data-value="4" onclick="setNote(4)">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                            <button class="star-btn" data-value="5" onclick="setNote(5)">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="stars-label stars-label-empty" id="starsLabel">Clique sur une étoile pour noter</div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3 : COMMENTAIRE -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-title-icon">💬</span>
+                        Ton commentaire
+                    </div>
+                    <textarea class="field-textarea" id="commentaire" placeholder="Décris ton expérience (propreté, ambiance, communication...)"></textarea>
+                </div>
+
+                <!-- BOUTON SUBMIT -->
+                <button class="btn-primary btn-submit-full" id="btnSubmit" onclick="submitAvis()" disabled>
+                    <span id="btnText">📤 Envoyer mon avis</span>
+                </button>
+                <div class="success-msg" id="successMsg">✅ Ton avis a bien été enregistré !</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL : VOIR LES AVIS -->
+    <div id="panelVoir" style="display:none;">
+        <div id="avisList" class="avis-list">
+            <div class="loading">Chargement des avis...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─── ÉTAT ───
+let currentUser = null;
+let targetUserId = null;
+let noteSelectionnee = 0;
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', async () => {
+    // Attendre que supabaseClient soit disponible
+    let attempts = 0;
+    while (typeof supabaseClient === 'undefined' && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    
+    if (typeof supabaseClient === 'undefined') {
+        alert('Erreur de chargement. Rafraîchis la page.');
+        return;
+    }
+    
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { window.location.href = 'connexion.html'; return; }
+    currentUser = user;
+
+    const params = new URLSearchParams(window.location.search);
+    targetUserId = params.get('user_id');
+
+    if (!targetUserId) {
+        targetUserId = currentUser.id;
+    }
+
+    await chargerProfil(targetUserId);
+    await chargerAnnonces();
+
+    // Définir le lien "Voir le profil"
+    document.getElementById('btnVoirProfil').href = `profil.html?user_id=${targetUserId}`;
+
+    // Si même user → cacher "Laisser un avis", aller sur "Avis reçus"
+    if (targetUserId === currentUser.id) {
+        document.getElementById('tabDonner').style.display = 'none';
+        switchTab('voir');
+    }
+});
+
+// ─── CHARGER PROFIL CIBLE ───
+async function chargerProfil(userId) {
+    const { data } = await supabaseClient
+        .from('users')
+        .select('prenom, nom, ecole, annee_etudes, photo_profil_url')
+        .eq('id', userId)
+        .single();
+
+    if (data) {
+        document.getElementById('heroName').textContent = `${data.prenom} ${data.nom}`;
+        document.getElementById('heroSchool').textContent = data.ecole ? `${data.ecole} — ${data.annee_etudes || ''}` : '';
+
+        if (data.photo_profil_url) {
+            document.getElementById('heroPhoto').innerHTML = `<img src="${data.photo_profil_url}" alt="Photo">`;
+        } else {
+            document.getElementById('heroInitials').textContent = `${data.prenom[0]}${data.nom[0]}`;
+        }
+    }
+
+    await chargerMoyenne(userId);
+}
+
+// ─── CHARGER MOYENNE ───
+async function chargerMoyenne(userId) {
+    const { data } = await supabaseClient
+        .from('avis')
+        .select('note')
+        .eq('profil_evalue_id', userId);
+
+    const heroRating = document.getElementById('heroRating');
+    heroRating.style.display = 'flex';
+
+    if (data && data.length > 0) {
+        const moy = data.reduce((sum, a) => sum + a.note, 0) / data.length;
+        const moyArrondi = Math.round(moy * 10) / 10;
+        document.getElementById('heroStars').textContent = genStars(moy);
+        document.getElementById('heroRatingText').textContent = `${moyArrondi}/5 — ${data.length} avis`;
+    } else {
+        document.getElementById('heroStars').textContent = '☆☆☆☆☆';
+        document.getElementById('heroRatingText').textContent = 'Aucun avis encore';
+    }
+}
+
+// ─── CHARGER ANNONCES du profil évalué ───
+async function chargerAnnonces() {
+    const { data } = await supabaseClient
+        .from('annonces')
+        .select('id, titre, ville')
+        .eq('user_id', targetUserId)
+        .order('created_at', { ascending: false });
+
+    const select = document.getElementById('selectAnnonce');
+    select.innerHTML = '<option value="">Sélectionnez une annonce</option>';
+
+    if (data && data.length > 0) {
+        data.forEach(a => {
+            select.innerHTML += `<option value="${a.id}">${a.titre} — ${a.ville || ''}</option>`;
+        });
+    } else {
+        select.innerHTML = '<option value="">Aucune annonce trouvée</option>';
+    }
+}
+
+// ─── ÉTOILES ───
+function setNote(valeur) {
+    noteSelectionnee = valeur;
+    const labels = ['', 'Très décevant 😞', 'Pas génial 😐', 'Correct 🙂', 'Bien 😊', 'Excellent ! 🌟'];
+    const labelEl = document.getElementById('starsLabel');
+    labelEl.textContent = labels[valeur];
+    labelEl.classList.remove('stars-label-empty');
+
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.value) <= valeur);
+    });
+
+    document.getElementById('btnSubmit').disabled = (noteSelectionnee === 0);
+}
+
+// Hover preview étoiles
+document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        const val = parseInt(btn.dataset.value);
+        document.querySelectorAll('.star-btn').forEach(b => {
+            const isActive = parseInt(b.dataset.value) <= val;
+            b.classList.toggle('active', isActive);
+        });
+    });
+    btn.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.star-btn').forEach(b => {
+            const isActive = parseInt(b.dataset.value) <= noteSelectionnee;
+            b.classList.toggle('active', isActive);
+        });
+    });
+});
+
+// ─── SOUMETTRE UN AVIS ───
+async function submitAvis() {
+    if (noteSelectionnee === 0) return;
+
+    const annonce_id = document.getElementById('selectAnnonce').value;
+    const commentaire = document.getElementById('commentaire').value.trim();
+
+    const btn = document.getElementById('btnSubmit');
+    const btnText = document.getElementById('btnText');
+    btn.disabled = true;
+    btnText.textContent = '⏳ Envoi en cours...';
+
+    const payload = {
+        evaluateur_id: currentUser.id,
+        profil_evalue_id: targetUserId,
+        note: noteSelectionnee,
+        commentaire: commentaire || null,
+    };
+    if (annonce_id) payload.annonce_id = annonce_id;
+
+    const { error } = await supabaseClient.from('avis').insert(payload);
+
+    if (error) {
+        console.error('Erreur insertion avis:', error);
+        btnText.textContent = '📤 Envoyer mon avis';
+        btn.disabled = false;
+        alert('Erreur lors de l\'envoi. Vérifie la console.');
+        return;
+    }
+
+    // Succès
+    document.getElementById('successMsg').classList.add('show');
+    btnText.textContent = '✅ Avis envoyé';
+
+    setTimeout(() => {
+        noteSelectionnee = 0;
+        setNote(0);
+        document.getElementById('commentaire').value = '';
+        document.getElementById('selectAnnonce').value = '';
+        document.getElementById('starsLabel').classList.add('stars-label-empty');
+        btnText.textContent = '📤 Envoyer mon avis';
+        btn.disabled = true;
+        document.getElementById('successMsg').classList.remove('show');
+        chargerMoyenne(targetUserId);
+    }, 2500);
+}
+
+// ─── CHARGER LES AVIS REÇUS ───
+async function chargerAvis() {
+    const container = document.getElementById('avisList');
+    container.innerHTML = '<div class="loading">Chargement...</div>';
+
+    const { data } = await supabaseClient
+        .from('avis')
+        .select(`
+            id, note, commentaire, created_at, annonce_id,
+            evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
+        `)
+        .eq('profil_evalue_id', targetUserId)
+        .order('created_at', { ascending: false });
+
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⭐</div>
+                <div class="empty-title">Pas encore d'avis</div>
+                <div class="empty-text">Les premiers avis apparaîtront ici après des séjours.</div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    for (const avis of data) {
+        const eval_ = avis.evaluateur;
+        const nom = eval_ ? `${eval_.prenom} ${eval_.nom}` : 'Utilisateur';
+        const photo = eval_?.photo_profil_url;
+        const initials = eval_ ? `${eval_.prenom[0]}${eval_.nom[0]}` : '?';
+        const date = new Date(avis.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const stars = genStars(avis.note);
+
+        const avatarHtml = photo
+            ? `<img src="${photo}" alt="${nom}">`
+            : initials;
+
+        container.innerHTML += `
+            <div class="avis-item">
+                <div class="avis-avatar">${avatarHtml}</div>
+                <div class="avis-content">
+                    <div class="avis-header">
+                        <span class="avis-name">${nom}</span>
+                        <span class="avis-date">${date}</span>
+                    </div>
+                    <div class="avis-stars">${stars}</div>
+                    ${avis.commentaire ? `<div class="avis-comment">${avis.commentaire}</div>` : ''}
+                    ${avis.annonce_id ? `<div class="avis-annonce">📄 Liée à une annonce</div>` : ''}
+                </div>
+            </div>`;
+    }
+}
+
+// ─── TABS ───
+function switchTab(tab) {
+    document.getElementById('tabDonner').classList.toggle('active', tab === 'donner');
+    document.getElementById('tabVoir').classList.toggle('active', tab === 'voir');
+    document.getElementById('panelDonner').style.display = tab === 'donner' ? 'block' : 'none';
+    document.getElementById('panelVoir').style.display = tab === 'voir' ? 'block' : 'none';
+
+    if (tab === 'voir') chargerAvis();
+}
+
+// ─── UTILITAIRES ───
+function genStars(note) {
+    const plein = Math.round(note);
+    return '★'.repeat(plein) + '☆'.repeat(5 - plein);
+}
+</script>
+</body>
+</html>

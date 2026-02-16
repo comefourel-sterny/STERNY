@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STERNY — Récapitulatif Projet Complet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f0f5;
+    color: #1e1e2e;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border-radius: 20px;
+    padding: 36px 40px;
+    color: white;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(30, 41, 59, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '🐦';
+    position: absolute;
+    top: 20px; right: 40px;
+    font-size: 80px;
+    opacity: 0.2;
+  }
+  .header h1 {
+    font-size: 30px;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 span { opacity: 0.7; font-weight: 500; }
+  .header p {
+    margin-top: 6px;
+    opacity: 0.85;
+    font-size: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .stat {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .stat .number {
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .stat .label {
+    font-size: 12px;
+    color: #7a7a8a;
+    margin-top: 3px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat.done .number { color: #22c55e; }
+  .stat.urgent .number { color: #ef4444; }
+  .stat.important .number { color: #f59e0b; }
+  .stat.later .number { color: #FF6B35; }
+
+  /* ===== SECTIONS ===== */
+  .section { margin-bottom: 28px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .section-icon {
+    font-size: 22px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 4px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .card.done { border-left-color: #22c55e; }
+  .card.urgent { border-left-color: #ef4444; }
+  .card.important { border-left-color: #f59e0b; }
+  .card.later { border-left-color: #FF6B35; }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1e1e2e;
+  }
+  .card-desc {
+    font-size: 14px;
+    color: #6a6a7a;
+    line-height: 1.5;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+  }
+  .badge.done { background: #dcfce7; color: #15803d; }
+  .badge.urgent { background: #fee2e2; color: #dc2626; }
+  .badge.important { background: #fef3c7; color: #d97706; }
+  .badge.later { background: #FFF4ED; color: #FF6B35; }
+
+  /* ===== COLOR PALETTE ===== */
+  .color-palette {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .color-box {
+    padding: 24px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+  }
+  .color-box.navy {
+    background: #1E293B;
+  }
+  .color-box.orange {
+    background: #FF6B35;
+  }
+  .color-box .color-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .color-box .color-code {
+    font-size: 13px;
+    opacity: 0.8;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ===== LISTS ===== */
+  ul.check-list {
+    list-style: none;
+    margin-top: 12px;
+  }
+  ul.check-list li {
+    padding: 8px 0;
+    padding-left: 28px;
+    position: relative;
+    font-size: 14px;
+    color: #4a4a5a;
+  }
+  ul.check-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #22c55e;
+    font-weight: 700;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .stats-bar {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .color-palette {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 32px 0;
+    color: #9a9aa5;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  
+  <!-- HEADER -->
+  <div class="header">
+    <h1>🐦 STERNY <span>— Plateforme de logement pour alternants</span></h1>
+    <p>Récapitulatif complet du projet • Mis à jour le 14 février 2026</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat done">
+      <div class="number">12</div>
+      <div class="label">Terminé</div>
+    </div>
+    <div class="stat urgent">
+      <div class="number">8</div>
+      <div class="label">Urgent</div>
+    </div>
+    <div class="stat important">
+      <div class="number">15</div>
+      <div class="label">Important</div>
+    </div>
+    <div class="stat later">
+      <div class="number">6</div>
+      <div class="label">Plus tard</div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- IDENTITÉ VISUELLE -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎨</div>
+      <div class="section-title">Identité Visuelle STERNY</div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Nom & Symbolique <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        <strong>STERNY</strong> (la sterne migratrice) — Oiseau qui symbolise parfaitement les alternants qui migrent entre leur ville d'études et leur ville d'entreprise.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Palette de couleurs <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        <strong>Navy #1E293B :</strong> Structure, sérieux, professionnel (logo texte, titres, infos structurelles)<br>
+        <strong>Orange #FF6B35 :</strong> Énergie, action, migration (logo oiseau, interactions, hover, sélections)
+      </div>
+      <div class="color-palette">
+        <div class="color-box navy">
+          <div class="color-name">Navy Principal</div>
+          <div class="color-code">#1E293B</div>
+        </div>
+        <div class="color-box orange">
+          <div class="color-name">Orange Sterne</div>
+          <div class="color-code">#FF6B35</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Logo <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        🐦 (orange) + STERNY (navy) — Actuellement en emoji, à remplacer par un SVG professionnel
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Charte graphique appliquée <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Toute la page "Créer une annonce" suit la nouvelle identité STERNY avec cohérence totale (Navy structure + Orange interactions).
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- PAGES EXISTANTES (FAIT) -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">✅</div>
+      <div class="section-title">Pages Existantes — Déjà Faites</div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Page Créer une annonce (Propriétaire) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Formulaire complet en 4 étapes : Informations, Détails, Photos, Prix. Identité STERNY appliquée, modale de confirmation avant publication, parcours fluide.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Page Créer une annonce (Locataire) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Formulaire complet en 5 étapes : Informations, Détails, Photos, Prix, Disponibilités. Permet au locataire de définir son rythme d'alternance pour matcher avec d'autres.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Dashboard Propriétaire (ancien design) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Tableau de bord basique avec liste des annonces. À redesigner avec identité STERNY et nouvelles fonctionnalités.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Dashboard Locataire (ancien design) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Tableau de bord basique. À redesigner avec identité STERNY et nouvelles fonctionnalités.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Dashboard Hôte (ancien design) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Tableau de bord pour le système de swap/host. À redesigner avec identité STERNY.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Système de messagerie <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Messagerie temps réel avec Supabase, auto-scroll, statut "lu". Fonctionne mais nécessite redesign STERNY.
+      </div>
+    </div>
+
+    <div class="card done">
+      <div class="card-title">Page de recherche (basique) <span class="badge done">✓ Fait</span></div>
+      <div class="card-desc">
+        Recherche de logements avec filtres. À améliorer et redesigner avec identité STERNY.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- PARCOURS CANDIDATURE (URGENT - MANQUANT) -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🚨</div>
+      <div class="section-title">Parcours Candidature — URGENT (Après publication annonce)</div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Page de détail d'une annonce <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Quand un alternant voit une annonce dans la recherche, il clique dessus → page de détail complète avec toutes les infos, photos en carousel, carte, bouton "Postuler".
+        <ul class="check-list">
+          <li>Affichage complet de l'annonce (infos, équipements, règles, photos)</li>
+          <li>Carousel de photos professionnel</li>
+          <li>Carte de localisation du logement</li>
+          <li>Bouton "Postuler" visible et fonctionnel</li>
+          <li>Section commentaires/avis (si applicable)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Formulaire de candidature <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Quand un alternant clique "Postuler", il remplit un formulaire de candidature avec son profil, sa motivation, ses dates.
+        <ul class="check-list">
+          <li>Formulaire : Nom, Prénom, Email, Téléphone</li>
+          <li>École/Entreprise, Dates de l'alternance</li>
+          <li>Message de motivation personnalisé</li>
+          <li>Upload CV (optionnel)</li>
+          <li>Confirmation avant envoi</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Notification de nouvelle candidature <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Le propriétaire reçoit une notification (email + notification in-app) quand quelqu'un postule à son annonce.
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Dashboard Propriétaire — Gestion des candidatures <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Le propriétaire voit toutes les candidatures reçues pour chaque annonce et peut les accepter/refuser.
+        <ul class="check-list">
+          <li>Liste des annonces avec nombre de candidatures</li>
+          <li>Clic sur une annonce → voir toutes les candidatures</li>
+          <li>Fiche détaillée de chaque candidat (profil, motivation, CV)</li>
+          <li>Boutons "Accepter" et "Refuser"</li>
+          <li>Modale de confirmation avant accepter/refuser</li>
+          <li>Possibilité de contacter le candidat avant décision</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Notification d'acceptation/refus <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> L'alternant reçoit une notification (email + in-app) quand sa candidature est acceptée ou refusée.
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Dashboard Alternant — Suivi des candidatures <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> L'alternant voit toutes ses candidatures en cours avec leur statut.
+        <ul class="check-list">
+          <li>Liste des candidatures : En attente, Acceptée, Refusée</li>
+          <li>Détail de chaque candidature (annonce, date de postulation, statut)</li>
+          <li>Possibilité de retirer une candidature</li>
+          <li>Lien vers la messagerie si acceptée</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Page de profil du candidat <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Le propriétaire peut voir le profil complet du candidat avant de décider.
+        <ul class="check-list">
+          <li>Photo de profil</li>
+          <li>Informations personnelles (école, entreprise, âge)</li>
+          <li>Historique (si location précédente sur la plateforme)</li>
+          <li>Avis/recommandations d'anciens propriétaires</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">Système de réservation/contrat <span class="badge urgent">Manquant</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Une fois accepté, le propriétaire et l'alternant doivent finaliser la réservation.
+        <ul class="check-list">
+          <li>Confirmation des dates et du prix</li>
+          <li>Paiement de la caution (via Stripe ou autre)</li>
+          <li>Génération d'un contrat de location numérique</li>
+          <li>Signature électronique des deux parties</li>
+          <li>Stockage sécurisé du contrat</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- FONCTIONNALITÉS IMPORTANTES -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div class="section-title">Fonctionnalités Importantes — À Développer</div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Système de notation et avis <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Après la fin de la location, le propriétaire et l'alternant peuvent se noter mutuellement.
+        <ul class="check-list">
+          <li>Note sur 5 étoiles</li>
+          <li>Commentaire écrit</li>
+          <li>Critères : Propreté, Communication, Respect des règles</li>
+          <li>Affichage des avis sur les profils</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Système de paiement intégré <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Paiement sécurisé de la caution et du loyer via la plateforme (Stripe).
+        <ul class="check-list">
+          <li>Paiement de la caution lors de l'acceptation</li>
+          <li>Paiement du loyer mensuel automatique</li>
+          <li>Remboursement de la caution en fin de location</li>
+          <li>Gestion des litiges</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Calendrier de disponibilités (Locataires) <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Pour les locataires qui proposent leur logement en swap, afficher clairement leurs disponibilités.
+        <ul class="check-list">
+          <li>Calendrier visuel avec périodes disponibles</li>
+          <li>Mise à jour facile des disponibilités</li>
+          <li>Synchronisation avec les candidatures acceptées</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Dashboard Admin <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Interface administrateur pour gérer la plateforme.
+        <ul class="check-list">
+          <li>Vue d'ensemble : nombre d'utilisateurs, annonces, candidatures</li>
+          <li>Modération des annonces</li>
+          <li>Gestion des signalements</li>
+          <li>Support utilisateur</li>
+          <li>Statistiques et analytics</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Page d'accueil publique <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Landing page attractive pour présenter STERNY aux nouveaux visiteurs.
+        <ul class="check-list">
+          <li>Présentation du concept</li>
+          <li>Témoignages</li>
+          <li>Statistiques (X logements, X alternants)</li>
+          <li>Call-to-action : "Créer mon compte"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Système de matching automatique (Locataires) <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Algorithme qui propose automatiquement des binômes de locataires avec des rythmes d'alternance compatibles.
+        <ul class="check-list">
+          <li>Analyse des disponibilités des deux locataires</li>
+          <li>Suggestions de binômes parfaits</li>
+          <li>Notification quand un match est trouvé</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Édition et suppression d'annonces <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Le propriétaire peut modifier ou supprimer ses annonces depuis son dashboard.
+        <ul class="check-list">
+          <li>Bouton "Modifier" → retour au formulaire pré-rempli</li>
+          <li>Bouton "Supprimer" avec confirmation</li>
+          <li>Historique des annonces supprimées</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">Notifications in-app + Email <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Besoin :</strong> Système complet de notifications pour tous les événements importants.
+        <ul class="check-list">
+          <li>Nouvelle candidature reçue</li>
+          <li>Candidature acceptée/refusée</li>
+          <li>Nouveau message reçu</li>
+          <li>Nouveau match trouvé (locataires)</li>
+          <li>Rappel de paiement du loyer</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- REDESIGN AVEC IDENTITÉ STERNY -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎨</div>
+      <div class="section-title">Redesign avec Identité STERNY — À Faire</div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Dashboard Propriétaire <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Appliquer la palette STERNY (Navy + Orange), moderniser l'interface, améliorer la gestion des candidatures.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Dashboard Locataire <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Appliquer la palette STERNY, intégrer le calendrier de disponibilités, système de matching.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Dashboard Hôte <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Appliquer la palette STERNY, moderniser l'interface de gestion des swaps.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Page de recherche <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Appliquer la palette STERNY, améliorer les filtres, ajouter une carte interactive.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Système de messagerie <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Appliquer la palette STERNY, améliorer l'UX, ajouter des fonctionnalités (envoi de fichiers, etc.).
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Navigation globale <span class="badge later">À redesigner</span></div>
+      <div class="card-desc">
+        Header/Footer cohérents avec logo STERNY, menu de navigation adapté à chaque type d'utilisateur.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- OPTIMISATIONS TECHNIQUES -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚙️</div>
+      <div class="section-title">Optimisations Techniques — Plus Tard</div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Remplacer emoji 🐦 par SVG <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Créer un logo SVG professionnel de la sterne pour remplacer l'emoji temporaire.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Animations de transition <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Ajouter des animations élégantes entre les étapes du formulaire, lors des modales, etc.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Mode preview de l'annonce <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Avant publication, montrer au propriétaire comment son annonce apparaîtra aux alternants.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Tests automatisés <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Mettre en place des tests E2E pour valider les parcours utilisateur complets.
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">Performance & SEO <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Optimiser les images, lazy loading, métadonnées pour le référencement.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- PRIORITÉS -->
+  <!-- ========================================== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎯</div>
+      <div class="section-title">Ordre de Priorité Recommandé</div>
+    </div>
+
+    <div class="card urgent">
+      <div class="card-title">PRIORITÉ 1 — Parcours Candidature Complet <span class="badge urgent">Urgent</span></div>
+      <div class="card-desc">
+        <strong>Sans cela, la plateforme ne fonctionne pas !</strong>
+        <ol style="margin-top: 12px; margin-left: 20px; color: #6a6a7a; line-height: 1.8;">
+          <li>Page de détail d'une annonce</li>
+          <li>Formulaire de candidature</li>
+          <li>Dashboard propriétaire — Gestion des candidatures</li>
+          <li>Dashboard alternant — Suivi des candidatures</li>
+          <li>Notifications (candidature reçue, acceptée/refusée)</li>
+          <li>Page de profil du candidat</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">PRIORITÉ 2 — Système de Réservation & Paiement <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Nécessaire pour finaliser une location</strong>
+        <ol style="margin-top: 12px; margin-left: 20px; color: #6a6a7a; line-height: 1.8;">
+          <li>Paiement de la caution (Stripe)</li>
+          <li>Génération du contrat numérique</li>
+          <li>Signature électronique</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card important">
+      <div class="card-title">PRIORITÉ 3 — Redesign Dashboards avec STERNY <span class="badge important">Important</span></div>
+      <div class="card-desc">
+        <strong>Pour une cohérence visuelle totale</strong>
+        <ol style="margin-top: 12px; margin-left: 20px; color: #6a6a7a; line-height: 1.8;">
+          <li>Dashboard Propriétaire</li>
+          <li>Dashboard Locataire</li>
+          <li>Page de recherche</li>
+          <li>Navigation globale</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card later">
+      <div class="card-title">PRIORITÉ 4 — Fonctionnalités Avancées <span class="badge later">Plus tard</span></div>
+      <div class="card-desc">
+        Système de notation, matching automatique, dashboard admin, page d'accueil publique.
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>🐦 <strong>STERNY</strong> — Plateforme de logement pour alternants</p>
+    <p style="margin-top: 8px;">Récapitulatif complet • Mise à jour le 14 février 2026</p>
+  </div>
+
+</div>
+
+</body>
+</html>

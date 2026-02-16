@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlternHome — Récapitulatif Projet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f0f5;
+    color: #1e1e2e;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 36px 40px;
+    color: white;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(102,126,234,0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 80px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .header h1 {
+    font-size: 30px;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 span { opacity: 0.7; font-weight: 500; }
+  .header p {
+    margin-top: 6px;
+    opacity: 0.85;
+    font-size: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .stat {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .stat .number {
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .stat .label {
+    font-size: 12px;
+    color: #7a7a8a;
+    margin-top: 3px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat.done .number { color: #22c55e; }
+  .stat.urgent .number { color: #ef4444; }
+  .stat.important .number { color: #f59e0b; }
+  .stat.later .number { color: #8b5cf6; }
+
+  /* ===== SECTIONS ===== */
+  .section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #7a7a8a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .dot.green { background: #22c55e; }
+  .dot.red { background: #ef4444; }
+  .dot.orange { background: #f59e0b; }
+  .dot.purple { background: #8b5cf6; }
+  .dot.blue { background: #3b82f6; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-header:hover { background: #fafafa; }
+
+  .card-icon {
+    font-size: 20px;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-green { background: #dcfce7; }
+  .icon-red { background: #fee2e2; }
+  .icon-orange { background: #fef3c7; }
+  .icon-purple { background: #ede9fe; }
+  .icon-blue { background: #dbeafe; }
+
+  .card-text { flex: 1; }
+  .card-text h3 { font-size: 15px; font-weight: 600; color: #1e1e2e; }
+  .card-text p { font-size: 13px; color: #7a7a8a; margin-top: 2px; }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-done { background: #dcfce7; color: #16a34a; }
+  .badge-urgent { background: #fee2e2; color: #dc2626; }
+  .badge-important { background: #fef3c7; color: #d97706; }
+  .badge-later { background: #ede9fe; color: #7c3aed; }
+  .badge-pause { background: #e5e7eb; color: #6b7280; }
+
+  /* ===== DETAIL (accordion) ===== */
+  .card-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .card-detail.open { max-height: 600px; }
+  .card-detail-inner {
+    padding: 0 20px 16px 72px;
+    border-top: 1px solid #f0f0f3;
+  }
+  .detail-list { list-style: none; padding: 0; }
+  .detail-list li {
+    font-size: 13px;
+    color: #5a5a6a;
+    padding: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .detail-list li .check { color: #22c55e; flex-shrink: 0; }
+  .detail-list li .pend { color: #f59e0b; flex-shrink: 0; }
+  .detail-list li .todo { color: #ef4444; flex-shrink: 0; }
+
+  /* ===== FICHIERS GRID ===== */
+  .fichiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .fichier {
+    background: #f7f7fa;
+    border: 1px solid #eeeeef;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #5a5a6a;
+    font-weight: 500;
+  }
+  .fichier .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .fichier .tag.new { background: #ede9fe; color: #7c3aed; }
+
+  /* ===== BUSINESS BOX ===== */
+  .business-box {
+    background: linear-gradient(135deg, #667eea15, #764ba215);
+    border: 1px solid #667eea30;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .business-box h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 10px;
+  }
+  .business-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .business-item {
+    text-align: center;
+    background: white;
+    border-radius: 10px;
+    padding: 14px 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .business-item .val {
+    font-size: 20px;
+    font-weight: 800;
+    color: #667eea;
+  }
+  .business-item .lbl {
+    font-size: 11px;
+    color: #7a7a8a;
+    margin-top: 3px;
+  }
+
+  /* ===== ORDRE RECOMMANDÉ ===== */
+  .roadmap {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 24px;
+  }
+  .roadmap h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .road-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .road-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .road-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .road-line .connector {
+    width: 2px;
+    height: 28px;
+    background: #e5e7eb;
+  }
+  .road-line .connector:last-child { display: none; }
+  .road-content {
+    padding-bottom: 20px;
+    flex: 1;
+  }
+  .road-content h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e1e2e;
+  }
+  .road-content p {
+    font-size: 12px;
+    color: #7a7a8a;
+    margin-top: 2px;
+  }
+
+  .c-green { background: #22c55e; }
+  .c-red { background: #ef4444; }
+  .c-orange { background: #f59e0b; }
+  .c-purple { background: #8b5cf6; }
+  .c-gray { background: #9ca3af; }
+
+  /* ===== NOTE EN BAS ===== */
+  .note-box {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 13px;
+    color: #92400e;
+  }
+  .note-box strong { color: #78350f; }
+
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .fichiers-grid { grid-template-columns: repeat(2, 1fr); }
+    .business-grid { grid-template-columns: 1fr; }
+    .card-detail-inner { padding-left: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>🏠 AlternHome <span>— Récap Projet</span></h1>
+    <p>État complet du projet au 3 février 2026</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat done"><div class="number">17</div><div class="label">Fichiers faits</div></div>
+    <div class="stat urgent"><div class="number">6</div><div class="label">Urgent à faire</div></div>
+    <div class="stat important"><div class="number">5</div><div class="label">Important</div></div>
+    <div class="stat later"><div class="number">3</div><div class="label">Plus tard</div></div>
+  </div>
+
+  <!-- ========== SECTION : FICHIERS DU PROJET ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot green"></div> Fichiers existants du projet</div>
+    <div class="card" style="padding: 18px 20px;">
+      <div class="fichiers-grid">
+        <div class="fichier">index.html</div>
+        <div class="fichier">inscription.html</div>
+        <div class="fichier">inscription-proprietaire.html <span class="tag new">nouveau</span></div>
+        <div class="fichier">connexion.html</div>
+        <div class="fichier">completer-profil.html</div>
+        <div class="fichier">modifier-profil.html <span class="tag new">enrichi</span></div>
+        <div class="fichier">mon-profil.html</div>
+        <div class="fichier">dashboard-locataire.html</div>
+        <div class="fichier">dashboard-hote.html</div>
+        <div class="fichier">recherche.html</div>
+        <div class="fichier">creer-annonce.html</div>
+        <div class="fichier">modifier-annonce.html</div>
+        <div class="fichier">logement.html</div>
+        <div class="fichier">messages.html</div>
+        <div class="fichier">conversation.html <span class="tag new">alertes</span></div>
+        <div class="fichier">config.js</div>
+        <div class="fichier">style.css</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION : BUSINESS ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot blue"></div> Modèle économique (défini)</div>
+    <div class="business-box">
+      <h4>💰 Modèle de revenus AlternHome</h4>
+      <div class="business-grid">
+        <div class="business-item">
+          <div class="val">10%</div>
+          <div class="lbl">Commission sur le loyer</div>
+        </div>
+        <div class="business-item">
+          <div class="val">~50%</div>
+          <div class="lbl">Économie par étudiant</div>
+        </div>
+        <div class="business-item">
+          <div class="val">+18%</div>
+          <div class="lbl">Revenus propriétaire/an</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION : FAIT ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot green"></div> Ce qui est fait</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-green">✅</div>
+        <div class="card-text">
+          <h3>Socle technique & Auth</h3>
+          <p>Supabase, config, bucket storage, design violet unifié</p>
+        </div>
+        <span class="badge badge-done">Fait</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="check">✓</span> Supabase configuré (auth, DB, storage)</li>
+            <li><span class="check">✓</span> Inscription + connexion avec Supabase Auth</li>
+            <li><span class="check">✓</span> Bucket <code>profils</code> pour photos (bug résolu)</li>
+            <li><span class="check">✓</span> RLS configuré pour les profils publics</li>
+            <li><span class="check">✓</span> Design cohérent violet <code>#667eea → #764ba2</code></li>
+            <li><span class="check">✓</span> config.js + style.css partagés</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-green">👤</div>
+        <div class="card-text">
+          <h3>Profil utilisateur (enrichi)</h3>
+          <p>Prénom, nom, sexe, école, photo, documents, garant</p>
+        </div>
+        <span class="badge badge-done">Fait</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="check">✓</span> Complétion profil (prénom, nom, sexe, date naissance, école, année, filière, bio)</li>
+            <li><span class="check">✓</span> Photo de profil avec upload vers bucket <code>profils</code></li>
+            <li><span class="check">✓</span> <strong>Nouveau :</strong> Téléphone</li>
+            <li><span class="check">✓</span> <strong>Nouveau :</strong> Upload 3 documents (pièce ID, certificat scolarité, RIB) avec drag & drop</li>
+            <li><span class="check">✓</span> <strong>Nouveau :</strong> Section garant (prénom, nom, tél, email)</li>
+            <li><span class="pend">⏳</span> Colonnes DB à créer dans Supabase (<code>telephone, garant_*, doc_*_url</code>)</li>
+            <li><span class="pend">⏳</span> Bucket <code>documents</code> à créer dans Storage</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-green">📊</div>
+        <div class="card-text">
+          <h3>Dashboards (hôte étudiant + locataire)</h3>
+          <p>Barre violette, stats, annonces, recherche, favoris</p>
+        </div>
+        <span class="badge badge-done">Fait</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="check">✓</span> Dashboard locataire : recherche, messages, favoris</li>
+            <li><span class="check">✓</span> Dashboard hôte (étudiant) : liste annonces, stats (annonces actives, revenus estimés, messages non lus)</li>
+            <li><span class="check">✓</span> Modifier / supprimer annonces depuis le dashboard</li>
+            <li><span class="check">✓</span> Barre violette profil unifiée sur les 2 dashboards</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-green">🏢</div>
+        <div class="card-text">
+          <h3>Annonces</h3>
+          <p>Création, modification, calendrier de disponibilité</p>
+        </div>
+        <span class="badge badge-done">Fait</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="check">✓</span> Création d'annonce : titre, ville, prix, surface, photos</li>
+            <li><span class="check">✓</span> Calendrier de disponibilité (bug calendrier résolu)</li>
+            <li><span class="check">✓</span> Modification d'annonce</li>
+            <li><span class="check">✓</span> Recherche basique</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-green">💬</div>
+        <div class="card-text">
+          <h3>Messagerie complète</h3>
+          <p>Chat WhatsApp style, alertes automatiques, liste conversations</p>
+        </div>
+        <span class="badge badge-done">Fait</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="check">✓</span> Liste des conversations avec preview du dernier message</li>
+            <li><span class="check">✓</span> Chat détaillé style WhatsApp</li>
+            <li><span class="check">✓</span> Alertes automatiques avec icône cloche (colonne <code>is_alert</code> en base)</li>
+            <li><span class="check">✓</span> Design Instagram/Messenger cohérent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION : URGENT (rouge) ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot red"></div> Urgent — à faire avant le lancement</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">🎬</div>
+        <div class="card-text">
+          <h3>Animation explicative (vidéo-like)</h3>
+          <p>Convaincre le propriétaire — réutilisable pour la communication</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Page HTML avec slides animées qui s'enchaînent automatiquement</li>
+            <li><span class="todo">→</span> Explique : qu'est-ce que la colocation alternée, comment ça marche, combien ça rapporte</li>
+            <li><span class="todo">→</span> Intégrée à la page inscription propriétaire</li>
+            <li><span class="todo">→</span> Réutilisable sur le site, les réseaux sociaux</li>
+            <li><span class="pend">💡</span> C'est ce qui convaincra le propriétaire d'aller jusqu'à la fin</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">🔗</div>
+        <div class="card-text">
+          <h3>Page inscription propriétaire</h3>
+          <p>Lien spécial envoyé par le locataire avec référant</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> URL : <code>inscription-proprietaire.html?ref=ID_ETUDIANT</code></li>
+            <li><span class="todo">→</span> Le locataire envoie ce lien au propriétaire</li>
+            <li><span class="todo">→</span> La page affiche l'animation PUIS le formulaire d'inscription</li>
+            <li><span class="todo">→</span> Après inscription, le profil du 1er locataire est automatiquement associé</li>
+            <li><span class="todo">→</span> Le propriétaire n'a rien à faire côté recherche</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">🏢</div>
+        <div class="card-text">
+          <h3>Dashboard propriétaire (nouveau fichier)</h3>
+          <p>Pas le dashboard-hote ! Un dashboard séparé pour le vrai propriétaire</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Voir les profils de ses locataires (photo, nom, école)</li>
+            <li><span class="todo">→</span> Badges statut des documents (✅ déposé / ⏳ en attente)</li>
+            <li><span class="todo">→</span> Accès à la conversation avec chaque locataire</li>
+            <li><span class="todo">→</span> Suivi des revenus (loyers reçus par logement)</li>
+            <li><span class="todo">→</span> Possibilité d'approuver/refuser un locataire</li>
+            <li><span class="pend">💡</span> <code>dashboard-hote.html</code> reste pour les étudiants qui sous-louent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">🎨</div>
+        <div class="card-text">
+          <h3>Améliorer la page d'inscription propriétaire</h3>
+          <p>Design et contenu à optimiser avant le lancement</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Créer une vraie vidéo explicative (2-3 min) pour remplacer le placeholder</li>
+            <li><span class="todo">→</span> Tester et optimiser les textes pour plus de clarté</li>
+            <li><span class="todo">→</span> Vérifier le parcours utilisateur complet</li>
+            <li><span class="todo">→</span> Ajouter des témoignages réels quand disponibles</li>
+            <li><span class="pend">💡</span> Page créée avec système de parrainage fonctionnel, mais à améliorer</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">⭐</div>
+        <div class="card-text">
+          <h3>Système d'avis / évaluations</h3>
+          <p>LE truc qui crée la confiance — comme les reviews Airbnb</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Étoiles (1 à 5) + commentaire après chaque séjour</li>
+            <li><span class="todo">→</span> Visible sur le profil de chaque étudiant</li>
+            <li><span class="todo">→</span> Moyenne des étoiles affichée sur les annonces</li>
+            <li><span class="pend">💡</span> Sans ça, personne ne fait confiance à la plateforme</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-red">🔍</div>
+        <div class="card-text">
+          <h3>Filtres de recherche avancés + Carte</h3>
+          <p>Prix, localisation, dates, commodités + map interactive</p>
+        </div>
+        <span class="badge badge-urgent">Urgent</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Filtres : prix min/max, ville, dates, type logement, commodités (WiFi, cuisine…)</li>
+            <li><span class="todo">→</span> Carte interactive (Google Maps ou Mapbox) avec épingles clickables</li>
+            <li><span class="todo">→</span> Page détail annonce enrichie : carousel photos, description complète, bouton "Contacter"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION : IMPORTANT (orange) ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot orange"></div> Important — avant ou peu après le lancement</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-orange">💳</div>
+        <div class="card-text">
+          <h3>Paiement en ligne — Stripe Connect</h3>
+          <p>L'étudiant paie, AlternHome prend 10%, le reste au propriétaire</p>
+        </div>
+        <span class="badge badge-important">Important</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Stripe Connect pour les paiements split automatiques</li>
+            <li><span class="todo">→</span> Page paiement mensuel pour l'étudiant</li>
+            <li><span class="todo">→</span> Historique des paiements dans le dashboard propriétaire</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-orange">📜</div>
+        <div class="card-text">
+          <h3>Documents légaux</h3>
+          <p>CGU, politique de confidentialité, mentions légales</p>
+        </div>
+        <span class="badge badge-important">Important</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Page CGU</li>
+            <li><span class="todo">→</span> Politique de confidentialité</li>
+            <li><span class="todo">→</span> Mentions légales</li>
+            <li><span class="todo">→</span> Case à cocher obligatoire à l'inscription</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-orange">📱</div>
+        <div class="card-text">
+          <h3>Responsive mobile</h3>
+          <p>Toutes les pages adaptées petit écran avant le lancement</p>
+        </div>
+        <span class="badge badge-important">Important</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Adapter chaque page pour les écrans mobiles</li>
+            <li><span class="todo">→</span> Tester sur iOS et Android</li>
+            <li><span class="pend">💡</span> À faire AVANT l'app React Native</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-orange">🔐</div>
+        <div class="card-text">
+          <h3>Vérification identité + Emails Resend</h3>
+          <p>Vérif manuelle d'abord, emails quand domaine configuré</p>
+        </div>
+        <span class="badge badge-important">Important</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Vérification manuelle des pièces ID (toi comme admin)</li>
+            <li><span class="todo">→</span> Plus tard : API Onfido/Jumio (après revenus)</li>
+            <li><span class="todo">→</span> Emails Resend : clé API ✅, domaine à configurer</li>
+            <li><span class="todo">→</span> Emails : confirmation inscription, nouveau message, nouvelle alerte</li>
+            <li><span class="pend">💡</span> Emails mis en pause pour l'instant — domaine pas prêt</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-orange">🗄️</div>
+        <div class="card-text">
+          <h3>Colonnes Supabase à ajouter</h3>
+          <p>Nécessaire pour que modifier-profil fonctionne</p>
+        </div>
+        <span class="badge badge-important">Important</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Table <code>users</code> : <code>telephone</code> (text)</li>
+            <li><span class="todo">→</span> Table <code>users</code> : <code>garant_prenom, garant_nom, garant_telephone, garant_email</code></li>
+            <li><span class="todo">→</span> Table <code>users</code> : <code>doc_piece_id_url, doc_scolarite_url, doc_rib_url</code></li>
+            <li><span class="todo">→</span> Créer le bucket <code>documents</code> dans Storage</li>
+            <li><span class="pend">💡</span> À faire dans Supabase Studio — prend 5 minutes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION : PLUS TARD (purple) ========== -->
+  <div class="section">
+    <div class="section-title"><div class="dot purple"></div> Plus tard — après le lancement</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-purple">📲</div>
+        <div class="card-text">
+          <h3>App mobile React Native + Expo</h3>
+          <p>Même Supabase, même design — App Store + Google Play</p>
+        </div>
+        <span class="badge badge-later">Plus tard</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> React Native + Expo (une seule base de code → iOS + Android)</li>
+            <li><span class="todo">→</span> Même Supabase, même authentification</li>
+            <li><span class="todo">→</span> Notifications push natives</li>
+            <li><span class="pend">💡</span> À faire APRÈS le responsive web et le lancement du site</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-icon icon-purple">📋</div>
+        <div class="card-text">
+          <h3>Historique séjours + Favoris</h3>
+          <p>Séjours passés, annonces sauvegardées</p>
+        </div>
+        <span class="badge badge-later">Plus tard</span>
+      </div>
+      <div class="card-detail">
+        <div class="card-detail-inner">
+          <ul class="detail-list">
+            <li><span class="todo">→</span> Chaque étudiant voit ses séjours passés</li>
+            <li><span class="todo">→</span> Le propriétaire voit l'historique de son logement</li>
+            <li><span class="todo">→</span> Sauvegarder des annonces en favoris</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ORDRE RECOMMANDÉ ========== -->
+  <div class="roadmap">
+    <h4>🎯 Ordre recommandé pour démarrer</h4>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-green">1</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Colonnes Supabase + bucket documents</h5>
+        <p>~5 minutes dans Supabase Studio — nécessaire pour la suite</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-red">2</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>🎬 Animation explicative</h5>
+        <p>On commence ici — c'est ce qui convaincra le propriétaire</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-red">3</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Page inscription propriétaire</h5>
+        <p>Avec le lien référant et l'animation intégrée</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-red">4</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Dashboard propriétaire</h5>
+        <p>Nouveau fichier — locataires, documents, revenus, messages</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-orange">5</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Avis / évaluations + Filtres recherche</h5>
+        <p>Confiance + expérience de recherche — avant le lancement</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-orange">6</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Carte interactive + Détail annonce</h5>
+        <p>Expérience visuelle avant le lancement</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-orange">7</div>
+        <div class="connector"></div>
+      </div>
+      <div class="road-content">
+        <h5>Stripe + CGU + Responsive</h5>
+        <p>Les derniers blocs avant de pouvoir lancer</p>
+      </div>
+    </div>
+
+    <div class="road-step">
+      <div class="road-line">
+        <div class="road-circle c-purple">8</div>
+      </div>
+      <div class="road-content">
+        <h5>App mobile React Native</h5>
+        <p>Après le lancement du site web — phase 2</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note-box">
+    <strong>💡 Note :</strong> <code>dashboard-hote.html</code> reste tel quel — il est pour les <strong>étudiants qui sous-louent</strong> leur logement à un autre étudiant. Le nouveau <strong>dashboard propriétaire</strong> sera un fichier séparé, pour les vrais propriétaires du bien.
+  </div>
+
+</div>
+
+<!-- SCRIPT accordion -->
+<script>
+function toggle(card) {
+  const detail = card.querySelector('.card-detail');
+  if (!detail) return;
+  detail.classList.toggle('open');
+}
+</script>
+</body>
+</html>

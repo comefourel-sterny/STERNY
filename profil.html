@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        /* HEADER DASHBOARD */
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 0;
+        }
+        .dashboard-header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-logout {
+            padding: 10px 20px;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-logout:hover { background: var(--gray-300); }
+
+        /* GRANDE BARRE VIOLETTE PROFIL */
+        .profile-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+        .profile-hero .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-photo .initials {
+            font-weight: 700;
+            color: #667eea;
+        }
+        .profile-info { flex: 1; }
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .profile-details {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+
+        /* Moyenne étoiles dans le hero */
+        .hero-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .hero-stars { color: #fbbf24; font-size: 20px; letter-spacing: 2px; }
+        .hero-rating-text { font-size: 15px; opacity: 0.9; }
+
+        .profile-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-profile {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+        .btn-profile.primary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        /* CONTENU */
+        .content-section {
+            max-width: 1200px;
+            margin: 30px auto 50px;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 20px;
+        }
+
+        /* INFOS CARD */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .info-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0 0 16px;
+        }
+        .info-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            min-width: 120px;
+        }
+        .info-value {
+            color: var(--gray-600);
+        }
+
+        /* LISTE AVIS */
+        .avis-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .avis-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+        .avis-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+        .avis-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .avis-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .avis-content { flex: 1; min-width: 0; }
+        .avis-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .avis-name { font-weight: 600; color: var(--gray-900); font-size: 15px; }
+        .avis-date { font-size: 13px; color: var(--gray-600); }
+        .avis-stars { color: #fbbf24; font-size: 16px; margin-top: 5px; letter-spacing: 1px; }
+        .avis-comment { font-size: 14px; color: var(--gray-600); margin-top: 6px; line-height: 1.5; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .empty-icon { font-size: 72px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-title { font-size: 20px; font-weight: 600; color: var(--gray-900); margin-bottom: 10px; }
+        .empty-text { color: var(--gray-600); margin-bottom: 25px; }
+
+        /* Loading */
+        .loading { text-align: center; padding: 50px 20px; color: var(--gray-600); font-size: 16px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .profile-hero .container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-profile { width: 100%; }
+            .avis-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .avis-header { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="dashboard-header">
+    <div class="container">
+        <a href="index.html" class="header-logo">🏠 AlternHome</a>
+        <div class="header-actions">
+            <a href="javascript:history.back()" class="btn-logout">← Retour</a>
+        </div>
+    </div>
+</div>
+
+<!-- BARRE VIOLETTE PROFIL -->
+<div class="profile-hero">
+    <div class="container">
+        <div class="profile-photo" id="heroPhoto">
+            <div class="initials" id="heroInitials">?</div>
+        </div>
+        <div class="profile-info">
+            <div class="profile-name" id="heroName">Chargement...</div>
+            <div class="profile-details" id="heroDetails">...</div>
+            <div class="profile-details" id="heroSchool">...</div>
+            <div class="hero-rating" id="heroRating" style="display:none;">
+                <span class="hero-stars" id="heroStars">☆☆☆☆☆</span>
+                <span class="hero-rating-text" id="heroRatingText">Aucun avis</span>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <a href="#" id="btnMessage" class="btn-profile primary">💬 Envoyer un message</a>
+            <a href="#" id="btnAvis" class="btn-profile">⭐ Laisser un avis</a>
+        </div>
+    </div>
+</div>
+
+<!-- CONTENU -->
+<div class="content-section">
+    
+    <!-- INFORMATIONS -->
+    <div class="info-card" id="infoCard" style="display:none;">
+        <h3>📋 Informations</h3>
+        <div id="infoContent"></div>
+    </div>
+
+    <!-- AVIS REÇUS -->
+    <div>
+        <h2 class="section-title">⭐ Avis reçus</h2>
+        <div id="avisList" class="avis-list">
+            <div class="loading">Chargement des avis...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─── ÉTAT ───
+let currentUser = null;
+let profileUserId = null;
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', async () => {
+    // Attendre que supabaseClient soit disponible
+    let attempts = 0;
+    while (typeof supabaseClient === 'undefined' && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    
+    if (typeof supabaseClient === 'undefined') {
+        alert('Erreur de chargement. Rafraîchis la page.');
+        return;
+    }
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { window.location.href = 'connexion.html'; return; }
+    currentUser = user;
+
+    // Récupérer l'ID depuis l'URL
+    const params = new URLSearchParams(window.location.search);
+    profileUserId = params.get('user_id');
+
+    if (!profileUserId) {
+        alert('Utilisateur non spécifié');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Si c'est son propre profil, rediriger vers mon-profil.html
+    if (profileUserId === currentUser.id) {
+        window.location.href = 'mon-profil.html';
+        return;
+    }
+
+    // Charger le profil
+    await chargerProfil();
+    await chargerAvis();
+
+    // Définir les liens des boutons
+    document.getElementById('btnMessage').href = `conversation.html?user_id=${profileUserId}`;
+    document.getElementById('btnAvis').href = `avis.html?user_id=${profileUserId}`;
+});
+
+// ─── CHARGER PROFIL ───
+async function chargerProfil() {
+    const { data, error } = await supabaseClient
+        .from('users')
+        .select('*')
+        .eq('id', profileUserId)
+        .single();
+
+    if (error || !data) {
+        console.error('Erreur chargement profil:', error);
+        alert('Profil introuvable');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Nom
+    document.getElementById('heroName').textContent = `${data.prenom} ${data.nom}`;
+
+    // Détails (âge + sexe)
+    let details = '';
+    if (data.date_naissance) {
+        const age = calculerAge(data.date_naissance);
+        details = `${age} ans`;
+    }
+    if (data.sexe && data.sexe !== 'non-precise') {
+        const sexeLabel = data.sexe.charAt(0).toUpperCase() + data.sexe.slice(1);
+        details += details ? ` • ${sexeLabel}` : sexeLabel;
+    }
+    document.getElementById('heroDetails').textContent = details || '';
+
+    // École
+    let schoolInfo = '';
+    if (data.ecole) {
+        schoolInfo = data.ecole;
+        if (data.annee_etudes) schoolInfo += ` • ${data.annee_etudes}`;
+        if (data.filiere) schoolInfo += ` • ${data.filiere}`;
+    }
+    document.getElementById('heroSchool').textContent = schoolInfo || '';
+
+    // Photo
+    if (data.photo_profil_url) {
+        document.getElementById('heroPhoto').innerHTML = `<img src="${data.photo_profil_url}" alt="Photo">`;
+    } else {
+        document.getElementById('heroInitials').textContent = `${data.prenom[0]}${data.nom[0]}`;
+    }
+
+    // Informations supplémentaires
+    const infoCard = document.getElementById('infoCard');
+    const infoContent = document.getElementById('infoContent');
+    let hasInfo = false;
+    let html = '';
+
+    if (data.ville_origine) {
+        html += `<div class="info-row"><span class="info-label">🏙️ Ville d'origine :</span><span class="info-value">${data.ville_origine}</span></div>`;
+        hasInfo = true;
+    }
+    if (data.description) {
+        html += `<div class="info-row"><span class="info-label">📝 Description :</span><span class="info-value">${data.description}</span></div>`;
+        hasInfo = true;
+    }
+
+    if (hasInfo) {
+        infoContent.innerHTML = html;
+        infoCard.style.display = 'block';
+    }
+
+    // Charger la moyenne des avis
+    await chargerMoyenne();
+}
+
+// ─── CHARGER MOYENNE ───
+async function chargerMoyenne() {
+    const { data } = await supabaseClient
+        .from('avis')
+        .select('note')
+        .eq('profil_evalue_id', profileUserId);
+
+    const heroRating = document.getElementById('heroRating');
+    heroRating.style.display = 'flex';
+
+    if (data && data.length > 0) {
+        const moy = data.reduce((sum, a) => sum + a.note, 0) / data.length;
+        const moyArrondi = Math.round(moy * 10) / 10;
+        document.getElementById('heroStars').textContent = genStars(moy);
+        document.getElementById('heroRatingText').textContent = `${moyArrondi}/5 — ${data.length} avis`;
+    } else {
+        document.getElementById('heroStars').textContent = '☆☆☆☆☆';
+        document.getElementById('heroRatingText').textContent = 'Aucun avis encore';
+    }
+}
+
+// ─── CHARGER AVIS ───
+async function chargerAvis() {
+    const container = document.getElementById('avisList');
+    container.innerHTML = '<div class="loading">Chargement...</div>';
+
+    const { data } = await supabaseClient
+        .from('avis')
+        .select(`
+            id, note, commentaire, created_at,
+            evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
+        `)
+        .eq('profil_evalue_id', profileUserId)
+        .order('created_at', { ascending: false });
+
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⭐</div>
+                <div class="empty-title">Pas encore d'avis</div>
+                <div class="empty-text">Les premiers avis apparaîtront ici après des séjours.</div>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    for (const avis of data) {
+        const eval_ = avis.evaluateur;
+        const nom = eval_ ? `${eval_.prenom} ${eval_.nom}` : 'Utilisateur';
+        const photo = eval_?.photo_profil_url;
+        const initials = eval_ ? `${eval_.prenom[0]}${eval_.nom[0]}` : '?';
+        const date = new Date(avis.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const stars = genStars(avis.note);
+
+        const avatarHtml = photo
+            ? `<img src="${photo}" alt="${nom}">`
+            : initials;
+
+        container.innerHTML += `
+            <div class="avis-item">
+                <div class="avis-avatar">${avatarHtml}</div>
+                <div class="avis-content">
+                    <div class="avis-header">
+                        <span class="avis-name">${nom}</span>
+                        <span class="avis-date">${date}</span>
+                    </div>
+                    <div class="avis-stars">${stars}</div>
+                    ${avis.commentaire ? `<div class="avis-comment">${avis.commentaire}</div>` : ''}
+                </div>
+            </div>`;
+    }
+}
+
+// ─── UTILITAIRES ───
+function genStars(note) {
+    const plein = Math.round(note);
+    return '★'.repeat(plein) + '☆'.repeat(5 - plein);
+}
+
+function calculerAge(dateNaissance) {
+    const today = new Date();
+    const birthDate = new Date(dateNaissance);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+</script>
+</body>
+</html>

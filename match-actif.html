@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre logement actif - EASWAP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        /* SUCCESS HERO */
+        .success-hero {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: success-bounce 1s ease-out;
+        }
+
+        @keyframes success-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .success-hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .success-hero p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        /* MAIN CARD */
+        .match-card {
+            max-width: 1000px;
+            margin: -40px auto 40px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-label {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 40px;
+        }
+
+        /* GRID 2 COLONNES */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* SECTION GAUCHE */
+        .main-info {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .info-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .info-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card-icon {
+            font-size: 24px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .contact-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .contact-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 15px;
+        }
+
+        .contact-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .contact-role {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .btn-contact {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* SIDEBAR DROITE */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* DOCUMENTS */
+        .documents-section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .documents-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .document-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .document-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .document-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .document-icon {
+            font-size: 24px;
+        }
+
+        .document-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .document-action {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        /* ACTIONS RAPIDES */
+        .quick-actions {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .quick-actions-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .action-icon {
+            font-size: 18px;
+        }
+
+        /* ALERT WARNING */
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .alert-text {
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* COUNTDOWN */
+        .countdown-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .countdown-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .countdown-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .countdown-unit {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .success-hero {
+                padding: 40px 20px;
+            }
+
+            .success-hero h1 {
+                font-size: 28px;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 EASWAP</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- SUCCESS HERO -->
+    <div class="success-hero">
+        <div class="success-icon">🎉</div>
+        <h1>Félicitations ! Votre logement est actif !</h1>
+        <p>Toutes les démarches sont terminées. Profitez de votre logement en toute sérénité.</p>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="match-card">
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div>
+                <div class="status-label">Statut</div>
+                <div class="status-value">✅ Actif</div>
+            </div>
+            <div>
+                <div class="status-label">Début</div>
+                <div class="status-value" id="dateDebut">01/03/2026</div>
+            </div>
+            <div>
+                <div class="status-label">Fin</div>
+                <div class="status-value" id="dateFin">31/08/2026</div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <div class="info-grid">
+                <!-- COLONNE GAUCHE -->
+                <div class="main-info">
+                    <!-- LOGEMENT -->
+                    <div class="info-card">
+                        <div class="info-card-title">
+                            <span class="info-card-icon">🏠</span>
+                            Votre logement
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Adresse</span>
+                            <span class="detail-value" id="logementAdresse">Chargement...</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Ville</span>
+                            <span class="detail-value" id="logementVille">Chargement...</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Surface</span>
+                            <span class="detail-value" id="logementSurface">--m²</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Loyer mensuel</span>
+                            <span class="detail-value" id="logementPrix">275€</span>
+                        </div>
+                    </div>
+
+                    <!-- CONTACT -->
+                    <div class="info-card">
+                        <div class="info-card-title">
+                            <span class="info-card-icon">👤</span>
+                            <span id="contactTitle">Votre propriétaire</span>
+                        </div>
+                        <div class="contact-card">
+                            <div class="contact-avatar">👤</div>
+                            <div class="contact-name" id="contactNom">Chargement...</div>
+                            <div class="contact-role" id="contactRole">Propriétaire</div>
+                            <div class="contact-info" id="contactInfo">
+                                📧 Email<br>
+                                📞 Téléphone
+                            </div>
+                            <a href="conversation.html?user_id=xxx" class="btn-contact" id="btnContact">
+                                💬 Envoyer un message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLONNE DROITE -->
+                <div class="sidebar">
+                    <!-- COUNTDOWN -->
+                    <div class="info-card">
+                        <div class="info-card-title">
+                            <span class="info-card-icon">⏰</span>
+                            Temps restant
+                        </div>
+                        <div class="countdown-box">
+                            <div class="countdown-label">Il vous reste</div>
+                            <div class="countdown-value" id="joursRestants">--</div>
+                            <div class="countdown-unit">jours</div>
+                        </div>
+                    </div>
+
+                    <!-- DOCUMENTS -->
+                    <div class="documents-section">
+                        <div class="documents-title">
+                            📄 Documents
+                        </div>
+                        <div class="document-item" onclick="telechargerDocument('contrat')">
+                            <div class="document-info">
+                                <span class="document-icon">📜</span>
+                                <span class="document-name">Contrat de location</span>
+                            </div>
+                            <span class="document-action">↓</span>
+                        </div>
+                        <div class="document-item" onclick="telechargerDocument('etat-lieux')">
+                            <div class="document-info">
+                                <span class="document-icon">📸</span>
+                                <span class="document-name">État des lieux d'entrée</span>
+                            </div>
+                            <span class="document-action">↓</span>
+                        </div>
+                        <div class="document-item" onclick="telechargerDocument('quittances')">
+                            <div class="document-info">
+                                <span class="document-icon">🧾</span>
+                                <span class="document-name">Quittances de loyer</span>
+                            </div>
+                            <span class="document-action">↓</span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS RAPIDES -->
+                    <div class="quick-actions">
+                        <div class="quick-actions-title">⚡ Actions rapides</div>
+                        <button class="action-btn" onclick="signalerProbleme()">
+                            <span class="action-icon">⚠️</span>
+                            Signaler un problème
+                        </button>
+                        <button class="action-btn" onclick="voirAnnonce()">
+                            <span class="action-icon">👁️</span>
+                            Voir l'annonce
+                        </button>
+                        <a href="#" id="dashboardLinkAction" class="action-btn" style="text-decoration: none;">
+                            <span class="action-icon">🏠</span>
+                            Retour au dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALERT RAPPEL -->
+            <div class="alert-warning" id="alertRappel" style="display: none;">
+                <div class="alert-icon">🔔</div>
+                <div class="alert-content">
+                    <div class="alert-title">Rappel : État des lieux de sortie</div>
+                    <div class="alert-text">
+                        Votre contrat se termine bientôt. N'oubliez pas de planifier l'état des lieux de sortie avec le propriétaire au moins 2 semaines avant votre départ.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 40px;">
+        <div class="container">
+            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const matchId = urlParams.get('match_id');
+
+        let matchData = null;
+        let currentUser = null;
+        let annonceId = null;
+
+        // Charger les données
+        async function chargerMatch() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                currentUser = user;
+
+                if (!matchId) {
+                    alert('❌ Aucun match spécifié');
+                    history.back();
+                    return;
+                }
+
+                // Récupérer les données
+                const { data: candidature, error } = await supabaseClient
+                    .from('candidatures')
+                    .select(`
+                        *,
+                        annonces (*),
+                        users!candidatures_locataire_id_fkey (*)
+                    `)
+                    .eq('id', matchId)
+                    .single();
+
+                if (error) throw error;
+                matchData = candidature;
+                annonceId = candidature.annonce_id;
+
+                // Récupérer propriétaire
+                const { data: proprietaire } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', candidature.annonces.user_id)
+                    .single();
+
+                // Afficher
+                afficherMatch(candidature, proprietaire);
+                calculerJoursRestants(candidature.annonces);
+
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur lors du chargement');
+            }
+        }
+
+        function afficherMatch(candidature, proprietaire) {
+            const locataire = candidature.users;
+            const annonce = candidature.annonces;
+
+            // Logement
+            document.getElementById('logementAdresse').textContent = annonce.adresse || 'Adresse';
+            document.getElementById('logementVille').textContent = annonce.ville || 'Ville';
+            document.getElementById('logementSurface').textContent = (annonce.surface || '--') + 'm²';
+            document.getElementById('logementPrix').textContent = annonce.prix + '€';
+
+            // Déterminer qui est l'autre personne
+            let contactPerson, contactTitle, contactRoleText;
+            if (currentUser.id === locataire.id) {
+                // Je suis le locataire → Afficher propriétaire
+                contactPerson = proprietaire;
+                contactTitle = 'Votre propriétaire';
+                contactRoleText = 'Propriétaire';
+            } else {
+                // Je suis le propriétaire → Afficher locataire
+                contactPerson = locataire;
+                contactTitle = 'Votre locataire';
+                contactRoleText = 'Locataire';
+            }
+
+            document.getElementById('contactTitle').textContent = contactTitle;
+            document.getElementById('contactNom').textContent = `${contactPerson.prenom} ${contactPerson.nom}`;
+            document.getElementById('contactRole').textContent = contactRoleText;
+            document.getElementById('contactInfo').innerHTML = 
+                `📧 ${contactPerson.email}<br>📞 ${contactPerson.telephone || 'Non renseigné'}`;
+            
+            document.getElementById('btnContact').href = `conversation.html?user_id=${contactPerson.id}`;
+        }
+
+        function calculerJoursRestants(annonce) {
+            // TODO: Calculer avec vraies dates
+            // Pour l'instant, exemple fictif
+            const joursRestants = 180; // 6 mois en jours
+            document.getElementById('joursRestants').textContent = joursRestants;
+
+            // Si moins de 14 jours, afficher alerte
+            if (joursRestants <= 14) {
+                document.getElementById('alertRappel').style.display = 'flex';
+            }
+        }
+
+        // Télécharger document
+        function telechargerDocument(type) {
+            alert('🚧 Téléchargement de document\n\nCette fonctionnalité sera bientôt disponible.\nType: ' + type);
+            // TODO: Implémenter téléchargement depuis Supabase Storage
+        }
+
+        // Signaler problème
+        function signalerProbleme() {
+            if (confirm('Voulez-vous signaler un problème ?\n\nVous allez être redirigé vers la messagerie.')) {
+                // TODO: Créer page signalement ou ouvrir messagerie avec template
+                const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
+                window.location.href = `conversation.html?user_id=${contactUserId}`;
+            }
+        }
+
+        // Voir annonce
+        function voirAnnonce() {
+            if (annonceId) {
+                window.location.href = `logement.html?id=${annonceId}`;
+            }
+        }
+
+        // Gérer dashboard
+        async function gererDashboard() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            const dashboardAction = document.getElementById('dashboardLinkAction');
+            
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+                
+                let dashboardUrl = 'dashboard-locataire.html';
+                if (userData?.type_user === 'hote') {
+                    dashboardUrl = 'dashboard-hote.html';
+                } else if (userData?.type_user === 'proprietaire') {
+                    dashboardUrl = 'dashboard-proprietaire.html';
+                }
+                
+                dashboardLink.href = dashboardUrl;
+                dashboardAction.href = dashboardUrl;
+            }
+        }
+
+        // Init
+        if (typeof supabaseClient !== 'undefined') {
+            chargerMatch();
+            gererDashboard();
+        }
+    </script>
+</body>
+</html>

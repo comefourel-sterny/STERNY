@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment ça marche - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        /* Hero Section réduit */
+        .hero-comment {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        .hero-comment h1 {
+            font-size: 42px;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        /* Section Choix de Profils - mieux aérée */
+        .profiles-section {
+            padding: 60px 20px 80px 20px;
+            background: #F9FAFB;
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+        }
+        
+        .profiles-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(102,126,234,0.2);
+            border-color: var(--primary);
+        }
+        
+        .profile-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 15px;
+        }
+        
+        .profile-card p {
+            font-size: 16px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+        
+        .profile-btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: auto;
+        }
+        
+        .profile-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        /* Lien retour */
+        .back-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Section Intro Vidéo */
+        .intro-section {
+            padding: 60px 20px;
+            background: white;
+        }
+        
+        .intro-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .intro-container h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+                <li><a href="devenir-hote.html">Devenir hôte</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-comment">
+        <h1>Comment ça marche ?</h1>
+    </section>
+
+    <!-- CHOIX DE PROFILS -->
+    <section class="profiles-section">
+        <div class="profiles-container">
+            <div class="profiles-grid">
+                <!-- Propriétaire -->
+                <div class="profile-card" onclick="window.location.href='comment-ca-marche-proprietaire.html'">
+                    <div class="profile-icon">🏠</div>
+                    <h3>Je suis propriétaire</h3>
+                    <p>J'ai un logement à louer à des étudiants en alternance</p>
+                    <a href="comment-ca-marche-proprietaire.html" class="profile-btn">Découvrir</a>
+                </div>
+                
+                <!-- Alterner mon logement -->
+                <div class="profile-card" onclick="window.location.href='comment-ca-marche-alterner.html'">
+                    <div class="profile-icon">🔄</div>
+                    <h3>J'ai un logement à partager</h3>
+                    <p>Je veux trouver un binôme pour diviser mon loyer</p>
+                    <a href="comment-ca-marche-alterner.html" class="profile-btn">Découvrir</a>
+                </div>
+                
+                <!-- Rechercher un logement -->
+                <div class="profile-card" onclick="window.location.href='comment-ca-marche-recherche.html'">
+                    <div class="profile-icon">🔍</div>
+                    <h3>Je cherche un logement</h3>
+                    <p>Je veux trouver un logement adapté à mon alternance</p>
+                    <a href="comment-ca-marche-recherche.html" class="profile-btn">Découvrir</a>
+                </div>
+            </div>
+            
+            <div class="back-link">
+                <a href="index.html">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Gérer le lien "Mon espace"
+        async function gererLienMonEspace() {
+            const lien = document.getElementById('monEspaceLink');
+            if (!lien) return;
+            
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (userData?.type_user === 'hote') {
+                    lien.href = 'dashboard-hote.html';
+                } else {
+                    lien.href = 'dashboard-locataire.html';
+                }
+            } else {
+                lien.href = 'connexion.html';
+            }
+        }
+        
+        gererLienMonEspace();
+    </script>
+</body>
+</html>

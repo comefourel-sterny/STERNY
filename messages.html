@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+            margin: 0;
+        }
+        
+        /* GRANDE BARRE VIOLETTE PROFIL (identique dashboard) */
+        .profile-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+        
+        .profile-hero .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-photo .initials {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .profile-details {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-profile {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+        }
+        
+        .btn-profile.btn-logout-violet {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-profile.btn-logout-violet:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .messages-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px 80px;
+            min-height: calc(100vh - 500px);
+        }
+        
+        /* TITRE SECTION */
+        .section-header {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+        
+        /* CARTE PRINCIPALE */
+        .messages-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        /* LISTE DES CONVERSATIONS */
+        .conversations-list {
+            background: white;
+        }
+        
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--gray-100);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .conversation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .conversation-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), transparent);
+            transform: translateX(4px);
+        }
+        
+        .conversation-item.unread {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08), transparent);
+        }
+        
+        .conversation-item.unread:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.12), transparent);
+        }
+        
+        /* PHOTO DE PROFIL */
+        .conversation-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 22px;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .conversation-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* INFO CONVERSATION */
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .conversation-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .conversation-item.unread .conversation-name {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .conversation-time {
+            font-size: 13px;
+            color: var(--gray-500);
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        
+        .conversation-preview {
+            font-size: 15px;
+            color: var(--gray-600);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.5;
+        }
+        
+        .conversation-item.unread .conversation-preview {
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+        
+        /* BADGE NON LU */
+        .unread-badge {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* ÉTAT VIDE */
+        .empty-state {
+            text-align: center;
+            padding: 100px 40px;
+        }
+        
+        .empty-icon {
+            font-size: 96px;
+            margin-bottom: 24px;
+            opacity: 0.4;
+        }
+        
+        .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+        
+        .empty-text {
+            color: var(--gray-600);
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .profile-hero .container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-profile {
+                width: 100%;
+            }
+            
+            .messages-container {
+                margin: 30px auto 40px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .conversation-avatar {
+                width: 52px;
+                height: 52px;
+                font-size: 20px;
+            }
+            
+            .conversation-item {
+                padding: 16px 20px;
+            }
+            
+            .conversation-name {
+                font-size: 16px;
+            }
+            
+            .conversation-preview {
+                font-size: 14px;
+            }
+            
+            .empty-state {
+                padding: 60px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- GRANDE BARRE VIOLETTE PROFIL (identique dashboard) -->
+    <div class="profile-hero">
+        <div class="container">
+            <div class="profile-photo" id="profilePhoto">
+                <div class="initials" id="profileInitials">?</div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Chargement...</div>
+                <div class="profile-details" id="profileDetails">...</div>
+                <div class="profile-details" id="profileSchool">...</div>
+            </div>
+            <div class="profile-actions">
+                <a href="modifier-profil.html" class="btn-profile">✏️ Modifier mon profil</a>
+                <button class="btn-profile btn-logout-violet" onclick="seDeconnecter()">Déconnexion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="messages-container">
+        <div class="section-header">
+            <h2 class="section-title">💬 Mes conversations</h2>
+        </div>
+        
+        <!-- CARTE BLANCHE -->
+        <div class="messages-card">
+            <!-- LISTE DES CONVERSATIONS -->
+            <div id="conversationsList">
+                <!-- Les conversations seront chargées ici -->
+            </div>
+            
+            <!-- ÉTAT VIDE -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">💬</div>
+                <h2 class="empty-title">Aucun message</h2>
+                <p class="empty-text">
+                    Tes conversations apparaîtront ici.<br>
+                    Contacte un propriétaire pour commencer à échanger !
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 0;">
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p><a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a></p>
+        </div>
+    </footer>
+
+    <script>
+        let currentUser = null;
+        
+        // Vérifier l'authentification
+        async function checkAuth() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            if (!user) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            currentUser = user;
+            
+            // Récupérer les infos du profil
+            const { data: userData, error } = await supabaseClient
+                .from('users')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+            
+            if (error) {
+                console.error('Erreur chargement profil:', error);
+                return;
+            }
+            
+            // Charger le profil dans la barre violette
+            chargerProfil(userData);
+            
+            // Charger les conversations
+            await chargerConversations();
+        }
+        
+        // Charger et afficher le profil
+        function chargerProfil(userData) {
+            // Nom complet
+            const nomComplet = `${userData.prenom} ${userData.nom}`;
+            document.getElementById('profileName').textContent = nomComplet;
+            
+            // Détails (âge + sexe)
+            let details = '';
+            if (userData.date_naissance) {
+                const age = calculerAge(userData.date_naissance);
+                details = `${age} ans`;
+            }
+            if (userData.sexe && userData.sexe !== 'non-precise') {
+                const sexeLabel = userData.sexe.charAt(0).toUpperCase() + userData.sexe.slice(1);
+                details += details ? ` • ${sexeLabel}` : sexeLabel;
+            }
+            document.getElementById('profileDetails').textContent = details || 'Informations non renseignées';
+            
+            // École
+            let schoolInfo = '';
+            if (userData.ecole) {
+                schoolInfo = userData.ecole;
+                if (userData.annee_etudes) {
+                    schoolInfo += ` • ${userData.annee_etudes}`;
+                }
+                if (userData.filiere) {
+                    schoolInfo += ` • ${userData.filiere}`;
+                }
+            }
+            document.getElementById('profileSchool').textContent = schoolInfo || 'École non renseignée';
+            
+            // Photo de profil
+            const profilePhoto = document.getElementById('profilePhoto');
+            const profileInitials = document.getElementById('profileInitials');
+            
+            if (userData.photo_profil_url) {
+                const img = document.createElement('img');
+                img.src = userData.photo_profil_url;
+                img.alt = 'Photo de profil';
+                profilePhoto.innerHTML = '';
+                profilePhoto.appendChild(img);
+            } else {
+                const initiales = (userData.prenom?.charAt(0) || '') + (userData.nom?.charAt(0) || '');
+                profileInitials.textContent = initiales.toUpperCase() || '?';
+            }
+        }
+        
+        // Calculer l'âge
+        function calculerAge(dateNaissance) {
+            const today = new Date();
+            const birthDate = new Date(dateNaissance);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        // Déconnexion
+        async function seDeconnecter() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+        
+        // Charger toutes les conversations
+        async function chargerConversations() {
+            try {
+                // Récupérer TOUS les messages
+                const { data: messages, error } = await supabaseClient
+                    .from('messages')
+                    .select(`
+                        *,
+                        expediteur:users!messages_expediteur_id_fkey(id, prenom, nom, photo_profil_url),
+                        destinataire:users!messages_destinataire_id_fkey(id, prenom, nom, photo_profil_url),
+                        annonce:annonces(titre)
+                    `)
+                    .or(`expediteur_id.eq.${currentUser.id},destinataire_id.eq.${currentUser.id}`)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Erreur chargement messages:', error);
+                    return;
+                }
+                
+                console.log('Messages chargés:', messages);
+                
+                if (!messages || messages.length === 0) {
+                    document.getElementById('emptyState').style.display = 'block';
+                    return;
+                }
+                
+                // Grouper les messages par conversation
+                const conversations = {};
+                
+                messages.forEach(msg => {
+                    // Identifier l'autre personne
+                    const isExpediteur = msg.expediteur_id === currentUser.id;
+                    const autreUserId = isExpediteur ? msg.destinataire_id : msg.expediteur_id;
+                    const autreUser = isExpediteur ? msg.destinataire : msg.expediteur;
+                    
+                    // VÉRIFICATION: Ignorer si l'autre utilisateur n'existe pas
+                    if (!autreUser || !autreUser.prenom || !autreUser.nom) {
+                        console.warn('Utilisateur manquant pour le message:', msg);
+                        return;
+                    }
+                    
+                    // Si c'est la première fois qu'on voit cette conversation
+                    if (!conversations[autreUserId]) {
+                        conversations[autreUserId] = {
+                            userId: autreUserId,
+                            user: autreUser,
+                            annonce: msg.annonce,
+                            lastMessage: msg,
+                            unread: !isExpediteur && !msg.lu // Non lu si on est le destinataire et pas encore lu
+                        };
+                    }
+                });
+                
+                // Afficher les conversations
+                afficherConversations(Object.values(conversations));
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+        
+        // Afficher les conversations
+        function afficherConversations(conversations) {
+            const container = document.getElementById('conversationsList');
+            
+            if (conversations.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="conversations-list">
+                    ${conversations.map(conv => {
+                        // Si c'est une alerte
+                        if (conv.lastMessage.is_alert) {
+                            const timeAgo = getTimeAgo(new Date(conv.lastMessage.created_at));
+                            
+                            return `
+                                <div class="conversation-item ${conv.unread ? 'unread' : ''}" onclick="ouvrirConversation('${conv.userId}')">
+                                    <div class="conversation-avatar" style="background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);">
+                                        🔔
+                                    </div>
+                                    <div class="conversation-info">
+                                        <div class="conversation-header">
+                                            <div class="conversation-name">AlternHome</div>
+                                            <div class="conversation-time">${timeAgo}</div>
+                                        </div>
+                                        <div class="conversation-preview">Nouvelle annonce correspondant à ta recherche !</div>
+                                    </div>
+                                    ${conv.unread ? '<div class="unread-badge"></div>' : ''}
+                                </div>
+                            `;
+                        }
+                        
+                        // Sinon, message normal
+                        const nomComplet = `${conv.user.prenom} ${conv.user.nom}`;
+                        const initiales = conv.user.prenom.charAt(0) + conv.user.nom.charAt(0);
+                        
+                        // Temps relatif
+                        const timeAgo = getTimeAgo(new Date(conv.lastMessage.created_at));
+                        
+                        // Aperçu du message (tronqué à 60 caractères)
+                        let preview = conv.lastMessage.contenu;
+                        if (preview.length > 60) {
+                            preview = preview.substring(0, 60) + '...';
+                        }
+                        
+                        // Si c'est nous qui avons envoyé le dernier message
+                        if (conv.lastMessage.expediteur_id === currentUser.id) {
+                            preview = 'Vous : ' + preview;
+                        }
+                        
+                        return `
+                            <div class="conversation-item ${conv.unread ? 'unread' : ''}" onclick="ouvrirConversation('${conv.userId}')">
+                                <div class="conversation-avatar">
+                                    ${conv.user.photo_profil_url 
+                                        ? `<img src="${conv.user.photo_profil_url}" alt="${nomComplet}">`
+                                        : initiales.toUpperCase()
+                                    }
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <div class="conversation-name">${nomComplet}</div>
+                                        <div class="conversation-time">${timeAgo}</div>
+                                    </div>
+                                    <div class="conversation-preview">${preview}</div>
+                                </div>
+                                ${conv.unread ? '<div class="unread-badge"></div>' : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
+        // Convertir une date en temps relatif
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 7) {
+                return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+            } else if (days > 0) {
+                return days === 1 ? 'Hier' : `Il y a ${days}j`;
+            } else if (hours > 0) {
+                return `Il y a ${hours}h`;
+            } else if (minutes > 0) {
+                return `Il y a ${minutes}min`;
+            } else {
+                return 'À l\'instant';
+            }
+        }
+        
+        // Ouvrir une conversation
+        function ouvrirConversation(userId) {
+            window.location.href = `conversation.html?user_id=${userId}`;
+        }
+        
+        // Gérer le lien "Mon espace"
+        async function gererLienMonEspace() {
+            const lien = document.getElementById('monEspaceLink');
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (userData?.type_user === 'hote') {
+                    lien.href = 'dashboard-hote.html';
+                } else {
+                    lien.href = 'dashboard-locataire.html';
+                }
+            } else {
+                lien.href = 'connexion.html';
+            }
+        }
+        
+        // Au chargement
+        if (typeof supabaseClient !== 'undefined') {
+            checkAuth();
+            gererLienMonEspace();
+        }
+    </script>
+</body>
+</html>

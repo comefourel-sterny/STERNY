@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenir Propriétaire Partenaire - AlternHome</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        /* ===== BANNIÈRE PARRAINAGE ===== */
+        .referral-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .referral-banner.show {
+            display: block;
+        }
+
+        .referral-banner p {
+            font-size: 15px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .referral-banner .referrer-name {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--gray-900);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .hero .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        /* ===== FORMULAIRE INSCRIPTION ===== */
+        .inscription-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .inscription-section .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .inscription-card {
+            background: white;
+            border-radius: 16px;
+            padding: 50px 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .inscription-card h2 {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #1a202c;
+        }
+
+        .inscription-card .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-group .required {
+            color: #ef4444;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .inscription-card {
+                padding: 40px 30px;
+            }
+
+            nav ul {
+                gap: 15px;
+            }
+
+            nav a {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BANNIÈRE PARRAINAGE -->
+    <div class="referral-banner" id="referralBanner">
+        <p>💬 <span class="referrer-name" id="referrerName"></span> vous recommande AlternHome</p>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 AlternHome</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <h1>Rentabilisez votre logement<br>différemment</h1>
+        </div>
+    </section>
+
+    <!-- FORMULAIRE INSCRIPTION -->
+    <section class="inscription-section" id="inscription">
+        <div class="container">
+            <div class="inscription-card">
+                <h2>Rejoignez AlternHome</h2>
+                <p class="subtitle">Créez votre compte propriétaire en 30 secondes</p>
+
+                <form id="inscriptionForm" onsubmit="inscrireProprietaire(event)">
+                    <div class="form-group">
+                        <label>Prénom <span class="required">*</span></label>
+                        <input type="text" id="prenom" placeholder="Jean" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nom <span class="required">*</span></label>
+                        <input type="text" id="nom" placeholder="Dupont" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" id="email" placeholder="jean.dupont@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mot de passe <span class="required">*</span></label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                            <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Créer mon compte propriétaire
+                    </button>
+
+                    <div class="message" id="messageBox"></div>
+                </form>
+
+                <div class="login-link">
+                    Déjà inscrit ? <a href="connexion.html">Se connecter</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Détecter le parrain dans l'URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const parrain = urlParams.get('parrain');
+            
+            if (parrain) {
+                const referralBanner = document.getElementById('referralBanner');
+                const referrerName = document.getElementById('referrerName');
+                
+                // Formater le nom (thomas-martin → Thomas Martin)
+                const formattedName = parrain
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                referrerName.textContent = formattedName;
+                referralBanner.classList.add('show');
+            }
+        });
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Inscription du propriétaire
+        async function inscrireProprietaire(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageBox = document.getElementById('messageBox');
+            
+            const prenom = document.getElementById('prenom').value.trim();
+            const nom = document.getElementById('nom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Création en cours...';
+            
+            try {
+                // Récupérer les infos de parrainage depuis l'URL ou sessionStorage
+                const urlParams = new URLSearchParams(window.location.search);
+                const parrainFromUrl = urlParams.get('parrain');
+                const referrerId = sessionStorage.getItem('referrer_id');
+                const referralCode = sessionStorage.getItem('referral_code');
+                
+                // 1. Créer le compte Supabase Auth
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (authError) throw authError;
+                
+                // 2. Créer l'entrée dans la table users
+                const { error: insertError } = await supabaseClient
+                    .from('users')
+                    .insert([
+                        {
+                            id: authData.user.id,
+                            prenom: prenom,
+                            nom: nom,
+                            email: email,
+                            type_user: 'proprietaire',
+                            referrer_id: referrerId || null,
+                            code_parrainage: null // Les propriétaires n'ont pas de code
+                        }
+                    ]);
+                
+                if (insertError) throw insertError;
+                
+                showMessage('success', '✅ Compte créé avec succès ! Redirection...');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard-proprietaire.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMessage('error', `❌ Erreur : ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Créer mon compte propriétaire';
+            }
+        }
+
+        // Afficher un message
+        function showMessage(type, text) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.className = 'message ' + type + ' show';
+            messageBox.textContent = text;
+        }
+    </script>
+
+</body>
+</html>

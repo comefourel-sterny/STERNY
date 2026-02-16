@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrat de location - EASWAP</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        /* CONTAINER */
+        .main-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            border: 1px solid #E5E7EB;
+        }
+
+        /* HEADER */
+        .contract-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .contract-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .contract-header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* PROGRESS */
+        .progress-container {
+            padding: 30px 40px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .progress-line-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 33%;
+            transition: width 0.5s;
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            flex: 1;
+        }
+
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .progress-circle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-step.completed .progress-circle {
+            background: #10b981;
+            color: white;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .progress-step.active .progress-label {
+            color: #667eea;
+        }
+
+        /* CONTRACT CONTENT */
+        .contract-content {
+            padding: 40px;
+        }
+
+        .contract-section {
+            margin-bottom: 30px;
+        }
+
+        .contract-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contract-section-icon {
+            font-size: 24px;
+        }
+
+        .contract-box {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .contract-box strong {
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .contract-box ul {
+            margin: 10px 0 10px 20px;
+        }
+
+        .contract-box li {
+            margin-bottom: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* ALERT */
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .alert-warning-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .alert-warning-content {
+            flex: 1;
+        }
+
+        .alert-warning-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .alert-warning-text {
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* SIGNATURE SECTION */
+        .signature-section {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .signature-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-container:hover {
+            border-color: #667eea;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .checkbox-label strong {
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        /* ACTIONS */
+        .actions-container {
+            padding: 30px 40px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .btn-back {
+            background: white;
+            color: #6b7280;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-download {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .btn-download:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .contract-header, .contract-content, .actions-container {
+                padding: 25px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-container {
+                flex-direction: column-reverse;
+            }
+
+            .btn-back, .btn-primary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">🏠 EASWAP</a>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- HEADER -->
+        <div class="contract-header">
+            <h1>📜 Contrat de location meublée</h1>
+            <p>Lisez attentivement et signez électroniquement</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill"></div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">✓</div>
+                    <div class="progress-label">Match</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="progress-circle">2</div>
+                    <div class="progress-label">Contrat</div>
+                </div>
+                <div class="progress-step">
+                    <div class="progress-circle">3</div>
+                    <div class="progress-label">Paiement</div>
+                </div>
+                <div class="progress-step">
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">État des lieux</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTRACT CONTENT -->
+        <div class="contract-content">
+            <!-- SECTION 1: PARTIES -->
+            <div class="contract-section">
+                <h2>
+                    <span class="contract-section-icon">👥</span>
+                    Entre les soussignés
+                </h2>
+                <div class="contract-box">
+                    <p><strong>LE BAILLEUR (Propriétaire) :</strong></p>
+                    <p id="proprietaireInfo">Chargement...</p>
+                    
+                    <p style="margin-top: 20px;"><strong>LE LOCATAIRE :</strong></p>
+                    <p id="locataireInfo">Chargement...</p>
+                </div>
+            </div>
+
+            <!-- SECTION 2: LOGEMENT -->
+            <div class="contract-section">
+                <h2>
+                    <span class="contract-section-icon">🏠</span>
+                    Désignation du logement loué
+                </h2>
+                <div class="contract-box">
+                    <p id="logementInfo">Chargement...</p>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Surface habitable</div>
+                            <div class="info-value" id="logementSurface">--m²</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Type de bien</div>
+                            <div class="info-value" id="logementType">Meublé</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Nombre de pièces</div>
+                            <div class="info-value" id="logementPieces">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">DPE</div>
+                            <div class="info-value" id="logementDPE">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: DURÉE -->
+            <div class="contract-section">
+                <h2>
+                    <span class="contract-section-icon">📅</span>
+                    Durée de la location
+                </h2>
+                <div class="contract-box">
+                    <p>Le présent contrat est conclu pour une durée de <strong id="dureeMois">6 mois</strong>, du <strong id="dateDebut">01/03/2026</strong> au <strong id="dateFin">31/08/2026</strong>.</p>
+                    
+                    <p style="margin-top: 15px;">Il s'agit d'une location meublée à usage d'habitation principale pour étudiant en alternance. Le contrat est renouvelable par tacite reconduction sauf préavis de <strong>1 mois</strong> donné par le locataire.</p>
+                </div>
+            </div>
+
+            <!-- SECTION 4: LOYER -->
+            <div class="contract-section">
+                <h2>
+                    <span class="contract-section-icon">💰</span>
+                    Conditions financières
+                </h2>
+                <div class="contract-box">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Loyer mensuel</div>
+                            <div class="info-value" id="loyerMensuel">275€</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Charges comprises</div>
+                            <div class="info-value">Oui</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Dépôt de garantie</div>
+                            <div class="info-value" id="depotGarantie">275€</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Paiement le</div>
+                            <div class="info-value">1er du mois</div>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 20px;">Le loyer est payable mensuellement, d'avance, le 1er de chaque mois. Le dépôt de garantie (maximum 1 mois pour location meublée) sera restitué dans un délai maximum de 1 mois après la restitution des clés, déduction faite, le cas échéant, des sommes restant dues et des réparations locatives.</p>
+                </div>
+            </div>
+
+            <!-- SECTION 5: OBLIGATIONS -->
+            <div class="contract-section">
+                <h2>
+                    <span class="contract-section-icon">📋</span>
+                    Obligations des parties
+                </h2>
+                <div class="contract-box">
+                    <p><strong>Obligations du locataire :</strong></p>
+                    <ul>
+                        <li>Payer le loyer et les charges aux termes convenus</li>
+                        <li>Souscrire une assurance habitation (responsabilité civile locative)</li>
+                        <li>Utiliser paisiblement le logement</li>
+                        <li>Prendre en charge l'entretien courant et les menues réparations</li>
+                        <li>Laisser exécuter les travaux urgents et nécessaires</li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>Obligations du bailleur :</strong></p>
+                    <ul>
+                        <li>Délivrer au locataire un logement décent</li>
+                        <li>Assurer au locataire la jouissance paisible du logement</li>
+                        <li>Entretenir le logement en l'état de servir</li>
+                        <li>Ne pas s'opposer aux aménagements réalisés par le locataire</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ALERT WARNING -->
+            <div class="alert-warning">
+                <div class="alert-warning-icon">⚠️</div>
+                <div class="alert-warning-content">
+                    <div class="alert-warning-title">Documents obligatoires annexés</div>
+                    <div class="alert-warning-text">
+                        Ce contrat comprend en annexe les diagnostics techniques obligatoires : DPE (Diagnostic de Performance Énergétique), ERNT (État des Risques Naturels et Technologiques), et le cas échéant : diagnostic plomb, amiante, gaz, électricité. Le propriétaire s'engage à fournir ces documents.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIGNATURE -->
+            <div class="signature-section">
+                <h3>✍️ Signature électronique</h3>
+                
+                <div class="checkbox-container" onclick="toggleCheckbox('cgvCheckbox')">
+                    <input type="checkbox" id="cgvCheckbox">
+                    <label for="cgvCheckbox" class="checkbox-label">
+                        <strong>J'ai lu et j'accepte les Conditions Générales de Vente</strong> d'EASWAP. Je comprends que cette plateforme agit en tant qu'intermédiaire et que le contrat de location est conclu directement entre le propriétaire et moi-même.
+                    </label>
+                </div>
+
+                <div class="checkbox-container" onclick="toggleCheckbox('contratCheckbox')" style="margin-top: 15px;">
+                    <input type="checkbox" id="contratCheckbox">
+                    <label for="contratCheckbox" class="checkbox-label">
+                        <strong>Je déclare avoir lu et accepté l'intégralité du contrat de location</strong> ci-dessus. Je m'engage à respecter toutes les clauses mentionnées. Je certifie l'exactitude des informations fournies.
+                    </label>
+                </div>
+
+                <button class="btn-download" onclick="telechargerPDF()">
+                    📄 Télécharger le contrat en PDF
+                </button>
+
+                <p style="margin-top: 20px; font-size: 13px; color: #6b7280; text-align: center;">
+                    En cliquant sur "Signer et continuer", vous apposez votre signature électronique qui a la même valeur légale qu'une signature manuscrite.
+                </p>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions-container">
+            <a href="match-confirmation.html?match_id=xxx" class="btn-back" id="btnRetour">
+                ← Retour
+            </a>
+            <button class="btn-primary" id="btnSigner" disabled onclick="signerContrat()">
+                ✍️ Signer et continuer
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 40px;">
+        <div class="container">
+            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script>
+        // Récupérer l'ID du match
+        const urlParams = new URLSearchParams(window.location.search);
+        const matchId = urlParams.get('match_id');
+
+        let matchData = null;
+        let currentUser = null;
+
+        // Charger les données
+        async function chargerContrat() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                currentUser = user;
+
+                if (!matchId) {
+                    alert('❌ Aucun match spécifié');
+                    history.back();
+                    return;
+                }
+
+                // Récupérer les données
+                const { data: candidature, error } = await supabaseClient
+                    .from('candidatures')
+                    .select(`
+                        *,
+                        annonces (*),
+                        users!candidatures_locataire_id_fkey (*)
+                    `)
+                    .eq('id', matchId)
+                    .single();
+
+                if (error) throw error;
+                matchData = candidature;
+
+                // Récupérer propriétaire
+                const { data: proprietaire } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', candidature.annonces.user_id)
+                    .single();
+
+                // Afficher
+                afficherContrat(candidature, proprietaire);
+
+                // Liens
+                document.getElementById('btnRetour').href = `match-confirmation.html?match_id=${matchId}`;
+
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur lors du chargement');
+            }
+        }
+
+        function afficherContrat(candidature, proprietaire) {
+            const locataire = candidature.users;
+            const annonce = candidature.annonces;
+
+            // Propriétaire
+            document.getElementById('proprietaireInfo').innerHTML = 
+                `<strong>${proprietaire.prenom} ${proprietaire.nom}</strong><br>
+                Email : ${proprietaire.email}<br>
+                Téléphone : ${proprietaire.telephone || 'Non renseigné'}`;
+
+            // Locataire
+            document.getElementById('locataireInfo').innerHTML = 
+                `<strong>${locataire.prenom} ${locataire.nom}</strong><br>
+                Email : ${locataire.email}<br>
+                Téléphone : ${locataire.telephone || 'Non renseigné'}`;
+
+            // Logement
+            document.getElementById('logementInfo').textContent = 
+                `Logement situé au ${annonce.adresse || 'adresse'}, ${annonce.ville}`;
+            document.getElementById('logementSurface').textContent = 
+                `${annonce.surface || '--'}m²`;
+            document.getElementById('logementPieces').textContent = 
+                `${annonce.pieces || '--'} pièces`;
+
+            // Montants
+            document.getElementById('loyerMensuel').textContent = `${annonce.prix}€`;
+            document.getElementById('depotGarantie').textContent = `${annonce.prix}€`;
+        }
+
+        // Toggle checkbox
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            checkbox.checked = !checkbox.checked;
+            verifierFormulaire();
+        }
+
+        // Vérifier si tout est coché
+        function verifierFormulaire() {
+            const cgv = document.getElementById('cgvCheckbox').checked;
+            const contrat = document.getElementById('contratCheckbox').checked;
+            const btnSigner = document.getElementById('btnSigner');
+            
+            btnSigner.disabled = !(cgv && contrat);
+        }
+
+        // Écouter les changements
+        document.getElementById('cgvCheckbox').addEventListener('change', verifierFormulaire);
+        document.getElementById('contratCheckbox').addEventListener('change', verifierFormulaire);
+
+        // Signer le contrat
+        async function signerContrat() {
+            if (!matchData) return;
+
+            try {
+                // TODO: Enregistrer la signature dans Supabase
+                // Créer une table 'contrats' avec : id, candidature_id, date_signature, etc.
+                
+                console.log('✅ Contrat signé !');
+                
+                // Redirection vers paiement
+                window.location.href = `paiement-initial.html?match_id=${matchId}`;
+
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                alert('❌ Erreur lors de la signature');
+            }
+        }
+
+        // Télécharger PDF (à implémenter)
+        function telechargerPDF() {
+            alert('🚧 Fonctionnalité en cours de développement\n\nLe téléchargement PDF sera bientôt disponible.');
+        }
+
+        // Gérer le lien dashboard
+        async function gererDashboard() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+            
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (userData?.type_user === 'hote') {
+                    dashboardLink.href = 'dashboard-hote.html';
+                } else if (userData?.type_user === 'proprietaire') {
+                    dashboardLink.href = 'dashboard-proprietaire.html';
+                } else {
+                    dashboardLink.href = 'dashboard-locataire.html';
+                }
+            }
+        }
+
+        // Init
+        if (typeof supabaseClient !== 'undefined') {
+            chargerContrat();
+            gererDashboard();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlternHome - Trouve ton logement en alternance</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 100px 20px 120px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        /* BARRE DE RECHERCHE */
+        .search-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .search-field {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        
+        .search-btn {
+            flex-shrink: 0;
+        }
+        
+        .search-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .search-field select,
+        .search-field input {
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-field select:focus,
+        .search-field input:focus {
+            border-color: var(--primary);
+        }
+        
+        .search-btn {
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .search-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* SECTION LOGEMENTS */
+        .featured-section {
+            padding: 80px 20px;
+            background: var(--gray-50);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-size: 36px;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+        
+        .section-header p {
+            font-size: 18px;
+            color: var(--gray-600);
+        }
+        
+        .logements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logement-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .logement-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+        
+        .logement-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            position: relative;
+        }
+        
+        .logement-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .logement-content {
+            padding: 20px;
+        }
+        
+        .logement-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .logement-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+        
+        .logement-location {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .logement-features {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .feature-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            color: var(--gray-700);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-field {
+                min-width: 100%;
+            }
+            
+            .search-btn {
+                width: 100%;
+            }
+            
+            .logements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+    <div class="container">
+        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#" id="commentCaMarcheLink">Comment ça marche</a></li>
+            <li><a href="devenir-hote.html">Devenir hôte</a></li>
+        </ul>
+    </div>
+</nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>🏠 Trouve ton logement en alternance</h1>
+        <p>Des logements adaptés à ton rythme école-entreprise</p>
+        
+        <!-- BARRE DE RECHERCHE -->
+        <div class="search-bar">
+            <div class="search-field">
+                <label>Ville</label>
+                <select id="ville">
+                    <option value="">Sélectionne une ville</option>
+                    <option value="rennes">Rennes</option>
+                    <option value="nantes">Nantes</option>
+                    <option value="brest">Brest</option>
+                </select>
+            </div>
+            
+            <div class="search-field">
+                <label>Budget max</label>
+                <select id="budget">
+                    <option value="">Budget</option>
+                    <option value="400">Moins de 400€</option>
+                    <option value="500">400€ - 500€</option>
+                    <option value="600">500€ - 600€</option>
+                    <option value="700">Plus de 600€</option>
+                </select>
+            </div>
+            
+            <div class="search-field">
+                <label>Rythme alternance</label>
+                <select id="rythme" onchange="toggleDisponibilites()">
+                    <option value="">Rythme</option>
+                    <option value="hebdo">Hebdomadaire</option>
+                    <option value="bloc">Par blocs</option>
+                    <option value="jour">Par jour</option>
+                    <option value="longs">Longues périodes</option>
+                    <option value="perso">Personnalisé</option>
+                </select>
+            </div>
+            
+            <div class="search-field" id="disponibilitesField" style="display: none;">
+                <label>Mes disponibilités</label>
+                <select id="disponibilites">
+                    <option value="">Mes disponibilités</option>
+                    <option value="1">1 semaine / 1 semaine</option>
+                    <option value="2">2 semaines / 2 semaines</option>
+                    <option value="3">3 semaines / 3 semaines</option>
+                    <option value="4">4 semaines / 4 semaines</option>
+                    <option value="6">6 semaines / 6 semaines</option>
+                    <option value="8">8 semaines / 8 semaines</option>
+                </select>
+            </div>
+            
+            <button class="search-btn" onclick="rechercher()">
+                🔍 Rechercher
+            </button>
+        </div>
+    </section>
+
+    <!-- LOGEMENTS À LA UNE -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Logements disponibles</h2>
+                <p>Sélectionnés pour les alternants</p>
+            </div>
+            
+            <div class="logements-grid">
+                <!-- Logement 1 -->
+                <a href="logement.html?id=1" class="logement-card">
+                    <div class="logement-image">
+                        🏢
+                        <span class="logement-badge">Nouveau</span>
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">450€ / mois</div>
+                        <div class="logement-title">Studio meublé</div>
+                        <div class="logement-location">📍 Centre-ville, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">25m²</span>
+                            <span class="feature-tag">1 sem/1 sem</span>
+                            <span class="feature-tag">Wifi</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Logement 2 -->
+                <a href="logement.html?id=2" class="logement-card">
+                    <div class="logement-image">
+                        🏠
+                        <span class="logement-badge">Populaire</span>
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">380€ / mois</div>
+                        <div class="logement-title">Colocation 3 personnes</div>
+                        <div class="logement-location">📍 Villejean, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">Chambre 12m²</span>
+                            <span class="feature-tag">Proche métro</span>
+                            <span class="feature-tag">Jardin</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Logement 3 -->
+                <a href="logement.html?id=3" class="logement-card">
+                    <div class="logement-image">
+                        🏡
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">520€ / mois</div>
+                        <div class="logement-title">T1 avec parking</div>
+                        <div class="logement-location">📍 Cleunay, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">30m²</span>
+                            <span class="feature-tag">Parking</span>
+                            <span class="feature-tag">Balcon</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Logement 4 -->
+                <a href="logement.html?id=4" class="logement-card">
+                    <div class="logement-image">
+                        🏘️
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">410€ / mois</div>
+                        <div class="logement-title">Studio proche gare</div>
+                        <div class="logement-location">📍 Gare, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">22m²</span>
+                            <span class="feature-tag">5min gare</span>
+                            <span class="feature-tag">Meublé</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Logement 5 -->
+                <a href="logement.html?id=5" class="logement-card">
+                    <div class="logement-image">
+                        🏛️
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">490€ / mois</div>
+                        <div class="logement-title">Studio rénové</div>
+                        <div class="logement-location">📍 Sainte-Anne, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">28m²</span>
+                            <span class="feature-tag">Rénové 2025</span>
+                            <span class="feature-tag">Lumineux</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Logement 6 -->
+                <a href="logement.html?id=6" class="logement-card">
+                    <div class="logement-image">
+                        🌳
+                    </div>
+                    <div class="logement-content">
+                        <div class="logement-price">550€ / mois</div>
+                        <div class="logement-title">T1 avec terrasse</div>
+                        <div class="logement-location">📍 Maurepas, Rennes</div>
+                        <div class="logement-features">
+                            <span class="feature-tag">32m²</span>
+                            <span class="feature-tag">Terrasse</span>
+                            <span class="feature-tag">Calme</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+            <p><a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a></p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDisponibilites() {
+            const rythme = document.getElementById('rythme').value;
+            const disponibilitesField = document.getElementById('disponibilitesField');
+            
+            // Afficher "Mes disponibilités" UNIQUEMENT pour ces rythmes
+            if (rythme === 'hebdo' || rythme === 'bloc' || rythme === 'jour' || rythme === 'longs') {
+                disponibilitesField.style.display = 'flex';
+            } else {
+                disponibilitesField.style.display = 'none';
+                document.getElementById('disponibilites').value = '';
+            }
+        }
+        
+        function rechercher() {
+            const ville = document.getElementById('ville').value;
+            const budget = document.getElementById('budget').value;
+            const rythme = document.getElementById('rythme').value;
+            const disponibilites = document.getElementById('disponibilites').value;
+            
+            // Construction de l'URL avec paramètres
+            let url = 'recherche.html?';
+            if (ville) url += 'ville=' + ville + '&';
+            if (budget) url += 'budget=' + budget + '&';
+            if (rythme) url += 'rythme=' + rythme + '&';
+            if (disponibilites) url += 'disponibilites=' + disponibilites;
+            
+            // Redirection vers la page de recherche
+            window.location.href = url;
+        }
+        
+        // Permet de rechercher avec la touche Entrée
+        document.querySelectorAll('.search-field select').forEach(select => {
+            select.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    rechercher();
+                }
+            });
+        });
+    </script>
+    <script>
+// Gérer le lien "Mon espace"
+async function gererLienMonEspace() {
+    const lien = document.getElementById('monEspaceLink');
+    if (!lien) return;
+    
+    // Vérifier si connecté
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (user) {
+        // Connecté : récupérer le type d'utilisateur
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', user.id)
+            .single();
+        
+        if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-hote.html';
+        } else {
+            lien.href = 'dashboard-locataire.html';
+        }
+    } else {
+        // Non connecté : rediriger vers la page de connexion
+        lien.href = 'connexion.html';
+    }
+}
+
+// Gérer le lien "Comment ça marche"
+async function gererLienCommentCaMarche() {
+    const lien = document.getElementById('commentCaMarcheLink');
+    if (!lien) return;
+    
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (user) {
+        // Connecté : vérifier le type
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', user.id)
+            .single();
+        
+        if (userData?.type_user === 'hote') {
+            lien.href = 'comment-ca-marche-proprietaire.html';
+        } else {
+            // Pour les locataires, on pourrait affiner selon s'ils ont un logement ou non
+            // Pour l'instant, on les envoie vers la page recherche
+            lien.href = 'comment-ca-marche-recherche.html';
+        }
+    } else {
+        // Non connecté : page générale avec choix
+        lien.href = 'comment-ca-marche.html';
+    }
+}
+
+// Appeler les fonctions au chargement de la page
+gererLienMonEspace();
+gererLienCommentCaMarche();
+    </script>
+</body>
+</html>
