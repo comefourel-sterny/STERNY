@@ -735,7 +735,11 @@
 
         function showError(message) {
             const box = document.getElementById('errorBox');
-            box.textContent = message;
+            if (message.includes('<')) {
+                box.innerHTML = message;
+            } else {
+                box.textContent = message;
+            }
             box.classList.add('show');
             setTimeout(() => hideError(), 5000);
         }
@@ -815,7 +819,7 @@
             } catch (error) {
                 const msg = error.message;
                 let msgFr = msg;
-                if (msg === 'User already registered') msgFr = 'Un compte existe déjà avec cet email';
+                if (msg === 'User already registered') msgFr = 'Un compte existe déjà avec cet email. <a href="connexion.html" style="color:#E8622A;font-weight:700;text-decoration:underline">Se connecter</a>';
                 else if (msg.includes('only request this after')) msgFr = 'Veuillez patienter quelques secondes avant de réessayer';
                 else if (msg.includes('rate limit')) msgFr = 'Trop de tentatives, veuillez réessayer dans un instant';
                 else if (msg.includes('invalid email')) msgFr = 'Adresse email invalide';

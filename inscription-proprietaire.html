@@ -614,7 +614,7 @@
             } catch (error) {
                 console.error('Erreur:', error);
                 showMessage('error', error.message === 'User already registered'
-                    ? 'Un compte existe déjà avec cet email'
+                    ? 'Un compte existe déjà avec cet email. <a href="connexion.html" style="color:#E8622A;font-weight:700;text-decoration:underline">Se connecter</a>'
                     : error.message);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Créer mon compte';
@@ -625,7 +625,11 @@
         function showMessage(type, text) {
             const messageBox = document.getElementById('messageBox');
             messageBox.className = 'error-box ' + type;
-            messageBox.textContent = text;
+            if (text.includes('<')) {
+                messageBox.innerHTML = text;
+            } else {
+                messageBox.textContent = text;
+            }
         }
     </script>
 <script src="cookie-banner.js"></script>
