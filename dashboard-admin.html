@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Administration — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F4F5F7;
+            color: #1E293B;
+            min-height: 100vh;
+        }
+
+        /* NAV */
+        .admin-nav {
+            background: #1E293B;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .admin-nav-left img { height: 28px; }
+        .admin-nav-badge {
+            background: #E8622A;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .admin-nav-right a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .admin-nav-right a:hover { color: white; }
+        .admin-user {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* LAYOUT */
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* SIDEBAR */
+        .admin-sidebar {
+            width: 240px;
+            background: white;
+            border-right: 1px solid #E8EAF0;
+            padding: 24px 0;
+            flex-shrink: 0;
+        }
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+        .sidebar-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+        .sidebar-item:hover {
+            background: #f9fafb;
+            color: #1E293B;
+        }
+        .sidebar-item.active {
+            background: #FFF3EE;
+            color: #E8622A;
+            font-weight: 600;
+        }
+        .sidebar-item svg { flex-shrink: 0; }
+        .sidebar-badge {
+            margin-left: auto;
+            background: #dc2626;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT */
+        .admin-main {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .admin-page-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+        .admin-page-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 28px;
+        }
+
+        /* STAT CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid #E8EAF0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .stat-card-icon.blue { background: #EFF6FF; color: #3B82F6; }
+        .stat-card-icon.orange { background: #FFF3EE; color: #E8622A; }
+        .stat-card-icon.green { background: #ECFDF5; color: #10B981; }
+        .stat-card-icon.purple { background: #F5F3FF; color: #8B5CF6; }
+        .stat-card-icon.red { background: #FEF2F2; color: #EF4444; }
+        .stat-card-icon.amber { background: #FFFBEB; color: #F59E0B; }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* SECTIONS */
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+
+        /* TABLE */
+        .admin-table-container {
+            background: white;
+            border: 1px solid #E8EAF0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .admin-table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8EAF0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-table-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .admin-table-count {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        table.admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #E8EAF0;
+            background: #f9fafb;
+        }
+        .admin-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .admin-table tr:last-child td { border-bottom: none; }
+        .admin-table tr:hover td { background: #fafbfc; }
+
+        /* STATUS BADGES */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-green { background: #ECFDF5; color: #059669; }
+        .badge-orange { background: #FFF3EE; color: #E8622A; }
+        .badge-red { background: #FEF2F2; color: #dc2626; }
+        .badge-blue { background: #EFF6FF; color: #3B82F6; }
+        .badge-gray { background: #F3F4F6; color: #6b7280; }
+        .badge-amber { background: #FFFBEB; color: #D97706; }
+
+        /* ACTION BUTTONS */
+        .btn-admin {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #E8EAF0;
+            background: white;
+            color: #374151;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn-admin:hover { border-color: #E8622A; color: #E8622A; }
+        .btn-admin.danger { border-color: #fecaca; color: #dc2626; }
+        .btn-admin.danger:hover { background: #FEF2F2; border-color: #dc2626; }
+        .btn-admin.success { border-color: #a7f3d0; color: #059669; }
+        .btn-admin.success:hover { background: #ECFDF5; border-color: #059669; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #9ca3af;
+        }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state-text { font-size: 14px; }
+
+        /* LOADING */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* USER ROW */
+        .user-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1E293B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .admin-layout { flex-direction: column; }
+            .admin-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #E8EAF0;
+                padding: 16px 0;
+            }
+            .sidebar-section { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px; }
+            .sidebar-label { display: none; }
+            .sidebar-item { padding: 8px 12px; font-size: 13px; }
+            .admin-main { padding: 20px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .admin-nav { padding: 12px 16px; }
+            .admin-table { font-size: 13px; }
+            .admin-table th, .admin-table td { padding: 10px 12px; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- ADMIN NAV -->
+    <nav class="admin-nav">
+        <div class="admin-nav-left">
+            <a href="index.html"><img src="Logo-Sterny-V1-blanc.svg" alt="STERNY" onerror="this.outerHTML='<span style=font-weight:800;font-size:18px>STERNY</span>'"></a>
+            <span class="admin-nav-badge">Admin</span>
+        </div>
+        <div class="admin-nav-right">
+            <a href="index.html">Retour au site</a>
+            <a href="#" onclick="deconnexionAdmin(); return false;" style="opacity:0.5;">D&eacute;connexion</a>
+            <span class="admin-user" id="adminEmail">—</span>
+        </div>
+    </nav>
+
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">G&eacute;n&eacute;ral</div>
+                <button class="sidebar-item active" onclick="showSection('dashboard')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    Tableau de bord
+                </button>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Gestion</div>
+                <button class="sidebar-item" onclick="showSection('users')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Utilisateurs
+                </button>
+                <button class="sidebar-item" onclick="showSection('annonces')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Annonces
+                </button>
+                <button class="sidebar-item" onclick="showSection('contrats')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Contrats
+                </button>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Mod&eacute;ration</div>
+                <button class="sidebar-item" onclick="showSection('signalements')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                    Signalements
+                    <span class="sidebar-badge" id="badgeSignalements" style="display:none;">0</span>
+                </button>
+                <button class="sidebar-item" onclick="showSection('litiges')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Litiges
+                    <span class="sidebar-badge" id="badgeLitiges" style="display:none;">0</span>
+                </button>
+                <button class="sidebar-item" onclick="showSection('contact')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Messages contact
+                    <span class="sidebar-badge" id="badgeContact" style="display:none;">0</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+
+            <!-- SECTION : DASHBOARD -->
+            <div class="admin-section active" id="section-dashboard">
+                <h1 class="admin-page-title">Tableau de bord</h1>
+                <p class="admin-page-subtitle">Vue d'ensemble de la plateforme STERNY</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div class="stat-value" id="statUsers">—</div>
+                        <div class="stat-label">Utilisateurs inscrits</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon orange">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </div>
+                        <div class="stat-value" id="statAnnonces">—</div>
+                        <div class="stat-label">Annonces publi&eacute;es</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon green">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div class="stat-value" id="statContrats">—</div>
+                        <div class="stat-label">Contrats sign&eacute;s</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon purple">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <div class="stat-value" id="statMessages">—</div>
+                        <div class="stat-label">Messages &eacute;chang&eacute;s</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon amber">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="stat-value" id="statLocataires">—</div>
+                        <div class="stat-label">Locataires</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon red">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                        </div>
+                        <div class="stat-value" id="statSignalements">—</div>
+                        <div class="stat-label">Signalements ouverts</div>
+                    </div>
+                </div>
+
+                <!-- Dernières activités -->
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Derni&egrave;res candidatures</span>
+                    </div>
+                    <div id="dashboardCandidatures" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : UTILISATEURS -->
+            <div class="admin-section" id="section-users">
+                <h1 class="admin-page-title">Utilisateurs</h1>
+                <p class="admin-page-subtitle">Gestion des comptes utilisateurs</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Tous les utilisateurs</span>
+                        <span class="admin-table-count" id="usersCount">—</span>
+                    </div>
+                    <div id="usersTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : ANNONCES -->
+            <div class="admin-section" id="section-annonces">
+                <h1 class="admin-page-title">Annonces</h1>
+                <p class="admin-page-subtitle">Toutes les annonces de logement</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Annonces</span>
+                        <span class="admin-table-count" id="annoncesCount">—</span>
+                    </div>
+                    <div id="annoncesTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : CONTRATS -->
+            <div class="admin-section" id="section-contrats">
+                <h1 class="admin-page-title">Contrats</h1>
+                <p class="admin-page-subtitle">Contrats de location en cours et termin&eacute;s</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Contrats</span>
+                        <span class="admin-table-count" id="contratsCount">—</span>
+                    </div>
+                    <div id="contratsTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : SIGNALEMENTS -->
+            <div class="admin-section" id="section-signalements">
+                <h1 class="admin-page-title">Signalements</h1>
+                <p class="admin-page-subtitle">Signalements d'annonces par les utilisateurs</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Signalements</span>
+                        <span class="admin-table-count" id="signalementsCount">—</span>
+                    </div>
+                    <div id="signalementsTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : LITIGES -->
+            <div class="admin-section" id="section-litiges">
+                <h1 class="admin-page-title">Litiges</h1>
+                <p class="admin-page-subtitle">Litiges ouverts entre locataires et propri&eacute;taires</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Litiges</span>
+                        <span class="admin-table-count" id="litigesCount">—</span>
+                    </div>
+                    <div id="litigesTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+            <!-- SECTION : MESSAGES CONTACT -->
+            <div class="admin-section" id="section-contact">
+                <h1 class="admin-page-title">Messages de contact</h1>
+                <p class="admin-page-subtitle">Messages envoy&eacute;s via le formulaire de contact</p>
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <span class="admin-table-title">Messages</span>
+                        <span class="admin-table-count" id="contactCount">&mdash;</span>
+                    </div>
+                    <div id="contactTableBody" class="loading-spinner">Chargement...</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        let currentAdmin = null;
+
+        // ========================================
+        // AUTH & ADMIN CHECK
+        // ========================================
+        async function verifierAdmin() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'connexion.html';
+                    return false;
+                }
+
+                const { data: userData, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error || !userData || !userData.is_admin) {
+                    alert('Acc\u00e8s non autoris\u00e9. Vous n\u2019\u00eates pas administrateur.');
+                    window.location.href = 'index.html';
+                    return false;
+                }
+
+                currentAdmin = userData;
+                document.getElementById('adminEmail').textContent = userData.email || user.email;
+                return true;
+
+            } catch (e) {
+                console.error('Erreur auth admin:', e);
+                window.location.href = 'connexion.html';
+                return false;
+            }
+        }
+
+        // ========================================
+        // NAVIGATION
+        // ========================================
+        function showSection(name) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+
+            const section = document.getElementById('section-' + name);
+            if (section) section.classList.add('active');
+
+            // Highlight sidebar
+            const items = document.querySelectorAll('.sidebar-item');
+            const sectionNames = ['dashboard', 'users', 'annonces', 'contrats', 'signalements', 'litiges', 'contact'];
+            const idx = sectionNames.indexOf(name);
+            if (idx >= 0 && items[idx]) items[idx].classList.add('active');
+
+            // Charger les données de la section
+            if (name === 'users') chargerUsers();
+            if (name === 'annonces') chargerAnnonces();
+            if (name === 'contrats') chargerContrats();
+            if (name === 'signalements') chargerSignalements();
+            if (name === 'litiges') chargerLitiges();
+            if (name === 'contact') chargerMessagesContact();
+        }
+
+        // ========================================
+        // DASHBOARD STATS
+        // ========================================
+        async function chargerStats() {
+            try {
+                // Compter les utilisateurs
+                const { count: totalUsers } = await supabaseClient.from('users').select('*', { count: 'exact', head: true });
+                const { count: totalLocataires } = await supabaseClient.from('users').select('*', { count: 'exact', head: true }).eq('type_user', 'locataire');
+                const { count: totalAnnonces } = await supabaseClient.from('annonces').select('*', { count: 'exact', head: true });
+                const { count: totalContrats } = await supabaseClient.from('contrats').select('*', { count: 'exact', head: true });
+                const { count: totalMessages } = await supabaseClient.from('messages').select('*', { count: 'exact', head: true });
+
+                document.getElementById('statUsers').textContent = totalUsers || 0;
+                document.getElementById('statLocataires').textContent = totalLocataires || 0;
+                document.getElementById('statAnnonces').textContent = totalAnnonces || 0;
+                document.getElementById('statContrats').textContent = totalContrats || 0;
+                document.getElementById('statMessages').textContent = totalMessages || 0;
+
+                // Signalements ouverts
+                let sigCount = 0;
+                try {
+                    const { count } = await supabaseClient.from('signalements').select('*', { count: 'exact', head: true }).eq('statut', 'en_attente');
+                    sigCount = count || 0;
+                } catch(e) {}
+                document.getElementById('statSignalements').textContent = sigCount;
+                if (sigCount > 0) {
+                    document.getElementById('badgeSignalements').textContent = sigCount;
+                    document.getElementById('badgeSignalements').style.display = 'inline';
+                }
+
+                // Litiges ouverts
+                let litCount = 0;
+                try {
+                    const { count } = await supabaseClient.from('litiges').select('*', { count: 'exact', head: true }).eq('statut', 'ouvert');
+                    litCount = count || 0;
+                } catch(e) {}
+                if (litCount > 0) {
+                    document.getElementById('badgeLitiges').textContent = litCount;
+                    document.getElementById('badgeLitiges').style.display = 'inline';
+                }
+
+                // Badge messages contact
+                let contactCount = 0;
+                try {
+                    const { count } = await supabaseClient.from('messages_contact').select('*', { count: 'exact', head: true }).eq('statut', 'nouveau');
+                    contactCount = count || 0;
+                } catch(e) {}
+                if (contactCount > 0) {
+                    document.getElementById('badgeContact').textContent = contactCount;
+                    document.getElementById('badgeContact').style.display = 'inline';
+                }
+
+                // Dernières candidatures
+                chargerDernieresCandidatures();
+
+            } catch (e) {
+                console.error('Erreur stats:', e);
+            }
+        }
+
+        async function chargerDernieresCandidatures() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('candidatures')
+                    .select('*, users!candidatures_locataire_id_fkey(prenom, nom, email)')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('dashboardCandidatures').innerHTML = '<div class="empty-state"><div class="empty-state-text">Aucune candidature</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>Locataire</th><th>Date</th><th>Statut</th></tr></thead><tbody>';
+                data.forEach(c => {
+                    const nom = c.users ? `${c.users.prenom || ''} ${c.users.nom || ''}` : 'Inconnu';
+                    const date = c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR') : '—';
+                    const badgeClass = c.statut === 'acceptee' ? 'badge-green' : c.statut === 'en_attente' ? 'badge-orange' : c.statut === 'refusee' ? 'badge-red' : 'badge-gray';
+                    html += `<tr><td>${nom}</td><td>${date}</td><td><span class="badge ${badgeClass}">${c.statut || '—'}</span></td></tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('dashboardCandidatures').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('dashboardCandidatures').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement</div></div>';
+            }
+        }
+
+        // ========================================
+        // UTILISATEURS
+        // ========================================
+        async function chargerUsers() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('users')
+                    .select('*', { count: 'exact' })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                document.getElementById('usersCount').textContent = `${count || data.length} utilisateur(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('usersTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Aucun utilisateur</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>Utilisateur</th><th>Type</th><th>Email</th><th>Inscrit le</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(u => {
+                    const initiales = ((u.prenom || '')[0] || '') + ((u.nom || '')[0] || '');
+                    const nom = `${u.prenom || ''} ${u.nom || ''}`.trim() || 'Sans nom';
+                    const typeClass = u.type_user === 'proprietaire' ? 'badge-orange' : 'badge-blue';
+                    const date = u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—';
+                    html += `<tr>
+                        <td><div class="user-info-cell"><div class="user-avatar-small">${initiales.toUpperCase()}</div><span>${nom}</span></div></td>
+                        <td><span class="badge ${typeClass}">${u.type_user || '—'}</span></td>
+                        <td>${u.email || '—'}</td>
+                        <td>${date}</td>
+                        <td><button class="btn-admin" onclick="voirUser('${u.id}')">Voir</button></td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('usersTableBody').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('usersTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement</div></div>';
+            }
+        }
+
+        function voirUser(userId) {
+            alert('D\u00e9tail utilisateur : ' + userId + '\n\nCette fonctionnalit\u00e9 sera compl\u00e9t\u00e9e prochainement.');
+        }
+
+        // ========================================
+        // ANNONCES
+        // ========================================
+        async function chargerAnnonces() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('annonces')
+                    .select('*, users!annonces_proprietaire_id_fkey(prenom, nom)', { count: 'exact' })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                document.getElementById('annoncesCount').textContent = `${count || data.length} annonce(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('annoncesTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Aucune annonce</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>Titre</th><th>Ville</th><th>Prix</th><th>Propri&eacute;taire</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(a => {
+                    const proprio = a.users ? `${a.users.prenom || ''} ${a.users.nom || ''}` : '—';
+                    const badgeClass = a.statut === 'active' ? 'badge-green' : a.statut === 'archivee' ? 'badge-gray' : 'badge-orange';
+                    html += `<tr>
+                        <td>${a.titre || 'Sans titre'}</td>
+                        <td>${a.ville || '—'}</td>
+                        <td>${a.prix || '—'}\u20ac/sem</td>
+                        <td>${proprio}</td>
+                        <td><span class="badge ${badgeClass}">${a.statut || '—'}</span></td>
+                        <td><a href="logement.html?id=${a.id}" target="_blank" class="btn-admin">Voir</a></td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('annoncesTableBody').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('annoncesTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement</div></div>';
+            }
+        }
+
+        // ========================================
+        // CONTRATS
+        // ========================================
+        async function chargerContrats() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('contrats')
+                    .select('*', { count: 'exact' })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                document.getElementById('contratsCount').textContent = `${count || data.length} contrat(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('contratsTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Aucun contrat</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>ID</th><th>D&eacute;but</th><th>Fin</th><th>Loyer</th><th>Statut</th></tr></thead><tbody>';
+                data.forEach(c => {
+                    const debut = c.date_debut ? new Date(c.date_debut).toLocaleDateString('fr-FR') : '—';
+                    const fin = c.date_fin ? new Date(c.date_fin).toLocaleDateString('fr-FR') : '—';
+                    const statut = c.statut || 'actif';
+                    const badgeClass = statut === 'actif' ? 'badge-green' : statut === 'resilie' ? 'badge-red' : 'badge-gray';
+                    html += `<tr>
+                        <td style="font-family:monospace;font-size:12px;">${(c.id || '').substring(0, 8)}...</td>
+                        <td>${debut}</td>
+                        <td>${fin}</td>
+                        <td>${c.loyer_mensuel || '—'}\u20ac/mois</td>
+                        <td><span class="badge ${badgeClass}">${statut}</span></td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('contratsTableBody').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('contratsTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement</div></div>';
+            }
+        }
+
+        // ========================================
+        // SIGNALEMENTS
+        // ========================================
+        async function chargerSignalements() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('signalements')
+                    .select('*', { count: 'exact' })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                document.getElementById('signalementsCount').textContent = `${count || data.length} signalement(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('signalementsTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-icon">\u2705</div><div class="empty-state-text">Aucun signalement</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>Date</th><th>Motif</th><th>Description</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(s => {
+                    const date = s.created_at ? new Date(s.created_at).toLocaleDateString('fr-FR') : '—';
+                    const badgeClass = s.statut === 'en_attente' ? 'badge-amber' : s.statut === 'traite' ? 'badge-green' : 'badge-gray';
+                    const desc = (s.description || '').substring(0, 60) + ((s.description || '').length > 60 ? '...' : '');
+                    html += `<tr>
+                        <td>${date}</td>
+                        <td>${s.motif || '—'}</td>
+                        <td>${desc}</td>
+                        <td><span class="badge ${badgeClass}">${s.statut || '—'}</span></td>
+                        <td>
+                            ${s.statut === 'en_attente' ? `<button class="btn-admin success" onclick="traiterSignalement('${s.id}')">Traiter</button>` : ''}
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('signalementsTableBody').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('signalementsTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement (table signalements peut ne pas exister encore)</div></div>';
+            }
+        }
+
+        async function traiterSignalement(id) {
+            if (!confirm('Marquer ce signalement comme trait\u00e9 ?')) return;
+            try {
+                await supabaseClient.from('signalements').update({ statut: 'traite' }).eq('id', id);
+                chargerSignalements();
+                chargerStats();
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+        }
+
+        // ========================================
+        // LITIGES
+        // ========================================
+        async function chargerLitiges() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('litiges')
+                    .select('*', { count: 'exact' })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                document.getElementById('litigesCount').textContent = `${count || data.length} litige(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('litigesTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-icon">\u2705</div><div class="empty-state-text">Aucun litige</div></div>';
+                    return;
+                }
+
+                const categoriesLabels = {
+                    'logement_non_conforme': 'Logement non conforme',
+                    'equipement_defectueux': '\u00c9quipement d\u00e9fectueux',
+                    'nuisances': 'Nuisances',
+                    'probleme_paiement': 'Probl\u00e8me paiement',
+                    'comportement': 'Comportement',
+                    'securite': 'S\u00e9curit\u00e9',
+                    'autre': 'Autre'
+                };
+
+                let html = '<table class="admin-table"><thead><tr><th>Date</th><th>Cat&eacute;gorie</th><th>Description</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(l => {
+                    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('fr-FR') : '—';
+                    const cat = categoriesLabels[l.categorie] || l.categorie || '—';
+                    const desc = (l.description || '').substring(0, 60) + ((l.description || '').length > 60 ? '...' : '');
+                    const badgeClass = l.statut === 'ouvert' ? 'badge-red' : l.statut === 'en_cours' ? 'badge-amber' : l.statut === 'resolu' ? 'badge-green' : 'badge-gray';
+                    html += `<tr>
+                        <td>${date}</td>
+                        <td>${cat}</td>
+                        <td>${desc}</td>
+                        <td><span class="badge ${badgeClass}">${l.statut || '—'}</span></td>
+                        <td>
+                            ${l.statut === 'ouvert' ? `<button class="btn-admin" onclick="prendreEnChargeLitige('${l.id}')">Prendre en charge</button>` : ''}
+                            ${l.statut === 'en_cours' ? `<button class="btn-admin success" onclick="resoudreLitige('${l.id}')">R&eacute;soudre</button>` : ''}
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('litigesTableBody').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('litigesTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement (table litiges peut ne pas exister encore)</div></div>';
+            }
+        }
+
+        async function prendreEnChargeLitige(id) {
+            if (!confirm('Prendre en charge ce litige ?')) return;
+            try {
+                await supabaseClient.from('litiges').update({ statut: 'en_cours' }).eq('id', id);
+                chargerLitiges();
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+        }
+
+        async function resoudreLitige(id) {
+            const resolution = prompt('Indiquez la r\u00e9solution du litige :');
+            if (!resolution) return;
+            try {
+                await supabaseClient.from('litiges').update({ statut: 'resolu', resolution: resolution }).eq('id', id);
+                chargerLitiges();
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+        }
+
+        // ========================================
+        // MESSAGES CONTACT
+        // ========================================
+        async function chargerMessagesContact() {
+            try {
+                const { data, error, count } = await supabaseClient
+                    .from('messages_contact')
+                    .select('*', { count: 'exact' })
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (error) throw error;
+
+                document.getElementById('contactCount').textContent = `${count || (data ? data.length : 0)} message(s)`;
+
+                if (!data || data.length === 0) {
+                    document.getElementById('contactTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">Aucun message de contact</div></div>';
+                    return;
+                }
+
+                let html = '<table class="admin-table"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Sujet</th><th>Message</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+                data.forEach(m => {
+                    const date = new Date(m.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                    const statutClass = m.statut === 'nouveau' ? 'color:#E8622A;font-weight:700' : m.statut === 'lu' ? 'color:#3B82F6' : 'color:#059669';
+                    const msgTrunc = m.message.length > 60 ? m.message.substring(0, 60) + '...' : m.message;
+                    html += `<tr>
+                        <td style="white-space:nowrap;font-size:12px;">${date}</td>
+                        <td style="font-weight:600;">${m.nom}</td>
+                        <td><a href="mailto:${m.email}" style="color:#E8622A;">${m.email}</a></td>
+                        <td>${m.sujet}</td>
+                        <td style="font-size:12px;max-width:200px;" title="${m.message.replace(/"/g, '&quot;')}">${msgTrunc}</td>
+                        <td style="${statutClass};text-transform:capitalize;">${m.statut}</td>
+                        <td style="white-space:nowrap;">
+                            ${m.statut === 'nouveau' ? `<button onclick="marquerContactLu('${m.id}')" style="padding:4px 8px;background:#3B82F6;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;">Lu</button>` : ''}
+                            ${m.statut !== 'traite' ? `<button onclick="marquerContactTraite('${m.id}')" style="padding:4px 8px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;margin-left:4px;">Traité</button>` : ''}
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('contactTableBody').innerHTML = html;
+            } catch (e) {
+                console.error('Erreur chargement messages contact:', e);
+                document.getElementById('contactTableBody').innerHTML = '<div class="empty-state"><div class="empty-state-text">Erreur de chargement (table messages_contact peut ne pas exister encore)</div></div>';
+            }
+        }
+
+        async function marquerContactLu(id) {
+            try {
+                await supabaseClient.from('messages_contact').update({ statut: 'lu' }).eq('id', id);
+                chargerMessagesContact();
+            } catch(e) { alert('Erreur : ' + e.message); }
+        }
+
+        async function marquerContactTraite(id) {
+            try {
+                await supabaseClient.from('messages_contact').update({ statut: 'traite' }).eq('id', id);
+                chargerMessagesContact();
+            } catch(e) { alert('Erreur : ' + e.message); }
+        }
+
+        // ========================================
+        // DÉCONNEXION
+        // ========================================
+        async function deconnexionAdmin() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // ========================================
+        // INIT
+        // ========================================
+        async function init() {
+            const isAdmin = await verifierAdmin();
+            if (!isAdmin) return;
+            chargerStats();
+        }
+
+        if (typeof supabaseClient !== 'undefined') {
+            init();
+        }
+    </script>
+<script src="cookie-banner.js"></script>
+</body>
+</html>

@@ -3,391 +3,631 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement sécurisé - EASWAP</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Paiement s&eacute;curis&eacute; — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <!-- Stripe.js (pour intégration future) -->
-    <!-- <script src="https://js.stripe.com/v3/"></script> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: var(--gray-50);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1E293B;
         }
 
-        .main-container {
+        /* ========== NAV ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .container {
+            max-width: none;
+            height: 85px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+        nav .logo img { height: 55px; }
+        nav ul { display: flex; gap: 36px; list-style: none; }
+        nav ul li a {
+            text-decoration: none;
+            color: #1E293B;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        nav ul li a:hover { color: #E8622A; }
+
+        /* ========== PAGE ========== */
+        .page-container {
             max-width: 900px;
-            margin: 40px auto;
+            margin: 0 auto;
+            padding: 48px 24px 40px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        /* ========== SHARED CARDS ========== */
+        .card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            border: 1px solid #E5E7EB;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin-bottom: 24px;
         }
 
-        /* HEADER */
-        .payment-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-        }
-
-        .payment-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .payment-header p {
-            font-size: 16px;
-            opacity: 0.95;
-        }
-
-        /* PROGRESS (même que contrat) */
-        .progress-container {
-            padding: 30px 40px;
-            border-bottom: 2px solid #f3f4f6;
-        }
-
+        /* ========== PROGRESS (identique contrat-location) ========== */
+        .progress-card { padding: 24px; }
         .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
         }
-
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #e5e7eb;
-            z-index: 0;
-        }
-
-        .progress-line-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 66%;
-            transition: width 0.5s;
-        }
-
         .progress-step {
-            position: relative;
-            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            flex: 1;
         }
-
-        .progress-circle {
+        .step-number {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #e5e7eb;
-            color: #9ca3af;
+            background: #E5E7EB;
+            color: #9CA3AF;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 14px;
             margin: 0 auto 8px;
             transition: all 0.3s;
+            position: relative;
         }
-
-        .progress-step.active .progress-circle {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .progress-step.active .step-number {
+            background: #E8622A;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: scale(1.1);
         }
-
-        .progress-step.completed .progress-circle {
-            background: #10b981;
+        .progress-step.completed .step-number {
+            background: #E8622A;
             color: white;
         }
-
-        .progress-label {
+        .progress-step.completed .step-number::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 16px;
+            height: 16px;
+            background: #22C55E;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 9px;
+        }
+        .step-label {
             font-size: 13px;
-            color: #6b7280;
             font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        .progress-step.active .step-label { color: #1E293B; }
+        .progress-step.completed .step-label { color: #E8622A; }
+        .progress-bar-track {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1E293B, #334155);
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
-        /* CONTENT */
-        .payment-content {
-            padding: 40px;
+        /* ========== SECTION LABELS (orange uppercase) ========== */
+        .section-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #E8622A;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
         }
 
-        /* 2 COLONNES */
-        .payment-grid {
+        /* ========== PAYMENT SECTIONS (stacked) ========== */
+        .payment-sections {
+            margin-bottom: 24px;
+        }
+
+        /* ========== RECAP CARD ========== */
+        .recap-card { padding: 24px 28px; }
+
+        .info-grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 12px 24px;
+        }
+        .info-item-2 {}
+        .info-item-2 .item-label {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+        .info-item-2 .item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
         }
 
-        /* COLONNE GAUCHE - RÉCAP */
-        .payment-summary {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
+        .summary-items {
+            margin-bottom: 16px;
         }
-
-        .payment-summary h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 20px;
-        }
-
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #F1F5F9;
         }
-
-        .summary-item:last-child {
-            border-bottom: none;
-        }
-
+        .summary-item:last-child { border-bottom: none; }
         .summary-label {
-            font-size: 15px;
-            color: #6b7280;
+            font-size: 14px;
+            color: #6B7280;
         }
-
         .summary-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            color: #1f2937;
+            color: #1E293B;
         }
 
         .summary-total {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 2px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0 0;
+            border-top: 2px solid #E2E8F0;
+            margin-top: 4px;
         }
-
         .summary-total-label {
-            font-size: 16px;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .summary-total-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: #667eea;
-        }
-
-        .payment-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #dbeafe;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #1e40af;
-            line-height: 1.6;
-        }
-
-        .payment-info strong {
-            font-weight: 700;
-        }
-
-        /* COLONNE DROITE - PAIEMENT */
-        .payment-form-container {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
-        }
-
-        .payment-form-container h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
             font-size: 14px;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
+            color: #1E293B;
+        }
+        .summary-total-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1E293B;
+            letter-spacing: -0.5px;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.3s;
-            background: white;
+        .payment-note {
+            font-size: 12px;
+            color: #9CA3AF;
+            line-height: 1.6;
+            margin-bottom: 14px;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .card-icons {
+        /* ========== LEGAL ========== */
+        .legal-checkbox {
             display: flex;
+            align-items: flex-start;
             gap: 10px;
-            margin-top: 10px;
+            margin-bottom: 14px;
+        }
+        .legal-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            flex-shrink: 0;
+            accent-color: #1E293B;
+            cursor: pointer;
+        }
+        .legal-checkbox label {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .legal-checkbox label a {
+            color: #E8622A;
+            text-decoration: underline;
+        }
+        .legal-mentions {
+            font-size: 11px;
+            color: #9CA3AF;
+            line-height: 1.7;
+        }
+        .legal-mentions p {
+            margin-bottom: 3px;
         }
 
-        .card-icon {
-            font-size: 32px;
+        /* ========== PAYMENT CARD ========== */
+        .payment-card {
+            padding: 0;
+            overflow: hidden;
+        }
+        .payment-section {
+            padding: 24px 28px;
+        }
+        .payment-section + .payment-section {
+            border-top: 1px solid #F1F5F9;
         }
 
-        .security-badge {
+        .payment-description {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .payment-description strong {
+            color: #1E293B;
+            font-weight: 700;
+        }
+
+        .btn-payer {
+            background: #E8622A;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            padding: 15px;
-            background: #dcfce7;
-            border-radius: 8px;
-            margin: 20px 0;
+            width: 100%;
+        }
+        .btn-payer:hover:not(:disabled) {
+            background: linear-gradient(135deg, #E8622A, #FF8F5E);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35);
+        }
+        .btn-payer:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-payer svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .security-badge-icon {
-            font-size: 24px;
-        }
-
-        .security-badge-text {
-            font-size: 13px;
-            color: #166534;
-            font-weight: 600;
-        }
-
-        /* ALERT */
-        .alert-warning {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 30px 0;
+        /* Security row */
+        .security-row {
             display: flex;
-            gap: 15px;
-            align-items: start;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .security-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .security-badge {
+            padding: 6px 10px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .security-badge svg {
+            width: 13px;
+            height: 13px;
+            stroke: #64748B;
+            fill: none;
+            stroke-width: 2;
         }
 
-        .alert-warning-icon {
-            font-size: 24px;
+        /* Stripe mention */
+        .stripe-mention {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stripe-mention span {
+            font-size: 11px;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+        .stripe-mention svg {
+            height: 18px;
+        }
+
+        /* ========== IMPAYE ALERT ========== */
+        .alert-impaye {
+            background: #FEF2F2;
+            border: 2px solid #FECACA;
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .alert-impaye-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
         }
-
-        .alert-warning-content {
-            flex: 1;
+        .alert-impaye-icon svg {
+            width: 16px; height: 16px; stroke: white; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
         }
-
-        .alert-warning-title {
+        .alert-impaye-title {
             font-weight: 700;
-            color: #92400e;
-            margin-bottom: 5px;
-            font-size: 15px;
-        }
-
-        .alert-warning-text {
-            color: #92400e;
+            color: #991B1B;
             font-size: 14px;
-            line-height: 1.6;
+            margin-bottom: 2px;
+        }
+        .alert-impaye-text {
+            color: #B91C1C;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
-        /* ACTIONS */
-        .actions-container {
-            padding: 30px 40px 40px;
+        /* ========== ACTIONS ========== */
+        .actions-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 28px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
             display: flex;
-            gap: 15px;
-            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
         }
-
+        .actions-card .btn-back,
+        .actions-card .btn-primary {
+            flex: 1;
+            justify-content: center;
+            text-align: center;
+        }
         .btn-back {
             background: white;
-            color: #6b7280;
-            padding: 16px 30px;
+            color: #6B7280;
+            padding: 12px 20px;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            border: 2px solid #e5e7eb;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1.5px solid #E5E7EB;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
         }
-
-        .btn-back:hover {
-            border-color: #667eea;
-            color: #667eea;
+        .btn-back svg {
+            width: 18px; height: 18px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
         }
+        .btn-back:hover { border-color: #1E293B; color: #1E293B; }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #E8622A;
             color: white;
-            padding: 16px 40px;
+            padding: 12px 24px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-
+        .btn-primary svg {
+            width: 18px; height: 18px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
         .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #E85D2A, #E8622A);
             transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.25);
         }
-
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 968px) {
-            .payment-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .payment-summary {
-                order: 2;
-            }
-
-            .payment-form-container {
-                order: 1;
-            }
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading-overlay.active { display: flex; }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #E5E7EB;
+            border-top: 4px solid #1E293B;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-overlay-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
         }
 
+        /* ========== MODALE CONFIRMATION ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .modal-icon svg {
+            width: 28px; height: 28px;
+            stroke: #E8622A; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; color: #1E293B; margin-bottom: 8px; }
+        .modal-text { font-size: 13.5px; color: #64748B; line-height: 1.6; margin-bottom: 24px; }
+        .modal-text strong { color: #1E293B; }
+        .modal-buttons { display: flex; gap: 12px; }
+        .modal-btn-cancel {
+            flex: 1; padding: 12px 20px; border-radius: 12px;
+            font-size: 14px; font-weight: 600;
+            border: 1.5px solid #E5E7EB; background: white; color: #6B7280;
+            cursor: pointer; transition: all 0.25s; font-family: inherit;
+        }
+        .modal-btn-cancel:hover { border-color: #1E293B; color: #1E293B; }
+        .modal-btn-confirm {
+            flex: 1; padding: 12px 24px; border-radius: 12px;
+            font-size: 14px; font-weight: 700; border: none;
+            background: #E8622A; color: white;
+            cursor: pointer; transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25); font-family: inherit;
+        }
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #E8622A, #FF8F5E);
+            box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        /* (no grid breakpoint needed — single column) */
         @media (max-width: 768px) {
-            .payment-header, .payment-content, .actions-container {
-                padding: 25px;
-            }
-
-            .actions-container {
+            nav .container { padding: 0 20px; height: 72px; }
+            nav .logo img { height: 45px; }
+            nav ul { gap: 20px; }
+            .page-container { padding: 24px 16px 60px; }
+            .page-header h1 { font-size: 28px; }
+            .card { border-radius: 16px; }
+            .progress-card { padding: 20px; }
+            .progress-steps { gap: 8px; }
+            .step-number { width: 34px; height: 34px; font-size: 12px; }
+            .step-label { font-size: 10px; }
+            .recap-card, .payment-card { padding: 20px; }
+            .summary-total-value { font-size: 18px; }
+            .actions-card {
                 flex-direction: column-reverse;
+                padding: 20px;
             }
-
             .btn-back, .btn-primary {
                 width: 100%;
                 text-align: center;
+                justify-content: center;
             }
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-overlay-text" id="loadingText">Redirection vers la mise en place du prelevement...</div>
+    </div>
+
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 EASWAP</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="#" id="dashboardLink">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
@@ -395,179 +635,187 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTAINER -->
-    <div class="main-container">
-        <!-- HEADER -->
-        <div class="payment-header">
-            <h1>💳 Paiement sécurisé</h1>
-            <p>Finalisez votre réservation en toute sécurité</p>
+    <!-- PAGE CONTAINER -->
+    <div class="page-container">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1 id="pageTitle">Mise en place du prelevement</h1>
+            <p id="pageSubtitle">Configurez votre prelevement automatique SEPA en toute securite</p>
         </div>
 
-        <!-- PROGRESS -->
-        <div class="progress-container">
-            <div class="progress-steps">
-                <div class="progress-line">
-                    <div class="progress-line-fill"></div>
-                </div>
-                <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
-                    <div class="progress-label">Match</div>
-                </div>
-                <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
-                    <div class="progress-label">Contrat</div>
-                </div>
-                <div class="progress-step active">
-                    <div class="progress-circle">3</div>
-                    <div class="progress-label">Paiement</div>
-                </div>
-                <div class="progress-step">
-                    <div class="progress-circle">4</div>
-                    <div class="progress-label">État des lieux</div>
+        <!-- IMPAYE ALERT (hidden by default) -->
+        <div class="alert-impaye" id="alertImpaye" style="display: none;">
+            <div class="alert-impaye-icon">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div>
+                <div class="alert-impaye-title">Loyer impaye</div>
+                <div class="alert-impaye-text" id="alertImpayeText">
+                    Vous avez un loyer en attente de regularisation.
                 </div>
             </div>
         </div>
 
-        <!-- CONTENT -->
-        <div class="payment-content">
-            <div class="payment-grid">
-                <!-- COLONNE GAUCHE - RÉCAP -->
-                <div class="payment-summary">
-                    <h2>📊 Récapitulatif</h2>
+        <!-- PROGRESS CARD (identique contrat-location.html) -->
+        <div class="card progress-card" id="progressCard">
+            <div class="progress-steps" id="progressSteps">
+                <div class="progress-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Match</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Dossier</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Contrat</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Paiement</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">5</div>
+                    <div class="step-label">Etat des lieux</div>
+                </div>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 70%;"></div>
+            </div>
+        </div>
 
-                    <div class="summary-item">
-                        <span class="summary-label">Dépôt de garantie (caution)</span>
-                        <span class="summary-value" id="montantCaution">275€</span>
-                    </div>
+        <!-- PAYMENT CARD (single card, stacked sections) -->
+        <div class="card payment-card">
 
-                    <div class="summary-item">
-                        <span class="summary-label">1er mois de loyer</span>
-                        <span class="summary-value" id="montantLoyer">275€</span>
-                    </div>
+            <!-- Section Recapitulatif -->
+            <div class="payment-section">
+                <div class="section-label">Recapitulatif</div>
 
-                    <div class="summary-item">
-                        <span class="summary-label">Frais de service EASWAP</span>
-                        <span class="summary-value" id="montantFrais">25€</span>
+                <!-- Initial mode items (SEPA prélèvement) -->
+                <div id="summaryInitial">
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">Depot de garantie (2 mois) <span style="color:#94A3B8;font-size:11px;">— preleve une fois</span></span>
+                            <span class="summary-value" id="montantCaution">&mdash;</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Loyer mensuel</span>
+                            <span class="summary-value" id="montantLoyer">&mdash;</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Commission STERNY (10%)</span>
+                            <span class="summary-value" id="montantFrais">&mdash;</span>
+                        </div>
                     </div>
 
                     <div class="summary-total">
-                        <div class="summary-total-label">💰 Total à payer</div>
-                        <div class="summary-total-value" id="montantTotal">575€</div>
-                    </div>
-
-                    <div class="payment-info">
-                        <strong>ℹ️ Informations importantes :</strong><br><br>
-                        • Le dépôt de garantie vous sera restitué à la fin du contrat (max 1 mois après votre départ)<br>
-                        • Les paiements suivants se feront directement entre vous et le propriétaire<br>
-                        • Votre paiement est 100% sécurisé par Stripe
+                        <div class="summary-total-label">Total mensuel</div>
+                        <div class="summary-total-value" id="montantMensuel">&mdash;</div>
                     </div>
                 </div>
 
-                <!-- COLONNE DROITE - FORMULAIRE -->
-                <div class="payment-form-container">
-                    <h2>💳 Informations de paiement</h2>
-
-                    <form id="paymentForm" onsubmit="traiterPaiement(event)">
-                        <div class="form-group">
-                            <label class="form-label">Numéro de carte</label>
-                            <input 
-                                type="text" 
-                                class="form-input" 
-                                id="cardNumber" 
-                                placeholder="1234 5678 9012 3456" 
-                                maxlength="19"
-                                required
-                            >
-                            <div class="card-icons">
-                                <span class="card-icon">💳</span>
-                                <span style="font-size: 13px; color: #9ca3af;">Visa, Mastercard, Amex</span>
-                            </div>
+                <!-- Impaye mode items -->
+                <div id="summaryImpaye" style="display: none;">
+                    <div class="summary-items">
+                        <div class="summary-item">
+                            <span class="summary-label">Loyer du mois</span>
+                            <span class="summary-value" id="montantImpaye">&mdash;</span>
                         </div>
-
-                        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label class="form-label">Date d'expiration</label>
-                                <input 
-                                    type="text" 
-                                    class="form-input" 
-                                    id="cardExpiry" 
-                                    placeholder="MM/AA" 
-                                    maxlength="5"
-                                    required
-                                >
-                            </div>
-                            <div>
-                                <label class="form-label">CVV</label>
-                                <input 
-                                    type="text" 
-                                    class="form-input" 
-                                    id="cardCvv" 
-                                    placeholder="123" 
-                                    maxlength="3"
-                                    required
-                                >
-                            </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Commission STERNY (10%)</span>
+                            <span class="summary-value" id="commissionImpaye">&mdash;</span>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Nom sur la carte</label>
-                            <input 
-                                type="text" 
-                                class="form-input" 
-                                id="cardName" 
-                                placeholder="JEAN DUPONT" 
-                                required
-                            >
+                        <div class="summary-item">
+                            <span class="summary-label">Mois concerne</span>
+                            <span class="summary-value" id="moisImpaye">&mdash;</span>
                         </div>
-
-                        <div class="security-badge">
-                            <span class="security-badge-icon">🔒</span>
-                            <span class="security-badge-text">
-                                Paiement 100% sécurisé via Stripe. Vos données bancaires sont cryptées et ne sont jamais stockées sur nos serveurs.
-                            </span>
+                        <div class="summary-item">
+                            <span class="summary-label">Logement</span>
+                            <span class="summary-value" id="logementImpaye">&mdash;</span>
                         </div>
-                    </form>
+                    </div>
+                </div>
+
+                <div class="summary-total" id="summaryTotalGeneral">
+                    <div class="summary-total-label" id="totalLabel">1er prelevement</div>
+                    <div class="summary-total-value" id="montantTotal">&mdash;</div>
                 </div>
             </div>
 
-            <!-- ALERT -->
-            <div class="alert-warning">
-                <div class="alert-warning-icon">⚠️</div>
-                <div class="alert-warning-content">
-                    <div class="alert-warning-title">Mode simulation</div>
-                    <div class="alert-warning-text">
-                        🚧 Cette page est actuellement en mode simulation pour le MVP. Le vrai paiement Stripe sera intégré prochainement. Vous pouvez tester le parcours sans effectuer de paiement réel.
+            <!-- Legal + Securite -->
+            <div class="payment-section">
+                <div class="legal-checkbox" id="legalCheckboxInitial">
+                    <input type="checkbox" id="acceptCGV" onchange="togglePaiement()">
+                    <label for="acceptCGV">J'ai lu et j'accepte les <a href="cgv.html" target="_blank">Conditions Generales de Vente</a> et la <a href="politique-confidentialite.html" target="_blank">Politique de Confidentialite</a>. J'autorise STERNY a prelever mon compte bancaire via prelevement SEPA pour le paiement de mes loyers mensuels.</label>
+                </div>
+                <div class="legal-checkbox" id="legalCheckboxImpaye" style="display:none;">
+                    <input type="checkbox" id="acceptCGVImpaye" onchange="togglePaiement()">
+                    <label for="acceptCGVImpaye">J'ai lu et j'accepte les <a href="cgv.html" target="_blank">Conditions Generales de Vente</a> et la <a href="politique-confidentialite.html" target="_blank">Politique de Confidentialite</a></label>
+                </div>
+                <div class="legal-mentions">
+                    <p>TVA non applicable, art. 293 B du CGI. Depot de garantie restitue en fin de contrat.</p>
+                    <p>Le prelevement SEPA est effectue chaque mois de maniere automatique. Vous pouvez le contester aupres de votre banque dans un delai de 8 semaines suivant le debit.</p>
+                    <p>Conformement a l'article L221-2, 12 du Code de la consommation, le droit de retractation ne s'applique pas aux contrats de location de logement a des fins residentielles.</p>
+                    <p>STERNY — Rennes, France — contact@sterny.co</p>
+                </div>
+                <div class="security-row" style="margin-top: 14px;">
+                    <div class="security-badges" id="securityBadges">
+                        <span class="security-badge">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            SSL
+                        </span>
+                        <span class="security-badge">
+                            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            Securise
+                        </span>
+                        <span class="security-badge">SEPA</span>
+                        <span class="security-badge">IBAN</span>
+                    </div>
+                    <div class="stripe-mention">
+                        <span>Propulse par</span>
+                        <svg viewBox="0 0 60 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M60 12.8C60 8.55 57.95 5.18 54.02 5.18C50.07 5.18 47.68 8.55 47.68 12.77C47.68 17.71 50.45 20.33 54.38 20.33C56.3 20.33 57.75 19.87 58.85 19.22V16.12C57.75 16.7 56.48 17.05 54.88 17.05C53.32 17.05 51.93 16.47 51.77 14.55H59.97C59.97 14.35 60 13.37 60 12.8ZM51.72 11.82C51.72 10 52.82 9.27 53.99 9.27C55.13 9.27 56.17 10 56.17 11.82H51.72ZM41.28 5.18C39.7 5.18 38.68 5.93 38.12 6.45L37.9 5.4H34.38V24.5L38.08 23.72L38.1 19.27C38.68 19.7 39.52 20.33 40.95 20.33C43.85 20.33 46.48 18 46.48 12.62C46.45 7.7 43.78 5.18 41.28 5.18ZM40.35 16.97C39.37 16.97 38.78 16.62 38.38 16.17L38.35 9.62C38.78 9.12 39.4 8.8 40.35 8.8C41.88 8.8 42.93 10.52 42.93 12.87C42.93 15.27 41.9 16.97 40.35 16.97ZM29.18 4.17L32.9 3.37V0.22L29.18 1V4.17ZM29.18 5.42H32.9V20.1H29.18V5.42ZM25.08 6.58L24.83 5.42H21.38V20.1H25.08V9.77C25.95 8.62 27.43 8.85 27.88 9V5.42C27.4 5.25 25.95 4.97 25.08 6.58ZM17.45 1.62L13.83 2.4L13.82 16.32C13.82 18.6 15.5 20.35 17.78 20.35C19.03 20.35 19.95 20.12 20.45 19.85V16.67C19.97 16.87 17.45 17.62 17.45 15.35V9.05H20.45V5.42H17.45V1.62ZM5.55 9.62C5.55 9 6.08 8.75 6.93 8.75C8.18 8.75 9.75 9.12 11 9.77V6.17C9.65 5.62 8.32 5.4 6.93 5.4C3.52 5.4 1.25 7.17 1.25 10.05C1.25 14.55 7.45 13.87 7.45 15.82C7.45 16.55 6.8 16.8 5.9 16.8C4.53 16.8 2.78 16.25 1.4 15.5V19.15C2.93 19.8 4.48 20.1 5.9 20.1C9.4 20.1 11.8 18.4 11.8 15.47C11.75 10.6 5.55 11.45 5.55 9.62Z" fill="#635BFF"/>
+                        </svg>
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- ACTIONS -->
-        <div class="actions-container">
-            <a href="contrat-location.html?match_id=xxx" class="btn-back" id="btnRetour">
-                ← Retour
-            </a>
-            <button class="btn-primary" onclick="traiterPaiement(event)">
-                💳 Payer 575€
+        <!-- ACTIONS CARD -->
+        <div class="actions-card">
+            <a href="dashboard-locataire.html" class="btn-back" id="btnRetour">Retour</a>
+            <button class="btn-primary" id="btnPayerBottom" onclick="lancerPaiementStripe()" disabled>
+                <span id="btnPayerBottomText">Mettre en place le prelevement</span>
             </button>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer style="margin-top: 40px;">
-        <div class="container">
-            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
-        </div>
-    </footer>
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const matchId = urlParams.get('match_id');
+        const pageType = urlParams.get('type') || 'initial';
+        const contratId = urlParams.get('contrat_id');
+        const moisParam = urlParams.get('mois');
 
         let matchData = null;
         let currentUser = null;
+        let isAdmin = false;
+        let paymentData = {};
 
-        // Charger les données
+        // Taux de commission STERNY (10% sur la part de loyer de l'etudiant)
+        const COMMISSION_RATE = 0.10;
+
+        function formatEuros(amount) {
+            if (Number.isInteger(amount)) return `${amount}\u20ac`;
+            return `${amount.toFixed(2).replace('.', ',')}\u20ac`;
+        }
+
+        // ================================================================
+        // CHARGER LES DONNEES
+        // ================================================================
         async function chargerPaiement() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
@@ -577,117 +825,357 @@
                 }
                 currentUser = user;
 
-                if (!matchId) {
-                    alert('❌ Aucun match spécifié');
-                    history.back();
-                    return;
+                // Vérifier si admin
+                const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+                isAdmin = adminCheck?.is_admin === true;
+
+                if (pageType === 'impaye') {
+                    await chargerModeImpaye();
+                } else {
+                    await chargerModeInitial();
                 }
-
-                // Récupérer les données
-                const { data: candidature, error } = await supabaseClient
-                    .from('candidatures')
-                    .select(`
-                        *,
-                        annonces (*)
-                    `)
-                    .eq('id', matchId)
-                    .single();
-
-                if (error) throw error;
-                matchData = candidature;
-
-                // Afficher les montants
-                const prix = candidature.annonces.prix;
-                document.getElementById('montantCaution').textContent = `${prix}€`;
-                document.getElementById('montantLoyer').textContent = `${prix}€`;
-                document.getElementById('montantFrais').textContent = '25€';
-                document.getElementById('montantTotal').textContent = `${(prix * 2) + 25}€`;
-
-                // Bouton payer
-                const btnPayer = document.querySelector('.btn-primary');
-                btnPayer.textContent = `💳 Payer ${(prix * 2) + 25}€`;
-
-                // Liens
-                document.getElementById('btnRetour').href = `contrat-location.html?match_id=${matchId}`;
-
             } catch (error) {
-                console.error('❌ Erreur:', error);
-                alert('❌ Erreur lors du chargement');
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement des donnees de paiement.');
             }
         }
 
-        // Formater numéro de carte (ajouter espaces)
-        document.getElementById('cardNumber')?.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\s/g, '');
-            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-            e.target.value = formattedValue;
-        });
+        // ================================================================
+        // MODE IMPAYE
+        // ================================================================
+        async function chargerModeImpaye() {
+            document.getElementById('pageTitle').textContent = 'Regulariser mon loyer';
+            document.getElementById('pageSubtitle').textContent = 'Payez votre loyer en attente en toute securite';
+            document.getElementById('progressCard').style.display = 'none';
+            document.getElementById('alertImpaye').style.display = 'flex';
+            document.getElementById('summaryInitial').style.display = 'none';
+            document.getElementById('summaryImpaye').style.display = 'block';
+            document.getElementById('btnRetour').href = 'dashboard-locataire.html';
+            document.getElementById('btnPayerBottomText').textContent = 'Payer';
+            document.getElementById('loadingText').textContent = 'Redirection vers le paiement securise...';
+            document.getElementById('totalLabel').textContent = 'Total a payer TTC';
 
-        // Formater date expiration (ajouter /)
-        document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\//g, '');
-            if (value.length >= 2) {
-                e.target.value = value.slice(0,2) + '/' + value.slice(2,4);
-            }
-        });
+            // Afficher checkbox impayé, masquer checkbox SEPA
+            document.getElementById('legalCheckboxInitial').style.display = 'none';
+            document.getElementById('legalCheckboxImpaye').style.display = 'flex';
 
-        // Traiter le paiement
-        async function traiterPaiement(event) {
-            event.preventDefault();
+            // Badges carte pour impayé
+            document.getElementById('securityBadges').innerHTML = `
+                <span class="security-badge">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    SSL
+                </span>
+                <span class="security-badge">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    3D Secure
+                </span>
+                <span class="security-badge">VISA</span>
+                <span class="security-badge">MASTERCARD</span>
+            `;
 
-            const cardNumber = document.getElementById('cardNumber').value;
-            const cardExpiry = document.getElementById('cardExpiry').value;
-            const cardCvv = document.getElementById('cardCvv').value;
-            const cardName = document.getElementById('cardName').value;
-
-            // Validation basique
-            if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
-                alert('❌ Veuillez remplir tous les champs');
+            if (!contratId) {
+                alert('Parametres manquants. Veuillez utiliser le lien fourni dans l\'email.');
                 return;
             }
 
-            // Afficher loader
-            const btnPayer = document.querySelector('.btn-primary');
-            const originalText = btnPayer.textContent;
-            btnPayer.disabled = true;
-            btnPayer.textContent = '⏳ Traitement en cours...';
+            const { data: paiement, error: pError } = await supabaseClient
+                .from('paiements_loyer')
+                .select(`*, contrats (id, annonce_id, locataire_id, annonces (titre, ville))`)
+                .eq('contrat_id', contratId)
+                .eq('mois', moisParam)
+                .in('statut', ['impaye', 'relance_envoyee'])
+                .single();
 
-            try {
-                // SIMULATION MODE
-                // TODO: Intégrer vraie API Stripe ici
-                
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Simuler délai
+            if (pError || !paiement) {
+                const { data: paiementCheck } = await supabaseClient
+                    .from('paiements_loyer')
+                    .select('statut')
+                    .eq('contrat_id', contratId)
+                    .eq('mois', moisParam)
+                    .single();
 
-                console.log('✅ Paiement simulé avec succès !');
-                
-                // TODO: Créer entrée dans table 'paiements' Supabase
-                
-                // Redirection vers état des lieux
+                if (paiementCheck?.statut === 'paye') {
+                    alert('Ce loyer a deja ete regularise.');
+                    window.location.href = 'dashboard-locataire.html';
+                    return;
+                }
+                alert('Aucun impaye trouve pour ces parametres.');
+                return;
+            }
+
+            const montant = parseFloat(paiement.montant);
+            const commission = parseFloat((montant * COMMISSION_RATE).toFixed(2));
+            const total = montant + commission;
+            const moisDate = new Date(paiement.mois + 'T00:00:00');
+            const moisFormate = moisDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            const annonce = paiement.contrats?.annonces;
+
+            document.getElementById('montantImpaye').textContent = formatEuros(montant);
+            document.getElementById('commissionImpaye').textContent = formatEuros(commission);
+            document.getElementById('moisImpaye').textContent = moisFormate;
+            document.getElementById('logementImpaye').textContent = annonce
+                ? `${annonce.titre}${annonce.ville ? ' - ' + annonce.ville : ''}`
+                : 'Votre logement';
+            document.getElementById('montantTotal').textContent = formatEuros(total);
+
+            document.getElementById('alertImpayeText').textContent =
+                `Votre loyer de ${moisFormate} (${formatEuros(montant)} + ${formatEuros(commission)} de commission) est en attente de regularisation.`;
+
+            const { data: locataire } = await supabaseClient
+                .from('users').select('prenom, nom').eq('id', currentUser.id).single();
+
+            paymentData = {
+                type: 'impaye', contrat_id: contratId, mois: moisParam,
+                paiement_id: paiement.id, montant: total,
+                loyer: montant, commission: commission,
+                locataire_nom: locataire?.nom || '', locataire_prenom: locataire?.prenom || '',
+                annonce_titre: annonce?.titre || '', annonce_ville: annonce?.ville || '',
+            };
+
+            activerBoutons(total);
+        }
+
+        // ================================================================
+        // MODE INITIAL
+        // ================================================================
+        async function chargerModeInitial() {
+            if (!matchId) {
+                // Mode démo
+                const demoPrixSemaine = 95;
+                const demoLoyerMensuel = Math.round(demoPrixSemaine * 52 / 12);
+                const demoCommissionMensuelle = parseFloat((demoLoyerMensuel * COMMISSION_RATE).toFixed(2));
+                const demoDepot = demoLoyerMensuel * 2;
+                const demoTotalMensuel = demoLoyerMensuel + demoCommissionMensuelle;
+                const demoPremierPrelevement = demoDepot + demoTotalMensuel;
+
+                document.getElementById('montantCaution').textContent = formatEuros(demoDepot);
+                document.getElementById('montantLoyer').textContent = `${formatEuros(demoLoyerMensuel)}/mois`;
+                document.getElementById('montantFrais').textContent = `${formatEuros(demoCommissionMensuelle)}/mois`;
+                document.getElementById('montantMensuel').textContent = `${formatEuros(demoTotalMensuel)}/mois`;
+                document.getElementById('totalLabel').textContent = '1er prelevement';
+                document.getElementById('montantTotal').textContent = formatEuros(demoPremierPrelevement);
+                document.getElementById('btnRetour').href = 'contrat-location.html';
+                paymentData = {
+                    type: 'initial', contrat_id: 'demo', montant: demoPremierPrelevement,
+                    depot: demoDepot, loyer_mensuel: demoLoyerMensuel,
+                    commission_mensuelle: demoCommissionMensuelle,
+                };
+                activerBoutons(demoPremierPrelevement);
+                return;
+            }
+
+            const { data: candidature, error } = await supabaseClient
+                .from('candidatures').select('*, annonces (*)').eq('id', matchId).single();
+
+            if (error) throw error;
+
+            // ─── SÉCURITÉ : Vérifier que l'utilisateur est bien partie prenante du match ───
+            const isLocataire = (currentUser.id === candidature.locataire_id);
+            const isProprietaire = (currentUser.id === candidature.annonces?.user_id);
+            if (!isLocataire && !isProprietaire && !isAdmin) {
+                alert('Accès non autorisé à ce paiement.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            matchData = candidature;
+
+            if (candidature.statut === 'paiement_ok') {
                 window.location.href = `etat-des-lieux-entree.html?match_id=${matchId}`;
+                return;
+            }
+            if (candidature.statut === 'actif') {
+                window.location.href = `match-actif.html?match_id=${matchId}`;
+                return;
+            }
 
-            } catch (error) {
-                console.error('❌ Erreur paiement:', error);
-                alert('❌ Erreur lors du paiement');
-                btnPayer.disabled = false;
-                btnPayer.textContent = originalText;
+            const estRenouvellement = candidature.est_renouvellement === true;
+            const prixSemaine = candidature.annonces.prix;
+            const loyerMensuel = Math.round(prixSemaine * 52 / 12);
+            const commissionMensuelle = parseFloat((loyerMensuel * COMMISSION_RATE).toFixed(2));
+            const depot = loyerMensuel * 2;
+            const totalMensuel = loyerMensuel + commissionMensuelle;
+
+            if (estRenouvellement) {
+                document.getElementById('montantCaution').textContent = 'Conserve';
+                document.getElementById('montantCaution').style.color = '#10B981';
+                document.getElementById('montantLoyer').textContent = `${formatEuros(loyerMensuel)}/mois`;
+                document.getElementById('montantFrais').textContent = `${formatEuros(commissionMensuelle)}/mois`;
+                document.getElementById('montantMensuel').textContent = `${formatEuros(totalMensuel)}/mois`;
+                document.getElementById('totalLabel').textContent = '1er prelevement';
+                document.getElementById('montantTotal').textContent = formatEuros(totalMensuel);
+
+                // Progress bar renouvellement (3 etapes)
+                document.getElementById('progressSteps').innerHTML = `
+                    <div class="progress-step completed"><div class="step-number">1</div><div class="step-label">Renouvellement</div></div>
+                    <div class="progress-step completed"><div class="step-number">2</div><div class="step-label">Contrat</div></div>
+                    <div class="progress-step active"><div class="step-number">3</div><div class="step-label">Paiement</div></div>
+                `;
+                document.getElementById('progressSteps').style.gridTemplateColumns = 'repeat(3, 1fr)';
+                document.querySelector('.progress-bar-fill').style.width = '83%';
+            } else {
+                const premierPrelevement = depot + totalMensuel;
+                document.getElementById('montantCaution').textContent = formatEuros(depot);
+                document.getElementById('montantLoyer').textContent = `${formatEuros(loyerMensuel)}/mois`;
+                document.getElementById('montantFrais').textContent = `${formatEuros(commissionMensuelle)}/mois`;
+                document.getElementById('montantMensuel').textContent = `${formatEuros(totalMensuel)}/mois`;
+                document.getElementById('totalLabel').textContent = '1er prelevement';
+                document.getElementById('montantTotal').textContent = formatEuros(premierPrelevement);
+            }
+
+            document.getElementById('btnRetour').href = `contrat-location.html?match_id=${matchId}`;
+
+            const { data: locataire } = await supabaseClient
+                .from('users').select('prenom, nom, email').eq('id', currentUser.id).single();
+
+            let contratIdForPayment = contratId;
+            let dateFin = null;
+            if (!contratIdForPayment) {
+                const { data: contrat } = await supabaseClient
+                    .from('contrats').select('id, date_fin').eq('candidature_id', matchId).single();
+                contratIdForPayment = contrat?.id || matchId;
+                dateFin = contrat?.date_fin || null;
+            } else {
+                const { data: contrat } = await supabaseClient
+                    .from('contrats').select('date_fin').eq('id', contratIdForPayment).single();
+                dateFin = contrat?.date_fin || null;
+            }
+
+            // Récupérer les infos de l'hôte (propriétaire de l'annonce)
+            const hoteId = candidature.annonces?.user_id || null;
+            let hoteEmail = '';
+            if (hoteId) {
+                const { data: hoteData } = await supabaseClient
+                    .from('users').select('email').eq('id', hoteId).single();
+                hoteEmail = hoteData?.email || '';
+            }
+
+            paymentData = {
+                type: 'initial',
+                contrat_id: contratIdForPayment,
+                montant: estRenouvellement ? totalMensuel : (depot + totalMensuel),
+                depot: estRenouvellement ? 0 : depot,
+                loyer_mensuel: loyerMensuel,
+                commission_mensuelle: commissionMensuelle,
+                date_fin: dateFin,
+                locataire_nom: locataire?.nom || '',
+                locataire_prenom: locataire?.prenom || '',
+                locataire_email: locataire?.email || '',
+                locataire_id: currentUser.id,
+                hote_id: hoteId,
+                hote_email: hoteEmail,
+                annonce_titre: candidature.annonces?.titre || '',
+                annonce_ville: candidature.annonces?.ville || '',
+            };
+
+            activerBoutons(paymentData.montant);
+        }
+
+        // ================================================================
+        // ACTIVER LES BOUTONS
+        // ================================================================
+        function activerBoutons(montant) {
+            const isInitial = pageType !== 'impaye';
+            const checkboxId = isInitial ? 'acceptCGV' : 'acceptCGVImpaye';
+            const checkbox = document.getElementById(checkboxId);
+            document.getElementById('btnPayerBottom').disabled = !(checkbox && checkbox.checked);
+
+            if (isInitial) {
+                document.getElementById('btnPayerBottomText').textContent = 'Mettre en place le prelevement';
+            } else {
+                document.getElementById('btnPayerBottomText').textContent = 'Payer';
             }
         }
 
-        // Gérer dashboard
+        function togglePaiement() {
+            const isInitial = pageType !== 'impaye';
+            const checkboxId = isInitial ? 'acceptCGV' : 'acceptCGVImpaye';
+            const checkbox = document.getElementById(checkboxId);
+            const btn = document.getElementById('btnPayerBottom');
+            if (paymentData.montant) {
+                btn.disabled = !checkbox.checked;
+            }
+        }
+
+        // ================================================================
+        // LANCER STRIPE CHECKOUT
+        // ================================================================
+        async function lancerPaiementStripe() {
+            // Rate limit : max 3 tentatives de paiement par 5 minutes
+            if (!RateLimiter.check('paiement', 3, 300000, { persistent: true })) return;
+
+            const btnBottom = document.getElementById('btnPayerBottom');
+
+            btnBottom.disabled = true;
+            document.getElementById('btnPayerBottomText').textContent = 'Redirection...';
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            // Mode démo : simuler le paiement sans appeler Stripe
+            if (paymentData.contrat_id === 'demo') {
+                setTimeout(() => {
+                    window.location.href = 'paiement-success.html?demo=true';
+                }, 1500);
+                return;
+            }
+
+            try {
+                const { data: { session: authSession } } = await supabaseClient.auth.getSession();
+
+                if (!authSession) {
+                    throw new Error('Vous devez être connecté pour effectuer un paiement');
+                }
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/functions/v1/create-stripe-checkout`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authSession.access_token}`,
+                        },
+                        body: JSON.stringify({
+                            ...paymentData,
+                            success_url: `${window.location.origin}/paiement-success.html?session_id={CHECKOUT_SESSION_ID}`,
+                            cancel_url: window.location.href,
+                        }),
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Erreur lors de la creation du paiement');
+                }
+
+                if (result.url) {
+                    window.location.href = result.url;
+                } else {
+                    throw new Error('URL de paiement non recue');
+                }
+            } catch (error) {
+                console.error('Erreur paiement Stripe:', error);
+                alert('Erreur lors de la creation du paiement : ' + error.message);
+
+                document.getElementById('loadingOverlay').classList.remove('active');
+                btnBottom.disabled = false;
+                if (pageType === 'impaye') {
+                    document.getElementById('btnPayerBottomText').textContent = 'Payer';
+                } else {
+                    document.getElementById('btnPayerBottomText').textContent = 'Mettre en place le prelevement';
+                }
+            }
+        }
+
+        // ================================================================
+        // DASHBOARD LINK
+        // ================================================================
         async function gererDashboard() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             const dashboardLink = document.getElementById('dashboardLink');
-            
             if (user) {
                 const { data: userData } = await supabaseClient
-                    .from('users')
-                    .select('type_user')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (userData?.type_user === 'hote') {
-                    dashboardLink.href = 'dashboard-hote.html';
-                } else if (userData?.type_user === 'proprietaire') {
+                    .from('users').select('type_user').eq('id', user.id).single();
+                if (userData?.type_user === 'proprietaire') {
                     dashboardLink.href = 'dashboard-proprietaire.html';
                 } else {
                     dashboardLink.href = 'dashboard-locataire.html';
@@ -695,11 +1183,15 @@
             }
         }
 
-        // Init
+        // ================================================================
+        // INIT
+        // ================================================================
         if (typeof supabaseClient !== 'undefined') {
             chargerPaiement();
             gererDashboard();
         }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

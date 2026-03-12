@@ -3,7 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlternHome - Trouve ton logement en alternance</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>STERNY — Trouve ton logement en alternance</title>
+    <meta name="description" content="STERNY met en relation les étudiants en alternance avec des propriétaires pour trouver un logement adapté à leur rythme. Recherche, candidature et contrat 100% en ligne.">
+    <link rel="canonical" href="https://sterny.co/">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/">
+    <meta property="og:title" content="STERNY — Trouve ton logement en alternance">
+    <meta property="og:description" content="La plateforme qui met en relation étudiants en alternance et propriétaires. Recherche, candidature et contrat 100% en ligne.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="STERNY">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="STERNY — Trouve ton logement en alternance">
+    <meta name="twitter:description" content="La plateforme qui met en relation étudiants en alternance et propriétaires.">
+    <meta name="twitter:image" content="https://sterny.co/og-image.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
@@ -12,28 +34,30 @@
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 100px 20px 120px;
+            padding: 80px 20px 100px;
             text-align: center;
         }
-        
+
         .hero h1 {
-            font-size: 52px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
             font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1.1;
         }
-        
+
         .hero p {
-            font-size: 20px;
-            margin-bottom: 40px;
-            opacity: 0.95;
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.9;
         }
-        
+
         /* BARRE DE RECHERCHE */
         .search-bar {
             background: white;
             border-radius: 16px;
             padding: 20px;
-            max-width: 1100px;
+            max-width: 960px;
             margin: 0 auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             display: flex;
@@ -41,7 +65,7 @@
             gap: 15px;
             align-items: end;
         }
-        
+
         .search-field {
             flex: 1;
             min-width: 200px;
@@ -49,11 +73,7 @@
             flex-direction: column;
             text-align: left;
         }
-        
-        .search-btn {
-            flex-shrink: 0;
-        }
-        
+
         .search-field label {
             font-size: 12px;
             font-weight: 600;
@@ -62,7 +82,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .search-field select,
         .search-field input {
             padding: 12px;
@@ -72,15 +92,37 @@
             font-family: inherit;
             outline: none;
             transition: border-color 0.3s;
+            height: 48px;
+            box-sizing: border-box;
+            color: var(--gray-900);
+            background-color: white;
         }
-        
+
+        .search-field select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .search-field select:invalid,
+        .search-field select option[value=""][disabled] {
+            color: rgba(0,0,0,0.5);
+        }
+
         .search-field select:focus,
         .search-field input:focus {
             border-color: var(--primary);
         }
-        
+
         .search-btn {
-            padding: 15px 40px;
+            align-self: flex-end;
+            height: 48px;
+            box-sizing: border-box;
+            padding: 0 40px;
             background: var(--primary);
             color: white;
             border: none;
@@ -90,17 +132,36 @@
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
+            flex-shrink: 0;
         }
-        
+
         .search-btn:hover {
-            background: var(--primary-dark);
+            background: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
         }
-        
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Message ville - sous la barre sans décalage */
+        #villeMessage {
+            text-align: center;
+            margin-top: 12px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #FCD34D;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         /* SECTION LOGEMENTS */
         .featured-section {
-            padding: 80px 20px;
+            padding: 50px 20px;
             background: var(--gray-50);
         }
         
@@ -122,44 +183,45 @@
         
         .logements-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 960px;
             margin: 0 auto;
         }
-        
+
         .logement-card {
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 40px rgba(30, 41, 59, 0.45);
+            border: 1px solid #E2E8F0;
             transition: all 0.3s ease;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
             display: block;
+            max-width: 380px;
         }
-        
+
         .logement-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 14px 50px rgba(30, 41, 59, 0.55);
         }
-        
+
         .logement-image {
             width: 100%;
-            height: 200px;
+            height: 160px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
             position: relative;
         }
-        
+
         .logement-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            left: 10px;
             background: white;
             color: var(--primary);
             padding: 6px 12px;
@@ -167,29 +229,29 @@
             font-size: 12px;
             font-weight: 600;
         }
-        
+
         .logement-content {
-            padding: 20px;
+            padding: 14px 16px;
         }
-        
+
         .logement-price {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
+            color: #E8622A;
+            margin-bottom: 4px;
         }
-        
+
         .logement-title {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--gray-900);
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
-        
+
         .logement-location {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--gray-600);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -212,98 +274,83 @@
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 36px;
+                font-size: 32px;
+                letter-spacing: -0.5px;
             }
-            
+
             .search-bar {
                 flex-direction: column;
             }
-            
+
             .search-field {
                 min-width: 100%;
             }
-            
+
             .search-btn {
                 width: 100%;
             }
-            
+
             .logements-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
     <div class="container">
-        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+        <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
         <ul>
             <li><a href="index.html">Accueil</a></li>
-            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             <li><a href="#" id="commentCaMarcheLink">Comment ça marche</a></li>
-            <li><a href="devenir-hote.html">Devenir hôte</a></li>
+            <li><a href="#" id="devenirHoteLink">Devenir hôte</a></li>
         </ul>
     </div>
 </nav>
 
     <!-- HERO SECTION -->
     <section class="hero">
-        <h1>🏠 Trouve ton logement en alternance</h1>
-        <p>Des logements adaptés à ton rythme école-entreprise</p>
-        
+        <h1>Ton logement, calé sur ton rythme</h1>
+        <p>Trouve un logement pensé pour l'alternance : flexible, meublé, et adapté à tes semaines école-entreprise.</p>
+
         <!-- BARRE DE RECHERCHE -->
         <div class="search-bar">
-            <div class="search-field">
+            <div class="search-field" style="position: relative;">
                 <label>Ville</label>
-                <select id="ville">
-                    <option value="">Sélectionne une ville</option>
-                    <option value="rennes">Rennes</option>
-                    <option value="nantes">Nantes</option>
-                    <option value="brest">Brest</option>
-                </select>
+                <div style="position: relative;">
+                    <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off" style="width: 100%;">
+                </div>
+                <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
             </div>
-            
+
             <div class="search-field">
-                <label>Budget max</label>
-                <select id="budget">
-                    <option value="">Budget</option>
-                    <option value="400">Moins de 400€</option>
-                    <option value="500">400€ - 500€</option>
-                    <option value="600">500€ - 600€</option>
-                    <option value="700">Plus de 600€</option>
+                <label>Type d'alternance</label>
+                <select id="rythme" onchange="updateDisponibilites()">
+                    <option value="" disabled selected>Type d'alternance</option>
+                    <option value="symmetric">Symétrique (même durée)</option>
+                    <option value="asymmetric">Asymétrique (durées différentes)</option>
+                    <option value="custom">Personnalisé</option>
                 </select>
             </div>
-            
-            <div class="search-field">
-                <label>Rythme alternance</label>
-                <select id="rythme" onchange="toggleDisponibilites()">
-                    <option value="">Rythme</option>
-                    <option value="hebdo">Hebdomadaire</option>
-                    <option value="bloc">Par blocs</option>
-                    <option value="jour">Par jour</option>
-                    <option value="longs">Longues périodes</option>
-                    <option value="perso">Personnalisé</option>
-                </select>
-            </div>
-            
+
             <div class="search-field" id="disponibilitesField" style="display: none;">
-                <label>Mes disponibilités</label>
+                <label>Mon rythme</label>
                 <select id="disponibilites">
-                    <option value="">Mes disponibilités</option>
-                    <option value="1">1 semaine / 1 semaine</option>
-                    <option value="2">2 semaines / 2 semaines</option>
-                    <option value="3">3 semaines / 3 semaines</option>
-                    <option value="4">4 semaines / 4 semaines</option>
-                    <option value="6">6 semaines / 6 semaines</option>
-                    <option value="8">8 semaines / 8 semaines</option>
+                    <option value="" disabled selected>Mon rythme</option>
                 </select>
             </div>
-            
-            <button class="search-btn" onclick="rechercher()">
-                🔍 Rechercher
-            </button>
+
+            <button class="search-btn" onclick="rechercher()">Rechercher</button>
         </div>
+        <!-- Message ville - hors de search-bar pour éviter le décalage -->
+        <div id="villeMessage" class="ville-message" style="display: none;"></div>
     </section>
 
     <!-- LOGEMENTS À LA UNE -->
@@ -314,156 +361,292 @@
                 <p>Sélectionnés pour les alternants</p>
             </div>
             
-            <div class="logements-grid">
-                <!-- Logement 1 -->
-                <a href="logement.html?id=1" class="logement-card">
-                    <div class="logement-image">
-                        🏢
-                        <span class="logement-badge">Nouveau</span>
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">450€ / mois</div>
-                        <div class="logement-title">Studio meublé</div>
-                        <div class="logement-location">📍 Centre-ville, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">25m²</span>
-                            <span class="feature-tag">1 sem/1 sem</span>
-                            <span class="feature-tag">Wifi</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Logement 2 -->
-                <a href="logement.html?id=2" class="logement-card">
-                    <div class="logement-image">
-                        🏠
-                        <span class="logement-badge">Populaire</span>
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">380€ / mois</div>
-                        <div class="logement-title">Colocation 3 personnes</div>
-                        <div class="logement-location">📍 Villejean, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">Chambre 12m²</span>
-                            <span class="feature-tag">Proche métro</span>
-                            <span class="feature-tag">Jardin</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Logement 3 -->
-                <a href="logement.html?id=3" class="logement-card">
-                    <div class="logement-image">
-                        🏡
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">520€ / mois</div>
-                        <div class="logement-title">T1 avec parking</div>
-                        <div class="logement-location">📍 Cleunay, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">30m²</span>
-                            <span class="feature-tag">Parking</span>
-                            <span class="feature-tag">Balcon</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Logement 4 -->
-                <a href="logement.html?id=4" class="logement-card">
-                    <div class="logement-image">
-                        🏘️
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">410€ / mois</div>
-                        <div class="logement-title">Studio proche gare</div>
-                        <div class="logement-location">📍 Gare, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">22m²</span>
-                            <span class="feature-tag">5min gare</span>
-                            <span class="feature-tag">Meublé</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Logement 5 -->
-                <a href="logement.html?id=5" class="logement-card">
-                    <div class="logement-image">
-                        🏛️
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">490€ / mois</div>
-                        <div class="logement-title">Studio rénové</div>
-                        <div class="logement-location">📍 Sainte-Anne, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">28m²</span>
-                            <span class="feature-tag">Rénové 2025</span>
-                            <span class="feature-tag">Lumineux</span>
-                        </div>
-                    </div>
-                </a>
-                
-                <!-- Logement 6 -->
-                <a href="logement.html?id=6" class="logement-card">
-                    <div class="logement-image">
-                        🌳
-                    </div>
-                    <div class="logement-content">
-                        <div class="logement-price">550€ / mois</div>
-                        <div class="logement-title">T1 avec terrasse</div>
-                        <div class="logement-location">📍 Maurepas, Rennes</div>
-                        <div class="logement-features">
-                            <span class="feature-tag">32m²</span>
-                            <span class="feature-tag">Terrasse</span>
-                            <span class="feature-tag">Calme</span>
-                        </div>
-                    </div>
-                </a>
+            <div class="logements-grid" id="logementsGrid">
+                <!-- Chargé dynamiquement depuis Supabase -->
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray-500);">
+                    Chargement des annonces...
+                </div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer>
+    <footer role="contentinfo">
         <div class="container">
-            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
-            <p><a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a></p>
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
         </div>
     </footer>
 
     <script>
-        function toggleDisponibilites() {
-            const rythme = document.getElementById('rythme').value;
-            const disponibilitesField = document.getElementById('disponibilitesField');
-            
-            // Afficher "Mes disponibilités" UNIQUEMENT pour ces rythmes
-            if (rythme === 'hebdo' || rythme === 'bloc' || rythme === 'jour' || rythme === 'longs') {
-                disponibilitesField.style.display = 'flex';
+        function updateDisponibilites() {
+            const type = document.getElementById('rythme').value;
+            const field = document.getElementById('disponibilitesField');
+            const select = document.getElementById('disponibilites');
+
+            select.innerHTML = '<option value="" disabled selected>Mon rythme</option>';
+
+            if (type === 'symmetric') {
+                field.style.display = 'flex';
+                const options = [
+                    { value: '1-1', label: '1 sem. / 1 sem.' },
+                    { value: '2-2', label: '2 sem. / 2 sem.' },
+                    { value: '3-3', label: '3 sem. / 3 sem.' },
+                    { value: '4-4', label: '4 sem. / 4 sem.' },
+                    { value: '5-5', label: '5 sem. / 5 sem.' },
+                    { value: '6-6', label: '6 sem. / 6 sem.' },
+                    { value: '8-8', label: '8 sem. / 8 sem.' },
+                ];
+                options.forEach(o => {
+                    select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+                });
+            } else if (type === 'asymmetric') {
+                field.style.display = 'flex';
+                const options = [
+                    { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
+                    { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
+                    { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
+                    { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
+                    { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
+                    { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
+                    { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
+                    { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
+                ];
+                options.forEach(o => {
+                    select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+                });
             } else {
-                disponibilitesField.style.display = 'none';
-                document.getElementById('disponibilites').value = '';
+                field.style.display = 'none';
             }
         }
-        
+
+        // ========== AUTOCOMPLÉTION VILLE ==========
+        const VILLES_DISPONIBLES = {
+            'Rennes': 'rennes',
+            'Nantes': 'nantes',
+            'Brest': 'brest',
+            'Quimper': 'quimper',
+            'Lorient': 'lorient',
+            'Vannes': 'vannes',
+            'Saint-Malo': 'saint-malo',
+            'Saint-Brieuc': 'saint-brieuc',
+            'Fougères': 'fougeres',
+            'Vitré': 'vitre'
+        };
+        let villeSelectionnee = '';
+
+        function capitalizeWords(str) {
+            return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
+
+        (function initVilleAutocomplete() {
+            const input = document.getElementById('villeInput');
+            const suggestionsDiv = document.getElementById('villeSuggestions');
+            const messageDiv = document.getElementById('villeMessage');
+            input.addEventListener('input', function() {
+                // Majuscule auto sur la saisie ville
+                const pos = this.selectionStart;
+                this.value = capitalizeWords(this.value);
+                this.setSelectionRange(pos, pos);
+
+                const query = this.value.trim().toLowerCase();
+                villeSelectionnee = '';
+                messageDiv.style.display = 'none';
+
+                if (query.length === 0) {
+                    suggestionsDiv.style.display = 'none';
+                    return;
+                }
+
+                const matches = Object.keys(VILLES_DISPONIBLES).filter(v =>
+                    v.toLowerCase().startsWith(query)
+                );
+
+                if (matches.length > 0) {
+                    suggestionsDiv.innerHTML = matches.map(v =>
+                        `<div class="ville-suggestion-item" data-value="${VILLES_DISPONIBLES[v]}" data-label="${v}">${v}</div>`
+                    ).join('');
+                    suggestionsDiv.style.display = 'block';
+
+                    suggestionsDiv.querySelectorAll('.ville-suggestion-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            input.value = this.dataset.label;
+                            villeSelectionnee = this.dataset.value;
+                            suggestionsDiv.style.display = 'none';
+                            messageDiv.style.display = 'none';
+                        });
+                    });
+                } else {
+                    if (query.length >= 2) {
+                        suggestionsDiv.innerHTML = '<div style="padding: 12px 16px; color: #E8622A; font-weight: 600; font-size: 14px; cursor: default;">STERNY arrive bientôt dans ta ville !</div>';
+                        suggestionsDiv.style.display = 'block';
+                    } else {
+                        suggestionsDiv.style.display = 'none';
+                    }
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                setTimeout(() => {
+                    suggestionsDiv.style.display = 'none';
+                    const val = input.value.trim();
+                    if (val && !villeSelectionnee) {
+                        const exactMatch = Object.keys(VILLES_DISPONIBLES).find(v =>
+                            v.toLowerCase() === val.toLowerCase()
+                        );
+                        if (exactMatch) {
+                            input.value = exactMatch;
+                            villeSelectionnee = VILLES_DISPONIBLES[exactMatch];
+                        }
+                    }
+                }, 200);
+            });
+
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    suggestionsDiv.style.display = 'none';
+                    rechercher();
+                }
+            });
+        })();
+
+        // ========== RACCOURCIR TEXTE SELECTS ==========
+
+        // Fix 2 : Raccourcir "Type d'alternance" après sélection
+        (function initRythmeShortening() {
+            const rythmeSelect = document.getElementById('rythme');
+            if (!rythmeSelect) return;
+
+            const rythmeFullTexts = {
+                'symmetric': 'Symétrique (même durée)',
+                'asymmetric': 'Asymétrique (durées différentes)',
+                'custom': 'Personnalisé'
+            };
+            const rythmeShortTexts = {
+                'symmetric': 'Symétrique',
+                'asymmetric': 'Asymétrique',
+                'custom': 'Personnalisé'
+            };
+
+            rythmeSelect.addEventListener('focus', function() {
+                Array.from(this.options).forEach(opt => {
+                    if (rythmeFullTexts[opt.value]) opt.textContent = rythmeFullTexts[opt.value];
+                });
+            });
+            rythmeSelect.addEventListener('change', function() {
+                const opt = this.selectedOptions[0];
+                if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
+            });
+            rythmeSelect.addEventListener('blur', function() {
+                const opt = this.selectedOptions[0];
+                if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
+            });
+        })();
+
+        // Fix 3 : Raccourcir "Mon rythme" après sélection
+        (function initDispoShortening() {
+            const dispoSelect = document.getElementById('disponibilites');
+            if (!dispoSelect) return;
+
+            function shortenRythmeText(text) {
+                return text.replace(/ entreprise/g, '').replace(/ école/g, '');
+            }
+
+            function restoreRythmeOption(opt) {
+                const val = opt.value;
+                if (!val) return;
+                const parts = val.split('-');
+                if (parts.length !== 2) return;
+                const a = parts[0], b = parts[1];
+                if (a === b) {
+                    opt.textContent = `${a} sem. / ${b} sem.`;
+                } else {
+                    opt.textContent = `${a} sem. entreprise / ${b} sem. école`;
+                }
+            }
+
+            dispoSelect.addEventListener('focus', function() {
+                Array.from(this.options).forEach(opt => {
+                    if (opt.value && !opt.disabled) restoreRythmeOption(opt);
+                });
+            });
+            dispoSelect.addEventListener('change', function() {
+                const opt = this.selectedOptions[0];
+                if (opt && opt.value) opt.textContent = shortenRythmeText(opt.textContent);
+            });
+            dispoSelect.addEventListener('blur', function() {
+                const opt = this.selectedOptions[0];
+                if (opt && opt.value) opt.textContent = shortenRythmeText(opt.textContent);
+            });
+        })();
+
         function rechercher() {
-            const ville = document.getElementById('ville').value;
-            const budget = document.getElementById('budget').value;
-            const rythme = document.getElementById('rythme').value;
-            const disponibilites = document.getElementById('disponibilites').value;
-            
-            // Construction de l'URL avec paramètres
+            let valid = true;
+
+            // Vérif ville
+            if (!villeSelectionnee) {
+                highlightError('villeInput');
+                valid = false;
+            }
+
+            // Vérif type d'alternance
+            const type = document.getElementById('rythme').value;
+            if (!type) {
+                highlightError('rythme');
+                valid = false;
+            }
+
+            // Vérif pattern si type symmetric ou asymmetric
+            const pattern = document.getElementById('disponibilites').value;
+            if ((type === 'symmetric' || type === 'asymmetric') && !pattern) {
+                highlightError('disponibilites');
+                valid = false;
+            }
+
+            if (!valid) return;
+
             let url = 'recherche.html?';
-            if (ville) url += 'ville=' + ville + '&';
-            if (budget) url += 'budget=' + budget + '&';
-            if (rythme) url += 'rythme=' + rythme + '&';
-            if (disponibilites) url += 'disponibilites=' + disponibilites;
-            
-            // Redirection vers la page de recherche
+            if (villeSelectionnee) url += 'ville=' + villeSelectionnee + '&';
+            if (type) url += 'type=' + type + '&';
+            if (pattern) url += 'pattern=' + pattern;
+
+            url = url.replace(/&$/, '');
             window.location.href = url;
         }
-        
-        // Permet de rechercher avec la touche Entrée
-        document.querySelectorAll('.search-field select').forEach(select => {
-            select.addEventListener('keypress', function(e) {
+
+        function highlightError(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.style.borderColor = '#ff6b6b';
+            el.style.animation = 'shake 0.4s ease';
+            setTimeout(() => {
+                el.style.borderColor = '';
+                el.style.animation = '';
+            }, 2000);
+        }
+
+        // Couleur grise pour les selects quand placeholder sélectionné (même gris que le placeholder input)
+        function updateSelectColor(select) {
+            select.style.color = select.value === '' ? 'rgba(0,0,0,0.5)' : 'var(--gray-900)';
+        }
+        document.querySelectorAll('.search-field select').forEach(s => {
+            updateSelectColor(s);
+            s.addEventListener('change', () => updateSelectColor(s));
+        });
+
+        // Rechercher avec la touche Entrée
+        document.querySelectorAll('.search-field select, .search-field input').forEach(el => {
+            el.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     rechercher();
                 }
@@ -488,7 +671,7 @@ async function gererLienMonEspace() {
             .single();
         
         if (userData?.type_user === 'hote') {
-            lien.href = 'dashboard-hote.html';
+            lien.href = 'dashboard-locataire.html';
         } else {
             lien.href = 'dashboard-locataire.html';
         }
@@ -526,9 +709,108 @@ async function gererLienCommentCaMarche() {
     }
 }
 
+// Gérer le lien "Devenir hôte"
+async function gererLienDevenirHote() {
+    const lien = document.getElementById('devenirHoteLink');
+    if (!lien) return;
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        // Connecté : rediriger vers son dashboard
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('type_user')
+            .eq('id', user.id)
+            .single();
+
+        if (userData?.type_user === 'proprietaire') {
+            lien.href = 'dashboard-proprietaire.html';
+        } else if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-locataire.html';
+        } else {
+            lien.href = 'dashboard-locataire.html';
+        }
+    } else {
+        // Non connecté : page d'inscription avec choix du profil
+        lien.href = 'choix-inscription.html';
+    }
+}
+
 // Appeler les fonctions au chargement de la page
 gererLienMonEspace();
 gererLienCommentCaMarche();
+gererLienDevenirHote();
     </script>
+
+    <script>
+    // Charger les annonces depuis Supabase
+    async function chargerAnnoncesAccueil() {
+        const grid = document.getElementById('logementsGrid');
+        try {
+            const { data, error } = await supabaseClient
+                .from('annonces')
+                .select('*')
+                .eq('disponible', true)
+                .order('created_at', { ascending: false })
+                .limit(6);
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                        <h3 style="color: var(--gray-700); margin-bottom: 10px;">Aucune annonce pour le moment</h3>
+                        <p style="color: var(--gray-500);">De nouveaux logements arrivent bientôt !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(annonce => {
+                const ville = annonce.ville ? annonce.ville.charAt(0).toUpperCase() + annonce.ville.slice(1) : '';
+                const svgPlaceholder = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>';
+                const imageStyle = annonce.photos && annonce.photos.length > 0
+                    ? `background-image: url('${annonce.photos[0]}'); background-size: cover; background-position: center;`
+                    : 'background: #1E293B; display: flex; align-items: center; justify-content: center;';
+                const imageContent = annonce.photos && annonce.photos.length > 0
+                    ? ''
+                    : svgPlaceholder;
+                const tags = [];
+                if (annonce.surface) tags.push(`${annonce.surface}m\u00B2`);
+                if (annonce.equipements && annonce.equipements.length > 0) {
+                    tags.push(...annonce.equipements.slice(0, 2));
+                }
+                const tagsHTML = tags.map(t => `<span class="feature-tag">${t}</span>`).join('');
+
+                grid.innerHTML += `
+                    <a href="logement.html?id=${annonce.id}" class="logement-card">
+                        <div class="logement-image" style="${imageStyle}">
+                            ${imageContent}
+                        </div>
+                        <div class="logement-content">
+                            <div class="logement-price">${annonce.prix}\u20AC<span style="font-size: 13px; font-weight: 500; color: #6B7280;"> / semaine</span></div>
+                            <div class="logement-title">${annonce.titre}</div>
+                            <div class="logement-location">${ville}</div>
+                            <div class="logement-features">${tagsHTML}</div>
+                        </div>
+                    </a>
+                `;
+            });
+        } catch (err) {
+            console.error('Erreur chargement annonces accueil:', err);
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <h3 style="color: var(--gray-700); margin-bottom: 10px;">Impossible de charger les annonces</h3>
+                    <p style="color: var(--gray-500);">Veuillez rafra\u00EEchir la page.</p>
+                </div>
+            `;
+        }
+    }
+    chargerAnnoncesAccueil();
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Nous contacter &mdash; STERNY</title>
+    <meta name="description" content="Contactez l'équipe STERNY pour toute question, suggestion ou demande d'assistance. Nous répondons sous 24h.">
+    <link rel="canonical" href="https://sterny.co/contact.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/contact.html">
+    <meta property="og:title" content="Nous contacter — STERNY">
+    <meta property="og:description" content="Contactez l'équipe STERNY. Nous répondons sous 24h.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-contact {
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 0 20px;
+        }
+
+        .contact-card {
+            max-width: 640px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin: 48px auto 80px;
+        }
+
+        .contact-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+
+        .contact-card .subtitle {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 32px;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .btn-back-top:hover { color: #E8622A; }
+        .btn-back-top svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .contact-channels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .channel-card {
+            padding: 24px;
+            border: 1px solid #E8EAF0;
+            border-radius: 14px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .channel-card:hover {
+            border-color: #E8622A;
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+        }
+
+        .channel-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            background: #FFF7F3;
+        }
+        .channel-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #E8622A;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .channel-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 4px;
+        }
+
+        .channel-card p {
+            font-size: 12px;
+            color: #94A3B8;
+            margin: 0 0 10px;
+        }
+
+        .channel-card a {
+            font-size: 13px;
+            color: #E8622A;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .channel-card a:hover { text-decoration: underline; }
+
+        /* FORMULAIRE */
+        .contact-form-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: #1E293B;
+            background: #FAFBFC;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { background: #d4571f; }
+        .btn-submit:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 32px 0;
+        }
+        .form-success svg {
+            width: 48px;
+            height: 48px;
+            color: #22c55e;
+            margin-bottom: 12px;
+        }
+        .form-success h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+        .form-success p {
+            font-size: 13px;
+            color: #94A3B8;
+        }
+
+        @media (max-width: 600px) {
+            .contact-card {
+                padding: 24px 20px;
+                margin: 24px auto 40px;
+            }
+            .contact-card h1 { font-size: 22px; }
+            .contact-channels { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-contact">
+        <div class="contact-card">
+            <a href="index.html" class="btn-back-top">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+            <h1>Nous contacter</h1>
+            <p class="subtitle">Une question, un probl&egrave;me ou une suggestion ? On vous r&eacute;pond sous 24h.</p>
+
+            <!-- CANAUX DE CONTACT -->
+            <div class="contact-channels">
+                <div class="channel-card">
+                    <div class="channel-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <h3>Email</h3>
+                    <p>R&eacute;ponse sous 24h</p>
+                    <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+                </div>
+                <div class="channel-card">
+                    <div class="channel-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3>Messagerie</h3>
+                    <p>Si vous avez un compte</p>
+                    <a href="messages.html">Ouvrir mes messages</a>
+                </div>
+            </div>
+
+            <!-- FORMULAIRE -->
+            <h2 class="contact-form-title">Envoyer un message</h2>
+
+            <form id="contactForm" aria-label="Formulaire de contact" onsubmit="envoyerMessage(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contactNom">Nom complet</label>
+                        <input type="text" id="contactNom" placeholder="Pr&eacute;nom Nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Adresse email</label>
+                        <input type="email" id="contactEmail" placeholder="vous@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactSujet">Sujet</label>
+                    <select id="contactSujet" required>
+                        <option value="" disabled selected>Choisissez un sujet</option>
+                        <option value="question">Question g&eacute;n&eacute;rale</option>
+                        <option value="inscription">Probl&egrave;me d&rsquo;inscription</option>
+                        <option value="paiement">Question sur un paiement</option>
+                        <option value="contrat">Question sur un contrat</option>
+                        <option value="bug">Signaler un bug</option>
+                        <option value="suggestion">Suggestion d&rsquo;am&eacute;lioration</option>
+                        <option value="partenariat">Partenariat / Presse</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactMessage">Votre message</label>
+                    <textarea id="contactMessage" placeholder="D&eacute;crivez votre demande en d&eacute;tail..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnEnvoyer">
+                    Envoyer le message
+                </button>
+            </form>
+
+            <div class="form-success" id="formSuccess">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <h3>Message envoy&eacute; !</h3>
+                <p>Merci pour votre message. Nous vous r&eacute;pondrons dans les 24 heures &agrave; l&rsquo;adresse indiqu&eacute;e.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        async function envoyerMessage(e) {
+            e.preventDefault();
+
+            // Rate limit : max 3 messages par 5 minutes (anti-spam)
+            if (!RateLimiter.check('contact', 3, 300000, { persistent: true })) return;
+
+            const btn = document.getElementById('btnEnvoyer');
+            btn.disabled = true;
+            btn.textContent = 'Envoi en cours...';
+
+            const nom = document.getElementById('contactNom').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const sujet = document.getElementById('contactSujet').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            try {
+                // Récupérer l'utilisateur connecté (si authentifié)
+                let userId = null;
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (user) userId = user.id;
+                } catch (e) { /* visiteur non connecté */ }
+
+                // Enregistrer dans Supabase (table messages_contact)
+                const { error } = await supabaseClient.from('messages_contact').insert({
+                    nom: nom,
+                    email: email,
+                    sujet: sujet,
+                    message: message,
+                    user_id: userId
+                });
+
+                if (error) throw error;
+
+                // Afficher le succès
+                document.getElementById('contactForm').style.display = 'none';
+                document.getElementById('formSuccess').style.display = 'block';
+
+            } catch (error) {
+                console.error('Erreur envoi:', error);
+                btn.disabled = false;
+                btn.textContent = 'Envoyer le message';
+                alert('Une erreur est survenue. Veuillez réessayer ou nous écrire directement à contact@sterny.co');
+            }
+        }
+    </script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

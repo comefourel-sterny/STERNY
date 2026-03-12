@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de Confidentialit&eacute; — STERNY</title>
+    <meta name="description" content="Politique de confidentialité de STERNY. Découvrez comment nous protégeons vos données personnelles.">
+    <link rel="canonical" href="https://sterny.co/politique-confidentialite.html">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            min-height: 100vh;
+        }
+
+        .legal-container {
+            max-width: 800px;
+            margin: 48px auto 80px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+        }
+
+        .legal-container h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .legal-date {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 32px;
+        }
+
+        .legal-container h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+
+        .legal-container p {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .legal-container ul {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            padding-left: 24px;
+        }
+
+        .legal-container ul li {
+            margin-bottom: 4px;
+        }
+
+        .legal-container a {
+            color: #E8622A;
+            text-decoration: none;
+        }
+
+        .legal-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 20px 0;
+            font-size: 13px;
+        }
+
+        .data-table th {
+            background: #F8F9FC;
+            color: #1E293B;
+            font-weight: 700;
+            text-align: left;
+            padding: 12px 14px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .data-table td {
+            color: #374151;
+            padding: 10px 14px;
+            border: 1px solid #E2E8F0;
+            line-height: 1.6;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #FAFBFC;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B !important;
+            text-decoration: none !important;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-back-top svg {
+            width: 16px; height: 16px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .btn-back-top:hover { color: #1E293B !important; }
+
+        /* Footer */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #E8622A;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        footer p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .legal-container {
+                margin: 24px 16px 60px 16px;
+                padding: 28px 20px;
+            }
+
+            .legal-container h1 {
+                font-size: 22px;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTENU -->
+    <div class="legal-container">
+        <a href="index.html" class="btn-back-top" onclick="event.preventDefault();window.close();setTimeout(function(){location.href='index.html';},100);">
+            <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Retour
+        </a>
+        <h1>Politique de Confidentialit&eacute;</h1>
+        <p class="legal-date">Derni&egrave;re mise &agrave; jour : 1er mars 2026</p>
+
+        <!-- Article 1 -->
+        <h2>Article 1 &ndash; Responsable du traitement</h2>
+        <p>
+            STERNY, auto-entreprise immatricul&eacute;e sous le n&deg; SIRET [&Agrave; COMPL&Eacute;TER], dont le si&egrave;ge est situ&eacute; &agrave; [&Agrave; COMPL&Eacute;TER], est responsable du traitement des donn&eacute;es personnelles collect&eacute;es via la Plateforme.
+        </p>
+        <p>
+            Contact DPO / responsable : <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+        </p>
+
+        <!-- Article 2 -->
+        <h2>Article 2 &ndash; Donn&eacute;es collect&eacute;es</h2>
+        <p>
+            Dans le cadre de son activit&eacute;, STERNY collecte les cat&eacute;gories de donn&eacute;es personnelles suivantes :
+        </p>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Cat&eacute;gorie</th>
+                    <th>Donn&eacute;es</th>
+                    <th>Finalit&eacute;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Identit&eacute;</td>
+                    <td>Nom, pr&eacute;nom, date de naissance, photo de profil</td>
+                    <td>Cr&eacute;ation de compte, v&eacute;rification d&rsquo;identit&eacute;</td>
+                </tr>
+                <tr>
+                    <td>Contact</td>
+                    <td>Email, t&eacute;l&eacute;phone</td>
+                    <td>Communication, gestion du compte</td>
+                </tr>
+                <tr>
+                    <td>Profil &eacute;tudiant</td>
+                    <td>&Eacute;cole, entreprise d&rsquo;alternance, type et rythme d&rsquo;alternance, ville(s) de recherche</td>
+                    <td>Matching avec les annonces</td>
+                </tr>
+                <tr>
+                    <td>Documents</td>
+                    <td>Certificat de scolarit&eacute;, attestation d&rsquo;assurance, RIB</td>
+                    <td>Constitution du dossier locataire</td>
+                </tr>
+                <tr>
+                    <td>Garant</td>
+                    <td>Nom, pr&eacute;nom, t&eacute;l&eacute;phone, email du garant</td>
+                    <td>S&eacute;curisation du bail</td>
+                </tr>
+                <tr>
+                    <td>Paiement</td>
+                    <td>Coordonn&eacute;es bancaires (trait&eacute;es par Stripe)</td>
+                    <td>Paiement des loyers et d&eacute;p&ocirc;t de garantie</td>
+                </tr>
+                <tr>
+                    <td>Navigation</td>
+                    <td>Adresse IP, cookies techniques</td>
+                    <td>Fonctionnement de la Plateforme</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Article 3 -->
+        <h2>Article 3 &ndash; Bases l&eacute;gales du traitement</h2>
+        <p>Les traitements de donn&eacute;es sont fond&eacute;s sur :</p>
+        <ul>
+            <li><strong>L&rsquo;ex&eacute;cution du contrat</strong> (art. 6.1.b du RGPD) : traitement n&eacute;cessaire &agrave; la fourniture des services de mise en relation, gestion du bail et des paiements</li>
+            <li><strong>Le consentement</strong> (art. 6.1.a du RGPD) : envoi de communications commerciales (newsletters, offres)</li>
+            <li><strong>L&rsquo;int&eacute;r&ecirc;t l&eacute;gitime</strong> (art. 6.1.f du RGPD) : am&eacute;lioration de la Plateforme, statistiques anonymis&eacute;es, pr&eacute;vention de la fraude</li>
+            <li><strong>L&rsquo;obligation l&eacute;gale</strong> (art. 6.1.c du RGPD) : conservation des donn&eacute;es de facturation, obligations comptables</li>
+        </ul>
+
+        <!-- Article 4 -->
+        <h2>Article 4 &ndash; Dur&eacute;e de conservation</h2>
+        <ul>
+            <li><strong>Donn&eacute;es de compte :</strong> conserv&eacute;es pendant toute la dur&eacute;e d&rsquo;utilisation du service, puis 3 ans apr&egrave;s la derni&egrave;re activit&eacute;</li>
+            <li><strong>Documents contractuels</strong> (contrats de bail, &eacute;tats des lieux) : 5 ans apr&egrave;s la fin du bail</li>
+            <li><strong>Donn&eacute;es de paiement :</strong> dur&eacute;es impos&eacute;es par les obligations comptables et fiscales (10 ans)</li>
+            <li><strong>Cookies techniques :</strong> dur&eacute;e de la session</li>
+        </ul>
+
+        <!-- Article 5 -->
+        <h2>Article 5 &ndash; Destinataires des donn&eacute;es</h2>
+        <p>Les donn&eacute;es peuvent &ecirc;tre communiqu&eacute;es &agrave; :</p>
+        <ul>
+            <li><strong>L&rsquo;autre partie au contrat de location</strong> (propri&eacute;taire ou locataire) : nom, pr&eacute;nom, coordonn&eacute;es de contact, dans le cadre strict de la relation locative</li>
+            <li><strong>Stripe</strong> (prestataire de paiement) : coordonn&eacute;es bancaires, pour le traitement s&eacute;curis&eacute; des paiements</li>
+            <li><strong>Supabase</strong> (h&eacute;bergeur de la base de donn&eacute;es) : toutes les donn&eacute;es, dans le cadre de l&rsquo;h&eacute;bergement technique</li>
+            <li><strong>Les autorit&eacute;s comp&eacute;tentes :</strong> en cas d&rsquo;obligation l&eacute;gale</li>
+        </ul>
+        <p>Aucune donn&eacute;e n&rsquo;est vendue &agrave; des tiers &agrave; des fins commerciales.</p>
+
+        <!-- Article 6 -->
+        <h2>Article 6 &ndash; Transferts hors UE</h2>
+        <p>
+            Certains sous-traitants (Stripe, Supabase) peuvent transf&eacute;rer des donn&eacute;es hors de l&rsquo;Union europ&eacute;enne. Ces transferts sont encadr&eacute;s par des Clauses Contractuelles Types (CCT) approuv&eacute;es par la Commission europ&eacute;enne ou par l&rsquo;adh&eacute;sion au Data Privacy Framework (DPF).
+        </p>
+
+        <!-- Article 7 -->
+        <h2>Article 7 &ndash; S&eacute;curit&eacute; des donn&eacute;es</h2>
+        <p>
+            STERNY met en &oelig;uvre les mesures techniques et organisationnelles appropri&eacute;es pour prot&eacute;ger les donn&eacute;es personnelles contre tout acc&egrave;s non autoris&eacute;, modification, divulgation ou destruction :
+        </p>
+        <ul>
+            <li>Chiffrement des communications (HTTPS/TLS)</li>
+            <li>Authentification s&eacute;curis&eacute;e des comptes</li>
+            <li>Acc&egrave;s restreint aux donn&eacute;es sur la base du besoin d&rsquo;en conna&icirc;tre</li>
+            <li>H&eacute;bergement sur des serveurs s&eacute;curis&eacute;s</li>
+        </ul>
+
+        <!-- Article 8 -->
+        <h2>Article 8 &ndash; Droits des utilisateurs</h2>
+        <p>
+            Conform&eacute;ment au RGPD et &agrave; la loi Informatique et Libert&eacute;s, vous disposez des droits suivants :
+        </p>
+        <ul>
+            <li><strong>Droit d&rsquo;acc&egrave;s :</strong> obtenir confirmation du traitement de vos donn&eacute;es et en recevoir une copie</li>
+            <li><strong>Droit de rectification :</strong> corriger des donn&eacute;es inexactes ou incompl&egrave;tes</li>
+            <li><strong>Droit &agrave; l&rsquo;effacement (&laquo; droit &agrave; l&rsquo;oubli &raquo;) :</strong> demander la suppression de vos donn&eacute;es, sous r&eacute;serve des obligations l&eacute;gales de conservation</li>
+            <li><strong>Droit &agrave; la limitation du traitement :</strong> restreindre temporairement le traitement dans certains cas</li>
+            <li><strong>Droit &agrave; la portabilit&eacute; :</strong> recevoir vos donn&eacute;es dans un format structur&eacute; et lisible par machine</li>
+            <li><strong>Droit d&rsquo;opposition :</strong> vous opposer au traitement de vos donn&eacute;es pour motif l&eacute;gitime</li>
+            <li><strong>Droit de retirer votre consentement :</strong> &agrave; tout moment, sans affecter la lic&eacute;it&eacute; du traitement ant&eacute;rieur</li>
+        </ul>
+        <p>
+            Pour exercer vos droits : <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+        </p>
+        <p>
+            D&eacute;lai de r&eacute;ponse : 1 mois &agrave; compter de la r&eacute;ception de la demande.
+        </p>
+        <p>
+            En cas d&rsquo;insatisfaction, vous pouvez introduire une r&eacute;clamation aupr&egrave;s de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>).
+        </p>
+
+        <!-- Article 9 -->
+        <h2>Article 9 &ndash; Cookies</h2>
+        <p>
+            STERNY utilise uniquement des cookies techniques strictement n&eacute;cessaires au fonctionnement de la Plateforme :
+        </p>
+        <ul>
+            <li>Cookie d&rsquo;authentification Supabase (session utilisateur)</li>
+            <li>Pr&eacute;f&eacute;rences de navigation</li>
+        </ul>
+        <p>
+            Aucun cookie publicitaire, de tracking ou de profilage n&rsquo;est utilis&eacute;. Aucun consentement n&rsquo;est requis pour les cookies strictement n&eacute;cessaires (art. 82 de la loi Informatique et Libert&eacute;s).
+        </p>
+
+        <!-- Article 10 -->
+        <h2>Article 10 &ndash; Modification de la politique</h2>
+        <p>
+            STERNY se r&eacute;serve le droit de modifier la pr&eacute;sente politique de confidentialit&eacute; &agrave; tout moment. Toute modification sera publi&eacute;e sur cette page avec mise &agrave; jour de la date. Les Utilisateurs seront inform&eacute;s en cas de changement substantiel.
+        </p>
+
+        <!-- Article 11 -->
+        <h2>Article 11 &ndash; Contact</h2>
+        <p>
+            Pour toute question relative &agrave; la protection de vos donn&eacute;es personnelles :
+        </p>
+        <p>
+            STERNY &ndash; <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+        </p>
+    </div>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 10px;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+            </p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // G&eacute;rer le lien dashboard
+        async function gererDashboard() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const dashboardLink = document.getElementById('dashboardLink');
+
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+
+                if (userData?.type_user === 'proprietaire') {
+                    dashboardLink.href = 'dashboard-proprietaire.html';
+                } else {
+                    dashboardLink.href = 'dashboard-etudiant.html';
+                }
+            } else {
+                dashboardLink.href = 'connexion.html';
+            }
+        }
+
+        // Init
+        if (typeof supabaseClient !== 'undefined') {
+            gererDashboard();
+        }
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

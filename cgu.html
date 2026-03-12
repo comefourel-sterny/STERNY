@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Conditions G&eacute;n&eacute;rales d'Utilisation — STERNY</title>
+    <meta name="description" content="Conditions Générales d'Utilisation de la plateforme STERNY. Consultez les règles d'utilisation du service.">
+    <link rel="canonical" href="https://sterny.co/cgu.html">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-cgu {
+            min-height: calc(100vh - 70px);
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 60px 20px 80px;
+        }
+
+        .cgu-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+        }
+
+        .cgu-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px 0;
+        }
+
+        .cgu-card .last-updated {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 32px;
+        }
+
+        .cgu-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        .cgu-card p,
+        .cgu-card li {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .cgu-card p {
+            margin: 0 0 12px 0;
+        }
+
+        .cgu-card ul {
+            margin: 0 0 12px 0;
+            padding-left: 20px;
+        }
+
+        .cgu-card li {
+            margin-bottom: 6px;
+        }
+
+        .cgu-card a {
+            color: var(--primary, #6366F1);
+            text-decoration: none;
+        }
+
+        .cgu-card a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B !important;
+            text-decoration: none !important;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-back-top svg {
+            width: 16px; height: 16px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .btn-back-top:hover { color: #1E293B !important; }
+
+        .footer-legal {
+            max-width: 800px;
+            margin: 32px auto 0;
+            text-align: center;
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .footer-legal a {
+            color: var(--primary, #6366F1);
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        .footer-legal a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .cgu-card {
+                padding: 28px 20px;
+            }
+
+            .cgu-card h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTENU CGU -->
+    <section class="page-cgu">
+        <div class="cgu-card">
+            <a href="index.html" class="btn-back-top" onclick="event.preventDefault();window.close();setTimeout(function(){location.href='index.html';},100);">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+            <h1>Conditions G&eacute;n&eacute;rales d&rsquo;Utilisation</h1>
+            <p class="last-updated">Derni&egrave;re mise &agrave; jour : 1<sup>er</sup> mars 2026</p>
+
+            <!-- Article 1 -->
+            <h2>Article 1 &ndash; D&eacute;finitions</h2>
+            <ul>
+                <li>&laquo;&nbsp;Plateforme&nbsp;&raquo; : le site web STERNY accessible &agrave; l&rsquo;adresse <a href="https://www.sterny.co">www.sterny.co</a></li>
+                <li>&laquo;&nbsp;Utilisateur&nbsp;&raquo; : toute personne acc&eacute;dant &agrave; la Plateforme, qu&rsquo;elle soit inscrite ou non</li>
+                <li>&laquo;&nbsp;Membre&nbsp;&raquo; : tout Utilisateur ayant cr&eacute;&eacute; un compte sur la Plateforme</li>
+                <li>&laquo;&nbsp;Propri&eacute;taire&nbsp;&raquo; : Membre proposant un logement meubl&eacute; &agrave; la location</li>
+                <li>&laquo;&nbsp;Locataire&nbsp;&raquo; ou &laquo;&nbsp;&Eacute;tudiant&nbsp;&raquo; : Membre recherchant un logement dans le cadre de son alternance</li>
+                <li>&laquo;&nbsp;Annonce&nbsp;&raquo; : offre de location publi&eacute;e par un Propri&eacute;taire sur la Plateforme</li>
+                <li>&laquo;&nbsp;Match&nbsp;&raquo; : accord mutuel entre un Propri&eacute;taire et un Locataire pour conclure un bail</li>
+                <li>&laquo;&nbsp;Services&nbsp;&raquo; : ensemble des fonctionnalit&eacute;s propos&eacute;es par la Plateforme</li>
+            </ul>
+
+            <!-- Article 2 -->
+            <h2>Article 2 &ndash; Objet</h2>
+            <p>Les pr&eacute;sentes CGU d&eacute;finissent les conditions d&rsquo;acc&egrave;s et d&rsquo;utilisation de la Plateforme STERNY. L&rsquo;acc&egrave;s &agrave; la Plateforme implique l&rsquo;acceptation sans r&eacute;serve des pr&eacute;sentes CGU.</p>
+
+            <!-- Article 3 -->
+            <h2>Article 3 &ndash; Acc&egrave;s &agrave; la Plateforme</h2>
+            <p>3.1. L&rsquo;acc&egrave;s &agrave; la consultation des annonces est libre et gratuit.</p>
+            <p>3.2. La candidature &agrave; un logement, la publication d&rsquo;annonces et l&rsquo;acc&egrave;s aux services de gestion n&eacute;cessitent la cr&eacute;ation d&rsquo;un compte Membre.</p>
+            <p>3.3. STERNY se r&eacute;serve le droit de suspendre ou supprimer tout compte ne respectant pas les pr&eacute;sentes CGU.</p>
+
+            <!-- Article 4 -->
+            <h2>Article 4 &ndash; Cr&eacute;ation de compte</h2>
+            <p>4.1. L&rsquo;inscription est ouverte aux personnes physiques majeures, ou mineures avec l&rsquo;autorisation de leur repr&eacute;sentant l&eacute;gal.</p>
+            <p>4.2. Le Membre s&rsquo;engage &agrave; fournir des informations exactes et &agrave; maintenir son profil &agrave; jour.</p>
+            <p>4.3. Le Membre est responsable de la confidentialit&eacute; de ses identifiants de connexion. Toute utilisation de son compte est r&eacute;put&eacute;e faite par lui.</p>
+            <p>4.4. Un seul compte par personne est autoris&eacute;.</p>
+
+            <!-- Article 5 -->
+            <h2>Article 5 &ndash; Publication d&rsquo;annonces</h2>
+            <p>5.1. Le Propri&eacute;taire s&rsquo;engage &agrave; publier des annonces v&eacute;ridiques, compl&egrave;tes et conformes au logement propos&eacute;.</p>
+            <p>5.2. Le logement doit respecter les crit&egrave;res de d&eacute;cence d&eacute;finis par le d&eacute;cret n&deg;&nbsp;2002-120 du 30&nbsp;janvier&nbsp;2002.</p>
+            <p>5.3. Les photos doivent &ecirc;tre r&eacute;centes et repr&eacute;sentatives du logement.</p>
+            <p>5.4. STERNY se r&eacute;serve le droit de refuser, modifier ou supprimer toute annonce non conforme aux pr&eacute;sentes CGU ou aux dispositions l&eacute;gales en vigueur.</p>
+            <p>5.5. Le prix affich&eacute; inclut la commission STERNY et correspond au loyer hebdomadaire charges comprises d&ucirc; par le locataire.</p>
+
+            <!-- Article 6 -->
+            <h2>Article 6 &ndash; Candidatures et matching</h2>
+            <p>6.1. Le Locataire peut postuler aux annonces correspondant &agrave; son profil.</p>
+            <p>6.2. Le Propri&eacute;taire est libre d&rsquo;accepter ou de refuser toute candidature, sous r&eacute;serve du respect des dispositions de la loi n&deg;&nbsp;2008-496 du 27&nbsp;mai&nbsp;2008 relative &agrave; la lutte contre les discriminations.</p>
+            <p>6.3. Un match est confirm&eacute; lorsque les deux parties ont donn&eacute; leur accord. Il engage les parties &agrave; poursuivre le processus (dossier, contrat, paiement).</p>
+
+            <!-- Article 7 -->
+            <h2>Article 7 &ndash; Comportement des Utilisateurs</h2>
+            <p>Il est interdit de :</p>
+            <ul>
+                <li>Publier du contenu faux, trompeur, diffamatoire ou contraire &agrave; l&rsquo;ordre public</li>
+                <li>Usurper l&rsquo;identit&eacute; d&rsquo;un tiers</li>
+                <li>Utiliser la Plateforme &agrave; des fins autres que la location de logement meubl&eacute; &eacute;tudiant</li>
+                <li>Contourner le syst&egrave;me de paiement de la Plateforme pour traiter directement avec l&rsquo;autre partie</li>
+                <li>Harceler, menacer ou discriminer tout autre Utilisateur</li>
+                <li>Utiliser des robots, scripts ou tout autre moyen automatis&eacute; pour acc&eacute;der &agrave; la Plateforme</li>
+            </ul>
+
+            <!-- Article 8 -->
+            <h2>Article 8 &ndash; Messagerie</h2>
+            <p>8.1. La Plateforme met &agrave; disposition un syst&egrave;me de messagerie entre Membres.</p>
+            <p>8.2. Les &eacute;changes doivent rester courtois et en lien avec la location.</p>
+            <p>8.3. STERNY se r&eacute;serve le droit de mod&eacute;rer les messages en cas de signalement.</p>
+
+            <!-- Article 9 -->
+            <h2>Article 9 &ndash; Responsabilit&eacute;</h2>
+            <p>9.1. STERNY est un interm&eacute;diaire technique. La Plateforme ne visite pas les logements et ne v&eacute;rifie pas leur conformit&eacute;.</p>
+            <p>9.2. STERNY ne peut &ecirc;tre tenue responsable des litiges entre Propri&eacute;taires et Locataires.</p>
+            <p>9.3. STERNY met en &oelig;uvre les moyens raisonnables pour assurer la disponibilit&eacute; de la Plateforme, sans obligation de r&eacute;sultat.</p>
+            <p>9.4. En cas d&rsquo;indisponibilit&eacute; temporaire, STERNY ne sera pas redevable de dommages et int&eacute;r&ecirc;ts.</p>
+
+            <!-- Article 10 -->
+            <h2>Article 10 &ndash; Propri&eacute;t&eacute; intellectuelle</h2>
+            <p>Tous les &eacute;l&eacute;ments de la Plateforme (logo, textes, design, code source, bases de donn&eacute;es) sont prot&eacute;g&eacute;s par le droit de la propri&eacute;t&eacute; intellectuelle. Toute reproduction non autoris&eacute;e est passible de poursuites.</p>
+
+            <!-- Article 11 -->
+            <h2>Article 11 &ndash; Donn&eacute;es personnelles</h2>
+            <p>Le traitement des donn&eacute;es personnelles est d&eacute;taill&eacute; dans notre <a href="politique-confidentialite.html">Politique de Confidentialit&eacute;</a>. En utilisant la Plateforme, l&rsquo;Utilisateur consent au traitement de ses donn&eacute;es dans les conditions d&eacute;crites.</p>
+
+            <!-- Article 12 -->
+            <h2>Article 12 &ndash; Modification des CGU</h2>
+            <p>STERNY peut modifier les pr&eacute;sentes CGU &agrave; tout moment. Les Utilisateurs seront inform&eacute;s des modifications par affichage sur la Plateforme. La poursuite de l&rsquo;utilisation vaut acceptation des nouvelles CGU.</p>
+
+            <!-- Article 13 -->
+            <h2>Article 13 &ndash; Droit applicable et litiges</h2>
+            <p>Les pr&eacute;sentes CGU sont r&eacute;gies par le droit fran&ccedil;ais. En cas de litige, les parties s&rsquo;engagent &agrave; rechercher une solution amiable avant toute action judiciaire. &Agrave; d&eacute;faut, les tribunaux fran&ccedil;ais seront comp&eacute;tents.</p>
+        </div>
+
+        <!-- LIENS VERS AUTRES PAGES LEGALES -->
+        <div class="footer-legal">
+            <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+            <a href="politique-confidentialite.html">Politique de confidentialit&eacute;</a>
+            <a href="cgv.html">CGV</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p><a href="mailto:contact@sterny.co">contact@sterny.co</a></p>
+        </div>
+    </footer>
+
+    <script>
+    // G&eacute;rer le lien "Mon espace"
+    async function gererLienMonEspace() {
+        const lien = document.getElementById('monEspaceLink');
+        if (!lien) return;
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        if (user) {
+            const { data: userData } = await supabaseClient
+                .from('users')
+                .select('type_user')
+                .eq('id', user.id)
+                .single();
+
+            if (userData?.type_user === 'hote') {
+                lien.href = 'dashboard-locataire.html';
+            } else {
+                lien.href = 'dashboard-locataire.html';
+            }
+        } else {
+            lien.href = 'connexion.html';
+        }
+    }
+
+    gererLienMonEspace();
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

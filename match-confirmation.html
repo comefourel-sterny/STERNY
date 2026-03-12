@@ -3,342 +3,737 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match confirmé ! - EASWAP</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Match confirm&eacute; — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F4F6F8;
             min-height: 100vh;
+            color: #1E293B;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .nav-inner {
+            max-width: none;
+            padding: 0 40px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 85px;
         }
+        .logo { text-decoration: none; display: flex; align-items: center; }
+        .logo img { height: 55px; width: auto; }
+        nav ul { display: flex; gap: 36px; list-style: none; }
+        nav ul li a { font-size: 15px; font-weight: 500; color: #64748B; transition: color 0.2s; }
+        nav ul li a:hover { color: #E8622A; }
 
-        /* HERO SECTION */
-        .hero-match {
+        /* ========== HERO ========== */
+        .hero {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            padding: 44px 24px 80px;
             text-align: center;
-            padding: 60px 20px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 98, 42, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 100px;
+            padding: 6px 16px 6px 8px;
+            margin-bottom: 16px;
+        }
+        .hero-badge-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #22C55E;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-badge-dot svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .hero-badge span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #86EFAC;
+        }
+        .hero h1 {
+            font-size: 26px;
+            font-weight: 700;
             color: white;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
         }
-
-        .celebration-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero-match h1 {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .hero-match p {
-            font-size: 18px;
-            opacity: 0.95;
-            max-width: 600px;
+        .hero p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+            max-width: 400px;
             margin: 0 auto;
         }
 
-        /* MAIN CARD */
-        .match-card {
-            max-width: 900px;
-            margin: 0 auto 40px;
+        /* ========== PAGE ========== */
+        .page-container {
+            max-width: 720px;
+            margin: -44px auto 0;
+            padding: 0 24px 48px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== CARD ========== */
+        .card {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.03);
+            margin-bottom: 12px;
             overflow: hidden;
         }
-
-        /* SECTION PARTICIPANTS */
-        .participants-section {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 30px;
-            padding: 40px;
-            align-items: center;
-            border-bottom: 2px solid #f3f4f6;
+        .card-section {
+            padding: 24px 28px;
         }
-
-        .participant {
-            text-align: center;
+        .card-section + .card-section {
+            border-top: 1px solid #F1F5F9;
         }
-
-        .participant-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 15px;
-            border: 4px solid #f3f4f6;
-        }
-
-        .participant-name {
-            font-size: 20px;
+        .card-label {
+            font-size: 11px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 5px;
-        }
-
-        .participant-role {
-            font-size: 14px;
-            color: #6b7280;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .participant-contact {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-top: 8px;
-        }
-
-        .match-icon {
-            font-size: 50px;
-            color: #10b981;
-        }
-
-        /* SECTION LOGEMENT */
-        .logement-section {
-            padding: 40px;
-            background: #f9fafb;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        .logement-section h2 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .logement-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .info-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-            text-align: center;
-        }
-
-        .info-box-icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .info-box-label {
-            font-size: 12px;
-            color: #6b7280;
-            font-weight: 600;
+            color: #94A3B8;
             text-transform: uppercase;
-            margin-bottom: 5px;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+        }
+        .card-label::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 12px;
+            background: #E8622A;
+            border-radius: 2px;
+            margin-right: 8px;
+            vertical-align: -1px;
         }
 
-        .info-box-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        /* SECTION PROCHAINES ÉTAPES */
-        .steps-section {
-            padding: 40px;
-        }
-
-        .steps-section h2 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .step {
+        /* ========== ANNONCE (dans la carte) ========== */
+        .annonce-row {
             display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: #f9fafb;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-            transition: all 0.3s;
+            align-items: center;
+            gap: 16px;
+        }
+        .annonce-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #334155, #475569);
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+        .annonce-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .annonce-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .annonce-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .annonce-tag {
+            padding: 2px 8px;
+            background: #F1F5F9;
+            border-radius: 5px;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #64748B;
         }
 
-        .step:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        /* ========== DETAILS (4 colonnes texte seulement) ========== */
+        .details-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+        .detail-col {
+            text-align: center;
+            padding: 4px 8px;
+        }
+        .detail-col:not(:last-child) {
+            border-right: 1px solid #F1F5F9;
+        }
+        .detail-col-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+        .detail-col-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .detail-col-value.accent {
+            color: #E85D2A;
         }
 
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        /* ========== PARTICIPANTS ========== */
+        .participants-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .participant-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+        }
+        .participant-row + .participant-row {
+            border-top: 1px solid #F1F5F9;
+        }
+        .participant-avatar {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .participant-avatar.p1 { background: #E8622A; }
+        .participant-avatar.p2 { background: #64748B; }
+        .participant-avatar svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .participant-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .participant-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .participant-role-tag {
+            font-size: 11px;
+            color: #94A3B8;
+            font-weight: 500;
+        }
+        .participant-contact-inline {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #64748B;
+        }
+        .contact-item svg {
+            width: 13px;
+            height: 13px;
+            stroke: #94A3B8;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             flex-shrink: 0;
         }
 
-        .step-content {
-            flex: 1;
-        }
-
-        .step-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 5px;
-        }
-
-        .step-description {
-            font-size: 14px;
-            color: #6b7280;
-            line-height: 1.6;
-        }
-
-        /* ACTIONS */
-        .actions-section {
-            padding: 30px 40px 40px;
+        .owner-note {
             display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #F0FDF4;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #166534;
+        }
+        .owner-note svg {
+            width: 13px;
+            height: 13px;
+            stroke: #22C55E;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .owner-note strong { font-weight: 600; }
+
+        /* ========== INFO ========== */
+        .info-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .info-line svg {
+            width: 16px;
+            height: 16px;
+            stroke: #94A3B8;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .info-line span {
+            font-size: 13px;
+            color: #64748B;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 16px 40px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
+        /* ========== ACTIONS ========== */
+        .actions-row {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-            text-decoration: none;
-            display: inline-block;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            flex: 1;
+            justify-content: center;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            padding: 16px 40px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            border: 2px solid #667eea;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-secondary:hover {
-            background: #667eea;
+        .btn-primary {
+            background: #1E293B;
             color: white;
         }
-
-        /* ALERT INFO */
-        .alert-info {
-            background: #dbeafe;
-            border: 2px solid #3b82f6;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 30px 40px;
-            display: flex;
-            gap: 15px;
-            align-items: start;
+        .btn-primary:hover {
+            background: #334155;
+        }
+        .btn-orange {
+            background: #1E293B;
+            color: white;
+        }
+        .btn-orange:hover {
+            background: #E8622A;
+        }
+        .btn-secondary {
+            background: white;
+            color: #1E293B;
+            border: 1.5px solid #E2E8F0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .btn-secondary:hover {
+            border-color: #CBD5E1;
+            background: #F8FAFC;
         }
 
-        .alert-icon {
-            font-size: 24px;
+        /* ========== MESSAGES OVERLAY ========== */
+        .messages-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .messages-overlay.active {
+            display: flex;
+        }
+        .messages-overlay-box {
+            background: white;
+            border-radius: 24px;
+            max-width: 640px;
+            width: 100%;
+            height: 80vh;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+            animation: modalIn 0.25s ease;
+        }
+        .messages-overlay-box.has-tabs {
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            overflow: visible;
+        }
+        .messages-overlay-box.has-tabs .overlay-chat-body {
+            background: white;
+            border-radius: 0 16px 16px 16px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+            border: 2px solid var(--tab-color, #E8622A);
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .overlay-chat-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 28px;
+            border-bottom: 1px solid #F1F5F9;
             flex-shrink: 0;
         }
-
-        .alert-content {
+        .overlay-chat-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: #F3F4F6;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #6B7280;
+            flex-shrink: 0;
+        }
+        .overlay-chat-back:hover { background: #E5E7EB; color: #1E293B; }
+        .overlay-chat-back svg { width: 16px; height: 16px; }
+        .overlay-chat-contact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex: 1;
         }
-
-        .alert-title {
+        .overlay-chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1E293B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
             font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 5px;
+            flex-shrink: 0;
+        }
+        .overlay-chat-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .messages-overlay-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: #F3F4F6;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #6B7280;
+            font-size: 18px;
+        }
+        .messages-overlay-close:hover { background: #E5E7EB; color: #1E293B; }
+        .overlay-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 0;
+        }
+        .overlay-chat-messages::-webkit-scrollbar { width: 6px; }
+        .overlay-chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .overlay-chat-messages::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+        .chat-date-sep {
+            text-align: center;
+            padding: 12px 0;
+        }
+        .chat-date-sep span {
+            font-size: 12px;
+            color: #9CA3AF;
+            background: #F3F4F6;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .chat-msg {
+            display: flex;
+            max-width: 75%;
+            animation: chatFadeIn 0.15s ease;
+        }
+        @keyframes chatFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-msg.sent { align-self: flex-end; }
+        .chat-bubble {
+            padding: 10px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .chat-msg.received .chat-bubble {
+            background: #F3F4F6;
+            color: #1E293B;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.sent .chat-bubble {
+            background: linear-gradient(135deg, #E8622A, #FF5722);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-msg-time {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+        .chat-msg.sent .chat-msg-time { text-align: right; }
+        .overlay-chat-input {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            padding: 16px 24px 20px;
+            border-top: 1px solid #F1F5F9;
+            flex-shrink: 0;
+        }
+        .overlay-chat-textarea {
+            flex: 1;
+            min-height: 42px;
+            max-height: 100px;
+            padding: 10px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            resize: none;
+            transition: border-color 0.2s;
+            color: #1E293B;
+        }
+        .overlay-chat-textarea:focus { outline: none; border-color: #E8622A; }
+        .overlay-chat-textarea::placeholder { color: #9CA3AF; }
+        .overlay-chat-send {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #E8622A, #FF5722);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .overlay-chat-send:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+        .overlay-chat-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .overlay-chat-send svg { width: 18px; height: 18px; }
+        .overlay-chat-empty {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
             font-size: 15px;
         }
 
-        .alert-text {
-            color: #1e40af;
-            font-size: 14px;
-            line-height: 1.6;
+        /* ========== CONTACT TABS ========== */
+        .overlay-chat-tabs {
+            display: flex;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+        .chat-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border: 2px solid transparent;
+            border-bottom: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #94A3B8;
+            transition: color 0.2s;
+            position: relative;
+            border-radius: 16px 16px 0 0;
+            margin-bottom: -2px;
+            z-index: 2;
+        }
+        .chat-tab.active {
+            color: #1E293B;
+            background: white;
+            border-color: var(--tab-color, #E8622A);
+        }
+        .chat-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: white;
+        }
+        .chat-tab:not(.active):hover {
+            color: #64748B;
+        }
+        .chat-tab-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .chat-tab.active .chat-tab-avatar { opacity: 1; }
+        .chat-tab:not(.active) .chat-tab-avatar { opacity: 0.4; }
+        .chat-tabs-close {
+            margin-left: auto;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: #F1F5F9;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #64748B;
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+            margin-right: 4px;
+        }
+        .chat-tabs-close:hover { color: #1E293B; background: #E2E8F0; }
+
+        /* Zone de chat */
+        .overlay-chat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            min-height: 0;
         }
 
-        /* RESPONSIVE */
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            .hero-match h1 {
-                font-size: 28px;
-            }
-
-            .celebration-icon {
-                font-size: 60px;
-            }
-
-            .participants-section {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .match-icon {
-                transform: rotate(90deg);
-            }
-
-            .logement-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .actions-section {
-                flex-direction: column;
-            }
-
-            .btn-primary, .btn-secondary {
-                width: 100%;
-                text-align: center;
-            }
+            nav .nav-inner { padding: 0 20px; height: 72px; }
+            .logo img { height: 45px; }
+            nav ul { gap: 20px; }
+            nav ul li a { font-size: 14px; }
+            .hero { padding: 32px 20px 60px; }
+            .hero h1 { font-size: 22px; }
+            .page-container { padding: 0 16px 32px; margin-top: -36px; }
+            .card-section { padding: 20px 20px; }
+            .annonce-thumb { width: 60px; height: 60px; }
+            .details-row { grid-template-columns: repeat(2, 1fr); gap: 12px 0; }
+            .detail-col:nth-child(2) { border-right: none; }
+            .participant-contact-inline { display: none; }
+            .participant-row { flex-wrap: wrap; }
+            .actions-row { flex-direction: column; }
+            .btn { width: 100%; }
         }
     </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
-        <div class="container">
-            <a href="index.html" class="logo">🏠 EASWAP</a>
-            <ul>
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="nav-inner">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="#" id="dashboardLink">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
@@ -347,304 +742,580 @@
     </nav>
 
     <!-- HERO -->
-    <div class="hero-match">
-        <div class="celebration-icon">🎉</div>
-        <h1>Félicitations ! Vous avez un match !</h1>
-        <p>Votre candidature a été acceptée. Voici les prochaines étapes pour finaliser votre location.</p>
+    <div class="hero">
+        <div class="hero-badge">
+            <div class="hero-badge-dot">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Match confirm&eacute;</span>
+        </div>
+        <h1>Votre logement est trouv&eacute; !</h1>
+        <p>Vous pouvez maintenant lancer les d&eacute;marches de location.</p>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="match-card">
-        <!-- PARTICIPANTS -->
-        <div class="participants-section">
-            <div class="participant" id="locataireSection">
-                <div class="participant-avatar">👤</div>
-                <div class="participant-name" id="locataireNom">Chargement...</div>
-                <div class="participant-role">Locataire</div>
-                <div class="participant-contact" id="locataireContact">
-                    📧 Email<br>
-                    📞 Téléphone
+    <div class="page-container">
+
+        <!-- CARTE PRINCIPALE : Annonce + D&eacute;tails -->
+        <div class="card">
+            <!-- Annonce -->
+            <div class="card-section">
+                <div class="annonce-row">
+                    <div class="annonce-thumb" id="annonceThumb"></div>
+                    <div class="annonce-info">
+                        <div class="annonce-title" id="annonceTitre">Chargement...</div>
+                        <div class="annonce-tags" id="annonceMeta"></div>
+                    </div>
                 </div>
             </div>
-
-            <div class="match-icon">🤝</div>
-
-            <div class="participant" id="proprietaireSection">
-                <div class="participant-avatar">🏡</div>
-                <div class="participant-name" id="proprietaireNom">Chargement...</div>
-                <div class="participant-role">Propriétaire</div>
-                <div class="participant-contact" id="proprietaireContact">
-                    📧 Email<br>
-                    📞 Téléphone
+            <!-- D&eacute;tails -->
+            <div class="card-section">
+                <div class="details-row">
+                    <div class="detail-col">
+                        <div class="detail-col-label">Ville</div>
+                        <div class="detail-col-value" id="detailVille">&mdash;</div>
+                    </div>
+                    <div class="detail-col">
+                        <div class="detail-col-label">Loyer / sem</div>
+                        <div class="detail-col-value accent" id="detailPrix">&mdash;</div>
+                    </div>
+                    <div class="detail-col">
+                        <div class="detail-col-label">D&eacute;but</div>
+                        <div class="detail-col-value" id="detailDebut">&mdash;</div>
+                    </div>
+                    <div class="detail-col">
+                        <div class="detail-col-label">Fin</div>
+                        <div class="detail-col-value" id="detailFin">&mdash;</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- LOGEMENT -->
-        <div class="logement-section">
-            <h2>📍 Détails du logement</h2>
-            <div class="logement-grid" id="logementGrid">
-                <div class="info-box">
-                    <div class="info-box-icon">🏠</div>
-                    <div class="info-box-label">Adresse</div>
-                    <div class="info-box-value" id="logementAdresse">Chargement...</div>
+        <!-- CARTE PARTICIPANTS -->
+        <div class="card">
+            <div class="card-section">
+                <div class="card-label">Participants</div>
+                <div class="participants-list" id="participantsRow">
+                    <div class="participant-row" id="participant1">
+                        <div class="participant-avatar p1">
+                            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="participant-main">
+                            <div class="participant-name" id="nom1">Chargement...</div>
+                            <div class="participant-role-tag" id="role1">Locataire</div>
+                        </div>
+                        <div class="participant-contact-inline" id="contact1"></div>
+                    </div>
+                    <div class="participant-row" id="participant2">
+                        <div class="participant-avatar p2">
+                            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="participant-main">
+                            <div class="participant-name" id="nom2">Chargement...</div>
+                            <div class="participant-role-tag" id="role2">Propri&eacute;taire</div>
+                        </div>
+                        <div class="participant-contact-inline" id="contact2"></div>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <div class="info-box-icon">📅</div>
-                    <div class="info-box-label">Début</div>
-                    <div class="info-box-value" id="logementDebut">01/03/2026</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-box-icon">📅</div>
-                    <div class="info-box-label">Fin</div>
-                    <div class="info-box-value" id="logementFin">31/08/2026</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-box-icon">💰</div>
-                    <div class="info-box-label">Loyer mensuel</div>
-                    <div class="info-box-value" id="logementPrix">275€</div>
+                <div class="owner-note" id="ownerNote" style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Le propriétaire sera notifié pour approuver ce profil</span>
                 </div>
             </div>
         </div>
 
-        <!-- ALERT INFO -->
-        <div class="alert-info">
-            <div class="alert-icon">ℹ️</div>
-            <div class="alert-content">
-                <div class="alert-title">📧 Confirmation envoyée par email</div>
-                <div class="alert-text">Vous avez reçu un email de confirmation avec toutes les informations importantes. Conservez-le précieusement !</div>
-            </div>
-        </div>
-
-        <!-- PROCHAINES ÉTAPES -->
-        <div class="steps-section">
-            <h2>📋 Prochaines étapes</h2>
-
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <div class="step-title">📞 Prenez contact</div>
-                    <div class="step-description">
-                        Échangez vos coordonnées et planifiez une visite si nécessaire. Vous pouvez utiliser la messagerie EASWAP ou communiquer directement.
-                    </div>
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <div class="step-title">📄 Préparez vos documents</div>
-                    <div class="step-description">
-                        <strong>Locataire :</strong> Fiches de paie, attestation assurance habitation, RIB<br>
-                        <strong>Propriétaire :</strong> Diagnostics obligatoires (DPE, ERNT, etc.)
-                    </div>
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <div class="step-title">✍️ Signez le contrat de location</div>
-                    <div class="step-description">
-                        EASWAP va générer un contrat de location pré-rempli. Vérifiez les informations et signez électroniquement.
-                    </div>
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <div class="step-title">💳 Effectuez le paiement initial</div>
-                    <div class="step-description">
-                        Le locataire devra payer le dépôt de garantie (1 mois), le 1er mois de loyer et les frais de service EASWAP.
-                    </div>
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">5</div>
-                <div class="step-content">
-                    <div class="step-title">📸 Réalisez l'état des lieux d'entrée</div>
-                    <div class="step-description">
-                        Le jour de la remise des clés, faites l'état des lieux ensemble. EASWAP fournit une checklist complète.
-                    </div>
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">6</div>
-                <div class="step-content">
-                    <div class="step-title">🔑 Emménagez !</div>
-                    <div class="step-description">
-                        Une fois tout finalisé, profitez de votre logement en toute sérénité. EASWAP reste disponible en cas de besoin.
-                    </div>
-                </div>
-            </div>
+        <!-- INFO -->
+        <div class="info-line">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>Confirmation envoy&eacute;e par email &mdash; conservez-le pr&eacute;cieusement.</span>
         </div>
 
         <!-- ACTIONS -->
-        <div class="actions-section">
-            <a href="contrat-location.html?match_id=xxx" class="btn-primary" id="btnContinuer">
-                ✅ Continuer les démarches
+        <div class="actions-row">
+            <button class="btn btn-secondary" id="btnMessage" onclick="ouvrirChat()">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Envoyer un message
+            </button>
+            <a href="dossier-locataire.html?match_id=xxx" class="btn btn-orange" id="btnContinuer">
+                Continuer les d&eacute;marches
+                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
-            <a href="conversation.html?user_id=xxx" class="btn-secondary" id="btnMessage">
-                💬 Envoyer un message
-            </a>
+        </div>
+
+    </div>
+
+    <!-- OVERLAY MESSAGES -->
+    <div class="messages-overlay" id="messagesOverlay" onclick="if(event.target===this)fermerChat()">
+        <div class="messages-overlay-box">
+            <!-- Header (visible seulement si 1 seul contact) -->
+            <div class="overlay-chat-header" id="chatHeader">
+                <div class="overlay-chat-contact">
+                    <div class="overlay-chat-avatar" id="chatAvatar">?</div>
+                    <div class="overlay-chat-name" id="chatName">...</div>
+                </div>
+                <button class="messages-overlay-close" onclick="fermerChat()">&times;</button>
+            </div>
+            <!-- Onglets (si plusieurs contacts) -->
+            <div class="overlay-chat-tabs" id="chatTabs" style="display: none;"></div>
+            <!-- Zone de chat -->
+            <div class="overlay-chat-body" id="chatBody">
+                <div class="overlay-chat-messages" id="chatMessages">
+                    <div class="overlay-chat-empty">Envoie ton premier message !</div>
+                </div>
+                <div class="overlay-chat-input">
+                    <textarea class="overlay-chat-textarea" id="chatInput" placeholder="Ecris ton message..." rows="1"></textarea>
+                    <button class="overlay-chat-send" id="chatSendBtn" onclick="envoyerMessage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer style="margin-top: 40px; padding: 30px 0; background: rgba(255,255,255,0.1); color: white; text-align: center;">
-        <div class="container">
-            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
-        </div>
-    </footer>
-
     <script>
-        // Récupérer l'ID du match depuis l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const matchId = urlParams.get('match_id');
 
-        // Variables globales
         let matchData = null;
         let currentUser = null;
+        let chatContacts = []; // Liste des contacts disponibles
+        let chatContactId = null;
+        let chatContactPrenom = '';
+        let chatContactNom = '';
 
-        // Charger les données du match
         async function chargerMatch() {
             try {
-                // Vérifier authentification
                 const { data: { user } } = await supabaseClient.auth.getUser();
-                if (!user) {
-                    window.location.href = 'connexion.html';
-                    return;
-                }
+                if (!user) { window.location.href = 'connexion.html'; return; }
                 currentUser = user;
 
+                // Vérifier si admin
+                const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+                const isAdmin = adminCheck?.is_admin === true;
+
+                // MODE DEMO
                 if (!matchId) {
-                    alert('❌ Aucun match spécifié');
-                    window.location.href = 'dashboard-locataire.html';
+                    afficherParticipant(1, '\u00c9tudiant', 'Lucas Martin', 'lucas@exemple.com', '07 98 76 54 32');
+                    afficherParticipant(2, '\u00c9tudiant', 'Emma Lef\u00e8vre', 'emma@exemple.com', '06 45 67 89 01');
+                    afficherOwnerNote('Marie Dupont');
+                    afficherAnnonce('Chambre lumineuse centre Lyon', null, 'Lyon', 'Chambre', 14, 95);
+                    afficherDetails('Lyon', '95 \u20ac/sem', '01/09/2026', '30/06/2027');
+                    document.getElementById('btnContinuer').href = 'dossier-locataire.html';
+                    // En démo : 2 contacts disponibles
+                    chatContacts = [
+                        { id: null, prenom: 'Emma', nom: 'Lef\u00e8vre', role: '\u00c9tudiant', color: 'orange' },
+                        { id: null, prenom: 'Marie', nom: 'Dupont', role: 'Propri\u00e9taire', color: 'navy' }
+                    ];
                     return;
                 }
 
-                // Récupérer les données de la candidature
                 const { data: candidature, error } = await supabaseClient
                     .from('candidatures')
                     .select(`
-                        id,
-                        annonce_id,
-                        locataire_id,
-                        statut,
-                        created_at,
-                        annonces (
-                            id,
-                            titre,
-                            ville,
-                            adresse,
-                            prix,
-                            user_id
-                        ),
-                        users!candidatures_locataire_id_fkey (
-                            id,
-                            nom,
-                            prenom,
-                            email,
-                            telephone
-                        )
+                        id, annonce_id, locataire_id, statut, created_at,
+                        annonces (id, titre, ville, prix, user_id, date_debut, date_fin, photos, type_logement, surface),
+                        users!candidatures_locataire_id_fkey (id, nom, prenom, email, telephone)
                     `)
                     .eq('id', matchId)
                     .single();
 
                 if (error) throw error;
-
                 if (!candidature || candidature.statut !== 'acceptee') {
-                    alert('❌ Ce match n\'est pas valide ou n\'a pas été accepté');
+                    alert('Ce match n\'est pas valide ou n\'a pas \u00e9t\u00e9 accept\u00e9');
                     window.location.href = 'dashboard-locataire.html';
                     return;
                 }
 
                 matchData = candidature;
 
-                // Récupérer les infos du propriétaire
+                // ─── SÉCURITÉ : Vérifier que l'utilisateur est bien partie prenante du match ───
+                const isLocataire = (currentUser.id === candidature.locataire_id);
+                const isProprietaire = (currentUser.id === candidature.annonces?.user_id);
+                if (!isLocataire && !isProprietaire && !isAdmin) {
+                    alert('Accès non autorisé à ce match.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
                 const { data: proprietaire } = await supabaseClient
                     .from('users')
                     .select('id, nom, prenom, email, telephone')
                     .eq('id', candidature.annonces.user_id)
                     .single();
 
-                // Afficher les informations
                 afficherMatch(candidature, proprietaire);
 
             } catch (error) {
-                console.error('❌ Erreur chargement match:', error);
-                alert('❌ Erreur lors du chargement du match');
+                console.error('Erreur chargement match:', error);
             }
         }
 
-        // Afficher les informations du match
-        function afficherMatch(candidature, proprietaire) {
-            const locataire = candidature.users;
-            const annonce = candidature.annonces;
+        function afficherParticipant(num, role, nom, email, tel) {
+            document.getElementById('role' + num).textContent = role;
+            document.getElementById('nom' + num).textContent = nom;
+            const contactEl = document.getElementById('contact' + num);
+            contactEl.innerHTML = `
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <span>${escapeHtml(email)}</span>
+                </div>
+                <div class="contact-item">
+                    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>${escapeHtml(tel) || 'Non renseign\u00e9'}</span>
+                </div>`;
+        }
 
-            // Locataire
-            document.getElementById('locataireNom').textContent = 
-                `${locataire.prenom} ${locataire.nom}`;
-            document.getElementById('locataireContact').innerHTML = 
-                `📧 ${locataire.email}<br>📞 ${locataire.telephone || 'Non renseigné'}`;
+        function afficherOwnerNote(nom) {
+            const ownerNote = document.getElementById('ownerNote');
+            document.getElementById('ownerName').textContent = nom;
+            ownerNote.style.display = 'flex';
+        }
 
-            // Propriétaire
-            document.getElementById('proprietaireNom').textContent = 
-                `${proprietaire.prenom} ${proprietaire.nom}`;
-            document.getElementById('proprietaireContact').innerHTML = 
-                `📧 ${proprietaire.email}<br>📞 ${proprietaire.telephone || 'Non renseigné'}`;
+        function afficherAnnonce(titre, photos, ville, typeLogement, surface, prix) {
+            document.getElementById('annonceTitre').textContent = titre || 'Annonce';
+            if (photos && photos.length > 0) {
+                document.getElementById('annonceThumb').style.backgroundImage = `url(${photos[0]})`;
+            }
+            const meta = document.getElementById('annonceMeta');
+            const tags = [];
+            if (ville) tags.push(ville);
+            if (typeLogement) tags.push(typeLogement);
+            if (surface) tags.push(surface + ' m\u00b2');
+            if (prix) tags.push(prix + ' \u20ac/sem');
+            meta.innerHTML = tags.map(t => `<span class="annonce-tag">${escapeHtml(t)}</span>`).join('');
+        }
 
-            // Logement
-            document.getElementById('logementAdresse').textContent = 
-                `${annonce.ville}`;
-            document.getElementById('logementPrix').textContent = 
-                `${annonce.prix}€`;
+        function afficherDetails(ville, prix, debut, fin) {
+            if (ville) document.getElementById('detailVille').textContent = ville;
+            if (prix) document.getElementById('detailPrix').textContent = prix;
+            if (debut) document.getElementById('detailDebut').textContent = debut;
+            if (fin) document.getElementById('detailFin').textContent = fin;
+        }
 
-            // Bouton continuer
-            const btnContinuer = document.getElementById('btnContinuer');
-            btnContinuer.href = `contrat-location.html?match_id=${matchId}`;
+        async function afficherMatch(candidature, proprietaire) {
+            const loc = candidature.users;
+            const ann = candidature.annonces;
 
-            // Bouton message - déterminer avec qui parler
-            const btnMessage = document.getElementById('btnMessage');
-            if (currentUser.id === locataire.id) {
-                // User = locataire → Contacter propriétaire
-                btnMessage.href = `conversation.html?user_id=${proprietaire.id}`;
+            const { data: propProfile } = await supabaseClient
+                .from('users')
+                .select('type_user')
+                .eq('id', proprietaire.id)
+                .single();
+
+            const propEstHote = propProfile && propProfile.type_user === 'hote';
+
+            if (propEstHote) {
+                // Modèle sous-location : locataire temporaire ↔ alternant hôte
+                afficherParticipant(1, 'Locataire temporaire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone);
+                afficherParticipant(2, 'Alternant hôte', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone);
+                // Note : le propriétaire sera notifié pour approuver
+                afficherOwnerNote(`${proprietaire.prenom} ${proprietaire.nom}`);
             } else {
-                // User = propriétaire → Contacter locataire
-                btnMessage.href = `conversation.html?user_id=${locataire.id}`;
+                afficherParticipant(1, 'Locataire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone);
+                afficherParticipant(2, 'Propriétaire', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone);
+            }
+
+            afficherAnnonce(ann.titre, ann.photos, ann.ville, ann.type_logement, ann.surface, ann.prix);
+            afficherDetails(
+                ann.ville,
+                ann.prix ? `${ann.prix} \u20ac/sem` : null,
+                ann.date_debut || null,
+                ann.date_fin || null
+            );
+
+            document.getElementById('btnContinuer').href = `dossier-locataire.html?match_id=${matchId}`;
+
+            // Configurer les contacts du chat
+            chatContacts = [];
+            if (currentUser.id === loc.id) {
+                // Je suis le locataire temporaire → je peux parler à l'alternant hôte
+                if (propEstHote) {
+                    chatContacts.push({ id: proprietaire.id, prenom: proprietaire.prenom, nom: proprietaire.nom, role: 'Alternant hôte', color: 'orange' });
+                } else {
+                    chatContacts.push({ id: proprietaire.id, prenom: proprietaire.prenom, nom: proprietaire.nom, role: 'Propriétaire', color: 'navy' });
+                }
+            } else {
+                // Je suis l'hôte/propriétaire → je peux parler au locataire temporaire
+                chatContacts.push({ id: loc.id, prenom: loc.prenom, nom: loc.nom, role: 'Locataire temporaire', color: 'orange' });
             }
         }
 
-        // Gérer le lien dashboard
-        async function gererDashboard() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const dashboardLink = document.getElementById('dashboardLink');
-            
-            if (user) {
-                const { data: userData } = await supabaseClient
-                    .from('users')
-                    .select('type_user')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (userData?.type_user === 'hote') {
-                    dashboardLink.href = 'dashboard-hote.html';
-                } else if (userData?.type_user === 'proprietaire') {
-                    dashboardLink.href = 'dashboard-proprietaire.html';
-                } else {
-                    dashboardLink.href = 'dashboard-locataire.html';
+        // === CHAT OVERLAY ===
+
+        let activeContactIndex = 0;
+
+        function ouvrirChat() {
+            if (!chatContacts || chatContacts.length === 0) {
+                alert('Aucun interlocuteur trouv\u00e9');
+                return;
+            }
+
+            document.getElementById('messagesOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Construire les onglets si plusieurs contacts
+            construireTabs();
+
+            // Ouvrir la conversation avec le premier contact
+            switchContact(0);
+            setupChatInput();
+        }
+
+        function construireTabs() {
+            var tabsContainer = document.getElementById('chatTabs');
+            var header = document.getElementById('chatHeader');
+            var box = document.querySelector('.messages-overlay-box');
+
+            if (chatContacts.length <= 1) {
+                tabsContainer.style.display = 'none';
+                header.style.display = 'flex';
+                box.classList.remove('has-tabs');
+                return;
+            }
+
+            header.style.display = 'none';
+            box.classList.add('has-tabs');
+            tabsContainer.style.display = 'flex';
+            tabsContainer.innerHTML = '';
+
+            chatContacts.forEach(function(contact, index) {
+                var initials = ((contact.prenom || 'U')[0] + (contact.nom ? contact.nom[0] : '')).toUpperCase();
+                var avatarBg = contact.color === 'orange' ? '#E8622A' : '#1E293B';
+                var tab = document.createElement('button');
+                tab.className = 'chat-tab' + (index === 0 ? ' active' : '');
+                tab.setAttribute('data-color', contact.color === 'orange' ? '#E8622A' : '#1E293B');
+                tab.innerHTML = '<div class="chat-tab-avatar" style="background:' + avatarBg + '">' + escapeHtml(initials) + '</div>' + escapeHtml(contact.prenom);
+                tab.onclick = function() { switchContact(index); };
+                tabsContainer.appendChild(tab);
+            });
+
+            // Bouton fermer
+            var closeBtn = document.createElement('button');
+            closeBtn.className = 'chat-tabs-close';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.onclick = fermerChat;
+            tabsContainer.appendChild(closeBtn);
+        }
+
+        function appliquerCouleurContour(index) {
+            var contact = chatContacts[index];
+            var color = contact.color === 'orange' ? '#E8622A' : '#1E293B';
+            var box = document.querySelector('.messages-overlay-box');
+            var body = document.getElementById('chatBody');
+            box.style.setProperty('--tab-color', color);
+            // Si premier onglet actif : coin haut-gauche à 0 (fusionné avec l'onglet)
+            // Sinon : coin haut-gauche arrondi
+            if (index === 0) {
+                body.style.borderRadius = '0 16px 16px 16px';
+            } else {
+                body.style.borderRadius = '16px 16px 16px 16px';
+            }
+        }
+
+        function switchContact(index) {
+            activeContactIndex = index;
+            var contact = chatContacts[index];
+
+            chatContactId = contact.id;
+            chatContactPrenom = contact.prenom;
+            chatContactNom = contact.nom;
+
+            // Mettre à jour le header (pour 1 seul contact)
+            var initials = ((contact.prenom || 'U')[0] + (contact.nom ? contact.nom[0] : '')).toUpperCase();
+            document.getElementById('chatAvatar').textContent = initials;
+            document.getElementById('chatAvatar').style.background = contact.color === 'orange' ? '#E8622A' : '#1E293B';
+            document.getElementById('chatName').textContent = (contact.prenom + ' ' + (contact.nom || '')).trim();
+
+            // Mettre à jour les onglets actifs
+            var tabs = document.querySelectorAll('.chat-tab');
+            tabs.forEach(function(tab, i) {
+                tab.classList.toggle('active', i === index);
+            });
+
+            // Appliquer la couleur de contour
+            appliquerCouleurContour(index);
+
+            // Charger les messages
+            if (chatContactId) {
+                chargerChat();
+            } else {
+                document.getElementById('chatMessages').innerHTML = '<div class="overlay-chat-empty">Envoie ton premier message !</div>';
+            }
+        }
+
+        function fermerChat() {
+            document.getElementById('messagesOverlay').classList.remove('active');
+            document.querySelector('.messages-overlay-box').classList.remove('has-tabs');
+            document.body.style.overflow = '';
+        }
+
+        async function chargerChat() {
+            var container = document.getElementById('chatMessages');
+            container.innerHTML = '<div class="overlay-chat-empty" style="color:#9CA3AF;">Chargement...</div>';
+
+            try {
+                var { data: msgs, error } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or('and(expediteur_id.eq.' + currentUser.id + ',destinataire_id.eq.' + chatContactId + '),and(expediteur_id.eq.' + chatContactId + ',destinataire_id.eq.' + currentUser.id + ')')
+                    .order('created_at', { ascending: true });
+
+                if (error) { console.error('Erreur messages:', error); return; }
+
+                if (!msgs || msgs.length === 0) {
+                    container.innerHTML = '<div class="overlay-chat-empty">Envoie ton premier message !</div>';
+                    return;
+                }
+
+                afficherChatMessages(msgs);
+
+                // Marquer comme lus
+                await supabaseClient
+                    .from('messages')
+                    .update({ lu: true })
+                    .eq('destinataire_id', currentUser.id)
+                    .eq('expediteur_id', chatContactId)
+                    .eq('lu', false);
+
+            } catch (err) {
+                console.error('Erreur:', err);
+            }
+        }
+
+        function afficherChatMessages(msgs) {
+            var container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+            var lastDate = '';
+
+            msgs.forEach(function(msg) {
+                var isSent = msg.expediteur_id === currentUser.id;
+                var msgDate = new Date(msg.created_at);
+
+                var dateStr = msgDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+                if (dateStr !== lastDate) {
+                    var sep = document.createElement('div');
+                    sep.className = 'chat-date-sep';
+                    sep.innerHTML = '<span>' + dateStr + '</span>';
+                    container.appendChild(sep);
+                    lastDate = dateStr;
+                }
+
+                var div = document.createElement('div');
+                div.className = 'chat-msg ' + (isSent ? 'sent' : 'received');
+                var time = msgDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                div.innerHTML = '<div><div class="chat-bubble">' + escapeHtml(msg.contenu) + '</div><div class="chat-msg-time">' + time + '</div></div>';
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            var d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        async function envoyerMessage() {
+            var input = document.getElementById('chatInput');
+            var message = input.value.trim();
+            if (!message) return;
+
+            var btn = document.getElementById('chatSendBtn');
+            btn.disabled = true;
+
+            try {
+                if (!chatContactId) {
+                    // Mode démo : afficher le message localement
+                    var container = document.getElementById('chatMessages');
+                    var emptyMsg = container.querySelector('.overlay-chat-empty');
+                    if (emptyMsg) emptyMsg.remove();
+
+                    var now = new Date();
+                    var time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    var div = document.createElement('div');
+                    div.className = 'chat-msg sent';
+                    div.innerHTML = '<div><div class="chat-bubble">' + escapeHtml(message) + '</div><div class="chat-msg-time">' + time + '</div></div>';
+                    container.appendChild(div);
+                    container.scrollTop = container.scrollHeight;
+
+                    input.value = '';
+                    input.style.height = 'auto';
+                    return;
+                }
+
+                var { error } = await supabaseClient
+                    .from('messages')
+                    .insert([{
+                        expediteur_id: currentUser.id,
+                        destinataire_id: chatContactId,
+                        contenu: message,
+                        lu: false
+                    }]);
+
+                if (error) throw error;
+
+                input.value = '';
+                input.style.height = 'auto';
+                await chargerChat();
+
+            } catch (err) {
+                console.error('Erreur envoi:', err);
+            } finally {
+                btn.disabled = false;
+                input.focus();
+            }
+        }
+
+        function setupChatInput() {
+            var textarea = document.getElementById('chatInput');
+            textarea.value = '';
+            textarea.style.height = 'auto';
+
+            var newTextarea = textarea.cloneNode(true);
+            textarea.parentNode.replaceChild(newTextarea, textarea);
+
+            newTextarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
+
+            newTextarea.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    envoyerMessage();
+                }
+            });
+
+            newTextarea.focus();
+        }
+
+        // Fermer avec Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var overlay = document.getElementById('messagesOverlay');
+                if (overlay && overlay.classList.contains('active')) {
+                    fermerChat();
                 }
             }
+        });
+
+        async function gererDashboard() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const link = document.getElementById('dashboardLink');
+            if (user) {
+                const { data: u } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+                if (u?.type_user === 'hote') link.href = 'dashboard-locataire.html';
+                else if (u?.type_user === 'proprietaire') link.href = 'dashboard-proprietaire.html';
+                else link.href = 'dashboard-locataire.html';
+            }
         }
 
-        // Initialisation
         if (typeof supabaseClient !== 'undefined') {
             chargerMatch();
             gererDashboard();
         }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

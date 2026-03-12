@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Paiement confirm&eacute; — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1E293B;
+        }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .container {
+            max-width: none;
+            margin: 0;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 85px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E293B;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo img {
+            height: 55px;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 36px;
+            list-style: none;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #E8622A;
+        }
+
+        /* ========== PAGE CONTAINER ========== */
+        .page-container {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: calc(100vh - 85px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== SUCCESS CARD ========== */
+        .success-card {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            width: 100%;
+        }
+
+        .success-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10B981, #34D399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .success-icon svg {
+            width: 26px; height: 26px;
+            stroke: white; fill: none; stroke-width: 3;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .success-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+
+        .success-subtitle {
+            font-size: 13px;
+            color: #94A3B8;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .recap-rows {
+            text-align: left;
+            margin-bottom: 20px;
+            border-top: 1px solid #F1F5F9;
+            padding-top: 16px;
+        }
+        .recap-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+        }
+        .recap-label {
+            font-size: 13px;
+            color: #94A3B8;
+        }
+        .recap-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .recap-value.green {
+            color: #10B981;
+            font-weight: 700;
+        }
+        .recap-value.ref {
+            font-size: 11px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #CBD5E1;
+        }
+
+        .next-hint {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #F1F5F9;
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn-primary {
+            background: #E8622A;
+            color: white;
+            padding: 12px 36px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'DM Sans', sans-serif;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25);
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.35);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #64748B;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            border: 1.5px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-secondary:hover { border-color: #1E293B; color: #1E293B; }
+
+        /* ========== LOADING ========== */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 40px 0;
+        }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid #E5E7EB;
+            border-top: 3px solid #1E293B;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-text { font-size: 13px; color: #94A3B8; }
+
+        /* ========== ERROR ========== */
+        .error-icon {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #EF4444, #F87171);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .error-icon svg {
+            width: 26px; height: 26px;
+            stroke: white; fill: none; stroke-width: 3;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            nav .container { padding: 0 20px; height: 72px; }
+            .logo img { height: 45px; }
+            nav ul { gap: 20px; }
+            .page-container { padding: 48px 16px; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTAINER -->
+    <div class="page-container">
+        <div class="success-card" id="successCard">
+
+            <!-- LOADING STATE -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <div class="loading-text">Vérification du paiement...</div>
+            </div>
+
+            <!-- SUCCESS STATE -->
+            <div id="successState" style="display: none;">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <h1 class="success-title" id="successTitle">Prélèvement mis en place !</h1>
+                <p class="success-subtitle" id="successMessage" role="status" aria-live="polite">
+                    Votre mandat SEPA a été enregistré avec succès.<br>
+                    Vos loyers seront prélevés automatiquement chaque mois.
+                </p>
+
+                <div class="recap-rows" id="recapSection">
+                    <div class="recap-row">
+                        <span class="recap-label" id="recapMontantLabel">Montant mensuel</span>
+                        <span class="recap-value green" id="recapMontant">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Date</span>
+                        <span class="recap-value" id="recapDate">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Référence</span>
+                        <span class="recap-value ref" id="recapRef">—</span>
+                    </div>
+                </div>
+
+                <p class="next-hint" id="nextHint">Prochaine étape : état des lieux d'entrée</p>
+
+                <a href="dashboard-locataire.html" class="btn-primary" id="btnDashboard">Mon espace</a>
+            </div>
+
+            <!-- ERROR STATE -->
+            <div id="errorState" style="display: none;">
+                <div class="error-icon">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </div>
+                <h1 class="success-title" style="color: #EF4444;">Erreur de paiement</h1>
+                <p class="success-subtitle" id="errorMessage" role="alert" aria-live="polite">
+                    Le paiement n'a pas pu être vérifié.<br>Contactez-nous à contact@sterny.co
+                </p>
+                <a href="dashboard-locataire.html" class="btn-secondary">Retour</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const isDemo = urlParams.get('demo') === 'true';
+        const paymentType = urlParams.get('type') || 'initial';
+
+        function afficherSucces(montant, ref, type) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+            if (montant) document.getElementById('recapMontant').textContent = montant;
+            if (ref) document.getElementById('recapRef').textContent = ref;
+            document.getElementById('recapDate').textContent =
+                new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Adapter les textes selon le type
+            if (type === 'impaye') {
+                document.getElementById('successTitle').textContent = 'Paiement confirmé';
+                document.getElementById('recapMontantLabel').textContent = 'Montant payé';
+                document.getElementById('successMessage').innerHTML =
+                    'Votre loyer a bien été régularisé.<br>Un reçu de paiement a été envoyé à votre adresse email.';
+                document.getElementById('nextHint').textContent = '';
+            }
+        }
+
+        async function verifierPaiement() {
+            // Mode démo
+            if (isDemo) {
+                const demoLoyerMensuel = Math.round(95 * 52 / 12);
+                const demoCommission = parseFloat((demoLoyerMensuel * 0.10).toFixed(2));
+                const demoTotal = demoLoyerMensuel + demoCommission;
+                afficherSucces(`${demoTotal}€/mois`, 'Réf. demo_' + Date.now(), 'initial');
+                return;
+            }
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+
+                if (!user) {
+                    afficherSucces(null, null, 'initial');
+                    return;
+                }
+
+                if (sessionId) {
+                    // Vérifier si c'est un paiement impayé (ponctuel)
+                    const { data: paiement } = await supabaseClient
+                        .from('paiements_loyer')
+                        .select('montant')
+                        .eq('stripe_session_id', sessionId)
+                        .single();
+
+                    if (paiement) {
+                        // C'est un impayé régularisé
+                        afficherSucces(`${paiement.montant}€`, 'Réf. ' + sessionId.substring(0, 20) + '...', 'impaye');
+                    } else {
+                        // C'est un paiement initial (SEPA)
+                        const { data: contrat } = await supabaseClient
+                            .from('contrats')
+                            .select('stripe_session_id, stripe_subscription_id')
+                            .eq('stripe_session_id', sessionId)
+                            .single();
+
+                        if (contrat && contrat.stripe_subscription_id) {
+                            // Prélèvement SEPA mis en place
+                            afficherSucces(null, 'Réf. ' + sessionId.substring(0, 20) + '...', 'initial');
+                            document.getElementById('successTitle').textContent = 'Prélèvement mis en place !';
+                            document.getElementById('successMessage').innerHTML =
+                                'Votre mandat SEPA a été enregistré avec succès.<br>Vos loyers seront prélevés automatiquement chaque mois.';
+                            document.getElementById('nextHint').textContent = 'Prochaine étape : état des lieux d\'entrée';
+                        } else if (contrat) {
+                            afficherSucces(null, 'Réf. ' + sessionId.substring(0, 20) + '...', 'initial');
+                            document.getElementById('successMessage').innerHTML =
+                                'Votre prélèvement est en cours de mise en place.<br>Un reçu vous sera envoyé par email.';
+                        } else {
+                            afficherSucces(null, 'Réf. ' + sessionId.substring(0, 20) + '...', 'initial');
+                            document.getElementById('successMessage').innerHTML =
+                                'Votre paiement est en cours de traitement.<br>Un reçu vous sera envoyé par email.';
+                        }
+                    }
+                } else {
+                    afficherSucces(null, null, 'initial');
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                afficherSucces(null, null, 'initial');
+            }
+        }
+
+        async function gererDashboard() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                const dashboardLink = document.getElementById('dashboardLink');
+
+                if (user) {
+                    const { data: userData } = await supabaseClient
+                        .from('users')
+                        .select('type_user')
+                        .eq('id', user.id)
+                        .single();
+
+                    if (userData?.type_user === 'proprietaire') {
+                        dashboardLink.href = 'dashboard-proprietaire.html';
+                        document.getElementById('btnDashboard').href = 'dashboard-proprietaire.html';
+                    } else {
+                        dashboardLink.href = 'dashboard-locataire.html';
+                    }
+                }
+            } catch (e) {
+                console.error('Erreur dashboard:', e);
+            }
+        }
+
+        if (typeof supabaseClient !== 'undefined') {
+            verifierPaiement();
+            gererDashboard();
+        }
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

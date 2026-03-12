@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Renouvellement de bail — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1E293B;
+        }
+
+        /* ========== NAV ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .container {
+            max-width: none;
+            height: 85px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+        nav .logo img { height: 55px; }
+        nav ul { display: flex; gap: 36px; list-style: none; }
+        nav ul li a {
+            text-decoration: none;
+            color: #1E293B;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        nav ul li a:hover { color: #E8622A; }
+
+        /* ========== PAGE ========== */
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        /* ========== CARDS ========== */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin-bottom: 24px;
+        }
+
+        /* ========== PROGRESS ========== */
+        .progress-card { padding: 24px; }
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: #9CA3AF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .progress-step.active .step-number {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            transform: scale(1.1);
+        }
+        .progress-step.completed .step-number {
+            background: #10B981;
+            color: white;
+        }
+        .progress-step.completed .step-number::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 16px;
+            height: 16px;
+            background: #22C55E;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 9px;
+        }
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        .progress-step.active .step-label { color: #1E293B; }
+        .progress-step.completed .step-label { color: #10B981; }
+        .progress-bar-track {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10B981, #059669);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        /* ========== RENEWAL HEADER ========== */
+        .renewal-header {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            padding: 32px 28px;
+            color: white;
+        }
+        .renewal-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .renewal-header p {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        /* ========== SECTION ========== */
+        .section { padding: 24px 28px; }
+        .section + .section { border-top: 1px solid #F1F5F9; }
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+        }
+
+        /* ========== INFO GRID ========== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+        }
+        .info-item .item-label {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+        .info-item .item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        /* ========== COUNTDOWN ========== */
+        .countdown-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .countdown-badge.urgent {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        .countdown-badge.ok {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .countdown-badge.expired {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* ========== FORM ========== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: #1E293B;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #10B981;
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        /* ========== LOCATAIRE CARD (vue proprio) ========== */
+        .locataire-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .loc-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .loc-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .loc-info p {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        /* ========== LOYER HIGHLIGHT ========== */
+        .loyer-highlight {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .loyer-left {
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .loyer-prix {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1E293B;
+            letter-spacing: -0.5px;
+        }
+        .loyer-prix small {
+            font-size: 13px;
+            font-weight: 500;
+            color: #9CA3AF;
+        }
+
+        /* ========== STATUS BADGES ========== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-en-attente {
+            background: #FFF7ED;
+            color: #C2410C;
+            border: 1px solid #FED7AA;
+        }
+        .status-acceptee {
+            background: #F0FDF4;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+        .status-refusee {
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        /* ========== MESSAGE BOX ========== */
+        .message-box {
+            background: #F0FDF4;
+            border-left: 4px solid #10B981;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .message-box.refus {
+            background: #FEF2F2;
+            border-left-color: #EF4444;
+        }
+        .message-box.attente {
+            background: #FFF7ED;
+            border-left-color: #F59E0B;
+        }
+        .message-box h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .message-box p {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+
+        /* ========== WAITING ANIMATION ========== */
+        .waiting-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 32px;
+            text-align: center;
+        }
+        .waiting-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .waiting-dots span {
+            width: 10px;
+            height: 10px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse-dot 1.4s infinite ease-in-out;
+        }
+        .waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse-dot {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ========== LEGAL NOTE ========== */
+        .legal-note {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 12px;
+            color: #64748B;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        /* ========== CONTRAT TEXT ========== */
+        .contrat-text {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.7;
+        }
+        .contrat-text p { margin-bottom: 10px; }
+        .contrat-text strong { color: #1E293B; }
+
+        /* ========== REFUS MOTIF ========== */
+        .refus-field {
+            display: none;
+            margin-top: 12px;
+        }
+        .refus-field.visible {
+            display: block;
+        }
+
+        /* ========== BUTTONS ========== */
+        .actions-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+        }
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .btn-back:hover { color: #1E293B; }
+        .btn-back svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+        }
+        .btn-secondary {
+            background: white;
+            color: #6B7280;
+            border: 1.5px solid #E8EAF0;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-secondary:hover {
+            border-color: #9CA3AF;
+            color: #374151;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        /* ========== SUMMARY CARD ========== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .summary-item {
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .summary-item .s-label {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+        .summary-item .s-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: #94A3B8;
+            font-size: 14px;
+        }
+        footer a {
+            color: #94A3B8;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #64748B;
+        }
+
+        /* ========== LOADING ========== */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            gap: 16px;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #E5E7EB;
+            border-top-color: #10B981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== HIDDEN ========== */
+        .hidden { display: none !important; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            nav .container { padding: 0 16px; height: 60px; }
+            nav .logo img { height: 40px; }
+            nav ul { display: none; }
+            .page-container { padding: 24px 12px 60px; }
+            .page-header h1 { font-size: 26px; }
+            .section { padding: 18px 16px; }
+            .renewal-header { padding: 24px 16px; }
+            .info-grid, .form-row, .summary-grid { grid-template-columns: 1fr; }
+            .actions-card { flex-direction: column-reverse; gap: 12px; }
+            .actions-card .btn-primary,
+            .actions-card .btn-danger { width: 100%; text-align: center; }
+            .btn-group { flex-direction: column; }
+            .btn-group button { width: 100%; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
+</head>
+<body>
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>Renouvellement de bail</h1>
+            <p id="pageSubtitle">Prolongez votre location en toute simplicit&eacute;</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="card progress-card">
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Renouvellement</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Contrat</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Paiement</div>
+                </div>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 17%;"></div>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div class="card" id="loadingCard">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p style="color: #64748B; font-size: 14px;">Chargement des donn&eacute;es...</p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ÉTAT 1 : FORMULAIRE LOCATAIRE (pas encore de demande)       -->
+        <!-- ============================================================ -->
+        <div id="stateForm" class="hidden">
+
+            <!-- R&eacute;sum&eacute; du bail actuel -->
+            <div class="card">
+                <div class="renewal-header">
+                    <h2 id="annonceTitle">-</h2>
+                    <p id="annonceVille">-</p>
+                </div>
+                <div class="section">
+                    <div class="section-label">Bail actuel</div>
+                    <div id="countdownContainer"></div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="item-label">P&eacute;riode</div>
+                            <div class="item-value" id="bailPeriode">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="item-label">Dur&eacute;e</div>
+                            <div class="item-value" id="bailDuree">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="item-label">Loyer</div>
+                            <div class="item-value" id="bailLoyer">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="item-label">Propri&eacute;taire</div>
+                            <div class="item-value" id="bailProprio">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire de renouvellement -->
+            <div class="card">
+                <div class="section">
+                    <div class="section-label">Nouvelle p&eacute;riode souhait&eacute;e</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newDateDebut">Date de d&eacute;but</label>
+                            <input type="date" id="newDateDebut">
+                        </div>
+                        <div class="form-group">
+                            <label for="newDateFin">Date de fin</label>
+                            <input type="date" id="newDateFin">
+                            <div class="form-hint">Maximum 9 mois apr&egrave;s la date de d&eacute;but</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLoyer">Loyer propos&eacute; (&euro;/semaine)</label>
+                        <input type="number" id="newLoyer" step="1" min="1">
+                        <div class="form-hint">Pr&eacute;-rempli avec le loyer actuel. Modifiable comme suggestion.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageLocataire">Message au propri&eacute;taire (optionnel)</label>
+                        <textarea id="messageLocataire" placeholder="Expliquez pourquoi vous souhaitez renouveler votre bail..."></textarea>
+                    </div>
+
+                    <div class="legal-note">
+                        <strong>Art. 25-7 de la loi du 6 juillet 1989 :</strong> Le bail meubl&eacute; &eacute;tudiant ne se renouvelle pas par reconduction tacite. Un nouveau contrat de location sera &eacute;tabli en cas d'accord du propri&eacute;taire, pour une dur&eacute;e n'exc&eacute;dant pas 9 mois.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card actions-card">
+                <a href="#" class="btn-back" id="btnRetourForm">Retour</a>
+                <button class="btn-primary" id="btnEnvoyer" onclick="soumettreDemandeRenouvellement()">
+                    Envoyer ma demande de renouvellement
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ÉTAT 2 : VUE PROPRIÉTAIRE (demande re&ccedil;ue)             -->
+        <!-- ============================================================ -->
+        <div id="stateProprio" class="hidden">
+
+            <div class="card">
+                <div class="renewal-header">
+                    <h2>Demande de renouvellement</h2>
+                    <p>Un locataire souhaite prolonger son bail</p>
+                </div>
+                <div class="section">
+                    <div class="section-label">Locataire</div>
+                    <div class="locataire-card">
+                        <div class="loc-avatar" id="locAvatar">-</div>
+                        <div class="loc-info">
+                            <h3 id="locNom">-</h3>
+                            <p id="locEmail">-</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-label">D&eacute;tails de la demande</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="s-label">Nouvelle p&eacute;riode</div>
+                            <div class="s-value" id="demandeperiode">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Dur&eacute;e</div>
+                            <div class="s-value" id="demandeDuree">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Loyer propos&eacute;</div>
+                            <div class="s-value" id="demandeLoyer">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Loyer actuel</div>
+                            <div class="s-value" id="loyerActuel">-</div>
+                        </div>
+                    </div>
+                    <div id="messageLocataireBox" class="hidden">
+                        <div class="message-box attente">
+                            <h3>Message du locataire</h3>
+                            <p id="messageLocataireTexte">-</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-label">Ajuster le loyer (optionnel)</div>
+                    <div class="form-group">
+                        <label for="loyerAjuste">Loyer final (&euro;/semaine)</label>
+                        <input type="number" id="loyerAjuste" step="1" min="1">
+                        <div class="form-hint">Vous pouvez modifier le loyer avant d'accepter</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="accepterRenouvellement()">
+                            Accepter le renouvellement
+                        </button>
+                        <button class="btn-danger" onclick="toggleRefusField()">
+                            Refuser
+                        </button>
+                    </div>
+
+                    <div class="refus-field" id="refusField">
+                        <div class="form-group" style="margin-top: 16px;">
+                            <label for="motifRefus">Motif du refus (optionnel)</label>
+                            <textarea id="motifRefus" placeholder="Indiquez la raison de votre refus..."></textarea>
+                        </div>
+                        <button class="btn-danger" onclick="refuserRenouvellement()" style="margin-top: 8px;">
+                            Confirmer le refus
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card actions-card">
+                <a href="#" class="btn-back" id="btnRetourProprio">Retour au tableau de bord</a>
+                <div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ÉTAT 2b : VUE LOCATAIRE EN ATTENTE                          -->
+        <!-- ============================================================ -->
+        <div id="stateAttente" class="hidden">
+
+            <div class="card">
+                <div class="renewal-header">
+                    <h2>Demande envoy&eacute;e</h2>
+                    <p>En attente de la r&eacute;ponse du propri&eacute;taire</p>
+                </div>
+                <div class="section" style="text-align: center;">
+                    <div class="waiting-animation">
+                        <div class="waiting-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <span class="status-badge status-en-attente" style="font-size: 14px; padding: 8px 20px;">
+                        En attente de r&eacute;ponse
+                    </span>
+                </div>
+                <div class="section">
+                    <div class="section-label">R&eacute;sum&eacute; de votre demande</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="s-label">Nouvelle p&eacute;riode</div>
+                            <div class="s-value" id="attentePeriode">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Dur&eacute;e</div>
+                            <div class="s-value" id="attenteDuree">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Loyer propos&eacute;</div>
+                            <div class="s-value" id="attenteLoyer">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Demand&eacute; le</div>
+                            <div class="s-value" id="attenteDate">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card actions-card">
+                <a href="#" class="btn-back" id="btnRetourAttente">Retour</a>
+                <button class="btn-secondary" onclick="annulerRenouvellement()">
+                    Annuler ma demande
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ÉTAT 3 : ACCEPTÉ                                            -->
+        <!-- ============================================================ -->
+        <div id="stateAccepte" class="hidden">
+
+            <div class="card">
+                <div class="renewal-header" style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 12px;">&#127881;</div>
+                    <h2>Renouvellement accept&eacute; !</h2>
+                    <p>Le propri&eacute;taire a accept&eacute; votre demande de renouvellement</p>
+                </div>
+                <div class="section">
+                    <div class="section-label">Conditions du nouveau bail</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="s-label">Nouvelle p&eacute;riode</div>
+                            <div class="s-value" id="acceptePeriode">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Dur&eacute;e</div>
+                            <div class="s-value" id="accepteDuree">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">Loyer confirm&eacute;</div>
+                            <div class="s-value" id="accepteLoyer">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="s-label">D&eacute;p&ocirc;t de garantie</div>
+                            <div class="s-value" id="accepteDepot">Conserv&eacute;</div>
+                        </div>
+                    </div>
+                    <div class="message-box">
+                        <h3>Prochaine &eacute;tape</h3>
+                        <p>Un nouveau contrat de location a &eacute;t&eacute; g&eacute;n&eacute;r&eacute;. Signez-le &eacute;lectroniquement pour finaliser votre renouvellement.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card actions-card">
+                <a href="#" class="btn-back" id="btnRetourAccepte">Retour</a>
+                <a href="#" class="btn-primary" id="btnNouveauContrat" style="text-decoration: none;">
+                    Signer le nouveau contrat &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ÉTAT 4 : REFUSÉ                                             -->
+        <!-- ============================================================ -->
+        <div id="stateRefuse" class="hidden">
+
+            <div class="card">
+                <div class="renewal-header" style="background: linear-gradient(135deg, #EF4444, #DC2626); text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 12px;">&#128532;</div>
+                    <h2>Renouvellement refus&eacute;</h2>
+                    <p>Le propri&eacute;taire n'a pas donn&eacute; suite &agrave; votre demande</p>
+                </div>
+                <div class="section">
+                    <div id="motifRefusBox" class="hidden">
+                        <div class="message-box refus">
+                            <h3>Motif du refus</h3>
+                            <p id="motifRefusTexte">-</p>
+                        </div>
+                    </div>
+                    <div class="contrat-text">
+                        <p>Conform&eacute;ment &agrave; l'article 25-7 de la loi du 6 juillet 1989, le propri&eacute;taire n'est pas tenu de motiver son refus de renouvellement d'un bail meubl&eacute; &eacute;tudiant.</p>
+                        <p>Votre bail actuel reste en vigueur jusqu'&agrave; son terme. Vous pouvez rechercher un nouveau logement sur STERNY.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card actions-card">
+                <a href="#" class="btn-back" id="btnRetourRefuse">Retour</a>
+                <a href="recherche.html" class="btn-primary" style="text-decoration: none;">
+                    Rechercher un logement
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <p>&copy; 2025 STERNY. Tous droits r&eacute;serv&eacute;s.</p>
+        <p style="margin-top: 8px; font-size: 13px;">
+            <a href="cgv.html">CGV</a> &middot;
+            <a href="cgu.html">CGU</a> &middot;
+            <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+            <a href="politique-confidentialite.html">Confidentialit&eacute;</a>
+        </p>
+    </footer>
+
+    <script>
+        // ================================================================
+        // DONNÉES
+        // ================================================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const contratId = urlParams.get('contrat_id');
+
+        let currentUser = null;
+        let contratData = null;
+        let annonceData = null;
+        let locataireData = null;
+        let proprietaireData = null;
+        let renouvellementData = null;
+        let isLocataire = false;
+
+        // ================================================================
+        // INIT
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', chargerRenouvellement);
+
+        // ================================================================
+        // CHARGER DONNÉES
+        // ================================================================
+        async function chargerRenouvellement() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) { window.location.href = 'connexion.html'; return; }
+                currentUser = user;
+
+                // Dashboard link
+                document.getElementById('dashboardLink').href =
+                    user.user_metadata?.type_user === 'proprietaire'
+                        ? 'dashboard-proprietaire.html'
+                        : 'dashboard-locataire.html';
+
+                const dashboardUrl = user.user_metadata?.type_user === 'proprietaire'
+                    ? 'dashboard-proprietaire.html'
+                    : 'dashboard-locataire.html';
+
+                // Set retour buttons
+                document.querySelectorAll('.btn-back').forEach(btn => {
+                    if (!btn.href || btn.href.includes('#')) btn.href = dashboardUrl;
+                });
+
+                // MODE DEMO (pas de contrat_id)
+                if (!contratId) {
+                    document.getElementById('loadingCard').classList.add('hidden');
+                    afficherFormulaire({
+                        date_debut: '2026-03-01',
+                        date_fin: '2026-08-31',
+                        loyer_mensuel: 95,
+                        proprietaire_id: 'demo'
+                    }, {
+                        titre: 'Chambre lumineuse centre-ville',
+                        ville: 'Lyon'
+                    }, {
+                        prenom: 'Jean',
+                        nom: 'Dupont'
+                    });
+                    return;
+                }
+
+                // Charger le contrat original
+                const { data: contrat, error: contratError } = await supabaseClient
+                    .from('contrats')
+                    .select('*')
+                    .eq('id', contratId)
+                    .single();
+
+                if (contratError) throw contratError;
+                contratData = contrat;
+
+                // Charger l'annonce
+                const { data: annonce } = await supabaseClient
+                    .from('annonces')
+                    .select('*')
+                    .eq('id', contrat.annonce_id)
+                    .single();
+                annonceData = annonce;
+
+                // Charger les parties
+                const { data: locataire } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', contrat.locataire_id)
+                    .single();
+                locataireData = locataire;
+
+                const { data: proprietaire } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', contrat.proprietaire_id)
+                    .single();
+                proprietaireData = proprietaire;
+
+                isLocataire = (currentUser.id === contrat.locataire_id);
+
+                // Chercher un renouvellement existant
+                const { data: renouvellement } = await supabaseClient
+                    .from('renouvellements')
+                    .select('*')
+                    .eq('contrat_original_id', contratId)
+                    .in('statut', ['demande_locataire', 'acceptee', 'refusee', 'contrat_genere'])
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                renouvellementData = renouvellement;
+
+                // Masquer le loading
+                document.getElementById('loadingCard').classList.add('hidden');
+
+                // Déterminer l'état à afficher
+                if (!renouvellement) {
+                    // Pas de demande → formulaire locataire
+                    if (isLocataire) {
+                        afficherFormulaire(contrat, annonce, proprietaire);
+                    } else {
+                        // Proprio sans demande → rien à voir
+                        afficherFormulaire(contrat, annonce, proprietaire);
+                        document.getElementById('pageSubtitle').textContent = 'Aucune demande de renouvellement en cours';
+                    }
+                } else if (renouvellement.statut === 'demande_locataire') {
+                    if (isLocataire) {
+                        afficherAttente(renouvellement);
+                    } else {
+                        afficherVueProprio(renouvellement, locataire, contrat);
+                    }
+                } else if (renouvellement.statut === 'acceptee' || renouvellement.statut === 'contrat_genere') {
+                    afficherAccepte(renouvellement);
+                } else if (renouvellement.statut === 'refusee') {
+                    afficherRefuse(renouvellement);
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('loadingCard').innerHTML = `
+                    <div class="loading-container">
+                        <p style="color: #EF4444; font-size: 14px;">Erreur lors du chargement des donn&eacute;es</p>
+                    </div>`;
+            }
+        }
+
+        // ================================================================
+        // ÉTAT 1 : FORMULAIRE LOCATAIRE
+        // ================================================================
+        function afficherFormulaire(contrat, annonce, proprietaire) {
+            document.getElementById('stateForm').classList.remove('hidden');
+
+            // Header
+            document.getElementById('annonceTitle').textContent = annonce?.titre || 'Logement';
+            document.getElementById('annonceVille').textContent = annonce?.ville || '';
+
+            // Bail actuel
+            const dateDebut = new Date(contrat.date_debut);
+            const dateFin = new Date(contrat.date_fin);
+            document.getElementById('bailPeriode').textContent =
+                `${dateDebut.toLocaleDateString('fr-FR')} → ${dateFin.toLocaleDateString('fr-FR')}`;
+
+            const mois = (dateFin.getFullYear() - dateDebut.getFullYear()) * 12 +
+                         (dateFin.getMonth() - dateDebut.getMonth());
+            document.getElementById('bailDuree').textContent = `${mois} mois`;
+            document.getElementById('bailLoyer').textContent = `${contrat.loyer_mensuel}€/sem`;
+            document.getElementById('bailProprio').textContent =
+                proprietaire ? `${proprietaire.prenom} ${proprietaire.nom}` : '-';
+
+            // Countdown
+            const today = new Date();
+            const joursRestants = Math.ceil((dateFin - today) / (1000 * 60 * 60 * 24));
+            const container = document.getElementById('countdownContainer');
+            if (joursRestants > 30) {
+                container.innerHTML = `<div class="countdown-badge ok">&#128994; Votre bail se termine dans ${joursRestants} jours</div>`;
+            } else if (joursRestants > 0) {
+                container.innerHTML = `<div class="countdown-badge urgent">&#9888;&#65039; Votre bail se termine dans ${joursRestants} jours</div>`;
+            } else {
+                container.innerHTML = `<div class="countdown-badge expired">&#128308; Votre bail est termin&eacute;</div>`;
+            }
+
+            // Pré-remplir le formulaire
+            const newDebut = new Date(dateFin);
+            newDebut.setDate(newDebut.getDate() + 1);
+            document.getElementById('newDateDebut').value = newDebut.toISOString().split('T')[0];
+
+            // Max 9 mois après début
+            const maxFin = new Date(newDebut);
+            maxFin.setMonth(maxFin.getMonth() + 9);
+            document.getElementById('newDateFin').max = maxFin.toISOString().split('T')[0];
+            document.getElementById('newDateFin').min = newDebut.toISOString().split('T')[0];
+
+            // Suggestion : même durée
+            const newFin = new Date(newDebut);
+            newFin.setMonth(newFin.getMonth() + mois);
+            newFin.setDate(newFin.getDate() - 1);
+            if (newFin <= maxFin) {
+                document.getElementById('newDateFin').value = newFin.toISOString().split('T')[0];
+            }
+
+            document.getElementById('newLoyer').value = contrat.loyer_mensuel;
+
+            // Validation date_debut change → recalcul max
+            document.getElementById('newDateDebut').addEventListener('change', function() {
+                const d = new Date(this.value);
+                const max = new Date(d);
+                max.setMonth(max.getMonth() + 9);
+                document.getElementById('newDateFin').max = max.toISOString().split('T')[0];
+                document.getElementById('newDateFin').min = this.value;
+            });
+        }
+
+        // ================================================================
+        // ÉTAT 2 : VUE PROPRIÉTAIRE
+        // ================================================================
+        function afficherVueProprio(renouvellement, locataire, contrat) {
+            document.getElementById('stateProprio').classList.remove('hidden');
+
+            // Locataire info
+            const initiales = `${(locataire.prenom || '')[0] || ''}${(locataire.nom || '')[0] || ''}`.toUpperCase();
+            document.getElementById('locAvatar').textContent = initiales;
+            document.getElementById('locNom').textContent = `${locataire.prenom} ${locataire.nom}`;
+            document.getElementById('locEmail').textContent = locataire.email;
+
+            // Demande details
+            const dateDebut = new Date(renouvellement.date_debut);
+            const dateFin = new Date(renouvellement.date_fin);
+            const mois = (dateFin.getFullYear() - dateDebut.getFullYear()) * 12 +
+                         (dateFin.getMonth() - dateDebut.getMonth());
+
+            document.getElementById('demandeperiode').textContent =
+                `${dateDebut.toLocaleDateString('fr-FR')} → ${dateFin.toLocaleDateString('fr-FR')}`;
+            document.getElementById('demandeDuree').textContent = `${mois} mois`;
+            document.getElementById('demandeLoyer').textContent = `${renouvellement.loyer_mensuel}€/sem`;
+            document.getElementById('loyerActuel').textContent = `${contrat.loyer_mensuel}€/sem`;
+
+            // Loyer ajusté pré-rempli
+            document.getElementById('loyerAjuste').value = renouvellement.loyer_mensuel;
+
+            // Message locataire
+            if (renouvellement.message_locataire) {
+                document.getElementById('messageLocataireBox').classList.remove('hidden');
+                document.getElementById('messageLocataireTexte').textContent = renouvellement.message_locataire;
+            }
+        }
+
+        // ================================================================
+        // ÉTAT 2b : LOCATAIRE EN ATTENTE
+        // ================================================================
+        function afficherAttente(renouvellement) {
+            document.getElementById('stateAttente').classList.remove('hidden');
+
+            const dateDebut = new Date(renouvellement.date_debut);
+            const dateFin = new Date(renouvellement.date_fin);
+            const mois = (dateFin.getFullYear() - dateDebut.getFullYear()) * 12 +
+                         (dateFin.getMonth() - dateDebut.getMonth());
+
+            document.getElementById('attentePeriode').textContent =
+                `${dateDebut.toLocaleDateString('fr-FR')} → ${dateFin.toLocaleDateString('fr-FR')}`;
+            document.getElementById('attenteDuree').textContent = `${mois} mois`;
+            document.getElementById('attenteLoyer').textContent = `${renouvellement.loyer_mensuel}€/sem`;
+            document.getElementById('attenteDate').textContent =
+                new Date(renouvellement.created_at).toLocaleDateString('fr-FR');
+        }
+
+        // ================================================================
+        // ÉTAT 3 : ACCEPTÉ
+        // ================================================================
+        function afficherAccepte(renouvellement) {
+            document.getElementById('stateAccepte').classList.remove('hidden');
+
+            const dateDebut = new Date(renouvellement.date_debut);
+            const dateFin = new Date(renouvellement.date_fin);
+            const mois = (dateFin.getFullYear() - dateDebut.getFullYear()) * 12 +
+                         (dateFin.getMonth() - dateDebut.getMonth());
+
+            document.getElementById('acceptePeriode').textContent =
+                `${dateDebut.toLocaleDateString('fr-FR')} → ${dateFin.toLocaleDateString('fr-FR')}`;
+            document.getElementById('accepteDuree').textContent = `${mois} mois`;
+            document.getElementById('accepteLoyer').textContent = `${renouvellement.loyer_mensuel}€/sem`;
+
+            // Dépôt
+            if (contratData && renouvellement.loyer_mensuel !== contratData.loyer_mensuel) {
+                const diff = renouvellement.loyer_mensuel - contratData.loyer_mensuel;
+                document.getElementById('accepteDepot').textContent =
+                    diff > 0 ? `Compl\u00e9ment de ${diff}\u20ac` : 'Conserv\u00e9';
+            }
+
+            // Lien vers le nouveau contrat
+            if (renouvellement.nouveau_contrat_id) {
+                // Chercher la candidature liée
+                supabaseClient
+                    .from('contrats')
+                    .select('candidature_id')
+                    .eq('id', renouvellement.nouveau_contrat_id)
+                    .single()
+                    .then(({ data }) => {
+                        if (data) {
+                            document.getElementById('btnNouveauContrat').href =
+                                `contrat-location.html?match_id=${data.candidature_id}`;
+                        }
+                    });
+            }
+
+            // Progress bar → étape 1 complétée
+            const steps = document.querySelectorAll('.progress-step');
+            steps[0].classList.add('completed');
+            steps[0].classList.remove('active');
+            steps[1].classList.add('active');
+            document.querySelector('.progress-bar-fill').style.width = '50%';
+        }
+
+        // ================================================================
+        // ÉTAT 4 : REFUSÉ
+        // ================================================================
+        function afficherRefuse(renouvellement) {
+            document.getElementById('stateRefuse').classList.remove('hidden');
+
+            if (renouvellement.motif_refus) {
+                document.getElementById('motifRefusBox').classList.remove('hidden');
+                document.getElementById('motifRefusTexte').textContent = renouvellement.motif_refus;
+            }
+        }
+
+        // ================================================================
+        // ACTIONS
+        // ================================================================
+
+        // --- SOUMETTRE DEMANDE (LOCATAIRE) ---
+        async function soumettreDemandeRenouvellement() {
+            const dateDebut = document.getElementById('newDateDebut').value;
+            const dateFin = document.getElementById('newDateFin').value;
+            const loyer = parseFloat(document.getElementById('newLoyer').value);
+            const message = document.getElementById('messageLocataire').value.trim();
+
+            // Validation
+            if (!dateDebut || !dateFin || !loyer) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+
+            const d1 = new Date(dateDebut);
+            const d2 = new Date(dateFin);
+            if (d2 <= d1) {
+                alert('La date de fin doit \u00eatre apr\u00e8s la date de d\u00e9but');
+                return;
+            }
+
+            // Vérifier max 9 mois
+            const diffMois = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+            if (diffMois > 9) {
+                alert('La dur\u00e9e ne peut pas exc\u00e9der 9 mois (bail \u00e9tudiant)');
+                return;
+            }
+
+            const btn = document.getElementById('btnEnvoyer');
+            btn.disabled = true;
+            btn.textContent = 'Envoi en cours...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('renouvellements')
+                    .insert({
+                        contrat_original_id: contratId,
+                        locataire_id: contratData.locataire_id,
+                        proprietaire_id: contratData.proprietaire_id,
+                        annonce_id: contratData.annonce_id,
+                        date_debut: dateDebut,
+                        date_fin: dateFin,
+                        loyer_mensuel: loyer,
+                        message_locataire: message || null,
+                        statut: 'demande_locataire'
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // Refresh la page pour afficher l'état "en attente"
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'envoi de la demande');
+                btn.disabled = false;
+                btn.textContent = 'Envoyer ma demande de renouvellement';
+            }
+        }
+
+        // --- ACCEPTER (PROPRIÉTAIRE) ---
+        async function accepterRenouvellement() {
+            if (!confirm('Accepter ce renouvellement ? Un nouveau contrat sera g\u00e9n\u00e9r\u00e9.')) return;
+
+            const loyerFinal = parseFloat(document.getElementById('loyerAjuste').value);
+
+            try {
+                // 1. Créer une candidature "virtuelle" pour le renouvellement
+                const { data: newCandidature, error: candError } = await supabaseClient
+                    .from('candidatures')
+                    .insert({
+                        annonce_id: contratData.annonce_id,
+                        locataire_id: contratData.locataire_id,
+                        statut: 'acceptee',
+                        est_renouvellement: true,
+                        renouvellement_id: renouvellementData.id
+                    })
+                    .select()
+                    .single();
+
+                if (candError) throw candError;
+
+                // 2. Créer le nouveau contrat
+                const { data: newContrat, error: contratError } = await supabaseClient
+                    .from('contrats')
+                    .insert({
+                        candidature_id: newCandidature.id,
+                        locataire_id: contratData.locataire_id,
+                        proprietaire_id: contratData.proprietaire_id,
+                        annonce_id: contratData.annonce_id,
+                        loyer_mensuel: loyerFinal,
+                        depot_garantie: loyerFinal !== contratData.loyer_mensuel ? loyerFinal : contratData.depot_garantie,
+                        date_debut: renouvellementData.date_debut,
+                        date_fin: renouvellementData.date_fin,
+                        statut: 'en_attente',
+                        contrat_parent_id: contratData.id,
+                        est_renouvellement: true
+                    })
+                    .select()
+                    .single();
+
+                if (contratError) throw contratError;
+
+                // 3. Mettre à jour le renouvellement
+                const { error: updateError } = await supabaseClient
+                    .from('renouvellements')
+                    .update({
+                        statut: 'contrat_genere',
+                        loyer_mensuel: loyerFinal,
+                        nouveau_contrat_id: newContrat.id,
+                        date_reponse: new Date().toISOString()
+                    })
+                    .eq('id', renouvellementData.id);
+
+                if (updateError) throw updateError;
+
+                alert('Renouvellement accept\u00e9 ! Le nouveau contrat est pr\u00eat \u00e0 signer.');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'acceptation du renouvellement');
+            }
+        }
+
+        // --- REFUSER (PROPRIÉTAIRE) ---
+        async function refuserRenouvellement() {
+            if (!confirm('Confirmer le refus de ce renouvellement ?')) return;
+
+            const motif = document.getElementById('motifRefus').value.trim();
+
+            try {
+                const { error } = await supabaseClient
+                    .from('renouvellements')
+                    .update({
+                        statut: 'refusee',
+                        motif_refus: motif || null,
+                        date_reponse: new Date().toISOString()
+                    })
+                    .eq('id', renouvellementData.id);
+
+                if (error) throw error;
+
+                alert('Demande de renouvellement refus\u00e9e.');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du refus');
+            }
+        }
+
+        // --- ANNULER (LOCATAIRE) ---
+        async function annulerRenouvellement() {
+            if (!confirm('Annuler votre demande de renouvellement ?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('renouvellements')
+                    .update({ statut: 'annulee' })
+                    .eq('id', renouvellementData.id);
+
+                if (error) throw error;
+
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'annulation');
+            }
+        }
+
+        // --- TOGGLE REFUS FIELD ---
+        function toggleRefusField() {
+            document.getElementById('refusField').classList.toggle('visible');
+        }
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

@@ -3,114 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rechercher un logement - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Rechercher un logement — STERNY</title>
+    <meta name="description" content="Trouvez le logement idéal pour votre alternance. Filtrez par ville, budget, type de logement et postulez directement en ligne sur STERNY.">
+    <link rel="canonical" href="https://sterny.co/recherche.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/recherche.html">
+    <meta property="og:title" content="Rechercher un logement — STERNY">
+    <meta property="og:description" content="Trouvez le logement idéal pour votre alternance. Filtrez par ville, budget et postulez en ligne.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="matching.js"></script>
     <style>
+        /* ===== NAV — identique dashboard ===== */
+        nav {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
+        }
+        nav a {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            font-size: 15px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s !important;
+        }
+        nav a:hover {
+            color: #E8622A !important;
+            background: rgba(232, 98, 42, 0.06) !important;
+        }
+        nav .nav-highlight {
+            color: #E8622A !important;
+            font-weight: 600 !important;
+        }
+        nav .nav-highlight:hover {
+            color: #d4571f !important;
+        }
+
         body {
-            background: var(--gray-50);
+            background: #F4F5F7;
         }
-        
-        /* HEADER DE RECHERCHE */
+
+        /* ===== VILLE SUGGESTIONS ===== */
+        .ville-suggestions {
+            border: 1.5px solid #E8EAF0 !important;
+            border-top: none !important;
+            border-radius: 0 0 12px 12px !important;
+            box-shadow: 0 4px 24px rgba(232, 98, 42, 0.08) !important;
+        }
+        .ville-suggestion-item:hover {
+            background: rgba(232, 98, 42, 0.04) !important;
+            color: #E8622A !important;
+        }
+
+        /* ===== SEARCH HEADER — card sobre et alignée ===== */
         .search-header {
-            background: white;
-            padding: 30px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #F4F5F7;
+            padding: 24px 20px 0;
         }
-        
+
         .search-header .container {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .search-header select,
-        .search-header input {
-            padding: 12px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        .search-header select:focus,
-        .search-header input:focus {
-            border-color: var(--primary);
-        }
-        
-        /* Style des options dans les selects */
-        .search-header select option {
-            padding: 10px 15px;
-            background: #f9fafb;
-            color: #374151;
-            margin: 2px 0;
-        }
-        
-        .search-header select option:first-child {
-            background: #f9fafb;
-            font-weight: 600;
-            color: #9ca3af;
-        }
-        
-        .search-header select option:hover {
-            background: #e5e7eb;
-        }
-        
-        .search-header .btn-primary {
-            padding: 12px 24px;
-        }
-        
-        /* LAYOUT PRINCIPAL */
-        .main-content {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-            max-width: 1400px;
-            margin: 30px auto 40px auto;
-            padding: 0 20px;
-        }
-        
-        /* SIDEBAR FILTRES */
-        .filters-sidebar {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            background: white;
             border-radius: 16px;
-            padding: 30px;
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-            box-shadow: 0 4px 16px rgba(102,126,234,0.12);
-            border: 2px solid #667eea40;
+            padding: 24px 28px;
+            max-width: 920px;
+            margin: 0 auto;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            border: 1px solid #E8EAF0;
+            display: flex;
+            gap: 14px;
+            align-items: end;
+            flex-wrap: wrap;
         }
-        
-        .filters-sidebar h3 {
-            font-size: 18px;
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            font-weight: 700;
+
+        .search-header .search-field {
+            flex: 1;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
         }
-        
-        .filter-group {
-            margin-bottom: 30px;
+
+        .search-header .search-field label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94A3B8;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .filter-group h4 {
+
+        .search-header .search-field select,
+        .search-header .search-field input {
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s;
+            height: 46px;
+            box-sizing: border-box;
+            background-color: white;
+            color: #1E293B;
+        }
+
+        .search-header .search-field select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .search-header .search-field select:focus,
+        .search-header .search-field input:focus {
+            border-color: #E8622A;
+        }
+
+        .search-header .search-btn {
+            align-self: flex-end;
+            height: 46px;
+            box-sizing: border-box;
+            padding: 0 32px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
-            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .search-header .search-btn:hover {
+            background: #D4561F;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .main-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 20px 40px;
+        }
+
+        .main-content * {
+            box-sizing: border-box;
+        }
+
+        /* BOUTON FILTRES */
+        .btn-filtres {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filtres:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
+        }
+
+        .btn-filtres svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .filtres-count {
+            background: #E8622A;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* DRAWER OVERLAY */
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 999;
+            transition: opacity 0.3s;
+        }
+        .drawer-overlay.active {
+            display: block;
+        }
+
+        /* DRAWER FILTRES */
+        .drawer-filtres {
+            position: fixed;
+            top: 0;
+            left: -360px;
+            width: 340px;
+            height: 100vh;
+            background: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 24px rgba(232, 98, 42, 0.08);
+        }
+        .drawer-filtres.active {
+            left: 0;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px;
+            border-bottom: 1px solid #E8EAF0;
+        }
+
+        .drawer-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+        }
+
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: #F4F5F7;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94A3B8;
+            transition: all 0.2s;
+        }
+
+        .drawer-close:hover {
+            background: #E8EAF0;
+            color: #1E293B;
+        }
+
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .drawer-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8EAF0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .drawer-footer .clear-filters {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6B7280;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .drawer-footer .clear-filters:hover {
+            border-color: #9CA3AF;
+            color: #374151;
+        }
+
+        .drawer-footer .btn-apply {
+            flex: 1;
+            padding: 12px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .drawer-footer .btn-apply:not(:disabled):hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+
+        /* FILTRES (réutilisés dans le drawer) */
+        .filter-group {
+            margin-bottom: 28px;
+        }
+
+        .filter-group h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .checkbox-item {
             display: flex;
             align-items: center;
@@ -118,403 +345,810 @@
             margin-bottom: 10px;
             cursor: pointer;
         }
-        
+
         .checkbox-item input[type="checkbox"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
+            accent-color: #E8622A;
         }
-        
+
         .checkbox-item label {
             font-size: 14px;
-            color: var(--gray-700);
+            color: #475569;
             cursor: pointer;
         }
-        
+
         .filter-count {
             font-size: 12px;
-            color: var(--gray-500);
+            color: #6B7280;
             margin-left: auto;
-        }
-        
-        .clear-filters {
-            width: 100%;
-            padding: 12px;
-            background: white;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #667eea;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .clear-filters:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
         }
         
         /* RÉSULTATS */
         .results-section {
             min-height: 70vh;
-            padding-top: 20px;
+            padding-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        
+
         .results-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 16px;
+            padding: 0;
+            gap: 12px;
         }
-        
+
+        .results-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .results-count {
-            font-size: 16px;
-            color: var(--gray-700);
+            font-size: 15px;
+            font-weight: 500;
+            color: #64748B;
         }
-        
+
+        .results-count strong {
+            color: #1E293B;
+            font-weight: 700;
+        }
+
+        .results-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .sort-select {
-            padding: 10px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
+            padding: 10px 36px 10px 16px;
+            border: 1px solid #E8EAF0;
+            border-radius: 12px;
             font-size: 14px;
-            outline: none;
+            font-weight: 600;
+            color: #475569;
+            background: white;
             cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all 0.2s;
+            outline: none;
         }
-        
+
+        .sort-select:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
+        }
+
+        .sort-select:focus {
+            border-color: #E8622A;
+        }
+
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            min-height: 60vh;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        
+
+        /* BARRE DE PROXIMITÉ */
+        .proximity-status {
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+            font-weight: 500;
+        }
+
+        .distance-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1E293B;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        @media (max-width: 768px) {
+            .proximity-input-group {
+                flex-direction: column;
+            }
+        }
+
+        /* AUTOCOMPLETE PROXIMITÉ */
+        .proximity-search-wrapper {
+            position: relative;
+        }
+
+        .proximity-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #E8EAF0;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.06);
+        }
+
+        .proximity-suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1E293B;
+            border-bottom: 1px solid #E8EAF0;
+            transition: background 0.15s;
+        }
+
+        .proximity-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .proximity-suggestion-item:hover {
+            background: rgba(232, 98, 42, 0.04);
+        }
+
+        .proximity-suggestion-item strong {
+            display: block;
+            font-weight: 600;
+        }
+
+        .proximity-suggestion-item small {
+            display: block;
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+
         /* CARTE LOGEMENT */
         .logement-card {
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            border: 1px solid #E8EAF0;
+            transition: all 0.25s ease;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
-        
+
         .logement-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            border-color: #E8622A;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.18);
+            transform: translateY(-3px);
         }
-        
+
         .logement-image {
             width: 100%;
-            height: 220px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            aspect-ratio: 16 / 9;
+            background: #1E293B;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 70px;
             position: relative;
+            overflow: hidden;
         }
-        
+
+        .logement-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Cœur favori — visible seulement au hover de la card */
         .favorite-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: white;
-            width: 40px;
-            height: 40px;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(4px);
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
             border: none;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+            opacity: 0;
+            pointer-events: none;
         }
-        
+
+        .logement-card:hover .favorite-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         .favorite-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
         }
-        
+
         .favorite-btn.is-favorite {
+            opacity: 1;
+            pointer-events: auto;
             background: #FEE2E2;
         }
-        
+
+        .favorite-btn.is-favorite svg {
+            fill: #EF4444;
+            stroke: #EF4444;
+        }
+
         .logement-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: white;
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .logement-content {
-            padding: 20px;
-        }
-        
-        .logement-price {
-            font-size: 24px;
+            top: 10px;
+            left: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
         }
-        
-        .logement-title {
+
+        .match-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+        }
+
+        .logement-content {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .logement-price {
             font-size: 18px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 8px;
+            font-weight: 700;
+            color: #E8622A;
+            margin-bottom: 2px;
         }
-        
-        .logement-location {
+
+        .logement-price span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #94A3B8;
+        }
+
+        .logement-title {
             font-size: 14px;
-            color: var(--gray-600);
-            margin-bottom: 15px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logement-location {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
-        
+
+        .logement-location svg {
+            flex-shrink: 0;
+        }
+
         .logement-features {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
+            margin-top: auto;
         }
-        
+
         .feature-tag {
-            font-size: 12px;
-            padding: 4px 10px;
-            background: var(--gray-100);
-            border-radius: 20px;
-            color: var(--gray-700);
+            font-size: 11px;
+            padding: 3px 8px;
+            background: #F4F5F7;
+            border-radius: 6px;
+            color: #64748B;
+            font-weight: 500;
         }
 
         .no-results {
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    grid-column: 1 / -1;
-}
-
-    
-        
+            text-align: center;
+            padding: 48px 24px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            grid-column: 1 / -1;
+            box-sizing: border-box;
+            border: 1px solid #E8EAF0;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+        }
         .no-results h3 {
-            font-size: 24px;
-            color: var(--gray-900);
-            margin-bottom: 10px;
+            font-size: 18px;
+            color: #1E293B;
+            margin: 16px 0 6px;
+            font-weight: 700;
         }
-        
         .no-results p {
-            font-size: 16px;
-            color: var(--gray-600);
+            font-size: 14px;
+            color: #94A3B8;
+            max-width: 360px;
+            line-height: 1.5;
         }
-        
+        .no-results .alert-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .no-results .alert-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            color: #1E293B;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .no-results .alert-form input:focus {
+            border-color: #E8622A;
+        }
+        .no-results .alert-form input::placeholder {
+            color: #9CA3AF;
+        }
+        .no-results .alert-form button {
+            padding: 12px 24px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .no-results .alert-form button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+        #alertMessage, #alertMessageBottom {
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* Alerte sous les annonces — compact inline */
+        .alerte-bottom {
+            grid-column: 1 / -1;
+            padding: 20px 24px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #E8EAF0;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            position: relative;
+            margin-top: 20px;
+        }
+        .alerte-bottom svg {
+            flex-shrink: 0;
+        }
+        .alerte-bottom .alerte-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .alerte-bottom .alerte-text h3 {
+            font-size: 15px;
+            color: #1E293B;
+            margin: 0;
+            font-weight: 700;
+        }
+        .alerte-bottom .alerte-text p {
+            font-size: 13px;
+            color: #6B7280;
+            margin: 2px 0 0;
+            line-height: 1.4;
+        }
+        .alerte-bottom .alert-form {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+        }
+        .alerte-bottom .alert-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            color: #1E293B;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .alerte-bottom .alert-form input:focus {
+            border-color: #E8622A;
+        }
+        .alerte-bottom .alert-form input::placeholder {
+            color: #9CA3AF;
+        }
+        .alerte-bottom .alert-form button {
+            padding: 12px 20px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .alerte-bottom .alert-form button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+        @media (max-width: 768px) {
+            .alerte-bottom {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .alerte-bottom .alert-form {
+                width: 100%;
+            }
+            .alerte-bottom .alert-form input {
+                flex: 1;
+                width: auto;
+            }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            
-            .filters-sidebar {
-                position: static;
+            .calendar-months-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .calendar-period {
+                font-size: 16px;
             }
         }
-        
         @media (max-width: 768px) {
             .results-grid {
                 grid-template-columns: 1fr;
             }
-            
+
+            .search-header {
+                padding: 16px 16px 0;
+            }
+
             .search-header .container {
                 flex-direction: column;
+                gap: 10px;
+                padding: 16px;
             }
-            
-            .search-header select,
-            .search-header input,
-            .search-header .btn-primary {
+
+            .search-header .search-field {
+                min-width: 100%;
+            }
+
+            .search-header .search-btn {
+                width: 100%;
+                height: 44px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .results-right {
                 width: 100%;
             }
+
+            .sort-select {
+                flex: 1;
+            }
+
+            .no-results .alert-form {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .drawer-filtres {
+                width: 90%;
+                left: -95%;
+            }
         }
         
-        /* ============ BOUTONS NAVIGATION CALENDRIER ============ */
-        .month-nav-btn:hover {
-            background: #5a67d8 !important;
-            transform: scale(1.05);
-        }
-        
-        /* ============ STYLES CALENDRIER ============ */
-        .calendar-wrapper {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .month-calendar {
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.08);
-            border: 2px solid #667eea30;
-            min-width: 0;
-            height: 100%;
-        }
-        
-        .month-calendar h4 {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-            color: #667eea;
-            font-weight: 700;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #667eea20;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            min-height: 180px;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
+        /* ============ CALENDRIER — style dashboard ============ */
+        .calendar-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 500;
-            max-height: 26px;
-            line-height: 1;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .calendar-day:hover {
-            background: #f3f4f6;
-        }
-        
-        .calendar-day.empty {
-            cursor: default;
-        }
-        
-        .calendar-day.selected {
-            background: #a5b4fc;
-            color: white;
-            font-weight: 600;
-        }
-        
-        .calendar-day.period-start {
-            background: #4f46e5;
-        }
-        
-        .calendar-day.period-middle {
-            background: #a5b4fc;
-        }
-        
-        .calendar-day.period-end {
-            background: #4f46e5;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E8EAF0;
         }
 
-        /* ============ STYLES CALENDRIER ============ */
-        .calendar-wrapper {
+        .calendar-nav-btn {
+            width: 44px;
+            height: 44px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            background: #FFF8F5;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E8622A;
+        }
+
+        .calendar-nav-btn:hover {
+            background: #E8622A;
+            border-color: #E8622A;
+            color: white;
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .calendar-period {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            letter-spacing: -0.3px;
+        }
+
+        .calendar-months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
-        
-        .month-calendar {
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.08);
-            border: 2px solid #667eea30;
-            min-width: 0;
-            height: 100%;
+
+        .calendar-month {
+            background: #FEFCFA;
+            border: 1.5px solid #F0E6DF;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.25s;
         }
-        
-        .month-calendar h4 {
+
+        .calendar-month:hover {
+            border-color: rgba(232, 98, 42, 0.3);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+        }
+
+        .month-header {
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-            color: #4C51BF;
+            font-size: 14px;
+            font-weight: 700;
+            color: #E8622A;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .calendar-grid {
+
+        .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            min-height: 180px;
+            gap: 4px;
+            margin-bottom: 8px;
         }
-        
-        .calendar-day {
+
+        .weekday {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1E293B;
+            padding: 6px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .day-cell {
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 500;
-            max-height: 26px;
-            line-height: 1;
-            border-radius: 50%;
-            cursor: pointer;
+            color: #475569;
             transition: all 0.2s;
+            cursor: pointer;
         }
-        
-        .calendar-day:hover {
-            background: #f3f4f6;
+
+        .day-cell.empty {
+            visibility: hidden;
         }
-        
-        .calendar-day.empty {
-            cursor: default;
+
+        .day-cell:hover {
+            background: rgba(232, 98, 42, 0.08);
+            color: #E8622A;
         }
-        
-        .calendar-day.selected {
-            background: #a5b4fc;
+
+        .day-cell.past {
+            color: #CBD5E1;
+        }
+
+        .day-cell.selected {
+            background: #E8622A;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.35);
         }
-        
-        .calendar-day.period-start {
-            background: #4f46e5;
+
+        .day-cell.past.selected {
+            opacity: 0.75;
+            background: #E8622A;
+            color: white;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.2);
         }
-        
-        .calendar-day.period-middle {
-            background: #a5b4fc;
-        }
-        
-        .calendar-day.period-end {
-            background: #4f46e5;
-        }
+
+
     </style>
+<!-- Notification modale -->
+<style>
+    .custom-notification {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.2s ease;
+    }
+    .custom-notification.show {
+        display: flex;
+    }
+    .notification-content {
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        max-width: 420px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.3s ease;
+        text-align: center;
+    }
+    .notification-icon {
+        font-size: 22px;
+        margin-bottom: 16px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        font-weight: 700;
+        background: #E8622A;
+        color: white;
+    }
+    .notification-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 8px;
+    }
+    .notification-message {
+        font-size: 14px;
+        color: #64748B;
+        line-height: 1.5;
+        margin-bottom: 24px;
+    }
+    .notification-btn {
+        background: #E8622A;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+    .notification-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+<div class="custom-notification" id="customNotification">
+    <div class="notification-content">
+        <div class="notification-icon" id="notificationIcon">!</div>
+        <div class="notification-title" id="notificationTitle">Notification</div>
+        <div class="notification-message" id="notificationMessage">Message</div>
+        <button class="notification-btn" onclick="closeNotification()">OK</button>
+    </div>
+</div>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
     <div class="container">
-        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+        <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
         <ul>
             <li><a href="index.html">Accueil</a></li>
-            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             <li><a href="#">Comment ça marche</a></li>
             <li><a href="#">Devenir hôte</a></li>
         </ul>
@@ -524,246 +1158,473 @@
     <!-- BARRE DE RECHERCHE HEADER -->
     <div class="search-header">
         <div class="container">
-            <select id="ville">
-                <option value="" disabled selected>Ville</option>
-                <option value="rennes">   Rennes</option>
-                <option value="nantes">   Nantes</option>
-                <option value="brest">   Brest</option>
-            </select>
-            
-            <select id="budget">
-                <option value="" disabled selected>Budget</option>
-                <option value="400">   Moins de 400€</option>
-                <option value="500">   400€ - 500€</option>
-                <option value="600">   500€ - 600€</option>
-                <option value="700">   Plus de 600€</option>
-            </select>
-            
-            <select id="rythme">
-                <option value="" disabled selected>Catégorie de rythme</option>
-                <option value="hebdo">Hebdomadaire</option>
-                <option value="bloc">Par blocs</option>
-                <option value="jour">Par jour</option>
-                <option value="longs">Longues périodes</option>
-                <option value="perso">Personnalisé</option>
-            </select>
+            <div class="search-field" style="position: relative;">
+                <label>Ville</label>
+                <div style="position: relative;">
+                    <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off" style="width: 100%;">
+                </div>
+                <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
+            </div>
 
-            <select id="monRythmeRecherche" style="display: none; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
-                <option value="" disabled selected>Mes disponibilités</option>
-                <option value="1">   1 semaine / 1 semaine</option>
-                <option value="2">   2 semaines / 2 semaines</option>
-                <option value="3">   3 semaines / 3 semaines</option>
-                <option value="4">   4 semaines / 4 semaines</option>
-                <option value="6">   6 semaines / 6 semaines</option>
-                <option value="8">   8 semaines / 8 semaines</option>
-            </select>
-            
-            <button class="btn btn-primary" onclick="filtrerLogements()">
-                🔍 Rechercher
-            </button>
-            
-            
+            <div class="search-field">
+                <label>Type d'alternance</label>
+                <select id="rythme" onchange="updateDisponibilites()">
+                    <option value="" disabled selected>Type d'alternance</option>
+                    <option value="symmetric">Symétrique (même durée)</option>
+                    <option value="asymmetric">Asymétrique (durées différentes)</option>
+                    <option value="custom">Personnalisé</option>
+                </select>
+            </div>
+
+            <div class="search-field" id="disponibilitesField" style="display: none;">
+                <label>Mon rythme</label>
+                <select id="monRythmeRecherche">
+                    <option value="" disabled selected>Mon rythme</option>
+                </select>
+            </div>
+
+            <button class="search-btn" onclick="filtrerLogements()">Rechercher</button>
         </div>
     </div>
 
     <!-- CONTENU PRINCIPAL -->
     <div class="main-content">
-        <!-- SIDEBAR FILTRES -->
-        <aside class="filters-sidebar">
-            <h3>Filtres</h3>
+            
+            <!-- CALENDRIER DE DISPONIBILITÉS -->
+            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px 32px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
 
-            <!-- Prix -->
-            <div class="filter-group">
-                <h4>Prix</h4>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="prix1" value="400" onchange="filtrerLogements()">
-                    <label for="prix1">Moins de 400€</label>
-                    <span class="filter-count">(2)</span>
+                <!-- NAVIGATION AVEC TITRE AU CENTRE -->
+                <div class="calendar-header">
+                    <button type="button" id="prevMonthBtnSearch" class="calendar-nav-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <div class="calendar-period" id="calendarPeriodSearch"></div>
+                    <button type="button" id="nextMonthBtnSearch" class="calendar-nav-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="prix2" value="500" onchange="filtrerLogements()">
-                    <label for="prix2">400€ - 500€</label>
-                    <span class="filter-count">(8)</span>
+
+                <!-- CALENDRIER 3 MOIS -->
+                <div class="calendar-months-grid" id="calendarMonthsGridSearch"></div>
+
+            </div>
+
+
+            <!-- RÉSULTATS -->
+            <div class="results-header">
+                <div class="results-left">
+                    <div class="results-count" id="resultsCount">
+                        <strong>0 logement</strong> disponible
+                    </div>
                 </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="prix3" value="600" onchange="filtrerLogements()">
-                    <label for="prix3">500€ - 600€</label>
-                    <span class="filter-count">(5)</span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="prix4" value="700" onchange="filtrerLogements()">
-                    <label for="prix4">Plus de 600€</label>
-                    <span class="filter-count">(3)</span>
+                <div class="results-right">
+                    <select class="sort-select" id="sortSelect" onchange="trierLogements(this.value)">
+                        <option value="" disabled selected>Trier par</option>
+                        <option value="prix-asc">Prix croissant</option>
+                        <option value="prix-desc">Prix décroissant</option>
+                        <option value="recent">Plus récent</option>
+                    </select>
+                    <button class="btn-filtres" onclick="ouvrirFiltres()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="4" y1="6" x2="20" y2="6"></line>
+                            <line x1="6" y1="12" x2="18" y2="12"></line>
+                            <line x1="8" y1="18" x2="16" y2="18"></line>
+                        </svg>
+                        Filtres
+                        <span class="filtres-count" id="filtresCount" style="display:none;">0</span>
+                    </button>
                 </div>
             </div>
-            
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Les logements seront ajoutés ici par JavaScript -->
+            </div>
+    </div>
+
+    <!-- DRAWER OVERLAY -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="fermerFiltres()"></div>
+
+    <!-- DRAWER FILTRES -->
+    <div class="drawer-filtres" id="drawerFiltres">
+        <div class="drawer-header">
+            <h3>Filtres</h3>
+            <button class="drawer-close" onclick="fermerFiltres()">&times;</button>
+        </div>
+        <div class="drawer-body">
+            <!-- Proximité -->
+            <div class="filter-group">
+                <h4>Proximité</h4>
+                <p style="font-size: 13px; color: #6B7280; margin-bottom: 10px;">Trie les résultats par distance de ton école ou lieu de travail</p>
+                <div style="display: flex; gap: 8px;">
+                    <div class="proximity-search-wrapper" style="flex: 1;">
+                        <input type="text" id="proximityInput"
+                               placeholder="Ex: Université Rennes 2..."
+                               autocomplete="off"
+                               style="width: 100%; padding: 12px 16px; border: 1.5px solid #E8EAF0; border-radius: 12px; font-size: 15px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: #1E293B; outline: none; box-sizing: border-box;">
+                        <div class="proximity-suggestions" id="proximitySuggestions"></div>
+                    </div>
+                    <button onclick="trierParProximite()" style="padding: 12px 16px; background: #E8622A; color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;">Trier</button>
+                </div>
+                <div class="proximity-status" id="proximityStatus" style="font-size: 13px; margin-top: 8px; min-height: 18px;"></div>
+            </div>
+
+            <!-- Budget & Surface -->
+            <div class="filter-group">
+                <h4>Budget & Surface</h4>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 12px; color: #94A3B8; font-weight: 600; display: block; margin-bottom: 6px;">Budget max</label>
+                        <input type="number" id="budgetMax" placeholder="€ / sem." min="0" step="10" style="width: 100%; padding: 10px 14px; border: 1.5px solid #E8EAF0; border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: #1E293B; outline: none; box-sizing: border-box;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 12px; color: #94A3B8; font-weight: 600; display: block; margin-bottom: 6px;">Surface min</label>
+                        <input type="number" id="surfaceMin" placeholder="m²" min="0" step="1" style="width: 100%; padding: 10px 14px; border: 1.5px solid #E8EAF0; border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: #1E293B; outline: none; box-sizing: border-box;">
+                    </div>
+                </div>
+            </div>
+
             <!-- Type de logement -->
             <div class="filter-group">
                 <h4>Type de logement</h4>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="type1" value="studio" onchange="filtrerLogements()">
+                    <input type="checkbox" id="type1" value="studio">
                     <label for="type1">Studio</label>
-                    <span class="filter-count">(7)</span>
+                    <span class="filter-count" id="countStudio">(0)</span>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="type2" value="t1" onchange="filtrerLogements()">
+                    <input type="checkbox" id="type2" value="t1">
                     <label for="type2">T1</label>
-                    <span class="filter-count">(5)</span>
+                    <span class="filter-count" id="countT1">(0)</span>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="type3" value="coloc" onchange="filtrerLogements()">
+                    <input type="checkbox" id="type3" value="coloc">
                     <label for="type3">Colocation</label>
-                    <span class="filter-count">(6)</span>
+                    <span class="filter-count" id="countColoc">(0)</span>
                 </div>
             </div>
-            
-            <!-- Rythme alternance -->
+
+            <!-- Type d'alternance -->
             <div class="filter-group">
-                <h4>Rythme alternance</h4>
+                <h4>Type d'alternance</h4>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="rythme1" value="hebdo" onchange="filtrerLogements()">
-                    <label for="rythme1">Hebdomadaire</label>
-                    <span class="filter-count">(0)</span>
+                    <input type="checkbox" id="rythme1" value="symmetric">
+                    <label for="rythme1">Symétrique</label>
+                    <span class="filter-count" id="countSym">(0)</span>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="rythme2" value="blocs" onchange="filtrerLogements()">
-                    <label for="rythme2">Par blocs</label>
-                    <span class="filter-count">(0)</span>
+                    <input type="checkbox" id="rythme2" value="asymmetric">
+                    <label for="rythme2">Asymétrique</label>
+                    <span class="filter-count" id="countAsym">(0)</span>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="rythme3" value="longs" onchange="filtrerLogements()">
-                    <label for="rythme3">Longues périodes</label>
-                    <span class="filter-count">(0)</span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rythme4" value="perso" onchange="filtrerLogements()">
-                    <label for="rythme4">Personnalisé</label>
-                    <span class="filter-count">(0)</span>
+                    <input type="checkbox" id="rythme3" value="custom">
+                    <label for="rythme3">Personnalisé</label>
+                    <span class="filter-count" id="countCustom">(0)</span>
                 </div>
             </div>
-            
+
             <!-- Équipements -->
             <div class="filter-group">
                 <h4>Équipements</h4>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="equip1" value="wifi" onchange="filtrerLogements()">
-                    <label for="equip1">Wifi</label>
+                    <input type="checkbox" id="equip1" value="WiFi">
+                    <label for="equip1">WiFi</label>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="equip2" value="meuble" onchange="filtrerLogements()">
+                    <input type="checkbox" id="equip2" value="Meublé">
                     <label for="equip2">Meublé</label>
                 </div>
                 <div class="checkbox-item">
-                    <input type="checkbox" id="equip3" value="parking" onchange="filtrerLogements()">
+                    <input type="checkbox" id="equip3" value="Parking">
                     <label for="equip3">Parking</label>
                 </div>
-            </div>
-            
-        
-
-            <button class="clear-filters" onclick="reinitialiserFiltres()">
-                Effacer les filtres
-            </button>
-
-
-        </aside>
-
-        <!-- ZONE PRINCIPALE (CALENDRIER + RÉSULTATS) -->
-        <div style="display: flex; flex-direction: column; gap: 0;">
-            
-            <!-- CALENDRIER DE DISPONIBILITÉS -->
-            <div id="calendrierRecherche" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%); padding: 30px; margin-bottom: 25px; border-radius: 16px; box-shadow: 0 4px 16px rgba(102,126,234,0.12); border: 2px solid #667eea40;">
-                
-                <!-- NAVIGATION AVEC TITRE AU CENTRE -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <button type="button" id="prevMonthBtnSearch" class="month-nav-btn" style="padding: 12px 24px; background: #667EEA; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
-                        ← Précédent
-                    </button>
-                    <h3 style="margin: 0; font-size: 22px; font-weight: 700; color: #667eea;">Tes disponibilités</h3>
-                    <button type="button" id="nextMonthBtnSearch" class="month-nav-btn" style="padding: 12px 24px; background: #667EEA; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">
-                        Suivant →
-                    </button>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="equip4" value="Cuisine équipée">
+                    <label for="equip4">Cuisine équipée</label>
                 </div>
-                
-                <!-- CALENDRIER 3 MOIS -->
-                <div class="calendar-wrapper">
-                    <div class="month-calendar">
-                        <h4 id="month-title-search-0">Janvier 2026</h4>
-                        <div class="calendar-grid" id="calendar-grid-search-0"></div>
-                    </div>
-                    <div class="month-calendar">
-                        <h4 id="month-title-search-1">Février 2026</h4>
-                        <div class="calendar-grid" id="calendar-grid-search-1"></div>
-                    </div>
-                    <div class="month-calendar">
-                        <h4 id="month-title-search-2">Mars 2026</h4>
-                        <div class="calendar-grid" id="calendar-grid-search-2"></div>
-                    </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="equip5" value="Balcon/Terrasse">
+                    <label for="equip5">Balcon/Terrasse</label>
                 </div>
-                
-                <!-- CHAMPS DE DATES - MIS EN VALEUR -->
-                <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 12px; border: 2px solid #667eea50; box-shadow: 0 4px 12px rgba(102,126,234,0.15);">
-                    <div style="display: flex; gap: 15px;">
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Date de début
-                            </label>
-                            <input 
-                                type="text" 
-                                id="dateDebutRecherche" 
-                                style="width: 100%; padding: 12px 15px; border: 2px solid #667eea; border-radius: 10px; font-size: 15px; background: white; color: #9CA3AF;"
-                            />
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Date de fin
-                            </label>
-                            <input 
-                                type="text" 
-                                id="dateFinRecherche" 
-                                style="width: 100%; padding: 12px 15px; border: 2px solid #667eea; border-radius: 10px; font-size: 15px; background: white; color: #9CA3AF;"
-                            />
-                        </div>
-                    </div>
-                </div>
-                
+                <!-- Équipements dynamiques (populaires depuis "Autre") -->
+                <div id="dynamicEquipments"></div>
             </div>
 
-            <!-- RÉSULTATS -->
-            <section class="results-section">
-            <div class="results-header">
-                <div class="results-count" id="resultsCount">
-                    <strong>18 logements</strong> disponibles
-                </div>
-                <select class="sort-select" onchange="trierLogements(this.value)">
-                    <option value="pertinence">Pertinence</option>
-                    <option value="prix-asc">Prix croissant</option>
-                    <option value="prix-desc">Prix décroissant</option>
-                    <option value="recent">Plus récents</option>
-                </select>
-            </div>
-            
-            <div class="results-grid" id="resultsGrid">
-                <!-- Les logements seront ajoutés ici par JavaScript -->
-            </div>
-        </section>
+        </div>
+        <div class="drawer-footer">
+            <button class="clear-filters" onclick="reinitialiserFiltres()">Tout effacer</button>
+            <button class="btn-apply" onclick="filtrerLogements(); fermerFiltres();">Appliquer</button>
         </div>
     </div>
 
     <!-- FOOTER -->
-    <footer>
+    <footer role="contentinfo">
         <div class="container">
-            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
-            <p><a href="/cdn-cgi/l/email-protection#1d7e7273697c7e695d7c7169786f7371727a7870787369337b6f"><span class="__cf_email__" data-cfemail="1e7d71706a7f7d6a5e7f726a7b6c707271797b737b706a30786c">[email&#160;protected]</span></a></p>
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+            </p>
         </div>
     </footer>
 
     <script>
+        let notificationRedirectUrl = null;
+
+        function showNotification(title, message, type = 'warning', redirectUrl = null) {
+            const notification = document.getElementById('customNotification');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            const iconEl = document.getElementById('notificationIcon');
+
+            titleEl.textContent = title;
+            messageEl.innerHTML = message;
+            notificationRedirectUrl = redirectUrl;
+
+            if (type === 'error') {
+                iconEl.innerHTML = '&#10005;';
+                iconEl.style.background = '#DC2626';
+                iconEl.style.color = 'white';
+            } else if (type === 'warning') {
+                iconEl.innerHTML = '!';
+                iconEl.style.background = '#1E293B';
+                iconEl.style.color = 'white';
+            } else {
+                iconEl.innerHTML = '&#10003;';
+                iconEl.style.background = '#E8622A';
+                iconEl.style.color = 'white';
+            }
+
+            notification.classList.add('show');
+        }
+
+        function closeNotification() {
+            document.getElementById('customNotification').classList.remove('show');
+            if (notificationRedirectUrl) {
+                window.location.href = notificationRedirectUrl;
+            }
+        }
+
         // VARIABLES GLOBALES
 let logements = [];
 let logementsAffiches = [];
 let currentUser = null;
 let userFavoris = [];
+
+// Variables proximité
+let userLat = null;
+let userLng = null;
+let proximiteActive = false;
+let proximitySearchTimeout = null;
+
+// Dictionnaire sigles → noms complets (écoles sup françaises)
+const SIGLES_ECOLES = {
+    'ENSAB': 'École nationale supérieure d\'architecture de Bretagne',
+    'ENSAP': 'École nationale supérieure d\'architecture de Paris',
+    'ENSAL': 'École nationale supérieure d\'architecture de Lyon',
+    'ENSAM': 'École nationale supérieure d\'architecture de Marseille',
+    'ENSAG': 'École nationale supérieure d\'architecture de Grenoble',
+    'ENSAN': 'École nationale supérieure d\'architecture de Nancy',
+    'ENSAS': 'École nationale supérieure d\'architecture de Strasbourg',
+    'ENSAPM': 'École nationale supérieure d\'architecture de Paris-Malaquais',
+    'ENSAPB': 'École nationale supérieure d\'architecture de Paris-Belleville',
+    'ENSAPLV': 'École nationale supérieure d\'architecture de Paris-La Villette',
+    'ENSA': 'École nationale supérieure d\'architecture',
+    'INSA': 'Institut national des sciences appliquées',
+    'ISEN': 'Institut supérieur de l\'électronique et du numérique',
+    'ENSAI': 'École nationale de la statistique et de l\'analyse de l\'information',
+    'ENSAE': 'École nationale de la statistique et de l\'administration économique',
+    'ENSC': 'École nationale supérieure de cognitique',
+    'ENSCI': 'École nationale supérieure de création industrielle',
+    'EPITECH': 'Epitech école informatique',
+    'EPITA': 'École pour l\'informatique et les techniques avancées',
+    'ESIR': 'École supérieure d\'ingénieurs de Rennes',
+    'ESCP': 'ESCP Business School',
+    'ESSEC': 'ESSEC Business School',
+    'HEC': 'HEC Paris',
+    'EDHEC': 'EDHEC Business School',
+    'KEDGE': 'KEDGE Business School',
+    'SKEMA': 'SKEMA Business School',
+    'NEOMA': 'NEOMA Business School',
+    'EM': 'École de management',
+    'ESC': 'École supérieure de commerce',
+    'EESAB': 'École européenne supérieure d\'art de Bretagne',
+    'ENIB': 'École nationale d\'ingénieurs de Brest',
+    'ENIM': 'École nationale d\'ingénieurs de Metz',
+    'ENIT': 'École nationale d\'ingénieurs de Tarbes',
+    'ENISE': 'École nationale d\'ingénieurs de Saint-Étienne',
+    'ECAM': 'ECAM école d\'ingénieurs',
+    'ICAM': 'Institut catholique d\'arts et métiers',
+    'ISAE': 'Institut supérieur de l\'aéronautique et de l\'espace',
+    'SUPAERO': 'Institut supérieur de l\'aéronautique et de l\'espace',
+    'ENAC': 'École nationale de l\'aviation civile',
+    'ENTPE': 'École nationale des travaux publics de l\'État',
+    'ENSEIRB': 'École nationale supérieure d\'électronique informatique et de radiocommunications de Bordeaux',
+    'ENSEEIHT': 'École nationale supérieure d\'électrotechnique d\'informatique d\'hydraulique et des télécommunications',
+    'ENSIMAG': 'École nationale supérieure d\'informatique et de mathématiques appliquées de Grenoble',
+    'ENSTA': 'École nationale supérieure de techniques avancées',
+    'ESTACA': 'ESTACA école d\'ingénieurs',
+    'ECE': 'ECE école d\'ingénieurs',
+    'EFREI': 'EFREI école d\'ingénieurs',
+    'ESIEA': 'ESIEA école d\'ingénieurs',
+    'ESIEE': 'ESIEE Paris',
+    'ISEP': 'Institut supérieur d\'électronique de Paris',
+    'TELECOM': 'Télécom Paris',
+    'IMT': 'Institut Mines-Télécom',
+    'MINES': 'École des Mines',
+    'CENTRALE': 'École Centrale',
+    'POLYTECH': 'Polytech école d\'ingénieurs',
+    'UTT': 'Université de technologie de Troyes',
+    'UTC': 'Université de technologie de Compiègne',
+    'UTBM': 'Université de technologie de Belfort-Montbéliard',
+    'IUT': 'Institut universitaire de technologie',
+    'BTS': 'Brevet de technicien supérieur',
+    'IFSI': 'Institut de formation en soins infirmiers',
+    'IRTS': 'Institut régional du travail social',
+    'ASKORIA': 'Askoria formation travail social',
+    'CNAM': 'Conservatoire national des arts et métiers',
+    'ENSATT': 'École nationale supérieure des arts et techniques du théâtre',
+    'FEMIS': 'École nationale supérieure des métiers de l\'image et du son',
+    'GOBELINS': 'Gobelins école de l\'image',
+    'SUPELEC': 'École supérieure d\'électricité',
+    'AGROCAMPUS': 'Agrocampus Ouest',
+    'AGRONOMIQUE': 'Institut national agronomique',
+    'RSB': 'Rennes School of Business',
+    'IGR': 'Institut de gestion de Rennes',
+    'ECOLES2I': 'École supérieure d\'informatique',
+    'SUPINFO': 'Supinfo école informatique',
+    'ESRA': 'ESRA école de cinéma',
+    'LISAA': 'LISAA école de design',
+    'STUDI': 'Studi école en ligne',
+    'YNOV': 'Ynov campus numérique',
+    'MYDIGITALSCHOOL': 'MyDigitalSchool',
+    'WIS': 'WIS web international school',
+    'HETIC': 'HETIC web école',
+    'IIM': 'Institut de l\'internet et du multimédia',
+    'SUPDEVINCI': 'Sup de Vinci',
+    'ESAIP': 'ESAIP école d\'ingénieurs',
+    'CPE': 'CPE Lyon',
+    'PHELMA': 'Grenoble INP Phelma',
+    'PAGORA': 'Grenoble INP Pagora',
+    'ENSE3': 'Grenoble INP Ense3',
+    'GÉNIE': 'Grenoble INP Génie industriel'
+};
+
+// Coordonnées des villes disponibles pour le biais de proximité
+const VILLES_COORDS = {
+    'rennes': { lat: 48.1173, lng: -1.6778 },
+    'nantes': { lat: 47.2184, lng: -1.5536 },
+    'brest': { lat: 48.3904, lng: -4.4861 },
+    'quimper': { lat: 47.9960, lng: -4.1024 },
+    'lorient': { lat: 47.7486, lng: -3.3660 },
+    'vannes': { lat: 47.6583, lng: -2.7608 },
+    'saint-malo': { lat: 48.6493, lng: -1.9890 },
+    'saint-brieuc': { lat: 48.5141, lng: -2.7602 },
+    'fougeres': { lat: 48.3524, lng: -1.1996 },
+    'vitre': { lat: 48.1246, lng: -1.2131 }
+};
+
+// ========== AUTOCOMPLÉTION VILLE ==========
+const VILLES_DISPONIBLES_RECHERCHE = {
+    'Rennes': 'rennes',
+    'Nantes': 'nantes',
+    'Brest': 'brest',
+    'Quimper': 'quimper',
+    'Lorient': 'lorient',
+    'Vannes': 'vannes',
+    'Saint-Malo': 'saint-malo',
+    'Saint-Brieuc': 'saint-brieuc',
+    'Foug\u00e8res': 'fougeres',
+    'Vitr\u00e9': 'vitre'
+};
+let villeSelectionneeRecherche = '';
+let villeSecondaireRecherche = ''; // Ville secondaire depuis le dashboard
+
+function capitalizeWords(str) {
+    return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, function(match) {
+        return match.toUpperCase();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const villeInput = document.getElementById('villeInput');
+    const villeSuggestions = document.getElementById('villeSuggestions');
+    if (!villeInput) return;
+
+    villeInput.addEventListener('input', function() {
+        // Majuscule auto sur la saisie ville
+        const pos = this.selectionStart;
+        this.value = capitalizeWords(this.value);
+        this.setSelectionRange(pos, pos);
+
+        const query = this.value.trim().toLowerCase();
+        villeSelectionneeRecherche = '';
+
+        if (query.length === 0) {
+            villeSuggestions.style.display = 'none';
+            filtrerLogements();
+            return;
+        }
+
+        const matches = Object.keys(VILLES_DISPONIBLES_RECHERCHE).filter(v =>
+            v.toLowerCase().startsWith(query)
+        );
+
+        if (matches.length > 0) {
+            villeSuggestions.innerHTML = matches.map(v =>
+                `<div class="ville-suggestion-item" data-value="${VILLES_DISPONIBLES_RECHERCHE[v]}" data-label="${v}">${v}</div>`
+            ).join('');
+            villeSuggestions.style.display = 'block';
+
+            villeSuggestions.querySelectorAll('.ville-suggestion-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    villeInput.value = this.dataset.label;
+                    villeSelectionneeRecherche = this.dataset.value;
+                    villeSuggestions.style.display = 'none';
+                    filtrerLogements();
+                });
+            });
+        } else {
+            if (query.length >= 2) {
+                villeSuggestions.innerHTML = '<div style="padding: 12px 16px; color: #E8622A; font-weight: 600; font-size: 14px; cursor: default;">STERNY arrive bientôt dans ta ville !</div>';
+                villeSuggestions.style.display = 'block';
+            } else {
+                villeSuggestions.style.display = 'none';
+            }
+        }
+    });
+
+    villeInput.addEventListener('blur', function() {
+        setTimeout(() => {
+            villeSuggestions.style.display = 'none';
+            const val = villeInput.value.trim();
+            if (val && !villeSelectionneeRecherche) {
+                const exactMatch = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(v =>
+                    v.toLowerCase() === val.toLowerCase()
+                );
+                if (exactMatch) {
+                    villeInput.value = exactMatch;
+                    villeSelectionneeRecherche = VILLES_DISPONIBLES_RECHERCHE[exactMatch];
+                    filtrerLogements();
+                }
+            }
+        }, 200);
+    });
+
+    villeInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            villeSuggestions.style.display = 'none';
+            filtrerLogements();
+        }
+    });
+});
 
 // CHARGER L'UTILISATEUR CONNECTÉ
 async function chargerUtilisateur() {
@@ -771,9 +1632,7 @@ async function chargerUtilisateur() {
         const { data: { user }, error } = await supabaseClient.auth.getUser();
         if (error) throw error;
         currentUser = user;
-        console.log('👤 Utilisateur:', currentUser);
     } catch (error) {
-        console.log('Pas d\'utilisateur connecté');
         currentUser = null;
     }
 }
@@ -793,139 +1652,229 @@ async function chargerAnnonces() {
         logementsAffiches = [...logements];
         afficherLogements(logementsAffiches);
         mettreAJourCompteursFiltres();
-        
+
+        // Analyser les équipements "Autre" pour générer les filtres dynamiques
+        analyserEquipementsAutre();
+
         // Charger les favoris de l'utilisateur
         await chargerFavoris();
         
-        console.log('✅ Annonces chargées:', logements.length);
     } catch (error) {
         console.error('❌ Erreur:', error);
         document.getElementById('resultsGrid').innerHTML = `
             <div class="no-results">
-                <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
                 <h3>Erreur de chargement</h3>
-                <p>Impossible de charger les logements.</p>
+                <p>Impossible de charger les logements. R\u00e9essaie dans quelques instants.</p>
             </div>
         `;
     }
 } 
 
+    // ========== DRAWER FILTRES ==========
+
+    function ouvrirFiltres() {
+        document.getElementById('drawerFiltres').classList.add('active');
+        document.getElementById('drawerOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fermerFiltres() {
+        document.getElementById('drawerFiltres').classList.remove('active');
+        document.getElementById('drawerOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Mettre à jour le badge compteur de filtres actifs
+    function mettreAJourBadgeFiltres() {
+        let count = 0;
+        document.querySelectorAll('#drawerFiltres input[type="checkbox"]:checked').forEach(() => count++);
+        if (document.getElementById('budgetMax') && document.getElementById('budgetMax').value) count++;
+        if (document.getElementById('surfaceMin') && document.getElementById('surfaceMin').value) count++;
+        const badge = document.getElementById('filtresCount');
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // ========== DISPONIBILITÉS DYNAMIQUES ==========
+
+    function updateDisponibilites() {
+        const type = document.getElementById('rythme').value;
+        const field = document.getElementById('disponibilitesField');
+        const select = document.getElementById('monRythmeRecherche');
+
+        select.innerHTML = '<option value="" disabled selected>Mon rythme</option>';
+
+        // Cacher le calendrier et réinitialiser
+        const calendarDiv = document.getElementById('calendrierRecherche');
+        if (calendarDiv) calendarDiv.style.display = 'none';
+        selectedDatesRecherche = [];
+        mesDisponibilites = [];
+
+        if (type === 'symmetric') {
+            field.style.display = 'flex';
+            const options = [
+                { value: '1-1', label: '1 sem. / 1 sem.' },
+                { value: '2-2', label: '2 sem. / 2 sem.' },
+                { value: '3-3', label: '3 sem. / 3 sem.' },
+                { value: '4-4', label: '4 sem. / 4 sem.' },
+                { value: '5-5', label: '5 sem. / 5 sem.' },
+                { value: '6-6', label: '6 sem. / 6 sem.' },
+                { value: '8-8', label: '8 sem. / 8 sem.' },
+            ];
+            options.forEach(o => {
+                select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+            });
+        } else if (type === 'asymmetric') {
+            field.style.display = 'flex';
+            const options = [
+                { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
+                { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
+                { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
+                { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
+                { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
+                { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
+                { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
+                { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
+            ];
+            options.forEach(o => {
+                select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+            });
+        } else {
+            field.style.display = 'none';
+        }
+    }
+
     // Mettre à jour les compteurs des filtres
 function mettreAJourCompteursFiltres() {
-    // PRIX
-    const moins400 = logements.filter(l => l.prix < 400).length;
-    const entre400et500 = logements.filter(l => l.prix >= 400 && l.prix < 500).length;
-    const entre500et600 = logements.filter(l => l.prix >= 500 && l.prix < 600).length;
-    const plus600 = logements.filter(l => l.prix >= 600).length;
-    
-    // Mettre à jour SEULEMENT les chiffres (pas tout le label)
-    document.querySelector('label[for="prix1"]').nextElementSibling.textContent = `(${moins400})`;
-    document.querySelector('label[for="prix2"]').nextElementSibling.textContent = `(${entre400et500})`;
-    document.querySelector('label[for="prix3"]').nextElementSibling.textContent = `(${entre500et600})`;
-    document.querySelector('label[for="prix4"]').nextElementSibling.textContent = `(${plus600})`;
-    
     // TYPE DE LOGEMENT
     const studios = logements.filter(l => l.type_logement === 'studio').length;
     const t1 = logements.filter(l => l.type_logement === 't1').length;
     const coloc = logements.filter(l => l.type_logement === 'colocation').length;
-    
-    document.querySelector('label[for="type1"]').nextElementSibling.textContent = `(${studios})`;
-    document.querySelector('label[for="type2"]').nextElementSibling.textContent = `(${t1})`;
-    document.querySelector('label[for="type3"]').nextElementSibling.textContent = `(${coloc})`;
 
-    // RYTHME ALTERNANCE
-    const hebdo = logements.filter(l => l.rythme_alternance === 'hebdo').length;
-    const blocs = logements.filter(l => l.rythme_alternance === 'blocs').length;
-    const longs = logements.filter(l => l.rythme_alternance === 'longs').length;
-    const perso = logements.filter(l => l.rythme_alternance === 'perso').length;
+    const countStudio = document.getElementById('countStudio');
+    const countT1 = document.getElementById('countT1');
+    const countColoc = document.getElementById('countColoc');
+    if (countStudio) countStudio.textContent = `(${studios})`;
+    if (countT1) countT1.textContent = `(${t1})`;
+    if (countColoc) countColoc.textContent = `(${coloc})`;
 
-    document.querySelector('label[for="rythme1"]').nextElementSibling.textContent = `(${hebdo})`;
-    document.querySelector('label[for="rythme2"]').nextElementSibling.textContent = `(${blocs})`;
-    document.querySelector('label[for="rythme3"]').nextElementSibling.textContent = `(${longs})`;
-    document.querySelector('label[for="rythme4"]').nextElementSibling.textContent = `(${perso})`;
+    // TYPE D'ALTERNANCE
+    const sym = logements.filter(l => l.type_alternance === 'symmetric').length;
+    const asym = logements.filter(l => l.type_alternance === 'asymmetric').length;
+    const custom = logements.filter(l => l.type_alternance === 'custom').length;
+
+    const countSym = document.getElementById('countSym');
+    const countAsym = document.getElementById('countAsym');
+    const countCustom = document.getElementById('countCustom');
+    if (countSym) countSym.textContent = `(${sym})`;
+    if (countAsym) countAsym.textContent = `(${asym})`;
+    if (countCustom) countCustom.textContent = `(${custom})`;
     }
-    
 
-        chargerAnnonces() 
-        
-
-     
         // Afficher les logements
         function afficherLogements(liste) {
             const grid = document.getElementById('resultsGrid');
             grid.innerHTML = '';
-            
-            
+
+
         if (liste.length === 0) {
-    grid.innerHTML = `
-        <div class="no-results">
-            <div style="font-size: 64px; margin-bottom: 20px;">😕</div>
-            <h3>Désolé, nous n'avons pas encore de logement correspondant</h3>
-            <p style="margin-bottom: 30px;">Mais ne t'inquiète pas ! Laisse-nous ton email et on te préviendra dès qu'un logement comme celui-ci sera disponible.</p>
-            
-            <div style="max-width: 500px; margin: 0 auto;">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input 
-                        type="email" 
-                        id="alertEmail" 
-                        placeholder="ton.email@exemple.com"
-                        style="flex: 1; padding: 14px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px;"
-                    >
-                    <button 
-                        onclick="creerAlerte()"
-                        style="padding: 14px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;"
-                    >
-                        🔔 Me prévenir
-                    </button>
+            grid.innerHTML = `
+                <div class="no-results">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #FFF1E8; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <h3>Aucun logement trouv\u00e9</h3>
+                    <p>Modifie tes crit\u00e8res ou active une alerte pour \u00eatre notifi\u00e9 d\u00e8s qu'un logement correspond.</p>
+                    <div class="alert-form">
+                        <input type="email" id="alertEmail" placeholder="ton@email.com">
+                        <button onclick="creerAlerte()">Activer l'alerte</button>
+                    </div>
+                    <p id="alertMessage"></p>
                 </div>
-                <p id="alertMessage" style="font-size: 14px; margin-top: 10px;"></p>
-                
-                <p style="font-size: 14px; color: var(--gray-600); margin-top: 20px;">
-                    En attendant, tu peux <a href="#" onclick="reinitialiserFiltres(); return false;" style="color: var(--primary); font-weight: 600;">élargir ta recherche</a>
-                </p>
-            </div>
-        </div>
-    `;
-    return;
-}
-            
+            `;
+            // Mettre à jour le compteur de résultats
+            document.getElementById('resultsCount').innerHTML = `<strong>0 logement</strong> disponible`;
+            return;
+        }
+
             liste.forEach(logement => {
-    // Générer un emoji basé sur le type de logement (fallback si pas de photo)
-    let emoji = '🏠';
-    if (logement.type_logement === 'studio') emoji = '🏢';
-    else if (logement.type_logement === 't1') emoji = '🏡';
-    else if (logement.type_logement === 't2') emoji = '🏘️';
-    else if (logement.type_logement === 'colocation') emoji = '👥';
-    
-    // Utiliser la première photo si disponible, sinon emoji
-    const imageStyle = logement.photos && logement.photos.length > 0 
+    // SVG placeholder si pas de photo
+    const svgPlaceholder = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>';
+
+    // Utiliser la première photo si disponible, sinon SVG
+    const imageStyle = logement.photos && logement.photos.length > 0
         ? `background-image: url('${logement.photos[0]}'); background-size: cover; background-position: center;`
-        : '';
-    
-    const imageContent = logement.photos && logement.photos.length > 0 
-        ? '' 
-        : emoji;
-    
+        : 'background: #1E293B; display: flex; align-items: center; justify-content: center;';
+
+    const imageContent = logement.photos && logement.photos.length > 0
+        ? ''
+        : svgPlaceholder;
+
     // Créer les tags à partir des équipements
     const tags = [];
-    if (logement.surface) tags.push(`${logement.surface}m²`);
+    if (logement.surface) tags.push(`${logement.surface} m²`);
     if (logement.equipements && logement.equipements.length > 0) {
         tags.push(...logement.equipements.slice(0, 2));
     }
-    
+
+    const distanceBadge = (proximiteActive && logement.distance !== undefined)
+        ? `<div class="distance-badge">${logement.distance.toFixed(1)} km</div>`
+        : '';
+
+    // Badge type de logement
+    const typeBadge = logement.type_logement
+        ? `<span class="logement-badge">${logement.type_logement.charAt(0).toUpperCase() + logement.type_logement.slice(1)}</span>`
+        : '';
+
+    // Badge match score
+    let matchBadge = '';
+    if (logement.matchScore !== undefined) {
+        if (logement.matchScore >= 0.95) {
+            matchBadge = '<span class="match-badge" style="background: #10b981; color: white;">Match parfait !</span>';
+        } else {
+            matchBadge = '<span class="match-badge" style="background: #E8622A; color: white;">' + (Math.round(logement.matchScore * 20) * 5) + '%</span>';
+        }
+    }
+
+    // Bouton favori
+    const isFav = userFavoris && userFavoris.includes(logement.id);
+    const heartBtn = `<button class="favorite-btn${isFav ? ' is-favorite' : ''}" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite('${logement.id}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="${isFav ? '#EF4444' : 'none'}" stroke="${isFav ? '#EF4444' : '#475569'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+    </button>`;
+
+    // Ville formatée
+    const villeFormatee = logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1);
+
     const card = `
-        <a href="logement.html?id=${logement.id}&date_debut=${encodeURIComponent(document.getElementById('dateDebutRecherche')?.value || '')}&date_fin=${encodeURIComponent(document.getElementById('dateFinRecherche')?.value || '')}" class="logement-card">
+        <a href="logement.html?id=${logement.id}${mesDisponibilites.length > 0 ? '&dates=' + mesDisponibilites.join(',') : ''}" class="logement-card">
             <div class="logement-image" style="${imageStyle}">
                 ${imageContent}
-                ${logement.matchScore && logement.matchScore > 0.95 ? '<span class="logement-badge" style="background: #10b981;">🎯 Match parfait !</span>' : ''}
-                <button class="favorite-btn" data-annonce-id="${logement.id}" onclick="event.preventDefault(); toggleFavorite('${logement.id}')">
-                    🤍
-                </button>
+                ${typeBadge}
+                ${heartBtn}
+                ${distanceBadge}
+                ${matchBadge}
             </div>
             <div class="logement-content">
-                <div class="logement-price">${logement.prix}€ / mois</div>
+                <div class="logement-price">${logement.prix}€<span> / semaine</span></div>
                 <div class="logement-title">${logement.titre}</div>
-                <div class="logement-location">${logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1)}</div>
+                <div class="logement-location">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    ${villeFormatee}
+                </div>
                 <div class="logement-features">
                     ${tags.map(tag => `<span class="feature-tag">${tag}</span>`).join('')}
                 </div>
@@ -935,115 +1884,568 @@ function mettreAJourCompteursFiltres() {
     grid.innerHTML += card;
 });
             
-            document.getElementById('resultsCount').innerHTML = `<strong>${liste.length} logement${liste.length > 1 ? 's' : ''}</strong> disponible${liste.length > 1 ? 's' : ''}`;
+            // Ajouter le bloc alerte sous les annonces
+            grid.innerHTML += `
+                <div class="alerte-bottom">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <div class="alerte-text">
+                        <h3>Tu ne trouves pas ton bonheur ?</h3>
+                        <p>On te prévient dès qu'un nouveau logement arrive.</p>
+                    </div>
+                    <div class="alert-form">
+                        <input type="email" id="alertEmailBottom" placeholder="ton@email.com">
+                        <button onclick="creerAlerteBottom()">Me prévenir</button>
+                    </div>
+                    <p id="alertMessageBottom" style="position: absolute; bottom: -20px; right: 24px; font-size: 12px;"></p>
+                </div>
+            `;
+
+            const villeText = villeSelectionneeRecherche ? ` à ${villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1)}` : '';
+            document.getElementById('resultsCount').innerHTML = `<strong>${liste.length} logement${liste.length > 1 ? 's' : ''}</strong> disponible${liste.length > 1 ? 's' : ''}${villeText}`;
         }
 
         // Filtrer les logements
 function filtrerLogements() {
     let resultats = [...logements];
-    
-    // Filtre ville
-    const ville = document.getElementById('ville').value;
-    if (ville) {
-        resultats = resultats.filter(l => l.ville === ville);
+
+    // Filtre ville (input autocomplétion) — inclut la ville secondaire si présente
+    if (villeSelectionneeRecherche) {
+        const villesAcceptees = [villeSelectionneeRecherche];
+        if (villeSecondaireRecherche) {
+            villesAcceptees.push(villeSecondaireRecherche);
+        }
+        resultats = resultats.filter(l => villesAcceptees.includes(l.ville));
     }
-    
-    // Filtre budget (select en haut)
-    const budget = document.getElementById('budget').value;
-    if (budget) {
-        const maxBudget = parseInt(budget);
-        resultats = resultats.filter(l => l.prix <= maxBudget);
+
+    // Filtre type d'alternance (select en haut)
+    const typeAlternance = document.getElementById('rythme').value;
+    if (typeAlternance) {
+        resultats = resultats.filter(l => l.type_alternance === typeAlternance);
     }
-    
-    // Filtre rythme (select en haut)
-    const rythme = document.getElementById('rythme').value;
-    if (rythme) {
-        // Pour l'instant on ne filtre pas sur rythme car pas dans les données
-        // On pourra l'ajouter plus tard
+
+    // Filtre pattern (select mon rythme)
+    const pattern = document.getElementById('monRythmeRecherche').value;
+    if (pattern) {
+        resultats = resultats.filter(l => l.rythme_pattern === pattern);
     }
-    
-    // Filtre prix (checkboxes sidebar)
-    const prixSelectionnes = [];
-    if (document.getElementById('prix1').checked) prixSelectionnes.push(400);
-    if (document.getElementById('prix2').checked) prixSelectionnes.push(500);
-    if (document.getElementById('prix3').checked) prixSelectionnes.push(600);
-    if (document.getElementById('prix4').checked) prixSelectionnes.push(700);
-    
-    if (prixSelectionnes.length > 0) {
-        resultats = resultats.filter(l => {
-            // Le logement doit être dans AU MOINS une des tranches sélectionnées
-            if (prixSelectionnes.includes(400) && l.prix < 400) return true;
-            if (prixSelectionnes.includes(500) && l.prix >= 400 && l.prix < 500) return true;
-            if (prixSelectionnes.includes(600) && l.prix >= 500 && l.prix < 600) return true;
-            if (prixSelectionnes.includes(700) && l.prix >= 600) return true;
-            return false;
-        });
-    }
-    
-    // Filtre type (checkboxes sidebar)
+
+    // Filtre type de logement (checkboxes drawer)
     const typesSelectionnes = [];
     if (document.getElementById('type1').checked) typesSelectionnes.push('studio');
     if (document.getElementById('type2').checked) typesSelectionnes.push('t1');
     if (document.getElementById('type3').checked) typesSelectionnes.push('coloc');
-    
+
     if (typesSelectionnes.length > 0) {
        resultats = resultats.filter(l => typesSelectionnes.includes(l.type_logement));
     }
-    
-    // Filtre rythme (checkboxes sidebar)
+
+    // Filtre budget max
+    const budgetMax = document.getElementById('budgetMax') ? parseFloat(document.getElementById('budgetMax').value) : NaN;
+    if (!isNaN(budgetMax) && budgetMax > 0) {
+        resultats = resultats.filter(l => (l.prix || 0) <= budgetMax);
+    }
+
+    // Filtre surface min
+    const surfaceMin = document.getElementById('surfaceMin') ? parseFloat(document.getElementById('surfaceMin').value) : NaN;
+    if (!isNaN(surfaceMin) && surfaceMin > 0) {
+        resultats = resultats.filter(l => (l.surface || 0) >= surfaceMin);
+    }
+
+    // Filtre type d'alternance (checkboxes drawer)
     const rythmesSelectionnes = [];
-    if (document.getElementById('rythme1').checked) rythmesSelectionnes.push('hebdo');
-    if (document.getElementById('rythme2').checked) rythmesSelectionnes.push('blocs');
-    if (document.getElementById('rythme3').checked) rythmesSelectionnes.push('longs');
-    if (document.getElementById('rythme4').checked) rythmesSelectionnes.push('perso');
-    
-    // Pour l'instant pas de filtrage car pas dans les données
-    // On affiche juste dans la console pour debug
+    if (document.getElementById('rythme1').checked) rythmesSelectionnes.push('symmetric');
+    if (document.getElementById('rythme2').checked) rythmesSelectionnes.push('asymmetric');
+    if (document.getElementById('rythme3').checked) rythmesSelectionnes.push('custom');
+
     if (rythmesSelectionnes.length > 0) {
-        console.log('Filtres rythme sélectionnés:', rythmesSelectionnes);
+        resultats = resultats.filter(l => rythmesSelectionnes.includes(l.type_alternance));
     }
-    
-    // Sauvegarder et afficher
-    // Calculer les scores de matching si l'utilisateur a saisi ses disponibilités
-    if (mesDisponibilites.length > 0) {
-        resultats = resultats.map(logement => {
-            // Calculer le score de compatibilité
-            const score = logement.disponibilites_pattern && logement.disponibilites_pattern.length > 0
-                ? calculerCompatibilite(mesDisponibilites, logement.disponibilites_pattern)
-                : 0;
-            
-            return { ...logement, matchScore: score };
+
+    // Filtre équipements statiques (checkboxes drawer)
+    const equipSelectionnes = [];
+    if (document.getElementById('equip1').checked) equipSelectionnes.push('WiFi');
+    if (document.getElementById('equip2').checked) equipSelectionnes.push('Meublé');
+    if (document.getElementById('equip3').checked) equipSelectionnes.push('Parking');
+    if (document.getElementById('equip4').checked) equipSelectionnes.push('Cuisine équipée');
+    if (document.getElementById('equip5').checked) equipSelectionnes.push('Balcon/Terrasse');
+
+    if (equipSelectionnes.length > 0) {
+        resultats = resultats.filter(l => {
+            if (!l.equipements) return false;
+            return equipSelectionnes.every(eq =>
+                l.equipements.some(e => e.toLowerCase().includes(eq.toLowerCase()))
+            );
         });
-        
-        // Trier par score décroissant (meilleurs matchs en premier)
-        resultats.sort((a, b) => b.matchScore - a.matchScore);
     }
-    
+
+    // Filtre équipements dynamiques (mots-clés "Autre")
+    const dynamicCheckboxes = document.querySelectorAll('.dynamic-equip-checkbox:checked');
+    if (dynamicCheckboxes.length > 0) {
+        const dynamicKeywords = Array.from(dynamicCheckboxes).map(cb => cb.value.toLowerCase());
+        resultats = resultats.filter(l => {
+            if (!l.equipements) return false;
+            return dynamicKeywords.every(kw => {
+                return l.equipements.some(e => {
+                    if (e.startsWith('Autre: ')) {
+                        return e.toLowerCase().includes(kw);
+                    }
+                    return false;
+                });
+            });
+        });
+    }
+
+    // Filtrer par compatibilité si l'utilisateur a saisi ses disponibilités
+    if (mesDisponibilites.length > 0) {
+        const userDatesSet = new Set(mesDisponibilites);
+        resultats = resultats.filter(logement => {
+            if (!logement.disponibilites_pattern || logement.disponibilites_pattern.length === 0) return false;
+            // Compter les dates communes (logement dispo quand l'utilisateur a besoin)
+            const intersection = logement.disponibilites_pattern.filter(d => userDatesSet.has(d)).length;
+            return intersection > 0;
+        });
+        // Trier par compatibilité (meilleur match en premier)
+        resultats = resultats.map(logement => {
+            const hostDatesSet = new Set(logement.disponibilites_pattern);
+            // Dates de l'utilisateur qui tombent dans la période de l'hôte
+            const hostMin = logement.disponibilites_pattern[0];
+            const hostMax = logement.disponibilites_pattern[logement.disponibilites_pattern.length - 1];
+            const userDansPerioDeHote = mesDisponibilites.filter(d => d >= hostMin && d <= hostMax);
+            const intersection = userDansPerioDeHote.filter(d => hostDatesSet.has(d)).length;
+            const total = userDansPerioDeHote.length || 1;
+            const matchScore = intersection / total;
+            return { ...logement, matchScore };
+        });
+        resultats.sort((a, b) => b.matchScore - a.matchScore);
+    } else {
+        // Tri par prix croissant seulement si pas de dates saisies
+        resultats.sort((a, b) => (a.prix || 0) - (b.prix || 0));
+    }
+
     // Sauvegarder et afficher
     logementsAffiches = resultats;
     afficherLogements(logementsAffiches);
+    mettreAJourBadgeFiltres();
 }
 
         // Réinitialiser les filtres
         function reinitialiserFiltres() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById('ville').value = '';
-            document.getElementById('budget').value = '';
+            document.querySelectorAll('#drawerFiltres input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('villeInput').value = '';
+            villeSelectionneeRecherche = '';
+            villeSecondaireRecherche = '';
             document.getElementById('rythme').value = '';
+            document.getElementById('disponibilitesField').style.display = 'none';
+            if (document.getElementById('budgetMax')) document.getElementById('budgetMax').value = '';
+            if (document.getElementById('surfaceMin')) document.getElementById('surfaceMin').value = '';
+            if (document.getElementById('sortSelect')) document.getElementById('sortSelect').value = '';
             logementsAffiches = [...logements];
+            afficherLogements(logementsAffiches);
+            mettreAJourBadgeFiltres();
+        }
+
+        // ========== TRI DES LOGEMENTS ==========
+
+        function trierLogements(critere) {
+            let sorted = [...logementsAffiches];
+            if (critere === 'prix-asc') {
+                sorted.sort((a, b) => (a.prix || 0) - (b.prix || 0));
+            } else if (critere === 'prix-desc') {
+                sorted.sort((a, b) => (b.prix || 0) - (a.prix || 0));
+            } else if (critere === 'proximite' && proximiteActive) {
+                calculerDistancesEtTrier();
+                return;
+            } else if (critere === 'recent') {
+                sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else {
+                // pertinence = ordre original (ou ordre matching si dispo saisies)
+                sorted = [...logementsAffiches];
+            }
+            logementsAffiches = sorted;
             afficherLogements(logementsAffiches);
         }
 
-        // Toggle favoris
+        // ========== PROXIMITÉ ==========
+
+        // Formule Haversine — distance en km entre deux points GPS
+        function haversineKm(lat1, lng1, lat2, lng2) {
+            const R = 6371; // rayon Terre en km
+            const toRad = x => x * Math.PI / 180;
+            const dLat = toRad(lat2 - lat1);
+            const dLng = toRad(lng2 - lng1);
+            const a = Math.sin(dLat / 2) ** 2 +
+                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // Toggle barre de proximité
+
+        // Géocoder l'adresse saisie et trier par distance
+        async function trierParProximite() {
+            const input = document.getElementById('proximityInput').value.trim();
+            const statusDiv = document.getElementById('proximityStatus');
+
+            if (!input) {
+                statusDiv.innerHTML = '<span style="color: var(--error);">Saisis une adresse ou un lieu</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span style="color: #6B7280;">Recherche en cours...</span>';
+
+            // Ajouter la ville sélectionnée pour améliorer le géocodage
+            let query = input;
+            if (villeSelectionneeRecherche) {
+                const villeLabel = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(k =>
+                    VILLES_DISPONIBLES_RECHERCHE[k] === villeSelectionneeRecherche
+                );
+                if (villeLabel && !input.toLowerCase().includes(villeLabel.toLowerCase())) {
+                    query += ' ' + villeLabel;
+                }
+            }
+
+            try {
+                const response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`);
+                const data = await response.json();
+
+                if (!data.features || data.features.length === 0) {
+                    statusDiv.innerHTML = '<span style="color: var(--error);">Adresse introuvable. Essaie avec plus de détails.</span>';
+                    return;
+                }
+
+                const [lng, lat] = data.features[0].geometry.coordinates;
+                const label = data.features[0].properties.label;
+                userLat = lat;
+                userLng = lng;
+                proximiteActive = true;
+
+                statusDiv.innerHTML = `<span style="color: var(--success);">📍 Tri par proximité de : <strong>${label}</strong></span>`;
+
+                // Activer l'option "Plus proche" dans le select de tri
+                const optionProx = document.getElementById('optionProximite');
+                if (optionProx) {
+                    optionProx.disabled = false;
+                }
+
+                // Calculer les distances et trier
+                calculerDistancesEtTrier();
+
+            } catch (error) {
+                console.error('Erreur géocodage:', error);
+                statusDiv.innerHTML = '<span style="color: var(--error);">Erreur réseau. Réessaie.</span>';
+            }
+        }
+
+        // Calculer les distances et trier par proximité
+        function calculerDistancesEtTrier() {
+            if (!userLat || !userLng) return;
+
+            logementsAffiches = logementsAffiches.map(logement => {
+                if (logement.latitude && logement.longitude) {
+                    logement.distance = haversineKm(userLat, userLng, logement.latitude, logement.longitude);
+                } else {
+                    logement.distance = 9999; // Pas de coords → mis en dernier
+                }
+                return logement;
+            });
+
+            logementsAffiches.sort((a, b) => (a.distance || 9999) - (b.distance || 9999));
+
+            // Mettre le select de tri sur "proximité"
+            const sortSelect = document.querySelector('.sort-select');
+            if (sortSelect) sortSelect.value = 'proximite';
+
+            afficherLogements(logementsAffiches);
+        }
+
+        // ========== AUTOCOMPLETE PROXIMITÉ ==========
+
+        async function searchProximitySchool(query) {
+            const suggestionsDiv = document.getElementById('proximitySuggestions');
+
+            try {
+                const seen = new Map();
+
+                // Biais de proximité : utiliser les coords de la ville sélectionnée
+                const villeCoords = villeSelectionneeRecherche ? VILLES_COORDS[villeSelectionneeRecherche] : null;
+                const proximity = villeCoords ? villeCoords.lng + ',' + villeCoords.lat : '2.2137,46.2276'; // France center fallback
+
+                // Nom de la ville pour enrichir les requêtes
+                const villeLabel = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(k =>
+                    VILLES_DISPONIBLES_RECHERCHE[k] === villeSelectionneeRecherche
+                ) || '';
+
+                // Vérifier si la query est un sigle connu → enrichir la recherche
+                const queryUpper = query.trim().toUpperCase();
+                const expandedName = SIGLES_ECOLES[queryUpper] || null;
+                const searchQueries = [query];
+                if (expandedName) searchQueries.push(expandedName);
+
+                if (!window._mbxSession) window._mbxSession = crypto.randomUUID();
+                const allPromises = [];
+                const promiseLabels = [];
+
+                for (const q of searchQueries) {
+                    const eq = encodeURIComponent(q);
+                    const mbxQ = villeLabel ? q + ' ' + villeLabel : q;
+
+                    // Mapbox Suggest
+                    allPromises.push(
+                        fetch('https://api.mapbox.com/search/searchbox/v1/suggest?q=' + encodeURIComponent(mbxQ) + '&language=fr&types=poi&proximity=' + proximity + '&limit=5&session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN)
+                            .then(r => r.ok ? r.json() : { suggestions: [] }).catch(() => ({ suggestions: [] }))
+                    );
+                    promiseLabels.push('mapbox');
+
+                    // Parcoursup — dans la ville sélectionnée
+                    const psupBase = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-parcoursup/records';
+                    const psupFields = 'g_ea_lib_vx%2Cville_etab%2Cg_olocalisation_des_formations';
+                    if (villeLabel) {
+                        allPromises.push(
+                            fetch(psupBase + '?where=search(g_ea_lib_vx%2C%22' + eq + '%22)%20AND%20search(ville_etab%2C%22' + encodeURIComponent(villeLabel) + '%22)&limit=10&select=' + psupFields)
+                                .then(r => r.ok ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+                        );
+                        promiseLabels.push('parcoursup');
+                    }
+                    // Parcoursup — partout en France
+                    allPromises.push(
+                        fetch(psupBase + '?where=search(g_ea_lib_vx%2C%22' + eq + '%22)&limit=10&select=' + psupFields)
+                            .then(r => r.ok ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+                    );
+                    promiseLabels.push('parcoursup');
+
+                    // Photon/OSM
+                    const photonQ = villeLabel ? q + ' ' + villeLabel : q;
+                    allPromises.push(
+                        fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(photonQ) + '&limit=5&lang=fr')
+                            .then(r => r.ok ? r.json() : { features: [] }).catch(() => ({ features: [] }))
+                    );
+                    promiseLabels.push('photon');
+                }
+
+                const allResults = await Promise.all(allPromises);
+
+                // Clé normalisée pour éviter les doublons
+                function normalKey(name, city) {
+                    const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+                    return norm(name) + '|' + norm(city || '');
+                }
+
+                const eduTypes = ['college', 'university', 'school'];
+                const allRetrievePromises = [];
+
+                for (let i = 0; i < allResults.length; i++) {
+                    const data = allResults[i];
+                    const label = promiseLabels[i];
+
+                    if (label === 'mapbox' && data.suggestions) {
+                        data.suggestions.filter(s => s.mapbox_id && s.name).slice(0, 3).forEach(s => {
+                            allRetrievePromises.push(
+                                fetch('https://api.mapbox.com/search/searchbox/v1/retrieve/' + s.mapbox_id + '?session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN)
+                                    .then(r => r.ok ? r.json() : null).catch(() => null)
+                            );
+                        });
+                    } else if (label === 'parcoursup' && data.results) {
+                        data.results.forEach(r => {
+                            if (r.g_olocalisation_des_formations && r.g_olocalisation_des_formations.lat && r.g_olocalisation_des_formations.lon) {
+                                const key = normalKey(r.g_ea_lib_vx, r.ville_etab);
+                                if (!seen.has(key)) {
+                                    seen.set(key, {
+                                        name: r.g_ea_lib_vx,
+                                        city: r.ville_etab || '',
+                                        lat: r.g_olocalisation_des_formations.lat,
+                                        lng: r.g_olocalisation_des_formations.lon
+                                    });
+                                }
+                            }
+                        });
+                    } else if (label === 'photon' && data.features) {
+                        data.features.forEach(f => {
+                            const props = f.properties || {};
+                            const geom = f.geometry || {};
+                            const osmValue = props.osm_value || '';
+                            const osmKey = props.osm_key || '';
+                            const isEdu = (osmKey === 'amenity' && eduTypes.includes(osmValue)) ||
+                                          (osmKey === 'building' && eduTypes.includes(osmValue));
+                            if (!isEdu) return;
+                            if (props.name && geom.coordinates) {
+                                const city = props.city || props.county || '';
+                                const key = normalKey(props.name, city);
+                                if (!seen.has(key)) {
+                                    seen.set(key, { name: props.name, city, lat: geom.coordinates[1], lng: geom.coordinates[0] });
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Résoudre les retrieve Mapbox — FILTRER uniquement les établissements d'enseignement
+                const eduCategories = ['school', 'college', 'university', 'education', 'training', 'library'];
+                const eduKeywords = ['école', 'ecole', 'université', 'universite', 'lycée', 'lycee', 'institut', 'campus', 'faculté', 'faculte', 'ensa', 'insa', 'isen', 'iut', 'cfa', 'formation', 'supérieur', 'superieur', 'académie', 'academie', 'conservatoire', 'polytech', 'business school', 'school of'];
+                const retrieveResults = await Promise.all(allRetrievePromises);
+                retrieveResults.forEach(rData => {
+                    if (rData && rData.features && rData.features[0]) {
+                        const f = rData.features[0];
+                        const coords = f.geometry.coordinates;
+                        const props = f.properties || {};
+                        const name = props.name || '';
+                        const city = props.context?.place?.name || props.context?.locality?.name || '';
+
+                        const categories = (props.poi_category || []).map(c => c.toLowerCase());
+                        const nameLower = name.toLowerCase();
+                        const isSchool = categories.some(c => eduCategories.includes(c)) ||
+                                         eduKeywords.some(kw => nameLower.includes(kw));
+                        if (!isSchool) return;
+
+                        const key = normalKey(name, city);
+                        if (name && !seen.has(key)) {
+                            seen.set(key, { name, city, lat: coords[1], lng: coords[0] });
+                        }
+                    }
+                });
+
+                // Filtrer et trier par distance (si ville sélectionnée)
+                let unique = Array.from(seen.values());
+                if (villeCoords) {
+                    unique = unique.filter(r => haversineKm(villeCoords.lat, villeCoords.lng, r.lat, r.lng) < 100);
+                    unique.sort((a, b) =>
+                        haversineKm(villeCoords.lat, villeCoords.lng, a.lat, a.lng) -
+                        haversineKm(villeCoords.lat, villeCoords.lng, b.lat, b.lng)
+                    );
+                }
+                unique = unique.slice(0, 7);
+
+                if (unique.length === 0) {
+                    suggestionsDiv.innerHTML = '<div class="proximity-suggestion-item" style="color: #6B7280; cursor: default;">Aucun établissement trouvé</div>';
+                    suggestionsDiv.style.display = 'block';
+                    return;
+                }
+
+                suggestionsDiv.innerHTML = unique.map(r => {
+                    const escapedName = (r.name + (r.city ? ' — ' + r.city : '')).replace(/'/g, "\\'");
+                    return '<div class="proximity-suggestion-item" onclick="selectProximitySuggestion(' + r.lat + ', ' + r.lng + ', \'' + escapedName + '\')">'
+                        + '<strong>' + r.name + '</strong>'
+                        + (r.city ? '<small>' + r.city + '</small>' : '')
+                        + '</div>';
+                }).join('');
+
+                suggestionsDiv.style.display = 'block';
+            } catch (e) {
+                console.error('Erreur recherche proximité:', e);
+            }
+        }
+
+        function selectProximitySuggestion(lat, lng, label) {
+            const input = document.getElementById('proximityInput');
+            const suggestionsDiv = document.getElementById('proximitySuggestions');
+            const statusDiv = document.getElementById('proximityStatus');
+
+            input.value = label;
+            suggestionsDiv.style.display = 'none';
+
+            userLat = lat;
+            userLng = lng;
+            proximiteActive = true;
+
+            statusDiv.innerHTML = '<span style="color: var(--success);">📍 Tri par proximité de : <strong>' + label + '</strong></span>';
+
+            const optionProx = document.getElementById('optionProximite');
+            if (optionProx) optionProx.disabled = false;
+
+            calculerDistancesEtTrier();
+        }
+
+        function setupProximitySearch() {
+            const input = document.getElementById('proximityInput');
+            const suggestionsDiv = document.getElementById('proximitySuggestions');
+            if (!input || !suggestionsDiv) return;
+
+            input.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(proximitySearchTimeout);
+
+                if (query.length < 2) {
+                    suggestionsDiv.style.display = 'none';
+                    return;
+                }
+
+                proximitySearchTimeout = setTimeout(() => {
+                    searchProximitySchool(query);
+                }, 300);
+            });
+
+            // Fermer les suggestions au clic extérieur
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.proximity-search-wrapper')) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+        }
+
+        // ========== ANALYSE ÉQUIPEMENTS "AUTRE" ==========
+
+        function analyserEquipementsAutre() {
+            const compteur = {};
+
+            // Parcourir toutes les annonces chargées
+            logements.forEach(logement => {
+                if (!logement.equipements || !Array.isArray(logement.equipements)) return;
+
+                logement.equipements.forEach(equip => {
+                    if (equip.startsWith('Autre: ')) {
+                        const texte = equip.substring(7); // Retirer "Autre: "
+                        // Splitter par virgule et nettoyer
+                        texte.split(',').forEach(mot => {
+                            const cleaned = mot.trim().toLowerCase();
+                            if (cleaned.length > 1) {
+                                // Capitaliser la première lettre pour l'affichage
+                                const displayName = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+                                if (!compteur[cleaned]) {
+                                    compteur[cleaned] = { count: 0, displayName };
+                                }
+                                compteur[cleaned].count++;
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Filtrer les mots-clés ayant >= 2 citations
+            const populaires = Object.entries(compteur)
+                .filter(([_, data]) => data.count >= 2)
+                .sort((a, b) => b[1].count - a[1].count);
+
+            // Générer les checkboxes dynamiques
+            const container = document.getElementById('dynamicEquipments');
+            if (!container) return;
+
+            if (populaires.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '<div style="border-top: 1px solid #E8EAF0; margin: 8px 0; padding-top: 8px;">';
+            html += '<span style="font-size: 11px; color: #6B7280; font-weight: 500;">Les plus demandés</span>';
+
+            populaires.forEach(([key, data], idx) => {
+                const id = 'equipDyn' + idx;
+                html += `<div class="checkbox-item" style="margin-top: 6px;">
+                    <input type="checkbox" id="${id}" value="${key}" class="dynamic-equip-checkbox">
+                    <label for="${id}">${data.displayName} <span style="color: #9CA3AF; font-size: 12px;">(${data.count})</span></label>
+                </div>`;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
         // ========== SYSTÈME DE FAVORIS ==========
         
         // Charger les favoris de l'utilisateur
         async function chargerFavoris() {
-            console.log('Chargement des favoris...');
-            console.log('Current user:', currentUser);
             
             if (!currentUser) {
-                console.log('Pas d\'utilisateur connecté, pas de favoris à charger');
                 return;
             }
             
@@ -1052,13 +2454,11 @@ function filtrerLogements() {
                 .select('annonce_id')
                 .eq('user_id', currentUser.id);
             
-            console.log('Réponse favoris:', { data, error });
             
             if (error) {
                 console.error('Erreur chargement favoris:', error);
             } else if (data) {
                 userFavoris = data.map(f => f.annonce_id);
-                console.log('Favoris chargés:', userFavoris);
                 mettreAJourBoutonsFavoris();
             }
         }
@@ -1067,11 +2467,12 @@ function filtrerLogements() {
         function mettreAJourBoutonsFavoris() {
             document.querySelectorAll('.favorite-btn').forEach(btn => {
                 const annonceId = btn.getAttribute('data-annonce-id');
+                const svg = btn.querySelector('svg');
                 if (userFavoris.includes(annonceId)) {
-                    btn.textContent = '🩷';
+                    if (svg) svg.setAttribute('fill', '#FF385C');
                     btn.classList.add('is-favorite');
                 } else {
-                    btn.textContent = '🤍';
+                    if (svg) svg.setAttribute('fill', '#1E293B');
                     btn.classList.remove('is-favorite');
                 }
             });
@@ -1080,20 +2481,15 @@ function filtrerLogements() {
         // Toggle favori
         async function toggleFavorite(annonceId) {
             if (!currentUser) {
-                alert('❌ Connecte-toi pour ajouter des favoris !');
-                window.location.href = 'connexion.html';
+                showNotification('Connexion requise', 'Connecte-toi pour ajouter des favoris !', 'warning', 'connexion.html');
                 return;
             }
             
-            console.log('Toggle favori pour:', annonceId);
-            console.log('User ID:', currentUser.id);
-            console.log('Favoris actuels:', userFavoris);
             
             const isFavorite = userFavoris.includes(annonceId);
             
             if (isFavorite) {
                 // Retirer des favoris
-                console.log('Retrait du favori...');
                 const { error } = await supabaseClient
                     .from('favoris')
                     .delete()
@@ -1102,15 +2498,13 @@ function filtrerLogements() {
                 
                 if (error) {
                     console.error('Erreur retrait favori:', error);
-                    alert('❌ Erreur lors du retrait du favori');
+                    showNotification('Erreur', 'Erreur lors du retrait du favori', 'error');
                 } else {
-                    console.log('✅ Favori retiré avec succès');
                     userFavoris = userFavoris.filter(id => id !== annonceId);
                     mettreAJourBoutonsFavoris();
                 }
             } else {
                 // Ajouter aux favoris
-                console.log('Ajout du favori...');
                 const { error } = await supabaseClient
                     .from('favoris')
                     .insert([{
@@ -1120,9 +2514,8 @@ function filtrerLogements() {
                 
                 if (error) {
                     console.error('Erreur ajout favori:', error);
-                    alert('❌ Erreur lors de l\'ajout du favori');
+                    showNotification('Erreur', 'Erreur lors de l\'ajout du favori', 'error');
                 } else {
-                    console.log('✅ Favori ajouté avec succès');
                     userFavoris.push(annonceId);
                     mettreAJourBoutonsFavoris();
                 }
@@ -1130,204 +2523,236 @@ function filtrerLogements() {
         }
 
         // Créer une alerte pour nouveaux logements
-function creerAlerte() {
-    const email = document.getElementById('alertEmail').value;
-    const messageDiv = document.getElementById('alertMessage');
-    
+// Fonction commune pour créer une alerte
+async function envoyerAlerte(email, inputId, messageDiv, btn) {
     // Validation
     if (!email) {
-        messageDiv.innerHTML = '<span style="color: var(--error);">❌ Merci de renseigner ton email</span>';
+        messageDiv.innerHTML = '<span style="color: #EF4444;">Merci de renseigner ton email</span>';
         return;
     }
-    
-    if (!email.includes('@')) {
-        messageDiv.innerHTML = '<span style="color: var(--error);">❌ Email invalide</span>';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        messageDiv.innerHTML = '<span style="color: #EF4444;">Email invalide</span>';
         return;
     }
-    
-    // Récupération des critères de recherche
-    const ville = document.getElementById('ville').value || 'toutes villes';
-    const budget = document.getElementById('budget').value || 'tous budgets';
-    
-    // Simulation de sauvegarde (plus tard : vraie base de données)
-    console.log('Alerte créée pour:', email, 'Critères:', { ville, budget });
-    
-    // Message de succès
-    messageDiv.innerHTML = '<span style="color: var(--success);">✅ Parfait ! On te préviendra dès qu\'un logement correspondant sera disponible</span>';
-    
-    // Vider le champ
-    document.getElementById('alertEmail').value = '';
-    
-    // Masquer le message après 5 secondes
-    setTimeout(() => {
-        messageDiv.innerHTML = '';
-    }, 5000);
+
+    // Rate limit : max 3 alertes par 5 minutes
+    if (!RateLimiter.check('alerte', 3, 300000)) return;
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Envoi...'; }
+
+    // Récupérer les critères de recherche
+    const ville = villeSelectionneeRecherche || null;
+    const rythme = selectedRhythmRecherche ? selectedRhythmRecherche + '-' + (selectedOffWeeksRecherche || selectedRhythmRecherche) : null;
+
+    try {
+        // 1. Sauvegarder l'alerte en base avec les critères
+        const { error } = await supabaseClient.from('alertes').insert({
+            email: email,
+            ville: ville,
+            rythme: rythme
+        });
+        if (error) throw error;
+
+        // 2. Envoyer l'email de confirmation via l'edge function
+        try {
+            await supabaseClient.functions.invoke('send-alert-email', {
+                body: { email, ville, rythme }
+            });
+        } catch (emailErr) {
+            console.warn('Email de confirmation non envoyé:', emailErr);
+            // On ne bloque pas l'alerte si l'email échoue
+        }
+
+        messageDiv.innerHTML = '<span style="color: #10B981;">C\'est noté ! Un email de confirmation t\'a été envoyé.</span>';
+        document.getElementById(inputId).value = '';
+    } catch (e) {
+        console.error('Erreur alerte:', e);
+        if (e.message && e.message.includes('duplicate')) {
+            messageDiv.innerHTML = '<span style="color: #E8622A;">Tu es déjà inscrit à cette alerte !</span>';
+        } else {
+            messageDiv.innerHTML = '<span style="color: #EF4444;">Une erreur est survenue, réessaie plus tard.</span>';
+        }
+    }
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Me prévenir'; }
+    setTimeout(() => { messageDiv.innerHTML = ''; }, 5000);
 }
-       
+
+async function creerAlerte() {
+    const email = document.getElementById('alertEmail').value.trim();
+    const messageDiv = document.getElementById('alertMessage');
+    const btn = document.querySelector('.no-results .alert-form button');
+    await envoyerAlerte(email, 'alertEmail', messageDiv, btn);
+}
+
+async function creerAlerteBottom() {
+    const email = document.getElementById('alertEmailBottom').value.trim();
+    const messageDiv = document.getElementById('alertMessageBottom');
+    const btn = document.querySelector('.alerte-bottom .alert-form button');
+    await envoyerAlerte(email, 'alertEmailBottom', messageDiv, btn);
+}
+
 // ============ MATCHING ============
 
 let mesDisponibilites = [];
+function formatDateLocalR(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
 let selectedRhythmRecherche = null;
+let selectedOffWeeksRecherche = null;
 let selectedDatesRecherche = [];
 let calendarStartDateRecherche = null;
 let currentMonthOffsetRecherche = 0;
 
-// Générer un mois du calendrier
-function generateMonthRecherche(year, monthIndex, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    container.innerHTML = '';
-    const firstDay = new Date(year, monthIndex, 1);
-    const lastDay = new Date(year, monthIndex + 1, 0);
-    const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
-    
-    // Cases vides avant le 1er jour
-    for (let i = 0; i < firstDayOfWeek; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty';
-        container.appendChild(emptyCell);
-    }
-    
-    // Jours du mois
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-        const date = new Date(year, monthIndex, day);
-        const dayCell = document.createElement('div');
-        dayCell.className = 'calendar-day';
-        dayCell.textContent = day;
-        dayCell.dataset.date = date.toISOString().split('T')[0];
-        dayCell.addEventListener('click', () => handleCalendarDateClickRecherche(date));
-        container.appendChild(dayCell);
-    }
-}
-
+// Générer le calendrier complet (3 mois)
 function initCalendarRecherche() {
     const today = new Date();
-    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
                         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-    
+    const dayLabels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+    const container = document.getElementById('calendarMonthsGridSearch');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Afficher la période dynamique (comme creer-annonce)
+    const periodEl = document.getElementById('calendarPeriodSearch');
+    if (periodEl) {
+        const startMonthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche, 1);
+        const endMonthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche + 2, 1);
+        periodEl.textContent = `${monthNames[startMonthDate.getMonth()]} - ${monthNames[endMonthDate.getMonth()]} ${endMonthDate.getFullYear()}`;
+    }
+
+    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
     for (let i = 0; i < 3; i++) {
         const monthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche + i, 1);
         const monthIndex = monthDate.getMonth();
         const year = monthDate.getFullYear();
-        
-        // Mettre à jour le titre du mois
-        const titleElement = document.getElementById(`month-title-search-${i}`);
-        if (titleElement) {
-            titleElement.textContent = `${monthNames[monthIndex]} ${year}`;
+
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'calendar-month';
+
+        // Titre du mois
+        const header = document.createElement('div');
+        header.className = 'month-header';
+        header.textContent = `${monthNames[monthIndex]} ${year}`;
+        monthDiv.appendChild(header);
+
+        // Jours de la semaine
+        const weekdaysDiv = document.createElement('div');
+        weekdaysDiv.className = 'weekdays';
+        dayLabels.forEach(label => {
+            const wd = document.createElement('div');
+            wd.className = 'weekday';
+            wd.textContent = label;
+            weekdaysDiv.appendChild(wd);
+        });
+        monthDiv.appendChild(weekdaysDiv);
+
+        // Grille des jours
+        const daysGrid = document.createElement('div');
+        daysGrid.className = 'days-grid';
+
+        const firstDay = new Date(year, monthIndex, 1);
+        const lastDay = new Date(year, monthIndex + 1, 0);
+        const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
+
+        // Cases vides avant le 1er jour
+        for (let j = 0; j < firstDayOfWeek; j++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'day-cell empty';
+            daysGrid.appendChild(emptyCell);
         }
-        
-        // Générer le calendrier
-        generateMonthRecherche(year, monthIndex, `calendar-grid-search-${i}`);
+
+        // Jours du mois
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const date = new Date(year, monthIndex, day);
+            const dayCell = document.createElement('div');
+            dayCell.className = 'day-cell';
+            dayCell.textContent = day;
+            dayCell.dataset.date = formatDateLocalR(date);
+
+            // Style jours passés
+            if (date < todayMidnight) {
+                dayCell.classList.add('past');
+            }
+
+            dayCell.addEventListener('click', () => handleCalendarDateClickRecherche(date));
+            daysGrid.appendChild(dayCell);
+        }
+
+        monthDiv.appendChild(daysGrid);
+        container.appendChild(monthDiv);
     }
+
+    // Re-colorier les dates sélectionnées si elles existent
+    if (selectedDatesRecherche.length > 0) {
+        colorierDatesRecherche();
+    }
+}
+
+function colorierDatesRecherche() {
+    document.querySelectorAll('#calendrierRecherche .day-cell').forEach(cell => {
+        cell.classList.remove('selected');
+    });
+    if (selectedDatesRecherche.length === 0) return;
+    selectedDatesRecherche.forEach(date => {
+        const dateStr = formatDateLocalR(date);
+        const dayCell = document.querySelector(`#calendrierRecherche [data-date="${dateStr}"]`);
+        if (dayCell) {
+            dayCell.classList.add('selected');
+        }
+    });
 }
 
 function handleCalendarDateClickRecherche(clickedDate) {
     if (!selectedRhythmRecherche) return;
-    
-    calendarStartDateRecherche = clickedDate;
-    selectedDatesRecherche = genererPatternCalendrierRecherche(clickedDate, selectedRhythmRecherche);
-    
-    // Réinitialiser toutes les cellules
-    document.querySelectorAll('#calendrierRecherche .calendar-day').forEach(cell => {
-        cell.classList.remove('selected', 'period-start', 'period-middle', 'period-end');
-    });
-    
-    // Organiser par périodes
-    const periods = organiserParPeriodesCalendrierRecherche(selectedDatesRecherche, selectedRhythmRecherche);
-    
-    // Colorier les dates
-    selectedDatesRecherche.forEach(date => {
-        const dateStr = date.toISOString().split('T')[0];
-        const dayCell = document.querySelector(`#calendrierRecherche [data-date="${dateStr}"]`);
-        if (dayCell) {
-            const isStart = periods.some(p => p.start.toISOString().split('T')[0] === dateStr);
-            const isEnd = periods.some(p => p.end.toISOString().split('T')[0] === dateStr);
-            
-            if (isStart || isEnd) {
-                dayCell.classList.add('selected', 'period-start');
-            } else {
-                dayCell.classList.add('selected', 'period-middle');
-            }
-        }
-    });
-    
-    // Mettre à jour les champs de dates
-    if (selectedDatesRecherche.length > 0) {
-        const firstDate = selectedDatesRecherche[0];
-        const lastDate = selectedDatesRecherche[selectedDatesRecherche.length - 1];
-        
-        const dateDebutInput = document.getElementById('dateDebutRecherche');
-        const dateFinInput = document.getElementById('dateFinRecherche');
-        
-        // Fonction pour formater en jj/mm/aaaa
-        const formatDate = (date) => {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        };
-        
-        if (dateDebutInput) {
-            dateDebutInput.value = formatDate(firstDate);
-            dateDebutInput.style.color = '#374151'; // Passer au noir
-        }
-        if (dateFinInput) {
-            dateFinInput.value = formatDate(lastDate);
-            dateFinInput.style.color = '#374151'; // Passer au noir
-        }
-    }
-    
+
+    // Snap au lundi de la semaine cliquée
+    const dayOfWeek = clickedDate.getDay(); // 0=Dim, 1=Lun, ..., 6=Sam
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(clickedDate);
+    monday.setDate(clickedDate.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+
+    calendarStartDateRecherche = monday;
+
+    selectedDatesRecherche = genererPatternCalendrierRecherche(monday, selectedRhythmRecherche, selectedOffWeeksRecherche, null);
+
+    // Colorier
+    colorierDatesRecherche();
+
     // Mettre à jour mesDisponibilites et filtrer
-    mesDisponibilites = selectedDatesRecherche.map(d => d.toISOString().split('T')[0]);
+    mesDisponibilites = selectedDatesRecherche.map(d => formatDateLocalR(d));
     filtrerLogements();
 }
 
-function genererPatternCalendrierRecherche(startDate, weeksPerPeriod) {
+function genererPatternCalendrierRecherche(startDate, weeksOn, weeksOff, endDate) {
     const dates = [];
     const dayInMs = 24 * 60 * 60 * 1000;
-    const periodLengthDays = weeksPerPeriod * 7;
-    const cycleLengthDays = periodLengthDays * 2;
-    
-    for (let i = 0; i < 84; i++) {
-        const daysSinceStart = i;
-        const positionInCycle = daysSinceStart % cycleLengthDays;
-        
-        if (positionInCycle < periodLengthDays) {
-            const date = new Date(startDate.getTime() + (i * dayInMs));
+    const onDays = weeksOn * 7;
+    const offDays = (weeksOff || weeksOn) * 7;
+    const cycleDays = onDays + offDays;
+
+    // Reculer le startDate de ~2 mois pour inclure les semaines passées
+    // (permet de capturer les dates du mois en cours même si le clic est plus tard)
+    const cyclesBack = Math.ceil(60 / cycleDays);
+    const adjustedStart = new Date(startDate.getTime() - (cyclesBack * cycleDays * dayInMs));
+
+    // Générer depuis adjustedStart (~14 mois : 2 mois passé + 12 mois futur)
+    const totalDays = (cyclesBack * cycleDays) + (endDate ? Math.round((endDate - startDate) / dayInMs) + 1 : 365);
+
+    for (let i = 0; i < totalDays; i++) {
+        const positionInCycle = i % cycleDays;
+        if (positionInCycle < onDays) {
+            const date = new Date(adjustedStart.getTime() + (i * dayInMs));
             dates.push(date);
         }
     }
-    
+
     return dates;
 }
-
-function organiserParPeriodesCalendrierRecherche(dates, weeksPerPeriod) {
-    if (!dates || dates.length === 0) return [];
-    
-    const periods = [];
-    const periodLengthDays = weeksPerPeriod * 7;
-    
-    dates.sort((a, b) => a - b);
-    
-    let currentPeriod = { start: dates[0], end: dates[0] };
-    
-    for (let i = 1; i < dates.length; i++) {
-        const dayDiff = Math.round((dates[i] - currentPeriod.end) / (24 * 60 * 60 * 1000));
-        
-        if (dayDiff === 1) {
-            currentPeriod.end = dates[i];
-        } else {
-            periods.push(currentPeriod);
-            currentPeriod = { start: dates[i], end: dates[i] };
-        }
-    }
-    
-    periods.push(currentPeriod);
-    return periods;
-}
-
-
 
 function genererDatesSimulees(rythme) {
     // Génère 12 semaines de dates selon le rythme
@@ -1338,65 +2763,22 @@ function genererDatesSimulees(rythme) {
     for (let i = 0; i < 12; i += rythme * 2) {
         for (let j = 0; j < rythme * 7; j++) {
             const date = new Date(startDate.getTime() + (i * weekInMs) + (j * 24 * 60 * 60 * 1000));
-            dates.push(date.toISOString().split('T')[0]);
+            dates.push(formatDateLocalR(date));
         }
     }
     
     return dates;
 }
 
-function organiserParPeriodesCalendrierRecherche(dates, weeksPerPeriod) {
-    if (!dates || dates.length === 0) return [];
-    
-    const periods = [];
-    
-    dates.sort((a, b) => a - b);
-    
-    let currentPeriod = { start: dates[0], end: dates[0] };
-    
-    for (let i = 1; i < dates.length; i++) {
-        const dayDiff = Math.round((dates[i] - currentPeriod.end) / (24 * 60 * 60 * 1000));
-        
-        if (dayDiff === 1) {
-            currentPeriod.end = dates[i];
-        } else {
-            periods.push(currentPeriod);
-            currentPeriod = { start: dates[i], end: dates[i] };
-        }
-    }
-    
-    periods.push(currentPeriod);
-    return periods;
-}
 
 
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', async function() {
-    // Initialiser les champs de dates avec la date du jour (format jj/mm/aaaa)
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    const todayStr = `${day}/${month}/${year}`;
-    
-    const dateDebutInput = document.getElementById('dateDebutRecherche');
-    const dateFinInput = document.getElementById('dateFinRecherche');
-    
-    if (dateDebutInput && !dateDebutInput.value) {
-        dateDebutInput.value = todayStr;
-    }
-    if (dateFinInput && !dateFinInput.value) {
-        dateFinInput.value = todayStr;
-    }
-    
     // 1. Charger l'utilisateur d'abord
     await chargerUtilisateur();
     
     // 2. Puis charger les annonces (qui charge aussi les favoris)
     await chargerAnnonces();
-    
-    // Initialiser le calendrier au chargement
-    initCalendarRecherche();
     
     // Navigation calendrier : mois précédents
     const prevBtn = document.getElementById('prevMonthBtnSearch');
@@ -1416,31 +2798,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Afficher/masquer "Mes disponibilités" selon le rythme sélectionné
-    const rythmeSelect = document.getElementById('rythme');
+    // Afficher le calendrier quand on sélectionne un rythme
     const mesDispoSelect = document.getElementById('monRythmeRecherche');
-    
-    rythmeSelect.addEventListener('change', function() {
-        const rythmeValue = this.value;
-        
-        // Afficher "Mes disponibilités" UNIQUEMENT pour ces rythmes
-        if (rythmeValue === 'hebdo' || rythmeValue === 'bloc' || rythmeValue === 'jour' || rythmeValue === 'longs') {
-            mesDispoSelect.style.display = 'block';
-        } else {
-            // Pour "perso" ou aucun rythme → Masquer
-            mesDispoSelect.style.display = 'none';
-            mesDispoSelect.value = ''; // Réinitialiser la sélection
-            selectedRhythmRecherche = null; // Réinitialiser aussi la variable
-        }
-    });
-    
-    // Afficher le calendrier quand on sélectionne les disponibilités
+
     mesDispoSelect.addEventListener('change', function() {
-        const rythme = parseInt(this.value);
-        if (rythme) {
-            selectedRhythmRecherche = rythme;
+        const pattern = this.value; // ex: "2-2", "3-1"
+        if (pattern) {
+            const parts = pattern.split('-');
+            selectedRhythmRecherche = parseInt(parts[0]) || 1;
+            selectedOffWeeksRecherche = parseInt(parts[1]) || selectedRhythmRecherche;
+
+            // Révéler le calendrier avec animation
+            const calendarDiv = document.getElementById('calendrierRecherche');
+            if (calendarDiv.style.display === 'none') {
+                calendarDiv.style.display = 'block';
+                calendarDiv.style.opacity = '0';
+                calendarDiv.style.transform = 'translateY(-20px)';
+                calendarDiv.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                requestAnimationFrame(() => {
+                    calendarDiv.style.opacity = '1';
+                    calendarDiv.style.transform = 'translateY(0)';
+                });
+                setTimeout(() => {
+                    calendarDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+
             initCalendarRecherche();
-            // Réinitialiser
             selectedDatesRecherche = [];
             calendarStartDateRecherche = null;
             mesDisponibilites = [];
@@ -1450,35 +2834,146 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
     
-    // Récupérer TOUS les paramètres de l'URL si on vient de la page d'accueil
+    // Initialiser l'autocomplete proximité
+    setupProximitySearch();
+
+    // Handler Enter sur l'input proximité (fermer suggestions + fallback géocodage)
+    const proximityInput = document.getElementById('proximityInput');
+    if (proximityInput) {
+        proximityInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const suggestionsDiv = document.getElementById('proximitySuggestions');
+                if (suggestionsDiv) suggestionsDiv.style.display = 'none';
+                trierParProximite();
+            }
+        });
+    }
+
+    // Récupérer les paramètres de l'URL si on vient de la page d'accueil
     const urlParams = new URLSearchParams(window.location.search);
-    
+
     if (urlParams.has('ville')) {
-        document.getElementById('ville').value = urlParams.get('ville');
-    }
-    if (urlParams.has('budget')) {
-        document.getElementById('budget').value = urlParams.get('budget');
-    }
-    if (urlParams.has('rythme')) {
-        document.getElementById('rythme').value = urlParams.get('rythme');
-        // Si un rythme est présent, afficher le champ "Mes disponibilités"
-        const mesDispoSelect = document.getElementById('monRythmeRecherche');
-        if (mesDispoSelect) {
-            mesDispoSelect.style.display = 'block';
+        const villeParam = urlParams.get('ville');
+        const villeLabel = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(k =>
+            VILLES_DISPONIBLES_RECHERCHE[k] === villeParam
+        );
+        if (villeLabel) {
+            document.getElementById('villeInput').value = villeLabel;
+            villeSelectionneeRecherche = villeParam;
         }
     }
-    if (urlParams.has('disponibilites')) {
-        const mesDispoSelect = document.getElementById('monRythmeRecherche');
-        if (mesDispoSelect) {
-            mesDispoSelect.value = urlParams.get('disponibilites');
-            // IMPORTANT : Définir la variable pour que le calendrier fonctionne
-            selectedRhythmRecherche = parseInt(urlParams.get('disponibilites'));
+
+    // Ville secondaire (depuis le dashboard)
+    if (urlParams.has('ville2')) {
+        villeSecondaireRecherche = urlParams.get('ville2');
+    }
+    if (urlParams.has('type')) {
+        const typeVal = urlParams.get('type');
+        const rythmeEl = document.getElementById('rythme');
+        rythmeEl.value = typeVal;
+        // Peupler le select disponibilités dynamiquement
+        updateDisponibilites();
+        // Raccourcir le texte du rythme pré-sélectionné
+        const rShort = { symmetric: 'Symétrique', asymmetric: 'Asymétrique', custom: 'Personnalisé' };
+        const selectedOpt = rythmeEl.selectedOptions[0];
+        if (selectedOpt && rShort[selectedOpt.value]) selectedOpt.textContent = rShort[selectedOpt.value];
+    }
+    if (urlParams.has('pattern')) {
+        const patternVal = urlParams.get('pattern');
+        const dispoSelectUrl = document.getElementById('monRythmeRecherche');
+        if (dispoSelectUrl) {
+            dispoSelectUrl.value = patternVal;
+            // Parser le pattern pour le calendrier (on + off weeks)
+            const parts = patternVal.split('-');
+            selectedRhythmRecherche = parseInt(parts[0]) || 1;
+            selectedOffWeeksRecherche = parseInt(parts[1]) || selectedRhythmRecherche;
+            // Raccourcir le texte du rythme pré-sélectionné
+            const selOpt = dispoSelectUrl.selectedOptions[0];
+            if (selOpt && selOpt.value) {
+                selOpt.textContent = selOpt.textContent.replace(/ entreprise/g, '').replace(/ école/g, '');
+            }
         }
     }
-    
+
+    // Révéler le calendrier si un pattern est pré-rempli
+    if (urlParams.has('pattern')) {
+        const calendarDiv = document.getElementById('calendrierRecherche');
+        if (calendarDiv) {
+            calendarDiv.style.display = 'block';
+            initCalendarRecherche();
+        }
+    }
+
     // Si au moins un paramètre est présent, lancer la recherche automatiquement
-    if (urlParams.has('ville') || urlParams.has('budget') || urlParams.has('rythme') || urlParams.has('disponibilites')) {
+    if (urlParams.has('ville') || urlParams.has('type') || urlParams.has('pattern')) {
         filtrerLogements();
+    }
+
+    // ========== RACCOURCIR TEXTE SELECTS ==========
+
+    // Raccourcir "Type d'alternance" après sélection
+    const rythmeSelectEl = document.getElementById('rythme');
+    if (rythmeSelectEl) {
+        const rythmeFullTexts = {
+            'symmetric': 'Symétrique (même durée)',
+            'asymmetric': 'Asymétrique (durées différentes)',
+            'custom': 'Personnalisé'
+        };
+        const rythmeShortTexts = {
+            'symmetric': 'Symétrique',
+            'asymmetric': 'Asymétrique',
+            'custom': 'Personnalisé'
+        };
+
+        rythmeSelectEl.addEventListener('focus', function() {
+            Array.from(this.options).forEach(opt => {
+                if (rythmeFullTexts[opt.value]) opt.textContent = rythmeFullTexts[opt.value];
+            });
+        });
+        rythmeSelectEl.addEventListener('change', function() {
+            const opt = this.selectedOptions[0];
+            if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
+        });
+        rythmeSelectEl.addEventListener('blur', function() {
+            const opt = this.selectedOptions[0];
+            if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
+        });
+    }
+
+    // Raccourcir "Mon rythme" après sélection
+    const dispoSelectEl = document.getElementById('monRythmeRecherche');
+    if (dispoSelectEl) {
+        function shortenRythmeTextR(text) {
+            return text.replace(/ entreprise/g, '').replace(/ école/g, '');
+        }
+
+        function restoreRythmeOptionR(opt) {
+            const val = opt.value;
+            if (!val) return;
+            const parts = val.split('-');
+            if (parts.length !== 2) return;
+            const a = parts[0], b = parts[1];
+            if (a === b) {
+                opt.textContent = `${a} sem. / ${b} sem.`;
+            } else {
+                opt.textContent = `${a} sem. entreprise / ${b} sem. école`;
+            }
+        }
+
+        dispoSelectEl.addEventListener('focus', function() {
+            Array.from(this.options).forEach(opt => {
+                if (opt.value && !opt.disabled) restoreRythmeOptionR(opt);
+            });
+        });
+        dispoSelectEl.addEventListener('change', function() {
+            const opt = this.selectedOptions[0];
+            if (opt && opt.value) opt.textContent = shortenRythmeTextR(opt.textContent);
+        });
+        dispoSelectEl.addEventListener('blur', function() {
+            const opt = this.selectedOptions[0];
+            if (opt && opt.value) opt.textContent = shortenRythmeTextR(opt.textContent);
+        });
     }
 });
     </script>
@@ -1501,7 +2996,7 @@ async function gererLienMonEspace() {
             .single();
         
         if (userData?.type_user === 'hote') {
-            lien.href = 'dashboard-hote.html';
+            lien.href = 'dashboard-locataire.html';
         } else {
             lien.href = 'dashboard-locataire.html';
         }
@@ -1516,5 +3011,7 @@ if (typeof supabaseClient !== 'undefined') {
     gererLienMonEspace();
 }
 </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

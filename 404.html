@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Page introuvable — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #F4F5F7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .error-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .error-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1.5px solid #E8EAF0;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            padding: 60px 48px;
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+        }
+
+        .error-code {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 96px;
+            font-weight: 700;
+            color: #E8622A;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .error-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 12px;
+        }
+
+        .error-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: #64748B;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: #E8622A;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-home:hover {
+            background: #d4571f;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: #fff;
+            color: #1E293B;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        @media (max-width: 500px) {
+            .error-card {
+                padding: 40px 24px;
+            }
+
+            .error-code {
+                font-size: 72px;
+            }
+
+            .error-title {
+                font-size: 20px;
+            }
+
+            .error-actions {
+                flex-direction: column;
+            }
+
+            .btn-home, .btn-back {
+                justify-content: center;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAV -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="nav-content">
+            <a href="index.html" class="logo">
+                <img src="Logo-Sterny-V1.svg" alt="STERNY" height="32">
+            </a>
+        </div>
+    </nav>
+
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-code">404</div>
+            <h1 class="error-title">Page introuvable</h1>
+            <p class="error-text">
+                La page que tu cherches n'existe pas ou a été déplacée.<br>
+                Pas de panique, tu peux revenir à l'accueil ou retourner en arrière.
+            </p>
+            <div class="error-actions">
+                <a href="index.html" class="btn-home">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Retour à l'accueil
+                </a>
+                <a href="javascript:history.back()" class="btn-back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    Page précédente
+                </a>
+            </div>
+        </div>
+    </div>
+
+<script src="cookie-banner.js"></script>
+</body>
+</html>

@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre logement actif - EASWAP</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Votre logement actif — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
         body {
             background: var(--gray-50);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         /* SUCCESS HERO */
@@ -149,11 +161,13 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #1E293B;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
             margin: 0 auto 15px;
         }
 
@@ -179,7 +193,7 @@
 
         .btn-contact {
             width: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #E8622A, #FF5722);
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
@@ -194,7 +208,7 @@
 
         .btn-contact:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
         }
 
         /* SIDEBAR DROITE */
@@ -236,7 +250,7 @@
         }
 
         .document-item:hover {
-            border-color: #667eea;
+            border-color: #E8622A;
             transform: translateX(5px);
         }
 
@@ -257,7 +271,7 @@
         }
 
         .document-action {
-            color: #667eea;
+            color: #E8622A;
             font-size: 18px;
         }
 
@@ -295,8 +309,8 @@
         }
 
         .action-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #E8622A;
+            color: #E8622A;
         }
 
         .action-icon {
@@ -356,7 +370,7 @@
         .countdown-value {
             font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #1E293B, #E8622A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -367,6 +381,363 @@
             color: #9ca3af;
             font-weight: 600;
             margin-top: 5px;
+        }
+
+        /* BOUTON RESILIER (rouge) */
+        .action-btn.action-btn-danger {
+            color: #dc2626;
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+        .action-btn.action-btn-danger:hover {
+            border-color: #dc2626;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* MODAL RÉSILIATION */
+        .modal-resiliation-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-resiliation-overlay.active {
+            display: flex;
+        }
+        .modal-resiliation {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .modal-resiliation h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-resiliation p {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .modal-resiliation label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .modal-resiliation select,
+        .modal-resiliation textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .modal-resiliation select:focus,
+        .modal-resiliation textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+        .modal-resiliation-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .btn-annuler-resiliation {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            background: white;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-annuler-resiliation:hover {
+            border-color: #9ca3af;
+        }
+        .btn-confirmer-resiliation {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #dc2626;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-confirmer-resiliation:hover {
+            background: #b91c1c;
+        }
+        .btn-confirmer-resiliation:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+        .modal-resiliation .info-box {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* BOUTON RESTITUTION CAUTION (vert) */
+        .action-btn.action-btn-caution {
+            color: #059669;
+            border-color: #a7f3d0;
+            background: #ecfdf5;
+            display: none; /* Visible seulement pour propriétaire */
+        }
+        .action-btn.action-btn-caution:hover {
+            border-color: #059669;
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        /* MODAL RESTITUTION CAUTION */
+        .modal-caution-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-caution-overlay.active {
+            display: flex;
+        }
+        .modal-caution {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .modal-caution h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-caution p {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .modal-caution label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .modal-caution input,
+        .modal-caution textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .modal-caution input:focus,
+        .modal-caution textarea:focus {
+            outline: none;
+            border-color: #059669;
+        }
+        .caution-recap {
+            background: #f0fdf4;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .caution-recap-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        .caution-recap-row.total {
+            border-top: 1.5px solid #a7f3d0;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            color: #059669;
+            font-size: 16px;
+        }
+        .modal-caution-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .btn-annuler-caution {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            background: white;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-annuler-caution:hover { border-color: #9ca3af; }
+        .btn-confirmer-caution {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #059669;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-confirmer-caution:hover { background: #047857; }
+        .btn-confirmer-caution:disabled { background: #d1d5db; cursor: not-allowed; }
+
+        /* MODAL LITIGE */
+        .modal-litige-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-litige-overlay.active {
+            display: flex;
+        }
+        .modal-litige {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-litige h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-litige .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .modal-litige label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .modal-litige select,
+        .modal-litige textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .modal-litige select:focus,
+        .modal-litige textarea:focus {
+            outline: none;
+            border-color: #E8622A;
+        }
+        .modal-litige-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .btn-annuler-litige {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            background: white;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-annuler-litige:hover {
+            border-color: #9ca3af;
+        }
+        .btn-envoyer-litige {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #E8622A;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn-envoyer-litige:hover {
+            background: #d4571f;
+        }
+        .btn-envoyer-litige:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
         }
 
         /* RESPONSIVE */
@@ -399,14 +770,108 @@
                 text-align: center;
             }
         }
+        /* MODAL QUITTANCES */
+        .modal-quittances-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-quittances-overlay.active { display: flex; }
+        .modal-quittances {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .modal-quittances h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 6px;
+        }
+        .modal-quittances .modal-sub {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 20px;
+        }
+        .quittance-mois-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .quittance-mois-item:hover {
+            border-color: #E8622A;
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
+        }
+        .quittance-mois-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .quittance-mois-montant {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+        .btn-dl-quittance {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: background 0.2s;
+        }
+        .btn-dl-quittance:hover { background: #d4571f; }
+        .btn-fermer-quittances {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
+            background: #F4F5F7;
+            color: #64748B;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-fermer-quittances:hover { background: #E8EAF0; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 EASWAP</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="#" id="dashboardLink">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
@@ -416,9 +881,11 @@
 
     <!-- SUCCESS HERO -->
     <div class="success-hero">
-        <div class="success-icon">🎉</div>
-        <h1>Félicitations ! Votre logement est actif !</h1>
-        <p>Toutes les démarches sont terminées. Profitez de votre logement en toute sérénité.</p>
+        <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h1>Votre logement est actif</h1>
+        <p>Toutes les d&eacute;marches sont termin&eacute;es. Profitez de votre logement en toute s&eacute;r&eacute;nit&eacute;.</p>
     </div>
 
     <!-- MAIN CARD -->
@@ -427,7 +894,7 @@
         <div class="status-bar">
             <div>
                 <div class="status-label">Statut</div>
-                <div class="status-value">✅ Actif</div>
+                <div class="status-value">Actif</div>
             </div>
             <div>
                 <div class="status-label">Début</div>
@@ -447,7 +914,7 @@
                     <!-- LOGEMENT -->
                     <div class="info-card">
                         <div class="info-card-title">
-                            <span class="info-card-icon">🏠</span>
+                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
                             Votre logement
                         </div>
                         <div class="detail-row">
@@ -463,7 +930,7 @@
                             <span class="detail-value" id="logementSurface">--m²</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">Loyer mensuel</span>
+                            <span class="detail-label">Loyer hebdomadaire</span>
                             <span class="detail-value" id="logementPrix">275€</span>
                         </div>
                     </div>
@@ -471,11 +938,11 @@
                     <!-- CONTACT -->
                     <div class="info-card">
                         <div class="info-card-title">
-                            <span class="info-card-icon">👤</span>
-                            <span id="contactTitle">Votre propriétaire</span>
+                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                            <span id="contactTitle">Votre propri&eacute;taire</span>
                         </div>
                         <div class="contact-card">
-                            <div class="contact-avatar">👤</div>
+                            <div class="contact-avatar" id="contactAvatar"></div>
                             <div class="contact-name" id="contactNom">Chargement...</div>
                             <div class="contact-role" id="contactRole">Propriétaire</div>
                             <div class="contact-info" id="contactInfo">
@@ -483,7 +950,7 @@
                                 📞 Téléphone
                             </div>
                             <a href="conversation.html?user_id=xxx" class="btn-contact" id="btnContact">
-                                💬 Envoyer un message
+                                Envoyer un message
                             </a>
                         </div>
                     </div>
@@ -494,7 +961,7 @@
                     <!-- COUNTDOWN -->
                     <div class="info-card">
                         <div class="info-card-title">
-                            <span class="info-card-icon">⏰</span>
+                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
                             Temps restant
                         </div>
                         <div class="countdown-box">
@@ -507,67 +974,199 @@
                     <!-- DOCUMENTS -->
                     <div class="documents-section">
                         <div class="documents-title">
-                            📄 Documents
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Documents
                         </div>
                         <div class="document-item" onclick="telechargerDocument('contrat')">
                             <div class="document-info">
-                                <span class="document-icon">📜</span>
+                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
                                 <span class="document-name">Contrat de location</span>
                             </div>
-                            <span class="document-action">↓</span>
+                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
                         </div>
                         <div class="document-item" onclick="telechargerDocument('etat-lieux')">
                             <div class="document-info">
-                                <span class="document-icon">📸</span>
-                                <span class="document-name">État des lieux d'entrée</span>
+                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span>
+                                <span class="document-name">&Eacute;tat des lieux d'entr&eacute;e</span>
                             </div>
-                            <span class="document-action">↓</span>
+                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
                         </div>
                         <div class="document-item" onclick="telechargerDocument('quittances')">
                             <div class="document-info">
-                                <span class="document-icon">🧾</span>
+                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><polyline points="14 2 14 8 20 8"/><line x1="3" y1="15" x2="15" y2="15"/></svg></span>
                                 <span class="document-name">Quittances de loyer</span>
                             </div>
-                            <span class="document-action">↓</span>
+                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
                         </div>
                     </div>
 
                     <!-- ACTIONS RAPIDES -->
                     <div class="quick-actions">
-                        <div class="quick-actions-title">⚡ Actions rapides</div>
+                        <div class="quick-actions-title">Actions rapides</div>
                         <button class="action-btn" onclick="signalerProbleme()">
-                            <span class="action-icon">⚠️</span>
-                            Signaler un problème
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                            Signaler un probl&egrave;me
                         </button>
                         <button class="action-btn" onclick="voirAnnonce()">
-                            <span class="action-icon">👁️</span>
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
                             Voir l'annonce
                         </button>
+                        <button class="action-btn" id="btnGererRIB" style="display: none;" onclick="ouvrirPortailPaiement()">
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+                            G&eacute;rer mon RIB
+                        </button>
                         <a href="#" id="dashboardLinkAction" class="action-btn" style="text-decoration: none;">
-                            <span class="action-icon">🏠</span>
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
                             Retour au dashboard
                         </a>
+                        <button class="action-btn action-btn-caution" id="btnRestitutionCaution" onclick="ouvrirRestitutionCaution()">
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                            Restituer la caution
+                        </button>
+                        <button class="action-btn action-btn-danger" onclick="ouvrirResiliation()">
+                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>
+                            R&eacute;silier le contrat
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- ALERT RAPPEL -->
             <div class="alert-warning" id="alertRappel" style="display: none;">
-                <div class="alert-icon">🔔</div>
+                <div class="alert-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
                 <div class="alert-content">
-                    <div class="alert-title">Rappel : État des lieux de sortie</div>
+                    <div class="alert-title">Rappel : &Eacute;tat des lieux de sortie</div>
                     <div class="alert-text">
-                        Votre contrat se termine bientôt. N'oubliez pas de planifier l'état des lieux de sortie avec le propriétaire au moins 2 semaines avant votre départ.
+                        Votre contrat se termine bient&ocirc;t. N'oubliez pas de planifier l'&eacute;tat des lieux de sortie avec le propri&eacute;taire au moins 2 semaines avant votre d&eacute;part.
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL RÉSILIATION -->
+    <div class="modal-resiliation-overlay" id="modalResiliation">
+        <div class="modal-resiliation">
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                R&eacute;silier le contrat
+            </h3>
+            <p>Cette action est irr&eacute;versible. La r&eacute;siliation sera envoy&eacute;e &agrave; l'autre partie pour validation. Un pr&eacute;avis peut s'appliquer selon les conditions de votre contrat.</p>
+            <div class="info-box">
+                ⚠️ <strong>Important :</strong> En cas de r&eacute;siliation anticip&eacute;e, des frais peuvent s'appliquer selon les conditions g&eacute;n&eacute;rales et votre contrat. Consultez votre contrat avant de confirmer.
+            </div>
+            <label for="motifResiliation">Motif de la r&eacute;siliation *</label>
+            <select id="motifResiliation" onchange="checkResiliationForm()">
+                <option value="">-- S&eacute;lectionnez un motif --</option>
+                <option value="fin_alternance">Fin de mon alternance</option>
+                <option value="changement_ville">Changement de ville</option>
+                <option value="logement_non_conforme">Logement non conforme</option>
+                <option value="probleme_proprietaire">Probl&egrave;me avec le propri&eacute;taire</option>
+                <option value="raison_personnelle">Raison personnelle</option>
+                <option value="autre">Autre</option>
+            </select>
+            <label for="commentaireResiliation">Commentaire (optionnel)</label>
+            <textarea id="commentaireResiliation" rows="3" placeholder="Pr&eacute;cisez si besoin..."></textarea>
+            <div class="modal-resiliation-actions">
+                <button class="btn-annuler-resiliation" onclick="fermerResiliation()">Annuler</button>
+                <button class="btn-confirmer-resiliation" id="btnConfirmerResiliation" disabled onclick="confirmerResiliation()">Confirmer la r&eacute;siliation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RESTITUTION CAUTION -->
+    <div class="modal-caution-overlay" id="modalCaution">
+        <div class="modal-caution">
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Restitution du d&eacute;p&ocirc;t de garantie
+            </h3>
+            <p>Conform&eacute;ment &agrave; la loi, le d&eacute;p&ocirc;t de garantie doit &ecirc;tre restitu&eacute; dans un d&eacute;lai d'1 mois (si &eacute;tat des lieux conforme) ou 2 mois (si diff&eacute;rences). Vous pouvez d&eacute;duire les montants justifi&eacute;s.</p>
+
+            <label>Montant du d&eacute;p&ocirc;t de garantie</label>
+            <input type="text" id="cautionMontantTotal" readonly style="background: #f9fafb; font-weight: 700;">
+
+            <label for="cautionMontantRetenu">Montant retenu (&euro;) — d&eacute;gradations, impay&eacute;s...</label>
+            <input type="number" id="cautionMontantRetenu" min="0" step="0.01" value="0" oninput="calculerRestitution()">
+
+            <label for="cautionMotifRetenue">Justification des retenues (obligatoire si montant &gt; 0)</label>
+            <textarea id="cautionMotifRetenue" rows="3" placeholder="D&eacute;taillez les raisons des retenues..."></textarea>
+
+            <div class="caution-recap">
+                <div class="caution-recap-row">
+                    <span>D&eacute;p&ocirc;t de garantie</span>
+                    <span id="recapCautionTotal">—</span>
+                </div>
+                <div class="caution-recap-row">
+                    <span>Retenue</span>
+                    <span id="recapRetenue" style="color: #dc2626;">- 0 &euro;</span>
+                </div>
+                <div class="caution-recap-row total">
+                    <span>Montant restitu&eacute;</span>
+                    <span id="recapRestitue">—</span>
+                </div>
+            </div>
+
+            <div class="modal-caution-actions">
+                <button class="btn-annuler-caution" onclick="fermerRestitutionCaution()">Annuler</button>
+                <button class="btn-confirmer-caution" id="btnConfirmerCaution" onclick="confirmerRestitutionCaution()">Initier la restitution</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LITIGE -->
+    <div class="modal-litige-overlay" id="modalLitige">
+        <div class="modal-litige">
+            <h3>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Signaler un probl&egrave;me
+            </h3>
+            <p class="subtitle">D&eacute;crivez le probl&egrave;me rencontr&eacute;. Votre signalement sera enregistr&eacute; et l'autre partie sera notifi&eacute;e. L'&eacute;quipe STERNY pourra intervenir si n&eacute;cessaire.</p>
+
+            <label for="categorieLitige">Cat&eacute;gorie du probl&egrave;me *</label>
+            <select id="categorieLitige" onchange="checkLitigeForm()">
+                <option value="">-- S&eacute;lectionnez une cat&eacute;gorie --</option>
+                <option value="logement_non_conforme">Logement non conforme &agrave; l'annonce</option>
+                <option value="equipement_defectueux">&Eacute;quipement d&eacute;fectueux ou manquant</option>
+                <option value="nuisances">Nuisances (bruit, voisinage...)</option>
+                <option value="probleme_paiement">Probl&egrave;me de paiement</option>
+                <option value="comportement">Comportement inappropri&eacute;</option>
+                <option value="securite">Probl&egrave;me de s&eacute;curit&eacute;</option>
+                <option value="autre">Autre</option>
+            </select>
+
+            <label for="descriptionLitige">Description d&eacute;taill&eacute;e *</label>
+            <textarea id="descriptionLitige" rows="5" placeholder="D&eacute;crivez le probl&egrave;me avec le plus de d&eacute;tails possible..." oninput="checkLitigeForm()"></textarea>
+
+            <div class="modal-litige-actions">
+                <button class="btn-annuler-litige" onclick="fermerLitige()">Annuler</button>
+                <button class="btn-envoyer-litige" id="btnEnvoyerLitige" disabled onclick="envoyerLitige()">Envoyer le signalement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL QUITTANCES -->
+    <div class="modal-quittances-overlay" id="modalQuittances">
+        <div class="modal-quittances">
+            <h2>Quittances de loyer</h2>
+            <p class="modal-sub">S&eacute;lectionnez un mois pour t&eacute;l&eacute;charger la quittance au format PDF.</p>
+            <div id="listeQuittances">
+                <!-- Rempli dynamiquement par JS -->
+            </div>
+            <button class="btn-fermer-quittances" onclick="fermerQuittances()">Fermer</button>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer style="margin-top: 40px;">
         <div class="container">
-            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
+            <p>STERNY &copy; 2026 — Le logement pensé pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px;">
+                <a href="cgv.html">CGV</a> ·
+                <a href="cgu.html">CGU</a> ·
+                <a href="mentions-legales.html">Mentions légales</a> ·
+                <a href="politique-confidentialite.html">Confidentialité</a>
+            </p>
         </div>
     </footer>
 
@@ -578,6 +1177,7 @@
         let matchData = null;
         let currentUser = null;
         let annonceId = null;
+        let proprietaireData = null;
 
         // Charger les données
         async function chargerMatch() {
@@ -589,9 +1189,21 @@
                 }
                 currentUser = user;
 
+                // Vérifier si admin
+                const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+                const isAdmin = adminCheck?.is_admin === true;
+
+                // MODE DEMO
                 if (!matchId) {
-                    alert('❌ Aucun match spécifié');
-                    history.back();
+                    document.getElementById('logementAdresse').textContent = '12 rue de la Paix';
+                    document.getElementById('logementVille').textContent = 'Paris';
+                    document.getElementById('logementSurface').textContent = '25m\u00b2';
+                    document.getElementById('logementPrix').textContent = '95\u20ac/sem';
+                    document.getElementById('contactNom').textContent = 'Jean Dupont';
+                    document.getElementById('contactRole').textContent = 'Propri\u00e9taire';
+                    document.getElementById('contactInfo').textContent = 'jean.dupont@email.com';
+                    document.getElementById('contactAvatar').textContent = 'JD';
+                    document.getElementById('joursRestants').textContent = '152';
                     return;
                 }
 
@@ -607,6 +1219,16 @@
                     .single();
 
                 if (error) throw error;
+
+                // ─── SÉCURITÉ : Vérifier que l'utilisateur est bien partie prenante du match ───
+                const isLocataire = user.id === candidature.locataire_id;
+                const isProprietaire = user.id === candidature.annonces?.user_id;
+                if (!isLocataire && !isProprietaire && !isAdmin) {
+                    alert('Accès non autorisé à ce match.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
                 matchData = candidature;
                 annonceId = candidature.annonce_id;
 
@@ -617,17 +1239,40 @@
                     .eq('id', candidature.annonces.user_id)
                     .single();
 
+                // Stocker propriétaire globalement (pour quittances PDF)
+                proprietaireData = proprietaire;
+
+                // Récupérer le contrat signé
+                const { data: contrat } = await supabaseClient
+                    .from('contrats')
+                    .select('*')
+                    .eq('candidature_id', matchId)
+                    .single();
+
+                // Stocker contrat pour la restitution
+                contratData = contrat;
+
                 // Afficher
-                afficherMatch(candidature, proprietaire);
-                calculerJoursRestants(candidature.annonces);
+                afficherMatch(candidature, proprietaire, contrat);
+                calculerJoursRestants(contrat);
+
+                // Afficher bouton restitution caution pour le propriétaire uniquement
+                if (user.id === candidature.annonces.user_id && contrat?.depot_garantie) {
+                    document.getElementById('btnRestitutionCaution').style.display = 'flex';
+                }
+
+                // Afficher bouton "Gérer mon RIB" pour le locataire si SEPA actif
+                if (user.id === candidature.locataire_id && contrat?.stripe_customer_id) {
+                    document.getElementById('btnGererRIB').style.display = 'flex';
+                }
 
             } catch (error) {
-                console.error('❌ Erreur:', error);
-                alert('❌ Erreur lors du chargement');
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement');
             }
         }
 
-        function afficherMatch(candidature, proprietaire) {
+        function afficherMatch(candidature, proprietaire, contrat) {
             const locataire = candidature.users;
             const annonce = candidature.annonces;
 
@@ -635,7 +1280,7 @@
             document.getElementById('logementAdresse').textContent = annonce.adresse || 'Adresse';
             document.getElementById('logementVille').textContent = annonce.ville || 'Ville';
             document.getElementById('logementSurface').textContent = (annonce.surface || '--') + 'm²';
-            document.getElementById('logementPrix').textContent = annonce.prix + '€';
+            document.getElementById('logementPrix').textContent = annonce.prix + '€/sem';
 
             // Déterminer qui est l'autre personne
             let contactPerson, contactTitle, contactRoleText;
@@ -654,16 +1299,39 @@
             document.getElementById('contactTitle').textContent = contactTitle;
             document.getElementById('contactNom').textContent = `${contactPerson.prenom} ${contactPerson.nom}`;
             document.getElementById('contactRole').textContent = contactRoleText;
-            document.getElementById('contactInfo').innerHTML = 
-                `📧 ${contactPerson.email}<br>📞 ${contactPerson.telephone || 'Non renseigné'}`;
-            
+
+            // Avatar avec initiales
+            const initiales = (contactPerson.prenom || '')[0] + (contactPerson.nom || '')[0];
+            document.getElementById('contactAvatar').textContent = initiales.toUpperCase();
+
+            // Contact info
+            const emailLine = contactPerson.email || '';
+            const telLine = contactPerson.telephone || 'Non renseign\u00e9';
+            document.getElementById('contactInfo').innerHTML = `${emailLine}<br>${telLine}`;
+
             document.getElementById('btnContact').href = `conversation.html?user_id=${contactPerson.id}`;
+
+            // Dates du contrat
+            if (contrat) {
+                if (contrat.date_debut) {
+                    document.getElementById('dateDebut').textContent = new Date(contrat.date_debut).toLocaleDateString('fr-FR');
+                }
+                if (contrat.date_fin) {
+                    document.getElementById('dateFin').textContent = new Date(contrat.date_fin).toLocaleDateString('fr-FR');
+                }
+            }
         }
 
-        function calculerJoursRestants(annonce) {
-            // TODO: Calculer avec vraies dates
-            // Pour l'instant, exemple fictif
-            const joursRestants = 180; // 6 mois en jours
+        function calculerJoursRestants(contrat) {
+            if (!contrat || !contrat.date_fin) {
+                document.getElementById('joursRestants').textContent = '--';
+                return;
+            }
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const fin = new Date(contrat.date_fin);
+            const diffMs = fin.getTime() - now.getTime();
+            const joursRestants = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
             document.getElementById('joursRestants').textContent = joursRestants;
 
             // Si moins de 14 jours, afficher alerte
@@ -674,18 +1342,95 @@
 
         // Télécharger document
         function telechargerDocument(type) {
-            alert('🚧 Téléchargement de document\n\nCette fonctionnalité sera bientôt disponible.\nType: ' + type);
+            if (type === 'quittances') {
+                ouvrirQuittances();
+                return;
+            }
+            alert('T\u00e9l\u00e9chargement de document\n\nCette fonctionnalit\u00e9 sera bient\u00f4t disponible.\nType: ' + type);
             // TODO: Implémenter téléchargement depuis Supabase Storage
         }
 
-        // Signaler problème
+        // --- LITIGE / SIGNALEMENT ---
         function signalerProbleme() {
-            if (confirm('Voulez-vous signaler un problème ?\n\nVous allez être redirigé vers la messagerie.')) {
-                // TODO: Créer page signalement ou ouvrir messagerie avec template
+            document.getElementById('modalLitige').classList.add('active');
+        }
+        function fermerLitige() {
+            document.getElementById('modalLitige').classList.remove('active');
+            document.getElementById('categorieLitige').value = '';
+            document.getElementById('descriptionLitige').value = '';
+            document.getElementById('btnEnvoyerLitige').disabled = true;
+        }
+        function checkLitigeForm() {
+            const cat = document.getElementById('categorieLitige').value;
+            const desc = document.getElementById('descriptionLitige').value.trim();
+            document.getElementById('btnEnvoyerLitige').disabled = !(cat && desc.length >= 10);
+        }
+        async function envoyerLitige() {
+            const categorie = document.getElementById('categorieLitige').value;
+            const description = document.getElementById('descriptionLitige').value.trim();
+
+            if (!categorie || description.length < 10) return;
+
+            const btn = document.getElementById('btnEnvoyerLitige');
+            btn.disabled = true;
+            btn.textContent = 'Envoi en cours...';
+
+            try {
+                // Déterminer l'autre partie
                 const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
-                window.location.href = `conversation.html?user_id=${contactUserId}`;
+
+                // Insérer le litige en base
+                const { error } = await supabaseClient
+                    .from('litiges')
+                    .insert({
+                        match_id: matchId || '00000000-0000-0000-0000-000000000000',
+                        demandeur_id: currentUser.id,
+                        mis_en_cause_id: contactUserId,
+                        annonce_id: annonceId,
+                        categorie: categorie,
+                        description: description,
+                        statut: 'ouvert'
+                    });
+
+                if (error) throw error;
+
+                // Envoyer un message informatif à l'autre partie
+                if (contactUserId && currentUser) {
+                    const categoriesLabels = {
+                        'logement_non_conforme': 'Logement non conforme',
+                        'equipement_defectueux': 'Équipement défectueux',
+                        'nuisances': 'Nuisances',
+                        'probleme_paiement': 'Problème de paiement',
+                        'comportement': 'Comportement inapproprié',
+                        'securite': 'Problème de sécurité',
+                        'autre': 'Autre'
+                    };
+                    const msg = `⚠️ Un signalement a été ouvert\n\nCatégorie : ${categoriesLabels[categorie] || categorie}\n\nCe signalement a été enregistré sur la plateforme STERNY. Vous pouvez discuter directement avec l'autre partie pour résoudre le problème.`;
+
+                    await supabaseClient
+                        .from('messages')
+                        .insert({
+                            expediteur_id: currentUser.id,
+                            destinataire_id: contactUserId,
+                            contenu: msg
+                        });
+                }
+
+                alert('Votre signalement a bien été enregistré.\nL\'autre partie a été notifiée.\nL\'équipe STERNY suivra votre dossier.');
+                fermerLitige();
+
+            } catch (error) {
+                console.error('Erreur litige:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                btn.disabled = false;
+                btn.textContent = 'Envoyer le signalement';
             }
         }
+
+        // Fermer modale litige en cliquant en dehors
+        document.getElementById('modalLitige').addEventListener('click', function(e) {
+            if (e.target === this) fermerLitige();
+        });
 
         // Voir annonce
         function voirAnnonce() {
@@ -708,14 +1453,484 @@
                     .single();
                 
                 let dashboardUrl = 'dashboard-locataire.html';
-                if (userData?.type_user === 'hote') {
-                    dashboardUrl = 'dashboard-hote.html';
-                } else if (userData?.type_user === 'proprietaire') {
+                if (userData?.type_user === 'proprietaire') {
                     dashboardUrl = 'dashboard-proprietaire.html';
                 }
                 
                 dashboardLink.href = dashboardUrl;
                 dashboardAction.href = dashboardUrl;
+            }
+        }
+
+        // --- RESTITUTION CAUTION ---
+        let contratData = null;
+        let montantCautionTotal = 0;
+
+        function ouvrirRestitutionCaution() {
+            if (!contratData) {
+                alert('Données du contrat non disponibles.');
+                return;
+            }
+            montantCautionTotal = contratData.depot_garantie || 0;
+            document.getElementById('cautionMontantTotal').value = montantCautionTotal + ' €';
+            document.getElementById('recapCautionTotal').textContent = montantCautionTotal + ' €';
+            document.getElementById('cautionMontantRetenu').value = 0;
+            document.getElementById('cautionMotifRetenue').value = '';
+            calculerRestitution();
+            document.getElementById('modalCaution').classList.add('active');
+        }
+
+        function fermerRestitutionCaution() {
+            document.getElementById('modalCaution').classList.remove('active');
+        }
+
+        function calculerRestitution() {
+            const retenu = parseFloat(document.getElementById('cautionMontantRetenu').value) || 0;
+            const restitue = Math.max(0, montantCautionTotal - retenu);
+            document.getElementById('recapRetenue').textContent = '- ' + retenu.toFixed(2) + ' €';
+            document.getElementById('recapRestitue').textContent = restitue.toFixed(2) + ' €';
+        }
+
+        async function confirmerRestitutionCaution() {
+            const retenu = parseFloat(document.getElementById('cautionMontantRetenu').value) || 0;
+            const motif = document.getElementById('cautionMotifRetenue').value.trim();
+            const restitue = Math.max(0, montantCautionTotal - retenu);
+
+            if (retenu > 0 && !motif) {
+                alert('Veuillez justifier les retenues effectuées.');
+                return;
+            }
+            if (retenu > montantCautionTotal) {
+                alert('Le montant retenu ne peut pas dépasser le dépôt de garantie.');
+                return;
+            }
+
+            if (!confirm(`Confirmer la restitution de ${restitue.toFixed(2)} € au locataire ?`)) return;
+
+            const btn = document.getElementById('btnConfirmerCaution');
+            btn.disabled = true;
+            btn.textContent = 'Traitement en cours...';
+
+            try {
+                const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
+
+                // Créer la restitution en base
+                const { data: restitution, error } = await supabaseClient
+                    .from('restitutions_caution')
+                    .insert({
+                        contrat_id: contratData.id,
+                        match_id: matchId || '00000000-0000-0000-0000-000000000000',
+                        proprietaire_id: currentUser.id,
+                        locataire_id: contactUserId,
+                        montant_caution: montantCautionTotal,
+                        montant_retenu: retenu,
+                        montant_restitue: restitue,
+                        motif_retenue: motif || null,
+                        statut: 'en_attente'
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                // Notifier le locataire
+                let msg = `💰 Restitution du dépôt de garantie\n\nLe propriétaire a initié la restitution de votre dépôt de garantie.\n\n`;
+                msg += `• Dépôt initial : ${montantCautionTotal} €\n`;
+                if (retenu > 0) {
+                    msg += `• Retenue : ${retenu.toFixed(2)} € (${motif})\n`;
+                }
+                msg += `• Montant restitué : ${restitue.toFixed(2)} €\n\n`;
+                msg += `Vous pouvez accepter ou contester cette restitution depuis votre espace.`;
+
+                await supabaseClient
+                    .from('messages')
+                    .insert({
+                        expediteur_id: currentUser.id,
+                        destinataire_id: contactUserId,
+                        contenu: msg
+                    });
+
+                alert('La restitution a été initiée.\nLe locataire a été notifié et pourra accepter ou contester.');
+                fermerRestitutionCaution();
+
+            } catch (error) {
+                console.error('Erreur restitution:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                btn.disabled = false;
+                btn.textContent = 'Initier la restitution';
+            }
+        }
+
+        // Fermer modale caution en cliquant en dehors
+        document.getElementById('modalCaution').addEventListener('click', function(e) {
+            if (e.target === this) fermerRestitutionCaution();
+        });
+
+        // --- RÉSILIATION ---
+        function ouvrirResiliation() {
+            document.getElementById('modalResiliation').classList.add('active');
+        }
+        function fermerResiliation() {
+            document.getElementById('modalResiliation').classList.remove('active');
+            document.getElementById('motifResiliation').value = '';
+            document.getElementById('commentaireResiliation').value = '';
+            document.getElementById('btnConfirmerResiliation').disabled = true;
+        }
+        function checkResiliationForm() {
+            const motif = document.getElementById('motifResiliation').value;
+            document.getElementById('btnConfirmerResiliation').disabled = !motif;
+        }
+        async function confirmerResiliation() {
+            const motif = document.getElementById('motifResiliation').value;
+            const commentaire = document.getElementById('commentaireResiliation').value.trim();
+
+            if (!motif) return;
+
+            if (!confirm('Êtes-vous sûr de vouloir résilier ce contrat ?\nCette action ne peut pas être annulée.')) return;
+
+            const btn = document.getElementById('btnConfirmerResiliation');
+            btn.disabled = true;
+            btn.textContent = 'Résiliation en cours...';
+
+            try {
+                // Mettre à jour le statut de la candidature / match
+                if (matchId) {
+                    await supabaseClient
+                        .from('candidatures')
+                        .update({
+                            statut: 'resilie',
+                            motif_resiliation: motif,
+                            commentaire_resiliation: commentaire,
+                            date_resiliation: new Date().toISOString()
+                        })
+                        .eq('id', matchId);
+
+                    // Mettre à jour le contrat si existant
+                    await supabaseClient
+                        .from('contrats')
+                        .update({
+                            statut: 'resilie',
+                            date_resiliation: new Date().toISOString()
+                        })
+                        .eq('candidature_id', matchId);
+
+                    // Envoyer un message à l'autre partie
+                    const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
+                    if (contactUserId && currentUser) {
+                        const motifsLabels = {
+                            'fin_alternance': 'Fin d\'alternance',
+                            'changement_ville': 'Changement de ville',
+                            'logement_non_conforme': 'Logement non conforme',
+                            'probleme_proprietaire': 'Problème avec le propriétaire',
+                            'raison_personnelle': 'Raison personnelle',
+                            'autre': 'Autre'
+                        };
+                        let msg = `📋 Demande de résiliation de contrat\n\nMotif : ${motifsLabels[motif] || motif}`;
+                        if (commentaire) msg += `\nCommentaire : ${commentaire}`;
+                        msg += '\n\nCette résiliation a été initiée via la plateforme STERNY.';
+
+                        await supabaseClient
+                            .from('messages')
+                            .insert({
+                                expediteur_id: currentUser.id,
+                                destinataire_id: contactUserId,
+                                contenu: msg
+                            });
+                    }
+                }
+
+                alert('Votre demande de résiliation a été enregistrée.\nL\'autre partie sera notifiée.');
+                fermerResiliation();
+
+                // Rediriger vers le dashboard
+                const dashboardUrl = document.getElementById('dashboardLinkAction').href || 'dashboard-locataire.html';
+                window.location.href = dashboardUrl;
+
+            } catch (error) {
+                console.error('Erreur résiliation:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                btn.disabled = false;
+                btn.textContent = 'Confirmer la résiliation';
+            }
+        }
+
+        // Fermer modale en cliquant en dehors
+        document.getElementById('modalResiliation').addEventListener('click', function(e) {
+            if (e.target === this) fermerResiliation();
+        });
+
+        // --- QUITTANCES DE LOYER ---
+        function ouvrirQuittances() {
+            if (!contratData) {
+                alert('Donn\u00e9es du contrat non disponibles.');
+                return;
+            }
+
+            const container = document.getElementById('listeQuittances');
+            container.innerHTML = '';
+
+            // Calculer les mois entre date_debut et aujourd'hui (ou date_fin si passée)
+            const debut = new Date(contratData.date_debut);
+            const maintenant = new Date();
+            const fin = contratData.date_fin ? new Date(contratData.date_fin) : maintenant;
+            const limiteMax = fin < maintenant ? fin : maintenant;
+
+            const moisNoms = ['Janvier', 'F\u00e9vrier', 'Mars', 'Avril', 'Mai', 'Juin',
+                'Juillet', 'Ao\u00fbt', 'Septembre', 'Octobre', 'Novembre', 'D\u00e9cembre'];
+
+            let moisCourant = new Date(debut.getFullYear(), debut.getMonth(), 1);
+            let compteur = 0;
+
+            while (moisCourant <= limiteMax) {
+                const moisLabel = moisNoms[moisCourant.getMonth()] + ' ' + moisCourant.getFullYear();
+                const moisISO = moisCourant.toISOString().slice(0, 7); // 2026-03
+                const loyer = contratData.loyer_mensuel || (matchData?.annonces?.prix ? matchData.annonces.prix * 4 : 0);
+
+                const item = document.createElement('div');
+                item.className = 'quittance-mois-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="quittance-mois-label">${moisLabel}</div>
+                        <div class="quittance-mois-montant">${loyer.toFixed(2)} \u20ac</div>
+                    </div>
+                    <button class="btn-dl-quittance" onclick="genererQuittancePDF('${moisISO}', '${moisLabel}', ${loyer})">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        PDF
+                    </button>
+                `;
+                container.appendChild(item);
+                compteur++;
+
+                // Mois suivant
+                moisCourant.setMonth(moisCourant.getMonth() + 1);
+            }
+
+            if (compteur === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#94A3B8; padding:20px 0;">Aucune quittance disponible pour le moment.</p>';
+            }
+
+            document.getElementById('modalQuittances').classList.add('active');
+        }
+
+        function fermerQuittances() {
+            document.getElementById('modalQuittances').classList.remove('active');
+        }
+
+        // Fermer modale quittances en cliquant en dehors
+        document.getElementById('modalQuittances').addEventListener('click', function(e) {
+            if (e.target === this) fermerQuittances();
+        });
+
+        function genererQuittancePDF(moisISO, moisLabel, loyer) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Données
+            const locataire = matchData?.users || {};
+            const annonce = matchData?.annonces || {};
+            const proprio = proprietaireData || {};
+
+            const nomLocataire = `${locataire.prenom || 'Pr\u00e9nom'} ${locataire.nom || 'Nom'}`;
+            const nomProprio = `${proprio.prenom || 'Pr\u00e9nom'} ${proprio.nom || 'Nom'}`;
+            const adresse = annonce.adresse || 'Adresse du logement';
+            const ville = annonce.ville || 'Ville';
+            const codePostal = annonce.code_postal || '';
+            const adresseComplete = `${adresse}, ${codePostal} ${ville}`;
+            const dateDebut = contratData.date_debut ? new Date(contratData.date_debut).toLocaleDateString('fr-FR') : '--';
+            const dateFin = contratData.date_fin ? new Date(contratData.date_fin).toLocaleDateString('fr-FR') : '--';
+
+            // Mois de la quittance
+            const [annee, mois] = moisISO.split('-');
+            const premierJour = '01';
+            const dernierJour = new Date(parseInt(annee), parseInt(mois), 0).getDate();
+            const periodeDebut = `${premierJour}/${mois}/${annee}`;
+            const periodeFin = `${dernierJour}/${mois}/${annee}`;
+
+            // --- MISE EN PAGE ---
+
+            // En-tête STERNY
+            doc.setFillColor(30, 41, 59); // #1E293B
+            doc.rect(0, 0, 210, 40, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('STERNY', 20, 26);
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Plateforme de logement pour alternants', 68, 26);
+
+            // Titre du document
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('QUITTANCE DE LOYER', 105, 58, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text(`P\u00e9riode : ${moisLabel}`, 105, 67, { align: 'center' });
+
+            // Ligne séparatrice
+            doc.setDrawColor(232, 98, 42); // #E8622A
+            doc.setLineWidth(1);
+            doc.line(20, 74, 190, 74);
+
+            // BLOC PROPRIÉTAIRE
+            let y = 86;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(232, 98, 42);
+            doc.text('BAILLEUR', 20, y);
+
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.text(nomProprio, 20, y);
+            if (proprio.email) {
+                y += 6;
+                doc.text(proprio.email, 20, y);
+            }
+            if (proprio.telephone) {
+                y += 6;
+                doc.text(proprio.telephone, 20, y);
+            }
+
+            // BLOC LOCATAIRE
+            y = 86;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(232, 98, 42);
+            doc.text('LOCATAIRE', 115, y);
+
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.text(nomLocataire, 115, y);
+            if (locataire.email) {
+                y += 6;
+                doc.text(locataire.email, 115, y);
+            }
+
+            // BLOC LOGEMENT
+            y = 120;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(232, 98, 42);
+            doc.text('LOGEMENT', 20, y);
+
+            y += 8;
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.text(adresseComplete, 20, y);
+            y += 6;
+            doc.text(`Contrat du ${dateDebut} au ${dateFin}`, 20, y);
+
+            // DÉTAILS PAIEMENT
+            y += 20;
+            doc.setFillColor(248, 249, 252); // #F8F9FC
+            doc.roundedRect(20, y - 4, 170, 50, 3, 3, 'F');
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text('D\u00e9tail du paiement', 28, y + 6);
+
+            doc.setDrawColor(232, 234, 240);
+            doc.setLineWidth(0.3);
+            doc.line(28, y + 10, 182, y + 10);
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('P\u00e9riode concern\u00e9e', 28, y + 18);
+            doc.setTextColor(30, 41, 59);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`du ${periodeDebut} au ${periodeFin}`, 120, y + 18);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('Montant du loyer', 28, y + 28);
+            doc.setTextColor(30, 41, 59);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${loyer.toFixed(2)} \u20ac`, 120, y + 28);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('Statut', 28, y + 38);
+            doc.setTextColor(16, 185, 129); // vert
+            doc.setFont('helvetica', 'bold');
+            doc.text('ACQUITT\u00c9', 120, y + 38);
+
+            // MENTION LÉGALE
+            y += 66;
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(148, 163, 184);
+            const mention = 'Le propri\u00e9taire soussign\u00e9 reconna\u00eet avoir re\u00e7u du locataire d\u00e9sign\u00e9 ci-dessus la somme de ' +
+                loyer.toFixed(2) + ' \u20ac en paiement du loyer et des charges pour la p\u00e9riode indiqu\u00e9e ' +
+                'et lui en donne quittance, sous r\u00e9serve de tous droits.';
+            const mentionLines = doc.splitTextToSize(mention, 170);
+            doc.text(mentionLines, 20, y);
+
+            // DATE ET SIGNATURE
+            y += mentionLines.length * 5 + 16;
+            const dateQuittance = new Date().toLocaleDateString('fr-FR');
+            doc.setFontSize(10);
+            doc.setTextColor(55, 65, 81);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Fait \u00e0 ${ville}, le ${dateQuittance}`, 20, y);
+            y += 8;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Le bailleur :', 20, y);
+            y += 6;
+            doc.setFont('helvetica', 'normal');
+            doc.text(nomProprio, 20, y);
+
+            // PIED DE PAGE
+            doc.setFontSize(8);
+            doc.setTextColor(148, 163, 184);
+            doc.text('Document g\u00e9n\u00e9r\u00e9 par STERNY \u2014 sterny.co', 105, 285, { align: 'center' });
+
+            // Télécharger
+            doc.save(`Quittance_${moisISO}_${nomLocataire.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // --- GÉRER MON RIB (Stripe Customer Portal) ---
+        async function ouvrirPortailPaiement() {
+            if (!contratData?.id) {
+                alert('Donn\u00e9es du contrat non disponibles.');
+                return;
+            }
+
+            const btn = document.getElementById('btnGererRIB');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span> Chargement...';
+
+            try {
+                const { data, error } = await supabaseClient.functions.invoke('create-stripe-portal', {
+                    body: {
+                        contrat_id: contratData.id,
+                        return_url: window.location.href,
+                    },
+                });
+
+                if (error) throw error;
+                if (data?.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error('URL du portail non re\u00e7ue');
+                }
+            } catch (err) {
+                console.error('Erreur portail:', err);
+                alert('Impossible d\u2019ouvrir le portail de paiement.\nV\u00e9rifiez que votre pr\u00e9l\u00e8vement SEPA est bien actif.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 
@@ -725,5 +1940,7 @@
             gererDashboard();
         }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

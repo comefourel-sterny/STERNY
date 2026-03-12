@@ -3,678 +3,3037 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier mon profil - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Modifier mon profil — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        body { background: var(--gray-50); }
+        /* NAV — aligné sur dashboards */
+        nav {
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12) !important;
+        }
+        nav ul {
+            gap: 8px !important;
+        }
+        nav a {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s !important;
+            text-decoration: none !important;
+        }
+        nav a:hover {
+            color: #E8622A !important;
+            background: rgba(232, 98, 42, 0.06) !important;
+        }
+        nav a.nav-highlight {
+            color: #E8622A !important;
+            font-weight: 600 !important;
+        }
 
-        select {
+        .page-inscription {
+            min-height: calc(100vh - 85px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F4F5F7;
+            padding: 40px 20px;
+        }
+
+        .inscription-container {
+            position: relative;
+            max-width: 480px;
+            width: 100%;
+            height: 560px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px 36px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1px solid #E8EAF0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inscription-header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .inscription-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+        }
+
+        .step-indicator {
+            text-align: center;
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: #E8EAF0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #E8622A;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .step {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .step.active {
+            display: flex;
+        }
+
+        .step-content {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .step-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .form-group .required {
+            color: #E8622A;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            box-sizing: border-box;
+            color: #1E293B;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+        }
+
+        .form-group input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .form-group select {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
             background-color: white;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 12px center;
-            background-size: 18px;
-            padding-right: 40px;
+            background-size: 15px;
+            padding-right: 36px;
         }
 
-        .form-container { max-width: 700px; margin: 60px auto; padding: 0 20px; }
+        .form-group select.placeholder {
+            color: #9CA3AF;
+        }
 
-        .form-card {
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
             background: white;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            color: #1E293B;
+            resize: vertical;
+            min-height: 80px;
         }
 
-        .form-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid var(--gray-100); }
-        .form-header h1 { font-size: 32px; color: var(--gray-900); margin-bottom: 10px; }
-        .form-header p { color: var(--gray-600); font-size: 16px; }
-
-        .info-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center;
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
         }
-        .info-box h3 { margin: 0 0 8px 0; font-size: 18px; }
-        .info-box p { margin: 0; font-size: 14px; opacity: 0.95; }
 
-        /* Carte identité avec photo */
-        .identity-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border: 2px solid var(--gray-200);
-            border-radius: 16px; padding: 30px; margin-bottom: 30px;
-            display: flex; align-items: center; gap: 25px;
+        .form-group textarea::placeholder {
+            color: #9CA3AF;
         }
-        .photo-section { flex-shrink: 0; }
+
+        .hint {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Photo de profil */
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
 
         .photo-circle {
-            width: 120px; height: 120px; border-radius: 50%;
-            background: var(--gray-200); display: flex; align-items: center;
-            justify-content: center; cursor: pointer;
-            border: 3px dashed #ccc; position: relative; overflow: hidden; transition: border-color 0.3s;
-        }
-        .photo-circle:hover { border-color: var(--primary); }
-        .photo-circle .placeholder { text-align: center; color: #888; font-size: 13px; padding: 10px; }
-        .photo-circle .placeholder .camera-icon { font-size: 28px; display: block; margin-bottom: 4px; }
-        .photo-circle img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        .photo-circle input[type="file"] { display: none; }
-
-        .identity-info h3 { font-size: 18px; color: var(--gray-900); margin: 0 0 6px 0; }
-        .identity-info p { color: var(--gray-500); font-size: 14px; margin: 0; }
-
-        /* Titres de section */
-        .section-title {
-            font-size: 20px; color: var(--gray-900); margin: 0 0 20px 0;
-            padding-bottom: 10px; border-bottom: 2px solid var(--gray-100);
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: 50%;
+            background: #F4F5F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+            border: 1.5px solid #E2E5EA;
         }
 
-        /* Groupes de champs */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 15px; color: var(--gray-700); margin-bottom: 8px; font-weight: 600; }
-        .form-group .required { color: #e74c3c; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200);
-            border-radius: 8px; font-size: 15px; font-family: inherit; transition: all 0.2s; box-sizing: border-box;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        .photo-circle:hover {
+            border-color: #E8622A;
         }
 
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .photo-circle .placeholder svg {
+            width: 28px;
+            height: 28px;
+            color: #9CA3AF;
+        }
 
-        .form-actions { display: flex; gap: 12px; margin-top: 30px; justify-content: center; }
+        .photo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        .btn { padding: 14px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; text-align: center; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-        .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
-        .btn-secondary:hover { background: var(--gray-200); }
+        .photo-info {
+            flex: 1;
+        }
 
-        .message { padding: 15px 20px; border-radius: 10px; margin-bottom: 25px; font-size: 15px; display: none; }
-        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { background: #f8d7da; color: #842029; border: 1px solid #f5c6cb; }
+        .photo-info .photo-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 2px;
+        }
 
-        /* ===== ZONES D'UPLOAD DOCUMENTS ===== */
+        .photo-info .photo-hint {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        #dateNaissance::placeholder {
+            letter-spacing: 1.5px;
+            font-size: 13px;
+        }
+
+        /* MODAL RECADRAGE */
+        .crop-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .crop-overlay.active {
+            display: flex;
+        }
+
+        .crop-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        .crop-modal h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+
+        .crop-modal .crop-hint {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin-bottom: 20px;
+        }
+
+        .crop-area {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #E8EAF0;
+            cursor: grab;
+            touch-action: none;
+            background: #F3F4F6;
+        }
+
+        .crop-area:active {
+            cursor: grabbing;
+        }
+
+        .crop-area img {
+            position: absolute;
+            max-width: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .crop-zoom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .crop-zoom label {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .crop-zoom input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .crop-zoom input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E8622A;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+        }
+
+        .crop-zoom input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E8622A;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .crop-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .crop-cancel {
+            background: white;
+            color: #475569;
+            border: 1.5px solid #E2E5EA;
+        }
+
+        .crop-cancel:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .crop-confirm {
+            background: #1E293B;
+            color: white;
+            border: none;
+        }
+
+        .crop-confirm:hover {
+            background: #E8622A;
+        }
+
+        /* Boutons navigation */
+        .buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .buttons-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-back {
+            height: 40px;
+            padding: 0 16px;
+            background: white;
+            color: #475569;
+            border: 1.5px solid #E2E5EA;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .btn-back:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .btn-next {
+            height: 40px;
+            padding: 0 16px;
+            background: #1E293B;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .btn-next:hover {
+            background: #E8622A;
+        }
+
+        .btn-next:disabled {
+            background: #E8EAF0;
+            color: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 8px;
+            color: #6B7280;
+            font-size: 13px;
+        }
+
+        .back-link a {
+            color: #E8622A;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            position: absolute;
+            bottom: 28px;
+            left: 32px;
+            right: 32px;
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+            color: #991B1B;
+            padding: 12px 14px;
+            border-radius: 10px;
+            display: none;
+            font-size: 13px;
+            z-index: 20;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+            animation: slideUpError 0.25s ease;
+        }
+
+        @keyframes slideUpError {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Autocomplete école */
+        .school-search-wrapper {
+            position: relative;
+        }
+
+        .school-search-wrapper input {
+            padding-left: 38px !important;
+        }
+
+        .school-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .school-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .school-suggestion-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1E293B;
+            border-bottom: 1px solid #F3F4F6;
+            transition: background 0.15s;
+        }
+
+        .school-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .school-suggestion-item:hover {
+            background: #FFF4ED;
+        }
+
+        .school-suggestion-item small {
+            display: block;
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 1px;
+        }
+
+        /* Autocomplete année */
+        .annee-search-wrapper {
+            position: relative;
+        }
+
+        .annee-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .annee-suggestion-item {
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1E293B;
+            border-bottom: 1px solid #F3F4F6;
+            transition: background 0.15s;
+        }
+
+        .annee-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .annee-suggestion-item:hover {
+            background: #FFF4ED;
+        }
+
+        .annee-suggestion-item small {
+            color: #9CA3AF;
+            font-weight: 400;
+        }
+
+        /* Autocomplete filière */
+        .filiere-search-wrapper {
+            position: relative;
+        }
+
+        .filiere-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .filiere-suggestion-item {
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1E293B;
+            border-bottom: 1px solid #F3F4F6;
+            transition: background 0.15s;
+        }
+
+        .filiere-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .filiere-suggestion-item:hover {
+            background: #FFF4ED;
+        }
+
+        .filiere-suggestion-item small {
+            color: #9CA3AF;
+            font-weight: 400;
+        }
+
+        /* Autocomplete ville */
+        .ville-wrapper {
+            position: relative;
+        }
+
+        .ville-suggestions {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .ville-suggestion {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+
+        .ville-suggestion:hover {
+            background: #FFF4ED;
+            color: #E8622A;
+        }
+
+        /* Upload documents */
         .upload-zone {
-            border: 2px dashed var(--gray-300); border-radius: 10px;
-            padding: 22px; text-align: center; cursor: pointer;
-            transition: all 0.25s; background: #fafafa;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1.5px dashed #D1D5DB;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: #FAFAFA;
         }
-        .upload-zone:hover, .upload-zone.dragover { border-color: var(--primary); background: rgba(102,126,234,0.06); }
-        .upload-zone input[type="file"] { display: none; }
-        .upload-zone .upload-icon { font-size: 28px; display: block; margin-bottom: 6px; }
-        .upload-zone .upload-text { font-size: 14px; color: var(--gray-600); margin: 0; }
-        .upload-zone .upload-text strong { color: var(--primary); }
-        .upload-zone .upload-formats { font-size: 12px; color: var(--gray-400); margin-top: 4px; display: block; }
 
-        /* Fichier déjà uploadé → bordure verte */
-        .upload-zone.uploaded { border-color: #27ae60; background: rgba(39,174,96,0.07); }
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #E8622A;
+            background: #FFF4ED;
+        }
 
-        /* Preview fichier uploadé */
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .upload-zone .upload-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            background: #F3F4F6;
+            border-radius: 8px;
+        }
+
+        .upload-zone .upload-icon svg {
+            width: 18px;
+            height: 18px;
+            color: #9CA3AF;
+        }
+
+        .upload-zone .upload-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .upload-zone .upload-text {
+            font-size: 13px;
+            color: #6B7280;
+            margin: 0;
+        }
+
+        .upload-zone .upload-text strong {
+            color: #E8622A;
+        }
+
+        .upload-zone .upload-formats {
+            font-size: 11px;
+            color: #9CA3AF;
+            display: block;
+        }
+
+        .upload-zone.uploaded {
+            border-color: #10B981;
+            border-style: solid;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
         .file-preview {
-            display: flex; align-items: center; gap: 10px;
-            margin-top: 10px; padding: 8px 12px;
-            background: #f0faf3; border-radius: 8px; border: 1px solid #c3e6cb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            padding: 6px 12px;
+            background: #F0FAF3;
+            border-radius: 8px;
+            border: 1px solid #C3E6CB;
         }
-        .file-preview .file-icon { font-size: 20px; }
-        .file-preview .file-name { font-size: 14px; color: #155724; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-preview .file-remove { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 18px; padding: 0 4px; }
-        .file-preview .file-remove:hover { color: #c0392b; }
 
-        /* ===== SECTION GARANT (fond violet/bleu cohérent) ===== */
+        .file-preview .file-icon svg {
+            width: 16px;
+            height: 16px;
+            color: #10B981;
+        }
+
+        .file-preview .file-name {
+            font-size: 12px;
+            color: #155724;
+            font-weight: 600;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-preview .file-remove {
+            background: none;
+            border: none;
+            color: #EF4444;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 4px;
+            font-family: inherit;
+        }
+
+        .file-preview .file-remove:hover {
+            color: #DC2626;
+        }
+
+        /* Section garant */
         .garant-section {
-            background: linear-gradient(135deg, #ede9fe 0%, #e8eaff 100%);
-            border: 2px solid #c4b5fd; border-radius: 14px; padding: 28px; margin-top: 30px;
-        }
-        .garant-section .section-title { border-bottom-color: #c4b5fd; color: #5b21b6; }
-        .garant-note {
-            font-size: 13px; color: #4c1d95;
-            background: rgba(102,126,234,0.1); border-radius: 8px; padding: 10px 14px; margin-bottom: 18px;
+            background: none;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 10px;
         }
 
-        /* ===== BARRE INFO BLEUE (documents) ===== */
-        .docs-info-bar {
-            background: linear-gradient(135deg, #e8eaff 0%, #eef0ff 100%);
-            border: 1px solid #c5cae9; border-radius: 10px;
-            padding: 14px 18px; margin-bottom: 24px;
-            display: flex; align-items: flex-start; gap: 12px;
+        .garant-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 4px;
         }
-        .docs-info-bar .info-icon { font-size: 22px; flex-shrink: 0; }
-        .docs-info-bar p { margin: 0; font-size: 14px; color: #3949ab; }
-        .docs-info-bar p strong { color: #283593; }
+
+        /* Bandeau vérification documents */
+        .doc-verification-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(232, 98, 42, 0.06);
+            border: 1px solid rgba(232, 98, 42, 0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .doc-verification-info svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .doc-verification-info span {
+            font-size: 12.5px;
+            color: #475569;
+        }
+
+        .identity-verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #F0FDF4;
+            border: 1.5px solid #BBF7D0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 16px;
+        }
+
+        .garant-note {
+            font-size: 12.5px;
+            color: #6B7280;
+            background: rgba(232, 98, 42, 0.05);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            border-left: 3px solid #E8622A;
+            line-height: 1.5;
+        }
+
+        /* Loading spinner */
+        .btn-next.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-next.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Confirmation */
+        .confirmation-screen {
+            display: none;
+            text-align: center;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-screen.active {
+            display: flex;
+        }
+
+        .confirmation-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .confirmation-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .confirmation-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .confirmation-text {
+            font-size: 15px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+        /* Section préférences email */
+        .email-prefs-section {
+            max-width: 460px;
+            margin: 30px auto 20px;
+            padding: 20px 24px;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+        }
+        .email-prefs-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .email-prefs-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 16px;
+        }
+        .pref-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .pref-row:last-child {
+            border-bottom: none;
+        }
+        .pref-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .pref-desc {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 2px;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #CBD5E1;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: #E8622A;
+        }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(20px);
+        }
+        .prefs-saved {
+            font-size: 12px;
+            color: #059669;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .prefs-saved.show {
+            opacity: 1;
+        }
+
+        /* Section changement mot de passe */
+        .password-section {
+            max-width: 460px;
+            margin: 30px auto 20px;
+            padding: 20px 24px;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+        }
+        .password-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+        .password-section-text {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .password-form-group {
+            margin-bottom: 12px;
+        }
+        .password-form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .password-form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .password-form-group input:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+        }
+        .btn-change-password {
+            padding: 10px 20px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-change-password:hover {
+            background: #d4571f;
+        }
+        .btn-change-password:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+        .password-message {
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: none;
+        }
+        .password-message.success {
+            display: block;
+            background: #F0FDF4;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+        .password-message.error {
+            display: block;
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        /* Zone danger — Suppression de compte */
+        .danger-zone {
+            max-width: 460px;
+            margin: 30px auto 40px;
+            padding: 20px 24px;
+            background: #FEF2F2;
+            border: 1.5px solid #FECACA;
+            border-radius: 12px;
+        }
+        .danger-zone-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #DC2626;
+            margin-bottom: 6px;
+        }
+        .danger-zone-text {
+            font-size: 13px;
+            color: #7F1D1D;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .btn-delete-account {
+            padding: 10px 20px;
+            background: white;
+            color: #DC2626;
+            border: 1.5px solid #FECACA;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-delete-account:hover {
+            background: #DC2626;
+            color: white;
+            border-color: #DC2626;
+        }
+
+        /* Modal suppression */
+        .delete-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .delete-overlay.active { display: flex; }
+        .delete-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .delete-modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .delete-modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #DC2626;
+            margin: 0 0 10px;
+        }
+        .delete-modal p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin: 0 0 20px;
+        }
+        .delete-modal input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .delete-modal input:focus {
+            outline: none;
+            border-color: #DC2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+        .delete-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .delete-modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-cancel-delete {
+            background: #F4F5F7;
+            color: #475569;
+        }
+        .btn-cancel-delete:hover { background: #E8EAF0; }
+        .btn-confirm-delete {
+            background: #E5E7EB;
+            color: #9CA3AF;
+            pointer-events: none;
+        }
+        .btn-confirm-delete.active {
+            background: #DC2626;
+            color: white;
+            pointer-events: auto;
+        }
+        .btn-confirm-delete.active:hover { background: #B91C1C; }
+        .btn-confirm-delete:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         /* Responsive */
-        @media (max-width: 600px) {
-            .form-container { margin: 30px auto; }
-            .form-card { padding: 24px 18px; }
+        @media (max-width: 520px) {
+            .inscription-container { padding: 24px 20px; }
             .form-row { grid-template-columns: 1fr; }
-            .identity-card { flex-direction: column; text-align: center; }
+            .crop-area { width: 220px; height: 220px; }
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 AlternHome</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="recherche.html">Rechercher</a></li>
-                <li><a href="#" id="monEspaceLink" style="color: var(--primary);">Mon espace</a></li>
+                <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="form-container">
-        <div class="message" id="messageBox"></div>
-
-        <div class="form-card">
-            <div class="form-header">
-                <h1>✏️ Modifier mon profil</h1>
-                <p>Complète tes informations pour que les hôtes te connaissent mieux !</p>
+    <!-- MODAL RECADRAGE PHOTO -->
+    <div class="crop-overlay" id="cropOverlay" role="dialog" aria-modal="true" aria-label="Recadrer la photo">
+        <div class="crop-modal">
+            <h3>Recadre ta photo</h3>
+            <p class="crop-hint">Déplace et zoome pour ajuster</p>
+            <div class="crop-area" id="cropArea">
+                <img loading="lazy" id="cropImage" src="" alt="Photo à recadrer">
             </div>
-
-            <div class="info-box">
-                <h3>📋 Complète ton dossier</h3>
-                <p>Plus ton profil est complet, plus les hôtes auront confiance en toi !</p>
+            <div class="crop-zoom">
+                <label>Zoom</label>
+                <input type="range" id="cropZoom" min="100" max="300" value="100">
             </div>
-
-            <form id="profilForm">
-
-                <!-- ===== CARTE PHOTO + NOM ===== -->
-                <div class="identity-card">
-                    <div class="photo-section">
-                        <div class="photo-circle" id="photoCircle">
-                            <div class="placeholder">
-                                <span class="camera-icon">📷</span>
-                                Photo
-                            </div>
-                            <img id="photoPreview" src="" alt="Photo profil" style="display:none;">
-                            <input type="file" id="photoInput" accept="image/*">
-                        </div>
-                    </div>
-                    <div class="identity-info">
-                        <h3 id="previewNom">Ton nom</h3>
-                        <p id="previewEcole">École, filière...</p>
-                    </div>
-                </div>
-
-                <!-- ===== INFOS PERSONNELLES ===== -->
-                <h2 class="section-title">👤 Informations personnelles</h2>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Prénom <span class="required">*</span></label>
-                        <input type="text" id="prenom" placeholder="ex: Marie" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nom <span class="required">*</span></label>
-                        <input type="text" id="nom" placeholder="ex: Dupont" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Sexe <span class="required">*</span></label>
-                        <select id="sexe" required>
-                            <option value="" disabled selected>Choisir...</option>
-                            <option value="homme">Homme</option>
-                            <option value="femme">Femme</option>
-                            <option value="autre">Autre</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Date de naissance <span class="required">*</span></label>
-                        <input type="date" id="dateNaissance" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>📞 Numéro de téléphone</label>
-                    <input type="tel" id="telephone" placeholder="ex: 06 12 34 56 78">
-                    <small style="color: var(--gray-500); font-size: 13px; margin-top: 5px; display: block;">Utilisé en cas d'urgence et pour la communication</small>
-                </div>
-
-                <!-- ===== ÉTUDES ===== -->
-                <h2 class="section-title" style="margin-top:35px;">🎓 Informations d'études</h2>
-
-                <div class="form-group">
-                    <label>École / Université <span class="required">*</span></label>
-                    <input type="text" id="ecole" placeholder="ex: École Centrale de Lyon" required>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Année d'études <span class="required">*</span></label>
-                        <select id="anneeEtudes" required>
-                            <option value="" disabled selected>Choisir...</option>
-                            <option value="L1">L1</option>
-                            <option value="L2">L2</option>
-                            <option value="L3">L3</option>
-                            <option value="M1">M1</option>
-                            <option value="M2">M2</option>
-                            <option value="Doc">Doctorat</option>
-                            <option value="Autre">Autre</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Filière / Domaine <span class="required">*</span></label>
-                        <input type="text" id="filiere" placeholder="ex: Informatique" required>
-                    </div>
-                </div>
-
-                <!-- ===== À PROPOS ===== -->
-                <h2 class="section-title" style="margin-top:35px;">💬 À propos de moi</h2>
-
-                <div class="form-group">
-                    <label>Mes centres d'intérêts</label>
-                    <textarea id="centresInterets" placeholder="ex: Sport, Musique, Cinéma..." maxlength="150" rows="3" style="resize:vertical; min-height:80px;"></textarea>
-                    <small style="color: var(--gray-500); font-size: 13px; margin-top: 5px; display: block;">Optionnel - Max 150 caractères</small>
-                </div>
-
-                <!-- ===== DOCUMENTS ===== -->
-                <h2 class="section-title" style="margin-top:35px;">📄 Documents</h2>
-
-                <div class="docs-info-bar">
-                    <span class="info-icon">ℹ️</span>
-                    <p>Ces documents vérifient ton identité et rassurent les hôtes. Ils sont <strong>stockés en sécurité</strong> et ne sont partagés qu'avec les hôtes que tu contactes.</p>
-                </div>
-
-                <!-- Pièce d'identité -->
-                <div class="form-group">
-                    <label>📜 Pièce d'identité <span class="required">*</span></label>
-                    <div class="upload-zone" id="uploadPieceId">
-                        <span class="upload-icon">📄</span>
-                        <p class="upload-text">Glisse ici ou <strong>clique pour choisir</strong></p>
-                        <span class="upload-formats">Carte d'identité ou passeport • PDF, JPG, PNG (max 5 Mo)</span>
-                        <input type="file" id="inputPieceId" accept=".pdf,.jpg,.jpeg,.png">
-                    </div>
-                    <div class="file-preview" id="previewPieceId" style="display:none;">
-                        <span class="file-icon">📄</span>
-                        <span class="file-name" id="namePieceId">fichier.pdf</span>
-                        <button type="button" class="file-remove" onclick="removeDoc('pieceId')">✕</button>
-                    </div>
-                </div>
-
-                <!-- Certificat de scolarité -->
-                <div class="form-group">
-                    <label>🎓 Certificat de scolarité</label>
-                    <div class="upload-zone" id="uploadScolarite">
-                        <span class="upload-icon">📄</span>
-                        <p class="upload-text">Glisse ici ou <strong>clique pour choisir</strong></p>
-                        <span class="upload-formats">Attestation d'inscription en cours • PDF, JPG, PNG (max 5 Mo)</span>
-                        <input type="file" id="inputScolarite" accept=".pdf,.jpg,.jpeg,.png">
-                    </div>
-                    <div class="file-preview" id="previewScolarite" style="display:none;">
-                        <span class="file-icon">📄</span>
-                        <span class="file-name" id="nameScolarite">fichier.pdf</span>
-                        <button type="button" class="file-remove" onclick="removeDoc('scolarite')">✕</button>
-                    </div>
-                </div>
-
-                <!-- RIB -->
-                <div class="form-group">
-                    <label>🏦 Relevé d'identité bancaire (RIB)</label>
-                    <div class="upload-zone" id="uploadRIB">
-                        <span class="upload-icon">📄</span>
-                        <p class="upload-text">Glisse ici ou <strong>clique pour choisir</strong></p>
-                        <span class="upload-formats">Pour les paiements • PDF, JPG, PNG (max 5 Mo)</span>
-                        <input type="file" id="inputRIB" accept=".pdf,.jpg,.jpeg,.png">
-                    </div>
-                    <div class="file-preview" id="previewRIB" style="display:none;">
-                        <span class="file-icon">📄</span>
-                        <span class="file-name" id="nameRIB">fichier.pdf</span>
-                        <button type="button" class="file-remove" onclick="removeDoc('rib')">✕</button>
-                    </div>
-                </div>
-
-                <!-- ===== GARANT ===== -->
-                <div class="garant-section">
-                    <h2 class="section-title">👨‍👧 Informations du garant</h2>
-                    <div class="garant-note">
-                        ⚠️ Un garant garantit le paiement de ton loyer en cas de problème. Les propriétaires peuvent en faire la demande.
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Prénom du garant</label>
-                            <input type="text" id="garantPrenom" placeholder="ex: Jean">
-                        </div>
-                        <div class="form-group">
-                            <label>Nom du garant</label>
-                            <input type="text" id="garantNom" placeholder="ex: Dupont">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📞 Téléphone du garant</label>
-                            <input type="tel" id="garantTelephone" placeholder="ex: 06 98 76 54 32">
-                        </div>
-                        <div class="form-group">
-                            <label>📧 Email du garant</label>
-                            <input type="email" id="garantEmail" placeholder="ex: jean@email.com">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ===== BOUTONS ===== -->
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">💾 Enregistrer les modifications</button>
-                    <a href="#" id="annulerLink" class="btn btn-secondary">Annuler</a>
-                </div>
-            </form>
+            <div class="crop-actions">
+                <button class="crop-cancel" onclick="cancelCrop()">Annuler</button>
+                <button class="crop-confirm" onclick="confirmCrop()">Valider</button>
+            </div>
         </div>
     </div>
 
-    <footer style="margin-top:80px;">
-        <div class="container">
-            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
+    <!-- PAGE -->
+    <section class="page-inscription">
+        <div class="inscription-container">
+            <div class="inscription-header">
+                <h1 id="mainTitle">Modifier mon profil</h1>
+            </div>
+
+            <div class="step-indicator">Étape <span id="stepNum">1</span> sur 6</div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 16.7%"></div>
+            </div>
+
+            <div id="errorMessage" role="alert" aria-live="polite" class="error-message"></div>
+
+            <!-- ÉTAPE 1 : Photo + Identité -->
+            <div class="step active" id="step1">
+                <div class="step-content">
+                    <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+
+                    <div class="photo-upload">
+                        <div class="photo-circle" id="photoCircle">
+                            <div class="placeholder" id="photoPlaceholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                            <img loading="lazy" id="photoPreview" src="" alt="Photo de profil" style="display: none;">
+                        </div>
+                        <div class="photo-info">
+                            <div class="photo-title">Ta photo de profil</div>
+                            <div class="photo-hint">Clique sur le cercle -- JPG, PNG (max 5 MB)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Prénom <span class="required">*</span></label>
+                            <input type="text" id="prenom" placeholder="Prénom">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom <span class="required">*</span></label>
+                            <input type="text" id="nom" placeholder="Nom">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date de naissance <span class="required">*</span></label>
+                            <input type="text" id="dateNaissance" placeholder="JJ/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric">
+                            <input type="hidden" id="dateNaissanceHidden">
+                        </div>
+                        <div class="form-group">
+                            <label>Sexe <span class="required">*</span></label>
+                            <select id="sexe" class="placeholder" onchange="this.classList.toggle('placeholder', !this.value);">
+                                <option value="" disabled selected>Sélectionner</option>
+                                <option value="homme">Homme</option>
+                                <option value="femme">Femme</option>
+                                <option value="autre">Autre</option>
+                                <option value="non-precise">Non précisé</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone <span class="required">*</span></label>
+                        <input type="tel" id="telephone" placeholder="06 12 34 56 78">
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <a href="#" class="btn-back" id="btnRetourDashboard" onclick="retourDashboard()">Retour</a>
+                    <button class="btn-next" onclick="nextStep(1)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 : Études -->
+            <div class="step" id="step2">
+                <div class="step-content" style="padding-top: 10px;">
+                    <div class="form-group">
+                        <label>École / Université <span class="required">*</span></label>
+                        <div class="school-search-wrapper">
+                            <span class="school-search-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </span>
+                            <input type="text" id="ecole" placeholder="Recherche ton école, université, CFA..." autocomplete="off">
+                            <div class="school-suggestions" id="schoolSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Année d'études <span class="required">*</span></label>
+                        <div class="annee-search-wrapper">
+                            <input type="text" id="anneeEtudes" placeholder="ex: L3, M1, Bac+5..." autocomplete="off">
+                            <div class="annee-suggestions" id="anneeSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Filière / Domaine <span class="required">*</span></label>
+                        <div class="filiere-search-wrapper">
+                            <input type="text" id="filiere" placeholder="ex: Informatique, Commerce, Architecture..." autocomplete="off">
+                            <div class="filiere-suggestions" id="filiereSuggestions"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(2)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(2)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 : Alternance -->
+            <div class="step" id="step3">
+                <div class="step-content">
+                    <div class="form-group">
+                        <label>Type d'alternance</label>
+                        <select id="typeAlternance" class="placeholder" onchange="updateRythmeOptions(); this.classList.toggle('placeholder', !this.value);">
+                            <option value="" disabled selected>Sélectionner</option>
+                            <option value="symmetric">Symétrique (même durée)</option>
+                            <option value="asymmetric">Asymétrique (durées différentes)</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="rythmeField" style="display: none;">
+                        <label>Mon rythme</label>
+                        <select id="monRythme" class="placeholder" onchange="this.classList.toggle('placeholder', !this.value);">
+                            <option value="" disabled selected>Sélectionner</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="rythmeCustomField" style="display: none;">
+                        <label>Décris ton rythme</label>
+                        <input type="text" id="rythmeCustomInput" placeholder="Ex : 3 jours école / 2 jours entreprise">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ville de ton école</label>
+                        <div class="ville-wrapper">
+                            <input type="text" id="villeEcoleInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off">
+                            <div class="ville-suggestions" id="villeEcoleSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ville de ton entreprise</label>
+                        <div class="ville-wrapper">
+                            <input type="text" id="villeEntrepriseInput" placeholder="Ex: Nantes, Brest..." autocomplete="off">
+                            <div class="ville-suggestions" id="villeEntrepriseSuggestions"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(3)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(3)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4 : À propos -->
+            <div class="step" id="step4">
+                <div class="step-content" style="padding-top: 10px;">
+                    <div class="form-group">
+                        <label>À propos de toi</label>
+                        <textarea id="bio" placeholder="Parle de toi, tes centres d'intérêts, ce que tu aimes faire... Ça aidera les propriétaires à mieux te connaître !" maxlength="300" rows="5"></textarea>
+                        <p class="hint">Optionnel -- Max 300 caractères</p>
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(4)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(4)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5 : Documents -->
+            <div class="step" id="step5">
+                <div class="step-content">
+                    <div class="form-group">
+                        <label>Pièce d'identité <span class="required">*</span></label>
+                        <div class="upload-zone" id="uploadPieceId">
+                            <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="upload-info">
+                                <p class="upload-text"><strong>Clique</strong> ou glisse ton fichier</p>
+                                <span class="upload-formats">Carte d'identité / passeport — PDF, JPG, PNG</span>
+                            </div>
+                            <input type="file" id="inputPieceId" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div class="file-preview" id="previewPieceId" style="display:none;">
+                            <span class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                            <span class="file-name" id="namePieceId">fichier.pdf</span>
+                            <button type="button" class="file-remove" onclick="removeDoc('pieceId')">x</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Certificat de scolarité <span class="required">*</span></label>
+                        <div class="upload-zone" id="uploadScolarite">
+                            <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="upload-info">
+                                <p class="upload-text"><strong>Clique</strong> ou glisse ton fichier</p>
+                                <span class="upload-formats">Attestation d'inscription — PDF, JPG, PNG</span>
+                            </div>
+                            <input type="file" id="inputScolarite" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div class="file-preview" id="previewScolarite" style="display:none;">
+                            <span class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                            <span class="file-name" id="nameScolarite">fichier.pdf</span>
+                            <button type="button" class="file-remove" onclick="removeDoc('scolarite')">x</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>RIB <span style="font-size: 11px; color: #9CA3AF; font-weight: 400;">(optionnel)</span></label>
+                        <div class="upload-zone" id="uploadRIB">
+                            <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="upload-info">
+                                <p class="upload-text"><strong>Clique</strong> ou glisse ton fichier</p>
+                                <span class="upload-formats">Relevé d'identité bancaire -- PDF, JPG, PNG</span>
+                            </div>
+                            <input type="file" id="inputRIB" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div class="file-preview" id="previewRIB" style="display:none;">
+                            <span class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                            <span class="file-name" id="nameRIB">fichier.pdf</span>
+                            <button type="button" class="file-remove" onclick="removeDoc('rib')">x</button>
+                        </div>
+                    </div>
+                    <!-- Badge identité vérifiée (affiché si Stripe Identity déjà validé) -->
+                    <div class="identity-verified-badge" id="badgeIdentityOk" style="display: none;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Identit&eacute; v&eacute;rifi&eacute;e
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(5)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(5)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 6 : Garant -->
+            <div class="step" id="step6">
+                <div class="step-content">
+                    <div class="garant-section">
+                        <div class="garant-title">Informations du garant</div>
+                        <div class="garant-note">Un garant garantit le paiement de ton loyer. Les propriétaires peuvent en faire la demande.</div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Prénom du garant <span class="required">*</span></label>
+                                <input type="text" id="garantPrenom" placeholder="Prénom" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nom du garant <span class="required">*</span></label>
+                                <input type="text" id="garantNom" placeholder="Nom" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Téléphone du garant <span class="required">*</span></label>
+                                <input type="tel" id="garantTelephone" placeholder="06 98 76 54 32" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email du garant <span class="required">*</span></label>
+                                <input type="email" id="garantEmail" placeholder="jean@email.com" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(6)">Retour</button>
+                    <button class="btn-next" id="btnSave" onclick="enregistrerProfil()">Enregistrer</button>
+                </div>
+            </div>
+
+            <!-- ÉCRAN DE CONFIRMATION -->
+            <div class="confirmation-screen" id="confirmationScreen">
+                <div class="confirmation-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                </div>
+                <div class="confirmation-title">Profil mis à jour !</div>
+                <div class="confirmation-text">
+                    Tes modifications ont été enregistrées.<br>
+                    Redirection vers ton espace...
+                </div>
+            </div>
+
         </div>
-    </footer>
+    </section>
 
-<script>
-// ============================================================
-// VARIABLES
-// ============================================================
-let currentUser = null;
-let photoFile = null;
-let userData = null;
-let docFiles = { pieceId: null, scolarite: null, rib: null };
+    <!-- SECTION PRÉFÉRENCES EMAIL -->
+    <div class="email-prefs-section" id="emailPrefsSection">
+        <div class="email-prefs-title">📧 Préférences email</div>
+        <div class="email-prefs-subtitle">Choisis les emails que tu souhaites recevoir.</div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Alertes logement</div>
+                <div class="pref-desc">Nouveaux logements correspondant à tes critères</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefAlertes" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Messages</div>
+                <div class="pref-desc">Notification quand tu reçois un message</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefMessages" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Candidatures</div>
+                <div class="pref-desc">Mises à jour sur tes candidatures</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefCandidatures" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Paiements</div>
+                <div class="pref-desc">Reçus et rappels de paiement</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefPaiements" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Baux</div>
+                <div class="pref-desc">Fin de bail, renouvellement</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefBaux" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Actualités STERNY</div>
+                <div class="pref-desc">Nouveautés et offres de la plateforme</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefMarketing" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="prefs-saved" id="prefsSaved">✓ Préférences sauvegardées</div>
+    </div>
 
-// ============================================================
-// AUTH
-// ============================================================
-async function checkAuth() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) { window.location.href = 'connexion.html'; return; }
-    currentUser = user;
+    <!-- SECTION CHANGEMENT MOT DE PASSE -->
+    <div class="password-section" id="passwordSection">
+        <div class="password-section-title">🔒 Changer mon mot de passe</div>
+        <div class="password-section-text">
+            Renseigne ton nouveau mot de passe (min. 6 caractères).
+        </div>
+        <div class="password-form-group">
+            <label for="newPassword">Nouveau mot de passe</label>
+            <input type="password" id="newPassword" placeholder="Min. 6 caractères" autocomplete="new-password">
+        </div>
+        <div class="password-form-group">
+            <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+            <input type="password" id="confirmPassword" placeholder="Retape le mot de passe" autocomplete="new-password">
+        </div>
+        <button class="btn-change-password" id="btnChangePassword" onclick="changerMotDePasse()">Modifier le mot de passe</button>
+        <div class="password-message" id="passwordMessage"></div>
+    </div>
 
-    const { data: result } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
-    if (result) { userData = result; preRemplirFormulaire(result); }
-}
+    <!-- ZONE DANGER — Suppression de compte -->
+    <div class="danger-zone" id="dangerZone">
+        <div class="danger-zone-title">⚠️ Zone danger</div>
+        <div class="danger-zone-text">
+            Supprimer ton compte est irréversible. Toutes tes données, annonces, candidatures et messages seront définitivement supprimés.
+        </div>
+        <button class="btn-delete-account" onclick="ouvrirModalSuppression()">Supprimer mon compte</button>
+    </div>
 
-// ============================================================
-// PRÉ-REMPLISSAGE
-// ============================================================
-function preRemplirFormulaire(data) {
-    document.getElementById('prenom').value = data.prenom || '';
-    document.getElementById('nom').value = data.nom || '';
-    document.getElementById('previewNom').textContent = `${data.prenom || ''} ${data.nom || ''}`.trim() || 'Ton nom';
+    <!-- MODAL CONFIRMATION SUPPRESSION -->
+    <div class="delete-overlay" id="deleteOverlay" role="dialog" aria-modal="true" aria-label="Supprimer mon compte">
+        <div class="delete-modal">
+            <div class="delete-modal-icon">🗑️</div>
+            <h3>Supprimer mon compte</h3>
+            <p>Cette action est <strong>irréversible</strong>. Toutes tes données seront supprimées. Écris <strong>SUPPRIMER</strong> ci-dessous pour confirmer.</p>
+            <input type="text" id="deleteConfirmInput" placeholder="Écris SUPPRIMER" autocomplete="off">
+            <div class="delete-modal-actions">
+                <button class="btn-cancel-delete" onclick="fermerModalSuppression()">Annuler</button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete" onclick="supprimerCompte()" disabled>Supprimer définitivement</button>
+            </div>
+        </div>
+    </div>
 
-    if (data.date_naissance) document.getElementById('dateNaissance').value = data.date_naissance;
-    if (data.sexe) document.getElementById('sexe').value = data.sexe;
+    <script>
+        // ================================================================
+        // CONFIGURATION
+        // ================================================================
+        let totalSteps = 6;
+        let currentStep = 1;
+        let currentUser = null;
+        let isAdmin = false;
+        let photoFile = null;
+        let dashboardUrl = 'dashboard-locataire.html';
+        let userType = 'locataire';
 
-    document.getElementById('ecole').value = data.ecole || '';
-    document.getElementById('previewEcole').textContent = data.ecole ? `${data.ecole}${data.filiere ? ' - ' + data.filiere : ''}` : 'École, filière...';
+        function retourDashboard() {
+            window.location.href = dashboardUrl;
+        }
+        let docFiles = { pieceId: null, scolarite: null, rib: null };
+        let villeEcoleSelectionnee = '';
+        let villeEntrepriseSelectionnee = '';
 
-    if (data.annee_etudes) document.getElementById('anneeEtudes').value = data.annee_etudes;
-    document.getElementById('filiere').value = data.filiere || '';
-    if (data.bio) document.getElementById('centresInterets').value = data.bio;
-    if (data.telephone) document.getElementById('telephone').value = data.telephone;
+        const stepTitles = {
+            1: 'Modifier mon profil',
+            2: 'Tes études',
+            3: 'Ton alternance',
+            4: 'À propos de toi',
+            5: 'Tes documents',
+            6: 'Ton garant'
+        };
 
-    // Garant
-    if (data.garant_prenom) document.getElementById('garantPrenom').value = data.garant_prenom;
-    if (data.garant_nom) document.getElementById('garantNom').value = data.garant_nom;
-    if (data.garant_telephone) document.getElementById('garantTelephone').value = data.garant_telephone;
-    if (data.garant_email) document.getElementById('garantEmail').value = data.garant_email;
+        // Villes disponibles sur STERNY
+        const VILLES_DISPONIBLES = [
+            'Rennes', 'Nantes', 'Brest', 'Quimper', 'Lorient',
+            'Vannes', 'Saint-Malo', 'Saint-Brieuc', 'Fougères', 'Vitré'
+        ];
 
-    // Photo
-    if (data.photo_profil_url) {
-        document.getElementById('photoPreview').src = data.photo_profil_url;
-        document.getElementById('photoPreview').style.display = 'block';
-        document.querySelector('.photo-circle .placeholder').style.display = 'none';
-    }
+        // ================================================================
+        // NAVIGATION
+        // ================================================================
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
 
-    // Documents déjà uploadés
-    if (data.doc_piece_id_url) showExistingDoc('pieceId', data.doc_piece_id_url);
-    if (data.doc_scolarite_url) showExistingDoc('scolarite', data.doc_scolarite_url);
-    if (data.doc_rib_url) showExistingDoc('rib', data.doc_rib_url);
-}
+            let displayStep = step;
+            document.getElementById('stepNum').textContent = displayStep;
+            document.getElementById('progressFill').style.width = (displayStep / totalSteps * 100) + '%';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('mainTitle').textContent = stepTitles[step] || '';
 
-function showExistingDoc(type, url) {
-    const suffixMap = { pieceId: 'PieceId', scolarite: 'Scolarite', rib: 'RIB' };
-    const s = suffixMap[type];
-    const fileName = decodeURIComponent(url.split('/').pop());
-
-    document.getElementById('preview' + s).style.display = 'flex';
-    document.getElementById('name' + s).textContent = fileName;
-    document.getElementById('upload' + s).classList.add('uploaded');
-}
-
-// ============================================================
-// PHOTO PROFIL
-// ============================================================
-const photoCircle = document.getElementById('photoCircle');
-const photoInput = document.getElementById('photoInput');
-
-photoCircle.addEventListener('click', () => photoInput.click());
-photoInput.addEventListener('change', (e) => { if (e.target.files[0]) handlePhotoSelect(e.target.files[0]); });
-
-photoCircle.addEventListener('dragover', (e) => { e.preventDefault(); photoCircle.style.borderColor = 'var(--primary)'; });
-photoCircle.addEventListener('dragleave', () => { photoCircle.style.borderColor = '#ccc'; });
-photoCircle.addEventListener('drop', (e) => {
-    e.preventDefault(); photoCircle.style.borderColor = '#ccc';
-    if (e.dataTransfer.files[0]) handlePhotoSelect(e.dataTransfer.files[0]);
-});
-
-function handlePhotoSelect(file) {
-    if (!file.type.match('image.*')) { showMessage('error', 'Le fichier doit être une image (JPG, PNG, WEBP)'); return; }
-    if (file.size > 5 * 1024 * 1024) { showMessage('error', 'La photo ne doit pas dépasser 5 Mo'); return; }
-    photoFile = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('photoPreview').src = e.target.result;
-        document.getElementById('photoPreview').style.display = 'block';
-        photoCircle.querySelector('.placeholder').style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-}
-
-// ============================================================
-// DOCUMENTS : click, drag & drop, suppression
-// ============================================================
-const uploadIds = ['uploadPieceId', 'uploadScolarite', 'uploadRIB'];
-const inputIds = ['inputPieceId', 'inputScolarite', 'inputRIB'];
-const docTypes = ['pieceId', 'scolarite', 'rib'];
-
-// Associer chaque zone à son input + type
-uploadIds.forEach((zoneId, i) => {
-    const zone = document.getElementById(zoneId);
-    const input = document.getElementById(inputIds[i]);
-
-    // Click sur la zone → ouvre le sélecteur de fichier
-    zone.addEventListener('click', (e) => {
-        // Ne pas déclencher si on clique sur le bouton ✕
-        if (e.target.closest('.file-remove')) return;
-        input.click();
-    });
-
-    // Drag & drop
-    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-    zone.addEventListener('drop', (e) => {
-        e.preventDefault(); zone.classList.remove('dragover');
-        if (e.dataTransfer.files[0]) applyDoc(e.dataTransfer.files[0], docTypes[i]);
-    });
-
-    // Change sur l'input (sélection fichier)
-    input.addEventListener('change', (e) => { if (e.target.files[0]) applyDoc(e.target.files[0], docTypes[i]); });
-});
-
-function applyDoc(file, type) {
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) { showMessage('error', 'Format non supporté. PDF, JPG ou PNG uniquement.'); return; }
-    if (file.size > 5 * 1024 * 1024) { showMessage('error', 'Le fichier ne doit pas dépasser 5 Mo.'); return; }
-
-    docFiles[type] = file;
-
-    const suffixMap = { pieceId: 'PieceId', scolarite: 'Scolarite', rib: 'RIB' };
-    const s = suffixMap[type];
-
-    document.getElementById('preview' + s).style.display = 'flex';
-    document.getElementById('name' + s).textContent = file.name;
-    document.getElementById('upload' + s).classList.add('uploaded');
-}
-
-function removeDoc(type) {
-    const suffixMap = { pieceId: 'PieceId', scolarite: 'Scolarite', rib: 'RIB' };
-    const inputMap = { pieceId: 'inputPieceId', scolarite: 'inputScolarite', rib: 'inputRIB' };
-    const s = suffixMap[type];
-
-    docFiles[type] = null;
-    document.getElementById('preview' + s).style.display = 'none';
-    document.getElementById('upload' + s).classList.remove('uploaded');
-    document.getElementById(inputMap[type]).value = '';
-}
-
-// ============================================================
-// SOUMISSION
-// ============================================================
-document.getElementById('profilForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enregistrement...';
-
-    try {
-        const prenom = document.getElementById('prenom').value.trim();
-        const nom = document.getElementById('nom').value.trim();
-        const sexe = document.getElementById('sexe').value;
-        const dateNaissance = document.getElementById('dateNaissance').value;
-        const ecole = document.getElementById('ecole').value.trim();
-        const anneeEtudes = document.getElementById('anneeEtudes').value;
-        const filiere = document.getElementById('filiere').value.trim();
-        const bio = document.getElementById('centresInterets').value.trim();
-        const telephone = document.getElementById('telephone').value.trim();
-        const garantPrenom = document.getElementById('garantPrenom').value.trim();
-        const garantNom = document.getElementById('garantNom').value.trim();
-        const garantTelephone = document.getElementById('garantTelephone').value.trim();
-        const garantEmail = document.getElementById('garantEmail').value.trim();
-
-        // Vérification âge 18+
-        const birthDate = new Date(dateNaissance);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-        if (age < 18) {
-            showMessage('error', 'Tu dois avoir au moins 18 ans pour utiliser AlternHome');
-            submitBtn.disabled = false; submitBtn.textContent = '💾 Enregistrer les modifications';
-            return;
+            // Propriétaire : étape 1 unique → bouton "Enregistrer"
+            if (userType === 'proprietaire' && step === 1) {
+                const btnNext = document.querySelector('#step1 .btn-next');
+                if (btnNext) btnNext.textContent = 'Enregistrer';
+            }
         }
 
-        // --- Upload photo si nouvelle ---
-        let photoUrl = userData ? userData.photo_profil_url : null;
-        if (photoFile) {
-            const ext = photoFile.name.split('.').pop();
-            const name = `${currentUser.id}-${Date.now()}.${ext}`;
-            const { error: ue } = await supabaseClient.storage.from('profils').upload(name, photoFile, { cacheControl: '3600', upsert: true });
-            if (!ue) {
-                const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(name);
-                photoUrl = urlData.publicUrl;
-            } else { console.error('Upload photo error:', ue); }
+        function nextStep(current) {
+            // Admin bypass : skip validation
+            if (isAdmin) {
+                let next = current + 1;
+                if (next > totalSteps) { enregistrerProfil(); return; }
+                currentStep = next;
+                showStep(currentStep);
+                return;
+            }
+            const error = validateStep(current);
+            if (error) { showError(error); return; }
+            let next = current + 1;
+            // Propriétaire : après étape 1, enregistrer directement
+            if (userType === 'proprietaire' && next >= 2) {
+                enregistrerProfil();
+                return;
+            }
+            currentStep = next;
+            showStep(currentStep);
         }
 
-        // --- Upload documents si nouveaux ---
-        let docPieceIdUrl = userData ? userData.doc_piece_id_url : null;
-        let docScolariteUrl = userData ? userData.doc_scolarite_url : null;
-        let docRibUrl = userData ? userData.doc_rib_url : null;
-
-        if (docFiles.pieceId) docPieceIdUrl = await uploadDocument(docFiles.pieceId, 'piece-id');
-        if (docFiles.scolarite) docScolariteUrl = await uploadDocument(docFiles.scolarite, 'scolarite');
-        if (docFiles.rib) docRibUrl = await uploadDocument(docFiles.rib, 'rib');
-
-        // --- Update Supabase ---
-        const { error } = await supabaseClient.from('users').update({
-            prenom, nom, sexe,
-            date_naissance: dateNaissance,
-            photo_profil_url: photoUrl,
-            ecole, annee_etudes: anneeEtudes, filiere,
-            bio: bio || null,
-            telephone: telephone || null,
-            garant_prenom: garantPrenom || null,
-            garant_nom: garantNom || null,
-            garant_telephone: garantTelephone || null,
-            garant_email: garantEmail || null,
-            doc_piece_id_url: docPieceIdUrl || null,
-            doc_scolarite_url: docScolariteUrl || null,
-            doc_rib_url: docRibUrl || null
-        }).eq('id', currentUser.id);
-
-        if (error) {
-            console.error('Erreur update:', error);
-            showMessage('error', 'Erreur lors de l\'enregistrement : ' + error.message);
-            submitBtn.disabled = false; submitBtn.textContent = '💾 Enregistrer les modifications';
-            return;
+        function prevStep(current) {
+            let prev = current - 1;
+            currentStep = prev;
+            showStep(currentStep);
         }
 
-        showMessage('success', '✅ Profil mis à jour avec succès ! Redirection...');
-        setTimeout(() => {
-            window.location.href = (userData && userData.type_user === 'hote') ? 'dashboard-hote.html' : 'dashboard-locataire.html';
-        }, 1500);
+        let errorTimeout = null;
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            if (errorTimeout) clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
 
-    } catch (err) {
-        console.error('Erreur:', err);
-        showMessage('error', 'Une erreur est survenue : ' + err.message);
-        submitBtn.disabled = false; submitBtn.textContent = '💾 Enregistrer les modifications';
-    }
-});
+        // ================================================================
+        // VALIDATION
+        // ================================================================
+        function validateStep(step) {
+            if (step === 1) {
+                const prenom = document.getElementById('prenom').value.trim();
+                const nom = document.getElementById('nom').value.trim();
+                const tel = document.getElementById('telephone').value.trim();
 
-// ============================================================
-// UPLOAD DOCUMENT vers bucket "documents"
-// ============================================================
-async function uploadDocument(file, dossier) {
-    const ext = file.name.split('.').pop();
-    const name = `${currentUser.id}-${dossier}-${Date.now()}.${ext}`;
-    const { error } = await supabaseClient.storage.from('documents').upload(name, file, { cacheControl: '3600', upsert: true });
-    if (error) { console.error(`Upload doc ${dossier} error:`, error); return null; }
-    const { data: urlData } = supabaseClient.storage.from('documents').getPublicUrl(name);
-    return urlData.publicUrl;
-}
+                if (!prenom) return 'Merci de renseigner ton prénom';
+                if (!nom) return 'Merci de renseigner ton nom';
+                if (!tel) return 'Merci de renseigner ton numéro de téléphone';
 
-// ============================================================
-// PREVIEW LIVE (nom + école)
-// ============================================================
-document.getElementById('prenom').addEventListener('input', () => {
-    document.getElementById('previewNom').textContent = `${document.getElementById('prenom').value.trim()} ${document.getElementById('nom').value.trim()}`.trim() || 'Ton nom';
-});
-document.getElementById('nom').addEventListener('input', () => {
-    document.getElementById('previewNom').textContent = `${document.getElementById('prenom').value.trim()} ${document.getElementById('nom').value.trim()}`.trim() || 'Ton nom';
-});
-document.getElementById('ecole').addEventListener('input', () => {
-    document.getElementById('previewEcole').textContent = document.getElementById('ecole').value.trim() || 'École, filière...';
-});
+                // Propriétaire : pas de date/sexe
+                if (userType === 'proprietaire') return null;
 
-// ============================================================
-// UTILITAIRES
-// ============================================================
-function showMessage(type, text) {
-    const box = document.getElementById('messageBox');
-    box.className = `message ${type}`;
-    box.textContent = text;
-    box.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+                const dateDisplay = document.getElementById('dateNaissance').value;
+                const dateISO = document.getElementById('dateNaissanceHidden').value;
+                const sexe = document.getElementById('sexe').value;
 
-async function gererLienMonEspace() {
-    const lien = document.getElementById('monEspaceLink');
-    const annuler = document.getElementById('annulerLink');
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (user) {
-        const { data: ud } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
-        const target = (ud?.type_user === 'hote') ? 'dashboard-hote.html' : 'dashboard-locataire.html';
-        lien.href = target; annuler.href = target;
-    } else { lien.href = 'connexion.html'; annuler.href = 'connexion.html'; }
-}
+                if (!dateDisplay || dateDisplay.length !== 10) return 'Date de naissance incomplète (JJ/MM/AAAA)';
+                if (!dateISO) return 'Date de naissance invalide';
+                if (!sexe) return 'Merci de sélectionner ton sexe';
 
-// ============================================================
-// INIT
-// ============================================================
-if (typeof supabaseClient !== 'undefined') { checkAuth(); gererLienMonEspace(); }
-</script>
+                const birthDate = new Date(dateISO);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+                if (age < 18) return 'Tu dois avoir au moins 18 ans';
+            }
+
+            if (step === 2) {
+                const ecole = document.getElementById('ecole').value.trim();
+                const anneeEtudes = document.getElementById('anneeEtudes').value.trim();
+                const filiere = document.getElementById('filiere').value.trim();
+                if (!ecole) return 'Merci de renseigner ton école';
+                if (!anneeEtudes) return 'Merci de renseigner ton année d\'études';
+                if (!filiere) return 'Merci de renseigner ta filière';
+            }
+
+            if (step === 5) {
+                // Vérifier si les documents obligatoires sont uploadés (ou déjà enregistrés)
+                const pieceIdUploaded = docFiles.pieceId || document.getElementById('previewPieceId').style.display !== 'none';
+                const scolariteUploaded = docFiles.scolarite || document.getElementById('previewScolarite').style.display !== 'none';
+                if (!pieceIdUploaded || !scolariteUploaded) return 'Merci d\'ajouter tous les documents obligatoires pour continuer';
+            }
+
+            if (step === 6) {
+                const garantPrenom = document.getElementById('garantPrenom').value.trim();
+                const garantNom = document.getElementById('garantNom').value.trim();
+                const garantTel = document.getElementById('garantTelephone').value.trim();
+                const garantEmail = document.getElementById('garantEmail').value.trim();
+                if (!garantPrenom) return 'Merci de renseigner le prénom du garant';
+                if (!garantNom) return 'Merci de renseigner le nom du garant';
+                if (!garantTel) return 'Merci de renseigner le téléphone du garant';
+                if (!garantEmail) return 'Merci de renseigner l\'email du garant';
+                // Validation format email
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(garantEmail)) return 'L\'email du garant n\'est pas valide';
+            }
+
+            return null;
+        }
+
+        // ================================================================
+        // MAJUSCULE INTELLIGENTE
+        // ================================================================
+        function capitalizeWords(str) {
+            return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
+
+        document.getElementById('nom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        document.getElementById('prenom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        // ================================================================
+        // DATE DE NAISSANCE — formatage auto JJ/MM/AAAA
+        // ================================================================
+        document.getElementById('dateNaissance').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.slice(0, 8);
+
+            let formatted = '';
+            if (value.length > 0) formatted = value.slice(0, 2);
+            if (value.length > 2) formatted += '/' + value.slice(2, 4);
+            if (value.length > 4) formatted += '/' + value.slice(4, 8);
+
+            e.target.value = formatted;
+
+            if (value.length === 8) {
+                const day = value.slice(0, 2);
+                const month = value.slice(2, 4);
+                const year = value.slice(4, 8);
+                document.getElementById('dateNaissanceHidden').value = `${year}-${month}-${day}`;
+            } else {
+                document.getElementById('dateNaissanceHidden').value = '';
+            }
+        });
+
+        document.getElementById('dateNaissance').addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.endsWith('/')) {
+                e.preventDefault();
+                this.value = this.value.slice(0, -1);
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // ================================================================
+        // PHOTO + RECADRAGE
+        // ================================================================
+        const photoCircle = document.getElementById('photoCircle');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+
+        const cropOverlay = document.getElementById('cropOverlay');
+        const cropImage = document.getElementById('cropImage');
+        const cropArea = document.getElementById('cropArea');
+        const cropZoom = document.getElementById('cropZoom');
+        let cropDragging = false;
+        let cropStartX = 0, cropStartY = 0;
+        let imgX = 0, imgY = 0;
+        let imgStartX = 0, imgStartY = 0;
+        let currentScale = 1;
+        let originalFile = null;
+
+        photoCircle.addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) openCropper(e.target.files[0]);
+        });
+
+        function openCropper(file) {
+            if (!file.type.match('image.*')) { showError('Le fichier doit être une image (JPG, PNG, WEBP)'); return; }
+            if (file.size > 5 * 1024 * 1024) { showError('La photo ne doit pas dépasser 5 MB'); return; }
+
+            originalFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                cropImage.src = e.target.result;
+                cropImage.onload = () => {
+                    const areaSize = 260;
+                    const ratio = Math.max(areaSize / cropImage.naturalWidth, areaSize / cropImage.naturalHeight);
+                    currentScale = ratio;
+                    cropZoom.min = Math.round(ratio * 100);
+                    cropZoom.max = Math.round(ratio * 100 * 3);
+                    cropZoom.value = Math.round(ratio * 100);
+                    applyScale();
+                    centerImage();
+                    cropOverlay.classList.add('active');
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyScale() {
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            cropImage.style.width = w + 'px';
+            cropImage.style.height = h + 'px';
+        }
+
+        function centerImage() {
+            const areaSize = 260;
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            imgX = (areaSize - w) / 2;
+            imgY = (areaSize - h) / 2;
+            cropImage.style.left = imgX + 'px';
+            cropImage.style.top = imgY + 'px';
+        }
+
+        function clampPosition() {
+            const areaSize = 260;
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            if (imgX > 0) imgX = 0;
+            if (imgY > 0) imgY = 0;
+            if (imgX < areaSize - w) imgX = areaSize - w;
+            if (imgY < areaSize - h) imgY = areaSize - h;
+            cropImage.style.left = imgX + 'px';
+            cropImage.style.top = imgY + 'px';
+        }
+
+        cropZoom.addEventListener('input', (e) => {
+            const oldScale = currentScale;
+            currentScale = parseInt(e.target.value) / 100;
+            const areaSize = 260;
+            const centerX = areaSize / 2;
+            const centerY = areaSize / 2;
+            const relX = (centerX - imgX) / (cropImage.naturalWidth * oldScale);
+            const relY = (centerY - imgY) / (cropImage.naturalHeight * oldScale);
+            applyScale();
+            imgX = centerX - relX * cropImage.naturalWidth * currentScale;
+            imgY = centerY - relY * cropImage.naturalHeight * currentScale;
+            clampPosition();
+        });
+
+        cropArea.addEventListener('mousedown', (e) => { e.preventDefault(); cropDragging = true; cropStartX = e.clientX; cropStartY = e.clientY; imgStartX = imgX; imgStartY = imgY; });
+        window.addEventListener('mousemove', (e) => { if (!cropDragging) return; imgX = imgStartX + (e.clientX - cropStartX); imgY = imgStartY + (e.clientY - cropStartY); clampPosition(); });
+        window.addEventListener('mouseup', () => { cropDragging = false; });
+
+        cropArea.addEventListener('touchstart', (e) => { if (e.touches.length === 1) { cropDragging = true; cropStartX = e.touches[0].clientX; cropStartY = e.touches[0].clientY; imgStartX = imgX; imgStartY = imgY; } }, { passive: true });
+        window.addEventListener('touchmove', (e) => { if (!cropDragging || e.touches.length !== 1) return; imgX = imgStartX + (e.touches[0].clientX - cropStartX); imgY = imgStartY + (e.touches[0].clientY - cropStartY); clampPosition(); }, { passive: true });
+        window.addEventListener('touchend', () => { cropDragging = false; });
+
+        function cancelCrop() { cropOverlay.classList.remove('active'); photoInput.value = ''; }
+
+        function confirmCrop() {
+            const canvas = document.createElement('canvas');
+            const size = 400;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const areaSize = 260;
+            const sourceX = -imgX / currentScale;
+            const sourceY = -imgY / currentScale;
+            const sourceSize = areaSize / currentScale;
+            ctx.drawImage(cropImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+            canvas.toBlob((blob) => {
+                photoFile = new File([blob], 'photo-profil.jpg', { type: 'image/jpeg' });
+                const url = URL.createObjectURL(blob);
+                photoPreview.src = url;
+                photoPreview.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                cropOverlay.classList.remove('active');
+                photoInput.value = '';
+            }, 'image/jpeg', 0.9);
+        }
+
+        // ================================================================
+        // RYTHME D'ALTERNANCE
+        // ================================================================
+        function updateRythmeOptions() {
+            const type = document.getElementById('typeAlternance').value;
+            const rythmeField = document.getElementById('rythmeField');
+            const customField = document.getElementById('rythmeCustomField');
+            const select = document.getElementById('monRythme');
+
+            select.innerHTML = '<option value="" disabled selected>Sélectionner</option>';
+            select.classList.add('placeholder');
+            rythmeField.style.display = 'none';
+            customField.style.display = 'none';
+
+            if (type === 'symmetric') {
+                rythmeField.style.display = 'block';
+                const options = [
+                    { value: '1-1', label: '1 sem. / 1 sem.' },
+                    { value: '2-2', label: '2 sem. / 2 sem.' },
+                    { value: '3-3', label: '3 sem. / 3 sem.' },
+                    { value: '4-4', label: '4 sem. / 4 sem.' },
+                    { value: '5-5', label: '5 sem. / 5 sem.' },
+                    { value: '6-6', label: '6 sem. / 6 sem.' },
+                    { value: '8-8', label: '8 sem. / 8 sem.' },
+                ];
+                options.forEach(o => { select.innerHTML += `<option value="${o.value}">${o.label}</option>`; });
+            } else if (type === 'asymmetric') {
+                rythmeField.style.display = 'block';
+                const options = [
+                    { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
+                    { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
+                    { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
+                    { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
+                    { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
+                    { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
+                    { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
+                    { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
+                ];
+                options.forEach(o => { select.innerHTML += `<option value="${o.value}">${o.label}</option>`; });
+            } else if (type === 'custom') {
+                customField.style.display = 'block';
+            }
+        }
+
+        // ================================================================
+        // AUTOCOMPLETE VILLES
+        // ================================================================
+        function initVilleAutocomplete(inputId, suggestionsId, onSelect) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            let selectedValue = '';
+
+            input.addEventListener('focus', function() {
+                if (!this.value.trim()) {
+                    suggestions.innerHTML = VILLES_DISPONIBLES.map(v =>
+                        `<div class="ville-suggestion" data-ville="${v}">${v}</div>`
+                    ).join('');
+                    suggestions.style.display = 'block';
+                    attachVilleClicks(suggestions, input, onSelect);
+                }
+            });
+
+            input.addEventListener('input', () => {
+                const pos = input.selectionStart;
+                input.value = capitalizeWords(input.value);
+                input.setSelectionRange(pos, pos);
+
+                const val = input.value.trim().toLowerCase();
+                selectedValue = '';
+                onSelect('');
+
+                if (val.length < 1) { suggestions.style.display = 'none'; return; }
+
+                const matches = VILLES_DISPONIBLES.filter(v => v.toLowerCase().startsWith(val));
+
+                if (matches.length > 0) {
+                    suggestions.innerHTML = matches.map(v =>
+                        `<div class="ville-suggestion" data-ville="${v}">${v}</div>`
+                    ).join('');
+                    suggestions.style.display = 'block';
+                    attachVilleClicks(suggestions, input, onSelect);
+                } else {
+                    if (val.length >= 2) {
+                        suggestions.innerHTML = '<div style="padding: 14px 16px; text-align: center; cursor: default;"><span style="font-size: 13px; color: #E8622A; font-weight: 600;">STERNY arrive bientôt dans ta ville !</span></div>';
+                        suggestions.style.display = 'block';
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    suggestions.style.display = 'none';
+                    const val = input.value.trim();
+                    if (val && !selectedValue) {
+                        const exactMatch = VILLES_DISPONIBLES.find(v => v.toLowerCase() === val.toLowerCase());
+                        if (exactMatch) { input.value = exactMatch; selectedValue = exactMatch; onSelect(exactMatch); }
+                    }
+                }, 200);
+            });
+
+            function attachVilleClicks(cont, inp, cb) {
+                cont.querySelectorAll('.ville-suggestion').forEach(el => {
+                    el.addEventListener('click', () => {
+                        inp.value = el.dataset.ville;
+                        selectedValue = el.dataset.ville;
+                        cont.style.display = 'none';
+                        cb(el.dataset.ville);
+                    });
+                });
+            }
+        }
+
+        initVilleAutocomplete('villeEcoleInput', 'villeEcoleSuggestions', (v) => { villeEcoleSelectionnee = v; });
+        initVilleAutocomplete('villeEntrepriseInput', 'villeEntrepriseSuggestions', (v) => { villeEntrepriseSelectionnee = v; });
+
+        // ================================================================
+        // AUTOCOMPLETE ÉCOLE
+        // ================================================================
+        let schoolSearchTimeout = null;
+
+        const SIGLES_ECOLES = {
+            'ENSAB': 'École nationale supérieure d\'architecture de Bretagne Rennes',
+            'INSA': 'Institut national des sciences appliquées Rennes',
+            'ENSAI': 'École nationale de la statistique et de l\'analyse de l\'information Rennes',
+            'ESIR': 'École supérieure d\'ingénieurs de Rennes',
+            'EESAB': 'École européenne supérieure d\'art de Bretagne Rennes',
+            'RSB': 'Rennes School of Business',
+            'IGR': 'Institut de gestion de Rennes',
+            'ECAM': 'ECAM école d\'ingénieurs Rennes',
+            'EPITECH': 'Epitech école informatique Rennes',
+            'ENS': 'École normale supérieure Rennes',
+            'ASKORIA': 'Askoria formation travail social Rennes',
+            'ICAM': 'Institut catholique d\'arts et métiers Bretagne',
+            'ICR': 'Institut Catholique de Rennes',
+            'ESUP': 'ESUP école supérieure de commerce et management Rennes',
+            'PIGIER': 'Pigier Performance école privée Rennes',
+            'AFTEC': 'AFTEC formation Rennes',
+            'ECOFAC': 'Ecofac Business School Rennes',
+            'IFAG': 'IFAG école de management Rennes',
+            'MBWAY': 'MBway école de management Rennes',
+            'MYDIGITALSCHOOL': 'MyDigitalSchool Rennes',
+            'SUPDECOM': 'Sup de Com école de communication Rennes',
+            'MEDIASCHOOL': 'MediaSchool Rennes',
+            'ESDES': 'ESDES Business School Rennes',
+            'IPAC': 'IPAC Bachelor Factory Rennes',
+            'ISEFAC': 'ISEFAC école de commerce Rennes',
+            'DIGISCHOOL': 'DigiSchool Rennes',
+            'TOTEM': 'Totem Formation Rennes',
+            'EFFICOM': 'Efficom Rennes',
+            'ESARC': 'ESARC école de commerce Rennes',
+            'CAMPUS115': 'Campus 115 Rennes',
+            'ENSA': 'École nationale supérieure d\'architecture Nantes',
+            'CENTRALE': 'École Centrale Nantes',
+            'AUDENCIA': 'Audencia Business School Nantes',
+            'IMT': 'Institut Mines-Télécom Atlantique Nantes',
+            'POLYTECH': 'Polytech école d\'ingénieurs Nantes',
+            'YNOV': 'Ynov campus numérique Nantes',
+            'EKLYA': 'Eklya School of Business Nantes',
+            'ESMA': 'ESMA école de cinéma d\'animation Nantes',
+            'LISAA': 'LISAA école de design Nantes',
+            'SUP2I': 'Sup2i école informatique Nantes',
+            'IDRAC': 'IDRAC Business School Nantes',
+            'ESCD3A': 'ESCD 3A école de commerce Nantes',
+            'ENIB': 'École nationale d\'ingénieurs de Brest',
+            'ISEN': 'Institut supérieur de l\'électronique et du numérique Brest',
+            'UBO': 'Université de Bretagne Occidentale Brest',
+            'ESIAB': 'ESIAB école d\'ingénieurs agroalimentaire Brest',
+            'IUT': 'Institut universitaire de technologie',
+            'BTS': 'Brevet de technicien supérieur',
+            'IFSI': 'Institut de formation en soins infirmiers',
+            'IRTS': 'Institut régional du travail social',
+            'CFA': 'Centre de formation d\'apprentis',
+            'CNAM': 'Conservatoire national des arts et métiers',
+            'UBS': 'Université Bretagne Sud',
+            'AGROCAMPUS': 'Agrocampus Ouest Rennes',
+            'SUPINFO': 'Supinfo école informatique',
+            'STUDI': 'Studi école en ligne',
+            'WIS': 'WIS Web International School',
+            'ESC': 'École supérieure de commerce',
+        };
+
+        const VILLES_LANCEMENT = ['rennes', 'nantes', 'brest', 'quimper', 'lorient', 'vannes', 'saint-malo', 'saint-brieuc', 'fougeres', 'vitre'];
+
+        const ECOLES_POPULAIRES = [
+            { name: 'Université de Rennes', city: 'Rennes', aliases: ['rennes 1', 'univ rennes', 'ur1', 'université'] },
+            { name: 'Université Rennes 2', city: 'Rennes', aliases: ['rennes 2', 'ur2', 'lettres', 'langues'] },
+            { name: 'INSA Rennes', city: 'Rennes', aliases: ['insa', 'ingénieur', 'ingenieur'] },
+            { name: 'ENSAB', city: 'Rennes', aliases: ['ensab', 'archi', 'architecture'] },
+            { name: 'Sciences Po Rennes', city: 'Rennes', aliases: ['sciences po', 'iep', 'politique'] },
+            { name: 'Rennes School of Business', city: 'Rennes', aliases: ['rsb', 'business', 'commerce', 'esc'] },
+            { name: 'IGR-IAE Rennes', city: 'Rennes', aliases: ['igr', 'iae', 'gestion', 'management'] },
+            { name: 'ESIR', city: 'Rennes', aliases: ['esir', 'ingénieur', 'informatique'] },
+            { name: 'EESAB Rennes', city: 'Rennes', aliases: ['eesab', 'beaux-arts', 'art'] },
+            { name: 'IUT de Rennes', city: 'Rennes', aliases: ['iut', 'iut rennes', 'but'] },
+            { name: 'EPITECH Rennes', city: 'Rennes', aliases: ['epitech', 'info', 'code'] },
+            { name: 'ENS Rennes', city: 'Rennes', aliases: ['ens', 'normale sup'] },
+            { name: 'ENSAI', city: 'Rennes', aliases: ['ensai', 'statistique', 'data'] },
+            { name: 'Askoria', city: 'Rennes', aliases: ['askoria', 'social', 'éducateur'] },
+            { name: 'ECAM Rennes', city: 'Rennes', aliases: ['ecam', 'ingénieur'] },
+            { name: 'CFA de la CCI Bretagne', city: 'Rennes', aliases: ['cfa', 'cci', 'apprentissage'] },
+            { name: 'Institut Catholique de Rennes', city: 'Rennes', aliases: ['icr', 'catholique', 'privé', 'privee'] },
+            { name: 'ESUP Rennes', city: 'Rennes', aliases: ['esup', 'commerce', 'management', 'privé'] },
+            { name: 'Pigier Performance Rennes', city: 'Rennes', aliases: ['pigier', 'comptabilité', 'gestion', 'privé'] },
+            { name: 'AFTEC Rennes', city: 'Rennes', aliases: ['aftec', 'alternance', 'formation', 'privé'] },
+            { name: 'Ecofac Business School', city: 'Rennes', aliases: ['ecofac', 'business', 'commerce', 'privé'] },
+            { name: 'IFAG Rennes', city: 'Rennes', aliases: ['ifag', 'management', 'entrepreneur', 'privé'] },
+            { name: 'MBway Rennes', city: 'Rennes', aliases: ['mbway', 'mba', 'management', 'business', 'privé'] },
+            { name: 'MyDigitalSchool Rennes', city: 'Rennes', aliases: ['mydigitalschool', 'mds', 'digital', 'web', 'privé'] },
+            { name: 'Sup de Com Rennes', city: 'Rennes', aliases: ['supdecom', 'sup de com', 'communication', 'privé'] },
+            { name: 'MediaSchool Rennes', city: 'Rennes', aliases: ['mediaschool', 'média', 'journalisme', 'communication', 'privé'] },
+            { name: 'IPAC Bachelor Factory Rennes', city: 'Rennes', aliases: ['ipac', 'bachelor', 'privé'] },
+            { name: 'ISEFAC Rennes', city: 'Rennes', aliases: ['isefac', 'commerce', 'luxe', 'sport', 'privé'] },
+            { name: 'Efficom Rennes', city: 'Rennes', aliases: ['efficom', 'informatique', 'design', 'privé'] },
+            { name: 'ESARC Rennes', city: 'Rennes', aliases: ['esarc', 'commerce', 'immobilier', 'privé'] },
+            { name: 'Totem Formation', city: 'Rennes', aliases: ['totem', 'formation', 'alternance', 'privé'] },
+            { name: 'Nantes Université', city: 'Nantes', aliases: ['nantes', 'univ nantes', 'université'] },
+            { name: 'Centrale Nantes', city: 'Nantes', aliases: ['centrale', 'ingénieur'] },
+            { name: 'Audencia', city: 'Nantes', aliases: ['audencia', 'business', 'commerce'] },
+            { name: 'ENSA Nantes', city: 'Nantes', aliases: ['ensa nantes', 'architecture', 'archi'] },
+            { name: 'IMT Atlantique', city: 'Nantes', aliases: ['imt', 'mines', 'télécom', 'ingénieur'] },
+            { name: 'Polytech Nantes', city: 'Nantes', aliases: ['polytech', 'ingénieur'] },
+            { name: 'IUT de Nantes', city: 'Nantes', aliases: ['iut nantes', 'but'] },
+            { name: 'EPITECH Nantes', city: 'Nantes', aliases: ['epitech nantes', 'info'] },
+            { name: 'Ynov Nantes', city: 'Nantes', aliases: ['ynov', 'digital', 'numérique'] },
+            { name: 'IDRAC Business School Nantes', city: 'Nantes', aliases: ['idrac', 'business', 'commerce', 'privé'] },
+            { name: 'LISAA Nantes', city: 'Nantes', aliases: ['lisaa', 'design', 'graphisme', 'animation', 'privé'] },
+            { name: 'ESMA Nantes', city: 'Nantes', aliases: ['esma', 'cinéma', 'animation', '3d', 'privé'] },
+            { name: 'Pigier Nantes', city: 'Nantes', aliases: ['pigier nantes', 'comptabilité', 'gestion', 'privé'] },
+            { name: 'AFTEC Nantes', city: 'Nantes', aliases: ['aftec nantes', 'alternance', 'formation', 'privé'] },
+            { name: 'MBway Nantes', city: 'Nantes', aliases: ['mbway nantes', 'mba', 'management', 'privé'] },
+            { name: 'MyDigitalSchool Nantes', city: 'Nantes', aliases: ['mydigitalschool nantes', 'mds', 'digital', 'privé'] },
+            { name: 'Sup de Com Nantes', city: 'Nantes', aliases: ['supdecom nantes', 'communication', 'privé'] },
+            { name: 'IFAG Nantes', city: 'Nantes', aliases: ['ifag nantes', 'management', 'privé'] },
+            { name: 'Ecofac Nantes', city: 'Nantes', aliases: ['ecofac nantes', 'business', 'privé'] },
+            { name: 'Université de Bretagne Occidentale', city: 'Brest', aliases: ['ubo', 'brest', 'université'] },
+            { name: 'ENIB', city: 'Brest', aliases: ['enib', 'ingénieur', 'brest'] },
+            { name: 'IMT Atlantique Brest', city: 'Brest', aliases: ['imt brest', 'mines', 'télécom'] },
+            { name: 'ISEN Brest', city: 'Brest', aliases: ['isen', 'électronique', 'numérique'] },
+            { name: 'École Navale', city: 'Brest', aliases: ['navale', 'marine', 'militaire'] },
+            { name: 'AFTEC Brest', city: 'Brest', aliases: ['aftec brest', 'alternance', 'formation', 'privé'] },
+            { name: 'Pigier Brest', city: 'Brest', aliases: ['pigier brest', 'comptabilité', 'privé'] },
+            { name: 'IUT de Quimper', city: 'Quimper', aliases: ['iut quimper', 'but'] },
+            { name: 'UBO Quimper', city: 'Quimper', aliases: ['ubo quimper', 'université'] },
+            { name: 'Université Bretagne Sud', city: 'Lorient', aliases: ['ubs', 'lorient', 'université'] },
+            { name: 'IUT de Lorient', city: 'Lorient', aliases: ['iut lorient', 'but'] },
+            { name: 'Université Bretagne Sud', city: 'Vannes', aliases: ['ubs vannes', 'université'] },
+            { name: 'IUT de Vannes', city: 'Vannes', aliases: ['iut vannes', 'but'] },
+            { name: 'AFTEC Vannes', city: 'Vannes', aliases: ['aftec vannes', 'formation', 'privé'] },
+            { name: 'IUT de Saint-Malo', city: 'Saint-Malo', aliases: ['iut saint-malo', 'but', 'tourisme'] },
+            { name: 'IUT de Saint-Brieuc', city: 'Saint-Brieuc', aliases: ['iut saint-brieuc', 'but', 'agroalimentaire'] },
+        ];
+
+        (function setupSchoolSearch() {
+            const input = document.getElementById('ecole');
+            const suggestionsDiv = document.getElementById('schoolSuggestions');
+
+            input.addEventListener('focus', function() {
+                if (!this.value.trim()) showLocalSchoolSuggestions(ECOLES_POPULAIRES);
+            });
+
+            input.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(schoolSearchTimeout);
+
+                if (!query) { showLocalSchoolSuggestions(ECOLES_POPULAIRES); return; }
+
+                const queryLower = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                const localMatches = ECOLES_POPULAIRES.filter(e => {
+                    const nameLower = e.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const cityLower = (e.city || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    if (nameLower.includes(queryLower)) return true;
+                    if (cityLower.includes(queryLower)) return true;
+                    return e.aliases.some(a => a.includes(queryLower));
+                });
+
+                if (localMatches.length > 0) showLocalSchoolSuggestions(localMatches);
+
+                if (query.length >= 2) {
+                    schoolSearchTimeout = setTimeout(() => { searchSchool(query); }, 300);
+                } else if (localMatches.length === 0) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.school-search-wrapper')) suggestionsDiv.style.display = 'none';
+            });
+
+            function showLocalSchoolSuggestions(items) {
+                suggestionsDiv.innerHTML = items.map(e => {
+                    const displayName = e.name + (e.city ? ' — ' + e.city : '');
+                    return '<div class="school-suggestion-item" data-name="' + displayName.replace(/"/g, '&quot;') + '"><strong>' + e.name + '</strong>' + (e.city ? '<small>' + e.city + '</small>' : '') + '</div>';
+                }).join('');
+                suggestionsDiv.querySelectorAll('.school-suggestion-item[data-name]').forEach(item => {
+                    item.addEventListener('click', () => { input.value = item.dataset.name; suggestionsDiv.style.display = 'none'; });
+                });
+                suggestionsDiv.style.display = 'block';
+            }
+        })();
+
+        async function searchSchool(query) {
+            const suggestionsDiv = document.getElementById('schoolSuggestions');
+            try {
+                const seen = new Map();
+                const queryUpper = query.trim().toUpperCase();
+                const expandedName = SIGLES_ECOLES[queryUpper] || null;
+                const searchQueries = [query];
+                if (expandedName) searchQueries.push(expandedName);
+
+                if (!window._mbxSession) window._mbxSession = crypto.randomUUID();
+                const allPromises = [];
+                const promiseLabels = [];
+
+                for (const q of searchQueries) {
+                    const eq = encodeURIComponent(q);
+                    allPromises.push(fetch('https://api.mapbox.com/search/searchbox/v1/suggest?q=' + encodeURIComponent(q) + '&language=fr&country=fr&types=poi&limit=5&session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN).then(r => r.ok ? r.json() : { suggestions: [] }).catch(() => ({ suggestions: [] })));
+                    promiseLabels.push('mapbox');
+                    allPromises.push(fetch('https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-parcoursup/records?where=search(g_ea_lib_vx%2C%22' + eq + '%22)&limit=10&select=g_ea_lib_vx%2Cville_etab').then(r => r.ok ? r.json() : { results: [] }).catch(() => ({ results: [] })));
+                    promiseLabels.push('parcoursup');
+                    allPromises.push(fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(q) + '&limit=5&lang=fr&osm_tag=amenity:university&osm_tag=amenity:college&osm_tag=amenity:school').then(r => r.ok ? r.json() : { features: [] }).catch(() => ({ features: [] })));
+                    promiseLabels.push('photon');
+                }
+
+                const allResults = await Promise.all(allPromises);
+
+                function normalKey(name, city) {
+                    const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+                    return norm(name) + '|' + norm(city || '');
+                }
+
+                function isVilleLancement(city) {
+                    if (!city) return false;
+                    const cityNorm = city.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[-\s]/g, '');
+                    return VILLES_LANCEMENT.some(v => { const vNorm = v.replace(/[-\s]/g, ''); return cityNorm.includes(vNorm) || vNorm.includes(cityNorm); });
+                }
+
+                const allRetrievePromises = [];
+
+                for (let i = 0; i < allResults.length; i++) {
+                    const data = allResults[i];
+                    const label = promiseLabels[i];
+                    if (label === 'mapbox' && data.suggestions) {
+                        data.suggestions.filter(s => s.mapbox_id && s.name).slice(0, 3).forEach(s => {
+                            allRetrievePromises.push(fetch('https://api.mapbox.com/search/searchbox/v1/retrieve/' + s.mapbox_id + '?session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN).then(r => r.ok ? r.json() : null).catch(() => null));
+                        });
+                    } else if (label === 'parcoursup' && data.results) {
+                        data.results.forEach(r => { if (!isVilleLancement(r.ville_etab)) return; const key = normalKey(r.g_ea_lib_vx, r.ville_etab); if (!seen.has(key)) seen.set(key, { name: r.g_ea_lib_vx, city: r.ville_etab || '' }); });
+                    } else if (label === 'photon' && data.features) {
+                        data.features.forEach(f => { const props = f.properties || {}; if (props.name) { const city = props.city || props.county || ''; if (!isVilleLancement(city)) return; const key = normalKey(props.name, city); if (!seen.has(key)) seen.set(key, { name: props.name, city }); } });
+                    }
+                }
+
+                const eduCategories = ['school', 'college', 'university', 'education', 'training', 'library'];
+                const eduKeywords = ['école', 'ecole', 'université', 'universite', 'lycée', 'lycee', 'institut', 'campus', 'faculté', 'faculte', 'ensa', 'insa', 'isen', 'iut', 'cfa', 'formation', 'supérieur', 'superieur', 'académie', 'academie', 'conservatoire', 'polytech', 'business school', 'school of'];
+                const retrieveResults = await Promise.all(allRetrievePromises);
+                retrieveResults.forEach(rData => {
+                    if (rData && rData.features && rData.features[0]) {
+                        const f = rData.features[0]; const props = f.properties || {};
+                        const name = props.name || ''; const city = props.context?.place?.name || props.context?.locality?.name || '';
+                        if (!isVilleLancement(city)) return;
+                        const categories = (props.poi_category || []).map(c => c.toLowerCase());
+                        const nameLower = name.toLowerCase();
+                        const isSchool = categories.some(c => eduCategories.includes(c)) || eduKeywords.some(kw => nameLower.includes(kw));
+                        if (!isSchool) return;
+                        const key = normalKey(name, city);
+                        if (name && !seen.has(key)) seen.set(key, { name, city });
+                    }
+                });
+
+                let unique = Array.from(seen.values()).slice(0, 7);
+                if (unique.length === 0) { suggestionsDiv.innerHTML = '<div class="school-suggestion-item" style="color: #9CA3AF; cursor: default;">Aucun établissement trouvé</div>'; suggestionsDiv.style.display = 'block'; return; }
+
+                suggestionsDiv.innerHTML = unique.map(r => {
+                    const displayName = r.name + (r.city ? ' — ' + r.city : '');
+                    return '<div class="school-suggestion-item" data-name="' + displayName.replace(/"/g, '&quot;') + '"><strong>' + r.name + '</strong>' + (r.city ? '<small>' + r.city + '</small>' : '') + '</div>';
+                }).join('');
+                suggestionsDiv.querySelectorAll('.school-suggestion-item[data-name]').forEach(item => {
+                    item.addEventListener('click', () => { document.getElementById('ecole').value = item.dataset.name; suggestionsDiv.style.display = 'none'; });
+                });
+                suggestionsDiv.style.display = 'block';
+            } catch (e) { console.error('Erreur recherche école:', e); }
+        }
+
+        // ================================================================
+        // AUTOCOMPLETE ANNÉE D'ÉTUDES
+        // ================================================================
+        const ANNEES_ETUDES = [
+            { value: 'Bac+1', label: 'Bac+1 — L1 / BUT1 / BTS1 / PASS', aliases: ['l1', 'licence 1', 'licence', 'bac+1', 'première année', '1ere annee', 'but1', 'but 1', 'but', 'bts1', 'bts 1', 'bts', 'paces', 'pass', 'las', 'prepa 1', 'prépa', 'cpge', 'cap', 'cap 1'] },
+            { value: 'Bac+2', label: 'Bac+2 — L2 / BUT2 / BTS2 / Prépa', aliases: ['l2', 'licence 2', 'licence', 'bac+2', 'deuxième année', '2eme annee', 'but2', 'but 2', 'but', 'bts2', 'bts 2', 'bts', 'dut', 'prepa 2', 'prépa', 'cpge', 'dfgsm1', 'deust'] },
+            { value: 'Bac+3', label: 'Bac+3 — L3 / BUT3 / Licence / Bachelor', aliases: ['l3', 'licence 3', 'licence', 'bac+3', 'troisième année', '3eme annee', 'but3', 'but 3', 'but', 'bachelor', 'licence pro', 'licence professionnelle', 'lp', 'dfgsm2', 'dce', 'de'] },
+            { value: 'Bac+4', label: 'Bac+4 — M1 / Master 1', aliases: ['m1', 'master 1', 'master', 'bac+4', 'quatrième année', '4eme annee', 'mba', 'mba 1', 'msc', 'dfgsm3', 'dfasm1', 'magistère'] },
+            { value: 'Bac+5', label: 'Bac+5 — M2 / Master 2 / Ingénieur', aliases: ['m2', 'master 2', 'master', 'bac+5', 'cinquième année', '5eme annee', 'ingénieur', 'ingenieur', 'diplôme ingénieur', 'mba', 'mba 2', 'msc', 'dfasm2', 'dea', 'dess'] },
+            { value: 'Bac+6', label: 'Bac+6 — Mastère / MS / Post-master', aliases: ['bac+6', 'sixième année', '6eme annee', 'mastère', 'mastere', 'mastère spécialisé', 'ms', 'post-master', 'dfasm3', 'externat', 'thèse pharmacie', 'doctorat', 'thèse', 'these'] },
+            { value: 'Bac+7', label: 'Bac+7 — Doctorat / Thèse / Internat', aliases: ['bac+7', 'septième année', '7eme annee', 'doctorat', 'thèse', 'these', 'phd', 'internat 1', 'internat', 'des1', 'des'] },
+            { value: 'Bac+8', label: 'Bac+8 — Doctorat / Internat', aliases: ['bac+8', 'huitième année', '8eme annee', 'doctorat', 'thèse', 'these', 'phd', 'd1', 'd2', 'd3', 'internat 2', 'internat', 'des2', 'des'] },
+            { value: 'Bac+9', label: 'Bac+9 — Internat / Doctorat', aliases: ['bac+9', 'neuvième année', '9eme annee', 'internat 3', 'internat', 'des3', 'des', 'médecine', 'medecine', 'doctorat'] },
+            { value: 'Bac+10', label: 'Bac+10 — Internat / Spécialité', aliases: ['bac+10', 'dixième année', '10eme annee', 'internat 4', 'internat', 'des4', 'des', 'spécialité', 'specialite', 'doctorat'] },
+            { value: 'Bac+11', label: 'Bac+11 — Internat / Chirurgie', aliases: ['bac+11', 'onzième année', '11eme annee', 'internat 5', 'internat', 'des5', 'des', 'chirurgie'] },
+            { value: 'Bac+12', label: 'Bac+12 — Internat / Sur-spécialité', aliases: ['bac+12', 'douzième année', '12eme annee', 'internat 6', 'internat', 'des6', 'des', 'surspécialité'] },
+            { value: 'Bac+13', label: 'Bac+13 — Post-internat / Clinicat', aliases: ['bac+13', 'treizième année', '13eme annee', 'post-internat', 'clinicat', 'chef de clinique'] },
+            { value: 'Bac+14', label: 'Bac+14 — Post-doc / Clinicat', aliases: ['bac+14', 'quatorzième année', '14eme annee', 'post-doc', 'postdoc', 'clinicat 2'] },
+            { value: 'Bac+15', label: 'Bac+15 — Sur-spécialisation', aliases: ['bac+15', 'quinzième année', '15eme annee', 'sur-spécialisation'] },
+            { value: 'Bac+16', label: 'Bac+16', aliases: ['bac+16', 'seizième année', '16eme annee'] },
+        ];
+
+        (function setupAnneeSearch() {
+            const input = document.getElementById('anneeEtudes');
+            const suggestionsDiv = document.getElementById('anneeSuggestions');
+
+            input.addEventListener('focus', function() { if (!this.value.trim()) showAnneeSuggestions(ANNEES_ETUDES); });
+
+            input.addEventListener('input', function() {
+                const query = this.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (!query) { showAnneeSuggestions(ANNEES_ETUDES); return; }
+
+                const scored = [];
+                ANNEES_ETUDES.forEach(a => {
+                    const labelLower = a.label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const valueLower = a.value.toLowerCase();
+                    let score = 0;
+                    if (valueLower.startsWith(query) || labelLower.startsWith(query)) score = 100;
+                    else if (labelLower.includes(query)) score = 80;
+                    else {
+                        for (const alias of a.aliases) {
+                            const aliasNorm = alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                            if (aliasNorm === query) score = Math.max(score, 70);
+                            else if (aliasNorm.startsWith(query)) score = Math.max(score, 50);
+                            else if (aliasNorm.includes(query)) score = Math.max(score, 30);
+                        }
+                    }
+                    if (score > 0) scored.push({ annee: a, score });
+                });
+
+                scored.sort((a, b) => b.score - a.score);
+                if (scored.length > 0) showAnneeSuggestions(scored.map(s => s.annee));
+                else suggestionsDiv.style.display = 'none';
+            });
+
+            document.addEventListener('click', function(e) { if (!e.target.closest('.annee-search-wrapper')) suggestionsDiv.style.display = 'none'; });
+
+            function showAnneeSuggestions(items) {
+                suggestionsDiv.innerHTML = items.map(a => '<div class="annee-suggestion-item" data-value="' + a.value + '">' + a.label + '</div>').join('');
+                suggestionsDiv.querySelectorAll('.annee-suggestion-item').forEach(item => {
+                    item.addEventListener('click', () => { input.value = item.dataset.value; suggestionsDiv.style.display = 'none'; });
+                });
+                suggestionsDiv.style.display = 'block';
+            }
+        })();
+
+        // ================================================================
+        // AUTOCOMPLETE FILIÈRE / DOMAINE
+        // ================================================================
+        const FILIERES = [
+            { value: 'Informatique', aliases: ['info', 'dev', 'développement', 'developpement', 'programmation', 'code', 'software', 'logiciel', 'sio', 'slam', 'sisr', 'sn', 'cda', 'dwwm'] },
+            { value: 'Commerce', aliases: ['business', 'vente', 'commercial', 'négoce', 'negoce', 'ndrc', 'mco', 'tc', 'technico-commercial'] },
+            { value: 'Marketing', aliases: ['market', 'publicité', 'pub', 'digital', 'sem', 'seo', 'sea', 'cm', 'community manager'] },
+            { value: 'Finance', aliases: ['banque', 'comptabilité', 'comptabilite', 'audit', 'gestion financière', 'cca', 'cg', 'cgp', 'daf'] },
+            { value: 'Comptabilité / Gestion', aliases: ['compta', 'dcg', 'dscg', 'expertise comptable', 'gestion', 'cca', 'cg', 'dec', 'cem', 'contrôle de gestion'] },
+            { value: 'Droit', aliases: ['juridique', 'avocat', 'notaire', 'juriste', 'loi', 'djce', 'crfpa', 'eda', 'enm', 'droit des affaires', 'droit privé', 'droit public'] },
+            { value: 'Ressources humaines', aliases: ['rh', 'recrutement', 'personnel', 'paie', 'social', 'grh', 'gpec', 'sirh', 'drh'] },
+            { value: 'Communication', aliases: ['com', 'média', 'media', 'journalisme', 'presse', 'rédaction', 'rp', 'relations publiques', 'bts com'] },
+            { value: 'Architecture', aliases: ['archi', 'urbanisme', 'bâtiment', 'batiment', 'construction', 'deea', 'dea', 'hmonp', 'dplg'] },
+            { value: 'Design', aliases: ['graphisme', 'graphique', 'ux', 'ui', 'web design', 'création visuelle', 'dnmade', 'dsaa', 'bts design'] },
+            { value: 'Génie civil', aliases: ['btp', 'travaux publics', 'construction', 'structures', 'chantier', 'gc', 'gccd', 'epc'] },
+            { value: 'Génie mécanique', aliases: ['mécanique', 'mecanique', 'conception', 'cao', 'usinage', 'production', 'gmp', 'gim', 'crsa', 'cpi', 'cprp'] },
+            { value: 'Génie électrique', aliases: ['électricité', 'electricite', 'électronique', 'electronique', 'automatisme', 'courant', 'geii', 'ee', 'eea', 'electrotechnique'] },
+            { value: 'Énergie', aliases: ['énergétique', 'energetique', 'thermique', 'renouvelable', 'environnement', 'enr', 'gte', 'met', 'fluides'] },
+            { value: 'Électronique', aliases: ['electronique', 'systèmes embarqués', 'microcontroleur', 'signal', 'geii', 'ase', 'ese'] },
+            { value: 'Chimie', aliases: ['biochimie', 'chimiste', 'laboratoire', 'formulation', 'matériaux', 'sgm', 'gc chimie', 'cpi chimie'] },
+            { value: 'Biologie', aliases: ['bio', 'biotechnologie', 'biotech', 'sciences de la vie', 'génétique', 'bbc', 'bcg', 'svt', 'bop', 'bbe'] },
+            { value: 'Médecine', aliases: ['médical', 'medical', 'santé', 'sante', 'docteur', 'chirurgie', 'clinique', 'pass', 'las', 'ecn', 'edn', 'dfgsm', 'dfasm'] },
+            { value: 'Pharmacie', aliases: ['pharma', 'officine', 'médicament', 'medicament', 'dfgsp', 'dfasp', 'internat pharmacie'] },
+            { value: 'Infirmier / Soins', aliases: ['infirmière', 'infirmier', 'ifsi', 'soins', 'paramédical', 'aide-soignant', 'ide', 'as', 'dei'] },
+            { value: 'Kinésithérapie', aliases: ['kiné', 'kine', 'rééducation', 'reeducation', 'physiothérapie', 'mkde', 'ifmk', 'demk'] },
+            { value: 'Psychologie', aliases: ['psycho', 'psychologue', 'neuropsychologie', 'clinique', 'tcc', 'lpro psycho'] },
+            { value: 'Sciences politiques', aliases: ['sciences po', 'politique', 'iep', 'géopolitique', 'ri', 'relations internationales'] },
+            { value: 'Économie', aliases: ['eco', 'économiste', 'economiste', 'macroéconomie', 'microéconomie', 'aes', 'ase', 'seg', 'mass'] },
+            { value: 'Logistique / Supply Chain', aliases: ['logistique', 'supply', 'transport', 'approvisionnement', 'chaîne', 'glt', 'tsmel', 'qlio', 'sco'] },
+            { value: 'Agroalimentaire', aliases: ['agro', 'alimentaire', 'nutrition', 'agroécologie', 'agronomie', 'iaa', 'gbio', 'sta'] },
+            { value: 'Environnement', aliases: ['écologie', 'ecologie', 'développement durable', 'climat', 'eau', 'déchets', 'hse', 'qhse', 'edd', 'gedd', 'ene'] },
+            { value: 'Travail social', aliases: ['social', 'éducateur', 'educateur', 'assistant social', 'askoria', 'dees', 'deass', 'decesf', 'caferuis', 'me', 'es', 'ass'] },
+            { value: 'Immobilier', aliases: ['immo', 'transaction', 'gestion locative', 'promotion', 'foncier', 'bts pi', 'pi', 'mogi'] },
+            { value: 'Tourisme / Hôtellerie', aliases: ['tourisme', 'hôtellerie', 'hotellerie', 'restauration', 'accueil', 'voyage', 'bts tourisme', 'mhr', 'hr'] },
+            { value: 'Sport / STAPS', aliases: ['sport', 'staps', 'éducation physique', 'coaching', 'entraîneur', 'apas', 'em', 'es sport', 'bpjeps', 'dejeps'] },
+            { value: 'Arts / Beaux-Arts', aliases: ['art', 'beaux-arts', 'peinture', 'sculpture', 'création artistique', 'dnsep', 'dna', 'dnap', 'dnmade'] },
+            { value: 'Audiovisuel / Cinéma', aliases: ['audiovisuel', 'cinéma', 'cinema', 'vidéo', 'montage', 'réalisation', 'son', 'bts audiovisuel', 'mc', 'ina'] },
+            { value: 'Musique', aliases: ['musicien', 'conservatoire', 'composition', 'instrument', 'son', 'dem', 'dnspm', 'cfem'] },
+            { value: 'Mode / Textile', aliases: ['mode', 'textile', 'couture', 'stylisme', 'fashion', 'dtms', 'mmv', 'bts mode'] },
+            { value: 'Langues / LEA', aliases: ['lea', 'langues', 'traduction', 'interprétation', 'llcer', 'anglais', 'espagnol', 'llce', 'fle', 'lansad'] },
+            { value: 'Lettres / Littérature', aliases: ['lettres', 'littérature', 'litterature', 'français', 'francais', 'philologie', 'lm', 'lettres modernes', 'lettres classiques'] },
+            { value: 'Histoire', aliases: ['historien', 'patrimoine', 'archéologie', 'archeologie', 'hg', 'histoire géo', 'histoire de l\'art'] },
+            { value: 'Géographie', aliases: ['géo', 'geo', 'cartographie', 'aménagement', 'territoire', 'gea', 'sig', 'géomatique'] },
+            { value: 'Philosophie', aliases: ['philo', 'philosophe', 'éthique', 'pensée', 'capes philo', 'agreg philo'] },
+            { value: 'Sociologie', aliases: ['socio', 'sciences sociales', 'société', 'societe', 'aes', 'ethnologie', 'anthropologie'] },
+            { value: 'Mathématiques', aliases: ['maths', 'math', 'statistiques', 'stats', 'calcul', 'miashs', 'mass', 'mi', 'capes maths', 'agreg maths'] },
+            { value: 'Physique', aliases: ['physique', 'physiques', 'optique', 'mécanique quantique', 'astrophysique', 'pc', 'mp', 'psi', 'physique chimie'] },
+            { value: 'Data / Intelligence artificielle', aliases: ['data', 'ia', 'ai', 'machine learning', 'big data', 'données', 'data science', 'ml', 'dl', 'nlp', 'miage', 'siad'] },
+            { value: 'Cybersécurité', aliases: ['cyber', 'sécurité informatique', 'securite', 'réseau', 'hacking', 'ssi', 'rssi', 'pentest', 'soc'] },
+            { value: 'Réseaux / Télécoms', aliases: ['réseau', 'reseau', 'télécom', 'telecom', 'infrastructure', 'système', 'admin sys', 'rt', 'sio', 'asur'] },
+            { value: 'Robotique', aliases: ['robot', 'automatique', 'mécatronique', 'drones', 'ari', 'arm'] },
+            { value: 'Aéronautique / Spatial', aliases: ['aéro', 'aero', 'aviation', 'espace', 'spatial', 'satellite', 'isae', 'enac', 'supaero', 'elsa'] },
+            { value: 'Automobile', aliases: ['auto', 'véhicule', 'vehicule', 'moteur', 'mobilité', 'mva', 'bts ava', 'estaca'] },
+            { value: 'Vétérinaire', aliases: ['véto', 'veto', 'animaux', 'animal', 'clinique vétérinaire', 'env', 'enva', 'envt'] },
+        ];
+
+        (function setupFiliereSearch() {
+            const input = document.getElementById('filiere');
+            const suggestionsDiv = document.getElementById('filiereSuggestions');
+
+            input.addEventListener('focus', function() { if (!this.value.trim()) showFiliereSuggestions(FILIERES); });
+
+            input.addEventListener('input', function() {
+                const query = this.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                if (!query) { showFiliereSuggestions(FILIERES); return; }
+
+                const scored = [];
+                FILIERES.forEach(f => {
+                    const valueLower = f.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    let score = 0;
+                    if (valueLower.startsWith(query)) score = 100;
+                    else if (valueLower.split(/[\s\/]+/).some(w => w.startsWith(query))) score = 80;
+                    else if (valueLower.includes(query)) score = 60;
+                    else {
+                        for (const alias of f.aliases) {
+                            const aliasNorm = alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                            if (aliasNorm.startsWith(query)) score = Math.max(score, 40);
+                            else if (aliasNorm.includes(query)) score = Math.max(score, 20);
+                        }
+                    }
+                    if (score > 0) scored.push({ filiere: f, score });
+                });
+
+                scored.sort((a, b) => b.score - a.score || a.filiere.value.localeCompare(b.filiere.value));
+                if (scored.length > 0) showFiliereSuggestions(scored.map(s => s.filiere));
+                else suggestionsDiv.style.display = 'none';
+            });
+
+            document.addEventListener('click', function(e) { if (!e.target.closest('.filiere-search-wrapper')) suggestionsDiv.style.display = 'none'; });
+
+            function showFiliereSuggestions(items) {
+                suggestionsDiv.innerHTML = items.map(f => '<div class="filiere-suggestion-item" data-value="' + f.value.replace(/"/g, '&quot;') + '">' + f.value + '</div>').join('');
+                suggestionsDiv.querySelectorAll('.filiere-suggestion-item').forEach(item => {
+                    item.addEventListener('click', () => { input.value = item.dataset.value; suggestionsDiv.style.display = 'none'; });
+                });
+                suggestionsDiv.style.display = 'block';
+            }
+        })();
+
+        // ================================================================
+        // DOCUMENTS : click, drag & drop, suppression
+        // ================================================================
+        const docConfig = [
+            { zone: 'uploadPieceId', input: 'inputPieceId', preview: 'previewPieceId', name: 'namePieceId', key: 'pieceId' },
+            { zone: 'uploadScolarite', input: 'inputScolarite', preview: 'previewScolarite', name: 'nameScolarite', key: 'scolarite' },
+            { zone: 'uploadRIB', input: 'inputRIB', preview: 'previewRIB', name: 'nameRIB', key: 'rib' },
+        ];
+
+        docConfig.forEach(cfg => {
+            const zone = document.getElementById(cfg.zone);
+            const input = document.getElementById(cfg.input);
+
+            zone.addEventListener('click', () => input.click());
+            input.addEventListener('change', (e) => { if (e.target.files[0]) handleDocSelect(cfg.key, e.target.files[0]); });
+
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => { zone.classList.remove('dragover'); });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault(); zone.classList.remove('dragover');
+                if (e.dataTransfer.files[0]) handleDocSelect(cfg.key, e.dataTransfer.files[0]);
+            });
+        });
+
+        function handleDocSelect(key, file) {
+            const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) { showError('Format non supporté. Utilise PDF, JPG ou PNG.'); return; }
+            if (file.size > 5 * 1024 * 1024) { showError('Le fichier ne doit pas dépasser 5 Mo.'); return; }
+
+            docFiles[key] = file;
+            const cfg = docConfig.find(c => c.key === key);
+            document.getElementById(cfg.name).textContent = file.name;
+            document.getElementById(cfg.preview).style.display = 'flex';
+            document.getElementById(cfg.zone).classList.add('uploaded');
+        }
+
+        function removeDoc(key) {
+            docFiles[key] = null;
+            const cfg = docConfig.find(c => c.key === key);
+            document.getElementById(cfg.preview).style.display = 'none';
+            document.getElementById(cfg.zone).classList.remove('uploaded');
+            document.getElementById(cfg.input).value = '';
+        }
+
+        // ================================================================
+        // AUTH + PRÉ-REMPLISSAGE
+        // ================================================================
+        async function checkAuth() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+            currentUser = user;
+
+            // Lien "Mon espace" + retour dashboard
+            const { data: typeData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+            const link = document.getElementById('monEspaceLink');
+            if (typeData && typeData.type_user === 'proprietaire') {
+                // Les propriétaires ont leur propre page de modification
+                window.location.href = 'modifier-profil-proprietaire.html';
+                return;
+            } else if (typeData && typeData.type_user === 'hote') {
+                link.href = 'dashboard-locataire.html';
+                dashboardUrl = 'dashboard-locataire.html';
+                userType = 'hote';
+            } else {
+                link.href = 'dashboard-locataire.html';
+                dashboardUrl = 'dashboard-locataire.html';
+                userType = 'locataire';
+            }
+
+            // Charger toutes les données
+            const { data: userData } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+            if (userData) {
+                isAdmin = userData.is_admin === true;
+                preRemplir(userData);
+            }
+
+            // Charger les préférences email
+            chargerPrefsEmail();
+        }
+
+        function preRemplir(data) {
+            if (data.prenom) document.getElementById('prenom').value = data.prenom;
+            if (data.nom) document.getElementById('nom').value = data.nom;
+
+            if (data.sexe) {
+                const sel = document.getElementById('sexe');
+                sel.value = data.sexe;
+                sel.classList.toggle('placeholder', !data.sexe);
+            }
+
+            if (data.date_naissance) {
+                const d = new Date(data.date_naissance);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                document.getElementById('dateNaissance').value = `${day}/${month}/${year}`;
+                document.getElementById('dateNaissanceHidden').value = data.date_naissance;
+            }
+
+            if (data.telephone) document.getElementById('telephone').value = data.telephone;
+
+            if (data.photo_profil_url) {
+                photoPreview.src = data.photo_profil_url;
+                photoPreview.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+            }
+
+            if (data.ecole) document.getElementById('ecole').value = data.ecole;
+            if (data.annee_etudes) document.getElementById('anneeEtudes').value = data.annee_etudes;
+            if (data.filiere) document.getElementById('filiere').value = data.filiere;
+
+            // Alternance
+            if (data.type_alternance) {
+                const sel = document.getElementById('typeAlternance');
+                sel.value = data.type_alternance;
+                sel.classList.toggle('placeholder', !data.type_alternance);
+                updateRythmeOptions();
+
+                if (data.rythme_alternance) {
+                    if (data.type_alternance === 'custom') {
+                        document.getElementById('rythmeCustomInput').value = data.rythme_alternance;
+                    } else {
+                        const rSel = document.getElementById('monRythme');
+                        rSel.value = data.rythme_alternance;
+                        rSel.classList.toggle('placeholder', !data.rythme_alternance);
+                    }
+                }
+            }
+
+            if (data.ville_ecole) {
+                document.getElementById('villeEcoleInput').value = data.ville_ecole;
+                villeEcoleSelectionnee = data.ville_ecole;
+            }
+            if (data.ville_entreprise) {
+                document.getElementById('villeEntrepriseInput').value = data.ville_entreprise;
+                villeEntrepriseSelectionnee = data.ville_entreprise;
+            }
+
+            if (data.bio) document.getElementById('bio').value = data.bio;
+
+            // Garant
+            if (data.garant_prenom) document.getElementById('garantPrenom').value = data.garant_prenom;
+            if (data.garant_nom) document.getElementById('garantNom').value = data.garant_nom;
+            if (data.garant_telephone) document.getElementById('garantTelephone').value = data.garant_telephone;
+            if (data.garant_email) document.getElementById('garantEmail').value = data.garant_email;
+
+            // Documents existants
+            if (data.doc_piece_id_url) showExistingDoc('pieceId', data.doc_piece_id_url);
+            if (data.doc_scolarite_url) showExistingDoc('scolarite', data.doc_scolarite_url);
+            if (data.doc_rib_url) showExistingDoc('rib', data.doc_rib_url);
+
+            // Badge identité vérifiée
+            if (data.identite_verifiee === 'verifiee') {
+                document.getElementById('badgeIdentityOk').style.display = 'inline-flex';
+            }
+        }
+
+        function showExistingDoc(key, url) {
+            const cfg = docConfig.find(c => c.key === key);
+            const fileName = decodeURIComponent(url.split('/').pop());
+            document.getElementById(cfg.name).textContent = fileName;
+            document.getElementById(cfg.preview).style.display = 'flex';
+            document.getElementById(cfg.zone).classList.add('uploaded');
+        }
+
+        // ================================================================
+        // ENREGISTREMENT
+        // ================================================================
+        async function enregistrerProfil() {
+            // Valider les champs garant avant d'enregistrer
+            const garantError = validateStep(6);
+            if (garantError) {
+                showError(garantError);
+                return;
+            }
+
+            const btn = (userType === 'proprietaire')
+                ? document.querySelector('#step1 .btn-next')
+                : document.getElementById('btnSave');
+            btn.classList.add('loading');
+            btn.textContent = 'Enregistrement...';
+
+            try {
+                const prenom = document.getElementById('prenom').value.trim();
+                const nom = document.getElementById('nom').value.trim();
+                const telephone = document.getElementById('telephone').value.trim();
+
+                if (!prenom) { showError('Merci de renseigner ton prénom'); btn.classList.remove('loading'); btn.textContent = 'Enregistrer'; return; }
+                if (!nom) { showError('Merci de renseigner ton nom'); btn.classList.remove('loading'); btn.textContent = 'Enregistrer'; return; }
+                if (!telephone) { showError('Merci de renseigner ton téléphone'); btn.classList.remove('loading'); btn.textContent = 'Enregistrer'; return; }
+
+                const updateData = { prenom, nom, telephone };
+
+                if (userType === 'proprietaire') {
+                    // Propriétaire : juste les infos de base
+                } else {
+                    // Locataire / Hôte : toutes les infos
+                    const sexe = document.getElementById('sexe').value;
+                    const dateNaissance = document.getElementById('dateNaissanceHidden').value;
+                    const ecole = document.getElementById('ecole').value.trim();
+                    const anneeEtudes = document.getElementById('anneeEtudes').value.trim();
+                    const filiere = document.getElementById('filiere').value.trim();
+                    const bio = document.getElementById('bio').value.trim();
+
+                    const typeAlternance = document.getElementById('typeAlternance').value || null;
+                    let rythmeAlternance = null;
+                    if (typeAlternance === 'custom') {
+                        rythmeAlternance = document.getElementById('rythmeCustomInput').value.trim() || null;
+                    } else if (typeAlternance) {
+                        rythmeAlternance = document.getElementById('monRythme').value || null;
+                    }
+
+                    const villeEcole = villeEcoleSelectionnee || document.getElementById('villeEcoleInput').value.trim() || null;
+                    const villeEntreprise = villeEntrepriseSelectionnee || document.getElementById('villeEntrepriseInput').value.trim() || null;
+
+                    const garantPrenom = document.getElementById('garantPrenom').value.trim() || null;
+                    const garantNom = document.getElementById('garantNom').value.trim() || null;
+                    const garantTelephone = document.getElementById('garantTelephone').value.trim() || null;
+                    const garantEmail = document.getElementById('garantEmail').value.trim() || null;
+
+                    Object.assign(updateData, {
+                        sexe,
+                        date_naissance: dateNaissance,
+                        ecole, annee_etudes: anneeEtudes, filiere,
+                        bio: bio || null,
+                        type_alternance: typeAlternance,
+                        rythme_alternance: rythmeAlternance,
+                        ville_ecole: villeEcole,
+                        ville_entreprise: villeEntreprise,
+                        garant_prenom: garantPrenom,
+                        garant_nom: garantNom,
+                        garant_telephone: garantTelephone,
+                        garant_email: garantEmail
+                    });
+
+                    // Upload documents
+                    for (const [key, file] of Object.entries(docFiles)) {
+                        if (file) {
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${currentUser.id}-${key}-${Date.now()}.${fileExt}`;
+                            const { error: docErr } = await supabaseClient.storage.from('documents').upload(fileName, file, { cacheControl: '3600', upsert: true });
+                            if (!docErr) {
+                                const { data: urlData } = supabaseClient.storage.from('documents').getPublicUrl(fileName);
+                                const colMap = { pieceId: 'doc_piece_id_url', scolarite: 'doc_scolarite_url', rib: 'doc_rib_url' };
+                                updateData[colMap[key]] = urlData.publicUrl;
+                            }
+                        }
+                    }
+
+                    // Upload photo
+                    if (photoFile) {
+                        const fileExt = photoFile.name.split('.').pop();
+                        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+                        const { error: uploadError } = await supabaseClient.storage.from('profils').upload(fileName, photoFile, { cacheControl: '3600', upsert: true });
+                        if (!uploadError) {
+                            const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(fileName);
+                            updateData.photo_profil_url = urlData.publicUrl;
+                        }
+                    }
+
+                    // Si pièce d'identité + scolarité uploadées → badge "documents_fournis"
+                    // La vérification Stripe Identity est disponible dans l'étape Documents
+                    if (updateData.doc_piece_id_url && updateData.doc_scolarite_url) {
+                        updateData.identite_verifiee = 'documents_fournis';
+                    }
+                }
+
+                const { error } = await supabaseClient.from('users').update(updateData).eq('id', currentUser.id);
+                if (error) throw error;
+
+                // Confirmation — tout cacher sauf l'écran de confirmation
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                document.querySelector('.inscription-header').style.display = 'none';
+                document.querySelector('.step-indicator').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('confirmationScreen').classList.add('active');
+
+                const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', currentUser.id).single();
+                setTimeout(() => {
+                    if (userData && userData.type_user === 'proprietaire') {
+                        window.location.href = 'dashboard-proprietaire.html';
+                    } else if (userData && userData.type_user === 'hote') {
+                        window.location.href = 'dashboard-locataire.html';
+                    } else {
+                        window.location.href = 'dashboard-locataire.html';
+                    }
+                }, 2000);
+
+            } catch (err) {
+                console.error('Erreur enregistrement:', err);
+                btn.classList.remove('loading');
+                btn.textContent = 'Enregistrer';
+                showError(err.message || 'Une erreur est survenue');
+            }
+        }
+
+        // ================================================================
+        // PRÉFÉRENCES EMAIL
+        // ================================================================
+        async function chargerPrefsEmail() {
+            if (!currentUser) return;
+            const { data } = await supabaseClient.from('users').select('preferences_email').eq('id', currentUser.id).single();
+            if (data && data.preferences_email) {
+                const prefs = data.preferences_email;
+                document.getElementById('prefAlertes').checked = prefs.alertes !== false;
+                document.getElementById('prefMessages').checked = prefs.messages !== false;
+                document.getElementById('prefCandidatures').checked = prefs.candidatures !== false;
+                document.getElementById('prefPaiements').checked = prefs.paiements !== false;
+                document.getElementById('prefBaux').checked = prefs.baux !== false;
+                document.getElementById('prefMarketing').checked = prefs.marketing !== false;
+            }
+        }
+
+        let prefsSaveTimeout = null;
+        async function sauvegarderPrefsEmail() {
+            if (!currentUser) return;
+            clearTimeout(prefsSaveTimeout);
+            prefsSaveTimeout = setTimeout(async () => {
+                const prefs = {
+                    alertes: document.getElementById('prefAlertes').checked,
+                    messages: document.getElementById('prefMessages').checked,
+                    candidatures: document.getElementById('prefCandidatures').checked,
+                    paiements: document.getElementById('prefPaiements').checked,
+                    baux: document.getElementById('prefBaux').checked,
+                    marketing: document.getElementById('prefMarketing').checked,
+                };
+                const { error } = await supabaseClient.from('users').update({ preferences_email: prefs }).eq('id', currentUser.id);
+                if (!error) {
+                    const saved = document.getElementById('prefsSaved');
+                    saved.classList.add('show');
+                    setTimeout(() => saved.classList.remove('show'), 2000);
+                }
+            }, 500);
+        }
+
+        // ================================================================
+        // CHANGEMENT DE MOT DE PASSE
+        // ================================================================
+        async function changerMotDePasse() {
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+            const msgDiv = document.getElementById('passwordMessage');
+            const btn = document.getElementById('btnChangePassword');
+
+            // Validation
+            if (!newPwd || !confirmPwd) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Remplis les deux champs.';
+                return;
+            }
+            if (newPwd.length < 6) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Les mots de passe ne correspondent pas.';
+                return;
+            }
+
+            // Rate limit : max 3 changements par 10 minutes
+            if (!RateLimiter.check('change_password', 3, 600000, { persistent: true })) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Modification...';
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPwd
+                });
+
+                if (error) throw error;
+
+                msgDiv.className = 'password-message success';
+                msgDiv.textContent = 'Mot de passe modifié avec succès !';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } catch (err) {
+                console.error('Erreur changement mdp:', err);
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = err.message || 'Erreur lors du changement de mot de passe.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Modifier le mot de passe';
+            }
+        }
+
+        // ================================================================
+        // SUPPRESSION DE COMPTE (RGPD)
+        // ================================================================
+        function ouvrirModalSuppression() {
+            document.getElementById('deleteOverlay').classList.add('active');
+            document.getElementById('deleteConfirmInput').value = '';
+            document.getElementById('btnConfirmDelete').classList.remove('active');
+            document.getElementById('btnConfirmDelete').disabled = true;
+        }
+
+        function fermerModalSuppression() {
+            document.getElementById('deleteOverlay').classList.remove('active');
+        }
+
+        // Activer le bouton seulement si l'utilisateur tape "SUPPRIMER"
+        document.getElementById('deleteConfirmInput').addEventListener('input', function() {
+            const btn = document.getElementById('btnConfirmDelete');
+            if (this.value.trim() === 'SUPPRIMER') {
+                btn.classList.add('active');
+                btn.disabled = false;
+            } else {
+                btn.classList.remove('active');
+                btn.disabled = true;
+            }
+        });
+
+        // Fermer modal au clic hors du contenu
+        document.getElementById('deleteOverlay').addEventListener('click', function(e) {
+            if (e.target === this) fermerModalSuppression();
+        });
+
+        async function supprimerCompte() {
+            // Rate limit : max 1 tentative par 30 secondes
+            if (!RateLimiter.check('delete_account', 1, 30000, { persistent: true })) return;
+
+            const btn = document.getElementById('btnConfirmDelete');
+            const originalText = btn.textContent;
+            btn.textContent = 'Suppression en cours...';
+            btn.disabled = true;
+
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    alert('Session expirée. Reconnecte-toi.');
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/functions/v1/delete-account`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.access_token}`,
+                            'apikey': SUPABASE_KEY
+                        },
+                        body: JSON.stringify({ confirmation: 'SUPPRIMER' })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert(result.error || 'Erreur lors de la suppression');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Déconnecter et rediriger
+                await supabaseClient.auth.signOut();
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                console.error('Erreur suppression compte:', error);
+                alert('Erreur lors de la suppression. Réessaie plus tard.');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ================================================================
+        // INIT
+        // ================================================================
+        if (typeof supabaseClient !== 'undefined') { checkAuth(); }
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

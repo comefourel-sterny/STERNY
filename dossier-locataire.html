@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Dossier locataire — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F4F5F7;
+            min-height: 100vh;
+            color: #1E293B;
+        }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .nav-inner {
+            max-width: none;
+            margin: 0;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 85px;
+        }
+        .logo { text-decoration: none; display: flex; align-items: center; }
+        .logo img { height: 55px; width: auto; }
+        nav ul { display: flex; gap: 8px; list-style: none; }
+        nav a { text-decoration: none; color: #475569; font-weight: 500; font-size: 14px; padding: 8px 16px; border-radius: 8px; transition: all 0.2s; }
+        nav a:hover { color: #E8622A; background: rgba(232, 98, 42, 0.06); }
+
+        /* ========== PAGE LAYOUT ========== */
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+        .page-header p {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        /* ========== SHARED CARDS ========== */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(232, 98, 42, 0.08);
+            border: 1px solid #E8EAF0;
+            margin-bottom: 24px;
+        }
+
+        /* ========== PROGRESS ========== */
+        .progress-card { padding: 24px; }
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: #9CA3AF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 auto 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .progress-step.active .step-number {
+            background: #1E293B;
+            color: white;
+            transform: scale(1.1);
+        }
+        .progress-step.completed .step-number {
+            background: #E8622A;
+            color: white;
+        }
+        .progress-step.completed .step-number::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 16px;
+            height: 16px;
+            background: #22C55E;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 9px;
+        }
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        .progress-step.active .step-label { color: #1E293B; }
+        .progress-step.completed .step-label { color: #E8622A; }
+        .progress-bar-track {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #E8622A;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        /* ========== DOSSIER CARD (style contrat) ========== */
+        .dossier-card { padding: 0; overflow: hidden; }
+        .dossier-section { padding: 24px 28px; }
+        .dossier-section + .dossier-section { border-top: 1px solid #F1F5F9; }
+        .section-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #E8622A;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+        }
+        .dossier-text {
+            font-size: 12.5px;
+            color: #374151;
+            line-height: 1.8;
+        }
+        .dossier-text p { margin-bottom: 8px; }
+        .dossier-text p:last-child { margin-bottom: 0; }
+        .dossier-text strong { color: #1E293B; }
+
+        /* ========== SECTION CARDS (vue proprio) ========== */
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 24px rgba(232, 98, 42, 0.08);
+            border: 1px solid #E8EAF0;
+        }
+
+        /* ========== CHECKLIST DOCUMENTS ========== */
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #F8F9FC;
+            border-radius: 12px;
+            border: 1.5px solid #E8EAF0;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .doc-item:hover {
+            border-color: #CBD5E1;
+            background: #F1F5F9;
+        }
+        .doc-item.uploaded {
+            border-color: #86EFAC;
+            background: #F0FDF4;
+        }
+        .doc-item.uploaded:hover {
+            border-color: #4ADE80;
+            background: #DCFCE7;
+        }
+        .doc-item input[type="file"] { display: none; }
+
+        .doc-status-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .doc-status-icon.empty {
+            background: #E5E7EB;
+            color: #9CA3AF;
+        }
+        .doc-status-icon.done {
+            background: #22C55E;
+            color: white;
+        }
+
+        .doc-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .doc-info .doc-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 1px;
+        }
+        .doc-info .doc-desc {
+            font-size: 11.5px;
+            color: #6B7280;
+        }
+        .doc-info .doc-file-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #16A34A;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-action {
+            flex-shrink: 0;
+        }
+        .doc-action .upload-btn {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .doc-action .upload-btn.choose {
+            background: #1E293B;
+            color: white;
+        }
+        .doc-action .upload-btn.choose:hover {
+            background: #E8622A;
+        }
+        .doc-action .upload-btn.remove {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .doc-action .upload-btn.remove:hover {
+            background: #FECACA;
+        }
+
+        /* ========== VERIFICATION AUTOMATIQUE STERNY ========== */
+        .doc-verif-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+        .doc-verif-status.en_cours {
+            color: #2563EB;
+        }
+        .doc-verif-status.verifie {
+            color: #16A34A;
+        }
+        .doc-verif-status.rejete {
+            color: #DC2626;
+        }
+        .doc-verif-status svg {
+            flex-shrink: 0;
+        }
+        .doc-motif-rejet {
+            font-size: 11px;
+            font-weight: 500;
+            color: #DC2626;
+            margin-top: 2px;
+            padding: 4px 8px;
+            background: #FEF2F2;
+            border-radius: 6px;
+            border: 1px solid #FECACA;
+            line-height: 1.4;
+        }
+
+        /* Icône de vérification en cours (spinner) */
+        @keyframes verifSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .verif-spinner {
+            animation: verifSpin 1s linear infinite;
+            flex-shrink: 0;
+        }
+
+        /* Status icon pour document rejeté */
+        .doc-status-icon.rejected {
+            background: #DC2626;
+            color: white;
+        }
+        /* Status icon pour vérification en cours */
+        .doc-status-icon.verifying {
+            background: #2563EB;
+            color: white;
+        }
+
+        /* Etat rejeté sur le doc-item */
+        .doc-item.rejected {
+            border-color: #FCA5A5;
+            background: #FEF2F2;
+        }
+        .doc-item.rejected:hover {
+            border-color: #F87171;
+            background: #FEE2E2;
+        }
+        /* Etat vérification en cours */
+        .doc-item.verifying {
+            border-color: #93C5FD;
+            background: #EFF6FF;
+        }
+
+        /* Badge vérifié par STERNY (vue proprio) */
+        .status-badge.verified-sterny {
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+        .status-badge.rejected-sterny {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        .status-badge.verifying-sterny {
+            background: #EFF6FF;
+            color: #2563EB;
+            border: 1px solid #BFDBFE;
+        }
+
+        /* ========== FORMULAIRE GARANT ========== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .form-field label .req { color: #EF4444; margin-left: 2px; }
+        .form-field input {
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+            outline: none;
+            color: #1E293B;
+            background: white;
+        }
+        .form-field input:focus {
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+        }
+        .form-field input::placeholder { color: #9CA3AF; }
+
+        /* ========== VUE PROPRIETAIRE ========== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.provided {
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+        .status-badge.pending {
+            background: #FFFBEB;
+            color: #D97706;
+            border: 1px solid #FDE68A;
+        }
+
+        .doc-status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .doc-status-row:last-child { border-bottom: none; }
+        .doc-status-row .doc-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .garant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .garant-field {
+            padding: 10px 14px;
+            background: #F8F9FC;
+            border-radius: 10px;
+        }
+        .garant-field .field-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .garant-field .field-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        /* ========== ACTIONS ========== */
+        .actions-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 28px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .actions-card .btn-back,
+        .actions-card .btn-primary {
+            flex: 1;
+            justify-content: center;
+            text-align: center;
+        }
+        .btn-back {
+            background: white;
+            color: #475569;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1.5px solid #E2E5EA;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        .btn-back svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .btn-back:hover { border-color: #E8622A; color: #E8622A; }
+
+        .btn-primary {
+            background: #1E293B;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: #E8622A;
+        }
+        .btn-primary:disabled {
+            background: #E8EAF0;
+            color: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 999;
+            animation: toastIn 0.3s ease forwards;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .toast.success { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
+        .toast.error { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .page-container { padding: 24px 16px 60px; }
+            .page-header h1 { font-size: 26px; }
+            .section-card { padding: 20px 18px; border-radius: 16px; }
+            .dossier-section { padding: 20px 18px; }
+            .progress-card { padding: 20px; }
+            .progress-steps { gap: 8px; }
+            .step-number { width: 34px; height: 34px; font-size: 12px; }
+            .step-label { font-size: 10px; }
+            .actions-card {
+                flex-direction: column-reverse;
+                padding: 16px;
+                border-radius: 16px;
+            }
+            .btn-back, .btn-primary {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+            .form-grid { grid-template-columns: 1fr; }
+            .garant-grid { grid-template-columns: 1fr; }
+            .doc-item {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .doc-action {
+                width: 100%;
+            }
+            .doc-action .upload-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .doc-status-row {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            nav .nav-inner { padding: 0 20px; height: 72px; }
+            .logo img { height: 45px; }
+            nav ul { gap: 20px; }
+            nav ul li a { font-size: 14px; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="nav-inner">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>Dossier locataire</h1>
+            <p id="headerSubtitle">Compl&eacute;tez votre dossier pour passer &agrave; la signature du contrat</p>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="card progress-card">
+            <div class="progress-steps">
+                <div class="progress-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Match</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Dossier</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Contrat</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Paiement</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">5</div>
+                    <div class="step-label">&Eacute;tat des lieux</div>
+                </div>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 20%;"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- VUE LOCATAIRE (formulaire éditable) -->
+        <!-- ============================================================ -->
+        <div id="vueLocataire" style="display:none;">
+            <div class="card dossier-card">
+                <!-- SECTION 1 : DOCUMENTS -->
+                <div class="dossier-section">
+                    <div class="section-label">I. Documents obligatoires</div>
+                    <div class="dossier-text"><p>Importez les <strong>3 pi&egrave;ces justificatives</strong> demand&eacute;es. Elles seront partag&eacute;es avec le propri&eacute;taire pour constituer votre dossier.</p></div>
+
+                    <div class="doc-list" style="margin-top: 16px;">
+                        <!-- Certificat de scolarité -->
+                        <div class="doc-item" id="docItemScolarite">
+                            <div class="doc-status-icon empty" id="iconScolarite">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="doc-info">
+                                <div class="doc-name">Certificat de scolarit&eacute;</div>
+                                <div class="doc-desc">Attestation d'inscription en cours &mdash; PDF, JPG ou PNG (max 5 Mo)</div>
+                                <div class="doc-file-name" id="nameScolarite" style="display:none;"></div>
+                                <div class="doc-verif-status" id="verifScolarite" style="display:none;"></div>
+                                <div class="doc-motif-rejet" id="motifScolarite" style="display:none;"></div>
+                            </div>
+                            <div class="doc-action">
+                                <button type="button" class="upload-btn choose" id="btnUploadScolarite">Choisir</button>
+                                <button type="button" class="upload-btn remove" id="btnRemoveScolarite" style="display:none;" onclick="removeDoc('scolarite')">Retirer</button>
+                            </div>
+                            <input type="file" id="inputScolarite" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+
+                        <!-- Assurance habitation -->
+                        <div class="doc-item" id="docItemAssurance">
+                            <div class="doc-status-icon empty" id="iconAssurance">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="doc-info">
+                                <div class="doc-name">Assurance habitation</div>
+                                <div class="doc-desc">Attestation de responsabilit&eacute; civile locative &mdash; PDF, JPG ou PNG (max 5 Mo)</div>
+                                <div class="doc-file-name" id="nameAssurance" style="display:none;"></div>
+                                <div class="doc-verif-status" id="verifAssurance" style="display:none;"></div>
+                                <div class="doc-motif-rejet" id="motifAssurance" style="display:none;"></div>
+                            </div>
+                            <div class="doc-action">
+                                <button type="button" class="upload-btn choose" id="btnUploadAssurance">Choisir</button>
+                                <button type="button" class="upload-btn remove" id="btnRemoveAssurance" style="display:none;" onclick="removeDoc('assurance')">Retirer</button>
+                            </div>
+                            <input type="file" id="inputAssurance" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+
+                        <!-- RIB -->
+                        <div class="doc-item" id="docItemRIB">
+                            <div class="doc-status-icon empty" id="iconRIB">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="doc-info">
+                                <div class="doc-name">Relev&eacute; d'identit&eacute; bancaire (RIB)</div>
+                                <div class="doc-desc">Pour les pr&eacute;l&egrave;vements de loyer &mdash; PDF, JPG ou PNG (max 5 Mo)</div>
+                                <div class="doc-file-name" id="nameRIB" style="display:none;"></div>
+                                <div class="doc-verif-status" id="verifRIB" style="display:none;"></div>
+                                <div class="doc-motif-rejet" id="motifRIB" style="display:none;"></div>
+                            </div>
+                            <div class="doc-action">
+                                <button type="button" class="upload-btn choose" id="btnUploadRIB">Choisir</button>
+                                <button type="button" class="upload-btn remove" id="btnRemoveRIB" style="display:none;" onclick="removeDoc('rib')">Retirer</button>
+                            </div>
+                            <input type="file" id="inputRIB" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2 : GARANT -->
+                <div class="dossier-section">
+                    <div class="section-label">II. Informations du garant</div>
+                    <div class="dossier-text"><p>Le garant est la personne qui s'engage &agrave; <strong>payer le loyer en cas de d&eacute;faillance</strong> du locataire. Il pourra &ecirc;tre contact&eacute; par le propri&eacute;taire si n&eacute;cessaire.</p></div>
+
+                    <div class="form-grid" style="margin-top: 16px;">
+                        <div class="form-field">
+                            <label>Pr&eacute;nom <span class="req">*</span></label>
+                            <input type="text" id="garantPrenom" placeholder="Jean">
+                        </div>
+                        <div class="form-field">
+                            <label>Nom <span class="req">*</span></label>
+                            <input type="text" id="garantNom" placeholder="Dupont">
+                        </div>
+                        <div class="form-field">
+                            <label>T&eacute;l&eacute;phone <span class="req">*</span></label>
+                            <input type="tel" id="garantTelephone" placeholder="06 12 34 56 78">
+                        </div>
+                        <div class="form-field">
+                            <label>Email <span class="req">*</span></label>
+                            <input type="email" id="garantEmail" placeholder="jean.dupont@email.com">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3 : DOCUMENTS DU GARANT -->
+                <div class="dossier-section">
+                    <div class="section-label">III. Pi&egrave;ces justificatives du garant</div>
+                    <div class="dossier-text"><p>Conform&eacute;ment &agrave; la <strong>loi ALUR</strong>, le garant doit fournir une pi&egrave;ce d'identit&eacute; ainsi qu'un <strong>acte de cautionnement sign&eacute;</strong> pour que son engagement soit juridiquement valide.</p></div>
+
+                    <div class="doc-list" style="margin-top: 16px;">
+                        <!-- Pièce d'identité du garant -->
+                        <div class="doc-item" id="docItemGarantID">
+                            <div class="doc-status-icon empty" id="iconGarantID">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="doc-info">
+                                <div class="doc-name">Pi&egrave;ce d'identit&eacute; du garant</div>
+                                <div class="doc-desc">CNI, passeport ou titre de s&eacute;jour en cours de validit&eacute; &mdash; PDF, JPG ou PNG (max 5 Mo)</div>
+                                <div class="doc-file-name" id="nameGarantID" style="display:none;"></div>
+                                <div class="doc-verif-status" id="verifGarantID" style="display:none;"></div>
+                                <div class="doc-motif-rejet" id="motifGarantID" style="display:none;"></div>
+                            </div>
+                            <div class="doc-action">
+                                <button type="button" class="upload-btn choose" id="btnUploadGarantID">Choisir</button>
+                                <button type="button" class="upload-btn remove" id="btnRemoveGarantID" style="display:none;" onclick="removeDoc('garant_id')">Retirer</button>
+                            </div>
+                            <input type="file" id="inputGarantID" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+
+                        <!-- Acte de cautionnement -->
+                        <div class="doc-item" id="docItemCautionnement">
+                            <div class="doc-status-icon empty" id="iconCautionnement">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div class="doc-info">
+                                <div class="doc-name">Acte de cautionnement sign&eacute;</div>
+                                <div class="doc-desc">Document sign&eacute; par le garant engageant sa responsabilit&eacute; &mdash; PDF (max 5 Mo)</div>
+                                <div class="doc-file-name" id="nameCautionnement" style="display:none;"></div>
+                                <div class="doc-verif-status" id="verifCautionnement" style="display:none;"></div>
+                                <div class="doc-motif-rejet" id="motifCautionnement" style="display:none;"></div>
+                            </div>
+                            <div class="doc-action">
+                                <button type="button" class="upload-btn choose" id="btnUploadCautionnement">Choisir</button>
+                                <button type="button" class="upload-btn remove" id="btnRemoveCautionnement" style="display:none;" onclick="removeDoc('cautionnement')">Retirer</button>
+                            </div>
+                            <input type="file" id="inputCautionnement" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- VUE PROPRIETAIRE (lecture seule) -->
+        <!-- ============================================================ -->
+        <div id="vueProprio" style="display:none;">
+            <div class="section-card">
+                <div class="section-label">I. Documents du locataire</div>
+                <p style="font-size: 12.5px; color: #6B7280; margin-bottom: 14px; line-height: 1.4;">Les documents sont v&eacute;rifi&eacute;s automatiquement par STERNY.</p>
+                <div>
+                    <div class="doc-status-row">
+                        <span class="doc-label">Certificat de scolarit&eacute;</span>
+                        <div id="statusScolarite"></div>
+                    </div>
+                    <div class="doc-status-row">
+                        <span class="doc-label">Assurance habitation</span>
+                        <div id="statusAssurance"></div>
+                    </div>
+                    <div class="doc-status-row">
+                        <span class="doc-label">Relev&eacute; d'identit&eacute; bancaire (RIB)</span>
+                        <div id="statusRIB"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-label">II. Garant</div>
+                <p style="font-size: 12.5px; color: #6B7280; margin-bottom: 14px; line-height: 1.4;">Informations de la personne qui se porte caution.</p>
+                <div id="garantInfo"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-label">III. Pi&egrave;ces du garant</div>
+                <p style="font-size: 12.5px; color: #6B7280; margin-bottom: 14px; line-height: 1.4;">Documents justificatifs du garant v&eacute;rifi&eacute;s par STERNY.</p>
+                <div>
+                    <div class="doc-status-row">
+                        <span class="doc-label">Pi&egrave;ce d'identit&eacute; du garant</span>
+                        <div id="statusGarantID"></div>
+                    </div>
+                    <div class="doc-status-row">
+                        <span class="doc-label">Acte de cautionnement sign&eacute;</span>
+                        <div id="statusCautionnement"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ACTIONS -->
+        <div class="actions-card">
+            <a href="match-confirmation.html" class="btn-back" id="btnRetour">Retour</a>
+            <button class="btn-primary" id="btnValider" onclick="validerDossier()" style="display:none;">Valider mon dossier</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const matchId = urlParams.get('match_id');
+
+        let currentUser = null;
+        let locataireData = null;
+        let docFiles = { scolarite: null, assurance: null, rib: null, garant_id: null, cautionnement: null };
+
+        // Mapping type de document → ce qu'on attend pour la vérification auto
+        const docVerifRules = {
+            scolarite:     { label: 'Certificat de scolarité',     attendu: ['certificat', 'scolarité', 'inscription', 'attestation', 'université', 'école', 'étudiant', 'formation'] },
+            assurance:     { label: 'Assurance habitation',        attendu: ['assurance', 'habitation', 'responsabilité civile', 'multirisque', 'locataire', 'attestation', 'police'] },
+            rib:           { label: 'RIB',                         attendu: ['iban', 'bic', 'rib', 'relevé', 'identité bancaire', 'banque', 'compte', 'swift'] },
+            garant_id:     { label: 'Pièce d\'identité du garant', attendu: ['identité', 'nationale', 'passeport', 'séjour', 'république', 'carte', 'nom', 'prénom', 'né'] },
+            cautionnement: { label: 'Acte de cautionnement',       attendu: ['cautionnement', 'caution', 'garant', 'solidaire', 'engage', 'loyer', 'obligation'] }
+        };
+
+        // Mapping des champs DB pour les statuts
+        const docDbFields = {
+            scolarite:     { url: 'doc_scolarite_url',     statut: 'doc_scolarite_statut',     motif: 'doc_scolarite_motif_rejet' },
+            assurance:     { url: 'doc_assurance_url',      statut: 'doc_assurance_statut',     motif: 'doc_assurance_motif_rejet' },
+            rib:           { url: 'doc_rib_url',            statut: 'doc_rib_statut',           motif: 'doc_rib_motif_rejet' },
+            garant_id:     { url: 'doc_garant_id_url',      statut: 'doc_garant_id_statut',     motif: 'doc_garant_id_motif_rejet' },
+            cautionnement: { url: 'doc_cautionnement_url',  statut: 'doc_cautionnement_statut', motif: 'doc_cautionnement_motif_rejet' }
+        };
+
+        // ================================================================
+        // UPLOAD : clic sur le doc-item ou le bouton
+        // ================================================================
+        const docConfig = [
+            { key: 'scolarite',      itemId: 'docItemScolarite',      inputId: 'inputScolarite',      iconId: 'iconScolarite',      nameId: 'nameScolarite',      btnUpId: 'btnUploadScolarite',      btnRemId: 'btnRemoveScolarite',      verifId: 'verifScolarite',      motifId: 'motifScolarite' },
+            { key: 'assurance',      itemId: 'docItemAssurance',      inputId: 'inputAssurance',      iconId: 'iconAssurance',      nameId: 'nameAssurance',      btnUpId: 'btnUploadAssurance',      btnRemId: 'btnRemoveAssurance',      verifId: 'verifAssurance',      motifId: 'motifAssurance' },
+            { key: 'rib',            itemId: 'docItemRIB',            inputId: 'inputRIB',            iconId: 'iconRIB',            nameId: 'nameRIB',            btnUpId: 'btnUploadRIB',            btnRemId: 'btnRemoveRIB',            verifId: 'verifRIB',            motifId: 'motifRIB' },
+            { key: 'garant_id',      itemId: 'docItemGarantID',       inputId: 'inputGarantID',       iconId: 'iconGarantID',       nameId: 'nameGarantID',       btnUpId: 'btnUploadGarantID',       btnRemId: 'btnRemoveGarantID',       verifId: 'verifGarantID',       motifId: 'motifGarantID' },
+            { key: 'cautionnement',  itemId: 'docItemCautionnement',  inputId: 'inputCautionnement',  iconId: 'iconCautionnement',  nameId: 'nameCautionnement',  btnUpId: 'btnUploadCautionnement',  btnRemId: 'btnRemoveCautionnement',  verifId: 'verifCautionnement',  motifId: 'motifCautionnement' }
+        ];
+
+        docConfig.forEach(cfg => {
+            const item = document.getElementById(cfg.itemId);
+            const input = document.getElementById(cfg.inputId);
+            const btnUp = document.getElementById(cfg.btnUpId);
+
+            // Clic sur le bouton "Choisir"
+            btnUp.addEventListener('click', (e) => { e.stopPropagation(); input.click(); });
+            // Clic sur la ligne entière
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.upload-btn')) return;
+                input.click();
+            });
+            // Drag & drop
+            item.addEventListener('dragover', (e) => { e.preventDefault(); item.style.borderColor = '#E8622A'; });
+            item.addEventListener('dragleave', () => { if (!docFiles[cfg.key]) item.style.borderColor = '#E5E7EB'; });
+            item.addEventListener('drop', (e) => {
+                e.preventDefault();
+                item.style.borderColor = '';
+                if (e.dataTransfer.files[0]) applyDoc(e.dataTransfer.files[0], cfg.key);
+            });
+            // Input change
+            input.addEventListener('change', (e) => { if (e.target.files[0]) applyDoc(e.target.files[0], cfg.key); });
+        });
+
+        function applyDoc(file, type) {
+            const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+            if (!allowed.includes(file.type)) { showToast('error', 'Format non support\u00e9. PDF, JPG ou PNG uniquement.'); return; }
+            if (file.size > 5 * 1024 * 1024) { showToast('error', 'Le fichier ne doit pas d\u00e9passer 5 Mo.'); return; }
+
+            docFiles[type] = file;
+            const cfg = docConfig.find(c => c.key === type);
+            const item = document.getElementById(cfg.itemId);
+            const icon = document.getElementById(cfg.iconId);
+            const nameEl = document.getElementById(cfg.nameId);
+            const verifEl = document.getElementById(cfg.verifId);
+            const motifEl = document.getElementById(cfg.motifId);
+
+            // État : vérification en cours
+            item.className = 'doc-item verifying';
+            icon.className = 'doc-status-icon verifying';
+            icon.innerHTML = '<svg class="verif-spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+            nameEl.textContent = file.name;
+            nameEl.style.display = 'block';
+            document.getElementById(cfg.btnUpId).style.display = 'none';
+            document.getElementById(cfg.btnRemId).style.display = 'flex';
+            verifEl.className = 'doc-verif-status en_cours';
+            verifEl.innerHTML = '<svg class="verif-spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> V\u00e9rification STERNY en cours...';
+            verifEl.style.display = 'flex';
+            motifEl.style.display = 'none';
+
+            // Lancer la vérification automatique
+            verifierDocument(file, type);
+            checkValidation();
+        }
+
+        function removeDoc(type) {
+            docFiles[type] = null;
+            const cfg = docConfig.find(c => c.key === type);
+
+            const item = document.getElementById(cfg.itemId);
+            item.className = 'doc-item';
+            const icon = document.getElementById(cfg.iconId);
+            icon.className = 'doc-status-icon empty';
+            icon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+            document.getElementById(cfg.nameId).style.display = 'none';
+            document.getElementById(cfg.inputId).value = '';
+            document.getElementById(cfg.btnUpId).style.display = 'flex';
+            document.getElementById(cfg.btnRemId).style.display = 'none';
+
+            // Réinitialiser le statut de vérification
+            const verifEl = document.getElementById(cfg.verifId);
+            const motifEl = document.getElementById(cfg.motifId);
+            verifEl.style.display = 'none';
+            motifEl.style.display = 'none';
+
+            checkValidation();
+        }
+
+        // ================================================================
+        // VERIFICATION AUTOMATIQUE STERNY
+        // Envoie le document à l'Edge Function qui fait l'OCR via
+        // Google Vision API puis vérifie les mots-clés attendus
+        // ================================================================
+        async function verifierDocument(file, type) {
+            const cfg = docConfig.find(c => c.key === type);
+            const verifEl = document.getElementById(cfg.verifId);
+            const motifEl = document.getElementById(cfg.motifId);
+            const item = document.getElementById(cfg.itemId);
+            const icon = document.getElementById(cfg.iconId);
+            const rules = docVerifRules[type];
+
+            try {
+                // Convertir le fichier en base64 pour l'envoyer à l'Edge Function
+                // Si c'est un PDF, on le convertit d'abord en image PNG via pdf.js
+                let base64, sendMimeType;
+
+                if (file.type === 'application/pdf') {
+                    const converted = await convertPdfToImage(file);
+                    base64 = converted.base64;
+                    sendMimeType = converted.mimeType;
+                } else {
+                    base64 = await fileToBase64(file);
+                    sendMimeType = file.type;
+                }
+
+                // Si le fichier a été retiré entre-temps, on arrête
+                if (!docFiles[type]) return;
+
+                // Appel direct de l'Edge Function verify-document
+                const response = await fetch(SUPABASE_URL + '/functions/v1/verify-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_KEY
+                    },
+                    body: JSON.stringify({
+                        fileBase64: base64,
+                        mimeType: sendMimeType,
+                        docType: type,
+                        fileName: file.name,
+                        userNom: locataireData?.nom || '',
+                        userPrenom: locataireData?.prenom || ''
+                    })
+                });
+
+                // Si le fichier a été retiré pendant l'appel
+                if (!docFiles[type]) return;
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Erreur ' + response.status);
+
+                // Appliquer le résultat
+                if (data.statut === 'verifie') {
+                    // VÉRIFIÉ
+                    item.className = 'doc-item uploaded';
+                    icon.className = 'doc-status-icon done';
+                    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                    verifEl.className = 'doc-verif-status verifie';
+                    verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> V\u00e9rifi\u00e9 par STERNY';
+                    motifEl.style.display = 'none';
+                    showToast('success', `${rules.label} : v\u00e9rification r\u00e9ussie`);
+                } else {
+                    // REJETÉ
+                    item.className = 'doc-item rejected';
+                    icon.className = 'doc-status-icon rejected';
+                    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+                    verifEl.className = 'doc-verif-status rejete';
+                    verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Document non conforme';
+                    motifEl.textContent = data.motif || 'Le document ne correspond pas au type attendu.';
+                    motifEl.style.display = 'block';
+                    showToast('error', `${rules.label} : v\u00e9rification \u00e9chou\u00e9e`);
+                }
+
+            } catch (err) {
+                console.error('Erreur vérification:', err);
+                // Si l'Edge Function échoue, on rejette par sécurité
+                if (!docFiles[type]) return;
+                item.className = 'doc-item rejected';
+                icon.className = 'doc-status-icon rejected';
+                icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+                verifEl.className = 'doc-verif-status rejete';
+                verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Document non conforme';
+                motifEl.textContent = 'Service de vérification indisponible. Veuillez réessayer.';
+                motifEl.style.display = 'block';
+                showToast('error', 'Service de vérification indisponible');
+            }
+        }
+
+        // Fallback local si l'Edge Function est indisponible
+        async function verifierDocumentFallback(file, type) {
+            const cfg = docConfig.find(c => c.key === type);
+            const verifEl = document.getElementById(cfg.verifId);
+            const motifEl = document.getElementById(cfg.motifId);
+            const item = document.getElementById(cfg.itemId);
+            const icon = document.getElementById(cfg.iconId);
+            const rules = docVerifRules[type];
+
+            if (!docFiles[type]) return;
+
+            const erreurs = [];
+
+            // Format cautionnement = PDF obligatoire
+            if (type === 'cautionnement' && file.type !== 'application/pdf') {
+                erreurs.push('L\'acte de cautionnement doit \u00eatre au format PDF');
+            }
+            // Taille minimale
+            if (file.size < 10 * 1024) {
+                erreurs.push('Le fichier semble trop petit pour \u00eatre un document valide');
+            }
+            // Dimensions image
+            if (file.type.startsWith('image/')) {
+                const dim = await getImageDimensions(file);
+                if (dim.width < 400 || dim.height < 400) {
+                    erreurs.push('L\'image est trop petite \u2014 veuillez fournir un scan ou une photo lisible');
+                }
+            }
+            // Validité PDF
+            if (file.type === 'application/pdf') {
+                const valid = await verifierPdfBasique(file);
+                if (!valid) erreurs.push('Le fichier PDF semble corrompu ou invalide');
+            }
+
+            if (erreurs.length > 0) {
+                item.className = 'doc-item rejected';
+                icon.className = 'doc-status-icon rejected';
+                icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+                verifEl.className = 'doc-verif-status rejete';
+                verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Document non conforme';
+                motifEl.textContent = erreurs.join('. ');
+                motifEl.style.display = 'block';
+                showToast('error', `${rules.label} : v\u00e9rification \u00e9chou\u00e9e`);
+            } else {
+                item.className = 'doc-item uploaded';
+                icon.className = 'doc-status-icon done';
+                icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                verifEl.className = 'doc-verif-status verifie';
+                verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> V\u00e9rifi\u00e9 par STERNY';
+                motifEl.style.display = 'none';
+                showToast('success', `${rules.label} : v\u00e9rification r\u00e9ussie`);
+            }
+        }
+
+        // Utilitaire : convertir un fichier en base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Retirer le préfixe "data:xxx;base64,"
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Convertir un PDF en image PNG (1ère page) via pdf.js
+        // Retourne un objet {base64, mimeType} exploitable par l'OCR
+        async function convertPdfToImage(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const page = await pdf.getPage(1);
+            const scale = 2; // Bonne qualité pour l'OCR
+            const viewport = page.getViewport({ scale });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const dataUrl = canvas.toDataURL('image/png');
+            return {
+                base64: dataUrl.split(',')[1],
+                mimeType: 'image/png'
+            };
+        }
+
+        // Utilitaire : récupérer les dimensions d'une image
+        function getImageDimensions(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => { resolve({ width: img.width, height: img.height }); URL.revokeObjectURL(img.src); };
+                img.onerror = () => { resolve({ width: 0, height: 0 }); };
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // Utilitaire : vérifier qu'un PDF est valide (magic bytes)
+        function verifierPdfBasique(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const arr = new Uint8Array(reader.result);
+                    const header = String.fromCharCode(arr[0], arr[1], arr[2], arr[3], arr[4]);
+                    resolve(header.startsWith('%PDF'));
+                };
+                reader.onerror = () => resolve(false);
+                reader.readAsArrayBuffer(file.slice(0, 5));
+            });
+        }
+
+        // ================================================================
+        // VALIDATION (TEMPORAIREMENT DESACTIVEE — bouton toujours actif)
+        // ================================================================
+        function checkValidation() {
+            // TODO: Réactiver la validation avant lancement
+            // const hasScolarite = docFiles.scolarite || (locataireData && locataireData.doc_scolarite_url);
+            // const hasAssurance = docFiles.assurance || (locataireData && locataireData.doc_assurance_url);
+            // const hasRIB = docFiles.rib || (locataireData && locataireData.doc_rib_url);
+            // const garantPrenom = document.getElementById('garantPrenom').value.trim();
+            // const garantNom = document.getElementById('garantNom').value.trim();
+            // const garantTelephone = document.getElementById('garantTelephone').value.trim();
+            // const garantEmail = document.getElementById('garantEmail').value.trim();
+            // const allDocs = hasScolarite && hasAssurance && hasRIB;
+            // const allGarant = garantPrenom && garantNom && garantTelephone && garantEmail;
+            // document.getElementById('btnValider').disabled = !(allDocs && allGarant);
+        }
+
+        ['garantPrenom', 'garantNom', 'garantTelephone', 'garantEmail'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', () => { checkValidation(); });
+        });
+
+        // ================================================================
+        // CHARGER DONNEES
+        // ================================================================
+        async function chargerDossier() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) { window.location.href = 'connexion.html'; return; }
+                currentUser = user;
+
+                // Vérifier si admin
+                const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+                const isAdmin = adminCheck?.is_admin === true;
+
+                // MODE DEMO : si pas de match_id
+                if (!matchId) {
+                    const { data: userData } = await supabaseClient
+                        .from('users').select('*').eq('id', user.id).single();
+
+                    locataireData = userData || {};
+                    document.getElementById('vueLocataire').style.display = 'block';
+                    document.getElementById('btnValider').style.display = 'inline-flex';
+                    if (userData) preRemplirLocataire(userData);
+                    checkValidation();
+                    return;
+                }
+
+                const { data: candidature } = await supabaseClient
+                    .from('candidatures')
+                    .select('*, annonces (titre, ville, prix, user_id), users:locataire_id (*)')
+                    .eq('id', matchId)
+                    .single();
+
+                if (!candidature) {
+                    alert('Match introuvable');
+                    window.location.href = 'dashboard-locataire.html';
+                    return;
+                }
+
+                // ─── SÉCURITÉ : Vérifier que l'utilisateur est bien partie prenante du match ───
+                const locataire = candidature.users;
+                const isProprietaire = (currentUser.id === candidature.annonces?.user_id);
+                const isLocataire = (currentUser.id === locataire?.id);
+                if (!isLocataire && !isProprietaire && !isAdmin) {
+                    alert('Accès non autorisé à ce dossier.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                locataireData = locataire;
+
+                document.getElementById('btnRetour').href = `match-confirmation.html?match_id=${matchId}`;
+
+                if (isLocataire) {
+                    document.getElementById('vueLocataire').style.display = 'block';
+                    document.getElementById('btnValider').style.display = 'inline-flex';
+                    preRemplirLocataire(locataire);
+                } else {
+                    document.getElementById('vueProprio').style.display = 'block';
+                    document.getElementById('headerSubtitle').textContent = `Dossier de ${locataire.prenom || ''} ${locataire.nom || ''}`;
+                    afficherVueProprio(locataire);
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('error', 'Erreur lors du chargement du dossier');
+            }
+        }
+
+        // ================================================================
+        // PRE-REMPLIR (docs déjà uploadés)
+        // ================================================================
+        function preRemplirLocataire(data) {
+            const existingDocs = [
+                { key: 'scolarite',     url: data.doc_scolarite_url,     statut: data.doc_scolarite_statut,     motif: data.doc_scolarite_motif_rejet },
+                { key: 'assurance',     url: data.doc_assurance_url,     statut: data.doc_assurance_statut,     motif: data.doc_assurance_motif_rejet },
+                { key: 'rib',           url: data.doc_rib_url,           statut: data.doc_rib_statut,           motif: data.doc_rib_motif_rejet },
+                { key: 'garant_id',     url: data.doc_garant_id_url,     statut: data.doc_garant_id_statut,     motif: data.doc_garant_id_motif_rejet },
+                { key: 'cautionnement', url: data.doc_cautionnement_url, statut: data.doc_cautionnement_statut, motif: data.doc_cautionnement_motif_rejet }
+            ];
+            existingDocs.forEach(doc => {
+                if (doc.url) {
+                    const cfg = docConfig.find(c => c.key === doc.key);
+                    const fileName = doc.url.split('/').pop();
+
+                    const item = document.getElementById(cfg.itemId);
+                    const icon = document.getElementById(cfg.iconId);
+                    const nameEl = document.getElementById(cfg.nameId);
+                    const verifEl = document.getElementById(cfg.verifId);
+                    const motifEl = document.getElementById(cfg.motifId);
+
+                    nameEl.textContent = fileName;
+                    nameEl.style.display = 'block';
+                    document.getElementById(cfg.btnUpId).style.display = 'none';
+                    document.getElementById(cfg.btnRemId).style.display = 'flex';
+
+                    // Afficher le statut de vérification
+                    if (doc.statut === 'verifie') {
+                        item.classList.add('uploaded');
+                        item.classList.remove('rejected');
+                        icon.className = 'doc-status-icon done';
+                        icon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                        verifEl.className = 'doc-verif-status verifie';
+                        verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> V\u00e9rifi\u00e9 par STERNY';
+                        verifEl.style.display = 'flex';
+                        motifEl.style.display = 'none';
+                    } else if (doc.statut === 'rejete') {
+                        item.classList.remove('uploaded');
+                        item.classList.add('rejected');
+                        icon.className = 'doc-status-icon rejected';
+                        icon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+                        verifEl.className = 'doc-verif-status rejete';
+                        verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Document rejet\u00e9 \u2014 veuillez le remplacer';
+                        verifEl.style.display = 'flex';
+                        if (doc.motif) {
+                            motifEl.textContent = 'Motif : ' + doc.motif;
+                            motifEl.style.display = 'block';
+                        }
+                        // Permettre de re-uploader
+                        document.getElementById(cfg.btnRemId).style.display = 'flex';
+                    } else {
+                        // en_attente ou null → document fourni, en attente de vérification
+                        item.classList.add('uploaded');
+                        item.classList.remove('rejected');
+                        icon.className = 'doc-status-icon done';
+                        icon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                        verifEl.className = 'doc-verif-status en_attente';
+                        verifEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> En attente de v\u00e9rification';
+                        verifEl.style.display = 'flex';
+                        motifEl.style.display = 'none';
+                    }
+                }
+            });
+
+            // Garant
+            if (data.garant_prenom) document.getElementById('garantPrenom').value = data.garant_prenom;
+            if (data.garant_nom) document.getElementById('garantNom').value = data.garant_nom;
+            if (data.garant_telephone) document.getElementById('garantTelephone').value = data.garant_telephone;
+            if (data.garant_email) document.getElementById('garantEmail').value = data.garant_email;
+            checkValidation();
+        }
+
+        // ================================================================
+        // VUE PROPRIETAIRE (lecture seule — vérification automatique STERNY)
+        // ================================================================
+        function afficherVueProprio(locataire) {
+            const docs = [
+                { statusId: 'statusScolarite',     url: locataire.doc_scolarite_url,     statut: locataire.doc_scolarite_statut },
+                { statusId: 'statusAssurance',     url: locataire.doc_assurance_url,     statut: locataire.doc_assurance_statut },
+                { statusId: 'statusRIB',           url: locataire.doc_rib_url,           statut: locataire.doc_rib_statut },
+                { statusId: 'statusGarantID',      url: locataire.doc_garant_id_url,     statut: locataire.doc_garant_id_statut },
+                { statusId: 'statusCautionnement', url: locataire.doc_cautionnement_url, statut: locataire.doc_cautionnement_statut }
+            ];
+
+            docs.forEach(doc => {
+                const el = document.getElementById(doc.statusId);
+                if (!doc.url) {
+                    el.innerHTML = '<div class="status-badge pending"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Non fourni</div>';
+                } else if (doc.statut === 'verifie') {
+                    el.innerHTML = '<div class="status-badge verified-sterny"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> V\u00e9rifi\u00e9 par STERNY</div>';
+                } else if (doc.statut === 'rejete') {
+                    el.innerHTML = '<div class="status-badge rejected-sterny"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Rejet\u00e9 par STERNY</div>';
+                } else {
+                    el.innerHTML = '<div class="status-badge verifying-sterny"><svg class="verif-spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> V\u00e9rification en cours</div>';
+                }
+            });
+
+            const garantEl = document.getElementById('garantInfo');
+            if (locataire.garant_prenom && locataire.garant_nom) {
+                garantEl.innerHTML = `
+                    <div class="garant-grid">
+                        <div class="garant-field">
+                            <div class="field-label">Pr\u00e9nom</div>
+                            <div class="field-value">${locataire.garant_prenom}</div>
+                        </div>
+                        <div class="garant-field">
+                            <div class="field-label">Nom</div>
+                            <div class="field-value">${locataire.garant_nom}</div>
+                        </div>
+                        <div class="garant-field">
+                            <div class="field-label">T\u00e9l\u00e9phone</div>
+                            <div class="field-value">${locataire.garant_telephone || 'Non renseign\u00e9'}</div>
+                        </div>
+                        <div class="garant-field">
+                            <div class="field-label">Email</div>
+                            <div class="field-value">${locataire.garant_email || 'Non renseign\u00e9'}</div>
+                        </div>
+                    </div>`;
+            } else {
+                garantEl.innerHTML = '<div class="status-badge pending"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Informations non renseign\u00e9es</div>';
+            }
+        }
+
+        // ================================================================
+        // VALIDER DOSSIER
+        // ================================================================
+        async function validerDossier() {
+            const btn = document.getElementById('btnValider');
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Envoi en cours...';
+
+            try {
+                let docScolariteUrl = locataireData?.doc_scolarite_url;
+                let docAssuranceUrl = locataireData?.doc_assurance_url;
+                let docRibUrl = locataireData?.doc_rib_url;
+                let docGarantIdUrl = locataireData?.doc_garant_id_url;
+                let docCautionnementUrl = locataireData?.doc_cautionnement_url;
+
+                if (docFiles.scolarite) docScolariteUrl = await uploadDocument(docFiles.scolarite, 'scolarite');
+                if (docFiles.assurance) docAssuranceUrl = await uploadDocument(docFiles.assurance, 'assurance');
+                if (docFiles.rib) docRibUrl = await uploadDocument(docFiles.rib, 'rib');
+                if (docFiles.garant_id) docGarantIdUrl = await uploadDocument(docFiles.garant_id, 'garant_id');
+                if (docFiles.cautionnement) docCautionnementUrl = await uploadDocument(docFiles.cautionnement, 'cautionnement');
+
+                const updateData = {};
+                if (docScolariteUrl) updateData.doc_scolarite_url = docScolariteUrl;
+                if (docAssuranceUrl) updateData.doc_assurance_url = docAssuranceUrl;
+                if (docRibUrl) updateData.doc_rib_url = docRibUrl;
+                if (docGarantIdUrl) updateData.doc_garant_id_url = docGarantIdUrl;
+                if (docCautionnementUrl) updateData.doc_cautionnement_url = docCautionnementUrl;
+
+                // Sauvegarder le statut de vérification STERNY pour chaque document uploadé
+                docConfig.forEach(cfg => {
+                    if (docFiles[cfg.key]) {
+                        const verifEl = document.getElementById(cfg.verifId);
+                        const motifEl = document.getElementById(cfg.motifId);
+                        const fields = docDbFields[cfg.key];
+                        if (verifEl && verifEl.classList.contains('verifie')) {
+                            updateData[fields.statut] = 'verifie';
+                            updateData[fields.motif] = null;
+                        } else if (verifEl && verifEl.classList.contains('rejete')) {
+                            updateData[fields.statut] = 'rejete';
+                            updateData[fields.motif] = motifEl ? motifEl.textContent : null;
+                        } else {
+                            updateData[fields.statut] = 'en_attente';
+                            updateData[fields.motif] = null;
+                        }
+                    }
+                });
+
+                // Garant
+                const gP = document.getElementById('garantPrenom').value.trim();
+                const gN = document.getElementById('garantNom').value.trim();
+                const gT = document.getElementById('garantTelephone').value.trim();
+                const gE = document.getElementById('garantEmail').value.trim();
+                if (gP) updateData.garant_prenom = gP;
+                if (gN) updateData.garant_nom = gN;
+                if (gT) updateData.garant_telephone = gT;
+                if (gE) updateData.garant_email = gE;
+
+                if (Object.keys(updateData).length > 0) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .update(updateData)
+                        .eq('id', currentUser.id);
+
+                    if (error) {
+                        showToast('error', 'Erreur : ' + error.message);
+                        btn.disabled = false;
+                        btn.innerHTML = 'Valider mon dossier <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+                        return;
+                    }
+                }
+
+                showToast('success', 'Dossier valid\u00e9 ! Redirection...');
+                setTimeout(() => {
+                    window.location.href = matchId ? `contrat-location.html?match_id=${matchId}` : 'contrat-location.html';
+                }, 1200);
+
+            } catch (err) {
+                console.error('Erreur:', err);
+                showToast('error', err.message || 'Une erreur est survenue');
+                btn.disabled = false;
+                btn.innerHTML = 'Valider mon dossier <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+            }
+        }
+
+        // ================================================================
+        // UPLOAD DOCUMENT
+        // ================================================================
+        async function uploadDocument(file, dossier) {
+            const ext = file.name.split('.').pop();
+            const name = `${currentUser.id}-${dossier}-${Date.now()}.${ext}`;
+            const { error } = await supabaseClient.storage.from('documents').upload(name, file, { cacheControl: '3600', upsert: true });
+            if (error) { console.error(`Upload ${dossier} error:`, error); return null; }
+            const { data: urlData } = supabaseClient.storage.from('documents').getPublicUrl(name);
+            return urlData.publicUrl;
+        }
+
+        // ================================================================
+        // DASHBOARD LINK
+        // ================================================================
+        async function gererDashboard() {
+            const link = document.getElementById('dashboardLink');
+            if (currentUser) {
+                const { data: u } = await supabaseClient.from('users').select('type_user').eq('id', currentUser.id).single();
+                link.href = (u?.type_user === 'proprietaire') ? 'dashboard-proprietaire.html' : 'dashboard-locataire.html';
+            }
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(type, text) {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.className = `toast ${type}`;
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ================================================================
+        // INIT
+        // ================================================================
+        chargerDossier().then(() => gererDashboard());
+    </script>
+
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

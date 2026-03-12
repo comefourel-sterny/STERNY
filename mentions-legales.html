@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Mentions L&eacute;gales — STERNY</title>
+    <meta name="description" content="Mentions légales de STERNY. Éditeur, hébergeur et informations juridiques.">
+    <link rel="canonical" href="https://sterny.co/mentions-legales.html">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-mentions {
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 0 20px;
+        }
+
+        .mentions-card {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin: 48px auto 80px;
+        }
+
+        .mentions-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+
+        .mentions-card .subtitle {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 32px;
+        }
+
+        .mentions-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 10px;
+        }
+
+        .mentions-card p {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .mentions-card a {
+            color: #E8622A;
+        }
+
+        .mentions-card ul {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B !important;
+            text-decoration: none !important;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-back-top svg {
+            width: 16px; height: 16px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .btn-back-top:hover { color: #1E293B !important; }
+
+        @media (max-width: 600px) {
+            .mentions-card {
+                padding: 28px 20px;
+                margin: 24px auto 40px;
+            }
+
+            .mentions-card h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-mentions">
+        <div class="mentions-card">
+            <a href="index.html" class="btn-back-top" onclick="event.preventDefault();window.close();setTimeout(function(){location.href='index.html';},100);">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+            <h1>Mentions L&eacute;gales</h1>
+            <p class="subtitle">Derni&egrave;re mise &agrave; jour : 1er mars 2026</p>
+
+            <h2>1. &Eacute;diteur du site</h2>
+            <p>
+                <strong>STERNY</strong><br>
+                Statut : Micro-entreprise (auto-entrepreneur)<br>
+                Dirigeant : C&ocirc;me Fourel<br>
+                SIREN : 102 047 578<br>
+                Si&egrave;ge social : 21 rue &Eacute;mile Gu&eacute;n&eacute; [&Agrave; METTRE &Agrave; JOUR avant lancement]<br>
+                Email : <a href="mailto:contact@sterny.co">contact@sterny.co</a><br>
+                T&eacute;l&eacute;phone : 07 77 26 63 87
+            </p>
+
+            <h2>2. H&eacute;bergement</h2>
+            <p>Le site STERNY est h&eacute;berg&eacute; par :</p>
+            <p>
+                Vercel Inc.<br>
+                440 N Barranca Ave #4133, Covina, CA 91723, &Eacute;tats-Unis<br>
+                Site : <a href="https://vercel.com" target="_blank" rel="noopener noreferrer">vercel.com</a>
+            </p>
+
+            <h2>3. Directeur de la publication</h2>
+            <p>C&ocirc;me Fourel</p>
+
+            <h2>4. Propri&eacute;t&eacute; intellectuelle</h2>
+            <p>L&rsquo;ensemble du contenu du site STERNY (textes, images, logos, &eacute;l&eacute;ments graphiques, code source, bases de donn&eacute;es) est prot&eacute;g&eacute; par les lois fran&ccedil;aises et internationales relatives &agrave; la propri&eacute;t&eacute; intellectuelle.</p>
+            <p>Toute reproduction, repr&eacute;sentation, modification ou exploitation, m&ecirc;me partielle, du contenu du site, par quelque proc&eacute;d&eacute; que ce soit, sans autorisation &eacute;crite pr&eacute;alable de STERNY, est strictement interdite et constitue une contrefa&ccedil;on sanctionn&eacute;e par les articles L.335-2 et suivants du Code de la propri&eacute;t&eacute; intellectuelle.</p>
+            <p>La marque STERNY, le logo et l&rsquo;ensemble des signes distinctifs sont la propri&eacute;t&eacute; exclusive de STERNY. Toute utilisation non autoris&eacute;e est interdite.</p>
+
+            <h2>5. Donn&eacute;es personnelles et cookies</h2>
+            <p>STERNY collecte et traite des donn&eacute;es personnelles dans le cadre de son activit&eacute; de mise en relation entre propri&eacute;taires et locataires &eacute;tudiants.</p>
+            <p>Pour en savoir plus sur la collecte, le traitement et la protection de vos donn&eacute;es personnelles, veuillez consulter notre <a href="politique-confidentialite.html">Politique de Confidentialit&eacute;</a>.</p>
+            <p>Conform&eacute;ment au R&egrave;glement G&eacute;n&eacute;ral sur la Protection des Donn&eacute;es (RGPD &ndash; R&egrave;glement UE 2016/679) et &agrave; la loi n&deg; 78-17 du 6 janvier 1978 (loi Informatique et Libert&eacute;s), vous disposez d&rsquo;un droit d&rsquo;acc&egrave;s, de rectification, d&rsquo;effacement, de limitation du traitement, de portabilit&eacute; de vos donn&eacute;es et d&rsquo;opposition au traitement.</p>
+            <p>Pour exercer vos droits, contactez-nous &agrave; : <a href="mailto:contact@sterny.co">contact@sterny.co</a></p>
+
+            <h2>6. Cookies</h2>
+            <p>Le site utilise des cookies techniques n&eacute;cessaires au fonctionnement de la Plateforme (authentification, pr&eacute;f&eacute;rences de session). Aucun cookie publicitaire ou de tracking tiers n&rsquo;est utilis&eacute;.</p>
+
+            <h2>7. Responsabilit&eacute;</h2>
+            <p>STERNY met tout en &oelig;uvre pour assurer l&rsquo;exactitude des informations publi&eacute;es sur la Plateforme. Toutefois, STERNY ne saurait &ecirc;tre tenue responsable des erreurs, omissions ou r&eacute;sultats obtenus suite &agrave; l&rsquo;utilisation de ces informations.</p>
+            <p>STERNY agit en qualit&eacute; d&rsquo;interm&eacute;diaire et ne saurait &ecirc;tre tenue responsable des relations contractuelles entre propri&eacute;taires et locataires.</p>
+
+            <h2>8. Liens hypertextes</h2>
+            <p>Le site peut contenir des liens vers des sites tiers. STERNY n&rsquo;exerce aucun contr&ocirc;le sur ces sites et d&eacute;cline toute responsabilit&eacute; quant &agrave; leur contenu.</p>
+
+            <h2>9. M&eacute;diation de la consommation</h2>
+            <p>Conform&eacute;ment aux articles L.612-1 et suivants du Code de la consommation, en cas de litige non r&eacute;solu, le consommateur peut recourir gratuitement &agrave; un m&eacute;diateur de la consommation :</p>
+            <p>
+                M&eacute;diateur &agrave; d&eacute;signer [EN COURS &ndash; inscription pr&eacute;vue aupr&egrave;s de CM2C avant lancement commercial]
+            </p>
+            <p>Plateforme europ&eacute;enne de r&egrave;glement en ligne des litiges : <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr</a></p>
+
+            <h2>10. Droit applicable</h2>
+            <p>Les pr&eacute;sentes mentions l&eacute;gales sont soumises au droit fran&ccedil;ais. Tout litige rel&egrave;ve de la comp&eacute;tence des tribunaux fran&ccedil;ais.</p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p>
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="politique-confidentialite.html">Politique de Confidentialit&eacute;</a>
+            </p>
+            <p><a href="mailto:contact@sterny.co">contact@sterny.co</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // G&eacute;rer le lien "Mon espace"
+        async function gererDashboardLink() {
+            const lien = document.getElementById('dashboardLink');
+            if (!lien) return;
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            if (user) {
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('type_user')
+                    .eq('id', user.id)
+                    .single();
+
+                if (userData?.type_user === 'proprietaire') {
+                    lien.href = 'dashboard-proprietaire.html';
+                } else {
+                    lien.href = 'dashboard-locataire.html';
+                }
+            } else {
+                lien.href = 'connexion.html';
+            }
+        }
+
+        gererDashboardLink();
+    </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

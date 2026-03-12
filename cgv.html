@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Conditions G&eacute;n&eacute;rales de Vente — STERNY</title>
+    <meta name="description" content="Conditions Générales de Vente de STERNY. Tarifs, paiements, remboursements et obligations.">
+    <link rel="canonical" href="https://sterny.co/cgv.html">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .cgv-page {
+            min-height: calc(100vh - 85px);
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 48px 20px 64px;
+        }
+
+        .cgv-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 8px 40px rgba(30, 41, 59, 0.10);
+        }
+
+        .cgv-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px 0;
+        }
+
+        .cgv-date {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin-bottom: 36px;
+        }
+
+        .cgv-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        .cgv-card p {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .cgv-card ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 8px 0 12px 0;
+        }
+
+        .cgv-card ul li {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .cgv-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #E8622A;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B !important;
+            text-decoration: none !important;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-back-top svg {
+            width: 16px; height: 16px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .btn-back-top:hover { color: #1E293B !important; }
+
+        .cgv-footer {
+            max-width: 800px;
+            margin: 32px auto 0;
+            text-align: center;
+            font-size: 13px;
+            color: #9CA3AF;
+        }
+
+        .cgv-footer a {
+            color: #6B7280;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .cgv-footer a:hover {
+            color: #E8622A;
+        }
+
+        .cgv-footer .separator {
+            color: #D1D5DB;
+        }
+
+        @media (max-width: 768px) {
+            .cgv-card {
+                padding: 28px 20px;
+            }
+
+            .cgv-card h1 {
+                font-size: 22px;
+            }
+
+            .cgv-page {
+                padding: 24px 12px 40px;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Navigation principale">
+    <div class="container">
+        <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
+            <li><a href="messages.html">Messages</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section class="cgv-page">
+    <div class="cgv-card">
+        <a href="index.html" class="btn-back-top" onclick="event.preventDefault();window.close();setTimeout(function(){location.href='index.html';},100);">
+            <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Retour
+        </a>
+        <h1>Conditions G&eacute;n&eacute;rales de Vente</h1>
+        <p class="cgv-date">Derni&egrave;re mise &agrave; jour : 1er mars 2026</p>
+
+        <h2>Article 1 &ndash; Objet</h2>
+        <p>Les pr&eacute;sentes Conditions G&eacute;n&eacute;rales de Vente (CGV) r&eacute;gissent les relations contractuelles entre STERNY, auto-entreprise immatricul&eacute;e sous le n&deg; SIRET [&Agrave; COMPL&Eacute;TER], ci-apr&egrave;s &laquo;&nbsp;la Plateforme&nbsp;&raquo;, et toute personne utilisant les services payants de la Plateforme, ci-apr&egrave;s &laquo;&nbsp;l&rsquo;Utilisateur&nbsp;&raquo;.</p>
+        <p>STERNY est une plateforme d&rsquo;interm&eacute;diation qui met en relation des propri&eacute;taires de logements meubl&eacute;s avec des &eacute;tudiants en alternance recherchant un h&eacute;bergement. STERNY n&rsquo;est ni bailleur, ni locataire, ni garant.</p>
+
+        <h2>Article 2 &ndash; Services propos&eacute;s</h2>
+        <p>STERNY propose les services suivants :</p>
+        <ul>
+            <li>Mise en relation entre propri&eacute;taires et &eacute;tudiants via un syst&egrave;me de matching</li>
+            <li>Gestion administrative du dossier locataire (pi&egrave;ces justificatives, garant)</li>
+            <li>G&eacute;n&eacute;ration et signature &eacute;lectronique du contrat de location meubl&eacute;e</li>
+            <li>Encaissement et reversement des loyers via prestataire de paiement s&eacute;curis&eacute; (Stripe)</li>
+            <li>R&eacute;alisation de l&rsquo;&eacute;tat des lieux d&rsquo;entr&eacute;e et de sortie d&eacute;mat&eacute;rialis&eacute;</li>
+        </ul>
+
+        <h2>Article 3 &ndash; Commission et tarification</h2>
+        <p>3.1. Les services de STERNY sont gratuits pour les locataires (&eacute;tudiants).</p>
+        <p>3.2. Le propri&eacute;taire s&rsquo;acquitte d&rsquo;une commission de service calcul&eacute;e en pourcentage du loyer hebdomadaire, int&eacute;gr&eacute;e au prix affich&eacute; sur la plateforme. Le taux de commission est indiqu&eacute; au propri&eacute;taire lors de la cr&eacute;ation de l&rsquo;annonce.</p>
+        <p>3.3. La commission est pr&eacute;lev&eacute;e automatiquement sur chaque paiement de loyer avant reversement au propri&eacute;taire.</p>
+        <p>3.4. Aucun frais suppl&eacute;mentaire n&rsquo;est factur&eacute; au locataire au titre de l&rsquo;interm&eacute;diation, conform&eacute;ment &agrave; l&rsquo;article 5 II de la loi n&deg; 89-462 du 6 juillet 1989.</p>
+
+        <h2>Article 4 &ndash; Inscription et obligations des Utilisateurs</h2>
+        <p>4.1. L&rsquo;inscription sur la Plateforme implique l&rsquo;acceptation pleine et enti&egrave;re des pr&eacute;sentes CGV.</p>
+        <p>4.2. L&rsquo;Utilisateur s&rsquo;engage &agrave; fournir des informations exactes, compl&egrave;tes et &agrave; jour.</p>
+        <p>4.3. Le propri&eacute;taire garantit qu&rsquo;il dispose de tous les droits n&eacute;cessaires pour mettre le logement en location et que celui-ci est conforme aux normes de d&eacute;cence (d&eacute;cret n&deg; 2002-120 du 30 janvier 2002).</p>
+        <p>4.4. Le locataire garantit sa qualit&eacute; d&rsquo;&eacute;tudiant en alternance et s&rsquo;engage &agrave; fournir les justificatifs requis (certificat de scolarit&eacute;, attestation d&rsquo;assurance, RIB).</p>
+
+        <h2>Article 5 &ndash; Contrat de location</h2>
+        <p>5.1. Le contrat de location est conclu directement entre le propri&eacute;taire et le locataire. STERNY n&rsquo;est pas partie au contrat de bail.</p>
+        <p>5.2. Le contrat de bail propos&eacute; par la Plateforme est conforme au contrat type d&eacute;fini par le d&eacute;cret n&deg; 2015-587 du 29 mai 2015 (annexe 2 &ndash; logement meubl&eacute;).</p>
+        <p>5.3. La signature &eacute;lectronique appos&eacute;e via la Plateforme a la m&ecirc;me valeur juridique qu&rsquo;une signature manuscrite, conform&eacute;ment &agrave; l&rsquo;article 1367 du Code civil.</p>
+
+        <h2>Article 6 &ndash; Paiements</h2>
+        <p>6.1. Les paiements sont trait&eacute;s par le prestataire Stripe, dans le respect des normes PCI-DSS.</p>
+        <p>6.2. Le loyer est payable d&rsquo;avance, au premier jour de chaque semaine.</p>
+        <p>6.3. Le d&eacute;p&ocirc;t de garantie est encaiss&eacute; lors de la signature du contrat et conserv&eacute; sur un compte s&eacute;questre jusqu&rsquo;&agrave; la fin du bail.</p>
+        <p>6.4. En cas d&rsquo;impay&eacute;, STERNY se r&eacute;serve le droit de suspendre l&rsquo;acc&egrave;s aux services de la Plateforme.</p>
+
+        <h2>Article 7 &ndash; Droit de r&eacute;tractation</h2>
+        <p>7.1. Conform&eacute;ment &agrave; l&rsquo;article L.221-28 du Code de la consommation, le droit de r&eacute;tractation ne s&rsquo;applique pas aux prestations de services d&rsquo;h&eacute;bergement fournies &agrave; une date d&eacute;termin&eacute;e.</p>
+        <p>7.2. Toutefois, le locataire peut r&eacute;silier le bail &agrave; tout moment moyennant le respect du pr&eacute;avis d&rsquo;un mois pr&eacute;vu au contrat de location.</p>
+
+        <h2>Article 8 &ndash; Responsabilit&eacute;</h2>
+        <p>8.1. STERNY agit en qualit&eacute; d&rsquo;interm&eacute;diaire et ne saurait &ecirc;tre tenue responsable des obligations respectives du bailleur et du locataire au titre du contrat de location.</p>
+        <p>8.2. STERNY ne garantit pas la conformit&eacute; du logement, sa salubrit&eacute; ou son ad&eacute;quation aux besoins du locataire. Ces v&eacute;rifications incombent aux parties.</p>
+        <p>8.3. STERNY met tout en &oelig;uvre pour assurer la disponibilit&eacute; et la s&eacute;curit&eacute; de la Plateforme, sans obligation de r&eacute;sultat.</p>
+
+        <h2>Article 9 &ndash; Donn&eacute;es personnelles</h2>
+        <p>Les donn&eacute;es personnelles des Utilisateurs sont trait&eacute;es conform&eacute;ment &agrave; notre Politique de Confidentialit&eacute;, accessible &agrave; l&rsquo;adresse <a href="politique-confidentialite.html" style="color: #E8622A; text-decoration: none;">politique-confidentialite.html</a>, et dans le respect du R&egrave;glement G&eacute;n&eacute;ral sur la Protection des Donn&eacute;es (RGPD &ndash; R&egrave;glement UE 2016/679).</p>
+
+        <h2>Article 10 &ndash; Propri&eacute;t&eacute; intellectuelle</h2>
+        <p>L&rsquo;ensemble des &eacute;l&eacute;ments composant la Plateforme (textes, images, logos, code source) sont la propri&eacute;t&eacute; exclusive de STERNY. Toute reproduction, m&ecirc;me partielle, est interdite sans autorisation pr&eacute;alable &eacute;crite.</p>
+
+        <h2>Article 11 &ndash; M&eacute;diation et litiges</h2>
+        <p>11.1. En cas de litige, les parties s&rsquo;engagent &agrave; rechercher une solution amiable.</p>
+        <p>11.2. &Agrave; d&eacute;faut d&rsquo;accord, le consommateur peut recourir gratuitement au service de m&eacute;diation [&Agrave; COMPL&Eacute;TER &ndash; m&eacute;diateur de la consommation] conform&eacute;ment aux articles L.612-1 et suivants du Code de la consommation.</p>
+        <p>11.3. Le tribunal comp&eacute;tent est celui du lieu de r&eacute;sidence du d&eacute;fendeur ou, au choix du demandeur consommateur, celui du lieu de livraison effective du service.</p>
+
+        <h2>Article 12 &ndash; Modification des CGV</h2>
+        <p>STERNY se r&eacute;serve le droit de modifier les pr&eacute;sentes CGV &agrave; tout moment. Les Utilisateurs seront inform&eacute;s de toute modification par notification sur la Plateforme. Les CGV applicables sont celles en vigueur &agrave; la date de la transaction.</p>
+
+        <h2>Article 13 &ndash; Droit applicable</h2>
+        <p>Les pr&eacute;sentes CGV sont soumises au droit fran&ccedil;ais. En cas de litige, et &agrave; d&eacute;faut de r&eacute;solution amiable, les tribunaux fran&ccedil;ais seront seuls comp&eacute;tents.</p>
+    </div>
+
+    <div class="cgv-footer">
+        <a href="mentions-legales.html">Mentions l&eacute;gales</a>
+        <span class="separator">|</span>
+        <a href="cgu.html">CGU</a>
+        <span class="separator">|</span>
+        <a href="politique-confidentialite.html">Politique de confidentialit&eacute;</a>
+    </div>
+</section>
+
+<footer role="contentinfo">
+    <div class="container">
+        <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+        <p><a href="mailto:contact@sterny.co">contact@sterny.co</a></p>
+    </div>
+</footer>
+
+<script>
+    // Redirection "Mon espace" selon le type d'utilisateur
+    async function setupNav() {
+        try {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const link = document.getElementById('monEspaceLink');
+            if (!user) {
+                link.href = 'connexion.html';
+                return;
+            }
+            const { data } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+            if (data && data.type_user === 'hote') {
+                link.href = 'dashboard-proprietaire.html';
+            } else {
+                link.href = 'dashboard-locataire.html';
+            }
+        } catch (e) {
+            document.getElementById('monEspaceLink').href = 'connexion.html';
+        }
+    }
+    setupNav();
+</script>
+
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Profil — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
@@ -54,10 +62,10 @@
 
         /* GRANDE BARRE VIOLETTE PROFIL */
         .profile-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             padding: 40px 20px;
             color: white;
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 24px rgba(30, 41, 59, 0.3);
         }
         .profile-hero .container {
             max-width: 1200px;
@@ -87,13 +95,53 @@
         }
         .profile-photo .initials {
             font-weight: 700;
-            color: #667eea;
+            color: #E8622A;
         }
         .profile-info { flex: 1; }
         .profile-name {
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge-verifie {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #ECFDF5;
+            color: #059669;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid #A7F3D0;
+        }
+
+        .badge-verifie svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .badge-documents {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #EFF6FF;
+            color: #2563EB;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid #BFDBFE;
+        }
+
+        .badge-documents svg {
+            width: 13px;
+            height: 13px;
         }
         .profile-details {
             font-size: 16px;
@@ -115,7 +163,7 @@
         .btn-profile {
             padding: 12px 24px;
             background: white;
-            color: #667eea;
+            color: #E8622A;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -196,7 +244,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -255,13 +303,16 @@
             .avis-header { justify-content: center; }
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="dashboard-header">
     <div class="container">
-        <a href="index.html" class="header-logo">🏠 AlternHome</a>
+        <a href="index.html" class="header-logo">STERNY</a>
         <div class="header-actions">
             <a href="javascript:history.back()" class="btn-logout">← Retour</a>
         </div>
@@ -275,7 +326,7 @@
             <div class="initials" id="heroInitials">?</div>
         </div>
         <div class="profile-info">
-            <div class="profile-name" id="heroName">Chargement...</div>
+            <div class="profile-name" id="heroName">Chargement...<span id="badgeVerification" style="display:none;"></span></div>
             <div class="profile-details" id="heroDetails">...</div>
             <div class="profile-details" id="heroSchool">...</div>
             <div class="hero-rating" id="heroRating" style="display:none;">
@@ -286,6 +337,7 @@
         <div class="profile-actions">
             <a href="#" id="btnMessage" class="btn-profile primary">💬 Envoyer un message</a>
             <a href="#" id="btnAvis" class="btn-profile">⭐ Laisser un avis</a>
+            <a href="#" id="btnSignaler" class="btn-profile" onclick="ouvrirSignalementUser()" style="color:#EF4444;border-color:#FECACA;display:none;">🚩 Signaler</a>
         </div>
     </div>
 </div>
@@ -304,6 +356,34 @@
         <h2 class="section-title">⭐ Avis reçus</h2>
         <div id="avisList" class="avis-list">
             <div class="loading">Chargement des avis...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modale signalement utilisateur -->
+<div id="modalSignalUser" role="dialog" aria-modal="true" aria-label="Signaler cet utilisateur" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99998;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:20px;padding:32px;max-width:420px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,0.2);">
+        <h3 style="font-size:20px;font-weight:700;color:#1E293B;margin:0 0 16px;text-align:center;">🚩 Signaler cet utilisateur</h3>
+        <div id="signalUserMsg" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;margin-bottom:12px;display:none;"></div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:5px;">Motif</label>
+            <select id="signalUserMotif" style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;background:#F4F5F7;">
+                <option value="">-- Choisir un motif --</option>
+                <option value="faux_profil">Faux profil</option>
+                <option value="comportement_suspect">Comportement suspect</option>
+                <option value="harcelement">Harcèlement</option>
+                <option value="arnaque">Tentative d'arnaque</option>
+                <option value="discrimination">Discrimination</option>
+                <option value="autre">Autre</option>
+            </select>
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:5px;">Description (optionnel)</label>
+            <textarea id="signalUserDesc" rows="3" placeholder="Décris le problème..." style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;gap:12px;">
+            <button onclick="fermerSignalementUser()" style="flex:1;padding:11px;background:#fff;color:#1E293B;border:1.5px solid #E8EAF0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Annuler</button>
+            <button onclick="envoyerSignalementUser()" id="btnSignalUser" style="flex:1;padding:11px;background:#EF4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Signaler</button>
         </div>
     </div>
 </div>
@@ -331,18 +411,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user) { window.location.href = 'connexion.html'; return; }
     currentUser = user;
 
+    // Vérifier si admin
+    const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+    const isAdmin = adminCheck?.is_admin === true;
+
     // Récupérer l'ID depuis l'URL
     const params = new URLSearchParams(window.location.search);
     profileUserId = params.get('user_id');
 
-    if (!profileUserId) {
+    // Admin sans paramètre → afficher son propre profil
+    if (!profileUserId && isAdmin) {
+        profileUserId = user.id;
+    } else if (!profileUserId) {
         alert('Utilisateur non spécifié');
         window.location.href = 'index.html';
         return;
     }
 
-    // Si c'est son propre profil, rediriger vers mon-profil.html
-    if (profileUserId === currentUser.id) {
+    // Si c'est son propre profil et PAS admin, rediriger vers mon-profil.html
+    if (profileUserId === currentUser.id && !isAdmin) {
         window.location.href = 'mon-profil.html';
         return;
     }
@@ -354,6 +441,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Définir les liens des boutons
     document.getElementById('btnMessage').href = `conversation.html?user_id=${profileUserId}`;
     document.getElementById('btnAvis').href = `avis.html?user_id=${profileUserId}`;
+
+    // Afficher bouton signaler si ce n'est pas son propre profil
+    if (profileUserId !== currentUser.id) {
+        document.getElementById('btnSignaler').style.display = '';
+    }
 });
 
 // ─── CHARGER PROFIL ───
@@ -371,8 +463,17 @@ async function chargerProfil() {
         return;
     }
 
-    // Nom
-    document.getElementById('heroName').textContent = `${data.prenom} ${data.nom}`;
+    // Nom + badge vérification (3 niveaux)
+    // 🟢 verifiee = Stripe Identity validé (à la signature du bail)
+    // 🟠 documents_fournis = Pièce d'identité + certificat de scolarité uploadés
+    // 🔴 non_verifiee / null = Rien uploadé
+    let nameBadge = '';
+    if (data.identite_verifiee === 'verifiee') {
+        nameBadge = '<span class="badge-verifie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Identité vérifiée</span>';
+    } else if (data.identite_verifiee === 'documents_fournis') {
+        nameBadge = '<span class="badge-documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Documents fournis</span>';
+    }
+    document.getElementById('heroName').innerHTML = `${escapeHtml(data.prenom)} ${escapeHtml(data.nom)}${nameBadge ? ' ' + nameBadge : ''}`;
 
     // Détails (âge + sexe)
     let details = '';
@@ -397,7 +498,12 @@ async function chargerProfil() {
 
     // Photo
     if (data.photo_profil_url) {
-        document.getElementById('heroPhoto').innerHTML = `<img src="${data.photo_profil_url}" alt="Photo">`;
+        const img = document.createElement('img');
+        img.src = data.photo_profil_url;
+        img.alt = 'Photo';
+        const heroPhoto = document.getElementById('heroPhoto');
+        heroPhoto.innerHTML = '';
+        heroPhoto.appendChild(img);
     } else {
         document.getElementById('heroInitials').textContent = `${data.prenom[0]}${data.nom[0]}`;
     }
@@ -409,11 +515,11 @@ async function chargerProfil() {
     let html = '';
 
     if (data.ville_origine) {
-        html += `<div class="info-row"><span class="info-label">🏙️ Ville d'origine :</span><span class="info-value">${data.ville_origine}</span></div>`;
+        html += `<div class="info-row"><span class="info-label">🏙️ Ville d'origine :</span><span class="info-value">${escapeHtml(data.ville_origine)}</span></div>`;
         hasInfo = true;
     }
     if (data.description) {
-        html += `<div class="info-row"><span class="info-label">📝 Description :</span><span class="info-value">${data.description}</span></div>`;
+        html += `<div class="info-row"><span class="info-label">📝 Description :</span><span class="info-value">${escapeHtml(data.description)}</span></div>`;
         hasInfo = true;
     }
 
@@ -474,14 +580,14 @@ async function chargerAvis() {
     container.innerHTML = '';
     for (const avis of data) {
         const eval_ = avis.evaluateur;
-        const nom = eval_ ? `${eval_.prenom} ${eval_.nom}` : 'Utilisateur';
+        const nom = eval_ ? `${escapeHtml(eval_.prenom)} ${escapeHtml(eval_.nom)}` : 'Utilisateur';
         const photo = eval_?.photo_profil_url;
-        const initials = eval_ ? `${eval_.prenom[0]}${eval_.nom[0]}` : '?';
+        const initials = eval_ ? `${escapeHtml(eval_.prenom[0])}${escapeHtml(eval_.nom[0])}` : '?';
         const date = new Date(avis.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         const stars = genStars(avis.note);
 
         const avatarHtml = photo
-            ? `<img src="${photo}" alt="${nom}">`
+            ? `<img loading="lazy" src="${escapeHtml(photo)}" alt="${nom}">`
             : initials;
 
         container.innerHTML += `
@@ -493,13 +599,20 @@ async function chargerAvis() {
                         <span class="avis-date">${date}</span>
                     </div>
                     <div class="avis-stars">${stars}</div>
-                    ${avis.commentaire ? `<div class="avis-comment">${avis.commentaire}</div>` : ''}
+                    ${avis.commentaire ? `<div class="avis-comment">${escapeHtml(avis.commentaire)}</div>` : ''}
                 </div>
             </div>`;
     }
 }
 
 // ─── UTILITAIRES ───
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function genStars(note) {
     const plein = Math.round(note);
     return '★'.repeat(plein) + '☆'.repeat(5 - plein);
@@ -515,6 +628,51 @@ function calculerAge(dateNaissance) {
     }
     return age;
 }
+
+// ─── SIGNALEMENT UTILISATEUR ───
+function ouvrirSignalementUser() {
+    document.getElementById('modalSignalUser').style.display = 'flex';
+    document.getElementById('signalUserMsg').style.display = 'none';
+    document.getElementById('signalUserMotif').value = '';
+    document.getElementById('signalUserDesc').value = '';
+}
+function fermerSignalementUser() {
+    document.getElementById('modalSignalUser').style.display = 'none';
+}
+async function envoyerSignalementUser() {
+    const motif = document.getElementById('signalUserMotif').value;
+    const desc = document.getElementById('signalUserDesc').value;
+    const msg = document.getElementById('signalUserMsg');
+    const btn = document.getElementById('btnSignalUser');
+
+    if (!motif) { msg.textContent = 'Choisis un motif.'; msg.style.display = 'block'; msg.style.background = 'rgba(232,98,42,0.08)'; msg.style.color = '#E8622A'; return; }
+
+    // Rate limit : max 3 signalements par 10 minutes
+    if (!RateLimiter.check('signalement_user', 3, 600000, { persistent: true })) return;
+
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    try {
+        const { error } = await supabaseClient.from('signalements').insert({
+            reporter_id: currentUser.id,
+            type: 'utilisateur',
+            target_id: profileUserId,
+            motif: motif,
+            description: desc || null
+        });
+        if (error) throw error;
+        msg.textContent = 'Signalement envoyé. Merci !'; msg.style.display = 'block'; msg.style.background = '#D1FAE5'; msg.style.color = '#065F46';
+        setTimeout(function() { fermerSignalementUser(); }, 1500);
+    } catch (e) {
+        console.error('Erreur signalement:', e);
+        msg.textContent = 'Erreur lors de l\'envoi.'; msg.style.display = 'block'; msg.style.background = 'rgba(232,98,42,0.08)'; msg.style.color = '#E8622A';
+    }
+    btn.disabled = false; btn.textContent = 'Signaler';
+}
+// Fermer modale en cliquant en dehors
+document.getElementById('modalSignalUser').addEventListener('click', function(e) {
+    if (e.target === this) fermerSignalementUser();
+});
 </script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

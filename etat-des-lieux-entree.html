@@ -3,48 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>État des lieux d'entrée - EASWAP</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>&Eacute;tat des lieux d'entr&eacute;e — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: var(--gray-50);
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            min-height: 100vh;
+            color: #1E293B;
         }
 
-        .main-container {
-            max-width: 1100px;
-            margin: 40px auto;
+        /* ===================== NAV ===================== */
+        nav {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            border: 1px solid #E5E7EB;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 72px;
+            display: flex;
+            align-items: center;
         }
 
-        /* HEADER */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 20px 20px 0 0;
+        .nav-container {
+            max-width: none;
+            margin: 0;
+            padding: 0 40px;
+            height: 85px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo img {
+            height: 55px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1E293B;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #E8622A;
+        }
+
+        /* ===================== PAGE CONTAINER ===================== */
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ===================== PAGE HEADER ===================== */
+        .page-header {
             text-align: center;
+            margin-bottom: 32px;
         }
 
-        .header h1 {
-            font-size: 28px;
-            font-weight: 800;
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #1E293B;
             margin-bottom: 10px;
         }
 
-        .header p {
+        .page-header p {
             font-size: 16px;
-            opacity: 0.95;
+            color: #64748B;
+            line-height: 1.6;
         }
 
-        /* PROGRESS */
-        .progress-container {
-            padding: 30px 40px;
-            border-bottom: 2px solid #f3f4f6;
+        /* ===================== CARDS (shared) ===================== */
+        .progress-card,
+        .section-card,
+        .actions-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.18);
+            margin-bottom: 24px;
+            padding: 32px;
+        }
+
+        /* ===================== PROGRESS ===================== */
+        .progress-card {
+            padding: 32px 40px;
         }
 
         .progress-steps {
@@ -60,14 +133,16 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: #e5e7eb;
+            background: #E5E7EB;
             z-index: 0;
+            border-radius: 2px;
         }
 
         .progress-line-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #1E293B, #E8622A);
             width: 100%;
+            border-radius: 2px;
             transition: width 0.5s;
         }
 
@@ -82,40 +157,50 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #e5e7eb;
-            color: #9ca3af;
+            background: #E5E7EB;
+            color: #9CA3AF;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 14px;
             margin: 0 auto 8px;
             transition: all 0.3s;
         }
 
-        .progress-step.active .progress-circle,
-        .progress-step.completed .progress-circle {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .progress-step.active .progress-circle {
+            background: #E8622A;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.35);
+        }
+
+        .progress-step.completed .progress-circle {
+            background: #E8622A;
+            color: white;
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.35);
         }
 
         .progress-label {
             font-size: 13px;
-            color: #6b7280;
+            color: #64748B;
             font-weight: 600;
         }
 
-        /* CONTENT */
-        .content {
-            padding: 40px;
+        .progress-step.active .progress-label {
+            color: #1E293B;
         }
 
+        .progress-step.completed .progress-label {
+            color: #E8622A;
+        }
+
+        /* ===================== ALERT INFO ===================== */
         .alert-info {
-            background: #dbeafe;
-            border: 2px solid #3b82f6;
-            border-radius: 12px;
+            background: #FFF7ED;
+            border: 2px solid #FDBA74;
+            border-radius: 14px;
             padding: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             display: flex;
             gap: 15px;
             align-items: start;
@@ -132,165 +217,284 @@
 
         .alert-title {
             font-weight: 700;
-            color: #1e40af;
+            color: #9A3412;
             margin-bottom: 5px;
             font-size: 15px;
         }
 
         .alert-text {
-            color: #1e40af;
+            color: #9A3412;
             font-size: 14px;
             line-height: 1.6;
         }
 
-        /* SECTIONS */
-        .section {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
+        /* ===================== SECTION CARD ===================== */
+        .section-card {
+            overflow: hidden;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             cursor: pointer;
+            user-select: none;
         }
 
         .section-title {
             font-size: 20px;
             font-weight: 700;
-            color: #1f2937;
+            color: #1E293B;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .section-icon {
-            font-size: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-icon.sejour {
+            background: #EDE9FE;
+        }
+
+        .section-icon.cuisine {
+            background: #FEF3C7;
+        }
+
+        .section-icon.chambre {
+            background: #DBEAFE;
+        }
+
+        .section-icon.sdb {
+            background: #D1FAE5;
+        }
+
+        .section-icon.compteurs {
+            background: #FEE2E2;
+        }
+
+        .section-icon.photos {
+            background: #FCE7F3;
+        }
+
+        .section-icon.observations {
+            background: #E0E7FF;
+        }
+
+        .section-icon.signatures {
+            background: #F3E8FF;
         }
 
         .section-toggle {
-            font-size: 24px;
-            color: #9ca3af;
+            font-size: 20px;
+            color: #9CA3AF;
             transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #F1F5F9;
         }
 
-        .section.collapsed .section-toggle {
+        .section-toggle:hover {
+            background: #E2E8F0;
+        }
+
+        .section-card.collapsed .section-toggle {
             transform: rotate(180deg);
         }
 
         .section-content {
+            margin-top: 24px;
             transition: max-height 0.3s;
         }
 
-        .section.collapsed .section-content {
+        .section-card.collapsed .section-content {
             display: none;
         }
 
-        /* CHECKLIST */
+        /* ===================== CHECKLIST ===================== */
         .checklist-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 16px;
         }
 
         .checklist-item {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 15px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .checklist-item:hover {
+            border-color: #CBD5E1;
         }
 
         .checklist-item-label {
             font-size: 14px;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 10px;
+            color: #334155;
+            margin-bottom: 12px;
         }
 
         .state-buttons {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .state-btn {
-            padding: 8px 12px;
-            border: 2px solid #e5e7eb;
+            padding: 7px 12px;
+            border: 2px solid #E2E8F0;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             background: white;
-            color: #6b7280;
+            color: #64748B;
+            font-family: 'DM Sans', sans-serif;
         }
 
         .state-btn:hover {
-            border-color: #667eea;
+            border-color: #94A3B8;
+            color: #334155;
         }
 
-        .state-btn.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: #667eea;
+        /* State colors when selected */
+        .state-btn.active[data-state="neuf"],
+        .state-btn.active.state-neuf {
+            background: #DCFCE7;
+            color: #166534;
+            border-color: #22C55E;
         }
 
-        /* PHOTOS */
-        .photos-section {
+        .state-btn.active[data-state="bon"],
+        .state-btn.active.state-bon {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border-color: #3B82F6;
+        }
+
+        .state-btn.active[data-state="correct"],
+        .state-btn.active.state-correct {
+            background: #FFF7ED;
+            color: #9A3412;
+            border-color: #F97316;
+        }
+
+        .state-btn.active[data-state="degrade"],
+        .state-btn.active.state-degrade {
+            background: #FEF2F2;
+            color: #991B1B;
+            border-color: #EF4444;
+        }
+
+        /* ===================== COMPTEURS ===================== */
+        .compteurs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .compteur-item {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .compteur-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compteur-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E293B;
+            font-family: 'DM Sans', sans-serif;
             background: white;
-            border: 2px dashed #d1d5db;
-            border-radius: 12px;
-            padding: 30px;
+            transition: border-color 0.2s;
+        }
+
+        .compteur-input:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1);
+        }
+
+        /* ===================== PHOTOS ===================== */
+        .photos-upload-zone {
+            border: 2px dashed #E5E7EB;
+            border-radius: 14px;
+            padding: 36px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
+            transition: all 0.2s;
+            background: #FAFBFC;
         }
 
-        .photos-section:hover {
-            border-color: #667eea;
-            background: #f9fafb;
+        .photos-upload-zone:hover {
+            border-color: #E8622A;
+            background: #FFF7ED;
         }
 
-        .photos-section input[type="file"] {
+        .photos-upload-zone input[type="file"] {
             display: none;
         }
 
         .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 44px;
+            margin-bottom: 12px;
         }
 
         .upload-text {
             font-size: 16px;
-            color: #374151;
+            color: #334155;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .upload-subtext {
             font-size: 14px;
-            color: #9ca3af;
+            color: #94A3B8;
         }
 
         .photos-preview {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+            gap: 14px;
             margin-top: 20px;
         }
 
         .photo-preview {
             position: relative;
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            background: #f3f4f6;
+            background: #F1F5F9;
         }
 
         .photo-preview img {
@@ -301,205 +505,430 @@
 
         .photo-remove {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 6px;
+            right: 6px;
             background: rgba(239, 68, 68, 0.9);
             color: white;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            border: none;
         }
 
         .photo-remove:hover {
-            background: #dc2626;
+            background: #DC2626;
             transform: scale(1.1);
         }
 
-        /* COMPTEURS */
-        .compteurs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .compteur-item {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .compteur-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .compteur-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .compteur-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        /* OBSERVATIONS */
+        /* ===================== OBSERVATIONS ===================== */
         .observations-textarea {
             width: 100%;
             min-height: 120px;
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid #E2E8F0;
+            border-radius: 14px;
             font-size: 14px;
             line-height: 1.6;
             resize: vertical;
-            background: white;
+            background: #F8FAFC;
+            font-family: 'DM Sans', sans-serif;
+            color: #1E293B;
+            transition: border-color 0.2s;
         }
 
         .observations-textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #E8622A;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1);
         }
 
-        /* SIGNATURES */
-        .signatures-section {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 30px;
-            margin: 30px 0;
+        /* ===================== SIGNATURES ===================== */
+        .signatures-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
         }
 
+        .signatures-subtitle {
+            text-align: center;
+            color: #64748B;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        /* Grille statut 2 colonnes */
         .signatures-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-bottom: 0;
         }
 
         .signature-box {
-            background: white;
-            border: 2px solid #e5e7eb;
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
+            transition: all 0.3s;
+        }
+        .signature-box.signed {
+            background: #F0FDF4;
+            border-color: #86EFAC;
         }
 
         .signature-title {
-            font-size: 16px;
+            font-size: 11px;
             font-weight: 700;
-            color: #374151;
-            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6B7280;
+            margin-bottom: 0;
         }
+        .signature-box.signed .signature-title { color: #065F46; }
 
-        .signature-checkbox-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .signature-checkbox-container:hover {
-            background: #f3f4f6;
-        }
-
-        .signature-checkbox {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-
-        .signature-label {
-            font-size: 14px;
-            color: #374151;
-            font-weight: 600;
+        .signature-status-icon {
+            margin: 8px 0;
         }
 
         .signature-date {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #9ca3af;
+            font-size: 12px;
+            color: #9CA3AF;
+            font-weight: 500;
+            margin-top: 0;
+        }
+        .signature-box.signed .signature-date {
+            color: #059669;
+            font-weight: 600;
         }
 
-        /* ACTIONS */
-        .actions-container {
-            padding: 30px 40px 40px;
+        /* ===== BLOC SIGNATURE EDL — sobre et premium ===== */
+        .edl-sig-form-wrapper {
+            background: #F8FAFC;
+            border-top: 3px solid #1E293B;
+            border-radius: 0 0 12px 12px;
+            padding: 0 18px 14px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .edl-sig-section-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #E8622A;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding-top: 14px;
+            margin-bottom: 12px;
+        }
+
+        /* Identité signataire EDL — compact */
+        .edl-sig-identity {
             display: flex;
-            gap: 15px;
-            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            background: #F0FDF4;
+            border: 1px solid #D1FAE5;
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 10px;
+        }
+        .edl-sig-identity-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #059669, #10B981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .edl-sig-identity-avatar svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .edl-sig-identity-info { flex: 1; }
+        .edl-sig-identity-label {
+            font-size: 10px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 1px;
+        }
+        .edl-sig-identity-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #065F46;
+            line-height: 1.2;
+        }
+        .edl-sig-identity-email {
+            font-size: 11px;
+            color: #059669;
+            margin-top: 0;
+        }
+
+        /* Consents EDL — compact */
+        .edl-sig-consents {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 10px;
+        }
+        .edl-sig-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid #F1F5F9;
+            cursor: pointer;
+        }
+        .edl-sig-check:last-child { border-bottom: none; }
+        .edl-sig-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #1E293B;
+            margin-top: 1px;
+        }
+        .edl-sig-check-label {
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.4;
+        }
+
+        /* Bloc confirmation nom EDL — épuré */
+        .edl-sig-confirm {
+            margin-bottom: 10px;
+        }
+        .edl-sig-confirm-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .edl-sig-confirm-label svg {
+            width: 14px;
+            height: 14px;
+            stroke: #6B7280;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .edl-sig-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1E293B;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+        .edl-sig-input:focus {
+            outline: none;
+            border-color: #94A3B8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12);
+        }
+        .edl-sig-input.valid {
+            border-color: #22C55E;
+            background: #F0FDF4;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.08);
+        }
+        .edl-sig-input.invalid {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.06);
+        }
+        .edl-sig-hint {
+            font-size: 11px;
+            margin-top: 3px;
+            min-height: 12px;
+            font-weight: 500;
+        }
+        .edl-sig-hint.error { color: #DC2626; }
+        .edl-sig-hint.success { color: #059669; }
+
+        /* Bouton signer EDL */
+        .edl-btn-signer {
+            width: 100%;
+            padding: 14px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3);
+        }
+        .edl-btn-signer:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(30, 41, 59, 0.4);
+        }
+        .edl-btn-signer:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Mention légale EDL — discret */
+        .edl-sig-legal {
+            background: #F8FAFC;
+            border: 1px solid #F1F5F9;
+            border-radius: 6px;
+            padding: 7px 10px;
+            margin-top: 8px;
+        }
+        .edl-sig-legal p {
+            font-size: 10px;
+            color: #9CA3AF;
+            line-height: 1.4;
+            margin-bottom: 2px;
+        }
+        .edl-sig-legal p:last-child { margin-bottom: 0; }
+        .edl-sig-legal strong {
+            color: #64748B;
+            font-size: 10.5px;
+        }
+
+        /* Message d\u00e9j\u00e0 sign\u00e9 */
+        .edl-sig-done {
+            text-align: center;
+            padding: 28px 16px;
+        }
+        .edl-sig-done svg { margin-bottom: 10px; }
+        .edl-sig-done-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #065F46;
+            margin-bottom: 4px;
+        }
+        .edl-sig-done-msg {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        /* ===================== ACTIONS ===================== */
+        .actions-card {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .actions-card .btn-back,
+        .actions-card .btn-primary {
+            flex: 1;
+            justify-content: center;
+            text-align: center;
         }
 
         .btn-back {
             background: white;
-            color: #6b7280;
-            padding: 16px 30px;
+            color: #64748B;
+            padding: 14px 28px;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            border: 2px solid #e5e7eb;
+            font-size: 15px;
+            font-weight: 600;
+            border: 2px solid #E2E8F0;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'DM Sans', sans-serif;
         }
 
         .btn-back:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #E8622A;
+            color: #E8622A;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #E8622A;
             color: white;
-            padding: 16px 40px;
+            padding: 14px 36px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3);
+            font-family: 'DM Sans', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #E8622A, #FF8F5E);
             transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35);
         }
 
         .btn-primary:disabled {
-            opacity: 0.5;
+            opacity: 0.45;
             cursor: not-allowed;
+            transform: none;
         }
 
-        /* RESPONSIVE */
+        /* ===================== RESPONSIVE ===================== */
         @media (max-width: 768px) {
-            .header, .content, .actions-container {
-                padding: 25px;
+            .page-container {
+                padding: 24px 16px 60px;
+            }
+
+            .page-header h1 {
+                font-size: 26px;
+            }
+
+            .progress-card {
+                padding: 24px 20px;
+            }
+
+            .progress-label {
+                font-size: 11px;
+            }
+
+            .progress-circle {
+                width: 34px;
+                height: 34px;
+                font-size: 12px;
+            }
+
+            .section-card,
+            .actions-card {
+                padding: 24px 20px;
             }
 
             .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .compteurs-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -507,23 +936,78 @@
                 grid-template-columns: 1fr;
             }
 
-            .actions-container {
+            .actions-card {
                 flex-direction: column-reverse;
             }
 
-            .btn-back, .btn-primary {
+            .btn-back,
+            .btn-primary {
                 width: 100%;
                 text-align: center;
+                justify-content: center;
+            }
+
+            .nav-container {
+                padding: 0 20px;
+                height: 72px;
+            }
+
+            .nav-logo img {
+                height: 45px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .nav-links a {
+                font-size: 14px;
             }
         }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* (signature-box styles d\u00e9j\u00e0 d\u00e9finis plus haut) */
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            .section-title {
+                font-size: 17px;
+            }
+
+            .state-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .photos-upload-zone {
+                padding: 24px 16px;
+            }
+
+            .edl-sig-identity {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            .edl-sig-identity-info { text-align: center; }
+            .edl-sig-confirm { padding: 14px; }
+        }
     </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
-        <div class="container">
-            <a href="index.html" class="logo">🏠 EASWAP</a>
-            <ul>
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <ul class="nav-links">
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="#" id="dashboardLink">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
@@ -531,540 +1015,1194 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTAINER -->
-    <div class="main-container">
-        <!-- HEADER -->
-        <div class="header">
-            <h1>📸 État des lieux d'entrée</h1>
+    <!-- PAGE CONTAINER -->
+    <div class="page-container">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>État des lieux d'entrée</h1>
             <p>Inspectez le logement et prenez des photos avant l'emménagement</p>
         </div>
 
-        <!-- PROGRESS -->
-        <div class="progress-container">
+        <!-- PROGRESS CARD -->
+        <div class="progress-card">
             <div class="progress-steps">
                 <div class="progress-line">
                     <div class="progress-line-fill"></div>
                 </div>
                 <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
+                    <div class="progress-circle">&#10003;</div>
                     <div class="progress-label">Match</div>
                 </div>
                 <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
+                    <div class="progress-circle">&#10003;</div>
+                    <div class="progress-label">Dossier</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">&#10003;</div>
                     <div class="progress-label">Contrat</div>
                 </div>
                 <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
+                    <div class="progress-circle">&#10003;</div>
                     <div class="progress-label">Paiement</div>
                 </div>
                 <div class="progress-step active">
-                    <div class="progress-circle">4</div>
+                    <div class="progress-circle">5</div>
                     <div class="progress-label">État des lieux</div>
                 </div>
             </div>
         </div>
 
-        <!-- CONTENT -->
-        <div class="content">
-            <!-- ALERT -->
-            <div class="alert-info">
-                <div class="alert-icon">ℹ️</div>
-                <div class="alert-content">
-                    <div class="alert-title">À faire le jour de la remise des clés</div>
-                    <div class="alert-text">
-                        Inspectez chaque pièce ensemble (locataire et propriétaire). Prenez des photos et notez l'état de chaque élément. Cet état des lieux servira de référence à la sortie.
-                    </div>
+        <!-- ALERT INFO -->
+        <div class="alert-info">
+            <div class="alert-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+            <div class="alert-content">
+                <div class="alert-title">À faire le jour de la remise des clés</div>
+                <div class="alert-text">
+                    Inspectez chaque pièce ensemble (locataire et propriétaire). Prenez des photos et notez l'état de chaque élément. Cet état des lieux servira de référence à la sortie.
                 </div>
             </div>
+        </div>
 
-            <!-- SECTION SALON -->
-            <div class="section" id="section-salon">
-                <div class="section-header" onclick="toggleSection('salon')">
-                    <div class="section-title">
-                        <span class="section-icon">🛋️</span>
-                        Salon
-                    </div>
-                    <span class="section-toggle">▼</span>
+        <!-- SECTION SALON -->
+        <div class="section-card" id="section-salon">
+            <div class="section-header" onclick="toggleSection('salon')">
+                <div class="section-title">
+                    <span class="section-icon sejour">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0Z"/><path d="M4 18v2"/><path d="M20 18v2"/></svg>
+                    </span>
+                    Salon
                 </div>
-                <div class="section-content">
-                    <div class="checklist-grid">
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Sol</div>
-                            <div class="state-buttons" data-piece="salon" data-element="sol">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Murs</div>
-                            <div class="state-buttons" data-piece="salon" data-element="murs">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Plafond</div>
-                            <div class="state-buttons" data-piece="salon" data-element="plafond">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Fenêtres</div>
-                            <div class="state-buttons" data-piece="salon" data-element="fenetres">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <span class="section-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
             </div>
-
-            <!-- SECTION CUISINE -->
-            <div class="section" id="section-cuisine">
-                <div class="section-header" onclick="toggleSection('cuisine')">
-                    <div class="section-title">
-                        <span class="section-icon">🍳</span>
-                        Cuisine
+            <div class="section-content">
+                <div class="checklist-grid">
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Sol</div>
+                        <div class="state-buttons" data-piece="salon" data-element="sol">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                        </div>
                     </div>
-                    <span class="section-toggle">▼</span>
-                </div>
-                <div class="section-content">
-                    <div class="checklist-grid">
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Sol</div>
-                            <div class="state-buttons" data-piece="cuisine" data-element="sol">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Murs</div>
+                        <div class="state-buttons" data-piece="salon" data-element="murs">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Plaques de cuisson</div>
-                            <div class="state-buttons" data-piece="cuisine" data-element="plaques">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Plafond</div>
+                        <div class="state-buttons" data-piece="salon" data-element="plafond">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Réfrigérateur</div>
-                            <div class="state-buttons" data-piece="cuisine" data-element="frigo">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
-                        </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Évier & robinetterie</div>
-                            <div class="state-buttons" data-piece="cuisine" data-element="evier">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Fenêtres</div>
+                        <div class="state-buttons" data-piece="salon" data-element="fenetres">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- SECTION CHAMBRE -->
-            <div class="section" id="section-chambre">
-                <div class="section-header" onclick="toggleSection('chambre')">
-                    <div class="section-title">
-                        <span class="section-icon">🛏️</span>
-                        Chambre
-                    </div>
-                    <span class="section-toggle">▼</span>
+        <!-- SECTION CUISINE -->
+        <div class="section-card" id="section-cuisine">
+            <div class="section-header" onclick="toggleSection('cuisine')">
+                <div class="section-title">
+                    <span class="section-icon cuisine">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m16 6-4 4-4-4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
+                    </span>
+                    Cuisine
                 </div>
-                <div class="section-content">
-                    <div class="checklist-grid">
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Sol</div>
-                            <div class="state-buttons" data-piece="chambre" data-element="sol">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                <span class="section-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </div>
+            <div class="section-content">
+                <div class="checklist-grid">
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Sol</div>
+                        <div class="state-buttons" data-piece="cuisine" data-element="sol">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Murs</div>
-                            <div class="state-buttons" data-piece="chambre" data-element="murs">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Plaques de cuisson</div>
+                        <div class="state-buttons" data-piece="cuisine" data-element="plaques">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Lit</div>
-                            <div class="state-buttons" data-piece="chambre" data-element="lit">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Réfrigérateur</div>
+                        <div class="state-buttons" data-piece="cuisine" data-element="frigo">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Armoire/Placard</div>
-                            <div class="state-buttons" data-piece="chambre" data-element="armoire">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Évier & robinetterie</div>
+                        <div class="state-buttons" data-piece="cuisine" data-element="evier">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- SECTION SALLE DE BAIN -->
-            <div class="section" id="section-sdb">
-                <div class="section-header" onclick="toggleSection('sdb')">
-                    <div class="section-title">
-                        <span class="section-icon">🚿</span>
-                        Salle de bain
-                    </div>
-                    <span class="section-toggle">▼</span>
+        <!-- SECTION CHAMBRE -->
+        <div class="section-card" id="section-chambre">
+            <div class="section-header" onclick="toggleSection('chambre')">
+                <div class="section-title">
+                    <span class="section-icon chambre">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                    </span>
+                    Chambre
                 </div>
-                <div class="section-content">
-                    <div class="checklist-grid">
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Sol</div>
-                            <div class="state-buttons" data-piece="sdb" data-element="sol">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                <span class="section-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </div>
+            <div class="section-content">
+                <div class="checklist-grid">
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Sol</div>
+                        <div class="state-buttons" data-piece="chambre" data-element="sol">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Douche/Baignoire</div>
-                            <div class="state-buttons" data-piece="sdb" data-element="douche">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Murs</div>
+                        <div class="state-buttons" data-piece="chambre" data-element="murs">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Lavabo & robinetterie</div>
-                            <div class="state-buttons" data-piece="sdb" data-element="lavabo">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Lit</div>
+                        <div class="state-buttons" data-piece="chambre" data-element="lit">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="checklist-item">
-                            <div class="checklist-item-label">Miroir</div>
-                            <div class="state-buttons" data-piece="sdb" data-element="miroir">
-                                <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
-                                <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
-                                <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
-                                <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
-                            </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Armoire/Placard</div>
+                        <div class="state-buttons" data-piece="chambre" data-element="armoire">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- COMPTEURS -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span class="section-icon">⚡</span>
-                        Relevés des compteurs
-                    </div>
+        <!-- SECTION SALLE DE BAIN -->
+        <div class="section-card" id="section-sdb">
+            <div class="section-header" onclick="toggleSection('sdb')">
+                <div class="section-title">
+                    <span class="section-icon sdb">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1Z"/><path d="M6 12V4a2 2 0 0 1 2-2h3a1 1 0 0 1 1 1v2"/><path d="M4 20v2"/><path d="M20 20v2"/></svg>
+                    </span>
+                    Salle de bain
                 </div>
-                <div class="section-content">
-                    <div class="compteurs-grid">
-                        <div class="compteur-item">
-                            <div class="compteur-label">⚡ Électricité</div>
-                            <input type="number" class="compteur-input" id="compteur-elec" placeholder="12345">
+                <span class="section-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+            </div>
+            <div class="section-content">
+                <div class="checklist-grid">
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Sol</div>
+                        <div class="state-buttons" data-piece="sdb" data-element="sol">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="compteur-item">
-                            <div class="compteur-label">🔥 Gaz</div>
-                            <input type="number" class="compteur-input" id="compteur-gaz" placeholder="6789">
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Douche/Baignoire</div>
+                        <div class="state-buttons" data-piece="sdb" data-element="douche">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
-                        <div class="compteur-item">
-                            <div class="compteur-label">💧 Eau</div>
-                            <input type="number" class="compteur-input" id="compteur-eau" placeholder="4567">
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Lavabo & robinetterie</div>
+                        <div class="state-buttons" data-piece="sdb" data-element="lavabo">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
+                        </div>
+                    </div>
+                    <div class="checklist-item">
+                        <div class="checklist-item-label">Miroir</div>
+                        <div class="state-buttons" data-piece="sdb" data-element="miroir">
+                            <button class="state-btn" onclick="selectState(this, 'neuf')">Neuf</button>
+                            <button class="state-btn" onclick="selectState(this, 'bon')">Bon</button>
+                            <button class="state-btn" onclick="selectState(this, 'correct')">Correct</button>
+                            <button class="state-btn" onclick="selectState(this, 'degrade')">Dégradé</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- PHOTOS -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span class="section-icon">📸</span>
-                        Photos du logement
+        <!-- COMPTEURS -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon compteurs">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </span>
+                    Relevés des compteurs
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="compteurs-grid">
+                    <div class="compteur-item">
+                        <div class="compteur-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            Électricité
+                        </div>
+                        <input type="number" class="compteur-input" id="compteur-elec" placeholder="12345">
+                    </div>
+                    <div class="compteur-item">
+                        <div class="compteur-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                            Gaz
+                        </div>
+                        <input type="number" class="compteur-input" id="compteur-gaz" placeholder="6789">
+                    </div>
+                    <div class="compteur-item">
+                        <div class="compteur-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+                            Eau
+                        </div>
+                        <input type="number" class="compteur-input" id="compteur-eau" placeholder="4567">
                     </div>
                 </div>
-                <div class="section-content">
-                    <label for="photosInput" class="photos-section">
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Ajouter des photos</div>
-                        <div class="upload-subtext">Prenez des photos de chaque pièce et équipement</div>
-                        <input type="file" id="photosInput" accept="image/*" multiple onchange="handlePhotos(event)">
+            </div>
+        </div>
+
+        <!-- PHOTOS -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon photos">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DB2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                    </span>
+                    Photos du logement
+                </div>
+            </div>
+            <div class="section-content">
+                <label for="photosInput" class="photos-upload-zone">
+                    <div class="upload-icon">
+                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <div class="upload-text">Ajouter des photos</div>
+                    <div class="upload-subtext">Prenez des photos de chaque pièce et équipement</div>
+                    <input type="file" id="photosInput" accept="image/*" multiple onchange="handlePhotos(event)">
+                </label>
+                <div class="photos-preview" id="photosPreview"></div>
+            </div>
+        </div>
+
+        <!-- OBSERVATIONS -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon observations">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    </span>
+                    Observations générales
+                </div>
+            </div>
+            <div class="section-content">
+                <textarea class="observations-textarea" id="observations" placeholder="Notez ici toute observation particulière (rayures, taches, défauts visibles...)"></textarea>
+            </div>
+        </div>
+
+        <!-- SIGNATURES -->
+        <div class="section-card" id="section-signatures">
+            <div class="section-header" style="cursor: default;">
+                <div class="section-title">
+                    <span class="section-icon signatures">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </span>
+                    Signatures
+                </div>
+            </div>
+            <p class="signatures-subtitle">Les deux parties doivent signer pour valider l'&eacute;tat des lieux</p>
+
+            <!-- Statut des deux signatures (grille 2 colonnes) -->
+            <div class="signatures-grid">
+                <div class="signature-box" id="boxLocataire">
+                    <div class="signature-title">Locataire</div>
+                    <div class="signature-status-icon" id="iconLocataire">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="signature-date" id="dateLocataire">En attente</div>
+                </div>
+                <div class="signature-box" id="boxProprietaire">
+                    <div class="signature-title">Propri&eacute;taire</div>
+                    <div class="signature-status-icon" id="iconProprietaire">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="signature-date" id="dateProprietaire">En attente</div>
+                </div>
+            </div>
+
+            <!-- Formulaire de signature -->
+            <div id="edlSignForm" class="edl-sig-form-wrapper">
+
+                <div class="edl-sig-section-title">Signature de l'&eacute;tat des lieux</div>
+
+                <!-- Identit&eacute; du signataire -->
+                <div class="edl-sig-identity">
+                    <div class="edl-sig-identity-avatar">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="edl-sig-identity-info">
+                        <div class="edl-sig-identity-label">Vous signez en tant que</div>
+                        <div class="edl-sig-identity-name" id="edlSigNom">&mdash;</div>
+                        <div class="edl-sig-identity-email" id="edlSigEmail">&mdash;</div>
+                    </div>
+                </div>
+
+                <!-- Consentements -->
+                <div class="edl-sig-consents">
+                    <label class="edl-sig-check">
+                        <input type="checkbox" id="edlCheckInspecte" onchange="verifierEdlSignature()">
+                        <span class="edl-sig-check-label">Je certifie avoir inspect&eacute; le logement en pr&eacute;sence de l'autre partie et avoir constat&eacute; l'&eacute;tat d&eacute;crit ci-dessus.</span>
                     </label>
-                    <div class="photos-preview" id="photosPreview"></div>
+                    <label class="edl-sig-check">
+                        <input type="checkbox" id="edlCheckAccepte" onchange="verifierEdlSignature()">
+                        <span class="edl-sig-check-label">J'accepte que cet &eacute;tat des lieux serve de r&eacute;f&eacute;rence pour la comparaison lors de l'&eacute;tat des lieux de sortie.</span>
+                    </label>
+                </div>
+
+                <!-- Confirmation du nom -->
+                <div class="edl-sig-confirm">
+                    <label class="edl-sig-confirm-label" for="edlSaisieNom">
+                        <svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                        Pr&eacute;nom et nom
+                    </label>
+                    <input type="text" class="edl-sig-input" id="edlSaisieNom" placeholder="Pr&eacute;nom Nom" autocomplete="off" oninput="autoCapitalizeEdl(this); verifierEdlSignature()" style="text-transform: capitalize;">
+                    <div class="edl-sig-hint" id="edlNameHint"></div>
+                </div>
+
+                <!-- Bouton signer -->
+                <button class="edl-btn-signer" id="btnSignerEdl" disabled onclick="signerEdlAvecPreuves()">
+                    Signer l'&eacute;tat des lieux
+                </button>
+
+                <!-- Mention l&eacute;gale -->
+                <div class="edl-sig-legal">
+                    <p><strong>Signature &eacute;lectronique &agrave; valeur l&eacute;gale</strong></p>
+                    <p>Art. 1367 du Code civil et r&egrave;glement eIDAS. Preuves enregistr&eacute;es : identit&eacute;, e-mail, horodatage, IP, empreinte SHA-256 et consentement.</p>
                 </div>
             </div>
 
-            <!-- OBSERVATIONS -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span class="section-icon">📝</span>
-                        Observations générales
-                    </div>
-                </div>
-                <div class="section-content">
-                    <textarea class="observations-textarea" id="observations" placeholder="Notez ici toute observation particulière (rayures, taches, défauts visibles...)"></textarea>
-                </div>
-            </div>
-
-            <!-- SIGNATURES -->
-            <div class="signatures-section">
-                <h3 style="text-align: center; font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 10px;">✍️ Signatures</h3>
-                <p style="text-align: center; color: #6b7280; margin-bottom: 20px;">Les deux parties doivent signer pour valider l'état des lieux</p>
-                
-                <div class="signatures-grid">
-                    <div class="signature-box">
-                        <div class="signature-title">Locataire</div>
-                        <div class="signature-checkbox-container" onclick="toggleCheckbox('signatureLocataire')">
-                            <input type="checkbox" class="signature-checkbox" id="signatureLocataire">
-                            <label for="signatureLocataire" class="signature-label">Je certifie avoir inspecté le logement</label>
-                        </div>
-                        <div class="signature-date" id="dateLocataire">--/--/----</div>
-                    </div>
-                    
-                    <div class="signature-box">
-                        <div class="signature-title">Propriétaire</div>
-                        <div class="signature-checkbox-container" onclick="toggleCheckbox('signatureProprietaire')">
-                            <input type="checkbox" class="signature-checkbox" id="signatureProprietaire">
-                            <label for="signatureProprietaire" class="signature-label">Je certifie l'état du logement</label>
-                        </div>
-                        <div class="signature-date" id="dateProprietaire">--/--/----</div>
-                    </div>
-                </div>
+            <!-- Message quand d&eacute;j&agrave; sign&eacute; -->
+            <div class="edl-sig-done" id="dejaSigneEdl" style="display:none;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="edl-sig-done-title" id="dejaSigneTitle">Vous avez sign&eacute;</div>
+                <div class="edl-sig-done-msg" id="dejaSigneMsg">En attente de la signature de l'autre partie.</div>
             </div>
         </div>
 
         <!-- ACTIONS -->
-        <div class="actions-container">
-            <a href="paiement-initial.html?match_id=xxx" class="btn-back" id="btnRetour">
-                ← Retour
-            </a>
-            <button class="btn-primary" id="btnValider" disabled onclick="validerEtatDesLieux()">
-                ✅ Valider et finaliser
-            </button>
+        <div class="actions-card">
+            <a href="paiement-initial.html?match_id=xxx" class="btn-back" id="btnRetour">Retour</a>
+            <button class="btn-primary" id="btnValider" disabled onclick="validerEtatDesLieux()">Valider et finaliser</button>
         </div>
+
     </div>
 
-    <!-- FOOTER -->
-    <footer style="margin-top: 40px;">
-        <div class="container">
-            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
-        </div>
-    </footer>
-
     <script>
+        // ================================================================
+        // ÉTAT DES LIEUX AUTONOME — STERNY
+        // ================================================================
+        // Logique 100% automatisée :
+        // - Détection du rôle de l'utilisateur connecté
+        // - Création/chargement de l'état des lieux depuis Supabase
+        // - Auto-sauvegarde des données (checklist, compteurs, observations)
+        // - Upload des photos vers Supabase Storage
+        // - Signatures indépendantes (chaque partie signe depuis sa session)
+        // - Redirection vers match-actif quand les deux ont signé
+        // ================================================================
+
         const urlParams = new URLSearchParams(window.location.search);
         const matchId = urlParams.get('match_id');
 
+        // État global
+        let currentUser = null;
+        let currentUserData = null;
+        let isLocataire = false;
+        let isProprietaire = false;
+        let isAdminGlobal = false;
+        let matchData = null;
+        let contratData = null;
+        let edlData = null;     // État des lieux courant
         let checklistData = {};
-        let photosData = [];
+        let photosFiles = [];   // Fichiers bruts pour upload
+        let photosUrls = [];    // URLs Supabase Storage
+        let autoSaveTimer = null;
 
-        // Toggle section
+        // ================================================================
+        // INIT
+        // ================================================================
+        async function init() {
+            try {
+                // 1. Vérifier l'authentification
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    // Mode démo sans connexion
+                    if (!matchId) activerModeDemo();
+                    return;
+                }
+                currentUser = user;
+
+                // 2. Récupérer le profil utilisateur
+                const { data: userData } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                currentUserData = userData;
+                const isAdmin = userData?.is_admin === true;
+                isAdminGlobal = isAdmin;
+
+                // Dashboard link
+                const dashboardLink = document.getElementById('dashboardLink');
+                if (userData?.type_user === 'proprietaire') {
+                    dashboardLink.href = 'dashboard-proprietaire.html';
+                } else {
+                    dashboardLink.href = 'dashboard-locataire.html';
+                }
+
+                // MODE DEMO (pas de match_id)
+                if (!matchId) {
+                    activerModeDemo();
+                    return;
+                }
+
+                // 3. Charger la candidature
+                const { data: candidature, error } = await supabaseClient
+                    .from('candidatures')
+                    .select(`*, annonces (*), users!candidatures_locataire_id_fkey (*)`)
+                    .eq('id', matchId)
+                    .single();
+
+                if (error) throw error;
+                matchData = candidature;
+
+                // Garde-fou : rediriger si d\u00e9j\u00e0 \u00e0 une \u00e9tape ult\u00e9rieure
+                if (candidature.statut === 'actif') {
+                    window.location.href = `match-actif.html?match_id=${matchId}`;
+                    return;
+                }
+
+                // 4. D\u00e9terminer le r\u00f4le
+                isLocataire = (currentUser.id === candidature.locataire_id);
+                isProprietaire = (currentUser.id === candidature.annonces.user_id);
+
+                if (!isLocataire && !isProprietaire && !isAdmin) {
+                    alert('Vous n\'êtes pas autorisé à accéder à cet état des lieux.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // 5. Charger le contrat
+                const { data: contrat } = await supabaseClient
+                    .from('contrats')
+                    .select('*')
+                    .eq('candidature_id', matchId)
+                    .single();
+                contratData = contrat;
+
+                // 6. Charger ou créer l'état des lieux
+                await chargerOuCreerEdl();
+
+                // 7. Configurer les signatures selon le rôle
+                configurerSignatures();
+
+                // 8. Mettre à jour le lien retour
+                document.getElementById('btnRetour').href = `paiement-initial.html?match_id=${matchId}`;
+
+            } catch (err) {
+                console.error('Erreur init:', err);
+                alert('Erreur lors du chargement de l\'état des lieux.');
+            }
+        }
+
+        // ================================================================
+        // MODE DEMO
+        // ================================================================
+        function activerModeDemo() {
+            isLocataire = true;
+            edlSignataireName = 'Marie Martin';
+            document.getElementById('edlSigNom').textContent = 'Marie Martin';
+            document.getElementById('edlSigEmail').textContent = 'marie.martin@email.com';
+            document.getElementById('btnRetour').href = 'paiement-initial.html';
+        }
+
+        // ================================================================
+        // CHARGER OU CRÉER L'ÉTAT DES LIEUX
+        // ================================================================
+        async function chargerOuCreerEdl() {
+            if (!contratData) {
+                console.error('Pas de contrat trouvé');
+                return;
+            }
+
+            // Chercher un état des lieux existant
+            const { data: existingEdl } = await supabaseClient
+                .from('etats_des_lieux')
+                .select('*')
+                .eq('contrat_id', contratData.id)
+                .eq('type', 'entree')
+                .single();
+
+            if (existingEdl) {
+                edlData = existingEdl;
+                // Restaurer les données
+                restaurerDonnees(existingEdl);
+            } else {
+                // Créer un nouvel état des lieux
+                const { data: newEdl, error } = await supabaseClient
+                    .from('etats_des_lieux')
+                    .insert({
+                        contrat_id: contratData.id,
+                        candidature_id: matchId,
+                        locataire_id: contratData.locataire_id,
+                        proprietaire_id: contratData.proprietaire_id,
+                        annonce_id: contratData.annonce_id,
+                        type: 'entree',
+                        statut: 'en_cours'
+                    })
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('Erreur création EDL:', error);
+                    return;
+                }
+                edlData = newEdl;
+            }
+        }
+
+        // ================================================================
+        // RESTAURER LES DONNÉES SAUVEGARDÉES
+        // ================================================================
+        function restaurerDonnees(edl) {
+            // Checklist
+            if (edl.checklist && Object.keys(edl.checklist).length > 0) {
+                checklistData = edl.checklist;
+                Object.keys(edl.checklist).forEach(piece => {
+                    Object.keys(edl.checklist[piece]).forEach(element => {
+                        const state = edl.checklist[piece][element];
+                        const container = document.querySelector(`[data-piece="${piece}"][data-element="${element}"]`);
+                        if (container) {
+                            const btn = container.querySelector(`.state-btn[onclick*="'${state}'"]`);
+                            if (btn) {
+                                btn.classList.add('active', 'state-' + state);
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Compteurs
+            if (edl.compteurs) {
+                if (edl.compteurs.electricite) document.getElementById('compteur-elec').value = edl.compteurs.electricite;
+                if (edl.compteurs.gaz) document.getElementById('compteur-gaz').value = edl.compteurs.gaz;
+                if (edl.compteurs.eau) document.getElementById('compteur-eau').value = edl.compteurs.eau;
+            }
+
+            // Observations
+            if (edl.observations) {
+                document.getElementById('observations').value = edl.observations;
+            }
+
+            // Photos (URLs déjà uploadées)
+            if (edl.photos_urls && edl.photos_urls.length > 0) {
+                photosUrls = edl.photos_urls;
+                afficherPhotosExistantes();
+            }
+
+            // Signatures (l'affichage est g\u00e9r\u00e9 par configurerSignatures)
+            if (edl.signature_locataire) {
+                document.getElementById('boxLocataire').classList.add('signed');
+                const d = new Date(edl.date_signature_locataire);
+                document.getElementById('dateLocataire').textContent = `Sign\u00e9 le ${d.toLocaleDateString('fr-FR')}`;
+            }
+            if (edl.signature_proprietaire) {
+                document.getElementById('boxProprietaire').classList.add('signed');
+                const d = new Date(edl.date_signature_proprietaire);
+                document.getElementById('dateProprietaire').textContent = `Sign\u00e9 le ${d.toLocaleDateString('fr-FR')}`;
+            }
+        }
+
+        // ================================================================
+        // CONFIGURER LES SIGNATURES SELON LE R\u00d4LE
+        // ================================================================
+        let edlSignataireName = '';
+
+        function configurerSignatures() {
+            if (!edlData) return;
+
+            const dejaSigneLocataire = edlData.signature_locataire;
+            const dejaSigneProprietaire = edlData.signature_proprietaire;
+
+            // Afficher l'identit\u00e9 du signataire
+            if (matchData) {
+                let nom, email;
+                if (isLocataire) {
+                    nom = `${matchData.users.prenom} ${matchData.users.nom}`;
+                    email = matchData.users.email;
+                } else {
+                    // R\u00e9cup\u00e9rer le propri\u00e9taire
+                    nom = currentUserData ? `${currentUserData.prenom} ${currentUserData.nom}` : '';
+                    email = currentUserData ? currentUserData.email : '';
+                }
+                edlSignataireName = nom;
+                document.getElementById('edlSigNom').textContent = nom;
+                document.getElementById('edlSigEmail').textContent = email;
+            }
+
+            // Si d\u00e9j\u00e0 sign\u00e9 par moi : cacher le formulaire, montrer le message
+            const dejaSigneParMoi = (isLocataire && dejaSigneLocataire) || (isProprietaire && dejaSigneProprietaire);
+            if (dejaSigneParMoi) {
+                document.getElementById('edlSignForm').style.display = 'none';
+                document.getElementById('dejaSigneEdl').style.display = 'block';
+
+                if (dejaSigneLocataire && dejaSigneProprietaire) {
+                    document.getElementById('dejaSigneTitle').textContent = '\u00c9tat des lieux valid\u00e9 !';
+                    document.getElementById('dejaSigneMsg').textContent = 'Les deux parties ont sign\u00e9. Vous pouvez continuer.';
+                    const btn = document.getElementById('btnValider');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Continuer vers le logement actif <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+                } else {
+                    const autrePart = isLocataire ? 'du propri\u00e9taire' : 'du locataire';
+                    document.getElementById('dejaSigneMsg').textContent = `En attente de la signature ${autrePart}.`;
+                    document.getElementById('btnValider').disabled = true;
+                }
+            }
+
+            // Mise \u00e0 jour des ic\u00f4nes de statut
+            if (dejaSigneLocataire) {
+                document.getElementById('boxLocataire').classList.add('signed');
+                document.getElementById('iconLocataire').innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+            }
+            if (dejaSigneProprietaire) {
+                document.getElementById('boxProprietaire').classList.add('signed');
+                document.getElementById('iconProprietaire').innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+            }
+
+            verifierFormulaire();
+        }
+
+        // ================================================================
+        // V\u00c9RIFIER FORMULAIRE SIGNATURE EDL
+        // ================================================================
+        // ================================================================
+        // MAJUSCULE AUTOMATIQUE (Prénom Nom)
+        // ================================================================
+        function autoCapitalizeEdl(input) {
+            const pos = input.selectionStart;
+            input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+            input.setSelectionRange(pos, pos);
+        }
+
+        // ================================================================
+        // VÉRIFIER LE FORMULAIRE DE SIGNATURE EDL
+        // ================================================================
+        function verifierEdlSignature() {
+            // Admin bypass : toujours activer le bouton
+            if (isAdminGlobal) {
+                document.getElementById('btnSignerEdl').disabled = false;
+                return;
+            }
+            const check1 = document.getElementById('edlCheckInspecte').checked;
+            const check2 = document.getElementById('edlCheckAccepte').checked;
+            const saisie = document.getElementById('edlSaisieNom').value.trim();
+            const input = document.getElementById('edlSaisieNom');
+            const hint = document.getElementById('edlNameHint');
+            const btn = document.getElementById('btnSignerEdl');
+
+            let nomValide = false;
+            if (saisie.length > 0 && edlSignataireName) {
+                const normaliser = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+                nomValide = normaliser(saisie) === normaliser(edlSignataireName);
+
+                if (nomValide) {
+                    input.classList.remove('invalid');
+                    input.classList.add('valid');
+                    hint.className = 'edl-sig-hint success';
+                    hint.textContent = 'Identité confirmée';
+                } else {
+                    input.classList.remove('valid');
+                    input.classList.add('invalid');
+                    hint.className = 'edl-sig-hint error';
+                    hint.textContent = 'Le nom ne correspond pas à votre identité';
+                }
+            } else {
+                input.classList.remove('valid', 'invalid');
+                hint.className = 'edl-sig-hint';
+                hint.textContent = '';
+            }
+
+            const toutValide = check1 && check2 && nomValide;
+            btn.disabled = !toutValide;
+        }
+
+        // ================================================================
+        // HASH SHA-256 DU DOCUMENT EDL
+        // ================================================================
+        async function genererHashEdl() {
+            const donnees = JSON.stringify({
+                edl_id: edlData?.id,
+                contrat_id: contratData?.id,
+                checklist: checklistData,
+                compteurs: {
+                    electricite: document.getElementById('compteur-elec').value,
+                    gaz: document.getElementById('compteur-gaz').value,
+                    eau: document.getElementById('compteur-eau').value
+                },
+                observations: document.getElementById('observations').value,
+                photos: photosUrls
+            });
+            const encoder = new TextEncoder();
+            const data = encoder.encode(donnees);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ================================================================
+        // R\u00c9CUP\u00c9RER L'IP
+        // ================================================================
+        async function recupererIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip || 'inconnu';
+            } catch { return 'inconnu'; }
+        }
+
+        // ================================================================
+        // SIGNER L'EDL AVEC PREUVES L\u00c9GALES
+        // ================================================================
+        async function signerEdlAvecPreuves() {
+            if (!edlData) return;
+
+            const role = isLocataire ? 'locataire' : 'proprietaire';
+            if (role === 'locataire' && edlData.signature_locataire) return;
+            if (role === 'proprietaire' && edlData.signature_proprietaire) return;
+
+            const btn = document.getElementById('btnSignerEdl');
+            btn.disabled = true;
+            btn.textContent = 'Collecte des preuves...';
+
+            try {
+                // 1. Sauvegarder les donn\u00e9es actuelles d'abord
+                await sauvegarderDonnees();
+
+                // 2. Collecter les preuves
+                const now = new Date().toISOString();
+                const [ipAddress, documentHash] = await Promise.all([
+                    recupererIP(),
+                    genererHashEdl()
+                ]);
+                const userAgent = navigator.userAgent;
+                const email = isLocataire ? matchData.users.email : (currentUserData?.email || '');
+                const nomComplet = edlSignataireName;
+                const consentement = 'J\'ai inspect\u00e9 le logement en pr\u00e9sence de l\'autre partie. J\'accepte cet \u00e9tat des lieux comme r\u00e9f\u00e9rence pour la sortie.';
+
+                btn.textContent = 'Signature en cours...';
+
+                // 3. Pr\u00e9parer les donn\u00e9es
+                let updateData = {};
+                let newStatut = '';
+
+                if (role === 'locataire') {
+                    updateData = {
+                        signature_locataire: true,
+                        date_signature_locataire: now,
+                        signature_locataire_ip: ipAddress,
+                        signature_locataire_user_agent: userAgent,
+                        signature_locataire_hash: documentHash,
+                        signature_locataire_email: email,
+                        signature_locataire_nom_complet: nomComplet,
+                        signature_locataire_consentement: consentement
+                    };
+                    newStatut = edlData.signature_proprietaire ? 'valide' : 'signe_locataire';
+                } else {
+                    updateData = {
+                        signature_proprietaire: true,
+                        date_signature_proprietaire: now,
+                        signature_proprietaire_ip: ipAddress,
+                        signature_proprietaire_user_agent: userAgent,
+                        signature_proprietaire_hash: documentHash,
+                        signature_proprietaire_email: email,
+                        signature_proprietaire_nom_complet: nomComplet,
+                        signature_proprietaire_consentement: consentement
+                    };
+                    newStatut = edlData.signature_locataire ? 'valide' : 'signe_proprietaire';
+                }
+                updateData.statut = newStatut;
+
+                if (!edlData.document_hash) {
+                    updateData.document_hash = documentHash;
+                }
+
+                // 4. Mettre \u00e0 jour l'EDL
+                const { error } = await supabaseClient
+                    .from('etats_des_lieux')
+                    .update(updateData)
+                    .eq('id', edlData.id);
+
+                if (error) {
+                    showMessage('error', 'Erreur lors de la signature : ' + error.message);
+                    btn.disabled = false;
+                    btn.textContent = 'Signer l\'\u00e9tat des lieux';
+                    btn.style.opacity = '1';
+                    return;
+                }
+
+                // 5. Journal d'audit
+                await supabaseClient
+                    .from('signatures_audit')
+                    .insert({
+                        document_type: 'etat_des_lieux',
+                        document_id: edlData.id,
+                        user_id: currentUser.id,
+                        user_email: email,
+                        user_nom_complet: nomComplet,
+                        role_signataire: role,
+                        ip_address: ipAddress,
+                        user_agent: userAgent,
+                        document_hash: documentHash,
+                        consentement_texte: consentement,
+                        metadata: {
+                            edl_id: edlData.id,
+                            contrat_id: contratData?.id,
+                            candidature_id: matchId,
+                            type: 'entree'
+                        }
+                    });
+
+                // 6. Mettre \u00e0 jour localement
+                Object.assign(edlData, updateData);
+
+                // 7. Mettre \u00e0 jour l'affichage
+                const dateEl = document.getElementById(role === 'locataire' ? 'dateLocataire' : 'dateProprietaire');
+                dateEl.textContent = `Sign\u00e9 le ${new Date().toLocaleDateString('fr-FR')}`;
+                const box = document.getElementById(role === 'locataire' ? 'boxLocataire' : 'boxProprietaire');
+                box.classList.add('signed');
+
+                showMessage('success', 'Votre signature a \u00e9t\u00e9 enregistr\u00e9e avec preuve l\u00e9gale !');
+                configurerSignatures();
+
+            } catch (err) {
+                console.error('Erreur signature:', err);
+                showMessage('error', 'Erreur lors de la signature');
+                btn.disabled = false;
+                btn.textContent = 'Signer l\'\u00e9tat des lieux';
+                btn.style.opacity = '1';
+            }
+        }
+
+        // ================================================================
+        // TOGGLE SECTION (accordion)
+        // ================================================================
         function toggleSection(sectionId) {
             const section = document.getElementById('section-' + sectionId);
             section.classList.toggle('collapsed');
         }
 
-        // Select state
+        // ================================================================
+        // SÉLECTIONNER UN ÉTAT (checklist)
+        // ================================================================
         function selectState(button, state) {
             const container = button.parentElement;
             const piece = container.getAttribute('data-piece');
             const element = container.getAttribute('data-element');
-            
+
             // Désélectionner tous
-            container.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
-            
+            container.querySelectorAll('.state-btn').forEach(btn => {
+                btn.classList.remove('active', 'state-neuf', 'state-bon', 'state-correct', 'state-degrade');
+            });
+
             // Sélectionner celui-ci
-            button.classList.add('active');
-            
-            // Sauvegarder
+            button.classList.add('active', 'state-' + state);
+
+            // Sauvegarder en local
             if (!checklistData[piece]) checklistData[piece] = {};
             checklistData[piece][element] = state;
-            
-            console.log('Checklist:', checklistData);
-            verifierFormulaire();
+
+            // Auto-sauvegarde différée
+            planifierAutoSave();
         }
 
-        // Toggle checkbox
-        function toggleCheckbox(id) {
-            const checkbox = document.getElementById(id);
-            checkbox.checked = !checkbox.checked;
-            
-            // Mettre à jour la date
-            if (checkbox.checked) {
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('fr-FR');
-                if (id === 'signatureLocataire') {
-                    document.getElementById('dateLocataire').textContent = dateStr;
-                } else {
-                    document.getElementById('dateProprietaire').textContent = dateStr;
-                }
+        // ================================================================
+        // AUTO-SAUVEGARDE (debounced 2s)
+        // ================================================================
+        function planifierAutoSave() {
+            if (autoSaveTimer) clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => sauvegarderDonnees(), 2000);
+        }
+
+        async function sauvegarderDonnees() {
+            if (!edlData) return;
+
+            const compteurs = {
+                electricite: document.getElementById('compteur-elec').value || null,
+                gaz: document.getElementById('compteur-gaz').value || null,
+                eau: document.getElementById('compteur-eau').value || null
+            };
+            const observations = document.getElementById('observations').value;
+
+            const { error } = await supabaseClient
+                .from('etats_des_lieux')
+                .update({
+                    checklist: checklistData,
+                    compteurs: compteurs,
+                    observations: observations,
+                    photos_urls: photosUrls
+                })
+                .eq('id', edlData.id);
+
+            if (error) {
+                console.error('Erreur auto-sauvegarde:', error);
+            } else {
             }
-            
-            verifierFormulaire();
         }
 
-        // Handle photos
-        function handlePhotos(event) {
+        // Écouter les changements de compteurs et observations
+        ['compteur-elec', 'compteur-gaz', 'compteur-eau'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => planifierAutoSave());
+        });
+        document.getElementById('observations').addEventListener('input', () => planifierAutoSave());
+
+        // ================================================================
+        // PHOTOS — Upload vers Supabase Storage
+        // ================================================================
+        async function handlePhotos(event) {
             const files = Array.from(event.target.files);
+            if (!files.length) return;
+
             const preview = document.getElementById('photosPreview');
-            
-            files.forEach(file => {
+
+            for (const file of files) {
+                // Validation type de fichier
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format non accept\u00e9. Formats autoris\u00e9s : JPG, PNG, WebP.');
+                    continue;
+                }
+                // Validation taille (max 5 Mo)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Photo trop lourde (max 5 Mo). Veuillez r\u00e9duire la taille.');
+                    continue;
+                }
+
+                // Afficher un aperçu immédiat
                 const reader = new FileReader();
+                const tempIdx = photosUrls.length;
+
                 reader.onload = function(e) {
-                    photosData.push({
-                        name: file.name,
-                        data: e.target.result
-                    });
-                    
                     const photoDiv = document.createElement('div');
                     photoDiv.className = 'photo-preview';
+                    photoDiv.id = `photo-${tempIdx}`;
                     photoDiv.innerHTML = `
-                        <img src="${e.target.result}" alt="${file.name}">
-                        <div class="photo-remove" onclick="removePhoto(${photosData.length - 1})">×</div>
+                        <img loading="lazy" src="${e.target.result}" alt="${file.name}">
+                        <div class="photo-remove" onclick="removePhoto(${tempIdx})">\u00d7</div>
                     `;
                     preview.appendChild(photoDiv);
-                    
-                    verifierFormulaire();
                 };
                 reader.readAsDataURL(file);
-            });
+
+                // Upload vers Supabase Storage
+                if (edlData) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 6)}.${fileExt}`;
+                    const filePath = `etats-des-lieux/${edlData.id}/${fileName}`;
+
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('etats-des-lieux')
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+
+                    if (uploadError) {
+                        console.error('Erreur upload photo:', uploadError);
+                        // Fallback : stocker en base64 si le bucket n'existe pas encore
+                        photosUrls.push(`local:${file.name}`);
+                    } else {
+                        // Obtenir l'URL publique
+                        const { data: urlData } = supabaseClient.storage
+                            .from('etats-des-lieux')
+                            .getPublicUrl(filePath);
+                        photosUrls.push(urlData.publicUrl || filePath);
+                    }
+                } else {
+                    photosUrls.push(`local:${file.name}`);
+                }
+            }
+
+            // Sauvegarder les URLs
+            planifierAutoSave();
+
+            // Reset input
+            event.target.value = '';
         }
 
-        // Remove photo
-        function removePhoto(index) {
-            photosData.splice(index, 1);
+        function afficherPhotosExistantes() {
             const preview = document.getElementById('photosPreview');
             preview.innerHTML = '';
-            photosData.forEach((photo, i) => {
+            photosUrls.forEach((url, i) => {
                 const photoDiv = document.createElement('div');
                 photoDiv.className = 'photo-preview';
+                photoDiv.id = `photo-${i}`;
+                const imgSrc = url.startsWith('local:') ? '' : url;
                 photoDiv.innerHTML = `
-                    <img src="${photo.data}" alt="${photo.name}">
-                    <div class="photo-remove" onclick="removePhoto(${i})">×</div>
+                    ${imgSrc ? `<img loading="lazy" src="${imgSrc}" alt="Photo ${i + 1}">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#F1F5F9;color:#94A3B8;font-size:12px;">Photo ${i + 1}</div>`}
+                    <div class="photo-remove" onclick="removePhoto(${i})">\u00d7</div>
                 `;
                 preview.appendChild(photoDiv);
             });
-            verifierFormulaire();
         }
 
-        // Vérifier formulaire
+        async function removePhoto(index) {
+            // Supprimer du Storage si c'est une URL Supabase
+            const url = photosUrls[index];
+            if (url && !url.startsWith('local:') && edlData) {
+                // Extraire le path du fichier
+                const pathMatch = url.match(/etats-des-lieux\/.+/);
+                if (pathMatch) {
+                    await supabaseClient.storage
+                        .from('etats-des-lieux')
+                        .remove([pathMatch[0]]);
+                }
+            }
+
+            photosUrls.splice(index, 1);
+            afficherPhotosExistantes();
+            planifierAutoSave();
+        }
+
+        // (L'ancienne fonction signerEdl a \u00e9t\u00e9 remplac\u00e9e par signerEdlAvecPreuves ci-dessus)
+
+        // ================================================================
+        // VÉRIFIER LE FORMULAIRE
+        // ================================================================
         function verifierFormulaire() {
-            const signLocataire = document.getElementById('signatureLocataire').checked;
-            const signProprietaire = document.getElementById('signatureProprietaire').checked;
             const btnValider = document.getElementById('btnValider');
-            
-            // Pour valider : au moins les 2 signatures
-            btnValider.disabled = !(signLocataire && signProprietaire);
+
+            // Admin bypass : toujours activer
+            if (isAdminGlobal) {
+                btnValider.disabled = false;
+                return;
+            }
+            if (!edlData) {
+                // Mode demo : toujours d\u00e9sactiv\u00e9 (pas de vrai contrat)
+                btnValider.disabled = true;
+                return;
+            }
+
+            // Les deux parties ont sign\u00e9 ?
+            const deuxSigne = edlData.signature_locataire && edlData.signature_proprietaire;
+            btnValider.disabled = !deuxSigne;
         }
 
-        // Valider état des lieux
+        // ================================================================
+        // VALIDER ET FINALISER
+        // ================================================================
         async function validerEtatDesLieux() {
             const btnValider = document.getElementById('btnValider');
             btnValider.disabled = true;
-            btnValider.textContent = '⏳ Validation en cours...';
-            
+            btnValider.innerHTML = 'Validation en cours...';
+
             try {
-                // Récupérer compteurs
-                const compteurs = {
-                    electricite: document.getElementById('compteur-elec').value || null,
-                    gaz: document.getElementById('compteur-gaz').value || null,
-                    eau: document.getElementById('compteur-eau').value || null
-                };
-                
-                // Récupérer observations
-                const observations = document.getElementById('observations').value;
-                
-                // TODO: Sauvegarder dans Supabase
-                // Table: etats_des_lieux
-                // Champs: candidature_id, type='entree', checklist, photos, compteurs, observations, signatures
-                
-                console.log('État des lieux:', {
-                    checklist: checklistData,
-                    photos: photosData.length + ' photos',
-                    compteurs,
-                    observations
-                });
-                
-                // Simuler sauvegarde
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // TODO: Mettre à jour statut candidature -> 'actif'
-                
-                // Redirection vers match actif
-                window.location.href = `match-actif.html?match_id=${matchId}`;
-                
-            } catch (error) {
-                console.error('❌ Erreur:', error);
-                alert('❌ Erreur lors de la validation');
-                btnValider.disabled = false;
-                btnValider.textContent = '✅ Valider et finaliser';
-            }
-        }
+                // Sauvegarder une dernière fois
+                if (edlData) {
+                    await sauvegarderDonnees();
 
-        // Gérer dashboard
-        async function gererDashboard() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const dashboardLink = document.getElementById('dashboardLink');
-            
-            if (user) {
-                const { data: userData } = await supabaseClient
-                    .from('users')
-                    .select('type_user')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (userData?.type_user === 'hote') {
-                    dashboardLink.href = 'dashboard-hote.html';
-                } else if (userData?.type_user === 'proprietaire') {
-                    dashboardLink.href = 'dashboard-proprietaire.html';
-                } else {
-                    dashboardLink.href = 'dashboard-locataire.html';
+                    // Mettre à jour le statut de la candidature -> 'actif'
+                    await supabaseClient
+                        .from('candidatures')
+                        .update({ statut: 'actif' })
+                        .eq('id', matchId);
                 }
+
+                // Redirection vers match actif
+                showMessage('success', 'État des lieux validé ! Redirection...');
+                setTimeout(() => {
+                    window.location.href = `match-actif.html?match_id=${matchId || ''}`;
+                }, 1500);
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMessage('error', 'Erreur lors de la validation');
+                btnValider.disabled = false;
+                btnValider.innerHTML = 'Valider et finaliser <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
             }
         }
 
-        // Init
-        if (typeof supabaseClient !== 'undefined') {
-            gererDashboard();
+        // ================================================================
+        // UTILITAIRES
+        // ================================================================
+        function showMessage(type, text) {
+            const existing = document.querySelector('.message-bar');
+            if (existing) existing.remove();
+            const div = document.createElement('div');
+            div.className = `message-bar ${type}`;
+            div.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 28px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:slideDown 0.3s ease;font-family:DM Sans,sans-serif;';
+            if (type === 'success') { div.style.background = '#D1FAE5'; div.style.color = '#065F46'; div.style.border = '1px solid #A7F3D0'; }
+            else { div.style.background = '#FEE2E2'; div.style.color = '#991B1B'; div.style.border = '1px solid #FECACA'; }
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
         }
 
-        // Mettre à jour liens
-        if (matchId) {
-            document.getElementById('btnRetour').href = `paiement-initial.html?match_id=${matchId}`;
+        // ================================================================
+        // LANCEMENT
+        // ================================================================
+        if (typeof supabaseClient !== 'undefined') {
+            init();
         }
     </script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>

@@ -3,521 +3,1143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier mon profil - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Modifier mon profil — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --primary: #667eea;
-            --primary-dark: #5a67d8;
-            --secondary: #764ba2;
-            --success: #22c55e;
-            --error: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-            line-height: 1.6;
-        }
-
-        /* NAVIGATION */
+        /* NAV — aligné sur dashboards */
         nav {
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12) !important;
         }
-
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav .logo {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
         nav ul {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-            align-items: center;
+            gap: 8px !important;
+        }
+        nav a {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s !important;
+            text-decoration: none !important;
+        }
+        nav a:hover {
+            color: #E8622A !important;
+            background: rgba(232, 98, 42, 0.06) !important;
+        }
+        nav a.nav-highlight {
+            color: #E8622A !important;
+            font-weight: 600 !important;
         }
 
-        nav ul li a {
-            text-decoration: none;
-            color: var(--gray-700);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: var(--primary);
-        }
-
-        /* CONTENEUR PRINCIPAL */
-        .main-container {
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* HEADER */
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--gray-900);
-            margin-bottom: 10px;
-        }
-
-        .page-header p {
-            color: var(--gray-600);
-            font-size: 16px;
-        }
-
-        /* CARTE FORMULAIRE */
-        .form-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-        }
-
-        /* PHOTO DE PROFIL */
-        .profile-photo-section {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 40px;
-            border-bottom: 2px solid var(--gray-100);
-        }
-
-        .profile-photo-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 20px;
+        .page-inscription {
+            min-height: calc(100vh - 85px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            font-weight: 800;
-            color: white;
-            border: 4px solid white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            background: #F4F5F7;
+            padding: 40px 20px;
         }
 
-        .photo-upload-btn {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 2px solid var(--gray-300);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
+        .inscription-container {
+            position: relative;
+            max-width: 480px;
+            width: 100%;
+            height: 560px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px 36px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1px solid #E8EAF0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inscription-header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .inscription-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 4px 0;
+        }
+
+        .inscription-header p {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin: 0;
+        }
+
+        /* Photo de profil */
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .photo-circle {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: 50%;
+            background: #F4F5F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
+            overflow: hidden;
+            border: 1.5px solid #E2E5EA;
+            font-size: 20px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .photo-circle:hover {
+            border-color: #E8622A;
+        }
+
+        .photo-circle .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-circle .placeholder svg {
+            width: 24px;
+            height: 24px;
+            color: #9CA3AF;
+        }
+
+        .photo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-info {
+            flex: 1;
+        }
+
+        .photo-info .photo-title {
             font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 2px;
         }
 
-        .photo-upload-btn:hover {
-            background: var(--gray-200);
-            border-color: var(--gray-400);
+        .photo-info .photo-hint {
+            font-size: 12px;
+            color: #9CA3AF;
         }
 
-        /* FORMULAIRE */
-        .form-section {
-            margin-bottom: 30px;
+        /* MODAL RECADRAGE */
+        .crop-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .form-section h3 {
+        .crop-overlay.active {
+            display: flex;
+        }
+
+        .crop-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        .crop-modal h3 {
             font-size: 18px;
             font-weight: 700;
-            color: var(--gray-900);
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+
+        .crop-modal .crop-hint {
+            font-size: 13px;
+            color: #9CA3AF;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .crop-area {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #E8EAF0;
+            cursor: grab;
+            touch-action: none;
+            background: #F3F4F6;
+        }
+
+        .crop-area:active { cursor: grabbing; }
+
+        .crop-area img {
+            position: absolute;
+            max-width: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .crop-zoom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .crop-zoom label {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .crop-zoom input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #E8EAF0;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .crop-zoom input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E8622A;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+        }
+
+        .crop-zoom input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #E8622A;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .crop-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .crop-cancel {
+            background: white;
+            color: #475569;
+            border: 1.5px solid #E2E5EA;
+        }
+
+        .crop-cancel:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .crop-confirm {
+            background: #1E293B;
+            color: white;
+            border: none;
+        }
+
+        .crop-confirm:hover {
+            background: #E8622A;
+        }
+
+        /* Champs */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .form-group .required {
+            color: #E8622A;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            box-sizing: border-box;
+            color: #1E293B;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+        }
+
+        .form-group input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .form-group input:disabled {
+            background: #F3F4F6;
+            cursor: not-allowed;
+            color: #9CA3AF;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-top: 4px;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 12px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        /* Boutons */
+        .buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 16px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 8px;
-        }
-
-        .form-group label .required {
-            color: var(--error);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s;
+        .btn-back {
+            height: 40px;
+            padding: 0 16px;
             background: white;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group input:disabled {
-            background: var(--gray-100);
-            cursor: not-allowed;
-        }
-
-        /* BOUTONS */
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 40px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 16px;
+            color: #475569;
+            border: 1.5px solid #E2E5EA;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
             text-decoration: none;
-            text-align: center;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .btn-back:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .btn-next {
+            height: 40px;
+            padding: 0 16px;
+            background: #1E293B;
             color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        .btn-next:hover {
+            background: #E8622A;
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
+        .btn-next:disabled {
+            background: #E8EAF0;
+            color: #9CA3AF;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
-        .btn-secondary {
+        /* Loading spinner */
+        .btn-next.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-next.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 14px;
+            color: #6B7280;
+            font-size: 13px;
+        }
+
+        .back-link a {
+            color: #E8622A;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Erreur */
+        .error-message {
+            position: absolute;
+            bottom: 36px;
+            left: 36px;
+            right: 36px;
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+            color: #991B1B;
+            padding: 12px 14px;
+            border-radius: 10px;
+            display: none;
+            font-size: 13px;
+            z-index: 20;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+            animation: slideUpError 0.25s ease;
+        }
+
+        /* Succès */
+        .success-message {
+            position: absolute;
+            bottom: 36px;
+            left: 36px;
+            right: 36px;
+            background: #D1FAE5;
+            border: 1px solid #A7F3D0;
+            color: #065F46;
+            padding: 12px 14px;
+            border-radius: 10px;
+            display: none;
+            font-size: 13px;
+            z-index: 20;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+            animation: slideUpError 0.25s ease;
+        }
+
+        @keyframes slideUpError {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section préférences email */
+        .email-prefs-section {
+            max-width: 460px;
+            margin: 30px auto 20px;
+            padding: 20px 24px;
             background: white;
-            color: var(--gray-700);
-            border: 2px solid var(--gray-300);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-400);
-        }
-
-        /* MESSAGE */
-        .message {
-            padding: 15px 20px;
+            border: 1.5px solid #E8EAF0;
             border-radius: 12px;
-            margin-bottom: 20px;
-            font-weight: 500;
+        }
+        .email-prefs-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .email-prefs-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 16px;
+        }
+        .pref-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .pref-row:last-child { border-bottom: none; }
+        .pref-label { font-size: 13px; font-weight: 600; color: #1E293B; }
+        .pref-desc { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #CBD5E1; border-radius: 24px; transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background: #E8622A; }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+        .prefs-saved {
+            font-size: 12px; color: #059669; font-weight: 600; text-align: center;
+            margin-top: 10px; opacity: 0; transition: opacity 0.3s;
+        }
+        .prefs-saved.show { opacity: 1; }
+
+        /* Section changement mot de passe */
+        .password-section {
+            max-width: 460px;
+            margin: 30px auto 20px;
+            padding: 20px 24px;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+        }
+        .password-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+        .password-section-text {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .password-form-group {
+            margin-bottom: 12px;
+        }
+        .password-form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .password-form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .password-form-group input:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+        }
+        .btn-change-password {
+            padding: 10px 20px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-change-password:hover {
+            background: #d4571f;
+        }
+        .btn-change-password:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+        .password-message {
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             display: none;
         }
-
-        .message.success {
-            background: #dcfce7;
+        .password-message.success {
+            display: block;
+            background: #F0FDF4;
             color: #166534;
-            border: 2px solid var(--success);
+            border: 1px solid #BBF7D0;
+        }
+        .password-message.error {
+            display: block;
+            background: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
         }
 
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 2px solid var(--error);
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .form-card {
-                padding: 30px 20px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .form-actions {
-                flex-direction: column;
-            }
-
-            nav ul {
-                gap: 15px;
-                font-size: 14px;
-            }
+        /* Responsive */
+        @media (max-width: 500px) {
+            .inscription-container { padding: 24px 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .crop-area { width: 220px; height: 220px; }
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 AlternHome</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
-                <li><a href="recherche.html">Rechercher</a></li>
-                <li><a href="dashboard-proprietaire.html" style="color: var(--primary);">Mon espace</a></li>
+                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+                <li><a href="dashboard-proprietaire.html" class="nav-highlight">Mon espace</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- CONTENEUR PRINCIPAL -->
-    <div class="main-container">
-        <!-- HEADER -->
-        <div class="page-header">
-            <h1>Modifier mon profil</h1>
-            <p>Mettez à jour vos informations personnelles</p>
-        </div>
-
-        <!-- MESSAGE -->
-        <div id="message" class="message"></div>
-
-        <!-- FORMULAIRE -->
-        <div class="form-card">
-            <!-- PHOTO DE PROFIL -->
-            <div class="profile-photo-section">
-                <div class="profile-photo-preview" id="photoPreview">
-                    ?
-                </div>
-                <button class="photo-upload-btn" onclick="alert('Fonctionnalité bientôt disponible !')">
-                    📷 Changer la photo
-                </button>
+    <!-- MODAL RECADRAGE PHOTO -->
+    <div class="crop-overlay" id="cropOverlay" role="dialog" aria-modal="true" aria-label="Recadrer la photo">
+        <div class="crop-modal">
+            <h3>Recadre ta photo</h3>
+            <p class="crop-hint">Déplace et zoome pour ajuster</p>
+            <div class="crop-area" id="cropArea">
+                <img loading="lazy" id="cropImage" src="" alt="Photo à recadrer">
             </div>
-
-            <form id="formModifierProfil">
-                <!-- INFORMATIONS PERSONNELLES -->
-                <div class="form-section">
-                    <h3>Informations personnelles</h3>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="prenom">Prénom <span class="required">*</span></label>
-                            <input type="text" id="prenom" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nom">Nom <span class="required">*</span></label>
-                            <input type="text" id="nom" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="age">Âge <span class="required">*</span></label>
-                            <input type="number" id="age" min="18" max="120" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sexe">Sexe <span class="required">*</span></label>
-                            <select id="sexe" required>
-                                <option value="">Sélectionner...</option>
-                                <option value="Homme">Homme</option>
-                                <option value="Femme">Femme</option>
-                                <option value="Autre">Autre</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONTACT -->
-                <div class="form-section">
-                    <h3>Contact</h3>
-
-                    <div class="form-group">
-                        <label for="email">Email <span class="required">*</span></label>
-                        <input type="email" id="email" disabled>
-                        <small style="color: var(--gray-500); font-size: 13px; display: block; margin-top: 5px;">
-                            L'email ne peut pas être modifié
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telephone">Téléphone</label>
-                        <input type="tel" id="telephone" placeholder="06 12 34 56 78">
-                    </div>
-                </div>
-
-                <!-- BOUTONS -->
-                <div class="form-actions">
-                    <a href="dashboard-proprietaire.html" class="btn btn-secondary">Annuler</a>
-                    <button type="submit" class="btn btn-primary" id="btnSauvegarder">
-                        Enregistrer les modifications
-                    </button>
-                </div>
-            </form>
+            <div class="crop-zoom">
+                <label>Zoom</label>
+                <input type="range" id="cropZoom" min="100" max="300" value="100">
+            </div>
+            <div class="crop-actions">
+                <button class="crop-cancel" onclick="cancelCrop()">Annuler</button>
+                <button class="crop-confirm" onclick="confirmCrop()">Valider</button>
+            </div>
         </div>
     </div>
 
+    <!-- PAGE -->
+    <section class="page-inscription">
+        <div class="inscription-container">
+            <div class="inscription-header">
+                <h1>Modifier mon profil</h1>
+                <p>Mettez à jour vos informations</p>
+            </div>
+
+            <div id="errorMessage" role="alert" aria-live="polite" class="error-message"></div>
+            <div id="successMessage" role="status" aria-live="polite" class="success-message"></div>
+
+            <!-- Photo -->
+            <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+
+            <div class="photo-upload">
+                <div class="photo-circle" id="photoCircle">
+                    <div class="placeholder" id="photoPlaceholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <img loading="lazy" id="photoPreview" src="" alt="Photo de profil" style="display: none;">
+                </div>
+                <div class="photo-info">
+                    <div class="photo-title">Votre photo de profil</div>
+                    <div class="photo-hint">Cliquez sur le cercle — JPG, PNG (max 5 MB)</div>
+                </div>
+            </div>
+
+            <!-- Champs -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Prénom <span class="required">*</span></label>
+                    <input type="text" id="prenom" placeholder="Prénom">
+                </div>
+                <div class="form-group">
+                    <label>Nom <span class="required">*</span></label>
+                    <input type="text" id="nom" placeholder="Nom">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Téléphone <span class="required">*</span></label>
+                    <input type="tel" id="telephone" placeholder="06 12 34 56 78">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" disabled>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="buttons-row">
+                <a href="dashboard-proprietaire.html" class="btn-back">Annuler</a>
+                <button class="btn-next" id="btnSave" onclick="enregistrerProfil()">Enregistrer</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- SECTION PRÉFÉRENCES EMAIL -->
+    <div class="email-prefs-section" id="emailPrefsSection">
+        <div class="email-prefs-title">📧 Préférences email</div>
+        <div class="email-prefs-subtitle">Choisis les emails que tu souhaites recevoir.</div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Messages</div>
+                <div class="pref-desc">Notification quand tu reçois un message</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefMessages" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Candidatures</div>
+                <div class="pref-desc">Nouvelles candidatures sur tes annonces</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefCandidatures" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Paiements</div>
+                <div class="pref-desc">Reçus et rappels de paiement</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefPaiements" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Baux</div>
+                <div class="pref-desc">Fin de bail, renouvellement</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefBaux" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="pref-row">
+            <div>
+                <div class="pref-label">Actualités STERNY</div>
+                <div class="pref-desc">Nouveautés et offres de la plateforme</div>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" id="prefMarketing" checked onchange="sauvegarderPrefsEmail()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="prefs-saved" id="prefsSaved">✓ Préférences sauvegardées</div>
+    </div>
+
+    <!-- SECTION CHANGEMENT MOT DE PASSE -->
+    <div class="password-section" id="passwordSection">
+        <div class="password-section-title">🔒 Changer mon mot de passe</div>
+        <div class="password-section-text">
+            Renseigne ton nouveau mot de passe (min. 6 caractères).
+        </div>
+        <div class="password-form-group">
+            <label for="newPassword">Nouveau mot de passe</label>
+            <input type="password" id="newPassword" placeholder="Min. 6 caractères" autocomplete="new-password">
+        </div>
+        <div class="password-form-group">
+            <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+            <input type="password" id="confirmPassword" placeholder="Retape le mot de passe" autocomplete="new-password">
+        </div>
+        <button class="btn-change-password" id="btnChangePassword" onclick="changerMotDePasse()">Modifier le mot de passe</button>
+        <div class="password-message" id="passwordMessage"></div>
+    </div>
+
     <script>
-        // Configuration Supabase
-        const SUPABASE_URL = 'https://gjrhhxxchmdoszlqLiga.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqcmhoeHhjaG1kb3N6bHFsaWdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcyMTk2MTYsImV4cCI6MjA1Mjc5NTYxNn0.rCWwI4FLZvJl7k-gxS4OYAf40p_IFUtPcpVtaCEQY_c';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ================================================================
+        // VARIABLES
+        // ================================================================
+        let currentUser = null;
+        let isAdmin = false;
+        let photoFile = null;
 
-        let userId = null;
+        // ================================================================
+        // MAJUSCULE INTELLIGENTE
+        // ================================================================
+        function capitalizeWords(str) {
+            return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
 
-        // Charger les informations du profil
-        async function chargerProfil() {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (!user) {
-                    window.location.href = 'connexion.html';
-                    return;
+        document.getElementById('nom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        document.getElementById('prenom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        // ================================================================
+        // PHOTO + RECADRAGE
+        // ================================================================
+        const photoCircle = document.getElementById('photoCircle');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+
+        const cropOverlay = document.getElementById('cropOverlay');
+        const cropImage = document.getElementById('cropImage');
+        const cropArea = document.getElementById('cropArea');
+        const cropZoom = document.getElementById('cropZoom');
+        let cropDragging = false;
+        let cropStartX = 0, cropStartY = 0;
+        let imgX = 0, imgY = 0;
+        let imgStartX = 0, imgStartY = 0;
+        let currentScale = 1;
+
+        photoCircle.addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) openCropper(e.target.files[0]);
+        });
+
+        function openCropper(file) {
+            if (!file.type.match('image.*')) { showError('Le fichier doit être une image (JPG, PNG, WEBP)'); return; }
+            if (file.size > 5 * 1024 * 1024) { showError('La photo ne doit pas dépasser 5 MB'); return; }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                cropImage.src = e.target.result;
+                cropImage.onload = () => {
+                    const areaSize = 260;
+                    const ratio = Math.max(areaSize / cropImage.naturalWidth, areaSize / cropImage.naturalHeight);
+                    currentScale = ratio;
+                    cropZoom.min = Math.round(ratio * 100);
+                    cropZoom.max = Math.round(ratio * 100 * 3);
+                    cropZoom.value = Math.round(ratio * 100);
+                    applyScale();
+                    centerImage();
+                    cropOverlay.classList.add('active');
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyScale() {
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            cropImage.style.width = w + 'px';
+            cropImage.style.height = h + 'px';
+        }
+
+        function centerImage() {
+            const areaSize = 260;
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            imgX = (areaSize - w) / 2;
+            imgY = (areaSize - h) / 2;
+            cropImage.style.left = imgX + 'px';
+            cropImage.style.top = imgY + 'px';
+        }
+
+        function clampPosition() {
+            const areaSize = 260;
+            const w = cropImage.naturalWidth * currentScale;
+            const h = cropImage.naturalHeight * currentScale;
+            if (imgX > 0) imgX = 0;
+            if (imgY > 0) imgY = 0;
+            if (imgX < areaSize - w) imgX = areaSize - w;
+            if (imgY < areaSize - h) imgY = areaSize - h;
+            cropImage.style.left = imgX + 'px';
+            cropImage.style.top = imgY + 'px';
+        }
+
+        cropZoom.addEventListener('input', (e) => {
+            const oldScale = currentScale;
+            currentScale = parseInt(e.target.value) / 100;
+            const areaSize = 260;
+            const centerX = areaSize / 2;
+            const centerY = areaSize / 2;
+            const relX = (centerX - imgX) / (cropImage.naturalWidth * oldScale);
+            const relY = (centerY - imgY) / (cropImage.naturalHeight * oldScale);
+            applyScale();
+            imgX = centerX - relX * cropImage.naturalWidth * currentScale;
+            imgY = centerY - relY * cropImage.naturalHeight * currentScale;
+            clampPosition();
+        });
+
+        cropArea.addEventListener('mousedown', (e) => { e.preventDefault(); cropDragging = true; cropStartX = e.clientX; cropStartY = e.clientY; imgStartX = imgX; imgStartY = imgY; });
+        window.addEventListener('mousemove', (e) => { if (!cropDragging) return; imgX = imgStartX + (e.clientX - cropStartX); imgY = imgStartY + (e.clientY - cropStartY); clampPosition(); });
+        window.addEventListener('mouseup', () => { cropDragging = false; });
+
+        cropArea.addEventListener('touchstart', (e) => { if (e.touches.length === 1) { cropDragging = true; cropStartX = e.touches[0].clientX; cropStartY = e.touches[0].clientY; imgStartX = imgX; imgStartY = imgY; } }, { passive: true });
+        window.addEventListener('touchmove', (e) => { if (!cropDragging || e.touches.length !== 1) return; imgX = imgStartX + (e.touches[0].clientX - cropStartX); imgY = imgStartY + (e.touches[0].clientY - cropStartY); clampPosition(); }, { passive: true });
+        window.addEventListener('touchend', () => { cropDragging = false; });
+
+        function cancelCrop() { cropOverlay.classList.remove('active'); photoInput.value = ''; }
+
+        function confirmCrop() {
+            const canvas = document.createElement('canvas');
+            const size = 400;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const areaSize = 260;
+            const sourceX = -imgX / currentScale;
+            const sourceY = -imgY / currentScale;
+            const sourceSize = areaSize / currentScale;
+            ctx.drawImage(cropImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+            canvas.toBlob((blob) => {
+                photoFile = new File([blob], 'photo-profil.jpg', { type: 'image/jpeg' });
+                const url = URL.createObjectURL(blob);
+                photoPreview.src = url;
+                photoPreview.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                cropOverlay.classList.remove('active');
+                photoInput.value = '';
+            }, 'image/jpeg', 0.9);
+        }
+
+        // ================================================================
+        // MESSAGES
+        // ================================================================
+        let errorTimeout = null;
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            if (errorTimeout) clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        // ================================================================
+        // AUTH + PRÉ-REMPLISSAGE
+        // ================================================================
+        async function checkAuth() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+            currentUser = user;
+
+            document.getElementById('email').value = user.email || '';
+
+            const { data: userData } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+            if (userData) {
+                isAdmin = userData.is_admin === true;
+                if (userData.prenom) document.getElementById('prenom').value = userData.prenom;
+                if (userData.nom) document.getElementById('nom').value = userData.nom;
+                if (userData.telephone) document.getElementById('telephone').value = userData.telephone;
+
+                if (userData.photo_profil_url) {
+                    photoPreview.src = userData.photo_profil_url;
+                    photoPreview.style.display = 'block';
+                    document.getElementById('photoPlaceholder').style.display = 'none';
                 }
+            }
 
-                userId = user.id;
+            // Charger les préférences email
+            chargerPrefsEmail();
+        }
 
-                const { data: userData, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error) {
-                    console.error('Erreur:', error);
-                    showMessage('Erreur de chargement du profil', 'error');
-                    return;
-                }
-
-                if (userData) {
-                    // Remplir le formulaire
-                    document.getElementById('prenom').value = userData.prenom || '';
-                    document.getElementById('nom').value = userData.nom || '';
-                    document.getElementById('age').value = userData.age || '';
-                    document.getElementById('sexe').value = userData.sexe || '';
-                    document.getElementById('email').value = user.email || '';
-                    document.getElementById('telephone').value = userData.telephone || '';
-
-                    // Mettre à jour la photo de profil (initiales)
-                    if (userData.prenom && userData.nom) {
-                        const initials = `${userData.prenom[0]}${userData.nom[0]}`.toUpperCase();
-                        document.getElementById('photoPreview').textContent = initials;
-                    }
-                }
-
-            } catch (error) {
-                console.error('Erreur:', error);
-                showMessage('Erreur de chargement', 'error');
+        // ================================================================
+        // PRÉFÉRENCES EMAIL
+        // ================================================================
+        async function chargerPrefsEmail() {
+            if (!currentUser) return;
+            const { data } = await supabaseClient.from('users').select('preferences_email').eq('id', currentUser.id).single();
+            if (data && data.preferences_email) {
+                const prefs = data.preferences_email;
+                document.getElementById('prefMessages').checked = prefs.messages !== false;
+                document.getElementById('prefCandidatures').checked = prefs.candidatures !== false;
+                document.getElementById('prefPaiements').checked = prefs.paiements !== false;
+                document.getElementById('prefBaux').checked = prefs.baux !== false;
+                document.getElementById('prefMarketing').checked = prefs.marketing !== false;
             }
         }
 
-        // Sauvegarder les modifications
-        document.getElementById('formModifierProfil').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        let prefsSaveTimeout = null;
+        async function sauvegarderPrefsEmail() {
+            if (!currentUser) return;
+            clearTimeout(prefsSaveTimeout);
+            prefsSaveTimeout = setTimeout(async () => {
+                const prefs = {
+                    messages: document.getElementById('prefMessages').checked,
+                    candidatures: document.getElementById('prefCandidatures').checked,
+                    paiements: document.getElementById('prefPaiements').checked,
+                    baux: document.getElementById('prefBaux').checked,
+                    marketing: document.getElementById('prefMarketing').checked,
+                };
+                const { error } = await supabaseClient.from('users').update({ preferences_email: prefs }).eq('id', currentUser.id);
+                if (!error) {
+                    const saved = document.getElementById('prefsSaved');
+                    saved.classList.add('show');
+                    setTimeout(() => saved.classList.remove('show'), 2000);
+                }
+            }, 500);
+        }
 
-            const btnSauvegarder = document.getElementById('btnSauvegarder');
-            btnSauvegarder.disabled = true;
-            btnSauvegarder.textContent = 'Enregistrement...';
+        // ================================================================
+        // CHANGEMENT DE MOT DE PASSE
+        // ================================================================
+        async function changerMotDePasse() {
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+            const msgDiv = document.getElementById('passwordMessage');
+            const btn = document.getElementById('btnChangePassword');
+
+            if (!newPwd || !confirmPwd) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Remplis les deux champs.';
+                return;
+            }
+            if (newPwd.length < 6) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = 'Les mots de passe ne correspondent pas.';
+                return;
+            }
+
+            if (!RateLimiter.check('change_password', 3, 600000, { persistent: true })) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Modification...';
 
             try {
-                const updates = {
-                    prenom: document.getElementById('prenom').value.trim(),
-                    nom: document.getElementById('nom').value.trim(),
-                    age: parseInt(document.getElementById('age').value),
-                    sexe: document.getElementById('sexe').value,
-                    telephone: document.getElementById('telephone').value.trim(),
-                    updated_at: new Date().toISOString()
-                };
-
-                const { error } = await supabaseClient
-                    .from('users')
-                    .update(updates)
-                    .eq('id', userId);
-
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPwd
+                });
                 if (error) throw error;
 
-                showMessage('Profil mis à jour avec succès !', 'success');
+                msgDiv.className = 'password-message success';
+                msgDiv.textContent = 'Mot de passe modifié avec succès !';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } catch (err) {
+                console.error('Erreur changement mdp:', err);
+                msgDiv.className = 'password-message error';
+                msgDiv.textContent = err.message || 'Erreur lors du changement de mot de passe.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Modifier le mot de passe';
+            }
+        }
 
-                // Redirection après 1.5 secondes
+        // ================================================================
+        // ENREGISTREMENT
+        // ================================================================
+        async function enregistrerProfil() {
+            const btn = document.getElementById('btnSave');
+            const prenom = document.getElementById('prenom').value.trim();
+            const nom = document.getElementById('nom').value.trim();
+            const telephone = document.getElementById('telephone').value.trim();
+
+            // Admin bypass : skip validation
+            if (!isAdmin) {
+                if (!prenom) { showError('Merci de renseigner votre prénom'); return; }
+                if (!nom) { showError('Merci de renseigner votre nom'); return; }
+                if (!telephone) { showError('Merci de renseigner votre téléphone'); return; }
+            }
+
+            btn.classList.add('loading');
+            btn.textContent = 'Enregistrement...';
+
+            try {
+                // Upload photo si nouvelle
+                let photoUrl = null;
+                if (photoFile) {
+                    const fileExt = photoFile.name.split('.').pop();
+                    const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+                    const { error: uploadError } = await supabaseClient.storage.from('profils').upload(fileName, photoFile, { cacheControl: '3600', upsert: true });
+                    if (!uploadError) {
+                        const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(fileName);
+                        photoUrl = urlData.publicUrl;
+                    }
+                }
+
+                const updateData = {
+                    prenom, nom,
+                    telephone: telephone || null,
+                };
+
+                if (photoUrl) updateData.photo_profil_url = photoUrl;
+
+                const { error } = await supabaseClient.from('users').update(updateData).eq('id', currentUser.id);
+                if (error) throw error;
+
+                showSuccess('Profil mis à jour avec succès !');
+
                 setTimeout(() => {
                     window.location.href = 'dashboard-proprietaire.html';
                 }, 1500);
 
-            } catch (error) {
-                console.error('Erreur:', error);
-                showMessage('Erreur lors de la mise à jour', 'error');
-                btnSauvegarder.disabled = false;
-                btnSauvegarder.textContent = 'Enregistrer les modifications';
+            } catch (err) {
+                console.error('Erreur:', err);
+                btn.classList.remove('loading');
+                btn.textContent = 'Enregistrer';
+                showError(err.message || 'Une erreur est survenue');
             }
-        });
-
-        // Afficher un message
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-
-            // Masquer après 5 secondes
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
         }
 
-        // Initialiser au chargement
-        chargerProfil();
+        // ================================================================
+        // INIT
+        // ================================================================
+        if (typeof supabaseClient !== 'undefined') { checkAuth(); }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

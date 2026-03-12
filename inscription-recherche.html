@@ -3,160 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription Recherche - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Inscription Étudiant — STERNY</title>
+    <meta name="description" content="Inscrivez-vous sur STERNY en tant qu'étudiant en alternance pour trouver un logement adapté à votre rythme.">
+    <link rel="canonical" href="https://sterny.co/inscription-recherche.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/inscription-recherche.html">
+    <meta property="og:title" content="Inscription Étudiant — STERNY">
+    <meta property="og:description" content="Créez votre profil étudiant et trouvez un logement en alternance.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="robots" content="noindex, follow">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        body {
-            background: #F9FAFB;
-            min-height: 100vh;
+        .page-inscription {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F4F5F7;
+            padding: 40px 20px;
         }
-        
-        /* Hero violet */
-        .hero-inscription {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-        }
-        
-        .hero-inscription h1 {
-            font-size: 42px;
-            margin: 0;
-            font-weight: 700;
-        }
-        
+
         .inscription-container {
-            max-width: 600px;
-            margin: 60px auto;
-            padding: 40px;
+            position: relative;
+            max-width: 460px;
+            width: 100%;
+            height: 541px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border: 2px solid #E0E7FF;
+            padding: 36px 36px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1.5px solid #E8EAF0;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
         }
-        
+
         .inscription-container:hover {
-            border-color: #667eea;
-            box-shadow: 0 8px 24px rgba(102,126,234,0.15);
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
         }
-        
+
         .inscription-header {
             text-align: center;
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 2px solid #F3F4F6;
+            margin-bottom: 16px;
         }
-        
-        .inscription-header h2 {
-            font-size: 24px;
+
+        .inscription-header h1 {
+            font-size: 22px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 15px;
+            color: #1F2937;
+            margin: 0;
         }
-        
-        .etape-info {
-            font-size: 14px;
-            color: var(--gray-600);
-            background: #F0F9FF;
-            border-left: 4px solid #3B82F6;
+
+        /* Indicateur d'étape */
+        .step-indicator {
+            text-align: center;
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Barre de progression */
+        .progress-bar {
+            height: 3px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #E8622A 0%, #FF5722 100%);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        /* Steps */
+        .step {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .step.active {
+            display: flex;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+
+        /* Cartes d'intention (étape 1) — même style que choix-inscription */
+        .intent-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .intent-card {
+            position: relative;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
             padding: 12px 16px;
-            border-radius: 8px;
-            text-align: left;
-            line-height: 1.6;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
+
+        .intent-card:hover {
+            border-color: #E8622A;
+            background: #FFF4ED;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.15);
+        }
+
+        .intent-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intent-card:has(input:checked) {
+            border-color: #E8622A;
+            background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.25);
+        }
+
+        .intent-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #F3F4F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .intent-card:has(input:checked) .intent-icon {
+            background: rgba(232, 98, 42, 0.15);
+        }
+
+        .intent-title {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .intent-card:has(input:checked) .intent-title {
+            font-weight: 700;
+        }
+
+        .intent-check {
+            width: 22px;
+            height: 22px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .intent-card:has(input:checked) .intent-check {
+            background: #E8622A;
+            border-color: #E8622A;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Champs */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 14px;
         }
-        
+
         .form-group label {
             display: block;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--gray-900);
+            margin-bottom: 5px;
+            color: #1E293B;
+            font-size: 13px;
         }
-        
+
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #E0E7FF;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 10px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            box-sizing: border-box;
         }
-        
+
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1);
         }
-        
-        .form-group input:hover,
-        .form-group select:hover {
-            border-color: #a5b4fc;
+
+        .form-group input::placeholder {
+            color: #9CA3AF;
         }
-        
-        .submit-btn {
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border: 2px solid transparent;
+
+        .form-group select {
+            color: #1E293B;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .form-group select.placeholder {
+            color: #9CA3AF;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Autocomplete ville */
+        .ville-wrapper {
+            position: relative;
+        }
+
+        .ville-suggestions {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .ville-suggestion {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+
+        .ville-suggestion:hover {
+            background: #FFF4ED;
+            color: #E8622A;
+        }
+
+
+        /* Boutons navigation */
+        .buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
+        .buttons-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-back {
+            padding: 12px;
+            background: white;
+            color: #6B7280;
+            border: 1.5px solid #E8EAF0;
             border-radius: 12px;
-            font-size: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-back:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .btn-next {
+            padding: 12px;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: inherit;
         }
-        
-        .submit-btn:hover {
+
+        .btn-next:hover {
+            background: linear-gradient(135deg, #E8622A 0%, #FF5722 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 8px 20px rgba(232, 98, 42, 0.4);
         }
-        
-        /* Style pour bouton retour */
-        a[href="choix-inscription.html"]:hover {
-            background: var(--primary) !important;
-            color: white !important;
-            transform: translateY(-2px);
+
+        .btn-next:disabled {
+            background: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
-        
+
+        /* Lien retour */
         .back-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 14px;
+            color: #6B7280;
+            font-size: 13px;
         }
-        
+
         .back-link a {
-            color: var(--primary);
+            color: #E8622A;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
-        
+
         .back-link a:hover {
             text-decoration: underline;
         }
-        
+
+        /* Erreur */
         .error-message {
+            position: absolute;
+            bottom: 36px;
+            left: 36px;
+            right: 36px;
             background: #FEE2E2;
-            border: 1px solid #EF4444;
+            border: 1px solid #FECACA;
             color: #991B1B;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 12px 14px;
+            border-radius: 10px;
             display: none;
+            font-size: 13px;
+            z-index: 20;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+            animation: slideUpError 0.25s ease;
+        }
+
+        @keyframes slideUpError {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Écran de confirmation */
+        .confirmation-screen {
+            display: none;
+            text-align: center;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-screen.active {
+            display: flex;
+        }
+
+        .confirmation-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .confirmation-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .confirmation-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .confirmation-text {
+            font-size: 15px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Loading spinner */
+        .btn-next.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-next.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 AlternHome</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="connexion.html">Connexion</a></li>
                 <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
@@ -164,146 +468,673 @@
         </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="hero-inscription">
-        <h1>Chercher un logement</h1>
+    <!-- PAGE -->
+    <section class="page-inscription">
+        <div class="inscription-container">
+            <div class="inscription-header">
+                <h1 id="mainTitle">Que recherches-tu ?</h1>
+            </div>
+
+            <div class="step-indicator" id="stepIndicator">Étape <span>1</span> sur 4</div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+            </div>
+
+            <div id="errorMessage" role="alert" aria-live="polite" class="error-message"></div>
+
+            <!-- ÉTAPE 1 : Que recherches-tu ? -->
+            <div class="step active" id="step1">
+                <div class="step-content">
+                    <div class="intent-options">
+                        <label class="intent-card" for="intentRecherche">
+                            <input type="radio" name="intent" id="intentRecherche" value="recherche">
+                            <div class="intent-icon"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></div>
+                            <div class="intent-title">Je recherche un ou des logements</div>
+                            <div class="intent-check">✓</div>
+                        </label>
+
+                        <label class="intent-card" for="intentPartage">
+                            <input type="radio" name="intent" id="intentPartage" value="partage">
+                            <div class="intent-icon"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z"/></svg></div>
+                            <div class="intent-title">Je propose d'alterner mon logement</div>
+                            <div class="intent-check">✓</div>
+                        </label>
+
+                        <label class="intent-card" for="intentLesDeux">
+                            <input type="radio" name="intent" id="intentLesDeux" value="les-deux">
+                            <div class="intent-icon"><svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/></svg></div>
+                            <div class="intent-title">Les deux</div>
+                            <div class="intent-check">✓</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="buttons-row single">
+                    <button class="btn-next" id="btnStep1" disabled onclick="nextStep(1)">Continuer</button>
+                </div>
+
+                <div class="back-link">
+                    <a href="choix-inscription.html">Retour</a>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 : Infos personnelles -->
+            <div class="step" id="step2">
+                <div class="step-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nom</label>
+                            <input type="text" id="nom" placeholder="Dupont">
+                        </div>
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" id="prenom" placeholder="Côme">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="come@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="telephone" placeholder="06 12 34 56 78">
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(2)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(2)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 : Alternance + Ville -->
+            <div class="step" id="step3">
+                <div class="step-content">
+                    <div class="form-group">
+                        <label>Type d'alternance</label>
+                        <select id="typeAlternance" class="placeholder" onchange="updateRythmeOptions(); this.classList.toggle('placeholder', !this.value);">
+                            <option value="" disabled selected>Sélectionner</option>
+                            <option value="symmetric">Symétrique (même durée)</option>
+                            <option value="asymmetric">Asymétrique (durées différentes)</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="rythmeField" style="display: none;">
+                        <label>Mon rythme</label>
+                        <select id="monRythme" class="placeholder" onchange="this.classList.toggle('placeholder', !this.value);">
+                            <option value="" disabled selected>Sélectionner</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="rythmeCustomField" style="display: none;">
+                        <label>Décris ton rythme</label>
+                        <input type="text" id="rythmeCustomInput" placeholder="Ex : 3 jours école / 2 jours entreprise">
+                    </div>
+
+                    <!-- Ville unique (recherche ou partage) -->
+                    <div class="form-group" id="villeUniqueField">
+                        <label id="villeLabelText">Ta ville</label>
+                        <div class="ville-wrapper">
+                            <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off">
+                            <div class="ville-suggestions" id="villeSuggestions"></div>
+                        </div>
+                    </div>
+
+                    <!-- Deux villes (les deux) -->
+                    <div class="form-row" id="villeDoubleField" style="display: none;">
+                        <div class="form-group">
+                            <label>Ville où tu proposes</label>
+                            <div class="ville-wrapper">
+                                <input type="text" id="villeEcoleInput" placeholder="Rennes..." autocomplete="off">
+                                <div class="ville-suggestions" id="villeEcoleSuggestions"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Ville où tu cherches</label>
+                            <div class="ville-wrapper">
+                                <input type="text" id="villeEntrepriseInput" placeholder="Nantes..." autocomplete="off">
+                                <div class="ville-suggestions" id="villeEntrepriseSuggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(3)">Retour</button>
+                    <button class="btn-next" onclick="nextStep(3)">Continuer</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4 : Mot de passe -->
+            <div class="step" id="step4">
+                <div class="step-content">
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="password" placeholder="6 caractères minimum">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmer</label>
+                        <input type="password" id="confirmPassword" placeholder="Retape ton mot de passe">
+                    </div>
+                </div>
+
+                <div class="buttons-row">
+                    <button class="btn-back" onclick="prevStep(4)">Retour</button>
+                    <button class="btn-next" id="btnCreer" onclick="createAccount()">Créer mon compte</button>
+                </div>
+            </div>
+
+            <!-- ÉCRAN DE CONFIRMATION -->
+            <div class="confirmation-screen" id="confirmationScreen">
+                <div class="confirmation-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                </div>
+                <div class="confirmation-title">Bienvenue sur STERNY !</div>
+                <div class="confirmation-text">
+                    Ton compte a bien été créé.<br>
+                    Redirection vers ton espace...
+                </div>
+            </div>
+        </div>
     </section>
 
-    <div class="inscription-container">
-        <div class="inscription-header">
-            <h2>Formulaire d'inscription</h2>
-        </div>
-        
-        <div id="errorMessage" class="error-message"></div>
-        
-        <form id="inscriptionForm">
-            <!-- Infos personnelles -->
-            <div class="form-group">
-                <label for="nom">Nom <span style="color: #EF4444;">*</span></label>
-                <input type="text" id="nom" name="nom" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="prenom">Prénom <span style="color: #EF4444;">*</span></label>
-                <input type="text" id="prenom" name="prenom" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email <span style="color: #EF4444;">*</span></label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="telephone">Téléphone <span style="color: #EF4444;">*</span></label>
-                <input type="tel" id="telephone" name="telephone" required>
-            </div>
-            
-            <!-- Critères de recherche -->
-            <div class="form-group">
-                <label for="ville">Ville recherchée <span style="color: #EF4444;">*</span></label>
-                <select id="ville" name="ville" required>
-                    <option value="">Sélectionne une ville</option>
-                    <option value="rennes">Rennes</option>
-                    <option value="nantes">Nantes</option>
-                    <option value="brest">Brest</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="budget">Budget maximum (€/mois) <span style="color: #EF4444;">*</span></label>
-                <input type="number" id="budget" name="budget" min="0" step="50" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="rythme">Mon rythme d'alternance <span style="color: #EF4444;">*</span></label>
-                <select id="rythme" name="rythme" required>
-                    <option value="">Sélectionne ton rythme</option>
-                    <option value="hebdo">Hebdomadaire</option>
-                    <option value="bloc">Par blocs</option>
-                    <option value="jour">Par jour</option>
-                    <option value="longs">Longues périodes</option>
-                    <option value="perso">Personnalisé</option>
-                </select>
-            </div>
-            
-            <!-- Mot de passe -->
-            <div class="form-group">
-                <label for="password">Mot de passe <span style="color: #EF4444;">*</span></label>
-                <input type="password" id="password" name="password" required minlength="6">
-            </div>
-            
-            <div class="form-group">
-                <label for="confirmPassword">Confirmer le mot de passe <span style="color: #EF4444;">*</span></label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
-            </div>
-            
-            
-            <p class="etape-info" style="margin-top: 30px; margin-bottom: 20px;">On complétera ton profil plus tard</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
-                <a href="choix-inscription.html" style="padding: 14px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s;">Retour</a>
-                <button type="submit" style="padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Créer mon compte</button>
-            </div>
-        </form>
-    </div>
-
     <script>
-        document.getElementById('inscriptionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const errorMessage = document.getElementById('errorMessage');
-            const nom = document.getElementById('nom').value;
-            const prenom = document.getElementById('prenom').value;
-            const email = document.getElementById('email').value;
-            const telephone = document.getElementById('telephone').value;
-            const ville = document.getElementById('ville').value;
-            const budget = document.getElementById('budget').value;
-            const rythme = document.getElementById('rythme').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Vérification mot de passe
-            if (password !== confirmPassword) {
-                errorMessage.textContent = "Les mots de passe ne correspondent pas";
-                errorMessage.style.display = 'block';
+        // === CONFIGURATION ===
+        const totalSteps = 4;
+        let currentStep = 1;
+        let villeSelectionnee = '';
+        let villeEcoleSelectionnee = '';
+        let villeEntrepriseSelectionnee = '';
+        let rythmeSelectionne = '';
+        let intentChoisi = '';
+
+        // Villes disponibles sur STERNY
+        const VILLES_DISPONIBLES = [
+            'Rennes', 'Nantes', 'Brest', 'Quimper', 'Lorient',
+            'Vannes', 'Saint-Malo', 'Saint-Brieuc', 'Fougères', 'Vitré'
+        ];
+
+        // === ÉTAPE 1 : INTENTION ===
+        document.querySelectorAll('input[name="intent"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                intentChoisi = e.target.value;
+                document.getElementById('btnStep1').disabled = false;
+
+                // Adapter les champs ville selon l'intention
+                const villeUnique = document.getElementById('villeUniqueField');
+                const villeDouble = document.getElementById('villeDoubleField');
+                const villeLabel = document.getElementById('villeLabelText');
+
+                if (intentChoisi === 'recherche') {
+                    villeUnique.style.display = 'block';
+                    villeDouble.style.display = 'none';
+                    villeLabel.textContent = 'Ville où tu cherches';
+                } else if (intentChoisi === 'partage') {
+                    villeUnique.style.display = 'block';
+                    villeDouble.style.display = 'none';
+                    villeLabel.textContent = 'Ville de ton logement';
+                } else {
+                    villeUnique.style.display = 'none';
+                    villeDouble.style.display = 'grid';
+                }
+            });
+        });
+
+        // === RYTHME D'ALTERNANCE ===
+        function updateRythmeOptions() {
+            const type = document.getElementById('typeAlternance').value;
+            const rythmeField = document.getElementById('rythmeField');
+            const customField = document.getElementById('rythmeCustomField');
+            const select = document.getElementById('monRythme');
+
+            select.innerHTML = '<option value="" disabled selected>Sélectionner</option>';
+            select.classList.add('placeholder');
+            rythmeField.style.display = 'none';
+            customField.style.display = 'none';
+            rythmeSelectionne = type;
+
+            if (type === 'symmetric') {
+                rythmeField.style.display = 'block';
+                const options = [
+                    { value: '1-1', label: '1 sem. / 1 sem.' },
+                    { value: '2-2', label: '2 sem. / 2 sem.' },
+                    { value: '3-3', label: '3 sem. / 3 sem.' },
+                    { value: '4-4', label: '4 sem. / 4 sem.' },
+                    { value: '5-5', label: '5 sem. / 5 sem.' },
+                    { value: '6-6', label: '6 sem. / 6 sem.' },
+                    { value: '8-8', label: '8 sem. / 8 sem.' },
+                ];
+                options.forEach(o => {
+                    select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+                });
+            } else if (type === 'asymmetric') {
+                rythmeField.style.display = 'block';
+                const options = [
+                    { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
+                    { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
+                    { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
+                    { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
+                    { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
+                    { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
+                    { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
+                    { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
+                ];
+                options.forEach(o => {
+                    select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+                });
+            } else if (type === 'custom') {
+                customField.style.display = 'block';
+            }
+        }
+
+        // === NAVIGATION STEPS ===
+        const stepTitles = {
+            1: 'Que recherches-tu ?',
+            2: 'Tes informations',
+            3: 'Ton alternance',
+            4: 'Mot de passe'
+        };
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            document.getElementById('stepIndicator').querySelector('span').textContent = step;
+            document.getElementById('progressFill').style.width = (step / totalSteps * 100) + '%';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('mainTitle').textContent = stepTitles[step] || '';
+
+            const isConfirm = step > totalSteps;
+            document.getElementById('stepIndicator').style.display = isConfirm ? 'none' : '';
+            document.querySelector('.progress-bar').style.display = isConfirm ? 'none' : '';
+        }
+
+        function goBackToIntent(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            // Fermer les suggestions
+            document.querySelectorAll('.ville-suggestions').forEach(s => s.style.display = 'none');
+            // Retour à l'étape 1 sans effacer les données
+            currentStep = 1;
+            showStep(1);
+        }
+
+        function nextStep(current) {
+            const error = validateStep(current);
+            if (error) {
+                showError(error);
                 return;
             }
-            
+            currentStep = current + 1;
+            showStep(currentStep);
+        }
+
+        function prevStep(current) {
+            currentStep = current - 1;
+            showStep(currentStep);
+        }
+
+        let errorTimeout = null;
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            // Auto-disparition après 4 secondes
+            if (errorTimeout) clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => {
+                el.style.display = 'none';
+            }, 4000);
+        }
+
+        // === VALIDATION ===
+        function validateStep(step) {
+            if (step === 1) {
+                if (!intentChoisi) return 'Merci d\'indiquer ce que tu recherches pour continuer';
+            }
+
+            if (step === 2) {
+                const nom = document.getElementById('nom').value.trim();
+                const prenom = document.getElementById('prenom').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const telephone = document.getElementById('telephone').value.trim();
+
+                if (!nom) return 'Merci de renseigner ton nom';
+                if (!prenom) return 'Merci de renseigner ton prénom';
+                if (!email) return 'Une adresse email est nécessaire pour créer ton compte';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'L\'adresse email saisie ne semble pas valide';
+                if (!telephone) return 'Merci de renseigner ton numéro de téléphone';
+            }
+
+            if (step === 3) {
+                const typeAlt = document.getElementById('typeAlternance').value;
+                if (!typeAlt) return 'Merci de sélectionner ton type d\'alternance';
+
+                if (typeAlt === 'symmetric' || typeAlt === 'asymmetric') {
+                    const monRythme = document.getElementById('monRythme').value;
+                    if (!monRythme) return 'Merci de préciser ton rythme';
+                } else if (typeAlt === 'custom') {
+                    const customVal = document.getElementById('rythmeCustomInput').value.trim();
+                    if (!customVal) return 'Merci de décrire ton rythme d\'alternance';
+                }
+
+                if (intentChoisi === 'les-deux') {
+                    if (!villeEcoleSelectionnee) return 'Merci de sélectionner la ville où tu proposes ton logement';
+                    if (!villeEntrepriseSelectionnee) return 'Merci de sélectionner la ville où tu cherches un logement';
+                } else {
+                    if (!villeSelectionnee) return 'Merci de sélectionner une ville dans la liste';
+                }
+            }
+
+            if (step === 4) {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                if (!password) return 'Merci de choisir un mot de passe';
+                if (password.length < 6) return 'Le mot de passe doit contenir au moins 6 caractères';
+                if (password !== confirmPassword) return 'Les mots de passe ne correspondent pas';
+            }
+
+            return null;
+        }
+
+        // === AUTOCOMPLETE VILLES ===
+        function initVilleAutocomplete(inputId, suggestionsId, onSelect) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            let selectedValue = '';
+
+            input.addEventListener('input', () => {
+                // Majuscule auto sur la saisie ville
+                const pos = input.selectionStart;
+                input.value = capitalizeWords(input.value);
+                input.setSelectionRange(pos, pos);
+
+                const val = input.value.trim().toLowerCase();
+                selectedValue = '';
+                onSelect('');
+
+                if (val.length < 1) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                const matches = VILLES_DISPONIBLES.filter(v => v.toLowerCase().startsWith(val));
+
+                if (matches.length > 0) {
+                    suggestions.innerHTML = matches.map(v =>
+                        `<div class="ville-suggestion" data-ville="${v}">${v}</div>`
+                    ).join('');
+                    suggestions.style.display = 'block';
+
+                    suggestions.querySelectorAll('.ville-suggestion').forEach(el => {
+                        el.addEventListener('click', () => {
+                            input.value = el.dataset.ville;
+                            selectedValue = el.dataset.ville;
+                            suggestions.style.display = 'none';
+                            onSelect(el.dataset.ville);
+                        });
+                    });
+                } else {
+                    if (val.length >= 2) {
+                        let messageHtml = '<div style="padding: 14px 16px; text-align: center; cursor: default;">' +
+                            '<span style="font-size: 13px; color: #E8622A; font-weight: 600;">STERNY arrive bientôt dans ta ville !</span>';
+
+                        // Si mode "les deux", proposer de changer d'intention
+                        if (intentChoisi === 'les-deux') {
+                            messageHtml += '<div style="margin-top: 8px; font-size: 12px; color: #6B7280; line-height: 1.4;">' +
+                                'Pas de souci, tu peux <a href="#" onclick="goBackToIntent(event)" style="color: #E8622A; font-weight: 600; text-decoration: underline;">revenir en arrière</a> ' +
+                                'sans perdre tes informations.</div>';
+                        }
+                        messageHtml += '</div>';
+                        suggestions.innerHTML = messageHtml;
+                        suggestions.style.display = 'block';
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    suggestions.style.display = 'none';
+                    const val = input.value.trim();
+                    if (val && !selectedValue) {
+                        const exactMatch = VILLES_DISPONIBLES.find(v =>
+                            v.toLowerCase() === val.toLowerCase()
+                        );
+                        if (exactMatch) {
+                            input.value = exactMatch;
+                            selectedValue = exactMatch;
+                            onSelect(exactMatch);
+                        }
+                    }
+                }, 200);
+            });
+        }
+
+        initVilleAutocomplete('villeInput', 'villeSuggestions', (ville) => {
+            villeSelectionnee = ville;
+        });
+
+        initVilleAutocomplete('villeEcoleInput', 'villeEcoleSuggestions', (ville) => {
+            villeEcoleSelectionnee = ville;
+        });
+
+        initVilleAutocomplete('villeEntrepriseInput', 'villeEntrepriseSuggestions', (ville) => {
+            villeEntrepriseSelectionnee = ville;
+        });
+
+        // === MAJUSCULE INTELLIGENTE ===
+        function capitalizeWords(str) {
+            return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, function(match) {
+                return match.toUpperCase();
+            });
+        }
+
+        document.getElementById('nom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        document.getElementById('prenom').addEventListener('input', function(e) {
+            const pos = e.target.selectionStart;
+            e.target.value = capitalizeWords(e.target.value);
+            e.target.setSelectionRange(pos, pos);
+        });
+
+        // === FORMATAGE TÉLÉPHONE ===
+        // Formats internationaux : [longueur indicatif, pattern de groupes]
+        const phoneFormats = {
+            '33':  { len: 10, groups: [2, 2, 2, 2, 2] },       // France : 06 12 34 56 78
+            '34':  { len: 9,  groups: [3, 3, 3] },              // Espagne : 946 262 065
+            '39':  { len: 10, groups: [3, 3, 4] },              // Italie : 312 345 6789
+            '44':  { len: 10, groups: [2, 4, 4] },              // UK : 20 6257 2761
+            '49':  { len: 11, groups: [3, 4, 4] },              // Allemagne : 170 1234 5678
+            '32':  { len: 9,  groups: [3, 3, 3] },              // Belgique : 470 123 456
+            '41':  { len: 9,  groups: [2, 3, 2, 2] },           // Suisse : 79 123 45 67
+            '351': { len: 9,  groups: [3, 3, 3] },              // Portugal : 912 345 678
+            '31':  { len: 9,  groups: [1, 4, 4] },              // Pays-Bas : 6 1234 5678
+            '352': { len: 9,  groups: [3, 3, 3] },              // Luxembourg
+            '353': { len: 9,  groups: [3, 3, 3] },              // Irlande
+            '43':  { len: 10, groups: [3, 3, 4] },              // Autriche
+            '45':  { len: 8,  groups: [2, 2, 2, 2] },           // Danemark : 12 34 56 78
+            '46':  { len: 9,  groups: [3, 3, 3] },              // Suède
+            '47':  { len: 8,  groups: [2, 2, 2, 2] },           // Norvège
+            '48':  { len: 9,  groups: [3, 3, 3] },              // Pologne
+            '30':  { len: 10, groups: [3, 3, 4] },              // Grèce
+            '420': { len: 9,  groups: [3, 3, 3] },              // Tchéquie
+            '40':  { len: 10, groups: [3, 3, 4] },              // Roumanie
+            '1':   { len: 10, groups: [3, 3, 4] },              // USA/Canada
+            '212': { len: 9,  groups: [3, 3, 3] },              // Maroc
+        };
+
+        function detectPrefix(digits) {
+            // Tester d'abord les indicatifs à 3 chiffres, puis 2, puis 1
+            for (let len = 3; len >= 1; len--) {
+                const prefix = digits.substring(0, len);
+                if (phoneFormats[prefix]) return { prefix, format: phoneFormats[prefix] };
+            }
+            return null;
+        }
+
+        function formatInternational(digits) {
+            const detected = detectPrefix(digits);
+            if (!detected) {
+                // Format inconnu : groupes de 3 par défaut
+                const rest = digits;
+                let formatted = '';
+                for (let i = 0; i < rest.length; i++) {
+                    if (i > 0 && i % 3 === 0) formatted += ' ';
+                    formatted += rest[i];
+                }
+                return formatted;
+            }
+
+            const { prefix, format } = detected;
+            const rest = digits.substring(prefix.length);
+            const maxLen = format.len;
+            const trimmed = rest.substring(0, maxLen);
+
+            let formatted = prefix + ' ';
+            let pos = 0;
+            for (let i = 0; i < format.groups.length && pos < trimmed.length; i++) {
+                if (i > 0) formatted += ' ';
+                formatted += trimmed.substring(pos, pos + format.groups[i]);
+                pos += format.groups[i];
+            }
+            return formatted;
+        }
+
+        document.getElementById('telephone').addEventListener('input', function(e) {
+            let val = e.target.value;
+
+            // Numéro international (+)
+            if (val.startsWith('+')) {
+                let digits = val.substring(1).replace(/\D/g, '');
+                if (digits.length > 18) digits = digits.substring(0, 18);
+                e.target.value = digits.length > 0 ? '+' + formatInternational(digits) : '+';
+                return;
+            }
+
+            // Numéro français (commence par 0)
+            let digits = val.replace(/\D/g, '');
+            if (digits.length > 10) digits = digits.substring(0, 10);
+            let formatted = '';
+            for (let i = 0; i < digits.length; i++) {
+                if (i > 0 && i % 2 === 0) formatted += ' ';
+                formatted += digits[i];
+            }
+            e.target.value = formatted;
+        });
+
+        // === CRÉATION DU COMPTE ===
+        async function createAccount() {
+            const error = validateStep(4);
+            if (error) {
+                showError(error);
+                return;
+            }
+
+            // Rate limit : max 3 inscriptions par 5 minutes
+            if (!RateLimiter.check('signup', 3, 300000, { persistent: true })) return;
+
+            const btn = document.getElementById('btnCreer');
+            btn.classList.add('loading');
+            btn.textContent = 'Création en cours...';
+
+            const nom = document.getElementById('nom').value.trim();
+            const prenom = document.getElementById('prenom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const telephone = document.getElementById('telephone').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Récupérer le rythme d'alternance
+            const typeAlt = document.getElementById('typeAlternance').value;
+            let rythmeAlternance = '';
+            if (typeAlt === 'custom') {
+                rythmeAlternance = document.getElementById('rythmeCustomInput').value.trim();
+            } else {
+                const monRythme = document.getElementById('monRythme').value;
+                rythmeAlternance = monRythme; // ex: "2-2", "3-1"
+            }
+
+            // Déterminer le statut selon l'intention choisie
+            const isHote = intentChoisi === 'partage';
+            const statut = isHote ? 'hote' : 'recherche';
+
             try {
-                // 1. Créer l'utilisateur dans Supabase Auth
                 const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password
                 });
-                
+
                 if (authError) throw authError;
-                
-                // 2. Créer le profil utilisateur
+
+                const userData = {
+                    id: authData.user.id,
+                    nom,
+                    prenom,
+                    email,
+                    telephone,
+                    type_user: 'locataire',
+                    type_alternance: typeAlt,
+                    rythme_alternance: rythmeAlternance,
+                    a_logement: isHote
+                };
+
+                if (intentChoisi === 'recherche') {
+                    userData.ville = villeSelectionnee;
+                    userData.ville_ecole = villeSelectionnee;
+                    userData.statut_ville_ecole = 'recherche';
+                } else if (intentChoisi === 'partage') {
+                    userData.ville = villeSelectionnee;
+                    userData.ville_ecole = villeSelectionnee;
+                    userData.statut_ville_ecole = 'hote';
+                } else if (intentChoisi === 'les-deux') {
+                    // villeEcoleSelectionnee = ville où il PROPOSE (hôte)
+                    // villeEntrepriseSelectionnee = ville où il CHERCHE (recherche)
+                    userData.ville_ecole = villeEcoleSelectionnee;
+                    userData.statut_ville_ecole = 'hote';
+                    userData.ville_entreprise = villeEntrepriseSelectionnee;
+                    userData.statut_ville_entreprise = 'recherche';
+                    userData.ville = villeEcoleSelectionnee;
+                    userData.a_logement = true;
+                }
+
                 const { error: profileError } = await supabaseClient
                     .from('users')
-                    .insert([{
-                        id: authData.user.id,
-                        nom: nom,
-                        prenom: prenom,
-                        email: email,
-                        telephone: telephone,
-                        type_user: 'locataire',
-                        ville: ville,
-                        budget_max: budget,
-                        rythme_alternance: rythme,
-                        a_logement: false
-                    }]);
-                
+                    .insert([userData]);
+
                 if (profileError) throw profileError;
-                
-                // Redirection vers la recherche
-                window.location.href = 'recherche.html';
-                
-            } catch (error) {
-                errorMessage.textContent = error.message;
-                errorMessage.style.display = 'block';
+
+                // Afficher confirmation puis rediriger
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                document.getElementById('stepIndicator').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                document.getElementById('mainTitle').style.display = 'none';
+                document.getElementById('confirmationScreen').classList.add('active');
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard-locataire.html';
+                }, 2500);
+
+            } catch (err) {
+                btn.classList.remove('loading');
+                btn.textContent = 'Créer mon compte';
+
+                let msg = err.message;
+                if (msg.includes('already registered')) {
+                    msg = 'Un compte est déjà associé à cet email. Essaie de te connecter.';
+                }
+                showError(msg);
             }
-        });
+        }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

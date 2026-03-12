@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Questions fr&eacute;quentes (FAQ) &mdash; STERNY</title>
+    <meta name="description" content="Retrouvez les réponses aux questions les plus fréquentes sur STERNY : inscription, recherche de logement, paiement, contrat et plus encore.">
+    <link rel="canonical" href="https://sterny.co/faq.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/faq.html">
+    <meta property="og:title" content="FAQ — STERNY">
+    <meta property="og:description" content="Toutes les réponses à vos questions sur STERNY.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-faq {
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 0 20px;
+        }
+
+        .faq-card {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin: 48px auto 80px;
+        }
+
+        .faq-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+
+        .faq-card .subtitle {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 32px;
+        }
+
+        .faq-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #E8622A;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
+        }
+
+        .faq-item {
+            margin-bottom: 16px;
+            border: 1px solid #E8EAF0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 2px 12px rgba(30, 41, 59, 0.06);
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            background: #FAFBFC;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .faq-question:hover {
+            background: #F4F5F7;
+        }
+
+        .faq-question svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+            color: #94A3B8;
+        }
+
+        .faq-item.open .faq-question svg {
+            transform: rotate(180deg);
+            color: #E8622A;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-answer-inner {
+            padding: 0 20px 16px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-card a {
+            color: #E8622A;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .btn-back-top:hover { color: #E8622A; }
+        .btn-back-top svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .faq-contact-box {
+            margin-top: 40px;
+            padding: 24px;
+            background: #FFF7F3;
+            border-radius: 12px;
+            border: 1px solid rgba(232, 98, 42, 0.15);
+            text-align: center;
+        }
+
+        .faq-contact-box p {
+            font-size: 14px;
+            color: #1E293B;
+            margin: 0 0 12px;
+        }
+
+        .faq-contact-box a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #E8622A;
+            color: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .faq-contact-box a:hover { background: #d4571f; }
+
+        @media (max-width: 600px) {
+            .faq-card {
+                padding: 24px 20px;
+                margin: 24px auto 40px;
+            }
+            .faq-card h1 { font-size: 22px; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-faq">
+        <div class="faq-card">
+            <a href="index.html" class="btn-back-top">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+            <h1>Questions fr&eacute;quentes</h1>
+            <p class="subtitle">Tout ce que vous devez savoir sur STERNY</p>
+
+            <!-- SECTION : GÉNÉRAL -->
+            <h2 class="faq-section-title">G&eacute;n&eacute;ral</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Qu&rsquo;est-ce que STERNY ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    STERNY est une plateforme de mise en relation entre <strong>&eacute;tudiants en alternance</strong> et <strong>propri&eacute;taires</strong>. Elle permet aux alternants de trouver un logement adapt&eacute; &agrave; leur rythme (1 semaine entreprise / 1 semaine &eacute;cole, etc.) et aux propri&eacute;taires de louer &agrave; des locataires v&eacute;rifi&eacute;s.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>STERNY est-il gratuit ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    L&rsquo;inscription et la recherche sont <strong>100% gratuites</strong>. Des frais de service s&rsquo;appliquent uniquement lors de la signature d&rsquo;un contrat de location (d&eacute;p&ocirc;t de garantie et premier loyer). Consultez nos <a href="cgv.html">CGV</a> pour le d&eacute;tail.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Dans quelles villes STERNY est-il disponible ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    STERNY est actuellement disponible &agrave; <strong>Rennes, Nantes et Brest</strong>. Nous &eacute;tendrons bient&ocirc;t &agrave; d&rsquo;autres villes &eacute;tudiantes en France.
+                </div></div>
+            </div>
+
+            <!-- SECTION : LOCATAIRES -->
+            <h2 class="faq-section-title">Pour les &eacute;tudiants / locataires</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment m&rsquo;inscrire en tant qu&rsquo;&eacute;tudiant ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Cliquez sur <a href="choix-inscription.html">&laquo; S&rsquo;inscrire &raquo;</a>, choisissez votre profil (&eacute;tudiant qui cherche un logement ou qui souhaite partager le sien), puis compl&eacute;tez votre profil avec vos informations d&rsquo;alternance (ville entreprise, ville &eacute;cole, rythme).
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment fonctionne le matching ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    STERNY analyse votre <strong>rythme d&rsquo;alternance</strong>, vos <strong>villes</strong> (entreprise et &eacute;cole) et votre <strong>budget</strong> pour vous proposer les logements les plus compatibles. Plus votre profil est complet, meilleur sera le matching.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Quels documents dois-je fournir ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Pour constituer votre dossier locataire, vous aurez besoin de : <strong>pi&egrave;ce d&rsquo;identit&eacute;</strong>, <strong>contrat d&rsquo;alternance ou convention</strong>, <strong>justificatif de revenus</strong> (ou garant), et un <strong>RIB</strong>. Tous les documents sont t&eacute;l&eacute;charg&eacute;s de mani&egrave;re s&eacute;curis&eacute;e sur la plateforme.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Je peux annuler ma candidature ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Oui, tant que le propri&eacute;taire n&rsquo;a pas accept&eacute; votre candidature, vous pouvez l&rsquo;annuler depuis votre <strong>dashboard</strong>. Apr&egrave;s acceptation, il faudra suivre la proc&eacute;dure de r&eacute;siliation.
+                </div></div>
+            </div>
+
+            <!-- SECTION : PROPRIÉTAIRES -->
+            <h2 class="faq-section-title">Pour les propri&eacute;taires</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment publier une annonce ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Apr&egrave;s inscription, acc&eacute;dez &agrave; votre <strong>espace propri&eacute;taire</strong> et cliquez sur &laquo; Cr&eacute;er une annonce &raquo;. Renseignez la description, les photos, le loyer, la caution, les &eacute;quipements et les disponibilit&eacute;s. Votre annonce sera visible imm&eacute;diatement.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment sont s&eacute;lectionn&eacute;s les locataires ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Vous recevez les candidatures dans votre dashboard. Vous pouvez consulter le <strong>profil complet</strong> et le <strong>dossier locataire</strong> de chaque candidat, puis accepter ou refuser. C&rsquo;est vous qui choisissez.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Les paiements sont-ils s&eacute;curis&eacute;s ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Oui, tous les paiements passent par <strong>Stripe</strong>, leader mondial du paiement en ligne. Les transactions sont chiffr&eacute;es et s&eacute;curis&eacute;es. STERNY ne stocke jamais vos informations bancaires.
+                </div></div>
+            </div>
+
+            <!-- SECTION : CONTRAT & PAIEMENT -->
+            <h2 class="faq-section-title">Contrat &amp; Paiement</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment se passe la signature du contrat ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Apr&egrave;s l&rsquo;acceptation de la candidature, un <strong>contrat de location</strong> est g&eacute;n&eacute;r&eacute; automatiquement. Les deux parties le signent &eacute;lectroniquement sur la plateforme. Une fois sign&eacute;, le paiement du d&eacute;p&ocirc;t de garantie et du premier loyer est d&eacute;clench&eacute;.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment r&eacute;silier mon contrat ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    Locataire ou propri&eacute;taire, vous pouvez initier une r&eacute;siliation depuis la page de votre <strong>logement actif</strong>. Choisissez un motif, ajoutez un commentaire, et l&rsquo;autre partie sera notifi&eacute;e. La restitution de la caution sera g&eacute;r&eacute;e ensuite.
+                </div></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Comment fonctionne la restitution de caution ?</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-answer"><div class="faq-answer-inner">
+                    En fin de contrat, le propri&eacute;taire initie la restitution en indiquant le montant &eacute;ventuellement retenu (d&eacute;gradations, impay&eacute;s). Le locataire peut accepter ou contester. Le remboursement est effectu&eacute; automatiquement via Stripe.
+                </div></div>
+            </div>
+
+            <!-- BOX CONTACT -->
+            <div class="faq-contact-box">
+                <p>Vous ne trouvez pas la r&eacute;ponse &agrave; votre question ?</p>
+                <a href="contact.html">Contactez-nous</a>
+            </div>
+        </div>
+    </div>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            item.classList.toggle('open');
+        }
+    </script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

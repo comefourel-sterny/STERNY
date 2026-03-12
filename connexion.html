@@ -3,319 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Connexion — STERNY</title>
+    <meta name="description" content="Connectez-vous à votre espace STERNY pour gérer vos candidatures, messages et contrats de location.">
+    <link rel="canonical" href="https://sterny.co/connexion.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/connexion.html">
+    <meta property="og:title" content="Connexion — STERNY">
+    <meta property="og:description" content="Accédez à votre espace STERNY.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="robots" content="noindex, follow">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        body {
-            background: var(--gray-50);
+        html, body {
+            height: 100%;
+            margin: 0;
         }
-        
-        /* CONTAINER CONNEXION */
-        .connexion-container {
-            max-width: 500px;
-            margin: 100px auto;
-            padding: 0 20px;
+
+        .page-connexion {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F4F5F7;
+            padding: 40px 20px;
         }
-        
+
         .connexion-card {
+            max-width: 460px;
+            width: 100%;
+            min-height: 541px;
             background: white;
             border-radius: 20px;
-            padding: 50px 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 2px solid #E0E7FF;
+            padding: 36px 36px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1.5px solid #E8EAF0;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
         }
-        
+
+        .connexion-card form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .connexion-card .submit-btn {
+            margin-top: auto;
+        }
+
         .connexion-card:hover {
-            box-shadow: 0 8px 24px rgba(102,126,234,0.15);
-            border-color: #667eea;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
         }
-        
-        .connexion-card h1 {
-            font-size: 32px;
-            color: var(--gray-900);
-            margin-bottom: 12px;
+
+        /* Header */
+        .connexion-header {
             text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .connexion-header h2 {
+            font-size: 24px;
             font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 6px 0;
         }
-        
-        .connexion-card p {
-            text-align: center;
-            color: var(--gray-600);
-            margin-bottom: 35px;
-            font-size: 16px;
+
+        .connexion-header p {
+            color: #6B7280;
+            font-size: 15px;
+            margin: 0;
         }
-        
-        /* FORMULAIRE */
+
+        /* Form */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 14px;
         }
-        
+
         .form-group label {
             display: block;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 8px;
+            color: #1E293B;
+            margin-bottom: 6px;
         }
-        
+
         .form-group input {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #E0E7FF;
+            padding: 11px 16px;
+            border: 1.5px solid #E8EAF0;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-family: inherit;
             outline: none;
             transition: all 0.3s;
+            box-sizing: border-box;
+            background: #F4F5F7;
+            color: #1E293B;
         }
-        
+
         .form-group input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
         }
-        
+
         .form-group input:hover {
-            border-color: #a5b4fc;
+            border-color: #CBD5E1;
         }
-        
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+
+        .form-group input:-webkit-autofill,
+        .form-group input:-webkit-autofill:hover,
+        .form-group input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
+            -webkit-text-fill-color: #1E293B;
+            border-color: #E8EAF0;
+            transition: background-color 5000s ease-in-out 0s;
         }
-        
-        .submit-btn:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+
+        /* Password wrapper */
+        .password-wrapper {
+            position: relative;
         }
-        
-        .submit-btn:active {
-            transform: translateY(0);
+
+        .password-wrapper input {
+            padding-right: 85px;
         }
-        
-        .submit-btn:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* MESSAGES */
-        .message {
-            padding: 14px 16px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        .message.success {
-            background: #D1FAE5;
-            color: #065F46;
-            border-left: 4px solid #10B981;
-            display: block;
-        }
-        
-        .message.error {
-            background: #FEE2E2;
-            color: #991B1B;
-            border-left: 4px solid #EF4444;
-            display: block;
-        }
-        
-        .signup-link {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px solid var(--gray-100);
-            color: var(--gray-600);
-            font-size: 15px;
-        }
-        
-        .signup-link a {
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .signup-link a:hover {
-            color: var(--secondary);
-            text-decoration: underline;
-        }
-        
-        .forgot-password {
-            text-align: right;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .forgot-password a {
-            color: var(--primary);
-            font-size: 14px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Bouton toggle password */
+
         .toggle-password {
             position: absolute;
-            right: 12px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: transparent;
+            background: none;
             border: none;
             cursor: pointer;
             font-size: 13px;
-            color: var(--gray-500);
-            font-weight: 500;
+            color: #6B7280;
+            font-weight: 600;
             padding: 4px 8px;
             transition: color 0.3s;
+            font-family: inherit;
         }
-        
+
         .toggle-password:hover {
-            color: var(--primary);
+            color: #E8622A;
+        }
+
+        /* Forgot password */
+        .forgot-password {
+            text-align: right;
+            margin-top: 4px;
+            margin-bottom: 18px;
+        }
+
+        .forgot-password a {
+            color: #9CA3AF;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: #E8622A;
+        }
+
+        /* Error message */
+        .error-box {
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+        }
+
+        .error-box.error {
+            display: block;
+            background: rgba(232, 98, 42, 0.08);
+            color: #E8622A;
+        }
+
+        .error-box.success {
+            display: block;
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover {
+            background: #d4571f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Back link */
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 2px solid #F3F4F6;
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .back-link a {
+            color: #E8622A;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
         }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 AlternHome</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
-                <li><a href="connexion.html">Connexion</a></li>
-                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+                <li><a href="connexion.html" class="nav-highlight">Connexion</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- FORMULAIRE CONNEXION -->
-    <div class="connexion-container">
+    <div class="page-connexion">
         <div class="connexion-card">
-            <h1>Connexion</h1>
-            <p>Content de te revoir ! 👋</p>
-            
-            <div id="messageBox" class="message"></div>
-            
-            <!-- FORMULAIRE -->
+            <div class="connexion-header">
+                <h2>Connexion</h2>
+                <p>Content de te revoir !</p>
+            </div>
+
+            <div id="messageBox" class="error-box"></div>
+
             <form id="connexionForm" onsubmit="seConnecter(event)">
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="email" placeholder="ton.email@exemple.com" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Mot de passe</label>
-                    <div style="position: relative;">
-                        <input type="password" id="password" placeholder="Ton mot de passe" required style="padding-right: 85px;">
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Ton mot de passe" required>
                         <button type="button" class="toggle-password" onclick="togglePassword()">
-                           Afficher
+                            Afficher
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="forgot-password">
-                    <a href="#">Mot de passe oublié ?</a>
+                    <a href="mot-de-passe-oublie.html">Mot de passe oublié ?</a>
                 </div>
-                
+
                 <button type="submit" class="submit-btn" id="submitBtn">
                     Se connecter
                 </button>
             </form>
-            
-            <div class="signup-link">
+
+            <div class="back-link">
                 Pas encore de compte ? <a href="choix-inscription.html">Inscris-toi</a>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 AlternHome. Tous droits réservés.</p>
-        </div>
-    </footer>
-
     <script>
-        // CONNEXION
         async function seConnecter(event) {
             event.preventDefault();
-            
+
+            // Rate limit : max 5 tentatives par minute (anti brute-force)
+            if (!RateLimiter.check('login', 5, 60000, { persistent: true })) return;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
             const messageBox = document.getElementById('messageBox');
-            
-            // Désactiver le bouton
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Connexion en cours...';
-            
+
             try {
-                // Connexion avec Supabase
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
-                
+
                 if (error) throw error;
-                
-                // Récupérer le type d'utilisateur
+
                 const { data: userData, error: userError } = await supabaseClient
                     .from('users')
-                    .select('type_user')
+                    .select('type_user, is_admin')
                     .eq('id', data.user.id)
                     .single();
-                
+
                 if (userError) throw userError;
-                
-                // Afficher message de succès
-                messageBox.textContent = '✓ Connexion réussie ! Redirection...';
-                messageBox.className = 'message success';
-                
-                // Redirection selon le type d'utilisateur
+
+                messageBox.textContent = 'Connexion réussie ! Redirection...';
+                messageBox.className = 'error-box success';
+
                 setTimeout(() => {
-                    if (userData.type_user === 'hote') {
-                        window.location.href = 'dashboard-hote.html';
+                    if (userData.is_admin) {
+                        window.location.href = 'dashboard-admin.html';
+                    } else if (userData.type_user === 'proprietaire') {
+                        window.location.href = 'dashboard-proprietaire.html';
                     } else {
                         window.location.href = 'dashboard-locataire.html';
                     }
                 }, 1000);
-                
+
             } catch (error) {
-                // Afficher l'erreur
-                messageBox.textContent = '✗ ' + (error.message === 'Invalid login credentials' 
-                    ? 'Email ou mot de passe incorrect' 
+                messageBox.textContent = (error.message === 'Invalid login credentials'
+                    ? 'Email ou mot de passe incorrect'
                     : error.message);
-                messageBox.className = 'message error';
-                
-                // Réactiver le bouton
+                messageBox.className = 'error-box error';
+
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Se connecter';
             }
         }
-        
-        // Toggle password visibility
+
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleBtn = document.querySelector('.toggle-password');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleBtn.textContent = 'Masquer';
@@ -325,5 +379,7 @@
             }
         }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

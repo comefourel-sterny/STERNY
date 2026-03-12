@@ -3,8 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail du logement - AlternHome</title>
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Détail du logement — STERNY</title>
+    <meta name="description" content="Consultez les détails de ce logement disponible en alternance sur STERNY : photos, description, localisation et conditions.">
+    <link rel="canonical" href="https://sterny.co/logement.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/logement.html">
+    <meta property="og:title" content="Logement en alternance — STERNY">
+    <meta property="og:description" content="Découvrez ce logement disponible pour votre alternance sur STERNY.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
     <link rel="stylesheet" href="style.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
@@ -12,15 +29,30 @@
             background: var(--gray-50);
         }
         
+        /* LIEN RETOUR */
+        .back-link {
+            display: inline-block;
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: var(--accent);
+        }
+
         /* GALERIE PHOTOS */
         .photo-gallery {
             background: white;
-            padding: 30px 20px 20px 20px;
+            padding: 24px 0 20px 0;
         }
         
         .photo-gallery .container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
+            padding: 0 16px;
         }
         
         .main-photo {
@@ -47,63 +79,92 @@
             border-radius: 25px;
             font-size: 14px;
             font-weight: 600;
+            z-index: 5;
         }
-        
+
+        #mainEmoji {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #mainEmoji img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .favorite-btn-large {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            width: 60px;
-            height: 60px;
+            top: 12px;
+            right: 12px;
+            background: #F1F5F9;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
             cursor: pointer;
-            border: 3px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-            z-index: 10;
-            line-height: 1;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            z-index: 20;
             padding: 0;
         }
-        
+
         .favorite-btn-large:hover {
-            transform: scale(1.15);
-            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+            transform: scale(1.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
         }
-        
+
         .favorite-btn-large:active {
-            transform: scale(1.05);
+            transform: scale(0.9);
+        }
+
+        .favorite-btn-large svg {
+            width: 20px;
+            height: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .favorite-btn-large.is-favorite {
+            background: #F1F5F9;
         }
         
         .thumbnail-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            display: flex;
             gap: 12px;
-            transition: all 0.3s;
+            overflow-x: auto;
+            padding: 8px 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
-        
-        /* Responsive pour la grille de 5 photos */
-        @media (max-width: 768px) {
-            .thumbnail-grid {
-                grid-template-columns: repeat(3, 1fr) !important;
-                gap: 10px;
-            }
+
+        .thumbnail-grid::-webkit-scrollbar {
+            height: 4px;
         }
-        
-        @media (max-width: 480px) {
-            .thumbnail-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
+
+        .thumbnail-grid::-webkit-scrollbar-track {
+            background: transparent;
         }
-        
+
+        .thumbnail-grid::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 2px;
+        }
+
         .thumbnail {
             height: 90px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            flex: 0 0 calc((100% - 48px) / 5);
+            background: none;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -112,95 +173,117 @@
             cursor: pointer;
             transition: all 0.3s;
             overflow: hidden;
-            border: 3px solid transparent;
+            border: none;
         }
-        
+
         .thumbnail:hover {
             transform: translateY(-4px);
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-            border-color: var(--primary);
+            border-color: #E8622A;
         }
-        
+
         .thumbnail:active {
             transform: translateY(-2px);
         }
-        
+
         .thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
         
-        /* Miniatures plus petites pour 5 colonnes */
-        @media (min-width: 769px) {
-            .thumbnail-grid[style*="repeat(5"] .thumbnail {
-                height: 90px;
-            }
-        }
-        
         /* CONTENU PRINCIPAL */
         .logement-content {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 960px;
+            margin: 30px auto;
+            padding: 0;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 40px;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
         }
-        
+
         /* INFO PRINCIPALE */
         .main-info {
             background: white;
             border-radius: 16px;
-            padding: 40px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #E2E8F0;
         }
-        
+
         .logement-header {
-            border-bottom: 2px solid var(--gray-100);
-            padding-bottom: 25px;
-            margin-bottom: 30px;
+            border-bottom: 1px solid #F3F4F6;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
         }
-        
-        .logement-header h1 {
-            font-size: 32px;
-            color: var(--gray-900);
-            margin-bottom: 15px;
-        }
-        
-        .logement-location {
-            font-size: 18px;
-            color: var(--gray-600);
+
+        .header-title-row {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
         }
-        
+
+        .logement-header h1 {
+            font-size: 26px;
+            color: #1E293B;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .header-price {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .header-price-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #E8622A;
+        }
+
+        .header-price-period {
+            font-size: 15px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .logement-location {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+
         .quick-info {
             display: flex;
-            gap: 25px;
+            gap: 8px;
             flex-wrap: wrap;
         }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            color: var(--gray-700);
+
+        .info-tag {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+            background: #F1F5F9;
+            padding: 5px 12px;
+            border-radius: 20px;
         }
         
         .section-title {
             font-size: 24px;
             color: var(--gray-900);
-            margin-bottom: 20px;
-            margin-top: 40px;
-            padding-top: 40px;
+            margin-bottom: 4px;
+            margin-top: 20px;
+            padding-top: 20px;
             font-weight: 600;
-            border-top: 2px solid #F3F4F6;
+            border-top: 1px solid #E5E7EB;
         }
-        
-        .section-title:first-of-type {
+
+        #localisationSection .section-title {
             margin-top: 0;
             padding-top: 0;
             border-top: none;
@@ -210,7 +293,7 @@
             font-size: 16px;
             line-height: 1.8;
             color: var(--gray-700);
-            margin-bottom: 30px;
+            margin-bottom: 0;
         }
         
         /* BADGES ET HEADER */
@@ -221,7 +304,7 @@
         }
         
         .badge-type {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             color: white;
             padding: 6px 14px;
             border-radius: 20px;
@@ -281,8 +364,8 @@
             padding: 15px;
             border-radius: 12px;
             margin: 8px 0;
-            border: 2px solid #667eea;
-            border-bottom: 2px solid #667eea;
+            border: 2px solid #1E293B;
+            border-bottom: 2px solid #1E293B;
         }
         
         .info-label {
@@ -299,7 +382,7 @@
         .info-value-highlight {
             font-size: 18px;
             font-weight: 700;
-            color: #667eea;
+            color: #1E293B;
             background: white;
             padding: 6px 12px;
             border-radius: 8px;
@@ -308,7 +391,7 @@
         .info-value-highlight-small {
             font-size: 15px;
             font-weight: 700;
-            color: #667eea;
+            color: #1E293B;
             background: white;
             padding: 5px 10px;
             border-radius: 8px;
@@ -368,9 +451,15 @@
             font-size: 15px;
             color: var(--gray-700);
         }
+
+        .equipement-item svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
         
         .alternance-compatible {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.1), rgba(51, 65, 85, 0.1));
             border: 2px solid var(--primary);
             border-radius: 12px;
             padding: 20px;
@@ -404,34 +493,145 @@
         /* SIDEBAR RÉSERVATION */
         .booking-sidebar {
             position: sticky;
-            top: 100px;
+            top: 90px;
             height: fit-content;
         }
-        
+
         .booking-card {
             background: white;
             border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #E2E8F0;
         }
-        
-        .price-section {
-            text-align: center;
-            border-bottom: 2px solid var(--gray-100);
-            padding-bottom: 25px;
-            margin-bottom: 25px;
+
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #F3F4F6;
         }
-        
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
         .price-large {
-            font-size: 42px;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
+            color: #E8622A;
         }
-        
-        .price-period {
-            font-size: 16px;
+        .price-suffix {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--gray-500);
+        }
+
+        /* Dates sidebar */
+        .sidebar-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-date-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-date-label {
+            font-size: 14px;
             color: var(--gray-600);
+        }
+
+        .sidebar-date-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        /* Boutons sidebar */
+        .btn-postuler {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-postuler:hover {
+            background: linear-gradient(135deg, #E8622A 0%, #e55a2b 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+
+        .btn-contacter {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #1E293B;
+            border: 2px solid #1E293B;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-contacter:hover {
+            background: #F1F5F9;
+        }
+
+        /* Hôte sidebar */
+        .sidebar-host-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .host-avatar-small {
+            width: 44px;
+            height: 44px;
+            background: #1E293B;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .host-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .host-status-text {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        /* Calendrier toggle */
+        .calendar-toggle-btn {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+            font-family: inherit;
+        }
+
+        .calendar-toggle-btn:hover {
+            color: #E8622A;
         }
         
         .contact-form {
@@ -489,48 +689,7 @@
         .contact-btn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .host-info {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid var(--gray-100);
-            text-align: center;
-        }
-        
-        .host-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 15px;
-        }
-        
-        .host-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 5px;
-        }
-        
-        .host-status {
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-        
-        .host-quote {
-            font-size: 14px;
-            color: var(--gray-600);
-            font-style: italic;
-            margin-top: 10px;
-            padding: 15px;
-            background: var(--gray-50);
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.4);
         }
         
         /* MESSAGE DE CONFIRMATION */
@@ -549,208 +708,178 @@
             border: 2px solid var(--success);
         }
         
-        /* BOUTON POSTULER */
-        .btn-postuler {
-            width: 100%;
-            padding: 18px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-            margin-bottom: 15px;
-        }
         
-        .btn-postuler:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
-        }
-        
-        .btn-postuler:active {
-            transform: translateY(0);
-        }
-        
-        .btn-postuler:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* NOUVEAUX BOUTONS D'ACTION ÉGAUX */
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .btn-action {
-            padding: 14px 20px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            text-align: center;
-        }
-        
-        .btn-action-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-action-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-action-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .btn-action-secondary:hover {
-            background: #F0F4FF;
-        }
-        
-        .btn-action:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* PRIX EN BAS */
-        .price-section-bottom {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid #F3F4F6;
-            text-align: center;
-        }
-        
-        /* CALENDRIER DISPONIBILITÉS */
+        /* CALENDRIER DISPONIBILITÉS — même style que creer-annonce */
         .calendar-container {
-            margin-bottom: 15px;
+            background: white;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
-        
-        .calendar-month {
-            margin-bottom: 20px;
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
-        
+
+        .calendar-nav-btn {
+            width: 32px;
+            height: 32px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+        }
+
+        .calendar-nav-btn:hover {
+            border-color: #1E293B;
+            background: #F8FAFC;
+            color: #1E293B;
+        }
+
         .calendar-month-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 10px;
+            color: #1F2937;
             text-align: center;
         }
-        
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9CA3AF;
+            padding: 4px 0;
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
         }
-        
-        .calendar-day-header {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--gray-500);
-            text-align: center;
-            padding: 4px 0;
-        }
-        
+
         .calendar-day {
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            border-radius: 6px;
+            font-size: 13px;
+            border-radius: 8px;
             font-weight: 500;
+            color: #1F2937;
             transition: all 0.2s;
+            cursor: pointer;
         }
-        
+
         .calendar-day.empty {
-            background: transparent;
+            visibility: hidden;
         }
-        
+
         .calendar-day.host-available {
-            background: white;
-            color: #667eea;
-            border: 1px solid #E5E7EB;
+            background: transparent;
+            color: #1F2937;
+            cursor: pointer;
         }
-        
+
         .calendar-day.host-available:hover {
-            background: #F9FAFB;
-            transform: scale(1.1);
-            border-color: #667eea;
+            background: #F3F4F6;
         }
-        
+
         .calendar-day.user-selected {
-            background: #D1FAE5;
-            color: #065F46;
-            border: 2px solid #10B981;
+            background: linear-gradient(135deg, #E8622A 0%, #FF5722 100%);
+            color: white;
             font-weight: 700;
         }
-        
-        .calendar-day.unavailable {
-            background: #EEF2FF;
-            color: #9CA3AF;
-            cursor: not-allowed;
+
+        .calendar-day.user-selected.past {
+            background: #FFF4ED;
+            color: #C2410C;
+            font-weight: 600;
         }
-        
+
+        .calendar-day.week-hover:not(.user-selected) {
+            background: #FFF4ED;
+            color: #9A3412;
+        }
+
+        .calendar-day.host-busy {
+            background: rgba(30, 41, 59, 0.18);
+            color: rgba(30, 41, 59, 0.65);
+            cursor: default;
+        }
+
+        .calendar-day.host-busy.past {
+            background: rgba(30, 41, 59, 0.10);
+            color: rgba(30, 41, 59, 0.4);
+        }
+
+        .calendar-day.past-available {
+            color: #9CA3AF;
+            cursor: default;
+            opacity: 0.7;
+        }
+
         .calendar-day.today {
             font-weight: 700;
-            box-shadow: 0 0 0 2px #667eea;
+            box-shadow: inset 0 0 0 2px #1E293B;
         }
-        
+
         .calendar-legend {
             display: flex;
-            gap: 20px;
+            gap: 14px;
             justify-content: center;
-            padding-top: 15px;
+            padding-top: 14px;
+            margin-top: 4px;
             border-top: 1px solid #F3F4F6;
         }
-        
+
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--gray-700);
+            gap: 6px;
+            font-size: 11px;
+            color: #6B7280;
             font-weight: 500;
         }
-        
+
         .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
         }
-        
+
         .legend-color.host-available {
             background: white;
             border: 1px solid #E5E7EB;
         }
-        
-        .legend-color.user-selected {
-            background: #D1FAE5;
-            border: 2px solid #10B981;
+
+        .legend-color.host-busy {
+            background: rgba(30, 41, 59, 0.18);
         }
-        
-        .legend-color.unavailable {
-            background: #EEF2FF;
+
+        .legend-color.user-selected {
+            background: linear-gradient(135deg, #E8622A 0%, #FF5722 100%);
         }
         
         .btn-contact-secondary {
             background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            color: #1E293B;
+            border: 2px solid #1E293B;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
@@ -760,7 +889,7 @@
         }
         
         .btn-contact-secondary:hover {
-            background: #667eea;
+            background: #1E293B;
             color: white;
         }
         
@@ -849,7 +978,7 @@
         }
         
         .modal .form-group textarea:focus {
-            border-color: #667eea;
+            border-color: #1E293B;
         }
         
         /* RESPONSIVE */
@@ -868,11 +997,7 @@
                 height: 300px;
                 font-size: 80px;
             }
-            
-            .thumbnail-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
+
             .main-info {
                 padding: 25px;
             }
@@ -889,55 +1014,172 @@
                 padding: 25px;
             }
         }
+        /* CARTE LEAFLET */
+        #mapLogement {
+            width: 100%;
+            height: 350px;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .school-search-wrapper {
+            position: relative;
+            margin-top: 4px;
+        }
+
+        .school-search-input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-left: 40px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .school-search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .school-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            color: var(--gray-500);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .school-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            display: none;
+        }
+
+        .school-suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1E293B;
+            border-bottom: 1px solid #F3F4F6;
+            transition: background 0.15s;
+        }
+
+        .school-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .school-suggestion-item:hover {
+            background: #F1F5F9;
+        }
+
+        .school-suggestion-item small {
+            display: block;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .travel-times {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 6px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .travel-mode {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1 1 0;
+            min-width: 0;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .travel-mode:hover { background: #F1F5F9; }
+
+        .travel-mode.active {
+            border-color: #E8622A;
+            background: #FFF7ED;
+        }
+
+        .travel-icon { font-size: 15px; line-height: 1; }
+
+        .travel-duration {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .travel-mode.active .travel-duration { color: #E8622A; }
+
+        .travel-label { display: none; }
     </style>
+    <script src="rate-limiter.js"></script>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
     <div class="container">
-        <a href="index.html" class="logo">🏠 AlternHome</a>
+        <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+        <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
         <ul>
             <li><a href="index.html">Accueil</a></li>
-            <li><a href="#" id="monEspaceLink">Mon espace</a></li>
+            <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             <li><a href="#">Comment ça marche</a></li>
             <li><a href="#">Devenir hôte</a></li>
         </ul>
     </div>
 </nav>
 
-    <!-- BOUTON RETOUR -->
-    <div class="container" style="max-width: 900px; margin: 20px auto; padding: 0 20px;">
-        <button onclick="window.history.back()" style="
-            background: white;
-            border: 2px solid #E5E7EB;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        " onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='white'">
-            ← Retour
-        </button>
-    </div>
-
     <!-- GALERIE PHOTOS -->
     <section class="photo-gallery">
         <div class="container">
+            <a href="javascript:window.history.back()" class="back-link">← Retour aux résultats</a>
             <div class="main-photo" id="mainPhoto">
                 <span class="photo-badge" id="badge">Nouveau</span>
-                <button class="favorite-btn-large" onclick="toggleFavorite()">🤍</button>
-                <span id="mainEmoji">🏢</span>
+                <button class="favorite-btn-large" id="favoriBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1E293B"><path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Zm0-108q96-86 158-147.5t98-107q36-45.5 50-81t14-70.5q0-60-40-100t-100-40q-47 0-87 26.5T518-680h-76q-15-41-55-67.5T300-774q-60 0-100 40t-40 100q0 35 14 70.5t50 81q36 45.5 98 107T480-228Zm0-273Z"/></svg>
+                </button>
+                <span id="mainEmoji"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg></span>
             </div>
             <div class="thumbnail-grid">
-                <div class="thumbnail">🏢</div>
-                <div class="thumbnail">🛏️</div>
-                <div class="thumbnail">🍳</div>
-                <div class="thumbnail">🚿</div>
+                <div class="thumbnail"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg></div>
+                <div class="thumbnail"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg></div>
+                <div class="thumbnail"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg></div>
+                <div class="thumbnail"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg></div>
             </div>
         </div>
     </section>
@@ -947,28 +1189,59 @@
         <!-- INFO PRINCIPALE -->
         <div class="main-info">
             <div class="logement-header">
-                <div class="header-badges">
-                    <span class="badge-type" id="logementType">Studio</span>
-                    <span class="badge-verified">✓ Vérifié</span>
+                <div class="header-title-row">
+                    <h1 id="logementTitre">Studio meublé centre-ville</h1>
                 </div>
-                <h1 id="logementTitre">Studio meublé centre-ville</h1>
+                <div class="logement-location" id="logementLocation" style="display: none;"></div>
                 <div class="quick-info">
-                    <div class="info-item">
-                        <strong id="logementSurface">25m²</strong>
-                    </div>
-                    <div class="info-item">
-                        <strong id="logementPieces">1 pièce</strong>
-                    </div>
-                    <div class="info-item">
-                        <strong id="logementEtage">2ème étage</strong>
-                    </div>
+                    <div class="info-tag badge-type" id="logementType">Studio</div>
+                    <div class="info-tag" id="logementSurface">25m²</div>
+                    <div class="info-tag" id="logementPieces">1 pièce</div>
+                    <div class="info-tag" id="logementEtage">2ème étage</div>
                 </div>
             </div>
 
-            <!-- LOCALISATION EN PREMIER -->
+            <!-- LOCALISATION + CARTE (priorité alternants : proximité école) -->
             <div id="localisationSection" style="display: none;">
                 <h2 class="section-title">Localisation</h2>
-                <p class="description-text" id="quartierText"></p>
+
+                <!-- Champ recherche école -->
+                <div class="school-search-wrapper">
+                    <span class="school-search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" class="school-search-input" id="schoolSearchInput"
+                           placeholder="Recherche ton école, université, CFA..." autocomplete="off">
+                    <div class="school-suggestions" id="schoolSuggestions"></div>
+                </div>
+
+                <!-- Temps de trajet -->
+                <div class="travel-times" id="travelTimes" style="display: none;">
+                    <div class="travel-mode active" data-profile="driving" onclick="switchTravelMode(this)">
+                        <span class="travel-icon"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#64748B"><path d="M240-200v40q0 17-11.5 28.5T200-120h-40q-17 0-28.5-11.5T120-160v-320l84-240q6-18 21.5-29t34.5-11h440q19 0 34.5 11t21.5 29l84 240v320q0 17-11.5 28.5T800-120h-40q-17 0-28.5-11.5T720-160v-40H240Zm-8-360h496l-42-120H274l-42 120Zm-32 80v200-200Zm100 160q25 0 42.5-17.5T360-380q0-25-17.5-42.5T300-440q-25 0-42.5 17.5T240-380q0 25 17.5 42.5T300-320Zm360 0q25 0 42.5-17.5T720-380q0-25-17.5-42.5T660-440q-25 0-42.5 17.5T600-380q0 25 17.5 42.5T660-320Zm-460 40h560v-200H200v200Z"/></svg></span>
+                        <span class="travel-duration" id="travelDriving">—</span>
+                    </div>
+                    <div class="travel-mode" data-profile="transit" onclick="switchTravelMode(this)">
+                        <span class="travel-icon"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#64748B"><path d="M297.5-422.5Q280-405 280-380t17.5 42.5Q315-320 340-320t42.5-17.5Q400-355 400-380t-17.5-42.5Q365-440 340-440t-42.5 17.5Zm532.5-93Q880-471 880-400v160q0 33-23.5 56.5T800-160l80 80H520l80-80q-33 0-56.5-23.5T520-240v-160q0-71 50-115.5T700-560q80 0 130 44.5ZM679-291q-9 9-9 21t9 21q9 9 21 9t21-9q9-9 9-21t-9-21q-9-9-21-9t-21 9Zm-91-149q-4 9-6 19t-2 21v40h240v-40q0-11-2-21t-6-19H588ZM480-880q172 0 246 37t74 123v96q-18-6-38-9.5t-42-5.5v-41H240v120h260q-16 17-27.5 37T453-480H240v120q0 33 23.5 56.5T320-280h120v80H320v40q0 17-11.5 28.5T280-120h-40q-17 0-28.5-11.5T200-160v-82q-18-20-29-44.5T160-340v-380q0-83 77-121.5T480-880Zm2 120h224-448 224Zm-224 0h448q-15-17-64.5-28.5T482-800q-107 0-156.5 12.5T258-760Zm195 280Z"/></svg></span>
+                        <span class="travel-duration" id="travelTransit">—</span>
+                    </div>
+                    <div class="travel-mode" data-profile="cycling" onclick="switchTravelMode(this)">
+                        <span class="travel-icon"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#64748B"><path d="M200-160q-85 0-142.5-57.5T0-360q0-85 58.5-142.5T200-560q77 0 129.5 46T396-400h26l-72-200h-70v-80h200v80h-44l14 40h192l-58-160H480v-80h104q26 0 46.5 14t29.5 38l68 186h32q83 0 141.5 58.5T960-362q0 84-58 143t-142 59q-72 0-126.5-45T564-320H396q-14 69-68 114.5T200-160Zm0-80q41 0 70.5-22.5T312-320H200v-80h112q-12-36-41.5-58T200-480q-51 0-85.5 34.5T80-360q0 50 34.5 85t85.5 35Zm308-160h56q5-23 13.5-43t22.5-37H478l30 80Zm252 160q51 0 85.5-35t34.5-85q0-51-34.5-85.5T760-480h-4l40 106-76 28-38-106q-20 17-31 40t-11 52q0 50 34.5 85t85.5 35ZM196-360Zm564 0Z"/></svg></span>
+                        <span class="travel-duration" id="travelCycling">—</span>
+                    </div>
+                    <div class="travel-mode" data-profile="walking" onclick="switchTravelMode(this)">
+                        <span class="travel-icon"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#64748B"><path d="m280-40 112-564-72 28v136h-80v-188l202-86q14-6 29.5-7t29.5 4q14 5 26.5 14t20.5 23l40 64q26 42 70.5 69T760-520v80q-70 0-125-29t-94-74l-25 123 84 80v300h-80v-260l-84-64-72 324h-84Zm203.5-723.5Q460-787 460-820t23.5-56.5Q507-900 540-900t56.5 23.5Q620-853 620-820t-23.5 56.5Q573-740 540-740t-56.5-23.5Z"/></svg></span>
+                        <span class="travel-duration" id="travelWalking">—</span>
+                    </div>
+                </div>
+
+                <!-- Mini-carte -->
+                <div id="mapLogement"></div>
+                <div style="background: #E8EDF4; border-left: 3px solid #1E293B; border-radius: 8px; padding: 8px 14px; margin-top: 12px;">
+                    <div style="font-size: 12px; color: #0F172A; font-weight: 500; line-height: 1.3;">
+                        L'adresse exacte est communiquée après signature du bail.
+                    </div>
+                </div>
             </div>
 
             <!-- DESCRIPTION -->
@@ -986,100 +1259,81 @@
             </div>
 
             <!-- RÈGLES DU LOGEMENT -->
-            <div>
+            <div id="reglesSection" style="display: none;">
                 <h2 class="section-title">Règles du logement</h2>
-                <div class="regles-list">
-                    <div class="regle-item">
-                        <span class="regle-icon allowed">✓</span>
-                        <span>Animaux acceptés</span>
-                    </div>
-                    <div class="regle-item">
-                        <span class="regle-icon not-allowed">✗</span>
-                        <span>Non-fumeur</span>
-                    </div>
-                    <div class="regle-item">
-                        <span class="regle-icon allowed">✓</span>
-                        <span>Fêtes autorisées (avec modération)</span>
-                    </div>
-                </div>
+                <div class="regles-list" id="reglesContent"></div>
             </div>
         </div>
 
         <!-- SIDEBAR RÉSERVATION -->
         <aside class="booking-sidebar">
             <div class="booking-card">
-                <!-- INFO PROPRIÉTAIRE EN HAUT -->
-                <div class="host-info" id="hostInfo" style="display: none;">
-                    <div class="host-avatar"></div>
-                    <div class="host-name" id="hostName">Chargement...</div>
+                <!-- PRIX -->
+                <div class="sidebar-section">
+                    <div class="price-row">
+                        <span class="price-large" id="logementPrix">450€</span>
+                        <span class="price-suffix">/semaine charges comprises</span>
+                    </div>
                 </div>
 
-                <!-- BOUTONS DE TAILLE ÉGALE -->
-                <div class="action-buttons">
-                    <!-- BOUTON POSTULER -->
-                    <button onclick="ouvrirModalCandidature()" class="btn-action btn-action-primary" id="btnPostuler">
+                <!-- DATES CLÉS -->
+                <div class="sidebar-section sidebar-dates">
+                    <div class="sidebar-date-row">
+                        <span class="sidebar-date-label">Disponible du</span>
+                        <span class="sidebar-date-value" id="dateDebut">01/09/2026</span>
+                    </div>
+                    <div class="sidebar-date-row">
+                        <span class="sidebar-date-label">Jusqu'au</span>
+                        <span class="sidebar-date-value" id="dateFin">31/08/2027</span>
+                    </div>
+                    <div class="sidebar-date-row">
+                        <span class="sidebar-date-label">Durée minimum</span>
+                        <span class="sidebar-date-value" id="dureeMin">3 mois</span>
+                    </div>
+                </div>
+
+                <!-- BOUTONS -->
+                <div class="sidebar-section" style="border-bottom: none;">
+                    <button onclick="ouvrirModalCandidature()" class="btn-postuler" id="btnPostuler">
                         Postuler
                     </button>
 
-                    <!-- BOUTON CONTACTER -->
-                    <button onclick="ouvrirModalMessage()" class="btn-action btn-action-secondary">
-                        Contacter
-                    </button>
-                </div>
-
-                <!-- MESSAGE SI DÉJÀ CANDIDATÉ -->
-                <div id="dejaCandidateMessage" style="display: none; padding: 15px; background: #dcfce7; border-radius: 12px; text-align: center; color: #166534; font-weight: 600; margin-top: 15px; font-size: 14px;">
-                    ✅ Tu as déjà postulé à ce logement
-                </div>
-
-                <!-- PRIX EN BAS -->
-                <div class="price-section-bottom">
-                    <div class="price-large" id="logementPrix">450€</div>
-                    <div class="price-period">par mois (charges comprises)</div>
-                </div>
-            </div>
-
-            <!-- CALENDRIER DISPONIBILITÉS EN PREMIER -->
-            <div class="booking-card" style="margin-top: 20px;">
-                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Disponibilités</h3>
-                <div class="calendar-container" id="calendarContainer">
-                    <!-- Le calendrier sera généré ici par JavaScript -->
-                </div>
-                <div class="calendar-legend">
-                    <div class="legend-item">
-                        <span class="legend-color host-available"></span>
-                        <span class="legend-text">Disponible</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color user-selected"></span>
-                        <span class="legend-text">Votre sélection</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color unavailable"></span>
-                        <span class="legend-text">Non disponible</span>
+                    <!-- MESSAGE SI DÉJÀ CANDIDATÉ -->
+                    <div id="dejaCandidateMessage" style="display: none; padding: 12px; background: #dcfce7; border-radius: 10px; text-align: center; color: #166534; font-weight: 600; margin-top: 10px; font-size: 13px;">
+                        Tu as déjà postulé
                     </div>
                 </div>
-            </div>
-            
-            <!-- DATE DE FIN EN VALEUR (SÉPARÉE) -->
-            <div class="booking-card" style="margin-top: 20px;">
-                <div class="info-row highlighted-row">
-                    <span class="info-label">Disponible jusqu'au</span>
-                    <span class="info-value-highlight-small" id="dateFin">31/08/2026</span>
-                </div>
-            </div>
 
-            <!-- INFOS CLÉS EN BAS -->
-            <div class="booking-card" style="margin-top: 20px;">
-                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">Informations clés</h3>
-                <div class="info-grid">
-                    <div class="info-row">
-                        <span class="info-label">Disponible du</span>
-                        <span class="info-value" id="dateDebut">01/03/2026</span>
+                <!-- HÔTE -->
+                <div class="sidebar-section sidebar-host" id="hostInfo" style="display: none;">
+                    <div class="sidebar-host-row">
+                        <div class="host-avatar-small"></div>
+                        <div>
+                            <div class="host-name" id="hostName">Chargement...</div>
+                            <div class="host-status-text">Propriétaire</div>
+                        </div>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Durée minimum</span>
-                        <span class="info-value" id="dureeMin">3 mois</span>
+                </div>
+
+                <!-- CALENDRIER -->
+                <div class="sidebar-section" style="border-bottom: none; padding-bottom: 10px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #1E293B; margin-bottom: 10px;">Disponibilités</div>
+                    <div id="calendarAccordion">
+                        <div class="calendar-container" id="calendarContainer"></div>
+                        <div class="calendar-legend">
+                            <div class="legend-item">
+                                <span class="legend-color host-available"></span>
+                                <span class="legend-text">Disponible</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color host-busy"></span>
+                                <span class="legend-text">Occupé</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color user-selected"></span>
+                                <span class="legend-text">Sélectionné</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1087,13 +1341,13 @@
     </div>
 
     <!-- MODAL CANDIDATURE -->
-    <div id="modalCandidature" class="modal" style="display: none;">
+    <div id="modalCandidature" class="modal" role="dialog" aria-modal="true" aria-label="Postuler à ce logement" style="display: none;">
         <div class="modal-content">
-            <span class="modal-close" onclick="fermerModalCandidature()">&times;</span>
+            <span class="modal-close" aria-label="Fermer" onclick="fermerModalCandidature()">&times;</span>
             <h2 style="margin-bottom: 10px;">Postuler à ce logement</h2>
             <p style="color: #6b7280; margin-bottom: 25px;">Envoie un message au propriétaire pour te présenter</p>
             
-            <form id="formCandidature" onsubmit="envoyerCandidature(event)">
+            <form id="formCandidature" aria-label="Formulaire de candidature" onsubmit="envoyerCandidature(event)">
                 <div class="form-group">
                     <label>Ton message de motivation</label>
                     <textarea id="messageCandidature" placeholder="Bonjour, je suis étudiant en alternance à Lyon et je recherche un logement du 1er mars au 31 août. Ton annonce m'intéresse beaucoup..." required minlength="50" rows="6"></textarea>
@@ -1110,9 +1364,9 @@
     </div>
 
     <!-- MODAL MESSAGE -->
-    <div id="modalMessage" class="modal" style="display: none;">
+    <div id="modalMessage" class="modal" role="dialog" aria-modal="true" aria-label="Envoyer un message" style="display: none;">
         <div class="modal-content">
-            <span class="modal-close" onclick="fermerModalMessage()">&times;</span>
+            <span class="modal-close" aria-label="Fermer" onclick="fermerModalMessage()">&times;</span>
             <h2 style="margin-bottom: 10px;">Contacter le propriétaire</h2>
             <p style="color: #6b7280; margin-bottom: 25px;">Envoie un message direct</p>
             
@@ -1131,15 +1385,67 @@
         </div>
     </div>
 
+    <!-- Partage + Signaler -->
+    <div style="text-align:center;padding:20px;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:20px;">
+        <a onclick="partagerAnnonce()" style="color:#6B7280;font-size:12px;cursor:pointer;text-decoration:none;font-weight:500;transition:color 0.2s;display:inline-flex;align-items:center;gap:4px;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='#6B7280'">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            Partager
+        </a>
+        <span style="color:#E8EAF0;">|</span>
+        <a onclick="ouvrirSignalement()" style="color:#9CA3AF;font-size:12px;cursor:pointer;text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#9CA3AF'">Signaler cette annonce</a>
+    </div>
+
+    <!-- Modale signalement -->
+    <div id="modalSignalement" role="dialog" aria-modal="true" aria-label="Signaler cette annonce" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99998;align-items:center;justify-content:center;padding:20px;">
+        <div style="background:#fff;border-radius:20px;padding:32px;max-width:420px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,0.2);">
+            <h3 style="font-size:20px;font-weight:700;color:#1E293B;margin:0 0 16px;text-align:center;">Signaler cette annonce</h3>
+            <div id="signalMsg" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;margin-bottom:12px;display:none;"></div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:5px;">Motif</label>
+                <select id="signalMotif" style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;background:#F4F5F7;">
+                    <option value="">-- Choisir un motif --</option>
+                    <option value="fausse_annonce">Fausse annonce</option>
+                    <option value="photos_trompeuses">Photos trompeuses</option>
+                    <option value="prix_incorrect">Prix incorrect</option>
+                    <option value="comportement_suspect">Comportement suspect du propriétaire</option>
+                    <option value="discrimination">Discrimination</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:5px;">Description (optionnel)</label>
+                <textarea id="signalDesc" rows="3" placeholder="Décris le problème..." style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;resize:vertical;"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+                <button onclick="fermerSignalement()" style="flex:1;padding:11px;background:#fff;color:#1E293B;border:1.5px solid #E8EAF0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Annuler</button>
+                <button onclick="envoyerSignalement()" id="btnSignal" style="flex:1;padding:11px;background:#EF4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Signaler</button>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
-    <footer>
+    <footer role="contentinfo">
         <div class="container">
-            <p>&copy; 2026 AlternHome - Tous droits réservés</p>
-            <p><a href="mailto:contact@alternhome.fr">contact@alternhome.fr</a></p>
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="mailto:contact@sterny.co">contact@sterny.co</a>
+            </p>
         </div>
     </footer>
 
     <script>
+        // ─── UTILITAIRE SÉCURITÉ ───
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Récupérer l'ID du logement depuis l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const logementId = urlParams.get('id');
@@ -1179,20 +1485,39 @@
                 
             } catch (error) {
                 console.error('Erreur:', error);
-                alert('❌ Erreur de chargement');
-                window.location.href = 'recherche.html';
+                alert('❌ Erreur de chargement: ' + error.message);
             }
         }
         
         // Afficher les informations
         function afficherLogement(logement) {
-            console.log('🔍 DEBUG - Données logement complètes:', logement);
-            console.log('📅 DEBUG - disponibilites_debut:', logement.disponibilites_debut);
-            console.log('📅 DEBUG - disponibilites_pattern:', logement.disponibilites_pattern);
-            
             document.getElementById('logementTitre').textContent = logement.titre;
             document.getElementById('logementSurface').textContent = logement.surface + 'm²';
-            document.getElementById('logementPrix').textContent = logement.prix + '€';
+            document.getElementById('logementPrix').textContent = logement.prix + '€/sem';
+
+            // Type de logement
+            if (logement.type_logement) {
+                const typeLabel = logement.type_logement.charAt(0).toUpperCase() + logement.type_logement.slice(1);
+                document.getElementById('logementType').textContent = typeLabel;
+            }
+
+            // Location (ville + adresse)
+            if (logement.ville) {
+                const locationEl = document.getElementById('logementLocation');
+                const villeLabel = logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1);
+                locationEl.textContent = villeLabel;
+                locationEl.style.display = 'block';
+            }
+
+            // Étage
+            if (logement.etage) {
+                document.getElementById('logementEtage').textContent = logement.etage;
+            }
+
+            // Pièces
+            if (logement.pieces) {
+                document.getElementById('logementPieces').textContent = logement.pieces + (logement.pieces > 1 ? ' pièces' : ' pièce');
+            }
             
             // Afficher les photos dans la galerie
             const mainPhoto = document.getElementById('mainPhoto');
@@ -1201,41 +1526,39 @@
             
             if (logement.photos && logement.photos.length > 0) {
                 // Afficher la première photo en grand
-                mainEmojiDiv.innerHTML = `<img src="${logement.photos[0]}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="${logement.titre}">`;
+                const mainImg = document.createElement('img');
+                mainImg.src = logement.photos[0];
+                mainImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 12px;';
+                mainImg.alt = logement.titre || 'Photo du logement';
+                mainEmojiDiv.innerHTML = '';
+                mainEmojiDiv.appendChild(mainImg);
                 
                 // Afficher SEULEMENT les photos disponibles en miniatures (pas de cases vides)
-                thumbnailGrid.innerHTML = logement.photos.map((photoUrl, index) => {
-                    return `
-                        <div class="thumbnail" onclick="changerPhoto('${photoUrl}')" style="cursor: pointer;">
-                            <img src="${photoUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="Photo ${index + 1}">
-                        </div>
-                    `;
-                }).join('');
-                
-                // Ajuster le nombre de colonnes en fonction du nombre de photos
-                if (logement.photos.length === 1) {
-                    thumbnailGrid.style.gridTemplateColumns = '1fr';
-                } else if (logement.photos.length === 2) {
-                    thumbnailGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-                } else if (logement.photos.length === 3) {
-                    thumbnailGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                } else if (logement.photos.length === 4) {
-                    thumbnailGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-                } else {
-                    // 5 photos ou plus : afficher 5 colonnes (optimisé pour le standard)
-                    thumbnailGrid.style.gridTemplateColumns = 'repeat(5, 1fr)';
-                }
+                thumbnailGrid.innerHTML = '';
+                logement.photos.forEach((photoUrl, index) => {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'thumbnail';
+                    thumb.style.cursor = 'pointer';
+                    thumb.addEventListener('click', () => changerPhoto(photoUrl));
+                    const thumbImg = document.createElement('img');
+                    thumbImg.src = photoUrl;
+                    thumbImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 12px;';
+                    thumbImg.alt = `Photo ${index + 1}`;
+                    thumb.appendChild(thumbImg);
+                    thumbnailGrid.appendChild(thumb);
+                });
                 
             } else {
-                // Pas de photos : afficher emoji
-                mainEmojiDiv.textContent = '🏠';
+                // Pas de photos : afficher SVG placeholder
+                mainEmojiDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>';
+                const svgThumb = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="white"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>';
                 thumbnailGrid.innerHTML = `
-                    <div class="thumbnail">🏢</div>
-                    <div class="thumbnail">🛏️</div>
-                    <div class="thumbnail">🍳</div>
-                    <div class="thumbnail">🚿</div>
+                    <div class="thumbnail">${svgThumb}</div>
+                    <div class="thumbnail">${svgThumb}</div>
+                    <div class="thumbnail">${svgThumb}</div>
+                    <div class="thumbnail">${svgThumb}</div>
                 `;
-                thumbnailGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                // Flex s'adapte automatiquement
             }
             
             // Badge si nouvelle annonce (moins de 7 jours)
@@ -1257,68 +1580,172 @@
                 descDiv.textContent = 'Aucune description disponible.';
             }
             
-            // Quartier (si renseigné)
+            // Quartier + carte (adresse masquée jusqu'à signature du bail)
             if (logement.adresse) {
                 document.getElementById('localisationSection').style.display = 'block';
-                document.getElementById('quartierText').textContent = logement.adresse + ', ' + logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1);
+                const villeLabel = logement.ville ? logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1) : '';
+
+                // Initialiser la carte si coordonnées disponibles
+                if (logement.latitude && logement.longitude) {
+                    initMap(logement.latitude, logement.longitude, logement.titre || 'Logement', villeLabel);
+                }
             }
             
             // Équipements (si renseignés)
             if (logement.equipements && logement.equipements.length > 0) {
                 document.getElementById('equipementsSection').style.display = 'block';
                 const grid = document.getElementById('equipementsGrid');
-                
-                // Mapping des équipements avec emojis
-                const equipementsEmojis = {
-                    'Wifi': '📶 Wifi',
-                    'Cuisine équipée': '🍳 Cuisine équipée',
-                    'Lave-linge': '👕 Lave-linge',
-                    'Parking': '🚗 Parking',
-                    'Balcon/Terrasse': '🌿 Balcon/Terrasse',
-                    'Meublé': '🛋️ Meublé complet',
-                    'Cave': '📦 Cave'
+
+                const C = '#1E293B'; // Couleur des icônes
+
+                // SVG Material Symbols inline — sobres et pro
+                const EQUIPEMENT_SVGS = {
+                    'wifi': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M409-149q-29-29-29-71t29-71q29-29 71-29t71 29q29 29 29 71t-29 71q-29 29-71 29t-71-29ZM254-346l-84-86q59-59 138.5-93.5T480-560q92 0 171.5 35T790-430l-84 84q-44-44-102-69t-124-25q-66 0-124 25t-102 69ZM84-516 0-600q92-94 215-147t265-53q142 0 265 53t215 147l-84 84q-77-77-178.5-120.5T480-680q-116 0-217.5 43.5T84-516Z"/></svg>`,
+                    'cuisine équipée': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M160-160v-320H80v-80h160q-33 0-56.5-23.5T160-640v-160h240v160q0 33-23.5 56.5T320-560h320v-120q0-17-11.5-28.5T600-720q-17 0-28.5 11.5T560-680h-80q0-50 35-85t85-35q50 0 85 35t35 85v120h160v80h-80v320H160Zm80-480h80v-80h-80v80Zm0 400h200v-240H240v240Zm280 0h200v-240H520v240ZM240-640h80-80Zm0 400h480-480Z"/></svg>`,
+                    'lave-linge': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-80q-33 0-56.5-23.5T200-160v-640q0-33 23.5-56.5T280-880h400q33 0 56.5 23.5T760-800v640q0 33-23.5 56.5T680-80H280Zm0-80h400v-640H280v640Zm200-120q75 0 127.5-52.5T660-460q0-75-52.5-127.5T480-640q-75 0-127.5 52.5T300-460q0 75 52.5 127.5T480-280Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm-120-320q17 0 28.5-11.5T400-720q0-17-11.5-28.5T360-760q-17 0-28.5 11.5T320-720q0 17 11.5 28.5T360-680Zm120 0q17 0 28.5-11.5T520-720q0-17-11.5-28.5T480-760q-17 0-28.5 11.5T440-720q0 17 11.5 28.5T480-680ZM280-160h400-400Z"/></svg>`,
+                    'lave-vaisselle': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M200-80q-33 0-56.5-23.5T120-160v-640q0-33 23.5-56.5T200-880h560q33 0 56.5 23.5T840-800v640q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm120-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm320 0q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM360-680q17 0 28.5-11.5T400-720q0-17-11.5-28.5T360-760q-17 0-28.5 11.5T320-720q0 17 11.5 28.5T360-680Zm120 0q17 0 28.5-11.5T520-720q0-17-11.5-28.5T480-760q-17 0-28.5 11.5T440-720q0 17 11.5 28.5T480-680Z"/></svg>`,
+                    'parking': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M240-120v-720h280q100 0 170 70t70 170q0 100-70 170t-170 70H360v240H240Zm120-360h160q42 0 71-29t29-71q0-42-29-71t-71-29H360v200Z"/></svg>`,
+                    'balcon/terrasse': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M120-120v-200h80v120h240v-120h80v120h240v-120h80v200H120Zm0-280v-80q0-116 68-204t172-124v-32q0-25 17.5-42.5T420-900q11 0 21 3.5t19 10.5l-60 60 40 40 80-80q14 17 22 37t12 43l-74 74-40-40 34-34q-50-8-95.5 18.5T310-700H200v-80h42q35-40 83.5-60t94.5-20q46 0 94.5 20T598-780H840v80H720q12 32 16 65.5t0 67.5l-80-80v-53q0-8-1-15.5t-3-15.5l-52 52-40-40 72-72q-18-17-40.5-25.5T544-804l-72 72 78 78-52 52-78-78-72 72q0 83 53.5 148T520-389v109h-80v-68q-71-18-125.5-66T236-480H200v80H120Zm520 0v-80h120v-80h-42q5-20 7-40t2-40h80q0 20-2 40t-7 40h42v80h-80q-18 44-48 80.5T640-340v-60Z"/></svg>`,
+                    'meublé': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M200-160v-80h40v-160q0-51 28-94.5T340-560v-40q0-42 29-71t71-29h80q42 0 71 29t29 71v40q44 22 72 65.5t28 94.5v160h40v80H200Zm240-400h80v-40q0-8-6-14t-14-6h-40q-8 0-14 6t-6 14v40Zm-120 320h320v-160q0-33-23.5-56.5T560-480H400q-33 0-56.5 23.5T320-400v160Z"/></svg>`,
+                    'meublé complet': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M200-160v-80h40v-160q0-51 28-94.5T340-560v-40q0-42 29-71t71-29h80q42 0 71 29t29 71v40q44 22 72 65.5t28 94.5v160h40v80H200Zm240-400h80v-40q0-8-6-14t-14-6h-40q-8 0-14 6t-6 14v40Zm-120 320h320v-160q0-33-23.5-56.5T560-480H400q-33 0-56.5 23.5T320-400v160Z"/></svg>`,
+                    'cave': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M120-120v-80h80v-560q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v560h80v80H120Zm160-80h400v-560H280v560Zm80-80h240v-80H360v80Zm0-160h240v-80H360v80Zm0-160h240v-80H360v80ZM280-200h400-400Z"/></svg>`,
+                    'lit': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M80-200v-240q0-27 11-49t29-39v-112q0-50 35-85t85-35h160q23 0 43 8.5t37 23.5q17-15 37-23.5t43-8.5h160q50 0 85 35t35 85v112q18 17 29 39t11 49v240h-80v-80H160v80H80Zm440-360h240v-80q0-17-11.5-28.5T720-680H560q-17 0-28.5 11.5T520-640v80Zm-320 0h240v-80q0-17-11.5-28.5T400-680H240q-17 0-28.5 11.5T200-640v80Zm-40 200h640v-80q0-17-11.5-28.5T760-480H200q-17 0-28.5 11.5T160-440v80Zm640 0H160h640Z"/></svg>`,
+                    'garage': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M120-120v-560l360-200 360 200v560H640v-320H320v320H120Zm200 0h80v-80h160v80h80v-240H320v240Zm-80-320h480L480-620 240-440Zm0 0 240-180-240 180Z"/></svg>`,
+                    'jardin': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M440-120v-264q-51 8-97.5-8T256-440q-36-30-56-73.5T180-600q0-90 57-156t143-80q-3-21-1-41.5t9-39.5q35 16 60.5 44.5T485-812q20-22 44-38t52-26q11 20 15 41t1 42q86 14 142.5 80T796-560q0 43-19.5 86.5T722-400q-39 40-86.5 56T536-336v216h-96Z"/></svg>`,
+                    'piscine': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M80-160v-66q43-6 80-24t74-52q37 34 74 52t80 24q43-6 80-24t74-52q37 34 74 52t80 24q43-6 80-24t74-52q37 34 74.5 52T960-226v66q-51-2-93.5-22.5T791-232q-33 29-75.5 49.5T622-160q-51-2-93.5-22.5T453-232q-33 29-75.5 49.5T284-160q-51-2-93.5-22.5T115-232q-33 29-75.5 49.5T-4-160H80Zm0-200v-66q43-6 80-24t74-52q37 34 74 52t80 24q43-6 80-24t74-52q37 34 74 52t80 24v-240h-80v160q-51-2-93.5-22.5T547-432q-33 29-75.5 49.5T378-360q-51-2-93.5-22.5T209-432q-33 29-75.5 49.5T40-360v-120q0-50 35-85t85-35h160v-160h80v160h160v-240h80v80h80q50 0 85 35t35 85v200q43-6 80-24t74-52v118q-33 29-75.5 49.5T784-360q-51-2-93.5-22.5T615-432q-33 29-75.5 49.5T446-360q-51-2-93.5-22.5T277-432q-33 29-75.5 49.5T108-360H80Z"/></svg>`,
+                    'ascenseur': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-240h120v-200h40l40 80h200v-280H520l-40 80H280v320Zm-80 160q-33 0-56.5-23.5T120-160v-640q0-33 23.5-56.5T200-880h560q33 0 56.5 23.5T840-800v640q0 33-23.5 56.5T760-80H200Zm0-80h560v-640H200v640Zm0 0v-640 640Z"/></svg>`,
+                    'climatisation': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M440-80v-166L310-116l-56-56 186-188v-80h-80L172-252l-56-56 130-132H80v-80h166L116-650l56-56 188 186h80v-80L252-788l56-56 132 130V-880h80v166l130-130 56 56-186 188v80h80l188-188 56 56-130 132h166v80H714l130 130-56 56-188-186h-80v80l188 188-56 56-132-130v166h-80Z"/></svg>`,
+                    'chauffage': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M480-80q-83 0-141.5-58.5T280-280q0-48 21-89.5t59-70.5v-320q0-50 35-85t85-35q50 0 85 35t35 85v320q38 29 59 70.5t21 89.5q0 83-58.5 141.5T480-80Zm-40-440h80v-240q0-17-11.5-28.5T480-800q-17 0-28.5 11.5T440-760v240Z"/></svg>`,
+                    'sèche-linge': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-80q-33 0-56.5-23.5T200-160v-640q0-33 23.5-56.5T280-880h400q33 0 56.5 23.5T760-800v640q0 33-23.5 56.5T680-80H280Zm200-200q75 0 127.5-52.5T660-460q0-75-52.5-127.5T480-640q-75 0-127.5 52.5T300-460q0 75 52.5 127.5T480-280Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Z"/></svg>`,
+                    'télévision': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M160-200q-33 0-56.5-23.5T80-280v-480q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v480q0 33-23.5 56.5T800-200H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"/></svg>`,
+                    'tv': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M160-200q-33 0-56.5-23.5T80-280v-480q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v480q0 33-23.5 56.5T800-200H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"/></svg>`,
+                    'micro-ondes': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M120-160q-33 0-56.5-23.5T40-240v-480q0-33 23.5-56.5T120-800h720q33 0 56.5 23.5T920-720v480q0 33-23.5 56.5T840-160H120Zm0-80h520v-480H120v480Zm600 0h120v-480H720v480Zm-80-240q0-50 35-85t85-35v240q-50 0-85-35t-35-85ZM120-240h520-520Z"/></svg>`,
+                    'bureau': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M160-120v-80h640v80H160Zm160-160v-280H200q-33 0-56.5-23.5T120-640v-200h80v200h120v-200h80v200h120v-200h80v200h120v-200h80v200q0 33-23.5 56.5T720-560H600v280h-80v-280H400v280h-80Z"/></svg>`,
+                    'fibre': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M409-149q-29-29-29-71t29-71q29-29 71-29t71 29q29 29 29 71t-29 71q-29 29-71 29t-71-29ZM254-346l-84-86q59-59 138.5-93.5T480-560q92 0 171.5 35T790-430l-84 84q-44-44-102-69t-124-25q-66 0-124 25t-102 69ZM84-516 0-600q92-94 215-147t265-53q142 0 265 53t215 147l-84 84q-77-77-178.5-120.5T480-680q-116 0-217.5 43.5T84-516Z"/></svg>`,
+                    'douche': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-200q-17 0-28.5-11.5T240-240q0-17 11.5-28.5T280-280q17 0 28.5 11.5T320-240q0 17-11.5 28.5T280-200Zm0-160q-17 0-28.5-11.5T240-400q0-17 11.5-28.5T280-440q17 0 28.5 11.5T320-400q0 17-11.5 28.5T280-360Zm160 160q-17 0-28.5-11.5T400-240q0-17 11.5-28.5T440-280q17 0 28.5 11.5T480-240q0 17-11.5 28.5T440-200Zm0-160q-17 0-28.5-11.5T400-400q0-17 11.5-28.5T440-440q17 0 28.5 11.5T480-400q0 17-11.5 28.5T440-360Zm160 160q-17 0-28.5-11.5T560-240q0-17 11.5-28.5T600-280q17 0 28.5 11.5T640-240q0 17-11.5 28.5T600-200Zm0-160q-17 0-28.5-11.5T560-400q0-17 11.5-28.5T600-440q17 0 28.5 11.5T640-400q0 17-11.5 28.5T600-360ZM280-80q-33 0-56.5-23.5T200-160v-320h-40q-17 0-28.5-11.5T120-520q0-17 11.5-28.5T160-560h480q17 0 28.5 11.5T680-520q0 17-11.5 28.5T640-480h-40v320q0 33-23.5 56.5T520-80H280Zm400-480v-240q0-17 11.5-28.5T720-840q17 0 28.5 11.5T760-800v240h-80Z"/></svg>`,
+                    'baignoire': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M200-200v-27q-33-12-56.5-42T120-332v-228h80v120h640v-280q0-17-11.5-28.5T800-760q-17 0-28.5 11.5T760-720h-80q0-50 35-85t85-35q50 0 85 35t35 85v388q0 33-23.5 63T840-227v27h-80v-40H280v40h-80Zm-80-120h720v-120H120v120Zm0 0h720-720Z"/></svg>`,
+                    'réfrigérateur': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-80q-33 0-56.5-23.5T200-160v-640q0-33 23.5-56.5T280-880h400q33 0 56.5 23.5T760-800v640q0 33-23.5 56.5T680-80H280Zm0-440h400v-280H280v280Zm0 360h400v-280H280v280Zm40-320h80v-120h-80v120Zm0 320h80v-120h-80v120Z"/></svg>`,
+                    'frigo': `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="M280-80q-33 0-56.5-23.5T200-160v-640q0-33 23.5-56.5T280-880h400q33 0 56.5 23.5T760-800v640q0 33-23.5 56.5T680-80H280Zm0-440h400v-280H280v280Zm0 360h400v-280H280v280Zm40-320h80v-120h-80v120Zm0 320h80v-120h-80v120Z"/></svg>`
                 };
-                
+
+                // Icône fallback (check circle) sobre
+                const FALLBACK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="${C}"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>`;
+
+                // Mots-clés de fallback pour les équipements "Autre"
+                const KEYWORD_SVGS = [
+                    { keywords: ['wifi', 'internet', 'fibre', 'réseau'], key: 'wifi' },
+                    { keywords: ['cuisine', 'cuisson', 'plaque'], key: 'cuisine équipée' },
+                    { keywords: ['lave-linge', 'linge', 'buanderie', 'machine à laver'], key: 'lave-linge' },
+                    { keywords: ['vaisselle'], key: 'lave-vaisselle' },
+                    { keywords: ['parking', 'garage', 'voiture', 'stationnement'], key: 'parking' },
+                    { keywords: ['balcon', 'terrasse', 'extérieur', 'loggia'], key: 'balcon/terrasse' },
+                    { keywords: ['meublé', 'mobilier', 'meubl'], key: 'meublé' },
+                    { keywords: ['cave', 'stockage', 'grenier'], key: 'cave' },
+                    { keywords: ['jardin', 'pelouse'], key: 'jardin' },
+                    { keywords: ['piscine', 'bassin'], key: 'piscine' },
+                    { keywords: ['ascenseur'], key: 'ascenseur' },
+                    { keywords: ['clim', 'ventil'], key: 'climatisation' },
+                    { keywords: ['chauff', 'radiateur'], key: 'chauffage' },
+                    { keywords: ['sèche', 'séchage'], key: 'sèche-linge' },
+                    { keywords: ['tv', 'télé', 'écran'], key: 'tv' },
+                    { keywords: ['micro-onde'], key: 'micro-ondes' },
+                    { keywords: ['bureau', 'desk', 'travail'], key: 'bureau' },
+                    { keywords: ['lit', 'couchage', 'matelas'], key: 'lit' },
+                    { keywords: ['douche', 'salle d'], key: 'douche' },
+                    { keywords: ['bain', 'baignoire'], key: 'baignoire' },
+                    { keywords: ['frigo', 'réfrig', 'congél'], key: 'réfrigérateur' },
+                    { keywords: ['café', 'cafet', 'nespresso', 'expresso'], key: 'cuisine équipée' },
+                    { keywords: ['four'], key: 'cuisine équipée' },
+                    { keywords: ['rangement', 'placard', 'étagère'], key: 'cave' }
+                ];
+
+                function getEquipementSvg(equipName) {
+                    const nameLower = equipName.toLowerCase().replace(/^autre:\s*/i, '').trim();
+                    // 1. Match exact
+                    if (EQUIPEMENT_SVGS[nameLower]) return EQUIPEMENT_SVGS[nameLower];
+                    // 2. Match par mots-clés
+                    for (const rule of KEYWORD_SVGS) {
+                        if (rule.keywords.some(kw => nameLower.includes(kw))) {
+                            return EQUIPEMENT_SVGS[rule.key] || FALLBACK_ICON;
+                        }
+                    }
+                    // 3. Fallback
+                    return FALLBACK_ICON;
+                }
+
+                function getEquipementLabel(equipName) {
+                    return equipName.replace(/^Autre:\s*/i, '');
+                }
+
                 grid.innerHTML = logement.equipements.map(equip => {
-                    const label = equipementsEmojis[equip] || equip;
-                    return `<div class="equipement-item">${label}</div>`;
+                    const svg = getEquipementSvg(equip);
+                    const label = escapeHtml(getEquipementLabel(equip));
+                    return `<div class="equipement-item">${svg} ${label}</div>`;
                 }).join('');
             }
-            
-            // Afficher les dates de disponibilité
-            if (logement.disponibilites_debut) {
-                const dateDebut = new Date(logement.disponibilites_debut);
-                document.getElementById('dateDebut').textContent = dateDebut.toLocaleDateString('fr-FR');
+
+            // Règles du logement (texte libre depuis Supabase)
+            if (logement.regles && logement.regles.length > 0 && logement.regles[0].trim()) {
+                document.getElementById('reglesSection').style.display = 'block';
+                const reglesContent = document.getElementById('reglesContent');
+                const texte = logement.regles[0];
+                reglesContent.innerHTML = `<div style="font-size: 15px; color: var(--gray-700); line-height: 1.7; white-space: pre-line;">${escapeHtml(texte)}</div>`;
             }
-            
-            // Calculer la date de fin depuis disponibilites_pattern
-            let dateFin = null;
-            if (logement.disponibilites_pattern && logement.disponibilites_pattern.length > 0) {
-                // Prendre la dernière date du pattern
-                const derniereDate = logement.disponibilites_pattern[logement.disponibilites_pattern.length - 1];
-                dateFin = new Date(derniereDate);
-                document.getElementById('dateFin').textContent = dateFin.toLocaleDateString('fr-FR');
-            } else if (logement.disponibilites_debut) {
-                // Fallback: +6 mois si pas de pattern
-                dateFin = new Date(logement.disponibilites_debut);
-                dateFin.setMonth(dateFin.getMonth() + 6);
-                document.getElementById('dateFin').textContent = dateFin.toLocaleDateString('fr-FR');
+
+            // Helper pour parser une date "YYYY-MM-DD" sans décalage timezone
+            function parseLocalDate(str) {
+                if (!str) return null;
+                const parts = str.split('-');
+                if (parts.length !== 3) return null;
+                const [y, m, d] = parts.map(Number);
+                return new Date(y, m - 1, d);
             }
-            
-            // Générer le calendrier avec le pattern
-            if (logement.disponibilites_debut && logement.disponibilites_pattern) {
-                const dateDebutStr = logement.disponibilites_debut;
-                const dateFinStr = dateFin ? dateFin.toISOString().split('T')[0] : null;
+
+            // Dates de disponibilité
+            try {
                 const pattern = logement.disponibilites_pattern;
-                
-                if (dateFinStr) {
-                    genererCalendrier(dateDebutStr, dateFinStr, pattern);
+                const hasPattern = Array.isArray(pattern) && pattern.length > 0;
+                const hasDebut = !!logement.disponibilites_debut;
+
+                // Afficher date début
+                if (hasDebut) {
+                    const dateDebut = parseLocalDate(logement.disponibilites_debut);
+                    if (dateDebut) {
+                        const elDebut = document.getElementById('dateDebut');
+                        if (elDebut) elDebut.textContent = dateDebut.toLocaleDateString('fr-FR');
+                    }
                 }
-            } else {
-                // Pas de dates trouvées
-                console.error('❌ ERREUR: Aucune date de disponibilité trouvée dans l\'annonce');
-                console.log('Colonnes disponibles:', Object.keys(logement));
-                // Ne pas générer de calendrier
+
+                // Calculer et afficher date fin
+                let dateFinStr = null;
+                if (hasPattern) {
+                    const sorted = [...pattern].sort();
+                    dateFinStr = sorted[sorted.length - 1];
+                    const dateFin = parseLocalDate(dateFinStr);
+                    if (dateFin) {
+                        const elFin = document.getElementById('dateFin');
+                        if (elFin) elFin.textContent = dateFin.toLocaleDateString('fr-FR');
+                    }
+                } else if (hasDebut) {
+                    const dateFin = parseLocalDate(logement.disponibilites_debut);
+                    if (dateFin) {
+                        dateFin.setMonth(dateFin.getMonth() + 6);
+                        dateFinStr = formatDateLocal(dateFin);
+                        const elFin = document.getElementById('dateFin');
+                        if (elFin) elFin.textContent = dateFin.toLocaleDateString('fr-FR');
+                    }
+                }
+
+                // Générer le calendrier
+                if (hasDebut) {
+                    genererCalendrier(
+                        logement.disponibilites_debut,
+                        dateFinStr || logement.disponibilites_debut,
+                        hasPattern ? pattern : []
+                    );
+                }
+            } catch (calErr) {
+                console.error('❌ Erreur calendrier:', calErr);
             }
             
             // Afficher la durée minimum
@@ -1330,7 +1757,12 @@
         // Fonction pour changer l'image principale au clic sur une miniature
         function changerPhoto(photoUrl) {
             const mainEmojiDiv = document.getElementById('mainEmoji');
-            mainEmojiDiv.innerHTML = `<img src="${photoUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="Photo">`;
+            const img = document.createElement('img');
+            img.src = photoUrl;
+            img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 12px;';
+            img.alt = 'Photo';
+            mainEmojiDiv.innerHTML = '';
+            mainEmojiDiv.appendChild(img);
         }
         
         // Charger les infos du propriétaire
@@ -1353,82 +1785,90 @@
         
         // Générer le calendrier de disponibilités
         let currentCalendarMonth = new Date();
-        let selectedDates = {
-            debut: null,
-            fin: null
-        };
+        let selectedWeeks = new Set(); // Set de clés "YYYY-MM-DD" du lundi de chaque semaine sélectionnée
         let hostDates = {
             debut: null,
             fin: null
         };
         let hostAvailableDates = []; // Tableau des dates disponibles depuis disponibilites_pattern
+
+        // Utilitaire : trouver le lundi de la semaine d'une date
+        function getLundi(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            const day = d.getDay();
+            const diff = day === 0 ? -6 : 1 - day; // Si dimanche, reculer de 6 jours
+            d.setDate(d.getDate() + diff);
+            return d;
+        }
+
+        // Utilitaire : formater une date en "YYYY-MM-DD" sans timezone UTC
+        function formatDateLocal(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        // Utilitaire : obtenir les 7 jours d'une semaine à partir du lundi
+        function getSemaineDates(lundi) {
+            const dates = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(lundi);
+                d.setDate(d.getDate() + i);
+                dates.push(formatDateLocal(d));
+            }
+            return dates;
+        }
+
+        // Vérifier si un jour fait partie d'une semaine sélectionnée
+        function isJourSelectionne(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const lundi = getLundi(date);
+            const lundiStr = formatDateLocal(lundi);
+            return selectedWeeks.has(lundiStr);
+        }
         
         function genererCalendrier(dateDebut, dateFin, availableDatesPattern = []) {
-            console.log('Génération calendrier:', dateDebut, dateFin);
-            console.log('Pattern disponibilités:', availableDatesPattern.length, 'dates');
-            
             const container = document.getElementById('calendarContainer');
             if (!container) {
                 console.error('Container calendrier introuvable');
                 return;
             }
             
-            // Stocker les dates de l'hôte
-            hostDates.debut = new Date(dateDebut);
-            hostDates.fin = new Date(dateFin);
+            // Stocker les dates de l'hôte (parser en local, pas UTC)
+            const [dy, dm, dd] = dateDebut.split('-').map(Number);
+            hostDates.debut = new Date(dy, dm - 1, dd);
+            const [fy, fm, fd] = dateFin.split('-').map(Number);
+            hostDates.fin = new Date(fy, fm - 1, fd);
             
             // Stocker le pattern comme Set pour recherche rapide
             hostAvailableDates = new Set(availableDatesPattern);
-            console.log('📅 Dates disponibles stockées:', hostAvailableDates.size);
-            
             // Initialiser au mois ACTUEL, pas au mois de début de dispo
             const today = new Date();
             currentCalendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
             
             // Charger les dates de recherche de l'utilisateur depuis l'URL
             const urlParams = new URLSearchParams(window.location.search);
-            const dateDebutParam = urlParams.get('date_debut');
-            const dateFinParam = urlParams.get('date_fin');
-            
-            console.log('🔍 DEBUG - URL params date_debut:', dateDebutParam);
-            console.log('🔍 DEBUG - URL params date_fin:', dateFinParam);
-            
-            // IMPORTANT: Ne charger QUE si les deux paramètres existent ET ne sont pas vides
-            if (dateDebutParam && dateFinParam && dateDebutParam.trim() !== '' && dateFinParam.trim() !== '') {
+            const datesParam = urlParams.get('dates');
+
+            // Si des dates sont passées en URL (liste complète depuis recherche),
+            // sélectionner uniquement les semaines correspondantes
+            if (datesParam && datesParam.trim() !== '') {
                 try {
-                    // Convertir DD/MM/YYYY vers YYYY-MM-DD si nécessaire
-                    let dateDebutISO = dateDebutParam;
-                    let dateFinISO = dateFinParam;
-                    
-                    // Si format français DD/MM/YYYY, convertir
-                    if (dateDebutParam.includes('/')) {
-                        const [jour, mois, annee] = dateDebutParam.split('/');
-                        dateDebutISO = `${annee}-${mois.padStart(2, '0')}-${jour.padStart(2, '0')}`;
-                    }
-                    if (dateFinParam.includes('/')) {
-                        const [jour, mois, annee] = dateFinParam.split('/');
-                        dateFinISO = `${annee}-${mois.padStart(2, '0')}-${jour.padStart(2, '0')}`;
-                    }
-                    
-                    selectedDates.debut = new Date(dateDebutISO);
-                    selectedDates.fin = new Date(dateFinISO);
-                    
-                    // Vérifier que les dates sont valides
-                    if (isNaN(selectedDates.debut.getTime()) || isNaN(selectedDates.fin.getTime())) {
-                        console.warn('⚠️ Dates invalides dans URL, ignorées');
-                        selectedDates.debut = null;
-                        selectedDates.fin = null;
-                    } else {
-                        console.log('✅ Date début sélectionnée:', selectedDates.debut);
-                        console.log('✅ Date fin sélectionnée:', selectedDates.fin);
-                    }
+                    const userDates = new Set(datesParam.split(','));
+
+                    // Intersection : dates communes entre utilisateur et hôte
+                    hostAvailableDates.forEach(dateStr => {
+                        if (userDates.has(dateStr)) {
+                            const [py, pm, pd] = dateStr.split('-').map(Number);
+                            const d = new Date(py, pm - 1, pd);
+                            const lundi = getLundi(d);
+                            selectedWeeks.add(formatDateLocal(lundi));
+                        }
+                    });
+                    // Si aucune intersection, les rythmes sont incompatibles
                 } catch (e) {
                     console.error('❌ Erreur parsing dates:', e);
-                    selectedDates.debut = null;
-                    selectedDates.fin = null;
                 }
-            } else {
-                console.log('ℹ️ Pas de dates de recherche dans l\'URL');
             }
             
             afficherMoisCalendrier();
@@ -1440,47 +1880,50 @@
             
             // Navigation avec flèches
             const navDiv = document.createElement('div');
-            navDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
-            
+            navDiv.className = 'calendar-nav';
+
             const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = '←';
-            prevBtn.style.cssText = 'background: #F3F4F6; border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; color: #667eea;';
+            prevBtn.className = 'calendar-nav-btn';
+            prevBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
             prevBtn.onclick = () => {
                 currentCalendarMonth.setMonth(currentCalendarMonth.getMonth() - 1);
                 afficherMoisCalendrier();
             };
-            
+
             const monthTitle = document.createElement('div');
             monthTitle.className = 'calendar-month-title';
-            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
                                'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
             monthTitle.textContent = monthNames[currentCalendarMonth.getMonth()] + ' ' + currentCalendarMonth.getFullYear();
-            
+
             const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '→';
-            nextBtn.style.cssText = 'background: #F3F4F6; border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; color: #667eea;';
+            nextBtn.className = 'calendar-nav-btn';
+            nextBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
             nextBtn.onclick = () => {
                 currentCalendarMonth.setMonth(currentCalendarMonth.getMonth() + 1);
                 afficherMoisCalendrier();
             };
-            
+
             navDiv.appendChild(prevBtn);
             navDiv.appendChild(monthTitle);
             navDiv.appendChild(nextBtn);
             container.appendChild(navDiv);
             
-            // Grille du calendrier
-            const grid = document.createElement('div');
-            grid.className = 'calendar-grid';
-            
-            // Headers des jours
+            // En-têtes des jours de la semaine
+            const weekdaysDiv = document.createElement('div');
+            weekdaysDiv.className = 'calendar-weekdays';
             const dayNames = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
             dayNames.forEach(day => {
                 const header = document.createElement('div');
-                header.className = 'calendar-day-header';
+                header.className = 'calendar-weekday';
                 header.textContent = day;
-                grid.appendChild(header);
+                weekdaysDiv.appendChild(header);
             });
+            container.appendChild(weekdaysDiv);
+
+            // Grille des jours
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
             
             // Premier jour du mois
             const firstDay = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth(), 1);
@@ -1498,227 +1941,112 @@
             const daysInMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth() + 1, 0).getDate();
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayDate = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth(), day);
-                dayDate.setHours(0, 0, 0, 0); // Important: retirer les heures pour la comparaison
-                
+                dayDate.setHours(0, 0, 0, 0);
+
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 dayDiv.textContent = day;
-                
-                // Vérifier si le jour est passé
+
                 const isPast = dayDate < today;
-                
-                // Vérifier si le jour est dans le pattern de disponibilités de l'hôte (blanc)
-                const dayDateStr = dayDate.toISOString().split('T')[0];
-                const isHostAvailable = hostAvailableDates.has(dayDateStr) && !isPast;
-                
-                // DEBUG pour le premier jour du mois
-                if (day === 1) {
-                    console.log(`📅 Mois ${currentCalendarMonth.getMonth() + 1}/${currentCalendarMonth.getFullYear()}:`, {
-                        dayDate: dayDateStr,
-                        isInPattern: hostAvailableDates.has(dayDateStr),
-                        isAvailable: isHostAvailable,
-                        isPast: isPast,
-                        patternSize: hostAvailableDates.size
-                    });
-                }
-                
-                // Vérifier si le jour est sélectionné par l'utilisateur (vert)
-                // IMPORTANT: Ne vérifier que si les dates sont bien définies
-                let isUserSelected = false;
-                if (selectedDates.debut && selectedDates.fin) {
-                    const userDebutCompare = new Date(selectedDates.debut.getFullYear(), selectedDates.debut.getMonth(), selectedDates.debut.getDate());
-                    const userFinCompare = new Date(selectedDates.fin.getFullYear(), selectedDates.fin.getMonth(), selectedDates.fin.getDate());
-                    isUserSelected = dayDate >= userDebutCompare && dayDate <= userFinCompare;
-                    
-                    // DEBUG pour voir ce qui se passe
-                    if (day === 15) {
-                        console.log('🟢 Vérif jour 15:', {
-                            isUserSelected,
-                            userDebut: userDebutCompare.toISOString().split('T')[0],
-                            userFin: userFinCompare.toISOString().split('T')[0],
-                            isHostAvailable
-                        });
-                    }
-                }
-                
+                const dayDateStr = formatDateLocal(dayDate);
+                const isInPattern = hostAvailableDates.has(dayDateStr);
+                const isUserSelected = isJourSelectionne(dayDateStr);
+
+                // Déterminer la position dans la semaine pour les bords arrondis
+                const jourSemaine = dayDate.getDay(); // 0=dim, 1=lun...
+                const isLundi = jourSemaine === 1;
+                const isDimanche = jourSemaine === 0;
+
                 if (isUserSelected) {
+                    // Sélection utilisateur (orange, toute la semaine y compris passé)
                     dayDiv.classList.add('user-selected');
-                } else if (isHostAvailable) {
+                    if (isPast) dayDiv.classList.add('past');
+                    if (isLundi || day === 1) dayDiv.classList.add('week-start');
+                    if (isDimanche || day === daysInMonth) dayDiv.classList.add('week-end');
+                } else if (isInPattern && !isPast) {
+                    // Disponible pour le locataire (cliquable)
                     dayDiv.classList.add('host-available');
-                } else {
-                    dayDiv.classList.add('unavailable');
+                } else if (isInPattern && isPast) {
+                    // Était disponible mais c'est passé
+                    dayDiv.classList.add('past-available');
+                } else if (!isInPattern) {
+                    // Occupé par l'hôte (bleu clair) — passé ou futur
+                    dayDiv.classList.add('host-busy');
+                    if (isPast) dayDiv.classList.add('past');
                 }
-                
+
                 // Marquer aujourd'hui
                 if (dayDate.getTime() === today.getTime()) {
                     dayDiv.classList.add('today');
                 }
-                
-                // Rendre cliquable si disponible
-                if (isHostAvailable) {
+
+                // Clic = sélectionner/désélectionner la semaine entière
+                if ((isInPattern && !isPast) || isUserSelected) {
                     dayDiv.style.cursor = 'pointer';
-                    dayDiv.onclick = () => selectionnerDate(dayDate);
+                    dayDiv.onclick = () => selectionnerSemaine(dayDate);
                 }
-                
+
+                // Hover semaine : ajouter data-week pour le CSS
+                const lundiDeCetteSemaine = getLundi(dayDate);
+                dayDiv.setAttribute('data-week', formatDateLocal(lundiDeCetteSemaine));
+
                 grid.appendChild(dayDiv);
             }
-            
+
             container.appendChild(grid);
+
+            // Hover par semaine avec JS (highlight toute la semaine)
+            grid.addEventListener('mouseover', (e) => {
+                const target = e.target.closest('.calendar-day');
+                if (!target || !target.classList.contains('host-available')) return;
+                const weekKey = target.getAttribute('data-week');
+                if (!weekKey) return;
+                grid.querySelectorAll('.calendar-day.host-available[data-week="' + weekKey + '"]').forEach(d => {
+                    d.classList.add('week-hover');
+                });
+            });
+            grid.addEventListener('mouseout', (e) => {
+                grid.querySelectorAll('.week-hover').forEach(d => d.classList.remove('week-hover'));
+            });
         }
-        
-        function selectionnerDate(date) {
-            // Logique de sélection de plage
-            if (!selectedDates.debut || (selectedDates.debut && selectedDates.fin)) {
-                // Commencer une nouvelle sélection
-                selectedDates.debut = date;
-                selectedDates.fin = null;
+
+        function selectionnerSemaine(date) {
+            const lundi = getLundi(date);
+            const lundiStr = formatDateLocal(lundi);
+
+            // Toggle : si déjà sélectionnée, désélectionner
+            if (selectedWeeks.has(lundiStr)) {
+                selectedWeeks.delete(lundiStr);
             } else {
-                // Compléter la sélection
-                if (date < selectedDates.debut) {
-                    selectedDates.fin = selectedDates.debut;
-                    selectedDates.debut = date;
-                } else {
-                    selectedDates.fin = date;
-                }
+                selectedWeeks.add(lundiStr);
             }
-            
+
             afficherMoisCalendrier();
-            
-            // Afficher la sélection
-            if (selectedDates.debut && selectedDates.fin) {
-                console.log('Période sélectionnée:', selectedDates.debut.toLocaleDateString('fr-FR'), '-', selectedDates.fin.toLocaleDateString('fr-FR'));
-            }
+
         }
         
+        // Toggle calendrier (accordion sidebar)
+        function toggleCalendrier() {
+            const accordion = document.getElementById('calendarAccordion');
+            const arrow = document.getElementById('calendarToggleArrow');
+            const text = document.getElementById('calendarToggleText');
+
+            if (accordion.style.display === 'none') {
+                accordion.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+                text.textContent = 'Masquer le calendrier';
+            } else {
+                accordion.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+                text.textContent = 'Voir le calendrier';
+            }
+        }
+
         // Charger au chargement de la page
         chargerAnnonce();
-
-        // ============================================
-        // SYSTÈME DE FAVORIS COMPLET ✅
-        // ============================================
-
-        let currentUser = null;
-        let annonceId = null;
-        let isFavorite = false;
-
-        // Forcer le rechargement de la page au retour arrière (évite le cache)
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        });
-
-        // Initialisation du système de favoris au chargement
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Récupérer l'ID de l'annonce depuis l'URL
-            const urlParams = new URLSearchParams(window.location.search);
-            annonceId = urlParams.get('id');
-            
-            if (!annonceId) {
-                console.error('Pas d\'ID d\'annonce dans l\'URL');
-                return;
-            }
-            
-            // Vérifier si l'utilisateur est connecté
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            currentUser = user;
-            
-            if (currentUser) {
-                // Vérifier si cette annonce est dans les favoris
-                await verifierFavori();
-            }
-        });
-
-        // Vérifier si l'annonce est dans les favoris
-        async function verifierFavori() {
-            if (!currentUser || !annonceId) return;
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('favoris')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .eq('annonce_id', annonceId)
-                    .single();
-                
-                if (data) {
-                    // L'annonce est dans les favoris
-                    isFavorite = true;
-                    mettreAJourBoutonFavori();
-                    console.log('✅ Annonce dans les favoris');
-                }
-            } catch (error) {
-                // Pas de favori trouvé (c'est normal)
-                console.log('ℹ️ Annonce pas dans les favoris');
-            }
-        }
-
-        // Mettre à jour l'apparence du bouton favori
-        function mettreAJourBoutonFavori() {
-            const btn = document.querySelector('.favorite-btn-large');
-            if (!btn) return;
-            
-            if (isFavorite) {
-                btn.textContent = '❤️';
-            } else {
-                btn.textContent = '🤍';
-            }
-        }
-
-        // Toggle favoris (ajouter/retirer)
-        async function toggleFavorite() {
-            // Vérifier si l'utilisateur est connecté
-            if (!currentUser) {
-                alert('❌ Connecte-toi pour ajouter des favoris !');
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            if (!annonceId) {
-                console.error('Pas d\'ID d\'annonce');
-                return;
-            }
-            
-            try {
-                if (isFavorite) {
-                    // Retirer des favoris
-                    const { error } = await supabaseClient
-                        .from('favoris')
-                        .delete()
-                        .eq('user_id', currentUser.id)
-                        .eq('annonce_id', annonceId);
-                    
-                    if (error) throw error;
-                    
-                    isFavorite = false;
-                    console.log('✅ Retiré des favoris');
-                    
-                } else {
-                    // Ajouter aux favoris
-                    const { error } = await supabaseClient
-                        .from('favoris')
-                        .insert([{
-                            user_id: currentUser.id,
-                            annonce_id: annonceId
-                        }]);
-                    
-                    if (error) throw error;
-                    
-                    isFavorite = true;
-                    console.log('✅ Ajouté aux favoris');
-                }
-                
-                // Mettre à jour l'apparence du bouton
-                mettreAJourBoutonFavori();
-                
-            } catch (error) {
-                console.error('❌ Erreur toggle favori:', error);
-                alert('❌ Erreur lors de la mise à jour des favoris');
-            }
-        }
 
         // Envoyer un message
         async function envoyerMessage(event) {
@@ -1797,7 +2125,779 @@
                 confirmDiv.className = '';
             }, 5000);
         }
+
+        // ========== CARTE MAPBOX + RECHERCHE ÉCOLE ==========
+        let map = null;
+        let schoolMarkerEl = null;
+        let logementLat = null;
+        let logementLng = null;
+        let logementVille = '';
+        let schoolSearchTimeout = null;
+        let schoolMarker = null;
+        let schoolLat = null;
+        let schoolLng = null;
+        let distanceLineId = 'distance-line';
+
+        function initMap(lat, lng, titre, ville) {
+            logementLat = lat;
+            logementLng = lng;
+            logementVille = ville || '';
+
+            mapboxgl.accessToken = MAPBOX_TOKEN;
+            map = new mapboxgl.Map({
+                container: 'mapLogement',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: [lng, lat],
+                zoom: 13,
+                scrollZoom: false
+            });
+
+            // Contrôles de navigation
+            map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+            // Activer le scroll zoom au clic sur la carte, désactiver au clic ailleurs
+            const mapContainer = document.getElementById('mapLogement');
+            mapContainer.addEventListener('click', function() {
+                map.scrollZoom.enable();
+                mapContainer.style.cursor = 'grab';
+            });
+            document.addEventListener('click', function(e) {
+                if (!mapContainer.contains(e.target)) {
+                    map.scrollZoom.disable();
+                    mapContainer.style.cursor = '';
+                }
+            });
+
+            map.on('load', function() {
+                // Cercle de zone (adresse exacte masquée)
+                map.addSource('zone-circle', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [lng, lat]
+                        }
+                    }
+                });
+
+                // Cercle flou autour de la zone
+                map.addLayer({
+                    id: 'zone-circle-fill',
+                    type: 'circle',
+                    source: 'zone-circle',
+                    paint: {
+                        'circle-radius': {
+                            stops: [[10, 30], [13, 80], [15, 200]]
+                        },
+                        'circle-color': '#1E293B',
+                        'circle-opacity': 0.1,
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#1E293B',
+                        'circle-stroke-opacity': 0.3
+                    }
+                });
+            });
+
+            // Pin logement (icône map-pin-house)
+            const logementEl = document.createElement('div');
+            logementEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#1E293B" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"><path d="M15 22a1 1 0 0 1-1-1v-4a1 1 0 0 1 .445-.832l3-2a1 1 0 0 1 1.11 0l3 2A1 1 0 0 1 22 17v4a1 1 0 0 1-1 1z"/><path d="M18 10a8 8 0 0 0-16 0c0 4.993 5.539 10.193 7.399 11.799a1 1 0 0 0 .601.2"/><path d="M18 22v-3"/><circle cx="10" cy="10" r="3"/></svg>';
+            new mapboxgl.Marker({ element: logementEl })
+                .setLngLat([lng, lat])
+                .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML('<strong>Zone approximative</strong><br>' + (ville || '')))
+                .addTo(map);
+
+            // Activer autocomplétion école
+            setupSchoolSearch();
+        }
+
+        function setupSchoolSearch() {
+            const input = document.getElementById('schoolSearchInput');
+            const suggestionsDiv = document.getElementById('schoolSuggestions');
+            if (!input) return;
+
+            input.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(schoolSearchTimeout);
+
+                if (query.length < 2) {
+                    suggestionsDiv.style.display = 'none';
+                    return;
+                }
+
+                schoolSearchTimeout = setTimeout(() => {
+                    searchSchool(query);
+                }, 300);
+            });
+
+            // Fermer suggestions au clic ailleurs
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.school-search-wrapper')) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+        }
+
+        // Dictionnaire sigles → noms complets (écoles sup françaises les plus courantes)
+        const SIGLES_ECOLES = {
+            'ENSAB': 'École nationale supérieure d\'architecture de Bretagne',
+            'ENSAP': 'École nationale supérieure d\'architecture de Paris',
+            'ENSAL': 'École nationale supérieure d\'architecture de Lyon',
+            'ENSAM': 'École nationale supérieure d\'architecture de Marseille',
+            'ENSAG': 'École nationale supérieure d\'architecture de Grenoble',
+            'ENSAN': 'École nationale supérieure d\'architecture de Nancy',
+            'ENSAS': 'École nationale supérieure d\'architecture de Strasbourg',
+            'ENSAPM': 'École nationale supérieure d\'architecture de Paris-Malaquais',
+            'ENSAPB': 'École nationale supérieure d\'architecture de Paris-Belleville',
+            'ENSAPLV': 'École nationale supérieure d\'architecture de Paris-La Villette',
+            'ENSA': 'École nationale supérieure d\'architecture',
+            'INSA': 'Institut national des sciences appliquées',
+            'ISEN': 'Institut supérieur de l\'électronique et du numérique',
+            'ENSAI': 'École nationale de la statistique et de l\'analyse de l\'information',
+            'ENSAE': 'École nationale de la statistique et de l\'administration économique',
+            'ENSC': 'École nationale supérieure de cognitique',
+            'ENSCI': 'École nationale supérieure de création industrielle',
+            'EPITECH': 'Epitech école informatique',
+            'EPITA': 'École pour l\'informatique et les techniques avancées',
+            'ESIR': 'École supérieure d\'ingénieurs de Rennes',
+            'ESCP': 'ESCP Business School',
+            'ESSEC': 'ESSEC Business School',
+            'HEC': 'HEC Paris',
+            'EDHEC': 'EDHEC Business School',
+            'KEDGE': 'KEDGE Business School',
+            'SKEMA': 'SKEMA Business School',
+            'NEOMA': 'NEOMA Business School',
+            'EM': 'École de management',
+            'ESC': 'École supérieure de commerce',
+            'EESAB': 'École européenne supérieure d\'art de Bretagne',
+            'ENIB': 'École nationale d\'ingénieurs de Brest',
+            'ENIM': 'École nationale d\'ingénieurs de Metz',
+            'ENIT': 'École nationale d\'ingénieurs de Tarbes',
+            'ENISE': 'École nationale d\'ingénieurs de Saint-Étienne',
+            'ECAM': 'ECAM école d\'ingénieurs',
+            'ICAM': 'Institut catholique d\'arts et métiers',
+            'ISAE': 'Institut supérieur de l\'aéronautique et de l\'espace',
+            'SUPAERO': 'Institut supérieur de l\'aéronautique et de l\'espace',
+            'ENAC': 'École nationale de l\'aviation civile',
+            'ENTPE': 'École nationale des travaux publics de l\'État',
+            'ENSEIRB': 'École nationale supérieure d\'électronique informatique et de radiocommunications de Bordeaux',
+            'ENSEEIHT': 'École nationale supérieure d\'électrotechnique d\'informatique d\'hydraulique et des télécommunications',
+            'ENSIMAG': 'École nationale supérieure d\'informatique et de mathématiques appliquées de Grenoble',
+            'ENSTA': 'École nationale supérieure de techniques avancées',
+            'ESTACA': 'ESTACA école d\'ingénieurs',
+            'ECE': 'ECE école d\'ingénieurs',
+            'EFREI': 'EFREI école d\'ingénieurs',
+            'ESIEA': 'ESIEA école d\'ingénieurs',
+            'ESIEE': 'ESIEE Paris',
+            'ISEP': 'Institut supérieur d\'électronique de Paris',
+            'TELECOM': 'Télécom Paris',
+            'IMT': 'Institut Mines-Télécom',
+            'MINES': 'École des Mines',
+            'CENTRALE': 'École Centrale',
+            'POLYTECH': 'Polytech école d\'ingénieurs',
+            'UTT': 'Université de technologie de Troyes',
+            'UTC': 'Université de technologie de Compiègne',
+            'UTBM': 'Université de technologie de Belfort-Montbéliard',
+            'IUT': 'Institut universitaire de technologie',
+            'BTS': 'Brevet de technicien supérieur',
+            'IFSI': 'Institut de formation en soins infirmiers',
+            'IRTS': 'Institut régional du travail social',
+            'ASKORIA': 'Askoria formation travail social',
+            'CNAM': 'Conservatoire national des arts et métiers',
+            'ENSATT': 'École nationale supérieure des arts et techniques du théâtre',
+            'FEMIS': 'École nationale supérieure des métiers de l\'image et du son',
+            'GOBELINS': 'Gobelins école de l\'image',
+            'SUPELEC': 'École supérieure d\'électricité',
+            'AGROCAMPUS': 'Agrocampus Ouest',
+            'AGRONOMIQUE': 'Institut national agronomique',
+            'RSB': 'Rennes School of Business',
+            'IGR': 'Institut de gestion de Rennes',
+            'ECOLES2I': 'École supérieure d\'informatique',
+            'SUPINFO': 'Supinfo école informatique',
+            'ESRA': 'ESRA école de cinéma',
+            'LISAA': 'LISAA école de design',
+            'STUDI': 'Studi école en ligne',
+            'YNOV': 'Ynov campus numérique',
+            'MYDIGITALSCHOOL': 'MyDigitalSchool',
+            'WIS': 'WIS web international school',
+            'HETIC': 'HETIC web école',
+            'IIM': 'Institut de l\'internet et du multimédia',
+            'SUPDEVINCI': 'Sup de Vinci',
+            'ESAIP': 'ESAIP école d\'ingénieurs',
+            'CPE': 'CPE Lyon',
+            'PHELMA': 'Grenoble INP Phelma',
+            'PAGORA': 'Grenoble INP Pagora',
+            'ENSE3': 'Grenoble INP Ense3',
+            'GÉNIE': 'Grenoble INP Génie industriel'
+        };
+
+        async function searchSchool(query) {
+            const suggestionsDiv = document.getElementById('schoolSuggestions');
+
+            try {
+                const seen = new Map();
+                const proximity = logementLng + ',' + logementLat;
+
+                // Vérifier si la query est un sigle connu → enrichir la recherche
+                const queryUpper = query.trim().toUpperCase();
+                const expandedName = SIGLES_ECOLES[queryUpper] || null;
+                const searchQueries = [query];
+                if (expandedName) searchQueries.push(expandedName);
+
+                const encodedQuery = encodeURIComponent(query);
+
+                // Toutes les requêtes en parallèle (sigle + nom complet si sigle connu)
+                if (!window._mbxSession) window._mbxSession = crypto.randomUUID();
+                const allPromises = [];
+                const promiseLabels = [];
+
+                for (const q of searchQueries) {
+                    const eq = encodeURIComponent(q);
+                    const mbxQ = logementVille ? q + ' ' + logementVille : q;
+
+                    // Mapbox Suggest
+                    allPromises.push(
+                        fetch('https://api.mapbox.com/search/searchbox/v1/suggest?q=' + encodeURIComponent(mbxQ) + '&language=fr&types=poi&proximity=' + proximity + '&limit=5&session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN)
+                            .then(r => r.ok ? r.json() : { suggestions: [] }).catch(() => ({ suggestions: [] }))
+                    );
+                    promiseLabels.push('mapbox');
+
+                    // Parcoursup — dans la ville
+                    const psupBase = 'https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/fr-esr-parcoursup/records';
+                    const psupFields = 'g_ea_lib_vx%2Cville_etab%2Cg_olocalisation_des_formations';
+                    if (logementVille) {
+                        allPromises.push(
+                            fetch(psupBase + '?where=search(g_ea_lib_vx%2C%22' + eq + '%22)%20AND%20search(ville_etab%2C%22' + encodeURIComponent(logementVille) + '%22)&limit=10&select=' + psupFields)
+                                .then(r => r.ok ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+                        );
+                        promiseLabels.push('parcoursup');
+                    }
+                    // Parcoursup — partout
+                    allPromises.push(
+                        fetch(psupBase + '?where=search(g_ea_lib_vx%2C%22' + eq + '%22)&limit=10&select=' + psupFields)
+                            .then(r => r.ok ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+                    );
+                    promiseLabels.push('parcoursup');
+
+                    // Photon/OSM
+                    const photonQ = logementVille ? q + ' ' + logementVille : q;
+                    allPromises.push(
+                        fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(photonQ) + '&limit=5&lang=fr')
+                            .then(r => r.ok ? r.json() : { features: [] }).catch(() => ({ features: [] }))
+                    );
+                    promiseLabels.push('photon');
+                }
+
+                const allResults = await Promise.all(allPromises);
+
+                // Clé normalisée pour éviter les doublons (minuscule, sans accents, sans espaces multiples)
+                function normalKey(name, city) {
+                    const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+                    return norm(name) + '|' + norm(city || '');
+                }
+
+                // Traiter tous les résultats selon leur type
+                const eduTypes = ['college', 'university', 'school'];
+                const allRetrievePromises = [];
+
+                for (let i = 0; i < allResults.length; i++) {
+                    const data = allResults[i];
+                    const label = promiseLabels[i];
+
+                    if (label === 'mapbox' && data.suggestions) {
+                        data.suggestions.filter(s => s.mapbox_id && s.name).slice(0, 3).forEach(s => {
+                            allRetrievePromises.push(
+                                fetch('https://api.mapbox.com/search/searchbox/v1/retrieve/' + s.mapbox_id + '?session_token=' + window._mbxSession + '&access_token=' + MAPBOX_TOKEN)
+                                    .then(r => r.ok ? r.json() : null).catch(() => null)
+                            );
+                        });
+                    } else if (label === 'parcoursup' && data.results) {
+                        data.results.forEach(r => {
+                            if (r.g_olocalisation_des_formations && r.g_olocalisation_des_formations.lat && r.g_olocalisation_des_formations.lon) {
+                                const key = normalKey(r.g_ea_lib_vx, r.ville_etab);
+                                if (!seen.has(key)) {
+                                    seen.set(key, {
+                                        name: r.g_ea_lib_vx,
+                                        city: r.ville_etab || '',
+                                        lat: r.g_olocalisation_des_formations.lat,
+                                        lng: r.g_olocalisation_des_formations.lon
+                                    });
+                                }
+                            }
+                        });
+                    } else if (label === 'photon' && data.features) {
+                        data.features.forEach(f => {
+                            const props = f.properties || {};
+                            const geom = f.geometry || {};
+                            const osmValue = props.osm_value || '';
+                            const osmKey = props.osm_key || '';
+                            const isEdu = (osmKey === 'amenity' && eduTypes.includes(osmValue)) ||
+                                          (osmKey === 'building' && eduTypes.includes(osmValue));
+                            if (!isEdu) return;
+                            if (props.name && geom.coordinates) {
+                                const city = props.city || props.county || '';
+                                const key = normalKey(props.name, city);
+                                if (!seen.has(key)) {
+                                    seen.set(key, { name: props.name, city, lat: geom.coordinates[1], lng: geom.coordinates[0] });
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Résoudre les retrieve Mapbox — FILTRER uniquement les établissements d'enseignement
+                const eduCategories = ['school', 'college', 'university', 'education', 'training', 'library'];
+                const eduKeywords = ['école', 'ecole', 'université', 'universite', 'lycée', 'lycee', 'institut', 'campus', 'faculté', 'faculte', 'ensa', 'insa', 'isen', 'iut', 'cfa', 'formation', 'supérieur', 'superieur', 'académie', 'academie', 'conservatoire', 'polytech', 'business school', 'school of'];
+                const retrieveResults = await Promise.all(allRetrievePromises);
+                retrieveResults.forEach(rData => {
+                    if (rData && rData.features && rData.features[0]) {
+                        const f = rData.features[0];
+                        const coords = f.geometry.coordinates;
+                        const props = f.properties || {};
+                        const name = props.name || '';
+                        const city = props.context?.place?.name || props.context?.locality?.name || '';
+
+                        // Vérifier que c'est un établissement d'enseignement
+                        const categories = (props.poi_category || []).map(c => c.toLowerCase());
+                        const nameLower = name.toLowerCase();
+                        const isSchool = categories.some(c => eduCategories.includes(c)) ||
+                                         eduKeywords.some(kw => nameLower.includes(kw));
+                        if (!isSchool) return;
+
+                        const key = normalKey(name, city);
+                        if (name && !seen.has(key)) {
+                            seen.set(key, { name, city, lat: coords[1], lng: coords[0] });
+                        }
+                    }
+                });
+
+                // Calculer la distance en km entre le logement et chaque école
+                function haversineKm(lat1, lon1, lat2, lon2) {
+                    const R = 6371;
+                    const dLat = (lat2 - lat1) * Math.PI / 180;
+                    const dLon = (lon2 - lon1) * Math.PI / 180;
+                    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+                    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                }
+
+                // Filtrer : garder uniquement les écoles à moins de 100km du logement
+                let unique = Array.from(seen.values()).filter(r => {
+                    return haversineKm(logementLat, logementLng, r.lat, r.lng) < 100;
+                });
+
+                // Trier par distance (les plus proches en premier)
+                unique.sort((a, b) => {
+                    return haversineKm(logementLat, logementLng, a.lat, a.lng) - haversineKm(logementLat, logementLng, b.lat, b.lng);
+                });
+                unique = unique.slice(0, 7);
+
+                if (unique.length === 0) {
+                    suggestionsDiv.innerHTML = '<div class="school-suggestion-item" style="color: var(--gray-500); cursor: default;">Aucun établissement trouvé</div>';
+                    suggestionsDiv.style.display = 'block';
+                    return;
+                }
+
+                suggestionsDiv.innerHTML = unique.map(r => {
+                    const escapedName = (r.name + ' — ' + r.city).replace(/'/g, "\\'");
+                    return '<div class="school-suggestion-item" onclick="selectSchool(' + r.lat + ', ' + r.lng + ', \'' + escapedName + '\')">'
+                        + '<strong>' + r.name + '</strong>'
+                        + '<small>' + r.city + '</small>'
+                        + '</div>';
+                }).join('');
+
+                suggestionsDiv.style.display = 'block';
+            } catch (e) {
+                console.error('Erreur recherche école:', e);
+            }
+        }
+
+        function selectSchool(lat, lng, label) {
+            const suggestionsDiv = document.getElementById('schoolSuggestions');
+            const input = document.getElementById('schoolSearchInput');
+            const travelTimes = document.getElementById('travelTimes');
+
+            // Stocker les coordonnées de l'école
+            schoolLat = lat;
+            schoolLng = lng;
+
+            // Mettre le nom dans l'input
+            input.value = label;
+            suggestionsDiv.style.display = 'none';
+
+            // Supprimer ancien marqueur école
+            if (schoolMarker) schoolMarker.remove();
+
+            // Supprimer ancienne ligne de distance + layers transit
+            clearTransitLayers();
+            if (map.getSource(distanceLineId)) {
+                map.removeLayer(distanceLineId);
+                map.removeSource(distanceLineId);
+            }
+
+            // Ajouter pin école (icône map-pin orange)
+            const schoolEl = document.createElement('div');
+            schoolEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#E8622A" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>';
+            schoolMarker = new mapboxgl.Marker({ element: schoolEl })
+                .setLngLat([lng, lat])
+                .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML('<strong>' + label + '</strong>'))
+                .addTo(map);
+
+            // Calculer les temps de trajet + tracer le vrai itinéraire
+            travelTimes.style.display = 'flex';
+            const origin = logementLng + ',' + logementLat;
+            const dest = lng + ',' + lat;
+
+            // Réinitialiser les affichages + mode actif
+            document.querySelectorAll('.travel-mode').forEach(m => m.classList.remove('active'));
+            document.querySelector('.travel-mode[data-profile="driving"]').classList.add('active');
+            document.getElementById('travelDriving').textContent = '...';
+            document.getElementById('travelTransit').textContent = '...';
+            document.getElementById('travelCycling').textContent = '...';
+            document.getElementById('travelWalking').textContent = '...';
+
+            // Requête driving avec géométrie complète (pour tracer le trajet)
+            fetch('https://api.mapbox.com/directions/v5/mapbox/driving/' + origin + ';' + dest + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.routes && data.routes[0]) {
+                        document.getElementById('travelDriving').textContent = formatDuration(data.routes[0].duration);
+
+                        // Tracer le vrai itinéraire sur la carte
+                        map.addSource(distanceLineId, {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                geometry: data.routes[0].geometry
+                            }
+                        });
+                        map.addLayer({
+                            id: distanceLineId,
+                            type: 'line',
+                            source: distanceLineId,
+                            paint: {
+                                'line-color': '#E8622A',
+                                'line-width': 4,
+                                'line-opacity': 0.8
+                            },
+                            layout: {
+                                'line-cap': 'round',
+                                'line-join': 'round'
+                            }
+                        });
+
+                        // Ajuster la vue sur le trajet complet
+                        const coords = data.routes[0].geometry.coordinates;
+                        const bounds = new mapboxgl.LngLatBounds();
+                        coords.forEach(c => bounds.extend(c));
+                        map.fitBounds(bounds, { padding: 60 });
+                    }
+                })
+                .catch(() => { document.getElementById('travelDriving').textContent = '—'; });
+
+            // Cycling
+            fetch('https://api.mapbox.com/directions/v5/mapbox/cycling/' + origin + ';' + dest + '?overview=false&access_token=' + MAPBOX_TOKEN)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.routes && data.routes[0]) {
+                        document.getElementById('travelCycling').textContent = formatDuration(data.routes[0].duration);
+                    }
+                })
+                .catch(() => { document.getElementById('travelCycling').textContent = '—'; });
+
+            // Transports en commun (bus/métro/tram) via Transitous API (MOTIS)
+            fetch('https://api.transitous.org/api/v1/plan?fromPlace=' + logementLat + ',' + logementLng + ',0&toPlace=' + lat + ',' + lng + ',0')
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.itineraries && data.itineraries.length > 0) {
+                        // Prendre l'itinéraire le plus rapide
+                        const best = data.itineraries.reduce((a, b) => a.duration < b.duration ? a : b);
+                        document.getElementById('travelTransit').textContent = formatDuration(best.duration);
+                        // Stocker les données transit pour le tracé sur la carte
+                        window.transitData = best;
+                    } else {
+                        document.getElementById('travelTransit').textContent = '—';
+                        window.transitData = null;
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('travelTransit').textContent = '—';
+                    window.transitData = null;
+                });
+
+            // Walking
+            fetch('https://api.mapbox.com/directions/v5/mapbox/walking/' + origin + ';' + dest + '?overview=false&access_token=' + MAPBOX_TOKEN)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.routes && data.routes[0]) {
+                        document.getElementById('travelWalking').textContent = formatDuration(data.routes[0].duration);
+                    }
+                })
+                .catch(() => { document.getElementById('travelWalking').textContent = '—'; });
+        }
+
+        // Formater durée en secondes → "X min" ou "Xh Xmin"
+        function formatDuration(seconds) {
+            const mins = Math.round(seconds / 60);
+            if (mins < 60) return mins + ' min';
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return h + 'h' + (m > 0 ? m.toString().padStart(2, '0') : '');
+        }
+
+        // Supprimer tous les layers/sources de trajet transit
+        function clearTransitLayers() {
+            const style = map.getStyle();
+            if (style && style.layers) {
+                style.layers.forEach(layer => {
+                    if (layer.id.startsWith('transit-leg-')) {
+                        map.removeLayer(layer.id);
+                    }
+                });
+            }
+            if (style && style.sources) {
+                Object.keys(style.sources).forEach(src => {
+                    if (src.startsWith('transit-leg-')) {
+                        map.removeSource(src);
+                    }
+                });
+            }
+        }
+
+        // Décoder les polylines Google (precision 5 ou 6)
+        function decodePolyline(encoded, precision) {
+            precision = precision || 5;
+            const factor = Math.pow(10, precision);
+            const coords = [];
+            let lat = 0, lng = 0, index = 0;
+            while (index < encoded.length) {
+                let b, shift = 0, result = 0;
+                do {
+                    b = encoded.charCodeAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+                shift = 0; result = 0;
+                do {
+                    b = encoded.charCodeAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+                coords.push([lng / factor, lat / factor]);
+            }
+            return coords;
+        }
+
+        // Changer le mode de transport affiché sur la carte
+        function switchTravelMode(el) {
+            if (!schoolLat || !schoolLng) return;
+            const profile = el.dataset.profile;
+
+            // Mettre à jour le style actif
+            document.querySelectorAll('.travel-mode').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+
+            // Supprimer les anciens trajets
+            if (map.getSource(distanceLineId)) {
+                map.removeLayer(distanceLineId);
+                map.removeSource(distanceLineId);
+            }
+            clearTransitLayers();
+
+            // Si transit : tracer les segments Transitous
+            if (profile === 'transit' && window.transitData) {
+                const best = window.transitData;
+                const bounds = new mapboxgl.LngLatBounds();
+                bounds.extend([logementLng, logementLat]);
+                bounds.extend([schoolLng, schoolLat]);
+
+                // Construire les segments avec points de liaison entre chaque leg
+                const allLegs = best.legs.filter(leg => leg.legGeometry && leg.legGeometry.points);
+
+                allLegs.forEach((leg, i) => {
+                    const precision = (leg.legGeometry.precision) ? leg.legGeometry.precision : 7;
+                    let coords = decodePolyline(leg.legGeometry.points, precision);
+                    // Filtrer les coordonnées aberrantes (hors France métropolitaine)
+                    coords = coords.filter(c => c[1] > 41 && c[1] < 52 && c[0] > -6 && c[0] < 10);
+                    if (coords.length < 2) return;
+
+                    // Ajouter un point de liaison vers le leg suivant si nécessaire
+                    if (i < allLegs.length - 1) {
+                        const nextLeg = allLegs[i + 1];
+                        const nextPrecision = (nextLeg.legGeometry.precision) ? nextLeg.legGeometry.precision : 7;
+                        const nextCoords = decodePolyline(nextLeg.legGeometry.points, nextPrecision);
+                        if (nextCoords.length > 0) {
+                            // Connecter la fin de ce segment au début du suivant
+                            coords.push(nextCoords[0]);
+                        }
+                    }
+
+                    const srcId = 'transit-leg-' + i;
+                    const isWalk = (leg.mode === 'WALK');
+
+                    map.addSource(srcId, {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            geometry: { type: 'LineString', coordinates: coords }
+                        }
+                    });
+                    map.addLayer({
+                        id: srcId,
+                        type: 'line',
+                        source: srcId,
+                        paint: {
+                            'line-color': isWalk ? '#94A3B8' : '#E8622A',
+                            'line-width': isWalk ? 3 : 4,
+                            'line-opacity': 0.8,
+                            'line-dasharray': isWalk ? [2, 3] : [1, 0]
+                        },
+                        layout: { 'line-cap': 'round', 'line-join': 'round' }
+                    });
+                    coords.forEach(c => bounds.extend(c));
+                });
+
+                map.fitBounds(bounds, { padding: 60 });
+                return;
+            }
+
+            // Sinon : trajet Mapbox classique (driving/cycling/walking)
+            const origin = logementLng + ',' + logementLat;
+            const dest = schoolLng + ',' + schoolLat;
+            fetch('https://api.mapbox.com/directions/v5/mapbox/' + profile + '/' + origin + ';' + dest + '?geometries=geojson&overview=full&access_token=' + MAPBOX_TOKEN)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data && data.routes && data.routes[0]) {
+                        map.addSource(distanceLineId, {
+                            type: 'geojson',
+                            data: { type: 'Feature', geometry: data.routes[0].geometry }
+                        });
+                        map.addLayer({
+                            id: distanceLineId,
+                            type: 'line',
+                            source: distanceLineId,
+                            paint: { 'line-color': '#E8622A', 'line-width': 4, 'line-opacity': 0.8 },
+                            layout: { 'line-cap': 'round', 'line-join': 'round' }
+                        });
+                        const coords = data.routes[0].geometry.coordinates;
+                        const bounds = new mapboxgl.LngLatBounds();
+                        coords.forEach(c => bounds.extend(c));
+                        map.fitBounds(bounds, { padding: 60 });
+                    }
+                });
+        }
     </script>
+
+    <!-- SYSTÈME DE FAVORIS (script isolé) -->
+    <script>
+    (function() {
+        var favBtn = document.getElementById('favoriBtn');
+        if (!favBtn) return;
+
+        var favUser = null;
+        var favAnnonceId = null;
+        var favIsActive = false;
+
+        // SVG coeur vide (par defaut)
+        var svgCoeurVide = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#1E293B"><path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Zm0-108q96-86 158-147.5t98-107q36-45.5 50-81t14-70.5q0-60-40-100t-100-40q-47 0-87 26.5T518-680h-76q-15-41-55-67.5T300-774q-60 0-100 40t-40 100q0 35 14 70.5t50 81q36 45.5 98 107T480-228Zm0-273Z"/></svg>';
+
+        // SVG coeur plein orange (favori actif)
+        var svgCoeurCheck = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#E8622A"><path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/></svg>';
+
+        // Forcer le rechargement au retour arriere
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) window.location.reload();
+        });
+
+        // Mettre a jour l'affichage du bouton
+        function updateBtn() {
+            if (favIsActive) {
+                favBtn.innerHTML = svgCoeurCheck;
+                favBtn.classList.add('is-favorite');
+            } else {
+                favBtn.innerHTML = svgCoeurVide;
+                favBtn.classList.remove('is-favorite');
+            }
+        }
+
+        // Attacher le clic
+        favBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFav();
+        });
+
+        // Init : verifier si deja en favori
+        (async function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            favAnnonceId = urlParams.get('id');
+            if (!favAnnonceId) return;
+
+            try {
+                var result = await supabaseClient.auth.getUser();
+                favUser = result.data.user;
+            } catch(e) { return; }
+
+            if (favUser) {
+                try {
+                    var resp = await supabaseClient
+                        .from('favoris')
+                        .select('id')
+                        .eq('user_id', favUser.id)
+                        .eq('annonce_id', favAnnonceId)
+                        .maybeSingle();
+
+                    if (resp.data) {
+                        favIsActive = true;
+                        updateBtn();
+                    }
+                } catch(e) {}
+            }
+        })();
+
+        async function toggleFav() {
+            if (!favUser) {
+                try {
+                    var result = await supabaseClient.auth.getUser();
+                    favUser = result.data.user;
+                } catch(e) {}
+            }
+            if (!favUser) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            if (!favAnnonceId) {
+                favAnnonceId = new URLSearchParams(window.location.search).get('id');
+            }
+            if (!favAnnonceId) return;
+
+            try {
+                if (favIsActive) {
+                    var resp = await supabaseClient
+                        .from('favoris')
+                        .delete()
+                        .eq('user_id', favUser.id)
+                        .eq('annonce_id', favAnnonceId);
+                    if (resp.error) throw resp.error;
+                    favIsActive = false;
+                } else {
+                    var resp = await supabaseClient
+                        .from('favoris')
+                        .insert([{ user_id: favUser.id, annonce_id: favAnnonceId }])
+                        .select();
+                    if (resp.error) throw resp.error;
+                    favIsActive = true;
+                }
+                updateBtn();
+            } catch (err) {
+                alert('ERREUR: ' + err.message);
+                console.error('Erreur favori:', err);
+            }
+        }
+    })();
+    </script>
+
     <script>
 // Gérer le lien "Mon espace"
 async function gererLienMonEspace() {
@@ -1816,7 +2916,7 @@ async function gererLienMonEspace() {
             .single();
         
         if (userData?.type_user === 'hote') {
-            lien.href = 'dashboard-hote.html';
+            lien.href = 'dashboard-locataire.html';
         } else {
             lien.href = 'dashboard-locataire.html';
         }
@@ -1882,10 +2982,13 @@ async function verifierCandidatureExistante() {
 // Envoyer une candidature
 async function envoyerCandidature(event) {
     event.preventDefault();
-    
+
+    // Rate limit : max 3 candidatures par 10 minutes
+    if (!RateLimiter.check('candidature', 3, 600000)) return;
+
     const messageDiv = document.getElementById('candidatureMessage');
     const btnSubmit = event.target.querySelector('button[type="submit"]');
-    
+
     // Désactiver le bouton pendant l'envoi
     btnSubmit.disabled = true;
     btnSubmit.textContent = '⏳ Envoi en cours...';
@@ -1911,6 +3014,40 @@ async function envoyerCandidature(event) {
     }
     
     try {
+        // Vérifier si l'identité est vérifiée (Stripe Identity)
+        const { data: userData } = await supabaseClient
+            .from('users')
+            .select('identite_verifiee')
+            .eq('id', user.id)
+            .single();
+
+        if (!userData || userData.identite_verifiee !== 'verifiee') {
+            // Identité non vérifiée → lancer Stripe Identity
+            messageDiv.innerHTML = '<div style="padding: 15px; background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 8px; color: #9A3412; font-weight: 500; line-height: 1.5;"><strong>V\u00e9rification d\u2019identit\u00e9 requise</strong><br>Pour la s\u00e9curit\u00e9 de tous, tu dois v\u00e9rifier ton identit\u00e9 avant de postuler. Tu vas \u00eatre redirig\u00e9 vers Stripe.</div>';
+            btnSubmit.textContent = 'Redirection...';
+
+            try {
+                const { data: identityData, error: identityError } = await supabaseClient.functions.invoke('create-stripe-identity-session', {
+                    body: {
+                        user_id: user.id,
+                        return_url: window.location.href,
+                    },
+                });
+
+                if (identityError) throw identityError;
+                if (identityData?.url) {
+                    window.location.href = identityData.url;
+                    return;
+                }
+            } catch (identityErr) {
+                console.error('Erreur Stripe Identity:', identityErr);
+                messageDiv.innerHTML = '<div style="padding: 15px; background: #fee2e2; border-radius: 8px; color: #991b1b; font-weight: 600;">\u274c Impossible de lancer la v\u00e9rification. R\u00e9essaie plus tard.</div>';
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Envoyer ma candidature';
+                return;
+            }
+        }
+
         // Vérifier si l'utilisateur n'a pas déjà candidaté
         const { data: existingCandidature } = await supabaseClient
             .from('candidatures')
@@ -1938,8 +3075,6 @@ async function envoyerCandidature(event) {
             .select();
         
         if (error) throw error;
-        
-        console.log('✅ Candidature envoyée:', data);
         
         // Message de succès
         messageDiv.innerHTML = '<div style="padding: 15px; background: #dcfce7; border-radius: 8px; color: #166534; font-weight: 600;">✅ Candidature envoyée avec succès !</div>';
@@ -2022,6 +3157,84 @@ async function envoyerMessage(event) {
     }
 }
 
+// === PARTAGE SOCIAL ===
+async function partagerAnnonce() {
+    const titre = document.querySelector('h1')?.textContent || 'Logement sur STERNY';
+    const url = window.location.href;
+    const texte = `Découvre ce logement sur STERNY : ${titre}`;
+
+    // Web Share API (natif mobile/tablette)
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: titre, text: texte, url: url });
+        } catch (e) {
+            if (e.name !== 'AbortError') console.log('Partage annulé');
+        }
+        return;
+    }
+
+    // Fallback desktop : copier le lien
+    try {
+        await navigator.clipboard.writeText(url);
+        const toast = document.createElement('div');
+        toast.textContent = '✅ Lien copié !';
+        Object.assign(toast.style, {
+            position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+            background: '#1E293B', color: 'white', padding: '10px 20px', borderRadius: '10px',
+            fontSize: '14px', fontWeight: '600', zIndex: '99999', fontFamily: 'inherit',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)'
+        });
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    } catch {
+        // Fallback ultime : prompt avec URL
+        prompt('Copie ce lien pour partager :', url);
+    }
+}
+
+// === SIGNALEMENT ===
+function ouvrirSignalement() {
+    document.getElementById('modalSignalement').style.display = 'flex';
+    document.getElementById('signalMotif').value = '';
+    document.getElementById('signalDesc').value = '';
+    document.getElementById('signalMsg').style.display = 'none';
+}
+function fermerSignalement() {
+    document.getElementById('modalSignalement').style.display = 'none';
+}
+async function envoyerSignalement() {
+    var motif = document.getElementById('signalMotif').value;
+    var desc = document.getElementById('signalDesc').value;
+    var msg = document.getElementById('signalMsg');
+    var btn = document.getElementById('btnSignal');
+
+    if (!motif) { msg.textContent = 'Choisis un motif.'; msg.style.display = 'block'; msg.style.background = 'rgba(232,98,42,0.08)'; msg.style.color = '#E8622A'; return; }
+
+    // Rate limit : max 3 signalements par 10 minutes
+    if (!RateLimiter.check('signalement', 3, 600000, { persistent: true })) return;
+
+    var session = await supabaseClient.auth.getSession();
+    if (!session.data.session) { msg.textContent = 'Connecte-toi pour signaler.'; msg.style.display = 'block'; msg.style.background = 'rgba(232,98,42,0.08)'; msg.style.color = '#E8622A'; return; }
+
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    try {
+        var { error } = await supabaseClient.from('signalements').insert({
+            reporter_id: session.data.session.user.id,
+            type: 'annonce',
+            target_id: logementId,
+            motif: motif,
+            description: desc || null
+        });
+        if (error) throw error;
+        msg.textContent = 'Signalement envoyé. Merci !'; msg.style.display = 'block'; msg.style.background = '#D1FAE5'; msg.style.color = '#065F46';
+        setTimeout(function() { fermerSignalement(); }, 1500);
+    } catch (e) {
+        console.error('Erreur signalement:', e);
+        msg.textContent = 'Erreur lors de l\'envoi.'; msg.style.display = 'block'; msg.style.background = 'rgba(232,98,42,0.08)'; msg.style.color = '#E8622A';
+    }
+    btn.disabled = false; btn.textContent = 'Signaler';
+}
+
 // Fermer les modals en cliquant en dehors
 window.onclick = function(event) {
     const modalCandidature = document.getElementById('modalCandidature');
@@ -2040,5 +3253,7 @@ if (typeof supabaseClient !== 'undefined') {
     gererLienMonEspace();
 }
 </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

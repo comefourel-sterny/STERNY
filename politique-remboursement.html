@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Politique de remboursement — STERNY</title>
+    <meta name="description" content="Politique de remboursement de STERNY. Conditions d'annulation et de remboursement des paiements.">
+    <link rel="canonical" href="https://sterny.co/politique-remboursement.html">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .legal-page {
+            min-height: calc(100vh - 85px);
+            background: #F4F5F7;
+            padding: 48px 20px 64px;
+        }
+
+        .legal-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border: 1.5px solid #E8EAF0;
+        }
+
+        .legal-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px 0;
+        }
+
+        .legal-date {
+            font-size: 13px;
+            color: #9CA3AF;
+            margin-bottom: 36px;
+        }
+
+        .legal-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        .legal-card p {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .legal-card ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 8px 0 12px 0;
+        }
+
+        .legal-card ul li {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.8;
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .legal-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #E8622A;
+        }
+
+        .legal-card strong {
+            color: #1E293B;
+        }
+
+        .highlight-box {
+            background: rgba(232, 98, 42, 0.06);
+            border-left: 3px solid #E8622A;
+            padding: 14px 18px;
+            border-radius: 0 10px 10px 0;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.7;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B !important;
+            text-decoration: none !important;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-back-top svg {
+            width: 16px; height: 16px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .btn-back-top:hover { color: #1E293B !important; }
+
+        .legal-footer {
+            max-width: 800px;
+            margin: 32px auto 0;
+            text-align: center;
+            font-size: 13px;
+            color: #9CA3AF;
+        }
+
+        .legal-footer a {
+            color: #6B7280;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.2s;
+        }
+
+        .legal-footer a:hover {
+            color: #E8622A;
+        }
+
+        .legal-footer .separator {
+            color: #D1D5DB;
+        }
+
+        @media (max-width: 768px) {
+            .legal-card {
+                padding: 28px 20px;
+            }
+            .legal-card h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="connexion.html" class="nav-highlight">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="legal-page">
+        <div class="legal-card">
+            <a href="javascript:history.back()" class="btn-back-top">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+
+            <h1>Politique de remboursement</h1>
+            <p class="legal-date">Dernière mise à jour : 10 mars 2026</p>
+
+            <h2>1. Principe général</h2>
+            <p>STERNY est une plateforme de mise en relation entre étudiants en alternance et propriétaires/hôtes proposant des logements. Les paiements effectués sur la plateforme correspondent aux frais de mise en relation et de service.</p>
+
+            <h2>2. Frais de service STERNY</h2>
+            <p>Les frais de service facturés par STERNY lors de la validation d'un match couvrent :</p>
+            <ul>
+                <li>La mise en relation entre le locataire et le propriétaire/hôte</li>
+                <li>La vérification des profils et documents</li>
+                <li>L'accès aux outils de la plateforme (messagerie, contrat, état des lieux)</li>
+            </ul>
+
+            <h2>3. Cas de remboursement</h2>
+            <p>Un remboursement total ou partiel des frais de service peut être accordé dans les cas suivants :</p>
+            <ul>
+                <li><strong>Annulation avant emménagement</strong> : si le match est annulé avant la date d'entrée dans le logement, un remboursement intégral des frais de service est effectué</li>
+                <li><strong>Logement non conforme</strong> : si le logement ne correspond pas à la description de l'annonce (surface, équipements, localisation), un remboursement peut être demandé sous 48h après l'état des lieux d'entrée</li>
+                <li><strong>Problème technique</strong> : en cas d'erreur technique de la plateforme ayant entraîné un double paiement ou un paiement erroné</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>Important :</strong> Les loyers versés au propriétaire/hôte ne sont pas gérés par STERNY et ne font pas l'objet de cette politique. Tout litige concernant le loyer doit être résolu directement entre le locataire et le propriétaire.
+            </div>
+
+            <h2>4. Cas de non-remboursement</h2>
+            <p>Aucun remboursement ne sera accordé dans les situations suivantes :</p>
+            <ul>
+                <li>Le locataire quitte le logement de son propre chef avant la fin de la période convenue</li>
+                <li>Le locataire ne se présente pas à la date d'emménagement prévue sans prévenir</li>
+                <li>La demande de remboursement est effectuée plus de 14 jours après le paiement (sauf cas de logement non conforme)</li>
+                <li>Le locataire a enfreint les conditions générales d'utilisation de la plateforme</li>
+            </ul>
+
+            <h2>5. Procédure de demande</h2>
+            <p>Pour demander un remboursement :</p>
+            <ul>
+                <li>Envoie un email à <strong>contact@sterny.fr</strong> en indiquant ton nom, email de connexion et le motif de la demande</li>
+                <li>Joins toute pièce justificative utile (photos, captures d'écran, échanges de messages)</li>
+                <li>La demande sera traitée sous <strong>5 jours ouvrés</strong></li>
+            </ul>
+
+            <h2>6. Délai de remboursement</h2>
+            <p>Si le remboursement est accepté, il sera effectué dans un délai de <strong>10 jours ouvrés</strong> sur le moyen de paiement utilisé lors de la transaction initiale (carte bancaire via Stripe).</p>
+
+            <h2>7. Droit de rétractation</h2>
+            <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux services pleinement exécutés avant la fin du délai de rétractation avec l'accord préalable du consommateur. En acceptant un match et en accédant aux services associés, le locataire reconnaît que le service a commencé à être exécuté.</p>
+
+            <h2>8. Contact</h2>
+            <p>Pour toute question relative à cette politique, contacte-nous à <strong>contact@sterny.fr</strong>.</p>
+        </div>
+
+        <div class="legal-footer">
+            <a href="cgu.html">CGU</a>
+            <span class="separator">|</span>
+            <a href="cgv.html">CGV</a>
+            <span class="separator">|</span>
+            <a href="mentions-legales.html">Mentions légales</a>
+            <span class="separator">|</span>
+            <a href="politique-confidentialite.html">Confidentialité</a>
+        </div>
+    </div>
+
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>

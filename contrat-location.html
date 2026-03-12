@@ -3,374 +3,861 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrat de location - EASWAP</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Contrat de location — STERNY</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: var(--gray-50);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            min-height: 100vh;
+            color: #1E293B;
         }
 
-        /* CONTAINER */
-        .main-container {
+        /* ========== NAV ========== */
+        nav {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .container {
+            max-width: none;
+            height: 85px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+        nav .logo img { height: 55px; }
+        nav ul { display: flex; gap: 36px; list-style: none; }
+        nav ul li a {
+            text-decoration: none;
+            color: #1E293B;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        nav ul li a:hover { color: #E8622A; }
+
+        /* ========== PAGE ========== */
+        .page-container {
             max-width: 900px;
-            margin: 40px auto;
+            margin: 0 auto;
+            padding: 48px 24px 40px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        /* ========== SHARED CARDS ========== */
+        .card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            border: 1px solid #E5E7EB;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin-bottom: 24px;
         }
 
-        /* HEADER */
-        .contract-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-        }
-
-        .contract-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .contract-header p {
-            font-size: 16px;
-            opacity: 0.95;
-        }
-
-        /* PROGRESS */
-        .progress-container {
-            padding: 30px 40px;
-            border-bottom: 2px solid #f3f4f6;
-        }
-
+        /* ========== PROGRESS ========== */
+        .progress-card { padding: 24px; }
         .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
         }
-
-        .progress-line {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #e5e7eb;
-            z-index: 0;
-        }
-
-        .progress-line-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 33%;
-            transition: width 0.5s;
-        }
-
         .progress-step {
-            position: relative;
-            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            flex: 1;
         }
-
-        .progress-circle {
+        .step-number {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #e5e7eb;
-            color: #9ca3af;
+            background: #E5E7EB;
+            color: #9CA3AF;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 14px;
             margin: 0 auto 8px;
             transition: all 0.3s;
+            position: relative;
         }
-
-        .progress-step.active .progress-circle {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .progress-step.active .step-number {
+            background: #E8622A;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: scale(1.1);
         }
-
-        .progress-step.completed .progress-circle {
-            background: #10b981;
+        .progress-step.completed .step-number {
+            background: #E8622A;
             color: white;
         }
-
-        .progress-label {
+        .progress-step.completed .step-number::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 16px;
+            height: 16px;
+            background: #22C55E;
+            border-radius: 50%;
+            border: 2px solid white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 9px;
+        }
+        .step-label {
             font-size: 13px;
-            color: #6b7280;
             font-weight: 600;
+            color: #9CA3AF;
+            transition: color 0.3s;
+        }
+        .progress-step.active .step-label { color: #1E293B; }
+        .progress-step.completed .step-label { color: #E8622A; }
+        .progress-bar-track {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1E293B, #334155);
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
-        .progress-step.active .progress-label {
-            color: #667eea;
-        }
-
-        /* CONTRACT CONTENT */
-        .contract-content {
-            padding: 40px;
-        }
-
-        .contract-section {
-            margin-bottom: 30px;
-        }
-
-        .contract-section h2 {
-            font-size: 20px;
+        /* ========== CONTRAT CARD ========== */
+        .contrat-card { padding: 0; overflow: hidden; margin-bottom: 16px; }
+        .contrat-section { padding: 24px 28px; }
+        .contrat-section + .contrat-section { border-top: 1px solid #F1F5F9; }
+        .section-label {
+            font-size: 11.5px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 15px;
+            color: #E8622A;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+        }
+
+        /* Info accent (spécificité élevée pour surcharger .info-item-2 .item-value) */
+        .info-item-2 .item-value.accent,
+        .item-value.accent {
+            color: #1E293B;
+        }
+
+        /* Info grid 2 colonnes */
+        .info-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+        }
+        .info-item-2 {}
+        .info-item-2 .item-label {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+        .info-item-2 .item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        /* Obligations 2 colonnes */
+        .obligations-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .obligations-col-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+        }
+        .obligations-col-title .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-orange { background: #E8622A; }
+        .dot-slate { background: #64748B; }
+        .obligations-list {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.8;
+            margin: 0 0 0 12px;
+            padding: 0;
+            list-style: none;
+        }
+        .obligations-list li { position: relative; padding-left: 12px; }
+        .obligations-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #D1D5DB;
         }
 
-        .contract-section-icon {
-            font-size: 24px;
-        }
-
-        .contract-box {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            font-size: 14px;
+        /* Texte juridique */
+        .contrat-text {
+            font-size: 12.5px;
             color: #374151;
             line-height: 1.8;
         }
-
-        .contract-box strong {
-            color: #1f2937;
+        .contrat-text p { margin-bottom: 8px; }
+        .contrat-text p:last-child { margin-bottom: 0; }
+        .contrat-text strong { color: #1E293B; }
+        .contrat-text ul { margin: 6px 0 10px 18px; padding: 0; }
+        .contrat-text li { margin-bottom: 3px; }
+        .clause-ref {
+            font-size: 10px;
+            color: #CBD5E1;
+            font-style: italic;
+        }
+        .parties-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .partie-box {
+            background: #F8FAFC;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .partie-box .partie-role {
+            font-size: 11px;
             font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
-
-        .contract-box ul {
-            margin: 10px 0 10px 20px;
+        .partie-box .partie-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
         }
+        .partie-box .partie-info {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 2px;
+            line-height: 1.5;
+        }
+        .annexes-list {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.6;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .annexes-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .annexes-list li:last-child { border-bottom: none; }
+        .annexe-check {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 9px;
+        }
+        .annexe-check.ok { background: #D1FAE5; color: #065F46; }
+        .annexe-check.pending { background: #FEF3C7; color: #92400E; }
 
-        .contract-box li {
+        /* ========== SIGNATURE ========== */
+
+        /* Grille 2 colonnes pour le statut des deux parties */
+        .sig-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .sig-status-card {
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .sig-status-card.signed {
+            background: #F0FDF4;
+            border-color: #86EFAC;
+        }
+        .sig-status-card .sig-status-role {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6B7280;
             margin-bottom: 8px;
         }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+        .sig-status-card.signed .sig-status-role { color: #065F46; }
+        .sig-status-card .sig-status-icon {
+            margin: 8px 0;
         }
-
-        .info-item {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .info-label {
+        .sig-status-card .sig-status-date {
             font-size: 12px;
-            color: #6b7280;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+        .sig-status-card.signed .sig-status-date {
+            color: #059669;
             font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 5px;
         }
 
-        .info-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f2937;
+        /* ===== BLOC SIGNATURE — sobre et premium ===== */
+        .sig-form {
+            background: #F8FAFC;
+            border-top: 3px solid #1E293B;
+            border-radius: 0 0 12px 12px;
+            padding: 0 18px 14px;
+            margin-top: 20px;
+            position: relative;
         }
-
-        /* ALERT */
-        .alert-warning {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 30px 0;
+        /* Identité du signataire — compact */
+        .sig-identity {
             display: flex;
-            gap: 15px;
-            align-items: start;
+            align-items: center;
+            gap: 10px;
+            background: #F0FDF4;
+            border: 1px solid #D1FAE5;
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 10px;
+        }
+        .sig-identity-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #059669, #10B981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .sig-identity-avatar svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .sig-identity-info { flex: 1; }
+        .sig-identity-label {
+            font-size: 10px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 1px;
+        }
+        .sig-identity-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #065F46;
+            line-height: 1.2;
+        }
+        .sig-identity-email {
+            font-size: 11px;
+            color: #059669;
+            margin-top: 0;
         }
 
-        .alert-warning-icon {
-            font-size: 24px;
+        /* Groupe de checkboxes — compact */
+        .sig-consents {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 10px;
+        }
+        .sig-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid #F1F5F9;
+            cursor: pointer;
+        }
+        .sig-check:last-child { border-bottom: none; }
+        .sig-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #1E293B;
+            margin-top: 1px;
+        }
+        .sig-check-label {
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.4;
+        }
+        .sig-check-label a {
+            color: #E8622A;
+            text-decoration: underline;
+        }
+
+        /* Zone de saisie du nom — épuré */
+        .sig-confirm-block {
+            margin-bottom: 10px;
+        }
+        .sig-type-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .sig-type-label svg {
+            width: 14px;
+            height: 14px;
+            stroke: #6B7280;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .sig-type-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1E293B;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+        .sig-type-input:focus {
+            outline: none;
+            border-color: #94A3B8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12);
+        }
+        .sig-type-input.valid {
+            border-color: #22C55E;
+            background: #F0FDF4;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.08);
+        }
+        .sig-type-input.invalid {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.06);
+        }
+        .sig-type-hint {
+            font-size: 11px;
+            margin-top: 3px;
+            min-height: 12px;
+            font-weight: 500;
+        }
+        .sig-type-hint.error { color: #DC2626; }
+        .sig-type-hint.success { color: #059669; }
+
+        /* Bloc légal — discret */
+        .sig-legal-block {
+            background: #F8FAFC;
+            border: 1px solid #F1F5F9;
+            border-radius: 6px;
+            padding: 7px 10px;
+            margin-bottom: 0;
+        }
+        .sig-legal {
+            font-size: 10px;
+            color: #9CA3AF;
+            line-height: 1.4;
+            margin-bottom: 2px;
+        }
+        .sig-legal:last-child { margin-bottom: 0; }
+        .sig-legal strong {
+            color: #64748B;
+            font-size: 10.5px;
+        }
+
+        /* Message déjà signé */
+        .sig-done-block {
+            text-align: center;
+            padding: 28px 16px;
+        }
+        .sig-done-block svg { margin-bottom: 10px; }
+        .sig-done-block .sig-done-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #065F46;
+            margin-bottom: 4px;
+        }
+        .sig-done-block .sig-done-msg {
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .sig-email-notice {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            color: #94A3B8;
+            line-height: 1.8;
+            margin-top: 12px;
+            margin-left: 18px;
+        }
+        .sig-email-notice svg {
+            width: 16px; height: 16px; min-width: 16px; stroke: #94A3B8; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
             flex-shrink: 0;
         }
 
-        .alert-warning-content {
+        /* ========== ACTIONS ========== */
+        .actions-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 28px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .actions-card .btn-back,
+        .actions-card .btn-primary {
             flex: 1;
-        }
-
-        .alert-warning-title {
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 5px;
-            font-size: 15px;
-        }
-
-        .alert-warning-text {
-            color: #92400e;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* SIGNATURE SECTION */
-        .signature-section {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-        }
-
-        .signature-section h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 20px;
+            justify-content: center;
             text-align: center;
         }
-
-        .checkbox-container {
-            display: flex;
-            align-items: start;
-            gap: 12px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid #e5e7eb;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .checkbox-container:hover {
-            border-color: #667eea;
-        }
-
-        .checkbox-container input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .checkbox-label {
-            font-size: 14px;
-            color: #374151;
-            line-height: 1.6;
-        }
-
-        .checkbox-label strong {
-            color: #1f2937;
-            font-weight: 700;
-        }
-
-        /* ACTIONS */
-        .actions-container {
-            padding: 30px 40px 40px;
-            display: flex;
-            gap: 15px;
-            justify-content: space-between;
-        }
-
         .btn-back {
             background: white;
-            color: #6b7280;
-            padding: 16px 30px;
+            color: #6B7280;
+            padding: 12px 20px;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            border: 2px solid #e5e7eb;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1.5px solid #E5E7EB;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
         }
-
-        .btn-back:hover {
-            border-color: #667eea;
-            color: #667eea;
+        .btn-back svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
+        .btn-back:hover { border-color: #1E293B; color: #1E293B; }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #E8622A;
             color: white;
-            padding: 16px 40px;
+            padding: 12px 24px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
         .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #E8622A, #FF8F5E);
             transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35);
         }
-
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.15);
         }
 
-        .btn-download {
+        /* ========== MODALE CONFIRMATION ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
             background: white;
-            color: #667eea;
-            padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .modal-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #E8622A;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+        .modal-text {
+            font-size: 13.5px;
+            color: #64748B;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .modal-text strong {
+            color: #1E293B;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .modal-btn-cancel {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
-            border: 2px solid #667eea;
+            border: 1.5px solid #E5E7EB;
+            background: white;
+            color: #6B7280;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
+            transition: all 0.25s;
+            font-family: inherit;
         }
-
-        .btn-download:hover {
-            background: #667eea;
+        .modal-btn-cancel:hover {
+            border-color: #1E293B;
+            color: #1E293B;
+        }
+        .modal-btn-confirm {
+            flex: 1;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            background: #E8622A;
             color: white;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25);
+            font-family: inherit;
+        }
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #E8622A, #FF8F5E);
+            box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35);
+            transform: translateY(-1px);
         }
 
-        /* RESPONSIVE */
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            .contract-header, .contract-content, .actions-container {
-                padding: 25px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .actions-container {
+            nav .container { padding: 0 20px; height: 72px; }
+            nav .logo img { height: 45px; }
+            nav ul { gap: 20px; }
+            .page-container { padding: 24px 16px 60px; }
+            .page-header h1 { font-size: 28px; }
+            .card { border-radius: 16px; }
+            .progress-card { padding: 20px; }
+            .progress-steps { gap: 8px; }
+            .step-number { width: 34px; height: 34px; font-size: 12px; }
+            .step-label { font-size: 10px; }
+            .contrat-section { padding: 20px; }
+            .info-grid-2 { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+            .obligations-grid { grid-template-columns: 1fr; gap: 16px; }
+            .parties-grid { gap: 8px; }
+            .loyer-highlight { padding: 14px 16px; }
+            .loyer-prix { font-size: 20px; }
+            .actions-card {
                 flex-direction: column-reverse;
+                padding: 20px;
             }
-
             .btn-back, .btn-primary {
                 width: 100%;
                 text-align: center;
+                justify-content: center;
             }
+            .sig-identity {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            .sig-identity-info { text-align: center; }
+            .sig-confirm-block { padding: 14px; }
+        }
+
+        /* ========== ANIMATION ========== */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* ========== BLOC PREUVES SIGNATURE (impression uniquement) ========== */
+        .sig-print-proof { display: none; }
+        .sig-print-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #E8622A;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+        }
+        .sig-print-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .sig-print-card {
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .sig-print-card.signed { border-color: #22C55E; }
+        .sig-print-role {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+        .sig-print-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .sig-print-status {
+            font-size: 11.5px;
+            color: #9CA3AF;
+        }
+        .sig-print-card.signed .sig-print-status { color: #059669; }
+        .sig-print-legal {
+            font-size: 9.5px;
+            color: #9CA3AF;
+            line-height: 1.5;
+            border-top: 1px solid #F1F5F9;
+            padding-top: 10px;
+        }
+
+        /* ========== IMPRESSION PDF ========== */
+        @media print {
+            nav, .progress-card, .actions-card, .sig-email-notice { display: none !important; }
+            .sig-form, .sig-done-block, .sig-status-grid { display: none !important; }
+            .sig-print-proof { display: block !important; }
+            body { background: white !important; }
+            .page-container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .contrat-card { box-shadow: none !important; border-radius: 0 !important; }
+            .page-header { padding-top: 0 !important; }
         }
     </style>
+    <script src="analytics.js" defer></script>
+    <script src="notifications.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav>
+    <nav role="navigation" aria-label="Navigation principale">
         <div class="container">
-            <a href="index.html" class="logo">🏠 EASWAP</a>
-            <ul>
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="#" id="dashboardLink">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
@@ -378,237 +865,444 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTAINER -->
-    <div class="main-container">
-        <!-- HEADER -->
-        <div class="contract-header">
-            <h1>📜 Contrat de location meublée</h1>
-            <p>Lisez attentivement et signez électroniquement</p>
+    <div class="page-container">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>Contrat de location meubl&eacute;e</h1>
+            <p>Lisez attentivement et signez &eacute;lectroniquement</p>
         </div>
 
         <!-- PROGRESS -->
-        <div class="progress-container">
+        <div class="card progress-card">
             <div class="progress-steps">
-                <div class="progress-line">
-                    <div class="progress-line-fill"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Match</div>
                 </div>
                 <div class="progress-step completed">
-                    <div class="progress-circle">✓</div>
-                    <div class="progress-label">Match</div>
+                    <div class="step-number">2</div>
+                    <div class="step-label">Dossier</div>
                 </div>
                 <div class="progress-step active">
-                    <div class="progress-circle">2</div>
-                    <div class="progress-label">Contrat</div>
+                    <div class="step-number">3</div>
+                    <div class="step-label">Contrat</div>
                 </div>
                 <div class="progress-step">
-                    <div class="progress-circle">3</div>
-                    <div class="progress-label">Paiement</div>
+                    <div class="step-number">4</div>
+                    <div class="step-label">Paiement</div>
                 </div>
                 <div class="progress-step">
-                    <div class="progress-circle">4</div>
-                    <div class="progress-label">État des lieux</div>
+                    <div class="step-number">5</div>
+                    <div class="step-label">&Eacute;tat des lieux</div>
                 </div>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 40%;"></div>
             </div>
         </div>
 
-        <!-- CONTRACT CONTENT -->
-        <div class="contract-content">
-            <!-- SECTION 1: PARTIES -->
-            <div class="contract-section">
-                <h2>
-                    <span class="contract-section-icon">👥</span>
-                    Entre les soussignés
-                </h2>
-                <div class="contract-box">
-                    <p><strong>LE BAILLEUR (Propriétaire) :</strong></p>
-                    <p id="proprietaireInfo">Chargement...</p>
-                    
-                    <p style="margin-top: 20px;"><strong>LE LOCATAIRE :</strong></p>
-                    <p id="locataireInfo">Chargement...</p>
-                </div>
-            </div>
+        <!-- CONTRAT -->
+        <div class="card contrat-card">
 
-            <!-- SECTION 2: LOGEMENT -->
-            <div class="contract-section">
-                <h2>
-                    <span class="contract-section-icon">🏠</span>
-                    Désignation du logement loué
-                </h2>
-                <div class="contract-box">
-                    <p id="logementInfo">Chargement...</p>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Surface habitable</div>
-                            <div class="info-value" id="logementSurface">--m²</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Type de bien</div>
-                            <div class="info-value" id="logementType">Meublé</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Nombre de pièces</div>
-                            <div class="info-value" id="logementPieces">--</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">DPE</div>
-                            <div class="info-value" id="logementDPE">--</div>
-                        </div>
+            <!-- I. D&eacute;signation des parties -->
+            <div class="contrat-section">
+                <div class="section-label">I. D&eacute;signation des parties</div>
+                <div class="parties-grid">
+                    <div class="partie-box">
+                        <div class="partie-role">Propri&eacute;taire</div>
+                        <div class="partie-name" id="nomProprietaire">-</div>
+                        <div class="partie-info" id="infoProprietaire">-</div>
+                    </div>
+                    <div class="partie-box">
+                        <div class="partie-role">Locataire</div>
+                        <div class="partie-name" id="nomLocataire">-</div>
+                        <div class="partie-info" id="infoLocataire">-</div>
                     </div>
                 </div>
-            </div>
-
-            <!-- SECTION 3: DURÉE -->
-            <div class="contract-section">
-                <h2>
-                    <span class="contract-section-icon">📅</span>
-                    Durée de la location
-                </h2>
-                <div class="contract-box">
-                    <p>Le présent contrat est conclu pour une durée de <strong id="dureeMois">6 mois</strong>, du <strong id="dateDebut">01/03/2026</strong> au <strong id="dateFin">31/08/2026</strong>.</p>
-                    
-                    <p style="margin-top: 15px;">Il s'agit d'une location meublée à usage d'habitation principale pour étudiant en alternance. Le contrat est renouvelable par tacite reconduction sauf préavis de <strong>1 mois</strong> donné par le locataire.</p>
+                <div class="contrat-text" style="margin-top: 12px;">
+                    <p>Le pr&eacute;sent contrat est &eacute;tabli par l'interm&eacute;diaire de la plateforme <strong>STERNY</strong>, auto-entreprise immatricul&eacute;e sous le n&deg; SIRET [&Agrave; COMPL&Eacute;TER], agissant en qualit&eacute; de mandataire pour la mise en relation entre le propri&eacute;taire et le locataire. STERNY n'est pas partie au contrat de location.</p>
                 </div>
             </div>
 
-            <!-- SECTION 4: LOYER -->
-            <div class="contract-section">
-                <h2>
-                    <span class="contract-section-icon">💰</span>
-                    Conditions financières
-                </h2>
-                <div class="contract-box">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Loyer mensuel</div>
-                            <div class="info-value" id="loyerMensuel">275€</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Charges comprises</div>
-                            <div class="info-value">Oui</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Dépôt de garantie</div>
-                            <div class="info-value" id="depotGarantie">275€</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Paiement le</div>
-                            <div class="info-value">1er du mois</div>
-                        </div>
+            <!-- II. Objet du contrat -->
+            <div class="contrat-section">
+                <div class="section-label">II. Objet du contrat</div>
+                <div class="contrat-text">
+                    <p>Le pr&eacute;sent contrat a pour objet la location d'un <strong>logement meubl&eacute;</strong> &agrave; usage d'habitation principale du locataire, conform&eacute;ment aux articles 25-3 &agrave; 25-11 de la loi n&deg; 89-462 du 6 juillet 1989 et au d&eacute;cret n&deg; 2015-587 du 29 mai 2015 (annexe 2).</p>
+                    <p>Le logement est situ&eacute; &agrave; l'adresse indiqu&eacute;e dans l'annonce STERNY correspondante. Il est &eacute;quip&eacute; d'un mobilier en nombre et en qualit&eacute; suffisants pour permettre au locataire d'y dormir, manger et vivre convenablement au sens du d&eacute;cret n&deg; 2015-981 du 31 juillet 2015. L'inventaire d&eacute;taill&eacute; du mobilier est annex&eacute; au pr&eacute;sent contrat.</p>
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 25-4 &mdash; D&eacute;cret n&deg; 2015-981 du 31 juillet 2015</span></p>
+                </div>
+            </div>
+
+            <!-- III. Dur&eacute;e et conditions financi&egrave;res -->
+            <div class="contrat-section">
+                <div class="section-label">III. Dur&eacute;e et conditions financi&egrave;res</div>
+                <div class="info-grid-2">
+                    <div class="info-item-2">
+                        <div class="item-label">Loyer hebdomadaire CC</div>
+                        <div class="item-value accent" id="loyerDetail">&mdash;</div>
                     </div>
-
-                    <p style="margin-top: 20px;">Le loyer est payable mensuellement, d'avance, le 1er de chaque mois. Le dépôt de garantie (maximum 1 mois pour location meublée) sera restitué dans un délai maximum de 1 mois après la restitution des clés, déduction faite, le cas échéant, des sommes restant dues et des réparations locatives.</p>
+                    <div class="info-item-2">
+                        <div class="item-label">Loyer mensuel estim&eacute;</div>
+                        <div class="item-value" id="loyerMensuel">&mdash;</div>
+                    </div>
+                    <div class="info-item-2">
+                        <div class="item-label">Dur&eacute;e du bail</div>
+                        <div class="item-value" id="dureeMois2">6 mois</div>
+                    </div>
+                    <div class="info-item-2">
+                        <div class="item-label">D&eacute;but du bail</div>
+                        <div class="item-value" id="dateDebut">1 mars 2026</div>
+                    </div>
+                    <div class="info-item-2">
+                        <div class="item-label">Fin du bail</div>
+                        <div class="item-value" id="dateFin">31 ao&ucirc;t 2026</div>
+                    </div>
+                    <div class="info-item-2">
+                        <div class="item-label">D&eacute;p&ocirc;t de garantie</div>
+                        <div class="item-value" id="depotDetail">&mdash;</div>
+                    </div>
+                    <div class="info-item-2">
+                        <div class="item-label">Pr&eacute;avis de d&eacute;part</div>
+                        <div class="item-value">1 mois</div>
+                    </div>
+                </div>
+                <div class="contrat-text" style="margin-top: 14px;">
+                    <p>S'agissant d'un bail meubl&eacute; consenti &agrave; un &eacute;tudiant, la dur&eacute;e du bail est de <strong><span id="dureeMoisTexte">6 mois</span></strong> (9 mois maximum l&eacute;gaux). Le bail prend fin automatiquement &agrave; son terme, sans reconduction tacite (art. 25-7 de la loi du 6 juillet 1989).</p>
+                    <p>Le loyer est payable d'avance au premier jour de chaque semaine. Les charges locatives sont comprises dans le loyer sous forme de forfait. Ce forfait est r&eacute;vis&eacute; dans les m&ecirc;mes conditions que le loyer principal.</p>
+                    <p>Le d&eacute;p&ocirc;t de garantie, plafonn&eacute; &agrave; <strong>deux mois de loyer hors charges</strong> (art. 25-6 de la loi du 6 juillet 1989), est exigible &agrave; la signature du contrat. Il sera restitu&eacute; dans un d&eacute;lai d'un mois apr&egrave;s la restitution des cl&eacute;s si l'&eacute;tat des lieux de sortie est conforme, ou de deux mois en cas de diff&eacute;rences, d&eacute;duction faite des sommes restant dues.</p>
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 25-6 et 25-7 &mdash; D&eacute;cret n&deg; 2015-587, annexe 2, &sect; III et IV</span></p>
                 </div>
             </div>
 
-            <!-- SECTION 5: OBLIGATIONS -->
-            <div class="contract-section">
-                <h2>
-                    <span class="contract-section-icon">📋</span>
-                    Obligations des parties
-                </h2>
-                <div class="contract-box">
-                    <p><strong>Obligations du locataire :</strong></p>
+            <!-- IV. Obligations des parties -->
+            <div class="contrat-section">
+                <div class="section-label">IV. Obligations des parties</div>
+                <div class="obligations-grid">
+                    <div>
+                        <div class="obligations-col-title"><span class="dot dot-orange"></span> Locataire</div>
+                        <ul class="obligations-list">
+                            <li>Payer le loyer et les charges aux termes convenus</li>
+                            <li>Souscrire une assurance habitation couvrant les risques locatifs (responsabilit&eacute; civile)</li>
+                            <li>User paisiblement du logement et respecter la destination d'habitation</li>
+                            <li>R&eacute;pondre des d&eacute;gradations survenues pendant la jouissance des lieux</li>
+                            <li>Prendre en charge l'entretien courant et les menues r&eacute;parations</li>
+                            <li>Laisser ex&eacute;cuter les travaux d'am&eacute;lioration ou d'entretien n&eacute;cessaires</li>
+                            <li>Ne pas transformer les locaux sans accord &eacute;crit du propri&eacute;taire</li>
+                            <li>Informer le propri&eacute;taire de tout sinistre ou d&eacute;gradation dans les plus brefs d&eacute;lais</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="obligations-col-title"><span class="dot dot-slate"></span> Propri&eacute;taire</div>
+                        <ul class="obligations-list">
+                            <li>D&eacute;livrer un logement d&eacute;cent, en bon &eacute;tat d'usage et de r&eacute;parations</li>
+                            <li>Assurer la jouissance paisible du logement</li>
+                            <li>Entretenir le logement en &eacute;tat de servir &agrave; l'usage pr&eacute;vu</li>
+                            <li>Effectuer les r&eacute;parations autres que locatives (gros &oelig;uvre, toiture, etc.)</li>
+                            <li>Ne pas s'opposer aux am&eacute;nagements r&eacute;alis&eacute;s par le locataire ne modifiant pas la structure</li>
+                            <li>Fournir les diagnostics techniques obligatoires</li>
+                            <li>D&eacute;livrer les quittances de loyer gratuitement</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="contrat-text" style="margin-top: 12px;">
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 6 et 7 &mdash; D&eacute;cret n&deg; 87-712 du 26 ao&ucirc;t 1987 (r&eacute;parations locatives)</span></p>
+                </div>
+            </div>
+
+            <!-- V. R&eacute;siliation -->
+            <div class="contrat-section">
+                <div class="section-label">V. R&eacute;siliation et clause r&eacute;solutoire</div>
+                <div class="contrat-text">
+                    <p><strong>R&eacute;siliation par le locataire :</strong> Le locataire peut r&eacute;silier le bail &agrave; tout moment, sous r&eacute;serve de respecter un d&eacute;lai de pr&eacute;avis d'un mois, d&eacute;livr&eacute; par lettre recommand&eacute;e avec accus&eacute; de r&eacute;ception, par acte d'huissier, ou par remise en main propre contre r&eacute;c&eacute;piss&eacute;. Pendant le pr&eacute;avis, le loyer est d&ucirc; au prorata du nombre de jours d'occupation.</p>
+                    <p><strong>Fin du bail &eacute;tudiant :</strong> Le bail prend fin automatiquement &agrave; son terme (dur&eacute;e indiqu&eacute;e &agrave; la section III). Aucun cong&eacute; n'est n&eacute;cessaire de la part du locataire.</p>
+                    <p><strong>Possibilit&eacute; de renouvellement :</strong> &Agrave; l'approche du terme du bail, le locataire peut formuler une demande de renouvellement via la plateforme STERNY. Le propri&eacute;taire dispose d'un droit discr&eacute;tionnaire d'accepter ou de refuser cette demande, sans avoir &agrave; motiver sa d&eacute;cision. En cas d'accord, un <strong>nouveau contrat de location</strong> sera &eacute;tabli pour une dur&eacute;e n'exc&eacute;dant pas neuf mois, conform&eacute;ment &agrave; l'article 25-7 de la loi du 6 juillet 1989. Le d&eacute;p&ocirc;t de garantie du bail pr&eacute;c&eacute;dent sera conserv&eacute; sauf modification du loyer. Le renouvellement ne constitue pas une reconduction tacite au sens de la loi.</p>
+                    <p><strong>Clause r&eacute;solutoire :</strong> Le pr&eacute;sent bail sera r&eacute;sili&eacute; de plein droit, apr&egrave;s mise en demeure rest&eacute;e infructueuse pendant deux mois, en cas de :</p>
                     <ul>
-                        <li>Payer le loyer et les charges aux termes convenus</li>
-                        <li>Souscrire une assurance habitation (responsabilité civile locative)</li>
-                        <li>Utiliser paisiblement le logement</li>
-                        <li>Prendre en charge l'entretien courant et les menues réparations</li>
-                        <li>Laisser exécuter les travaux urgents et nécessaires</li>
+                        <li>D&eacute;faut de paiement du loyer ou des charges aux termes convenus</li>
+                        <li>Non-versement du d&eacute;p&ocirc;t de garantie</li>
+                        <li>Non-souscription d'une assurance habitation couvrant les risques locatifs</li>
+                        <li>Troubles de voisinage constat&eacute;s par d&eacute;cision de justice pass&eacute;e en force de chose jug&eacute;e</li>
                     </ul>
-
-                    <p style="margin-top: 15px;"><strong>Obligations du bailleur :</strong></p>
-                    <ul>
-                        <li>Délivrer au locataire un logement décent</li>
-                        <li>Assurer au locataire la jouissance paisible du logement</li>
-                        <li>Entretenir le logement en l'état de servir</li>
-                        <li>Ne pas s'opposer aux aménagements réalisés par le locataire</li>
-                    </ul>
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 15, 24 et 25-8 &mdash; Loi n&deg; 2023-668 du 27 juillet 2023</span></p>
                 </div>
             </div>
 
-            <!-- ALERT WARNING -->
-            <div class="alert-warning">
-                <div class="alert-warning-icon">⚠️</div>
-                <div class="alert-warning-content">
-                    <div class="alert-warning-title">Documents obligatoires annexés</div>
-                    <div class="alert-warning-text">
-                        Ce contrat comprend en annexe les diagnostics techniques obligatoires : DPE (Diagnostic de Performance Énergétique), ERNT (État des Risques Naturels et Technologiques), et le cas échéant : diagnostic plomb, amiante, gaz, électricité. Le propriétaire s'engage à fournir ces documents.
+            <!-- VI. &Eacute;tat des lieux et inventaire -->
+            <div class="contrat-section">
+                <div class="section-label">VI. &Eacute;tat des lieux et inventaire</div>
+                <div class="contrat-text">
+                    <p>Un <strong>&eacute;tat des lieux d'entr&eacute;e</strong> contradictoire et un <strong>inventaire d&eacute;taill&eacute; du mobilier</strong> sont &eacute;tablis lors de la remise des cl&eacute;s, conform&eacute;ment &agrave; l'article 3-2 de la loi du 6 juillet 1989. Ils sont annex&eacute;s au pr&eacute;sent contrat.</p>
+                    <p>Un &eacute;tat des lieux de sortie et un inventaire contradictoire sont &eacute;tablis lors de la restitution des cl&eacute;s. En cas de d&eacute;saccord, les parties peuvent faire appel &agrave; un huissier de justice, dont les frais seront partag&eacute;s par moiti&eacute;.</p>
+                    <p>Le locataire dispose d'un d&eacute;lai de <strong>10 jours</strong> &agrave; compter de la r&eacute;alisation de l'&eacute;tat des lieux d'entr&eacute;e pour demander sa compl&eacute;tion.</p>
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 3-2 &mdash; D&eacute;cret n&deg; 2016-382 du 30 mars 2016</span></p>
+                </div>
+            </div>
+
+            <!-- VII. Diagnostics et annexes -->
+            <div class="contrat-section">
+                <div class="section-label">VII. Annexes obligatoires</div>
+                <div class="contrat-text">
+                    <p>Le propri&eacute;taire s'engage &agrave; fournir, conform&eacute;ment &agrave; la loi, l'ensemble des annexes obligatoires au pr&eacute;sent contrat, notamment :</p>
+                    <ul>
+                        <li>Notice d'information relative aux droits et obligations des locataires et propri&eacute;taires</li>
+                        <li>Diagnostic de performance &eacute;nerg&eacute;tique (DPE)</li>
+                        <li>&Eacute;tat des risques naturels, miniers et technologiques (ERNT)</li>
+                        <li>Constat de risque d'exposition au plomb (logements avant 1949)</li>
+                        <li>Diagnostics amiante, gaz et &eacute;lectricit&eacute; (le cas &eacute;ch&eacute;ant)</li>
+                        <li>Inventaire d&eacute;taill&eacute; du mobilier</li>
+                        <li>&Eacute;tat des lieux d'entr&eacute;e</li>
+                        <li>R&egrave;glement de copropri&eacute;t&eacute; (si immeuble collectif)</li>
+                    </ul>
+                    <p>L'absence de fourniture du DPE interdit toute action en r&eacute;vision de loyer.</p>
+                    <p><span class="clause-ref">Loi n&deg; 89-462 du 6 juillet 1989, art. 3-3 &mdash; Code de la construction et de l'habitation, art. L.126-26 et suivants</span></p>
+                </div>
+            </div>
+
+            <!-- VIII. Clauses particuli&egrave;res -->
+            <div class="contrat-section">
+                <div class="section-label">VIII. Dispositions particuli&egrave;res</div>
+                <div class="contrat-text">
+                    <p><strong>Interm&eacute;diation STERNY :</strong> Le pr&eacute;sent contrat est conclu par l'interm&eacute;diaire de la plateforme STERNY, qui assure la mise en relation, la gestion des paiements et le suivi administratif. Les honoraires de mise en relation sont int&eacute;gr&eacute;s au loyer affich&eacute; et &agrave; la charge exclusive du propri&eacute;taire. Aucun frais suppl&eacute;mentaire n'est factur&eacute; au locataire au titre de l'interm&eacute;diation.</p>
+                    <p><strong>Assurance :</strong> Le locataire est tenu de justifier de la souscription d'une assurance habitation couvrant les risques locatifs &agrave; la signature du bail et, sur demande du propri&eacute;taire, &agrave; chaque renouvellement annuel de la police. Le propri&eacute;taire ne peut imposer le choix de l'assureur.</p>
+                    <p><strong>Animaux :</strong> Aucune clause ne peut interdire la d&eacute;tention d'un animal domestique, sous r&eacute;serve qu'il ne cause ni d&eacute;g&acirc;t ni trouble de jouissance.</p>
+                    <p><strong>R&eacute;vision du loyer :</strong> Le loyer peut &ecirc;tre r&eacute;vis&eacute; annuellement sur la base de l'Indice de R&eacute;f&eacute;rence des Loyers (IRL) publi&eacute; par l'INSEE. En l'absence de clause de r&eacute;vision, le loyer reste fixe pendant toute la dur&eacute;e du bail.</p>
+                    <p><strong>Loi applicable :</strong> Le pr&eacute;sent contrat est soumis aux dispositions de la loi n&deg; 89-462 du 6 juillet 1989, du d&eacute;cret n&deg; 2015-587 du 29 mai 2015 et de l'ensemble des textes r&eacute;glementaires en vigueur. Tout litige relatif &agrave; l'ex&eacute;cution du pr&eacute;sent contrat rel&egrave;ve de la comp&eacute;tence du tribunal judiciaire du lieu de situation de l'immeuble.</p>
+                </div>
+            </div>
+
+            <!-- Signature &eacute;lectronique -->
+            <div class="contrat-section">
+
+                <!-- Statut des deux signatures (grille 2 colonnes) -->
+                <div class="sig-status-grid" id="signatureStatus" style="display:none;">
+                    <div class="sig-status-card" id="statusLocataire">
+                        <div class="sig-status-role">Locataire</div>
+                        <div class="sig-status-icon" id="iconStatusLocataire">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="sig-status-date" id="dateStatusLocataire">En attente</div>
+                    </div>
+                    <div class="sig-status-card" id="statusProprietaire">
+                        <div class="sig-status-role">Propri&eacute;taire</div>
+                        <div class="sig-status-icon" id="iconStatusProprietaire">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="sig-status-date" id="dateStatusProprietaire">En attente</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- SIGNATURE -->
-            <div class="signature-section">
-                <h3>✍️ Signature électronique</h3>
-                
-                <div class="checkbox-container" onclick="toggleCheckbox('cgvCheckbox')">
-                    <input type="checkbox" id="cgvCheckbox">
-                    <label for="cgvCheckbox" class="checkbox-label">
-                        <strong>J'ai lu et j'accepte les Conditions Générales de Vente</strong> d'EASWAP. Je comprends que cette plateforme agit en tant qu'intermédiaire et que le contrat de location est conclu directement entre le propriétaire et moi-même.
-                    </label>
+                <!-- D&eacute;j&agrave; sign&eacute; par moi -->
+                <div class="sig-done-block" id="dejaSigne" style="display:none;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <div class="sig-done-title">Vous avez sign&eacute; le contrat</div>
+                    <div class="sig-done-msg" id="dejaSigneMsg">En attente de la signature de l'autre partie.</div>
                 </div>
 
-                <div class="checkbox-container" onclick="toggleCheckbox('contratCheckbox')" style="margin-top: 15px;">
-                    <input type="checkbox" id="contratCheckbox">
-                    <label for="contratCheckbox" class="checkbox-label">
-                        <strong>Je déclare avoir lu et accepté l'intégralité du contrat de location</strong> ci-dessus. Je m'engage à respecter toutes les clauses mentionnées. Je certifie l'exactitude des informations fournies.
-                    </label>
+                <!-- Formulaire de signature avec preuves -->
+                <div class="sig-form" id="formulaireSignature">
+
+                    <div class="section-label" id="sigSectionTitle" style="padding-top: 14px; margin-bottom: 12px;">IX. Signature &eacute;lectronique</div>
+
+                    <!-- Identit&eacute; du signataire -->
+                    <div class="sig-identity" id="sigIdentity">
+                        <div class="sig-identity-avatar">
+                            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="sig-identity-info">
+                            <div class="sig-identity-label" id="sigIdentityLabel">Vous signez en tant que</div>
+                            <div class="sig-identity-name" id="sigNomComplet">&mdash;</div>
+                            <div class="sig-identity-email" id="sigEmail">&mdash;</div>
+                        </div>
+                    </div>
+
+                    <!-- Consentements explicites -->
+                    <div class="sig-consents" id="sigConsents">
+                        <label class="sig-check">
+                            <input type="checkbox" id="checkLuContrat" onchange="verifierFormulaire()">
+                            <span class="sig-check-label" id="labelLuContrat"></span>
+                        </label>
+                        <label class="sig-check">
+                            <input type="checkbox" id="checkAccepteContrat" onchange="verifierFormulaire()">
+                            <span class="sig-check-label" id="labelAccepteContrat"></span>
+                        </label>
+                        <label class="sig-check">
+                            <input type="checkbox" id="checkCgvSterny" onchange="verifierFormulaire()">
+                            <span class="sig-check-label">J'accepte les <a href="cgv.html" target="_blank">Conditions G&eacute;n&eacute;rales</a> de STERNY et j'autorise la plateforme &agrave; conserver la preuve de ma signature.</span>
+                        </label>
+                    </div>
+
+                    <!-- Zone de saisie du nom -->
+                    <div class="sig-confirm-block">
+                        <label class="sig-type-label" for="sigSaisieNom">
+                            <svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                            Pr&eacute;nom et nom
+                        </label>
+                        <input type="text" class="sig-type-input" id="sigSaisieNom" placeholder="Pr&eacute;nom Nom" autocomplete="off" oninput="autoCapitalizeInput(this); verifierFormulaire()" style="text-transform: capitalize;">
+                        <div class="sig-type-hint" id="sigTypeHint"></div>
+                    </div>
+
+                    <!-- Mention l&eacute;gale -->
+                    <div class="sig-legal-block">
+                        <p class="sig-legal"><strong>Signature &eacute;lectronique &agrave; valeur l&eacute;gale</strong></p>
+                        <p class="sig-legal">En cliquant sur &laquo; Signer &raquo;, vous apposez votre signature &eacute;lectronique au sens de l'article 1367 du Code civil et du r&egrave;glement eIDAS (UE) n&deg; 910/2014.</p>
+                        <p class="sig-legal">Preuves enregistr&eacute;es : identit&eacute;, e-mail, horodatage, IP, empreinte SHA-256 et consentement.</p>
+                    </div>
                 </div>
 
-                <button class="btn-download" onclick="telechargerPDF()">
-                    📄 Télécharger le contrat en PDF
-                </button>
+                <!-- Bloc preuves de signature (visible uniquement à l'impression) -->
+                <div class="sig-print-proof" id="sigPrintProof">
+                    <div class="sig-print-title">IX. Signatures &eacute;lectroniques</div>
+                    <div class="sig-print-grid">
+                        <div class="sig-print-card" id="printLocataire">
+                            <div class="sig-print-role">Locataire</div>
+                            <div class="sig-print-name" id="printNomLocataire">&mdash;</div>
+                            <div class="sig-print-status" id="printStatusLocataire">En attente</div>
+                        </div>
+                        <div class="sig-print-card" id="printProprietaire">
+                            <div class="sig-print-role">Propri&eacute;taire</div>
+                            <div class="sig-print-name" id="printNomProprietaire">&mdash;</div>
+                            <div class="sig-print-status" id="printStatusProprietaire">En attente</div>
+                        </div>
+                    </div>
+                    <div class="sig-print-legal">
+                        Signature &eacute;lectronique au sens de l'article 1367 du Code civil et du r&egrave;glement eIDAS (UE) n&deg; 910/2014.<br>
+                        Preuves enregistr&eacute;es : identit&eacute;, e-mail, horodatage, adresse IP, empreinte SHA-256 et consentement.
+                    </div>
+                </div>
 
-                <p style="margin-top: 20px; font-size: 13px; color: #6b7280; text-align: center;">
-                    En cliquant sur "Signer et continuer", vous apposez votre signature électronique qui a la même valeur légale qu'une signature manuscrite.
-                </p>
+                <div class="sig-email-notice">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg>
+                    Une copie du contrat sign&eacute; vous sera envoy&eacute;e par e-mail une fois les deux signatures valid&eacute;es.
+                </div>
+
             </div>
+
         </div>
 
-        <!-- ACTIONS -->
-        <div class="actions-container">
-            <a href="match-confirmation.html?match_id=xxx" class="btn-back" id="btnRetour">
-                ← Retour
-            </a>
-            <button class="btn-primary" id="btnSigner" disabled onclick="signerContrat()">
-                ✍️ Signer et continuer
-            </button>
+        <!-- ACTIONS (même position que dossier) -->
+        <div class="actions-card">
+            <a href="dossier-locataire.html" class="btn-back" id="btnRetour">Retour</a>
+            <button class="btn-primary" id="btnSigner" disabled onclick="ouvrirConfirmation()">Signer et continuer</button>
+        </div>
+
+    </div>
+
+    <!-- MODALE DE CONFIRMATION -->
+    <div class="modal-overlay" id="modalConfirmation">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            </div>
+            <div class="modal-title">Confirmer la signature</div>
+            <div class="modal-text">
+                Vous êtes sur le point de <strong>signer électroniquement</strong> ce contrat de location meublée.<br><br>
+                Cette action a <strong>valeur juridique</strong> et ne peut pas être annulée. Êtes-vous sûr(e) de vouloir continuer ?
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn-cancel" onclick="fermerConfirmation()">Annuler</button>
+                <button class="modal-btn-confirm" onclick="confirmerSignature()">Oui, je signe</button>
+            </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer style="margin-top: 40px;">
-        <div class="container">
-            <p>&copy; 2026 EASWAP - Tous droits réservés</p>
-        </div>
-    </footer>
-
     <script>
-        // Récupérer l'ID du match
+        // ================================================================
+        // DONNEES
+        // ================================================================
         const urlParams = new URLSearchParams(window.location.search);
         const matchId = urlParams.get('match_id');
 
         let matchData = null;
         let currentUser = null;
+        let contratData = null;
+        let isLocataire = false;
+        let isAdminGlobal = false;
+        let proprietaireData = null;
 
-        // Charger les données
+        // ================================================================
+        // CHARGER LES DONNEES
+        // ================================================================
         async function chargerContrat() {
             try {
                 const { data: { user } } = await supabaseClient.auth.getUser();
                 if (!user) {
-                    window.location.href = 'connexion.html';
+                    // Mode démo sans connexion
+                    if (!matchId) {
+                        document.getElementById('nomProprietaire').textContent = 'Jean Dupont';
+                        document.getElementById('infoProprietaire').textContent = 'jean.dupont@email.com';
+                        document.getElementById('nomLocataire').textContent = 'Marie Martin';
+                        document.getElementById('infoLocataire').textContent = 'marie.martin@email.com';
+                        document.getElementById('loyerDetail').textContent = '95€/sem';
+                        document.getElementById('loyerMensuel').textContent = '412€/mois';
+                        document.getElementById('depotDetail').textContent = '824€';
+                        const demoDebut = new Date();
+                        demoDebut.setMonth(demoDebut.getMonth() + 1);
+                        demoDebut.setDate(1);
+                        const demoFin = new Date(demoDebut);
+                        demoFin.setMonth(demoFin.getMonth() + 6);
+                        demoFin.setDate(0);
+                        const fmtDemo = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                        document.getElementById('dateDebut').textContent = fmtDemo(demoDebut);
+                        document.getElementById('dateFin').textContent = fmtDemo(demoFin);
+                        document.getElementById('sigNomComplet').textContent = 'Marie Martin';
+                        document.getElementById('sigEmail').textContent = 'marie.martin@email.com';
+                        signataireName = 'Marie Martin';
+                        const now = new Date();
+                        document.getElementById('printNomLocataire').textContent = 'Marie Martin';
+                        document.getElementById('printNomProprietaire').textContent = 'Jean Dupont';
+                        document.getElementById('printStatusLocataire').textContent = `Signé le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR')}`;
+                        document.getElementById('printStatusProprietaire').textContent = `Signé le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR')}`;
+                        document.getElementById('printLocataire').classList.add('signed');
+                        document.getElementById('printProprietaire').classList.add('signed');
+                        }
                     return;
                 }
                 currentUser = user;
 
+                // Vérifier si admin
+                const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single();
+                const isAdmin = adminCheck?.is_admin === true;
+                isAdminGlobal = isAdmin;
+
+                // MODE DEMO (connecté mais sans match_id)
                 if (!matchId) {
-                    alert('❌ Aucun match spécifié');
-                    history.back();
+                    document.getElementById('nomProprietaire').textContent = 'Jean Dupont';
+                    document.getElementById('infoProprietaire').textContent = 'jean.dupont@email.com';
+                    document.getElementById('nomLocataire').textContent = 'Marie Martin';
+                    document.getElementById('infoLocataire').textContent = 'marie.martin@email.com';
+                    document.getElementById('loyerDetail').textContent = '95\u20ac/sem';
+                    document.getElementById('loyerMensuel').textContent = '412\u20ac/mois';
+                    document.getElementById('depotDetail').textContent = '824\u20ac';
+                    // Dates dynamiques demo
+                    const demoDebut = new Date();
+                    demoDebut.setMonth(demoDebut.getMonth() + 1);
+                    demoDebut.setDate(1);
+                    const demoFin = new Date(demoDebut);
+                    demoFin.setMonth(demoFin.getMonth() + 6);
+                    demoFin.setDate(0);
+                    const fmtDemo = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    document.getElementById('dateDebut').textContent = fmtDemo(demoDebut);
+                    document.getElementById('dateFin').textContent = fmtDemo(demoFin);
+                    document.getElementById('btnRetour').href = 'dossier-locataire.html';
+                    // Demo : remplir la section signature
+                    document.getElementById('sigNomComplet').textContent = 'Marie Martin';
+                    document.getElementById('sigEmail').textContent = 'marie.martin@email.com';
+                    signataireName = 'Marie Martin';
+                    // Demo : remplir le bloc impression (signatures fictives)
+                    document.getElementById('printNomLocataire').textContent = 'Marie Martin';
+                    document.getElementById('printNomProprietaire').textContent = 'Jean Dupont';
+                    const now = new Date();
+                    document.getElementById('printStatusLocataire').textContent = `Signé le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR')}`;
+                    document.getElementById('printStatusProprietaire').textContent = `Signé le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR')}`;
+                    document.getElementById('printLocataire').classList.add('signed');
+                    document.getElementById('printProprietaire').classList.add('signed');
+                    isLocataire = true;
+                    adapterConsentsParRole();
                     return;
                 }
 
-                // Récupérer les données
                 const { data: candidature, error } = await supabaseClient
                     .from('candidatures')
                     .select(`
@@ -621,114 +1315,584 @@
 
                 if (error) throw error;
                 matchData = candidature;
+                isLocataire = (currentUser.id === candidature.locataire_id);
+                const isProprietaire = (currentUser.id === candidature.annonces?.user_id);
 
-                // Récupérer propriétaire
+                // ─── SÉCURITÉ : Vérifier que l'utilisateur est bien partie prenante du match ───
+                if (!isLocataire && !isProprietaire && !isAdmin) {
+                    alert('Accès non autorisé à ce contrat.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Garde-fou : rediriger si la candidature est d\u00e9j\u00e0 pass\u00e9e \u00e0 une \u00e9tape ult\u00e9rieure
+                if (candidature.statut === 'paiement_ok') {
+                    window.location.href = `etat-des-lieux-entree.html?match_id=${matchId}`;
+                    return;
+                }
+                if (candidature.statut === 'actif') {
+                    window.location.href = `match-actif.html?match_id=${matchId}`;
+                    return;
+                }
+
                 const { data: proprietaire } = await supabaseClient
                     .from('users')
                     .select('*')
                     .eq('id', candidature.annonces.user_id)
                     .single();
+                proprietaireData = proprietaire;
 
-                // Afficher
                 afficherContrat(candidature, proprietaire);
 
-                // Liens
-                document.getElementById('btnRetour').href = `match-confirmation.html?match_id=${matchId}`;
+                // Adapter le flux si c'est un renouvellement
+                if (candidature.est_renouvellement) {
+                    adapterProgressRenouvellement();
+                    document.getElementById('btnRetour').href = 'dashboard-locataire.html';
+                } else {
+                    document.getElementById('btnRetour').href = `dossier-locataire.html?match_id=${matchId}`;
+                }
+
+                await chargerOuCreerContrat(candidature, proprietaire);
+
+                // Afficher l'identit\u00e9 du signataire dans le bloc signature
+                afficherIdentiteSignataire();
 
             } catch (error) {
-                console.error('❌ Erreur:', error);
-                alert('❌ Erreur lors du chargement');
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement du contrat');
             }
         }
 
+        // ================================================================
+        // AFFICHER LE CONTRAT
+        // ================================================================
         function afficherContrat(candidature, proprietaire) {
-            const locataire = candidature.users;
             const annonce = candidature.annonces;
+            const locataire = candidature.users;
 
-            // Propriétaire
-            document.getElementById('proprietaireInfo').innerHTML = 
-                `<strong>${proprietaire.prenom} ${proprietaire.nom}</strong><br>
-                Email : ${proprietaire.email}<br>
-                Téléphone : ${proprietaire.telephone || 'Non renseigné'}`;
+            // Parties
+            document.getElementById('nomProprietaire').textContent = `${proprietaire.prenom} ${proprietaire.nom}`;
+            document.getElementById('infoProprietaire').innerHTML = proprietaire.email || '';
+            document.getElementById('nomLocataire').textContent = `${locataire.prenom} ${locataire.nom}`;
+            document.getElementById('infoLocataire').innerHTML = locataire.email || '';
+
+            // Finances
+            const prixSemaine = annonce.prix;
+            const loyerMensuel = Math.round(prixSemaine * 52 / 12);
+            const depot = loyerMensuel * 2; // max 2 mois pour meublé
+
+            document.getElementById('loyerDetail').textContent = `${prixSemaine}\u20ac/sem`;
+            document.getElementById('loyerMensuel').textContent = `${loyerMensuel}\u20ac/mois`;
+            document.getElementById('depotDetail').textContent = `${depot}\u20ac`;
+        }
+
+        // ================================================================
+        // CHARGER OU CREER LE CONTRAT
+        // ================================================================
+        async function chargerOuCreerContrat(candidature, proprietaire) {
+            const { data: contrat } = await supabaseClient
+                .from('contrats')
+                .select('*')
+                .eq('candidature_id', matchId)
+                .single();
+
+            if (contrat) {
+                contratData = contrat;
+            } else {
+                const annonce = candidature.annonces;
+                const today = new Date();
+                const debut = new Date(today);
+                debut.setMonth(debut.getMonth() + 1);
+                debut.setDate(1);
+                const fin = new Date(debut);
+                fin.setMonth(fin.getMonth() + 6);
+                fin.setDate(0);
+
+                const { data: newContrat, error } = await supabaseClient
+                    .from('contrats')
+                    .insert({
+                        candidature_id: matchId,
+                        locataire_id: candidature.locataire_id,
+                        proprietaire_id: candidature.annonces.user_id,
+                        annonce_id: annonce.id,
+                        loyer_mensuel: Math.round(annonce.prix * 52 / 12),
+                        depot_garantie: Math.round(annonce.prix * 52 / 12) * 2,
+                        date_debut: debut.toISOString().split('T')[0],
+                        date_fin: fin.toISOString().split('T')[0],
+                        statut: 'en_attente'
+                    })
+                    .select()
+                    .single();
+
+                if (error) { console.error('Erreur cr\u00e9ation contrat:', error); return; }
+                contratData = newContrat;
+            }
+
+            const formatDateLisible = (dateStr) => {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+            };
+
+            if (contratData.date_debut) {
+                document.getElementById('dateDebut').textContent = formatDateLisible(contratData.date_debut);
+            }
+            if (contratData.date_fin) {
+                document.getElementById('dateFin').textContent = formatDateLisible(contratData.date_fin);
+                const debut = new Date(contratData.date_debut);
+                const fin = new Date(contratData.date_fin);
+                const mois = (fin.getFullYear() - debut.getFullYear()) * 12 + (fin.getMonth() - debut.getMonth());
+                document.getElementById('dureeMois2').textContent = `${mois} mois`;
+                document.getElementById('dureeMoisTexte').textContent = `${mois} mois`;
+            }
+
+            afficherStatutSignatures();
+        }
+
+        // ================================================================
+        // ADAPTER PROGRESS BAR POUR RENOUVELLEMENT (3 étapes)
+        // ================================================================
+        function adapterProgressRenouvellement() {
+            const stepsContainer = document.querySelector('.progress-steps');
+            stepsContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            stepsContainer.innerHTML = `
+                <div class="progress-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Renouvellement</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Contrat</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Paiement</div>
+                </div>
+            `;
+            document.querySelector('.progress-bar-fill').style.width = '50%';
+        }
+
+        // ================================================================
+        // STATUT DES SIGNATURES
+        // ================================================================
+        function afficherStatutSignatures() {
+            if (!contratData) return;
+
+            const statusDiv = document.getElementById('signatureStatus');
+            statusDiv.style.display = 'grid';
+
+            const locataireName = matchData.users.prenom + ' ' + matchData.users.nom;
+            const proprietaireName = proprietaireData.prenom + ' ' + proprietaireData.nom;
+
+            const checkSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
 
             // Locataire
-            document.getElementById('locataireInfo').innerHTML = 
-                `<strong>${locataire.prenom} ${locataire.nom}</strong><br>
-                Email : ${locataire.email}<br>
-                Téléphone : ${locataire.telephone || 'Non renseigné'}`;
+            const cardLoc = document.getElementById('statusLocataire');
+            cardLoc.querySelector('.sig-status-role').textContent = locataireName;
 
-            // Logement
-            document.getElementById('logementInfo').textContent = 
-                `Logement situé au ${annonce.adresse || 'adresse'}, ${annonce.ville}`;
-            document.getElementById('logementSurface').textContent = 
-                `${annonce.surface || '--'}m²`;
-            document.getElementById('logementPieces').textContent = 
-                `${annonce.pieces || '--'} pièces`;
+            if (contratData.signature_locataire) {
+                cardLoc.classList.add('signed');
+                document.getElementById('iconStatusLocataire').innerHTML = checkSvg;
+                const d = new Date(contratData.date_signature_locataire);
+                document.getElementById('dateStatusLocataire').textContent = `Sign\u00e9 le ${d.toLocaleDateString('fr-FR')}`;
+            }
 
-            // Montants
-            document.getElementById('loyerMensuel').textContent = `${annonce.prix}€`;
-            document.getElementById('depotGarantie').textContent = `${annonce.prix}€`;
+            // Propri\u00e9taire
+            const cardProp = document.getElementById('statusProprietaire');
+            cardProp.querySelector('.sig-status-role').textContent = proprietaireName;
+
+            if (contratData.signature_proprietaire) {
+                cardProp.classList.add('signed');
+                document.getElementById('iconStatusProprietaire').innerHTML = checkSvg;
+                const d = new Date(contratData.date_signature_proprietaire);
+                document.getElementById('dateStatusProprietaire').textContent = `Sign\u00e9 le ${d.toLocaleDateString('fr-FR')}`;
+            }
+
+            // D\u00e9j\u00e0 sign\u00e9 par moi ?
+            const dejaSigneParMoi = (isLocataire && contratData.signature_locataire) ||
+                                     (!isLocataire && contratData.signature_proprietaire);
+
+            if (dejaSigneParMoi) {
+                document.getElementById('formulaireSignature').style.display = 'none';
+                document.getElementById('dejaSigne').style.display = 'block';
+                document.getElementById('btnSigner').style.display = 'none';
+
+                if (contratData.signature_locataire && contratData.signature_proprietaire) {
+                    document.getElementById('dejaSigneMsg').textContent = 'Les deux parties ont sign\u00e9. Le contrat est valid\u00e9 !';
+                    const btn = document.getElementById('btnSigner');
+                    btn.style.display = 'inline-flex';
+                    btn.disabled = false;
+                    btn.textContent = '\u2192 Continuer vers le paiement';
+                    btn.onclick = () => { window.location.href = `paiement-initial.html?match_id=${matchId}`; };
+                } else {
+                    const autrePart = isLocataire ? 'du propri\u00e9taire' : 'du locataire';
+                    document.getElementById('dejaSigneMsg').textContent = `En attente de la signature ${autrePart}.`;
+                }
+            } else {
+                document.getElementById('formulaireSignature').style.display = 'flex';
+                document.getElementById('dejaSigne').style.display = 'none';
+                document.getElementById('btnSigner').style.display = 'inline-flex';
+            }
+
+            // Remplir le bloc impression
+            document.getElementById('printNomLocataire').textContent = locataireName;
+            document.getElementById('printNomProprietaire').textContent = proprietaireName;
+
+            const printLoc = document.getElementById('printLocataire');
+            if (contratData.signature_locataire) {
+                printLoc.classList.add('signed');
+                const d = new Date(contratData.date_signature_locataire);
+                document.getElementById('printStatusLocataire').textContent = `Signé le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR')}`;
+            }
+
+            const printProp = document.getElementById('printProprietaire');
+            if (contratData.signature_proprietaire) {
+                printProp.classList.add('signed');
+                const d = new Date(contratData.date_signature_proprietaire);
+                document.getElementById('printStatusProprietaire').textContent = `Signé le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR')}`;
+            }
+
         }
 
-        // Toggle checkbox
-        function toggleCheckbox(id) {
-            const checkbox = document.getElementById(id);
-            checkbox.checked = !checkbox.checked;
-            verifierFormulaire();
-        }
+        // ================================================================
+        // SIGNATURE : IDENTIT\u00c9 DU SIGNATAIRE
+        // ================================================================
+        let signataireName = '';
 
-        // Vérifier si tout est coché
-        function verifierFormulaire() {
-            const cgv = document.getElementById('cgvCheckbox').checked;
-            const contrat = document.getElementById('contratCheckbox').checked;
-            const btnSigner = document.getElementById('btnSigner');
-            
-            btnSigner.disabled = !(cgv && contrat);
-        }
-
-        // Écouter les changements
-        document.getElementById('cgvCheckbox').addEventListener('change', verifierFormulaire);
-        document.getElementById('contratCheckbox').addEventListener('change', verifierFormulaire);
-
-        // Signer le contrat
-        async function signerContrat() {
+        function afficherIdentiteSignataire() {
             if (!matchData) return;
+            const locataire = matchData.users;
 
-            try {
-                // TODO: Enregistrer la signature dans Supabase
-                // Créer une table 'contrats' avec : id, candidature_id, date_signature, etc.
-                
-                console.log('✅ Contrat signé !');
-                
-                // Redirection vers paiement
-                window.location.href = `paiement-initial.html?match_id=${matchId}`;
+            let nom, email;
+            if (isLocataire) {
+                nom = `${locataire.prenom} ${locataire.nom}`;
+                email = locataire.email;
+            } else {
+                nom = `${proprietaireData.prenom} ${proprietaireData.nom}`;
+                email = proprietaireData.email;
+            }
+            signataireName = nom;
+            document.getElementById('sigNomComplet').textContent = nom;
+            document.getElementById('sigEmail').textContent = email;
 
-            } catch (error) {
-                console.error('❌ Erreur:', error);
-                alert('❌ Erreur lors de la signature');
+            // Personnaliser les consentements selon le rôle
+            adapterConsentsParRole();
+        }
+
+        function adapterConsentsParRole() {
+            const labelLu = document.getElementById('labelLuContrat');
+            const labelAccepte = document.getElementById('labelAccepteContrat');
+            const sigTitle = document.getElementById('sigSectionTitle');
+            const identityLabel = document.getElementById('sigIdentityLabel');
+
+            if (isLocataire) {
+                if (sigTitle) sigTitle.textContent = 'IX. Signature du locataire';
+                if (identityLabel) identityLabel.textContent = 'Vous signez en tant que locataire';
+                labelLu.textContent = 'Je d\u00e9clare avoir lu l\u2019int\u00e9gralit\u00e9 du contrat de location meubl\u00e9e ci-dessus et en avoir compris toutes les clauses.';
+                labelAccepte.textContent = 'J\u2019accepte les termes du pr\u00e9sent contrat. Je m\u2019engage \u00e0 payer le loyer et les charges aux \u00e9ch\u00e9ances convenues, \u00e0 souscrire une assurance habitation et \u00e0 restituer le logement en bon \u00e9tat.';
+            } else {
+                if (sigTitle) sigTitle.textContent = 'IX. Signature du propri\u00e9taire';
+                if (identityLabel) identityLabel.textContent = 'Vous signez en tant que propri\u00e9taire';
+                labelLu.textContent = 'Je d\u00e9clare avoir lu l\u2019int\u00e9gralit\u00e9 du contrat de location meubl\u00e9e ci-dessus et en avoir compris toutes les clauses.';
+                labelAccepte.textContent = 'J\u2019accepte les termes du pr\u00e9sent contrat. Je m\u2019engage \u00e0 fournir un logement d\u00e9cent et conforme, \u00e0 effectuer les r\u00e9parations \u00e0 ma charge et \u00e0 respecter les droits du locataire pr\u00e9vus par la loi.';
             }
         }
 
-        // Télécharger PDF (à implémenter)
-        function telechargerPDF() {
-            alert('🚧 Fonctionnalité en cours de développement\n\nLe téléchargement PDF sera bientôt disponible.');
+        // ================================================================
+        // HASH SHA-256 DU DOCUMENT
+        // ================================================================
+        async function genererHashDocument() {
+            // On prend le contenu textuel de la carte contrat comme empreinte
+            const contratEl = document.querySelector('.contrat-card');
+            const texte = contratEl ? contratEl.innerText : '';
+            // Ajouter les donn\u00e9es cl\u00e9s du contrat
+            const donnees = texte + '|' +
+                (contratData?.id || '') + '|' +
+                (contratData?.loyer_mensuel || '') + '|' +
+                (contratData?.depot_garantie || '') + '|' +
+                (contratData?.date_debut || '') + '|' +
+                (contratData?.date_fin || '');
+
+            const encoder = new TextEncoder();
+            const data = encoder.encode(donnees);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Gérer le lien dashboard
+        // ================================================================
+        // R\u00c9CUP\u00c9RER L'IP PUBLIQUE
+        // ================================================================
+        async function recupererIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip || 'inconnu';
+            } catch {
+                return 'inconnu';
+            }
+        }
+
+        // ================================================================
+        // MAJUSCULE AUTOMATIQUE (Prénom Nom)
+        // ================================================================
+        function autoCapitalizeInput(input) {
+            const pos = input.selectionStart;
+            input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+            input.setSelectionRange(pos, pos);
+        }
+
+        // ================================================================
+        // VÉRIFIER LE FORMULAIRE DE SIGNATURE
+        // ================================================================
+        function verifierFormulaire() {
+            // Admin bypass : toujours activer le bouton
+            if (isAdminGlobal) {
+                document.getElementById('btnSigner').disabled = false;
+                return;
+            }
+            const check1 = document.getElementById('checkLuContrat').checked;
+            const check2 = document.getElementById('checkAccepteContrat').checked;
+            const check3 = document.getElementById('checkCgvSterny').checked;
+            const saisie = document.getElementById('sigSaisieNom').value.trim();
+            const input = document.getElementById('sigSaisieNom');
+            const hint = document.getElementById('sigTypeHint');
+
+            // Vérifier que le nom tapé correspond au nom du signataire
+            let nomValide = false;
+            if (saisie.length > 0 && signataireName) {
+                const normaliser = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+                nomValide = normaliser(saisie) === normaliser(signataireName);
+
+                if (nomValide) {
+                    input.classList.remove('invalid');
+                    input.classList.add('valid');
+                    hint.className = 'sig-type-hint success';
+                    hint.textContent = 'Identité confirmée';
+                } else {
+                    input.classList.remove('valid');
+                    input.classList.add('invalid');
+                    hint.className = 'sig-type-hint error';
+                    hint.textContent = 'Le nom ne correspond pas à votre identité';
+                }
+            } else {
+                input.classList.remove('valid', 'invalid');
+                hint.textContent = '';
+            }
+
+            const toutValide = check1 && check2 && check3 && nomValide;
+            document.getElementById('btnSigner').disabled = !toutValide;
+        }
+
+        // ================================================================
+        // MODALE DE CONFIRMATION
+        // ================================================================
+        function ouvrirConfirmation() {
+            document.getElementById('modalConfirmation').classList.add('active');
+        }
+        function fermerConfirmation() {
+            document.getElementById('modalConfirmation').classList.remove('active');
+        }
+        function confirmerSignature() {
+            fermerConfirmation();
+            signerContrat();
+        }
+
+        // Fermer la modale en cliquant en dehors
+        document.getElementById('modalConfirmation').addEventListener('click', function(e) {
+            if (e.target === this) fermerConfirmation();
+        });
+
+        // ================================================================
+        // SIGNER LE CONTRAT (avec preuves légales)
+        // ================================================================
+        async function signerContrat() {
+            // Mode démo : pas de contratData, on simule la signature
+            if (!contratData) {
+                const btn = document.getElementById('btnSigner');
+                btn.disabled = true;
+                btn.textContent = 'Signature en cours...';
+                // Animation courte puis redirection
+                setTimeout(() => {
+                    btn.textContent = '✓ Contrat signé !';
+                    showMessage('success', 'Contrat signé par les deux parties ! Redirection...');
+                    setTimeout(() => {
+                        window.location.href = 'paiement-initial.html';
+                    }, 1500);
+                }, 1000);
+                return;
+            }
+
+            const btn = document.getElementById('btnSigner');
+            btn.disabled = true;
+            btn.textContent = 'Collecte des preuves...';
+
+            try {
+                // 1. Collecter les preuves
+                const now = new Date().toISOString();
+                const [ipAddress, documentHash] = await Promise.all([
+                    recupererIP(),
+                    genererHashDocument()
+                ]);
+                const userAgent = navigator.userAgent;
+                const email = isLocataire ? matchData.users.email : proprietaireData.email;
+                const nomComplet = signataireName;
+
+                const consentement = [
+                    'J\'ai lu l\'int\u00e9gralit\u00e9 du contrat de location meubl\u00e9e et en ai compris toutes les clauses.',
+                    'J\'accepte l\'ensemble des termes et conditions du pr\u00e9sent contrat.',
+                    'J\'accepte les CGV de STERNY et autorise la conservation de la preuve de ma signature.'
+                ].join(' | ');
+
+                btn.textContent = 'Signature en cours...';
+
+                // 2. Pr\u00e9parer les donn\u00e9es de mise \u00e0 jour
+                let updateData = {};
+                let newStatut = '';
+                const role = isLocataire ? 'locataire' : 'proprietaire';
+
+                if (isLocataire) {
+                    updateData = {
+                        signature_locataire: true,
+                        date_signature_locataire: now,
+                        signature_locataire_ip: ipAddress,
+                        signature_locataire_user_agent: userAgent,
+                        signature_locataire_hash: documentHash,
+                        signature_locataire_email: email,
+                        signature_locataire_nom_complet: nomComplet,
+                        signature_locataire_consentement: consentement
+                    };
+                    newStatut = contratData.signature_proprietaire ? 'signe' : 'signe_locataire';
+                } else {
+                    updateData = {
+                        signature_proprietaire: true,
+                        date_signature_proprietaire: now,
+                        signature_proprietaire_ip: ipAddress,
+                        signature_proprietaire_user_agent: userAgent,
+                        signature_proprietaire_hash: documentHash,
+                        signature_proprietaire_email: email,
+                        signature_proprietaire_nom_complet: nomComplet,
+                        signature_proprietaire_consentement: consentement
+                    };
+                    newStatut = contratData.signature_locataire ? 'signe' : 'signe_proprietaire';
+                }
+                updateData.statut = newStatut;
+
+                // Si c'est la premi\u00e8re signature, sauvegarder le hash du contrat
+                if (!contratData.contrat_hash) {
+                    updateData.contrat_hash = documentHash;
+                }
+
+                // 3. Mettre \u00e0 jour le contrat
+                const { error } = await supabaseClient
+                    .from('contrats')
+                    .update(updateData)
+                    .eq('id', contratData.id);
+
+                if (error) throw error;
+
+                // 4. Cr\u00e9er l'entr\u00e9e dans le journal d'audit
+                await supabaseClient
+                    .from('signatures_audit')
+                    .insert({
+                        document_type: 'contrat',
+                        document_id: contratData.id,
+                        user_id: currentUser.id,
+                        user_email: email,
+                        user_nom_complet: nomComplet,
+                        role_signataire: role,
+                        ip_address: ipAddress,
+                        user_agent: userAgent,
+                        document_hash: documentHash,
+                        consentement_texte: consentement,
+                        metadata: {
+                            contrat_id: contratData.id,
+                            candidature_id: matchId,
+                            loyer_mensuel: contratData.loyer_mensuel,
+                            depot_garantie: contratData.depot_garantie,
+                            date_debut: contratData.date_debut,
+                            date_fin: contratData.date_fin
+                        }
+                    });
+
+                Object.assign(contratData, updateData);
+
+                if (newStatut === 'signe') {
+                    // ================================================
+                    // LOGIQUE POST-SIGNATURE : désactiver l'annonce
+                    // et refuser les candidatures en attente
+                    // ================================================
+
+                    // 1. Désactiver l'annonce (temporairement, le temps du bail)
+                    const annonceId = contratData.annonce_id;
+                    if (annonceId) {
+                        await supabaseClient
+                            .from('annonces')
+                            .update({ disponible: false })
+                            .eq('id', annonceId);
+                    }
+
+                    // 2. Refuser toutes les candidatures en attente sur cette annonce
+                    if (annonceId) {
+                        const { data: candidaturesRefusees } = await supabaseClient
+                            .from('candidatures')
+                            .update({ statut: 'refusee' })
+                            .eq('annonce_id', annonceId)
+                            .eq('statut', 'en_attente')
+                            .select('id');
+                    }
+
+                    // 3. Passer la candidature acceptée en paiement_ok
+                    await supabaseClient
+                        .from('candidatures')
+                        .update({ statut: 'paiement_ok' })
+                        .eq('id', matchId)
+                        .eq('statut', 'acceptee');
+
+                    showMessage('success', 'Contrat signé par les deux parties ! Redirection...');
+                    setTimeout(() => {
+                        window.location.href = `paiement-initial.html?match_id=${matchId}`;
+                    }, 1500);
+                } else {
+                    showMessage('success', 'Votre signature a \u00e9t\u00e9 enregistr\u00e9e !');
+                    afficherStatutSignatures();
+                }
+
+            } catch (error) {
+                console.error('Erreur signature:', error);
+                showMessage('error', 'Erreur lors de la signature : ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Signer et continuer';
+            }
+        }
+
+        // ================================================================
+        // UTILITAIRES
+        // ================================================================
+        function showMessage(type, text) {
+            const existing = document.querySelector('.message-bar');
+            if (existing) existing.remove();
+            const div = document.createElement('div');
+            div.className = `message-bar ${type}`;
+            div.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:14px 28px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:slideDown 0.3s ease;';
+            if (type === 'success') { div.style.background = '#D1FAE5'; div.style.color = '#065F46'; div.style.border = '1px solid #A7F3D0'; }
+            else { div.style.background = '#FEE2E2'; div.style.color = '#991B1B'; div.style.border = '1px solid #FECACA'; }
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ================================================================
+        // DASHBOARD LINK
+        // ================================================================
         async function gererDashboard() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
             const dashboardLink = document.getElementById('dashboardLink');
-            
-            if (user) {
+            if (currentUser) {
                 const { data: userData } = await supabaseClient
                     .from('users')
                     .select('type_user')
-                    .eq('id', user.id)
+                    .eq('id', currentUser.id)
                     .single();
-                
-                if (userData?.type_user === 'hote') {
-                    dashboardLink.href = 'dashboard-hote.html';
-                } else if (userData?.type_user === 'proprietaire') {
+                if (userData?.type_user === 'proprietaire') {
                     dashboardLink.href = 'dashboard-proprietaire.html';
                 } else {
                     dashboardLink.href = 'dashboard-locataire.html';
@@ -736,11 +1900,14 @@
             }
         }
 
-        // Init
+        // ================================================================
+        // INIT
+        // ================================================================
         if (typeof supabaseClient !== 'undefined') {
-            chargerContrat();
-            gererDashboard();
+            chargerContrat().then(() => gererDashboard());
         }
     </script>
+<script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
 </html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>&Agrave; propos de STERNY</title>
+    <meta name="description" content="Découvrez l'histoire de STERNY, la plateforme née du constat qu'aucune solution de logement n'était adaptée aux étudiants en alternance.">
+    <link rel="canonical" href="https://sterny.co/a-propos.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/a-propos.html">
+    <meta property="og:title" content="À propos de STERNY">
+    <meta property="og:description" content="L'histoire de STERNY : la plateforme de logement pensée pour les alternants.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-about {
+            background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+            padding: 0 20px;
+        }
+
+        .about-card {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+            margin: 48px auto 80px;
+        }
+
+        .about-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+
+        .about-card .subtitle {
+            font-size: 14px;
+            color: #94A3B8;
+            margin-bottom: 36px;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94A3B8;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .btn-back-top:hover { color: #E8622A; }
+        .btn-back-top svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* HERO ABOUT */
+        .about-hero {
+            background: #1E293B;
+            border-radius: 16px;
+            padding: 40px 32px;
+            margin-bottom: 36px;
+            text-align: center;
+            color: white;
+        }
+
+        .about-hero h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 12px;
+        }
+
+        .about-hero p {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.7;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .about-hero .accent {
+            color: #E8622A;
+            font-weight: 700;
+        }
+
+        /* SECTIONS */
+        .about-section {
+            margin-bottom: 32px;
+        }
+
+        .about-section h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #E8622A;
+            margin: 0 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
+        }
+
+        .about-section p {
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .about-section strong {
+            color: #1E293B;
+        }
+
+        /* VALEURS */
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .value-card {
+            padding: 20px;
+            border: 1px solid #E8EAF0;
+            border-radius: 14px;
+            transition: all 0.2s;
+        }
+        .value-card:hover {
+            border-color: #E8622A;
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+        }
+
+        .value-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .value-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 6px;
+        }
+
+        .value-card p {
+            font-size: 12px;
+            color: #64748B;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* STATS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px 12px;
+            background: #FAFBFC;
+            border-radius: 14px;
+            border: 1px solid #E8EAF0;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #E8622A;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 4px;
+        }
+
+        /* CTA */
+        .about-cta {
+            margin-top: 40px;
+            padding: 32px;
+            background: #FFF7F3;
+            border-radius: 14px;
+            border: 1px solid rgba(232, 98, 42, 0.15);
+            text-align: center;
+        }
+
+        .about-cta h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+
+        .about-cta p {
+            font-size: 13px;
+            color: #64748B;
+            margin: 0 0 16px;
+        }
+
+        .about-cta-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .about-cta-buttons a {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-cta-primary {
+            background: #E8622A;
+            color: white;
+        }
+        .btn-cta-primary:hover { background: #d4571f; }
+
+        .btn-cta-secondary {
+            background: white;
+            color: #1E293B;
+            border: 1.5px solid #E8EAF0;
+        }
+        .btn-cta-secondary:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+        }
+
+        .about-card a {
+            color: #E8622A;
+        }
+
+        @media (max-width: 600px) {
+            .about-card {
+                padding: 24px 20px;
+                margin: 24px auto 40px;
+            }
+            .about-card h1 { font-size: 22px; }
+            .about-hero { padding: 28px 20px; }
+            .about-hero h2 { font-size: 18px; }
+            .values-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script src="analytics.js" defer></script>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-about">
+        <div class="about-card">
+            <a href="index.html" class="btn-back-top">
+                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+            </a>
+            <h1>&Agrave; propos de STERNY</h1>
+            <p class="subtitle">Le logement pens&eacute; pour les alternants</p>
+
+            <!-- HERO -->
+            <div class="about-hero">
+                <h2>Pourquoi STERNY existe ?</h2>
+                <p>
+                    Chaque ann&eacute;e, des milliers d&rsquo;&eacute;tudiants en alternance font face au m&ecirc;me probl&egrave;me : <span class="accent">trouver un logement adapt&eacute; &agrave; leur rythme</span>.
+                    Entre leur ville d&rsquo;entreprise et leur ville d&rsquo;&eacute;cole, ils jonglent avec deux loyers, des trajets co&ucirc;teux et des solutions inadapt&eacute;es.
+                    STERNY est n&eacute; pour r&eacute;soudre ce probl&egrave;me.
+                </p>
+            </div>
+
+            <!-- NOTRE MISSION -->
+            <div class="about-section">
+                <h2>Notre mission</h2>
+                <p>
+                    STERNY est une <strong>plateforme de mise en relation</strong> entre &eacute;tudiants en alternance et propri&eacute;taires.
+                    Notre objectif : permettre &agrave; chaque alternant de trouver un logement qui <strong>correspond &agrave; son rythme</strong>
+                    (1 semaine sur 2, 3 semaines / 1 semaine, etc.) et &agrave; son budget.
+                </p>
+                <p>
+                    Pour les propri&eacute;taires, c&rsquo;est l&rsquo;assurance de louer &agrave; des <strong>locataires v&eacute;rifi&eacute;s</strong>,
+                    avec des contrats g&eacute;n&eacute;r&eacute;s automatiquement, des paiements s&eacute;curis&eacute;s via Stripe,
+                    et une gestion simplifi&eacute;e de A &agrave; Z.
+                </p>
+            </div>
+
+            <!-- COMMENT ÇA MARCHE -->
+            <div class="about-section">
+                <h2>Comment &ccedil;a marche</h2>
+                <p>
+                    <strong>1.</strong> L&rsquo;&eacute;tudiant cr&eacute;e son profil avec ses informations d&rsquo;alternance (villes, rythme, budget).<br>
+                    <strong>2.</strong> Notre algorithme de <strong>matching</strong> propose les logements les plus compatibles.<br>
+                    <strong>3.</strong> L&rsquo;&eacute;tudiant candidate, le propri&eacute;taire accepte.<br>
+                    <strong>4.</strong> Le contrat est g&eacute;n&eacute;r&eacute;, sign&eacute; en ligne, et le paiement est s&eacute;curis&eacute;.
+                </p>
+                <p>
+                    Tout se fait en ligne, sans paperasse. <a href="comment-ca-marche.html">En savoir plus &rarr;</a>
+                </p>
+            </div>
+
+            <!-- CHIFFRES -->
+            <div class="about-section">
+                <h2>STERNY en chiffres</h2>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">3</span>
+                        <div class="stat-label">Villes disponibles</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <div class="stat-label">En ligne</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24h</span>
+                        <div class="stat-label">Temps de r&eacute;ponse</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOS VALEURS -->
+            <div class="about-section">
+                <h2>Nos valeurs</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="value-icon">&#x1F3AF;</div>
+                        <h3>Adapt&eacute; aux alternants</h3>
+                        <p>Chaque fonctionnalit&eacute; est pens&eacute;e pour le rythme sp&eacute;cifique de l&rsquo;alternance.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">&#x1F512;</div>
+                        <h3>S&eacute;curit&eacute;</h3>
+                        <p>Paiements Stripe, v&eacute;rification des profils, contrats conformes au droit fran&ccedil;ais.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">&#x26A1;</div>
+                        <h3>Simplicit&eacute;</h3>
+                        <p>Inscription en 2 minutes, matching automatique, contrat g&eacute;n&eacute;r&eacute; en un clic.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">&#x1F91D;</div>
+                        <h3>Confiance</h3>
+                        <p>Transparence sur les prix, avis v&eacute;rifi&eacute;s, support r&eacute;actif sous 24h.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="about-cta">
+                <h3>Pr&ecirc;t &agrave; rejoindre STERNY ?</h3>
+                <p>&Eacute;tudiant ou propri&eacute;taire, trouvez la solution qui vous correspond.</p>
+                <div class="about-cta-buttons">
+                    <a href="choix-inscription.html" class="btn-cta-primary">S&rsquo;inscrire gratuitement</a>
+                    <a href="contact.html" class="btn-cta-secondary">Nous contacter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>
