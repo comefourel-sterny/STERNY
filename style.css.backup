@@ -1,0 +1,482 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    color: #1a202c;
+    line-height: 1.6;
+}
+
+html {
+    background: var(--gray-900);
+}
+
+/* VARIABLES DE COULEURS (Design System) */
+:root {
+    --primary: #1E293B;
+    --primary-dark: #334155;
+    --secondary: #334155;
+    --accent: #E8622A;
+    --success: #51cf66;
+    --error: #ff6b6b;
+    --gray-50: #F4F5F7;
+    --gray-100: #f3f4f6;
+    --gray-200: #E8EAF0;
+    --gray-300: #D1D5DB;
+    --gray-500: #6B7280;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+}
+
+/* NAVIGATION */
+nav {
+    background: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav .container {
+    max-width: none;
+    margin: 0;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 85px;
+}
+
+nav .logo {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+nav .logo img {
+    height: 55px;
+    width: auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 36px;
+}
+
+nav a {
+    color: var(--gray-900);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: var(--accent);
+}
+
+nav .nav-highlight {
+    color: #E8622A;
+    font-weight: 600;
+}
+
+nav .nav-highlight:hover {
+    color: #e55a2b;
+}
+
+/* SELECT — FIX SAFARI + STYLE UNIFORME */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+select option:disabled {
+    color: #9CA3AF;
+}
+
+/* AUTOCOMPLÉTION VILLE */
+.ville-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1050;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.ville-suggestion-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    transition: background 0.2s;
+}
+
+.ville-suggestion-item:hover {
+    background: #FFF4ED;
+    color: #E8622A;
+}
+
+.ville-message {
+    font-size: 13px;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.ville-message.warning {
+    color: #F59E0B;
+}
+
+/* Checkmark validation dans les champs input */
+.input-checkmark {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #E8622A;
+    font-size: 22px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.input-checkmark.show {
+    opacity: 1;
+}
+
+/* BUTTONS */
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* SECTIONS */
+section {
+    padding: 80px 20px;
+}
+
+/* FOOTER */
+footer {
+    background: var(--gray-900);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* CLOCHE NOTIFICATIONS */
+#notif-bell-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+#notif-bell svg {
+    transition: color 0.2s;
+}
+
+#notif-bell:hover svg {
+    stroke: #E8622A;
+}
+
+#notif-dropdown {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@media (max-width: 768px) {
+    #notif-bell-container {
+        margin-right: 4px;
+    }
+    #notif-dropdown {
+        width: calc(100vw - 32px) !important;
+        right: -60px !important;
+    }
+}
+
+/* HAMBURGER MENU */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1002;
+}
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background: #1E293B;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    nav .container {
+        padding: 0 20px;
+        height: 64px;
+    }
+
+    nav .logo img {
+        height: 40px;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    nav ul {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 260px;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        padding: 80px 32px 32px;
+        gap: 0;
+        box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+        transition: right 0.3s ease;
+        z-index: 1001;
+    }
+
+    nav ul.open {
+        right: 0;
+    }
+
+    nav ul li {
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    nav ul li a {
+        display: block;
+        padding: 14px 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+
+    /* Overlay behind menu */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 1000;
+    }
+    .menu-overlay.active {
+        display: block;
+    }
+
+    section {
+        padding: 60px 20px;
+    }
+}
+
+/* ========== CALENDRIER - STYLE UNIFIÉ ========== */
+
+.calendar-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 30px 0;
+  align-items: start;
+}
+
+
+/* Chaque mois */
+.month-calendar {
+  background: white;
+  border: 2px solid #1E293B;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* === CALENDRIER === */
+
+.calendar-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.month-calendar {
+  border: 2px solid #1E293B;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.month-calendar h4 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Ligne des jours L M M J V S D */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* Grille des jours */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+/* Case jour */
+.calendar-day {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: #EDF2FF;
+}
+
+.calendar-day.selected {
+  background: #1E293B;
+  color: white;
+}
+
+/* Grille des jours du mois */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Jour individuel */
+.calendar-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Hover */
+.calendar-day:hover {
+  background-color: #eef2ff;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.calendar-header {
+  font-weight: 600;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: #eef2ff;
+}
