@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="PP-Sterny-V1.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-white.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-32.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-dark-32.png" media="(prefers-color-scheme: dark)">
     <link rel="icon" href="favicon.ico" sizes="any" media="(prefers-color-scheme: light)">
     <link rel="icon" href="favicon-dark.ico" sizes="any" media="(prefers-color-scheme: dark)">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -34,21 +33,21 @@
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 80px 20px 100px;
+            padding: 100px 20px 80px;
             text-align: center;
         }
 
         .hero h1 {
             font-size: 48px;
-            margin-bottom: 16px;
+            margin-bottom: 28px;
             font-weight: 700;
             letter-spacing: -1px;
             line-height: 1.1;
         }
 
         .hero p {
-            font-size: 18px;
-            margin-bottom: 32px;
+            font-size: 19px;
+            margin-bottom: 40px;
             opacity: 0.9;
         }
 
@@ -59,7 +58,7 @@
             padding: 20px;
             max-width: 960px;
             margin: 0 auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
@@ -87,11 +86,11 @@
         .search-field input {
             padding: 12px;
             border: 2px solid var(--gray-200);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.2s;
             height: 48px;
             box-sizing: border-box;
             color: var(--gray-900);
@@ -115,7 +114,8 @@
 
         .search-field select:focus,
         .search-field input:focus {
-            border-color: var(--primary);
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
 
         .search-btn {
@@ -123,22 +123,22 @@
             height: 48px;
             box-sizing: border-box;
             padding: 0 40px;
-            background: var(--primary);
+            background: #E8622A;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             white-space: nowrap;
             flex-shrink: 0;
         }
 
         .search-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            background: #D4571F;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.16);
         }
 
         @keyframes shake {
@@ -193,9 +193,9 @@
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 8px 40px rgba(30, 41, 59, 0.45);
-            border: 1px solid #E2E8F0;
-            transition: all 0.3s ease;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            border: 1px solid #E8EAF0;
+            transition: all 0.2s;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
@@ -204,8 +204,8 @@
         }
 
         .logement-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 14px 50px rgba(30, 41, 59, 0.55);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(232, 98, 42, 0.2);
         }
 
         .logement-image {

@@ -9,8 +9,9 @@
 
 body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    color: #1a202c;
+    color: #1E293B;
     line-height: 1.6;
+    background: #F4F5F7;
 }
 
 html {
@@ -39,6 +40,7 @@ html {
 nav {
     background: white;
     box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border-bottom: 2px solid rgba(232, 98, 42, 0.12);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -49,7 +51,6 @@ nav .container {
     margin: 0;
     padding: 0 40px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     height: 85px;
 }
@@ -58,24 +59,28 @@ nav .logo {
     text-decoration: none;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 nav .logo img {
     height: 55px;
     width: auto;
+    max-width: 170px;
+    object-fit: contain;
 }
 
 nav ul {
     list-style: none;
     display: flex;
     gap: 36px;
+    margin-left: auto;
 }
 
 nav a {
     color: var(--gray-900);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: color 0.2s;
 }
 
 nav a:hover {
@@ -156,7 +161,7 @@ select option:disabled {
     font-size: 22px;
     font-weight: 700;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s;
     pointer-events: none;
 }
 
@@ -168,11 +173,11 @@ select option:disabled {
 .btn {
     padding: 12px 30px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s;
     text-decoration: none;
     display: inline-block;
 }
@@ -184,8 +189,8 @@ select option:disabled {
 
 .btn-primary:hover {
     background: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(232, 98, 42, 0.16);
 }
 
 .btn-secondary {
@@ -233,12 +238,20 @@ footer a:hover {
     position: relative;
     display: flex;
     align-items: center;
-    margin-left: auto;
-    margin-right: 8px;
+    margin-left: 40px;
+    flex-shrink: 0;
+    order: 1;
+}
+
+/* Overlay invisible sur desktop */
+.menu-overlay {
+    display: none;
 }
 
 #notif-bell svg {
-    transition: color 0.2s;
+    stroke: var(--gray-900) !important;
+    transition: stroke 0.2s;
+    transform: translateY(4px);
 }
 
 #notif-bell:hover svg {
@@ -251,6 +264,8 @@ footer a:hover {
 
 @media (max-width: 768px) {
     #notif-bell-container {
+        order: 0;
+        margin-left: auto;
         margin-right: 4px;
     }
     #notif-dropdown {
@@ -275,7 +290,7 @@ footer a:hover {
     background: #1E293B;
     margin: 5px 0;
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: all 0.2s;
 }
 .hamburger.active span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
@@ -291,7 +306,7 @@ footer a:hover {
 @media (max-width: 768px) {
     nav .container {
         padding: 0 20px;
-        height: 64px;
+        height: 72px;
     }
 
     nav .logo img {

@@ -44,15 +44,20 @@ const SternyNotifications = (() => {
                 </svg>
                 <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-6px;background:#EF4444;color:white;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;"></span>
             </div>
-            <div id="notif-dropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:360px;max-height:420px;background:white;border:1.5px solid #E8EAF0;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:1100;overflow:hidden;">
+            <div id="notif-dropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:360px;max-height:420px;background:white;border:1.5px solid rgba(232,98,42,0.25);border-radius:14px;box-shadow:0 8px 32px rgba(232,98,42,0.10);z-index:1100;overflow:hidden;">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #F1F5F9;">
                     <span style="font-size:15px;font-weight:700;color:#1E293B;">Notifications</span>
                     <a id="notif-mark-all" onclick="SternyNotifications.markAllRead()" style="font-size:12px;color:#E8622A;cursor:pointer;font-weight:600;display:none;">Tout marquer lu</a>
                 </div>
                 <div id="notif-list" style="max-height:340px;overflow-y:auto;"></div>
                 <div id="notif-empty" style="display:none;text-align:center;padding:40px 20px;color:#9CA3AF;">
-                    <div style="font-size:28px;margin-bottom:8px;">🔔</div>
+                    <div style="margin-bottom:8px;"><svg width="28" height="28" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
                     <div style="font-size:13px;font-weight:500;">Aucune notification</div>
+                </div>
+                <div id="notif-login" style="display:none;text-align:center;padding:32px 20px;">
+                    <div style="margin-bottom:10px;"><svg width="28" height="28" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+                    <div style="font-size:13px;font-weight:500;color:#6B7280;margin-bottom:14px;">Connecte-toi pour voir tes notifications</div>
+                    <a href="connexion.html" style="display:inline-block;padding:10px 24px;background:#E8622A;color:white;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:background 0.2s;">Se connecter</a>
                 </div>
             </div>
         `;
@@ -82,7 +87,18 @@ const SternyNotifications = (() => {
     async function charger() {
         try {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (!user) return;
+            if (!user) {
+                // Afficher l'état "non connecté"
+                const loginDiv = document.getElementById('notif-login');
+                const emptyDiv = document.getElementById('notif-empty');
+                const listDiv = document.getElementById('notif-list');
+                const markAll = document.getElementById('notif-mark-all');
+                if (loginDiv) loginDiv.style.display = 'block';
+                if (emptyDiv) emptyDiv.style.display = 'none';
+                if (listDiv) listDiv.style.display = 'none';
+                if (markAll) markAll.style.display = 'none';
+                return;
+            }
 
             const { data, error } = await supabaseClient
                 .from('notifications_in_app')
@@ -100,6 +116,13 @@ const SternyNotifications = (() => {
             if (isOpen) renderList();
         } catch (e) {
             console.log('Notifications: erreur chargement', e.message);
+            // En cas d'erreur (pas de connexion, supabase indisponible), afficher l'état login
+            const loginDiv = document.getElementById('notif-login');
+            const emptyDiv = document.getElementById('notif-empty');
+            const listDiv = document.getElementById('notif-list');
+            if (loginDiv) loginDiv.style.display = 'block';
+            if (emptyDiv) emptyDiv.style.display = 'none';
+            if (listDiv) listDiv.style.display = 'none';
         }
     }
 
@@ -125,7 +148,10 @@ const SternyNotifications = (() => {
         const list = document.getElementById('notif-list');
         const empty = document.getElementById('notif-empty');
         const markAll = document.getElementById('notif-mark-all');
+        const login = document.getElementById('notif-login');
         if (!list) return;
+        // Si l'état login est affiché, ne pas le remplacer
+        if (login && login.style.display === 'block') return;
 
         if (notifs.length === 0) {
             list.style.display = 'none';
