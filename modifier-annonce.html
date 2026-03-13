@@ -33,6 +33,8 @@
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F4F5F7;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             color: #1E293B;
         }
         
@@ -2001,6 +2003,7 @@
             color: white;
             padding: 40px 20px;
             text-align: center;
+            margin-top: auto;
         }
         footer a {
             color: #E8622A;
@@ -2020,7 +2023,8 @@
             <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
         <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
         <div class="menu-overlay" onclick="toggleMenu()"></div>
-        <ul>
+        <ul style="margin-left: auto;">
+                <li><a href="index.html">Accueil</a></li>
                 <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
                 <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             </ul>

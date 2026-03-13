@@ -12,6 +12,9 @@ body {
     color: #1E293B;
     line-height: 1.6;
     background: #F4F5F7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 html {
@@ -232,6 +235,7 @@ footer {
     color: white;
     padding: 40px 20px;
     text-align: center;
+    margin-top: auto;
 }
 
 footer a {
