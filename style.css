@@ -60,6 +60,11 @@ nav .logo {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    background: none !important;
+}
+
+nav .logo:hover {
+    background: none !important;
 }
 
 nav .logo img {
