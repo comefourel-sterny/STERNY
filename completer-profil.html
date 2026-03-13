@@ -145,22 +145,29 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: inherit;
-            transition: all 0.2s;
-            background: white;
+            transition: all 0.3s;
+            background: #F4F5F7;
             box-sizing: border-box;
             color: #1E293B;
+            outline: none;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #E8622A;
-            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #CBD5E1;
         }
 
         .form-group input::placeholder {
@@ -184,15 +191,16 @@
 
         .form-group textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: inherit;
-            transition: all 0.2s;
-            background: white;
+            transition: all 0.3s;
+            background: #F4F5F7;
             box-sizing: border-box;
             color: #1E293B;
+            outline: none;
             resize: vertical;
             min-height: 80px;
         }
@@ -200,7 +208,12 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #E8622A;
-            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
+        }
+
+        .form-group textarea:hover {
+            border-color: #CBD5E1;
         }
 
         .form-group textarea::placeholder {
