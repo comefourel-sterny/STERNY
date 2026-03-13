@@ -239,7 +239,7 @@
             cursor: pointer;
             transition: all 0.3s;
             overflow: hidden;
-            border: 1.5px solid #E2E5EA;
+            border: 1.5px solid #E8EAF0;
         }
 
         .photo-circle:hover {
@@ -327,7 +327,7 @@
             border: 2px solid #E8EAF0;
             cursor: grab;
             touch-action: none;
-            background: #F3F4F6;
+            background: #F4F5F7;
         }
 
         .crop-area:active {
@@ -407,7 +407,7 @@
         .crop-cancel {
             background: white;
             color: #475569;
-            border: 1.5px solid #E2E5EA;
+            border: 1.5px solid #E8EAF0;
         }
 
         .crop-cancel:hover {
@@ -444,7 +444,7 @@
             padding: 0 16px;
             background: white;
             color: #475569;
-            border: 1.5px solid #E2E5EA;
+            border: 1.5px solid #E8EAF0;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
@@ -510,19 +510,16 @@
 
         /* Erreur */
         .error-message {
-            position: absolute;
-            bottom: 36px;
-            left: 36px;
-            right: 36px;
-            background: #FEE2E2;
-            border: 1px solid #FECACA;
-            color: #991B1B;
+            background: rgba(232, 98, 42, 0.08);
+            border: 1px solid rgba(232, 98, 42, 0.15);
+            color: #E8622A;
             padding: 12px 14px;
             border-radius: 10px;
             display: none;
             font-size: 13px;
-            z-index: 20;
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+            text-align: center;
+            margin-top: auto;
             animation: slideUpError 0.25s ease;
         }
 
@@ -562,7 +559,7 @@
             max-height: 180px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.10);
             display: none;
         }
 
@@ -571,7 +568,7 @@
             cursor: pointer;
             font-size: 13px;
             color: #1E293B;
-            border-bottom: 1px solid #F3F4F6;
+            border-bottom: 1px solid #E8EAF0;
             transition: background 0.15s;
         }
 
@@ -607,7 +604,7 @@
             max-height: 180px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.10);
             display: none;
         }
 
@@ -616,7 +613,7 @@
             cursor: pointer;
             font-size: 13px;
             color: #1E293B;
-            border-bottom: 1px solid #F3F4F6;
+            border-bottom: 1px solid #E8EAF0;
             transition: background 0.15s;
         }
 
@@ -650,7 +647,7 @@
             max-height: 180px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.10);
             display: none;
         }
 
@@ -659,7 +656,7 @@
             cursor: pointer;
             font-size: 13px;
             color: #1E293B;
-            border-bottom: 1px solid #F3F4F6;
+            border-bottom: 1px solid #E8EAF0;
             transition: background 0.15s;
         }
 
@@ -970,10 +967,22 @@
         let errorTimeout = null;
         function showError(msg) {
             const el = document.getElementById('errorMessage');
-            el.textContent = msg;
+            // Déplacer le message dans l'étape active, avant les boutons
+            const activeStep = document.querySelector('.step.active');
+            const btns = activeStep ? activeStep.querySelector('.buttons-row') : null;
+            if (btns) btns.parentNode.insertBefore(el, btns);
+            if (msg.includes('<')) { el.innerHTML = msg; } else { el.textContent = msg; }
             el.style.display = 'block';
+            // Masquer boutons + back-link
+            const backLink = activeStep ? activeStep.querySelector('.back-link') : null;
+            if (btns) btns.style.display = 'none';
+            if (backLink) backLink.style.display = 'none';
             if (errorTimeout) clearTimeout(errorTimeout);
-            errorTimeout = setTimeout(() => { el.style.display = 'none'; }, 4000);
+            errorTimeout = setTimeout(() => {
+                el.style.display = 'none';
+                if (btns) btns.style.display = '';
+                if (backLink) backLink.style.display = '';
+            }, 3000);
         }
 
         // === VALIDATION ===
