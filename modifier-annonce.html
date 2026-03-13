@@ -31,7 +31,7 @@
         
         body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            background: #F4F5F7;
             min-height: 100vh;
             color: #1E293B;
         }
@@ -43,6 +43,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
         }
         
         nav .container {
@@ -69,20 +70,59 @@
         
         nav ul {
             display: flex;
-            gap: 36px;
+            gap: 8px;
             list-style: none;
         }
-        
+
         nav a {
             text-decoration: none;
-            color: #4a5568;
+            color: #475569;
             font-weight: 500;
             font-size: 15px;
-            transition: color 0.2s;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
-        
+
         nav a:hover {
             color: #E8622A;
+            background: rgba(232, 98, 42, 0.06);
+        }
+
+        nav .logo:hover {
+            background: none;
+        }
+
+        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        .menu-overlay { display: none; }
+
+        nav .nav-highlight {
+            color: #E8622A;
+            font-weight: 600;
+        }
+        nav .nav-highlight:hover {
+            color: #e55a2b;
+        }
+
+        #notif-bell-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #notif-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        #notif-bell svg {
+            stroke: #1E293B;
+            transition: stroke 0.2s;
+            transform: translateY(4px);
+        }
+        #notif-bell:hover svg {
+            stroke: #E8622A;
         }
         
         /* CONTAINER PRINCIPAL */
@@ -1553,21 +1593,21 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            background: #E8622A;
             color: white;
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
-            background: linear-gradient(135deg, #E8622A 0%, #FF5722 100%);
+            background: #d4571f;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(232, 98, 42, 0.4);
+            box-shadow: 0 8px 20px rgba(232, 98, 42, 0.3);
         }
-        
+
         .btn-primary:active {
-            background: linear-gradient(135deg, #FF5722 0%, #F4511E 100%);
+            background: #c44e1a;
             transform: translateY(0);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.5);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
         }
         
         .btn:disabled {
@@ -2066,7 +2106,7 @@
                 </div>
                 <div class="form-navigation-buttons">
                     <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer</button>
                 </div>
             </div>
         </div>
@@ -2178,7 +2218,7 @@
                 </div>
                 <div class="form-navigation-buttons">
                     <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer</button>
                 </div>
             </div>
         </div>
@@ -2261,7 +2301,7 @@
                 </div>
                 <div class="form-navigation-buttons">
                     <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer</button>
                 </div>
             </div>
         </div>
@@ -2491,7 +2531,7 @@
                 </div>
                 <div class="form-navigation-buttons">
                     <button class="btn btn-secondary" onclick="prevStep()">Retour</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Continuer →</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continuer</button>
                 </div>
             </div>
         </div>

@@ -25,7 +25,7 @@
 
         body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+            background: #F4F5F7;
             min-height: 100vh;
             color: #1E293B;
         }
@@ -37,6 +37,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
         }
 
         nav .container {
@@ -64,20 +65,27 @@
 
         nav ul {
             display: flex;
-            gap: 36px;
+            gap: 8px;
             list-style: none;
         }
 
         nav a {
             text-decoration: none;
-            color: #4a5568;
+            color: #475569;
             font-weight: 500;
             font-size: 15px;
-            transition: color 0.2s;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
         }
 
         nav a:hover {
             color: #E8622A;
+            background: rgba(232, 98, 42, 0.06);
+        }
+
+        nav .logo:hover {
+            background: none;
         }
 
         .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -108,7 +116,7 @@
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #10B981, #34D399);
+            background: #10B981;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -240,7 +248,7 @@
         .error-icon {
             width: 52px; height: 52px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #EF4444, #F87171);
+            background: #EF4444;
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 20px;
         }
