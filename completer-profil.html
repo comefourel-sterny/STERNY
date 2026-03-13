@@ -431,7 +431,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: auto;
-            padding-top: 10px;
+            padding-top: 16px;
             flex-shrink: 0;
         }
 
@@ -440,21 +440,16 @@
         }
 
         .btn-back {
-            height: 40px;
-            padding: 0 16px;
+            padding: 12px;
             background: white;
-            color: #475569;
+            color: #6B7280;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            font-size: 13px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
         }
 
         .btn-back:hover {
@@ -463,31 +458,30 @@
         }
 
         .btn-next {
-            height: 40px;
-            padding: 0 16px;
-            background: #1E293B;
+            padding: 12px;
+            background: #E8622A;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
         }
 
         .btn-next:hover {
-            background: #E8622A;
+            background: #d4571f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
 
         .btn-next:disabled {
             background: #E8EAF0;
             color: #9CA3AF;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Lien retour */
