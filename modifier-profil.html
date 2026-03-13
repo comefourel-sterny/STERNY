@@ -51,14 +51,14 @@
 
         .inscription-container {
             position: relative;
-            max-width: 480px;
+            max-width: 460px;
             width: 100%;
-            height: 560px;
+            min-height: 541px;
             background: white;
-            border-radius: 16px;
-            padding: 32px 36px;
+            border-radius: 20px;
+            padding: 36px 36px;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
-            border: 1px solid #E8EAF0;
+            border: 1.5px solid #E8EAF0;
             display: flex;
             flex-direction: column;
         }
@@ -141,10 +141,10 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: inherit;
             transition: all 0.2s;
             background: white;
@@ -181,10 +181,10 @@
 
         .form-group textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             font-family: inherit;
             transition: all 0.2s;
             background: white;
@@ -436,13 +436,12 @@
         }
 
         .btn-back {
-            height: 40px;
-            padding: 0 16px;
+            padding: 14px;
             background: white;
-            color: #475569;
-            border: 1.5px solid #E2E5EA;
-            border-radius: 10px;
-            font-size: 13px;
+            color: #6B7280;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -460,16 +459,15 @@
         }
 
         .btn-next {
-            height: 40px;
-            padding: 0 16px;
-            background: #1E293B;
+            padding: 14px;
+            background: #E8622A;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             font-family: inherit;
             display: flex;
             align-items: center;
@@ -478,13 +476,17 @@
         }
 
         .btn-next:hover {
-            background: #E8622A;
+            background: #d4571f;
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+            transform: translateY(-2px);
         }
 
         .btn-next:disabled {
             background: #E8EAF0;
             color: #9CA3AF;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .back-link {
@@ -495,20 +497,17 @@
         }
 
         .back-link a {
-            color: #E8622A;
+            color: #9CA3AF;
             text-decoration: none;
             font-weight: 600;
         }
 
         .back-link a:hover {
+            color: #6B7280;
             text-decoration: underline;
         }
 
         .error-message {
-            position: absolute;
-            bottom: 28px;
-            left: 32px;
-            right: 32px;
             background: rgba(232, 98, 42, 0.08);
             border: 1px solid rgba(232, 98, 42, 0.15);
             color: #E8622A;
@@ -518,8 +517,7 @@
             font-size: 13px;
             font-weight: 600;
             text-align: center;
-            z-index: 20;
-            box-shadow: 0 -4px 16px rgba(232, 98, 42, 0.08);
+            margin-top: auto;
             animation: slideUpError 0.25s ease;
         }
 
@@ -1082,12 +1080,12 @@
             box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
         .btn-change-password {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: #E8622A;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -1142,12 +1140,12 @@
             margin-bottom: 14px;
         }
         .btn-delete-account {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: white;
             color: #DC2626;
             border: 1.5px solid #FECACA;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 12px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -1364,9 +1362,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <a href="#" class="btn-back" id="btnRetourDashboard" onclick="retourDashboard()">Retour</a>
+                <div class="buttons-row single">
                     <button class="btn-next" onclick="nextStep(1)">Continuer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" id="btnRetourDashboard" onclick="retourDashboard(); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1401,9 +1401,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <button class="btn-back" onclick="prevStep(2)">Retour</button>
+                <div class="buttons-row single">
                     <button class="btn-next" onclick="nextStep(2)">Continuer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" onclick="prevStep(2); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1449,9 +1451,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <button class="btn-back" onclick="prevStep(3)">Retour</button>
+                <div class="buttons-row single">
                     <button class="btn-next" onclick="nextStep(3)">Continuer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" onclick="prevStep(3); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1465,9 +1469,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <button class="btn-back" onclick="prevStep(4)">Retour</button>
+                <div class="buttons-row single">
                     <button class="btn-next" onclick="nextStep(4)">Continuer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" onclick="prevStep(4); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1531,9 +1537,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <button class="btn-back" onclick="prevStep(5)">Retour</button>
+                <div class="buttons-row single">
                     <button class="btn-next" onclick="nextStep(5)">Continuer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" onclick="prevStep(5); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1568,9 +1576,11 @@
                     </div>
                 </div>
 
-                <div class="buttons-row">
-                    <button class="btn-back" onclick="prevStep(6)">Retour</button>
+                <div class="buttons-row single">
                     <button class="btn-next" id="btnSave" onclick="enregistrerProfil()">Enregistrer</button>
+                </div>
+                <div class="back-link">
+                    <a href="#" onclick="prevStep(6); return false;">Retour</a>
                 </div>
             </div>
 
@@ -1763,10 +1773,22 @@
         let errorTimeout = null;
         function showError(msg) {
             const el = document.getElementById('errorMessage');
-            el.textContent = msg;
+            // Déplacer le message dans l'étape active, avant les boutons
+            const activeStep = document.querySelector('.step.active');
+            const btns = activeStep ? activeStep.querySelector('.buttons-row') : null;
+            if (btns) btns.parentNode.insertBefore(el, btns);
+            if (msg.includes('<')) { el.innerHTML = msg; } else { el.textContent = msg; }
             el.style.display = 'block';
+            // Masquer boutons + back-link
+            const backLink = activeStep ? activeStep.querySelector('.back-link') : null;
+            if (btns) btns.style.display = 'none';
+            if (backLink) backLink.style.display = 'none';
             if (errorTimeout) clearTimeout(errorTimeout);
-            errorTimeout = setTimeout(() => { el.style.display = 'none'; }, 4000);
+            errorTimeout = setTimeout(() => {
+                el.style.display = 'none';
+                if (btns) btns.style.display = '';
+                if (backLink) backLink.style.display = '';
+            }, 3000);
         }
 
         // ================================================================

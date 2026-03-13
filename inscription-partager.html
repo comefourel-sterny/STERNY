@@ -441,8 +441,10 @@
                 </div>
 
                 <div class="btn-row" style="margin-top: auto;">
-                    <button class="btn-back" onclick="prevStep()">Retour</button>
-                    <button class="btn-submit" onclick="nextStep()">Continuer</button>
+                    <button class="btn-submit" onclick="nextStep()" style="width:100%;">Continuer</button>
+                </div>
+                <div class="back-link" style="text-align:center;margin-top:8px;">
+                    <a href="#" onclick="prevStep(); return false;" style="color:#9CA3AF;text-decoration:none;font-weight:600;font-size:13px;">Retour</a>
                 </div>
             </div>
 
@@ -470,8 +472,10 @@
                 </div>
 
                 <div class="btn-row" style="margin-top: auto;">
-                    <button class="btn-back" onclick="prevStep()">Retour</button>
-                    <button class="btn-submit" id="submitBtn" onclick="createAccount()">Créer mon compte</button>
+                    <button class="btn-submit" id="submitBtn" onclick="createAccount()" style="width:100%;">Créer mon compte</button>
+                </div>
+                <div class="back-link" style="text-align:center;margin-top:8px;">
+                    <a href="#" onclick="prevStep(); return false;" style="color:#9CA3AF;text-decoration:none;font-weight:600;font-size:13px;">Retour</a>
                 </div>
             </div>
 
