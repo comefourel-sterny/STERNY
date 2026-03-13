@@ -60,6 +60,7 @@ nav .logo {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    padding: 0;
     background: none !important;
 }
 
@@ -77,19 +78,23 @@ nav .logo img {
 nav ul {
     list-style: none;
     display: flex;
-    gap: 36px;
+    gap: 8px;
     margin-left: auto;
 }
 
 nav a {
-    color: var(--gray-900);
+    color: #475569;
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.2s;
+    font-size: 15px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
 nav a:hover {
-    color: var(--accent);
+    color: #E8622A;
+    background: rgba(232, 98, 42, 0.06);
 }
 
 nav .nav-highlight {
