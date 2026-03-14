@@ -29,6 +29,10 @@
             box-sizing: border-box;
         }
         
+        html {
+            background: #E8622A;
+        }
+
         body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F4F5F7;
@@ -133,6 +137,7 @@
         /* CONTAINER PRINCIPAL */
         .create-container {
             max-width: 900px;
+            width: 100%;
             margin: 0 auto;
             padding: 48px 24px 80px;
         }
@@ -164,9 +169,9 @@
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
         }
-        
+
         .progress-steps {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -262,7 +267,7 @@
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
             display: none;
             animation: fadeIn 0.4s ease;
         }
@@ -1649,11 +1654,7 @@
         }
 
         .error-message::after {
-            content: "Cliquer pour fermer";
-            font-size: 12px;
-            color: #F87171;
-            margin-left: 8px;
-            font-weight: 400;
+            content: none;
         }
         
         .error-icon {
