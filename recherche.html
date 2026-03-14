@@ -850,6 +850,105 @@
             }
         }
 
+        /* BLOC DEMANDE — incitation à devenir hôte */
+        .demande-block {
+            grid-column: 1 / -1;
+            padding: 28px 32px;
+            background: linear-gradient(135deg, #FFF8F5 0%, #FEF1EB 100%);
+            border-radius: 16px;
+            border: 1.5px solid rgba(232, 98, 42, 0.2);
+            margin-top: 12px;
+            text-align: center;
+        }
+        .demande-block .demande-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid #E8EAF0;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.08);
+        }
+        .demande-block .demande-stat .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #E8622A;
+            line-height: 1;
+        }
+        .demande-block .demande-stat .stat-label {
+            font-size: 13px;
+            color: #475569;
+            text-align: left;
+            line-height: 1.3;
+            font-weight: 500;
+        }
+        .demande-block h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 6px;
+        }
+        .demande-block p {
+            font-size: 14px;
+            color: #6B7280;
+            margin: 0 0 18px;
+            line-height: 1.5;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .demande-block .demande-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .demande-block .btn-devenir-hote {
+            padding: 12px 24px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .demande-block .btn-devenir-hote:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        }
+        .demande-block .btn-agences {
+            padding: 12px 24px;
+            background: white;
+            color: #E8622A;
+            border: 1.5px solid #E8622A;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .demande-block .btn-agences:hover {
+            background: #FFF8F5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.15);
+        }
+        @media (max-width: 768px) {
+            .demande-block {
+                padding: 20px;
+            }
+            .demande-block .demande-actions {
+                flex-direction: column;
+            }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 1024px) {
             .results-grid {
@@ -1806,6 +1905,7 @@ function mettreAJourCompteursFiltres() {
                     </div>
                     <p id="alertMessage"></p>
                 </div>
+                ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
             // Mettre à jour le compteur de résultats
             document.getElementById('resultsCount').innerHTML = `<strong>0 logement</strong> disponible`;
@@ -1904,6 +2004,7 @@ function mettreAJourCompteursFiltres() {
                     </div>
                     <p id="alertMessageBottom" style="position: absolute; bottom: -20px; right: 24px; font-size: 12px;"></p>
                 </div>
+                ${genererBlocDemande(villeSelectionneeRecherche, 'bottom')}
             `;
 
             const villeText = villeSelectionneeRecherche ? ` à ${villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1)}` : '';
@@ -1911,7 +2012,7 @@ function mettreAJourCompteursFiltres() {
         }
 
         // Filtrer les logements
-function filtrerLogements() {
+async function filtrerLogements() {
     let resultats = [...logements];
 
     // Filtre ville (input autocomplétion) — inclut la ville secondaire si présente
@@ -2027,6 +2128,9 @@ function filtrerLogements() {
         // Tri par prix croissant seulement si pas de dates saisies
         resultats.sort((a, b) => (a.prix || 0) - (b.prix || 0));
     }
+
+    // Charger la demande pour la ville sélectionnée
+    await chargerDemandeVille(villeSelectionneeRecherche);
 
     // Sauvegarder et afficher
     logementsAffiches = resultats;
@@ -2579,6 +2683,47 @@ async function envoyerAlerte(email, inputId, messageDiv, btn) {
 
     if (btn) { btn.disabled = false; btn.textContent = 'Me prévenir'; }
     setTimeout(() => { messageDiv.innerHTML = ''; }, 5000);
+}
+
+// ============ DEMANDE — compteur d'alertes pour inciter à devenir hôte ============
+let demandeCount = 0;
+
+async function chargerDemandeVille(ville) {
+    if (!ville) { demandeCount = 0; return; }
+    try {
+        let query = supabaseClient.from('alertes').select('*', { count: 'exact', head: true });
+        // Comparer en minuscule pour matcher toutes les variantes
+        query = query.ilike('ville', ville);
+        const { count, error } = await query;
+        if (error) throw error;
+        demandeCount = count || 0;
+    } catch (e) {
+        console.warn('Erreur chargement demande:', e);
+        demandeCount = 0;
+    }
+}
+
+function genererBlocDemande(ville, contexte) {
+    if (demandeCount <= 0) return '';
+
+    const villeFormatee = ville ? ville.charAt(0).toUpperCase() + ville.slice(1) : '';
+    const pluriel = demandeCount > 1 ? 's' : '';
+    const cherchent = demandeCount > 1 ? 'cherchent' : 'cherche';
+
+    return `
+        <div class="demande-block">
+            <div class="demande-stat">
+                <span class="stat-number">${demandeCount}</span>
+                <span class="stat-label">étudiant${pluriel} ${cherchent} aussi<br>un logement${villeFormatee ? ' à ' + villeFormatee : ''}</span>
+            </div>
+            <h3>Et si tu proposais un logement ?</h3>
+            <p>Trouve un appartement et propose-le aux étudiants qui matchent avec ton rythme. On t'aide à trouver via nos agences partenaires.</p>
+            <div class="demande-actions">
+                <a href="inscription-partager.html" class="btn-devenir-hote">Devenir hôte</a>
+                <a href="contact.html?objet=agence" class="btn-agences">Trouver via une agence</a>
+            </div>
+        </div>
+    `;
 }
 
 async function creerAlerte() {
