@@ -55,7 +55,7 @@
             color: #d4571f !important;
         }
 
-        html { background: #E8622A; }
+        html { background: #E8622A; scrollbar-gutter: stable; }
         body {
             background: #F4F5F7;
         }
@@ -82,7 +82,7 @@
             background: white;
             border-radius: 16px;
             padding: 24px 28px;
-            max-width: 920px;
+            max-width: 960px;
             margin: 0 auto;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
             border: 1px solid #E8EAF0;
@@ -166,7 +166,8 @@
 
         /* ===== LAYOUT PRINCIPAL ===== */
         .main-content {
-            max-width: 960px;
+            width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px 20px 40px;
         }
@@ -543,9 +544,8 @@
         }
 
         .logement-card:hover {
-            border-color: #E8622A;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.18);
-            transform: translateY(-3px);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 36px rgba(232, 98, 42, 0.22);
         }
 
         .logement-image {
@@ -641,10 +641,10 @@
         }
 
         .logement-price {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #E8622A;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .logement-price span {
@@ -654,22 +654,19 @@
         }
 
         .logement-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: #1E293B;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 4px;
         }
 
         .logement-location {
             font-size: 13px;
             color: #94A3B8;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .logement-location svg {
@@ -1923,7 +1920,7 @@ function filtrerLogements() {
         if (villeSecondaireRecherche) {
             villesAcceptees.push(villeSecondaireRecherche);
         }
-        resultats = resultats.filter(l => villesAcceptees.includes(l.ville));
+        resultats = resultats.filter(l => villesAcceptees.some(v => v.toLowerCase() === l.ville.toLowerCase()));
     }
 
     // Filtre type d'alternance (select en haut)
