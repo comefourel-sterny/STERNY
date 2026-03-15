@@ -438,8 +438,31 @@
             font-size: 14px;
             font-weight: 700;
             flex-shrink: 0;
+            transition: box-shadow 0.2s;
         }
-        .overlay-chat-name { font-size: 16px; font-weight: 700; color: #1E293B; }
+        .overlay-chat-name { font-size: 16px; font-weight: 700; color: #1E293B; transition: color 0.2s; }
+
+        /* Profile link hover effects */
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        .profile-link:hover .overlay-chat-name,
+        .profile-link:hover .loc-name,
+        .profile-link:hover .cand-name,
+        .profile-link:hover .renouv-name { color: #E8622A; }
+        .profile-link:hover .overlay-chat-avatar,
+        .profile-link:hover .loc-avatar,
+        .profile-link:hover .cand-avatar,
+        .profile-link:hover .renouv-avatar { box-shadow: 0 0 0 2px #E8622A; }
+        .loc-avatar, .cand-avatar, .renouv-avatar { transition: box-shadow 0.2s; }
+        .loc-name, .cand-name, .renouv-name { transition: color 0.2s; }
+        .message-avatar-link { text-decoration: none; color: inherit; flex-shrink: 0; }
+        .message-avatar-link:hover .message-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .overlay-chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -2414,10 +2437,10 @@
                     <button class="overlay-chat-back" onclick="retourListeMessages()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
                     </button>
-                    <div class="overlay-chat-contact">
+                    <a class="overlay-chat-contact profile-link" id="overlayChatProfileLink" href="#">
                         <div class="overlay-chat-avatar" id="overlayChatAvatar">?</div>
                         <div class="overlay-chat-name" id="overlayChatName">...</div>
-                    </div>
+                    </a>
                     <button class="messages-overlay-close" onclick="fermerOverlayMessages()">&times;</button>
                 </div>
                 <div class="overlay-chat-messages" id="overlayChatMessages">
@@ -3042,11 +3065,13 @@
                     // Injecter le locataire-bloc apr\u00e8s le container (sous les annonces)
                     const blocHtml = `
                         <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor:pointer;">
-                            <div class="loc-avatar">${initials}</div>
-                            <div class="loc-info">
-                                <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${countdownText}</span></div>
-                                <div class="loc-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
-                            </div>
+                            <a class="profile-link" href="profil.html?user_id=${locataire.id}" onclick="event.stopPropagation();">
+                                <div class="loc-avatar">${initials}</div>
+                                <div class="loc-info">
+                                    <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${countdownText}</span></div>
+                                    <div class="loc-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
+                                </div>
+                            </a>
                             <div style="display:flex;gap:8px;align-items:center;">
                                 <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${locataire.id}', '${prenomEsc}', '${nomEsc}')" style="font-size:12px;padding:6px 14px;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -3291,11 +3316,13 @@
 
                     container.innerHTML += `
                         <div class="candidature-bloc" onclick="ouvrirOverlayCandidature(${index})">
-                            <div class="cand-avatar">${avatarHtml}</div>
-                            <div class="cand-info">
-                                <div class="cand-name">${c.users.prenom} ${c.users.nom}</div>
-                                <div class="cand-subtitle">${c.annonces.titre} · ${c.annonces.ville}</div>
-                            </div>
+                            <a class="profile-link" href="profil.html?user_id=${c.users.id}" onclick="event.stopPropagation();">
+                                <div class="cand-avatar">${avatarHtml}</div>
+                                <div class="cand-info">
+                                    <div class="cand-name">${c.users.prenom} ${c.users.nom}</div>
+                                    <div class="cand-subtitle">${c.annonces.titre} · ${c.annonces.ville}</div>
+                                </div>
+                            </a>
                             ${rightHtml}
                         </div>
                     `;
@@ -3673,11 +3700,13 @@
 
                     container.innerHTML += `
                         <div class="renouv-card">
-                            <div class="renouv-avatar">${initiales}</div>
-                            <div class="renouv-info">
-                                <div class="renouv-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
-                                <div class="renouv-meta">${demande.annonces?.titre || 'Logement'} &middot; ${mois} mois &middot; ${demande.loyer_mensuel}&euro;/sem</div>
-                            </div>
+                            <a class="profile-link" href="profil.html?user_id=${demande.locataire_id}">
+                                <div class="renouv-avatar">${initiales}</div>
+                                <div class="renouv-info">
+                                    <div class="renouv-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
+                                    <div class="renouv-meta">${demande.annonces?.titre || 'Logement'} &middot; ${mois} mois &middot; ${demande.loyer_mensuel}&euro;/sem</div>
+                                </div>
+                            </a>
                             <div class="renouv-actions">
                                 <a href="renouvellement.html?contrat_id=${demande.contrat_original_id}" class="btn-voir-demande">Voir la demande</a>
                             </div>
@@ -3755,7 +3784,9 @@
 
             return `
                 <div class="message-item ${c.nonLu ? 'message-unread' : ''}" onclick="ouvrirConversationOverlay('${c.userId}', '${prenomEscaped}', '${nomEscaped}')" style="cursor:pointer;">
-                    <div class="message-avatar">${initials}</div>
+                    <a href="profil.html?user_id=${c.userId}" onclick="event.stopPropagation();" class="message-avatar-link">
+                        <div class="message-avatar">${initials}</div>
+                    </a>
                     <div class="message-content">
                         <div class="message-top-row">
                             <div class="message-name">${c.prenom} ${c.nom || ''}</div>
@@ -4011,6 +4042,7 @@
             var initials = ((prenom || 'U')[0] + (nom ? nom[0] : '')).toUpperCase();
             document.getElementById('overlayChatAvatar').textContent = initials;
             document.getElementById('overlayChatName').textContent = (prenom + ' ' + (nom || '')).trim();
+            document.getElementById('overlayChatProfileLink').href = `profil.html?user_id=${userId}`;
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);
