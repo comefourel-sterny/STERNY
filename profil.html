@@ -275,6 +275,54 @@
             margin-top: 4px;
         }
 
+        /* MOYENNES PAR CATÉGORIE */
+        .category-averages {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .cat-avg-item {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 16px;
+            background: #F4F5F7;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .cat-avg-label {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .cat-avg-stars {
+            color: #fbbf24;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        .cat-avg-value {
+            font-size: 13px;
+            color: #1E293B;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* AVIS CATÉGORIE TAGS */
+        .avis-categories {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .avis-cat-tag {
+            font-size: 12px;
+            color: #6B7280;
+            background: #F4F5F7;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
         /* AVIS */
         .avis-list { display: flex; flex-direction: column; gap: 12px; }
         .avis-item {
@@ -450,6 +498,7 @@
     <!-- AVIS REÇUS -->
     <div class="section-card">
         <h2 class="section-card-title">Avis reçus</h2>
+        <div class="category-averages" id="categoryAverages" style="display:none;"></div>
         <div id="avisList" class="avis-list">
             <div class="loading">Chargement des avis...</div>
         </div>
@@ -726,11 +775,19 @@ async function chargerAnnonces() {
     document.getElementById('sectionAnnonces').style.display = 'block';
 }
 
+// ─── LABELS CATÉGORIES ───
+function getCategoryLabels(typeUser) {
+    if (typeUser === 'proprietaire' || typeUser === 'hote') {
+        return { communication: 'Communication', categorie2: 'État du logement', categorie3: 'Rapport qualité-prix' };
+    }
+    return { communication: 'Communication', categorie2: 'Propreté', categorie3: 'Respect du logement' };
+}
+
 // ─── CHARGER MOYENNE ───
 async function chargerMoyenne() {
     const { data } = await supabaseClient
         .from('avis')
-        .select('note')
+        .select('note, note_communication, note_categorie_2, note_categorie_3')
         .eq('profil_evalue_id', profileUserId);
 
     const ratingEl = document.getElementById('profilRating');
@@ -741,6 +798,36 @@ async function chargerMoyenne() {
         const moyArrondi = Math.round(moy * 10) / 10;
         document.getElementById('profilStars').textContent = genStars(moy);
         document.getElementById('profilRatingText').textContent = `${moyArrondi}/5 — ${data.length} avis`;
+
+        // Moyennes par catégorie
+        const labels = getCategoryLabels(profileData.type_user);
+        const catData = { communication: [], categorie2: [], categorie3: [] };
+        for (const a of data) {
+            if (a.note_communication) catData.communication.push(a.note_communication);
+            if (a.note_categorie_2) catData.categorie2.push(a.note_categorie_2);
+            if (a.note_categorie_3) catData.categorie3.push(a.note_categorie_3);
+        }
+
+        const avgContainer = document.getElementById('categoryAverages');
+        if (catData.communication.length > 0) {
+            let html = '';
+            for (const [key, label] of Object.entries(labels)) {
+                const arr = catData[key];
+                if (arr.length > 0) {
+                    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+                    const avgR = Math.round(avg * 10) / 10;
+                    html += `<div class="cat-avg-item">
+                        <div class="cat-avg-label">${label}</div>
+                        <div class="cat-avg-stars">${genStars(avg)}</div>
+                        <div class="cat-avg-value">${avgR}/5</div>
+                    </div>`;
+                }
+            }
+            if (html) {
+                avgContainer.innerHTML = html;
+                avgContainer.style.display = 'flex';
+            }
+        }
     } else {
         document.getElementById('profilStars').textContent = '☆☆☆☆☆';
         document.getElementById('profilRatingText').textContent = 'Aucun avis encore';
@@ -755,7 +842,7 @@ async function chargerAvis() {
     const { data } = await supabaseClient
         .from('avis')
         .select(`
-            id, note, commentaire, created_at,
+            id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at,
             evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
         `)
         .eq('profil_evalue_id', profileUserId)
@@ -784,6 +871,17 @@ async function chargerAvis() {
             ? `<img loading="lazy" src="${escapeHtml(photo)}" alt="${nom}">`
             : initials;
 
+        // Tags catégories
+        let catHtml = '';
+        if (avis.note_communication || avis.note_categorie_2 || avis.note_categorie_3) {
+            const labels = getCategoryLabels(profileData.type_user);
+            catHtml = '<div class="avis-categories">';
+            if (avis.note_communication) catHtml += `<span class="avis-cat-tag">${labels.communication} ${genStars(avis.note_communication)}</span>`;
+            if (avis.note_categorie_2) catHtml += `<span class="avis-cat-tag">${labels.categorie2} ${genStars(avis.note_categorie_2)}</span>`;
+            if (avis.note_categorie_3) catHtml += `<span class="avis-cat-tag">${labels.categorie3} ${genStars(avis.note_categorie_3)}</span>`;
+            catHtml += '</div>';
+        }
+
         container.innerHTML += `
             <div class="avis-item">
                 <div class="avis-avatar">${avatarHtml}</div>
@@ -793,6 +891,7 @@ async function chargerAvis() {
                         <span class="avis-date">${date}</span>
                     </div>
                     <div class="avis-stars">${stars}</div>
+                    ${catHtml}
                     ${avis.commentaire ? `<div class="avis-comment">${escapeHtml(avis.commentaire)}</div>` : ''}
                 </div>
             </div>`;
