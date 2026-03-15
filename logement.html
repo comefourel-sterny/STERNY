@@ -715,25 +715,8 @@
             color: #fff;
             background: #1E293B;
             line-height: 1;
+            transition: box-shadow 0.2s;
         }
-        img.host-avatar-small {
-            object-fit: cover;
-        }
-
-        .host-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1E293B;
-            line-height: 1.2;
-            transition: color 0.2s;
-        }
-
-        .host-status-text {
-            font-size: 13px;
-            color: #6B7280;
-            transition: color 0.2s;
-        }
-
         .host-link {
             display: flex;
             align-items: center;
@@ -744,15 +727,24 @@
             flex: 1;
         }
         .host-link:hover .host-name,
-        .host-link:hover .host-status-text {
-            color: #E8622A;
+        .host-link:hover .host-status-text { color: #E8622A; }
+        .host-link:hover .host-avatar-small { box-shadow: 0 0 0 2px #E8622A; }
+        img.host-avatar-small {
+            object-fit: cover;
         }
-        .host-avatar-small {
-            transition: box-shadow 0.2s;
+
+        .host-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+            line-height: 1.2;
         }
-        .host-link:hover .host-avatar-small {
-            box-shadow: 0 0 0 2px #E8622A;
+
+        .host-status-text {
+            font-size: 13px;
+            color: #6B7280;
         }
+
 
         /* Card calendrier */
         .calendar-card {
@@ -1984,7 +1976,6 @@
 
                 if (data && !error) {
                     document.getElementById('hostName').textContent = data.prenom + ' ' + data.nom.charAt(0) + '.';
-                    document.getElementById('hostLink').href = 'profil.html?user_id=' + userId;
                     const avatarEl = document.getElementById('hostAvatar');
                     const typeEl = document.getElementById('hostType');
 
@@ -2004,6 +1995,7 @@
                     }
 
                     document.getElementById('hostInfo').style.display = 'flex';
+                    document.getElementById('hostLink').href = `profil.html?user_id=${userId}`;
                 }
             } catch (error) {
                 console.error('Erreur chargement propriétaire:', error);
@@ -2768,32 +2760,9 @@
                 const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
                 return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             }
-            function interpolateBorder(inside, outside) {
-                let lo = 0, hi = 1;
-                for (let i = 0; i < 20; i++) {
-                    const mid = (lo + hi) / 2;
-                    const lng = inside[0] + mid * (outside[0] - inside[0]);
-                    const lat = inside[1] + mid * (outside[1] - inside[1]);
-                    if (haversineKm(lng, lat, centerLng, centerLat) < PRIVACY_RADIUS_KM) lo = mid;
-                    else hi = mid;
-                }
-                const t = (lo + hi) / 2;
-                return [inside[0] + t * (outside[0] - inside[0]), inside[1] + t * (outside[1] - inside[1])];
-            }
-            const result = [];
-            for (let i = 0; i < coords.length; i++) {
-                const dIn = haversineKm(coords[i][0], coords[i][1], centerLng, centerLat) <= PRIVACY_RADIUS_KM;
-                if (!dIn) {
-                    if (result.length === 0 && i > 0) {
-                        result.push(interpolateBorder(coords[i - 1], coords[i]));
-                    }
-                    result.push(coords[i]);
-                } else if (result.length > 0) {
-                    result.push(interpolateBorder(coords[i], coords[i - 1]));
-                    break;
-                }
-            }
-            return result.length >= 2 ? result : [];
+            // Garder seulement les points en dehors du cercle
+            const clipped = coords.filter(c => haversineKm(c[0], c[1], centerLng, centerLat) > PRIVACY_RADIUS_KM);
+            return clipped.length >= 2 ? clipped : [];
         }
 
         function traceRoute(coords) {

@@ -256,7 +256,20 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: box-shadow 0.2s;
         }
+        .participant-profile-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            flex: 1;
+        }
+        .participant-profile-link:hover .participant-name { color: #E8622A; }
+        .participant-profile-link:hover .participant-role-tag { color: #E8622A; }
+        .participant-profile-link:hover .participant-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .participant-avatar.p1 { background: #E8622A; }
         .participant-avatar.p2 { background: #64748B; }
         .participant-avatar svg {
@@ -816,23 +829,27 @@
                 <div class="card-label">Participants</div>
                 <div class="participants-list" id="participantsRow">
                     <div class="participant-row" id="participant1">
-                        <div class="participant-avatar p1">
-                            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        </div>
-                        <div class="participant-main">
-                            <div class="participant-name" id="nom1">Chargement...</div>
-                            <div class="participant-role-tag" id="role1">Locataire</div>
-                        </div>
+                        <a class="participant-profile-link" id="participantLink1" href="#">
+                            <div class="participant-avatar p1">
+                                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div class="participant-main">
+                                <div class="participant-name" id="nom1">Chargement...</div>
+                                <div class="participant-role-tag" id="role1">Locataire</div>
+                            </div>
+                        </a>
                         <div class="participant-contact-inline" id="contact1"></div>
                     </div>
                     <div class="participant-row" id="participant2">
-                        <div class="participant-avatar p2">
-                            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        </div>
-                        <div class="participant-main">
-                            <div class="participant-name" id="nom2">Chargement...</div>
-                            <div class="participant-role-tag" id="role2">Propri&eacute;taire</div>
-                        </div>
+                        <a class="participant-profile-link" id="participantLink2" href="#">
+                            <div class="participant-avatar p2">
+                                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div class="participant-main">
+                                <div class="participant-name" id="nom2">Chargement...</div>
+                                <div class="participant-role-tag" id="role2">Propri&eacute;taire</div>
+                            </div>
+                        </a>
                         <div class="participant-contact-inline" id="contact2"></div>
                     </div>
                 </div>
@@ -971,10 +988,9 @@
 
         function afficherParticipant(num, role, nom, email, tel, userId) {
             document.getElementById('role' + num).textContent = role;
+            document.getElementById('nom' + num).textContent = nom;
             if (userId) {
-                document.getElementById('nom' + num).innerHTML = `<a href="profil.html?user_id=${userId}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'">${escapeHtml(nom)}</a>`;
-            } else {
-                document.getElementById('nom' + num).textContent = nom;
+                document.getElementById('participantLink' + num).href = `profil.html?user_id=${userId}`;
             }
             const contactEl = document.getElementById('contact' + num);
             contactEl.innerHTML = `

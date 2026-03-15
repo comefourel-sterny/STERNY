@@ -169,7 +169,18 @@
             font-weight: 700;
             color: white;
             margin: 0 auto 15px;
+            transition: box-shadow 0.2s;
         }
+
+        .contact-profile-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        .contact-profile-link:hover .contact-name,
+        .contact-profile-link:hover .contact-role { color: #E8622A; }
+        .contact-profile-link:hover .contact-avatar { box-shadow: 0 0 0 2px #E8622A; }
 
         .contact-name {
             font-size: 18px;
@@ -942,9 +953,11 @@
                             <span id="contactTitle">Votre propri&eacute;taire</span>
                         </div>
                         <div class="contact-card">
-                            <div class="contact-avatar" id="contactAvatar"></div>
-                            <div class="contact-name" id="contactNom">Chargement...</div>
-                            <div class="contact-role" id="contactRole">Propriétaire</div>
+                            <a class="contact-profile-link" id="contactProfileLink" href="#">
+                                <div class="contact-avatar" id="contactAvatar"></div>
+                                <div class="contact-name" id="contactNom">Chargement...</div>
+                                <div class="contact-role" id="contactRole">Propriétaire</div>
+                            </a>
                             <div class="contact-info" id="contactInfo">
                                 📧 Email<br>
                                 📞 Téléphone
@@ -1311,6 +1324,7 @@
             document.getElementById('contactInfo').innerHTML = `${emailLine}<br>${telLine}`;
 
             document.getElementById('btnContact').href = `conversation.html?user_id=${contactPerson.id}`;
+            document.getElementById('contactProfileLink').href = `profil.html?user_id=${contactPerson.id}`;
 
             // Dates du contrat
             if (contrat) {
