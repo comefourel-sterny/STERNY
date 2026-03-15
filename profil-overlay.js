@@ -31,17 +31,18 @@
             padding: 20px;
         }
 
-        /* CARTE PROFIL */
+        /* CARTE PROFIL — même format que connexion/inscription */
         .profil-overlay-panel {
             position: relative;
             width: 100%;
-            max-width: 420px;
+            max-width: 460px;
             max-height: 85vh;
-            background: #fff;
+            background: white;
             z-index: 99991;
             overflow-y: auto;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1.5px solid #E8EAF0;
             transform: scale(0.96);
             opacity: 0;
             transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
