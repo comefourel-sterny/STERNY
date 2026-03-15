@@ -49,7 +49,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding: 12px 16px;
+            padding: 8px 12px 0;
             background: white;
             z-index: 2;
             border-radius: 20px 20px 0 0;
@@ -74,26 +74,26 @@
 
         /* EN-TÊTE PROFIL */
         .po-top {
-            padding: 24px 20px 0;
+            padding: 0 24px;
             text-align: center;
         }
         .po-avatar {
-            width: 72px;
-            height: 72px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: white;
             overflow: hidden;
-            margin: 0 auto 10px;
+            margin: 0 auto 8px;
         }
         .po-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .po-name { font-size: 20px; font-weight: 700; color: #1E293B; margin-bottom: 3px; }
-        .po-role { font-size: 13px; color: #6B7280; margin-bottom: 6px; }
+        .po-name { font-size: 18px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+        .po-role { font-size: 12px; color: #6B7280; margin-bottom: 4px; }
         .po-badge-row {
             display: flex;
             align-items: center;
@@ -135,7 +135,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
         }
         .po-stars { color: #fbbf24; font-size: 14px; letter-spacing: 1px; }
         .po-rating-text { font-size: 12px; color: #6B7280; }
@@ -145,7 +145,7 @@
             display: flex;
             gap: 8px;
             justify-content: center;
-            padding-bottom: 18px;
+            padding-bottom: 10px;
         }
         .po-btn {
             padding: 8px 16px;
@@ -173,7 +173,7 @@
             gap: 14px;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 12px 20px;
+            padding: 8px 20px;
             border-top: 1px solid #E8EAF0;
             border-bottom: 1px solid #E8EAF0;
         }
@@ -189,21 +189,21 @@
 
         /* Sections */
         .po-section {
-            padding: 16px 20px;
+            padding: 10px 20px;
             border-bottom: 1px solid #E8EAF0;
         }
         .po-section:last-child { border-bottom: none; }
         .po-section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #94A3B8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         /* À propos */
-        .po-about { font-size: 13px; color: #475569; line-height: 1.6; }
+        .po-about { font-size: 12px; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
         /* Infos */
         .po-info-compact { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -222,19 +222,19 @@
         /* Annonces mini */
         .po-annonce {
             display: flex;
-            gap: 10px;
-            padding: 10px;
+            gap: 8px;
+            padding: 8px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
             color: inherit;
             transition: border-color 0.2s;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .po-annonce:last-child { margin-bottom: 0; }
         .po-annonce:hover { border-color: #E8622A; }
         .po-annonce-photo {
-            width: 48px; height: 48px; min-width: 48px;
+            width: 40px; height: 40px; min-width: 40px;
             border-radius: 8px; object-fit: cover; background: #F4F5F7;
         }
         .po-annonce-info { flex: 1; min-width: 0; }
@@ -243,10 +243,10 @@
         .po-annonce-prix { font-size: 13px; font-weight: 700; color: #E8622A; margin-top: 1px; }
 
         /* Moyennes catégories */
-        .po-cat-avgs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .po-cat-avgs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
         .po-cat-avg {
             flex: 1; min-width: 80px;
-            padding: 8px 10px;
+            padding: 5px 8px;
             background: #F4F5F7;
             border-radius: 8px;
             text-align: center;
@@ -256,10 +256,10 @@
         .po-cat-avg-value { font-size: 11px; color: #1E293B; font-weight: 600; }
 
         /* Avis */
-        .po-avis-list { display: flex; flex-direction: column; gap: 10px; }
+        .po-avis-list { display: flex; flex-direction: column; gap: 6px; }
         .po-avis {
-            display: flex; gap: 10px; padding: 12px;
-            background: #F9FAFB; border-radius: 10px;
+            display: flex; gap: 8px; padding: 8px;
+            background: #F9FAFB; border-radius: 8px;
         }
         .po-avis-avatar {
             width: 32px; height: 32px; border-radius: 50%;
@@ -279,14 +279,14 @@
         .po-avis-cat-tag { font-size: 10px; color: #6B7280; background: #E8EAF0; padding: 2px 5px; border-radius: 4px; }
 
         /* Empty & loading */
-        .po-empty { text-align: center; padding: 24px 12px; }
+        .po-empty { text-align: center; padding: 12px; }
         .po-empty-icon { font-size: 28px; opacity: 0.3; margin-bottom: 6px; }
         .po-empty-title { font-size: 14px; font-weight: 600; color: #1E293B; margin-bottom: 3px; }
         .po-empty-text { font-size: 12px; color: #94A3B8; }
         .po-loading { text-align: center; padding: 20px; color: #94A3B8; font-size: 12px; }
 
         /* Signaler */
-        .po-signaler { text-align: center; padding: 12px 20px 20px; }
+        .po-signaler { text-align: center; padding: 8px 20px 12px; }
         .po-signaler a { font-size: 11px; color: #94A3B8; text-decoration: none; transition: color 0.2s; }
         .po-signaler a:hover { color: #E8622A; }
 
@@ -727,7 +727,9 @@
         }
 
         var html = '';
-        for (var i = 0; i < result.data.length; i++) {
+        var maxAvis = 2;
+        var total = result.data.length;
+        for (var i = 0; i < Math.min(total, maxAvis); i++) {
             var avis = result.data[i];
             var eval_ = avis.evaluateur;
             var nom = eval_ ? poEscape(eval_.prenom) + ' ' + poEscape(eval_.nom) : 'Utilisateur';
@@ -748,6 +750,9 @@
             }
 
             html += '<div class="po-avis"><div class="po-avis-avatar">' + avatarInner + '</div><div class="po-avis-content"><div class="po-avis-header"><span class="po-avis-name">' + nom + '</span><span class="po-avis-date">' + date + '</span></div><div class="po-avis-stars">' + stars + '</div>' + catHtml + (avis.commentaire ? '<div class="po-avis-comment">' + poEscape(avis.commentaire) + '</div>' : '') + '</div></div>';
+        }
+        if (total > maxAvis) {
+            html += '<a href="avis.html?user_id=' + poProfileUserId + '" style="display:block;text-align:center;font-size:12px;font-weight:600;color:#E8622A;text-decoration:none;padding:4px 0;">Voir les ' + total + ' avis →</a>';
         }
         container.innerHTML = html;
     }
