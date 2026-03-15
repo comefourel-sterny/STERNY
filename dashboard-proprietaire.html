@@ -2961,7 +2961,7 @@
                     <div class="loc-avatar">${initials}</div>
                     <div class="loc-info">
                         <div class="loc-label">Locataire</div>
-                        <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
+                        <div class="loc-name"><a href="profil.html?user_id=${loc.id}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${loc.prenom || ''} ${loc.nom || ''}</a></div>
                     </div>
                     <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${loc.id}', '${prenomEscaped}', '${nomEscaped}')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -3045,7 +3045,7 @@
                             <div class="loc-avatar">${initials}</div>
                             <div class="loc-info">
                                 <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${countdownText}</span></div>
-                                <div class="loc-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
+                                <div class="loc-name"><a href="profil.html?user_id=${locataire.id}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${locataire.prenom || ''} ${locataire.nom || ''}</a></div>
                             </div>
                             <div style="display:flex;gap:8px;align-items:center;">
                                 <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${locataire.id}', '${prenomEsc}', '${nomEsc}')" style="font-size:12px;padding:6px 14px;">
@@ -3293,7 +3293,7 @@
                         <div class="candidature-bloc" onclick="ouvrirOverlayCandidature(${index})">
                             <div class="cand-avatar">${avatarHtml}</div>
                             <div class="cand-info">
-                                <div class="cand-name">${c.users.prenom} ${c.users.nom}</div>
+                                <div class="cand-name"><a href="profil.html?user_id=${c.users.id}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${c.users.prenom} ${c.users.nom}</a></div>
                                 <div class="cand-subtitle">${c.annonces.titre} · ${c.annonces.ville}</div>
                             </div>
                             ${rightHtml}
@@ -3758,7 +3758,7 @@
                     <div class="message-avatar">${initials}</div>
                     <div class="message-content">
                         <div class="message-top-row">
-                            <div class="message-name">${c.prenom} ${c.nom || ''}</div>
+                            <div class="message-name"><a href="profil.html?user_id=${c.userId}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${c.prenom} ${c.nom || ''}</a></div>
                             <span class="message-time">${timeAgo}</span>
                         </div>
                         <div class="message-bottom-row">
@@ -4009,8 +4009,12 @@
 
             // Header du chat
             var initials = ((prenom || 'U')[0] + (nom ? nom[0] : '')).toUpperCase();
-            document.getElementById('overlayChatAvatar').textContent = initials;
-            document.getElementById('overlayChatName').textContent = (prenom + ' ' + (nom || '')).trim();
+            var avatarEl = document.getElementById('overlayChatAvatar');
+            avatarEl.textContent = initials;
+            avatarEl.style.cursor = 'pointer';
+            avatarEl.onclick = function() { window.location.href = 'profil.html?user_id=' + userId; };
+            var nameEl = document.getElementById('overlayChatName');
+            nameEl.innerHTML = '<a href="profil.html?user_id=' + userId + '" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'#E8622A\'" onmouseout="this.style.color=\'inherit\'">' + ((prenom + ' ' + (nom || '')).trim()) + '</a>';
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);

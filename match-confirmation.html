@@ -969,9 +969,13 @@
             }
         }
 
-        function afficherParticipant(num, role, nom, email, tel) {
+        function afficherParticipant(num, role, nom, email, tel, userId) {
             document.getElementById('role' + num).textContent = role;
-            document.getElementById('nom' + num).textContent = nom;
+            if (userId) {
+                document.getElementById('nom' + num).innerHTML = `<a href="profil.html?user_id=${userId}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'">${escapeHtml(nom)}</a>`;
+            } else {
+                document.getElementById('nom' + num).textContent = nom;
+            }
             const contactEl = document.getElementById('contact' + num);
             contactEl.innerHTML = `
                 <div class="contact-item">
@@ -1025,13 +1029,13 @@
 
             if (propEstHote) {
                 // Modèle sous-location : locataire temporaire ↔ alternant hôte
-                afficherParticipant(1, 'Locataire temporaire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone);
-                afficherParticipant(2, 'Alternant hôte', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone);
+                afficherParticipant(1, 'Locataire temporaire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone, loc.id);
+                afficherParticipant(2, 'Alternant hôte', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone, proprietaire.id);
                 // Note : le propriétaire sera notifié pour approuver
                 afficherOwnerNote(`${proprietaire.prenom} ${proprietaire.nom}`);
             } else {
-                afficherParticipant(1, 'Locataire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone);
-                afficherParticipant(2, 'Propriétaire', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone);
+                afficherParticipant(1, 'Locataire', `${loc.prenom} ${loc.nom}`, loc.email, loc.telephone, loc.id);
+                afficherParticipant(2, 'Propriétaire', `${proprietaire.prenom} ${proprietaire.nom}`, proprietaire.email, proprietaire.telephone, proprietaire.id);
             }
 
             afficherAnnonce(ann.titre, ann.photos, ann.ville, ann.type_logement, ann.surface, ann.prix);

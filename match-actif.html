@@ -1297,7 +1297,8 @@
             }
 
             document.getElementById('contactTitle').textContent = contactTitle;
-            document.getElementById('contactNom').textContent = `${contactPerson.prenom} ${contactPerson.nom}`;
+            const contactNomEl = document.getElementById('contactNom');
+            contactNomEl.innerHTML = `<a href="profil.html?user_id=${contactPerson.id}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'">${contactPerson.prenom} ${contactPerson.nom}</a>`;
             document.getElementById('contactRole').textContent = contactRoleText;
 
             // Avatar avec initiales

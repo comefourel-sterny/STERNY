@@ -4493,7 +4493,7 @@
                     <div class="message-avatar">${initials}</div>
                     <div class="message-content">
                         <div class="message-top-row">
-                            <div class="message-name">${c.prenom} ${c.nom || ''}</div>
+                            <div class="message-name"><a href="profil.html?user_id=${c.userId}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${c.prenom} ${c.nom || ''}</a></div>
                             <span class="message-time">${timeAgo}</span>
                         </div>
                         <div class="message-bottom-row">
@@ -4562,8 +4562,12 @@
 
             // Header du chat
             var initials = ((prenom || 'U')[0] + (nom ? nom[0] : '')).toUpperCase();
-            document.getElementById('overlayChatAvatar').textContent = initials;
-            document.getElementById('overlayChatName').textContent = (prenom + ' ' + (nom || '')).trim();
+            var avatarEl = document.getElementById('overlayChatAvatar');
+            avatarEl.textContent = initials;
+            avatarEl.style.cursor = 'pointer';
+            avatarEl.onclick = function() { window.location.href = 'profil.html?user_id=' + userId; };
+            var nameEl = document.getElementById('overlayChatName');
+            nameEl.innerHTML = '<a href="profil.html?user_id=' + userId + '" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'#E8622A\'" onmouseout="this.style.color=\'inherit\'">' + ((prenom + ' ' + (nom || '')).trim()) + '</a>';
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);
