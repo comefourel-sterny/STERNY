@@ -2371,32 +2371,52 @@
             });
 
             map.on('load', function() {
-                // Cercle de zone (adresse exacte masquée)
+                // Générer un vrai cercle géographique de 500m (= PRIVACY_RADIUS_KM)
+                function createGeoCircle(centerLng, centerLat, radiusKm, steps) {
+                    steps = steps || 64;
+                    const coords = [];
+                    for (let i = 0; i <= steps; i++) {
+                        const angle = (i / steps) * 2 * Math.PI;
+                        const dx = radiusKm * Math.cos(angle);
+                        const dy = radiusKm * Math.sin(angle);
+                        const newLat = centerLat + (dy / 111.32);
+                        const newLng = centerLng + (dx / (111.32 * Math.cos(centerLat * Math.PI / 180)));
+                        coords.push([newLng, newLat]);
+                    }
+                    return coords;
+                }
+
+                const circleCoords = createGeoCircle(lng, lat, 0.5, 64);
+
                 map.addSource('zone-circle', {
                     type: 'geojson',
                     data: {
                         type: 'Feature',
                         geometry: {
-                            type: 'Point',
-                            coordinates: [lng, lat]
+                            type: 'Polygon',
+                            coordinates: [circleCoords]
                         }
                     }
                 });
 
-                // Cercle flou autour de la zone
                 map.addLayer({
                     id: 'zone-circle-fill',
-                    type: 'circle',
+                    type: 'fill',
                     source: 'zone-circle',
                     paint: {
-                        'circle-radius': {
-                            stops: [[10, 30], [13, 80], [15, 200]]
-                        },
-                        'circle-color': '#1E293B',
-                        'circle-opacity': 0.1,
-                        'circle-stroke-width': 2,
-                        'circle-stroke-color': '#1E293B',
-                        'circle-stroke-opacity': 0.3
+                        'fill-color': '#1E293B',
+                        'fill-opacity': 0.1
+                    }
+                });
+
+                map.addLayer({
+                    id: 'zone-circle-stroke',
+                    type: 'line',
+                    source: 'zone-circle',
+                    paint: {
+                        'line-color': '#1E293B',
+                        'line-width': 2,
+                        'line-opacity': 0.3
                     }
                 });
             });
@@ -2723,9 +2743,32 @@
                 const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
                 return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             }
-            // Garder seulement les points en dehors du cercle
-            const clipped = coords.filter(c => haversineKm(c[0], c[1], centerLng, centerLat) > PRIVACY_RADIUS_KM);
-            return clipped.length >= 2 ? clipped : [];
+            function interpolateBorder(inside, outside) {
+                let lo = 0, hi = 1;
+                for (let i = 0; i < 20; i++) {
+                    const mid = (lo + hi) / 2;
+                    const lng = inside[0] + mid * (outside[0] - inside[0]);
+                    const lat = inside[1] + mid * (outside[1] - inside[1]);
+                    if (haversineKm(lng, lat, centerLng, centerLat) < PRIVACY_RADIUS_KM) lo = mid;
+                    else hi = mid;
+                }
+                const t = (lo + hi) / 2;
+                return [inside[0] + t * (outside[0] - inside[0]), inside[1] + t * (outside[1] - inside[1])];
+            }
+            const result = [];
+            for (let i = 0; i < coords.length; i++) {
+                const dIn = haversineKm(coords[i][0], coords[i][1], centerLng, centerLat) <= PRIVACY_RADIUS_KM;
+                if (!dIn) {
+                    if (result.length === 0 && i > 0) {
+                        result.push(interpolateBorder(coords[i - 1], coords[i]));
+                    }
+                    result.push(coords[i]);
+                } else if (result.length > 0) {
+                    result.push(interpolateBorder(coords[i], coords[i - 1]));
+                    break;
+                }
+            }
+            return result.length >= 2 ? result : [];
         }
 
         function traceRoute(coords) {
