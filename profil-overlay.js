@@ -17,30 +17,29 @@
             inset: 0;
             background: rgba(0,0,0,0.45);
             z-index: 99990;
-            opacity: 0;
-            transition: opacity 0.25s ease;
-            cursor: pointer;
             display: none;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
-        .profil-overlay-backdrop.visible { opacity: 1; display: block; pointer-events: auto; }
+        .profil-overlay-backdrop.visible { opacity: 1; display: flex; pointer-events: auto; align-items: center; justify-content: center; padding: 24px; }
 
-        /* PANNEAU PROFIL */
+        /* CARTE PROFIL CENTRÉE */
         .profil-overlay-panel {
-            position: fixed;
-            top: 0;
-            right: -480px;
-            display: none;
-            width: 420px;
-            max-width: 92vw;
-            height: 100vh;
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
             background: white;
             z-index: 99991;
             overflow-y: auto;
-            box-shadow: -8px 0 32px rgba(0,0,0,0.12);
-            transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
         }
-        .profil-overlay-panel.open { right: 0; }
+        .profil-overlay-panel.open { transform: scale(1); opacity: 1; }
 
         /* BOUTON FERMER */
         .profil-overlay-close {
@@ -48,18 +47,14 @@
             top: 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 14px 20px;
+            justify-content: flex-end;
+            padding: 12px 16px;
             background: white;
-            border-bottom: 1px solid #E8EAF0;
             z-index: 2;
+            border-radius: 20px 20px 0 0;
         }
         .profil-overlay-close-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #94A3B8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: none;
         }
         .profil-overlay-close-btn {
             width: 32px;
@@ -317,16 +312,16 @@
     const overlay = document.createElement('div');
     overlay.id = 'profilOverlayRoot';
     overlay.innerHTML = `
-        <div class="profil-overlay-backdrop" id="poBackdrop"></div>
-        <div class="profil-overlay-panel" id="poPanel">
-            <div class="profil-overlay-close">
-                <span class="profil-overlay-close-label">Profil</span>
-                <button class="profil-overlay-close-btn" id="poCloseBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
-            <div id="poContent">
-                <div class="po-loading">Chargement du profil...</div>
+        <div class="profil-overlay-backdrop" id="poBackdrop">
+            <div class="profil-overlay-panel" id="poPanel" onclick="event.stopPropagation();">
+                <div class="profil-overlay-close">
+                    <button class="profil-overlay-close-btn" id="poCloseBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div id="poContent">
+                    <div class="po-loading">Chargement du profil...</div>
+                </div>
             </div>
         </div>
         <div class="po-modal-signal" id="poModalSignal">
@@ -369,12 +364,9 @@
         if (!poIsOpen) return;
         poIsOpen = false;
         document.getElementById('poPanel').classList.remove('open');
+        document.getElementById('poPanel').classList.remove('open');
         document.getElementById('poBackdrop').classList.remove('visible');
         document.body.style.overflow = '';
-        setTimeout(function () {
-            document.getElementById('poBackdrop').style.display = 'none';
-            document.getElementById('poPanel').style.display = 'none';
-        }, 300);
     }
     window.fermerProfilOverlay = fermerProfilOverlay;
 
@@ -486,9 +478,7 @@
         poProfileUserId = userId;
         poProfileData = null;
 
-        // Afficher le panel
-        document.getElementById('poBackdrop').style.display = 'block';
-        document.getElementById('poPanel').style.display = 'block';
+        // Afficher la carte
         document.getElementById('poContent').innerHTML = '<div class="po-loading">Chargement du profil...</div>';
         document.body.style.overflow = 'hidden';
 
