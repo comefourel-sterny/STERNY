@@ -15,73 +15,78 @@
         .profil-overlay-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(30, 45, 61, 0.45);
             z-index: 99990;
             display: none;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.25s ease;
+            transition: opacity 0.22s ease;
         }
-        .profil-overlay-backdrop.visible { opacity: 1; display: flex; pointer-events: auto; align-items: center; justify-content: center; padding: 24px; }
+        .profil-overlay-backdrop.visible {
+            opacity: 1;
+            display: flex;
+            pointer-events: auto;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        /* CARTE PROFIL CENTRÉE */
+        /* CARTE PROFIL */
         .profil-overlay-panel {
             position: relative;
             width: 100%;
-            max-width: 460px;
+            max-width: 420px;
             max-height: 85vh;
-            background: white;
+            background: #fff;
             z-index: 99991;
             overflow-y: auto;
-            border-radius: 20px;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
-            border: 1.5px solid #E8EAF0;
-            transform: scale(0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+            transform: scale(0.96);
             opacity: 0;
-            transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
         }
-        .profil-overlay-panel.open { transform: scale(1); opacity: 1; }
+        .profil-overlay-panel.open {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Scrollbar discrète */
+        .profil-overlay-panel::-webkit-scrollbar { width: 4px; }
+        .profil-overlay-panel::-webkit-scrollbar-track { background: transparent; }
+        .profil-overlay-panel::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
 
         /* BOUTON FERMER */
-        .profil-overlay-close {
-            position: sticky;
-            top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 8px 12px 0;
-            background: white;
-            z-index: 2;
-            border-radius: 20px 20px 0 0;
-        }
-        .profil-overlay-close-label {
-            display: none;
-        }
-        .profil-overlay-close-btn {
-            width: 32px;
-            height: 32px;
+        .po-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
             border: none;
-            background: #F4F5F7;
-            border-radius: 8px;
+            background: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            border-radius: 6px;
+            transition: background 0.15s;
+            z-index: 3;
+            padding: 0;
         }
-        .profil-overlay-close-btn:hover { background: #E8EAF0; }
-        .profil-overlay-close-btn svg { width: 16px; height: 16px; color: #1E293B; }
+        .po-close:hover { background: #f3f4f6; }
+        .po-close svg { width: 18px; height: 18px; color: #6b7280; }
 
-        /* EN-TÊTE PROFIL */
-        .po-top {
-            padding: 0 24px;
+        /* HEADER */
+        .po-header {
+            padding: 28px 28px 0;
             text-align: center;
         }
         .po-avatar {
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            background: #1e2d3d;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -89,211 +94,299 @@
             font-weight: 700;
             color: white;
             overflow: hidden;
-            margin: 0 auto 8px;
+            margin: 0 auto 12px;
+            letter-spacing: 0.5px;
         }
         .po-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .po-name { font-size: 18px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
-        .po-role { font-size: 12px; color: #6B7280; margin-bottom: 4px; }
+        .po-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e2d3d;
+            margin: 0 0 4px;
+            line-height: 1.2;
+        }
+        .po-role-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
         .po-badge-row {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             flex-wrap: wrap;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         .po-badge-verifie {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #ECFDF5;
+            background: #ecfdf5;
             color: #059669;
             font-size: 11px;
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(167,243,208,0.6);
         }
         .po-badge-verifie svg { width: 12px; height: 12px; }
         .po-badge-documents {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #EFF6FF;
-            color: #2563EB;
+            background: #eff6ff;
+            color: #2563eb;
             font-size: 11px;
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(191,219,254,0.6);
         }
         .po-badge-documents svg { width: 12px; height: 12px; }
 
-        /* Étoiles */
+        /* NOTE ÉTOILES */
         .po-rating {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            margin-bottom: 8px;
+            margin: 8px 0 0;
         }
-        .po-stars { color: #fbbf24; font-size: 14px; letter-spacing: 1px; }
-        .po-rating-text { font-size: 12px; color: #6B7280; }
+        .po-stars { color: #f59e0b; font-size: 14px; letter-spacing: 1px; }
+        .po-rating-text { font-size: 12px; color: #6b7280; font-weight: 500; }
 
-        /* Boutons */
+        /* BOUTONS ACTION */
         .po-actions {
             display: flex;
-            gap: 8px;
-            justify-content: center;
-            padding-bottom: 10px;
+            gap: 10px;
+            padding: 20px 28px 0;
         }
         .po-btn {
-            padding: 8px 16px;
+            flex: 1;
+            padding: 10px 0;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-family: inherit;
-            border: 1.5px solid #E8EAF0;
-            background: white;
-            color: #1E293B;
-        }
-        .po-btn:hover { border-color: #E8622A; color: #E8622A; }
-        .po-btn.primary { background: #E8622A; border-color: #E8622A; color: white; }
-        .po-btn.primary:hover { background: #d4571f; border-color: #d4571f; }
-
-        /* Badges confiance */
-        .po-trust {
             display: flex;
-            gap: 14px;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            padding: 8px 20px;
-            border-top: 1px solid #E8EAF0;
-            border-bottom: 1px solid #E8EAF0;
+            gap: 6px;
+            font-family: inherit;
+            text-align: center;
         }
-        .po-trust-item {
+        .po-btn-primary {
+            background: #e8642a;
+            color: #fff;
+            border: none;
+        }
+        .po-btn-primary:hover { background: #d4571f; }
+        .po-btn-secondary {
+            background: #fff;
+            color: #1e2d3d;
+            border: 1.5px solid #e2e8f0;
+        }
+        .po-btn-secondary:hover { border-color: #e8642a; color: #e8642a; }
+
+        /* SECTION CONTACT */
+        .po-contact {
+            padding: 16px 28px;
+            margin-top: 20px;
+            border-top: 1px solid #f3f4f6;
+        }
+        .po-contact-row {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            color: #94A3B8;
+            gap: 10px;
+            padding: 8px 0;
         }
-        .po-trust-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-        .po-trust-item.verified { color: #059669; }
+        .po-contact-row + .po-contact-row {
+            border-top: 1px solid #f3f4f6;
+        }
+        .po-contact-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .po-contact-icon svg { width: 15px; height: 15px; color: #6b7280; }
+        .po-contact-icon.verified svg { color: #059669; }
+        .po-contact-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            margin-bottom: 1px;
+        }
+        .po-contact-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e2d3d;
+            line-height: 1.2;
+        }
 
-        /* Sections */
+        /* SECTIONS */
         .po-section {
-            padding: 10px 20px;
-            border-bottom: 1px solid #E8EAF0;
+            padding: 16px 28px;
+            border-top: 1px solid #f3f4f6;
         }
-        .po-section:last-child { border-bottom: none; }
         .po-section-title {
             font-size: 11px;
-            font-weight: 700;
-            color: #94A3B8;
+            font-weight: 600;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
         }
 
-        /* À propos */
-        .po-about { font-size: 12px; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        /* À PROPOS */
+        .po-about {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.55;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
-        /* Infos */
-        .po-info-compact { display: flex; flex-wrap: wrap; gap: 6px; }
+        /* BADGES INFO */
+        .po-info-tags { display: flex; flex-wrap: wrap; gap: 6px; }
         .po-info-tag {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #475569;
-            background: #F4F5F7;
-            padding: 4px 10px;
-            border-radius: 7px;
+            gap: 5px;
+            font-size: 13px;
+            color: #1e2d3d;
+            background: #f3f4f6;
+            padding: 5px 12px;
+            border-radius: 8px;
         }
-        .po-info-tag svg { width: 13px; height: 13px; color: #94A3B8; flex-shrink: 0; }
+        .po-info-tag svg { width: 14px; height: 14px; color: #94a3b8; flex-shrink: 0; }
 
-        /* Annonces mini */
+        /* ANNONCES MINI */
         .po-annonce {
             display: flex;
-            gap: 8px;
-            padding: 8px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
+            gap: 10px;
+            padding: 10px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
             text-decoration: none;
             color: inherit;
-            transition: border-color 0.2s;
-            margin-bottom: 4px;
+            transition: border-color 0.15s;
+            margin-bottom: 6px;
         }
         .po-annonce:last-child { margin-bottom: 0; }
-        .po-annonce:hover { border-color: #E8622A; }
+        .po-annonce:hover { border-color: #e8642a; }
         .po-annonce-photo {
-            width: 40px; height: 40px; min-width: 40px;
-            border-radius: 8px; object-fit: cover; background: #F4F5F7;
+            width: 48px; height: 48px; min-width: 48px;
+            border-radius: 8px; object-fit: cover; background: #f3f4f6;
         }
         .po-annonce-info { flex: 1; min-width: 0; }
-        .po-annonce-titre { font-size: 13px; font-weight: 600; color: #1E293B; margin-bottom: 1px; }
-        .po-annonce-detail { font-size: 11px; color: #6B7280; }
-        .po-annonce-prix { font-size: 13px; font-weight: 700; color: #E8622A; margin-top: 1px; }
+        .po-annonce-titre { font-size: 13px; font-weight: 600; color: #1e2d3d; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .po-annonce-detail { font-size: 11px; color: #6b7280; }
+        .po-annonce-prix { font-size: 13px; font-weight: 700; color: #e8642a; margin-top: 2px; }
 
-        /* Moyennes catégories */
-        .po-cat-avgs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+        /* MOYENNES CATÉGORIES */
+        .po-cat-avgs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
         .po-cat-avg {
-            flex: 1; min-width: 80px;
-            padding: 5px 8px;
-            background: #F4F5F7;
+            flex: 1; min-width: 90px;
+            padding: 8px 10px;
+            background: #f3f4f6;
             border-radius: 8px;
             text-align: center;
         }
-        .po-cat-avg-label { font-size: 10px; color: #6B7280; margin-bottom: 1px; }
-        .po-cat-avg-stars { color: #fbbf24; font-size: 11px; letter-spacing: 1px; }
-        .po-cat-avg-value { font-size: 11px; color: #1E293B; font-weight: 600; }
+        .po-cat-avg-label { font-size: 10px; color: #6b7280; font-weight: 500; margin-bottom: 2px; }
+        .po-cat-avg-stars { color: #f59e0b; font-size: 11px; letter-spacing: 1px; }
+        .po-cat-avg-value { font-size: 12px; color: #1e2d3d; font-weight: 600; }
 
-        /* Avis */
-        .po-avis-list { display: flex; flex-direction: column; gap: 6px; }
+        /* AVIS */
+        .po-avis-list { display: flex; flex-direction: column; gap: 8px; }
         .po-avis {
-            display: flex; gap: 8px; padding: 8px;
-            background: #F9FAFB; border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 10px;
         }
         .po-avis-avatar {
             width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            background: #1e2d3d;
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: 700; font-size: 11px;
             flex-shrink: 0; overflow: hidden;
         }
         .po-avis-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .po-avis-content { flex: 1; min-width: 0; }
-        .po-avis-header { display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: wrap; }
-        .po-avis-name { font-weight: 600; color: #1E293B; font-size: 12px; }
-        .po-avis-date { font-size: 10px; color: #94A3B8; }
-        .po-avis-stars { color: #fbbf24; font-size: 12px; margin-top: 1px; letter-spacing: 1px; }
-        .po-avis-comment { font-size: 12px; color: #475569; margin-top: 3px; line-height: 1.5; }
+        .po-avis-header { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+        .po-avis-name { font-weight: 600; color: #1e2d3d; font-size: 13px; }
+        .po-avis-date { font-size: 11px; color: #94a3b8; }
+        .po-avis-stars { color: #f59e0b; font-size: 12px; margin-top: 2px; letter-spacing: 1px; }
+        .po-avis-comment { font-size: 13px; color: #475569; margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .po-avis-cats { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-        .po-avis-cat-tag { font-size: 10px; color: #6B7280; background: #E8EAF0; padding: 2px 5px; border-radius: 4px; }
+        .po-avis-cat-tag { font-size: 10px; color: #6b7280; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+        .po-voir-tous {
+            display: block;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e8642a;
+            text-decoration: none;
+            padding: 8px 0 0;
+            transition: opacity 0.15s;
+        }
+        .po-voir-tous:hover { opacity: 0.8; }
 
-        /* Empty & loading */
-        .po-empty { text-align: center; padding: 12px; }
-        .po-empty-icon { font-size: 28px; opacity: 0.3; margin-bottom: 6px; }
-        .po-empty-title { font-size: 14px; font-weight: 600; color: #1E293B; margin-bottom: 3px; }
-        .po-empty-text { font-size: 12px; color: #94A3B8; }
-        .po-loading { text-align: center; padding: 20px; color: #94A3B8; font-size: 12px; }
+        /* EMPTY STATE */
+        .po-empty {
+            text-align: center;
+            padding: 16px 12px;
+        }
+        .po-empty-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+        }
+        .po-empty-icon svg { width: 18px; height: 18px; color: #94a3b8; }
+        .po-empty-title { font-size: 13px; font-weight: 600; color: #1e2d3d; margin-bottom: 2px; }
+        .po-empty-text { font-size: 12px; color: #94a3b8; line-height: 1.4; }
 
-        /* Signaler */
-        .po-signaler { text-align: center; padding: 8px 20px 12px; }
-        .po-signaler a { font-size: 11px; color: #94A3B8; text-decoration: none; transition: color 0.2s; }
-        .po-signaler a:hover { color: #E8622A; }
+        /* LOADING */
+        .po-loading { text-align: center; padding: 32px 20px; color: #94a3b8; font-size: 13px; }
 
-        /* Modale signalement overlay */
+        /* SIGNALER */
+        .po-signaler {
+            text-align: center;
+            padding: 12px 28px 20px;
+        }
+        .po-signaler a {
+            font-size: 11px;
+            color: #c4c9d0;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .po-signaler a:hover { color: #6b7280; }
+
+        /* MODALE SIGNALEMENT */
         .po-modal-signal {
             position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(30, 45, 61, 0.5);
             z-index: 99995;
             display: none;
             align-items: center;
@@ -302,9 +395,25 @@
         }
         .po-modal-signal.visible { display: flex; }
         .po-modal-signal-inner {
-            background: #fff; border-radius: 20px; padding: 28px;
-            max-width: 400px; width: 100%;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .profil-overlay-backdrop.visible { padding: 12px; }
+            .profil-overlay-panel { max-height: 90vh; }
+            .po-header { padding: 24px 20px 0; }
+            .po-actions { padding: 16px 20px 0; }
+            .po-contact { padding: 14px 20px; }
+            .po-section { padding: 14px 20px; }
+            .po-signaler { padding: 10px 20px 16px; }
+            .po-avatar { width: 56px; height: 56px; font-size: 20px; }
+            .po-name { font-size: 18px; }
         }
     `;
     document.head.appendChild(style);
@@ -315,11 +424,9 @@
     overlay.innerHTML = `
         <div class="profil-overlay-backdrop" id="poBackdrop">
             <div class="profil-overlay-panel" id="poPanel" onclick="event.stopPropagation();">
-                <div class="profil-overlay-close">
-                    <button class="profil-overlay-close-btn" id="poCloseBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
+                <button class="po-close" id="poCloseBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
                 <div id="poContent">
                     <div class="po-loading">Chargement du profil...</div>
                 </div>
@@ -327,27 +434,27 @@
         </div>
         <div class="po-modal-signal" id="poModalSignal">
             <div class="po-modal-signal-inner">
-                <h3 style="font-size:18px;font-weight:700;color:#1E293B;margin:0 0 14px;text-align:center;">Signaler cet utilisateur</h3>
+                <h3 style="font-size:18px;font-weight:700;color:#1e2d3d;margin:0 0 14px;text-align:center;">Signaler cet utilisateur</h3>
                 <div id="poSignalMsg" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;margin-bottom:12px;display:none;"></div>
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:4px;">Motif</label>
-                    <select id="poSignalMotif" style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;background:#F4F5F7;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#1e2d3d;margin-bottom:4px;">Motif</label>
+                    <select id="poSignalMotif" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;background:#f3f4f6;">
                         <option value="">-- Choisir un motif --</option>
                         <option value="faux_profil">Faux profil</option>
                         <option value="comportement_suspect">Comportement suspect</option>
-                        <option value="harcelement">Harcèlement</option>
+                        <option value="harcelement">Harc\u00e8lement</option>
                         <option value="arnaque">Tentative d'arnaque</option>
                         <option value="discrimination">Discrimination</option>
                         <option value="autre">Autre</option>
                     </select>
                 </div>
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:13px;font-weight:600;color:#1E293B;margin-bottom:4px;">Description (optionnel)</label>
-                    <textarea id="poSignalDesc" rows="3" placeholder="Décris le problème..." style="width:100%;padding:10px 14px;border:1.5px solid #E8EAF0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;resize:vertical;"></textarea>
+                    <label style="display:block;font-size:13px;font-weight:600;color:#1e2d3d;margin-bottom:4px;">Description (optionnel)</label>
+                    <textarea id="poSignalDesc" rows="3" placeholder="D\u00e9cris le probl\u00e8me..." style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;box-sizing:border-box;outline:none;resize:vertical;"></textarea>
                 </div>
                 <div style="display:flex;gap:10px;">
-                    <button id="poSignalCancel" style="flex:1;padding:10px;background:#fff;color:#1E293B;border:1.5px solid #E8EAF0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Annuler</button>
-                    <button id="poSignalSubmit" style="flex:1;padding:10px;background:#EF4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Signaler</button>
+                    <button id="poSignalCancel" style="flex:1;padding:10px;background:#fff;color:#1e2d3d;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Annuler</button>
+                    <button id="poSignalSubmit" style="flex:1;padding:10px;background:#EF4444;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Signaler</button>
                 </div>
             </div>
         </div>
@@ -364,7 +471,6 @@
     function fermerProfilOverlay() {
         if (!poIsOpen) return;
         poIsOpen = false;
-        document.getElementById('poPanel').classList.remove('open');
         document.getElementById('poPanel').classList.remove('open');
         document.getElementById('poBackdrop').classList.remove('visible');
         document.body.style.overflow = '';
@@ -393,7 +499,7 @@
             msg.textContent = 'Choisis un motif.';
             msg.style.display = 'block';
             msg.style.background = 'rgba(232,98,42,0.08)';
-            msg.style.color = '#E8622A';
+            msg.style.color = '#e8642a';
             return;
         }
         if (typeof RateLimiter !== 'undefined' && !RateLimiter.check('signalement_user', 3, 600000, { persistent: true })) return;
@@ -408,7 +514,7 @@
                 description: desc || null
             });
             if (result.error) throw result.error;
-            msg.textContent = 'Signalement envoyé. Merci !';
+            msg.textContent = 'Signalement envoy\u00e9. Merci !';
             msg.style.display = 'block';
             msg.style.background = '#D1FAE5';
             msg.style.color = '#065F46';
@@ -420,7 +526,7 @@
             msg.textContent = "Erreur lors de l'envoi.";
             msg.style.display = 'block';
             msg.style.background = 'rgba(232,98,42,0.08)';
-            msg.style.color = '#E8622A';
+            msg.style.color = '#e8642a';
         }
         btn.disabled = false;
         btn.textContent = 'Signaler';
@@ -456,7 +562,6 @@
     async function ouvrirProfilOverlay(userId) {
         if (!userId) return;
 
-        // Attendre supabase
         var attempts = 0;
         while (typeof supabaseClient === 'undefined' && attempts < 50) {
             await new Promise(function (r) { setTimeout(r, 100); });
@@ -464,13 +569,11 @@
         }
         if (typeof supabaseClient === 'undefined') return;
 
-        // User courant
         if (!poCurrentUser) {
             var authResult = await supabaseClient.auth.getUser();
             poCurrentUser = authResult.data.user;
         }
 
-        // Si c'est son propre profil, redirigr
         if (poCurrentUser && userId === poCurrentUser.id) {
             window.location.href = 'mon-profil.html';
             return;
@@ -479,7 +582,6 @@
         poProfileUserId = userId;
         poProfileData = null;
 
-        // Afficher la carte
         document.getElementById('poContent').innerHTML = '<div class="po-loading">Chargement du profil...</div>';
         document.body.style.overflow = 'hidden';
 
@@ -491,7 +593,6 @@
         });
         poIsOpen = true;
 
-        // Charger les données
         try {
             await poChargerProfil();
         } catch (e) {
@@ -517,16 +618,9 @@
         var data = result.data;
         poProfileData = data;
 
-        // Nom & rôle
+        // Rôle
         var roleLabels = { locataire: 'Locataire', proprietaire: 'Propri\u00e9taire', hote: 'H\u00f4te' };
         var role = roleLabels[data.type_user] || '';
-        var roleDetails = role;
-        if (data.date_naissance) {
-            roleDetails += roleDetails ? ' \u00b7 ' + poCalculerAge(data.date_naissance) + ' ans' : poCalculerAge(data.date_naissance) + ' ans';
-        }
-        if (data.ville_origine) {
-            roleDetails += roleDetails ? ' \u00b7 ' + poEscape(data.ville_origine) : poEscape(data.ville_origine);
-        }
 
         // Avatar
         var avatarHtml;
@@ -544,15 +638,6 @@
             badgeHtml = '<span class="po-badge-documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Documents fournis</span>';
         }
 
-        // Trust badges
-        var trustHtml = '<div class="po-trust-item verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</div>';
-        if (data.telephone) {
-            trustHtml += '<div class="po-trust-item verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.21.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>T\u00e9l\u00e9phone</div>';
-        }
-        if (data.identite_verifiee === 'verifiee') {
-            trustHtml += '<div class="po-trust-item verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Identit\u00e9</div>';
-        }
-
         // À propos
         var aboutHtml = '';
         if (data.description) {
@@ -562,29 +647,57 @@
         // Infos compactes
         var infoHtml = poBuilInfoCompact(data);
 
-        // Construire le contenu
+        // ─── Construire le HTML ───
         var html = '';
-        html += '<div class="po-top">';
+
+        // Header
+        html += '<div class="po-header">';
         html += '<div class="po-avatar">' + avatarHtml + '</div>';
         html += '<div class="po-name">' + poEscape(data.prenom) + ' ' + poEscape(data.nom) + '</div>';
-        html += '<div class="po-role">' + poEscape(roleDetails) + '</div>';
+        html += '<div class="po-role-label">' + poEscape(role) + '</div>';
         if (badgeHtml) html += '<div class="po-badge-row">' + badgeHtml + '</div>';
-        html += '<div class="po-rating" id="poRating" style="display:none;"><span class="po-stars" id="poStars">\u2606\u2606\u2606\u2606\u2606</span><span class="po-rating-text" id="poRatingText">Aucun avis</span></div>';
+        html += '<div class="po-rating" id="poRating" style="display:none;"><span class="po-stars" id="poStars"></span><span class="po-rating-text" id="poRatingText"></span></div>';
+        html += '</div>';
+
+        // Action buttons
         html += '<div class="po-actions">';
-        html += '<a href="conversation.html?user_id=' + poProfileUserId + '" class="po-btn primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Message</a>';
-        html += '<a href="avis.html?user_id=' + poProfileUserId + '" class="po-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Avis</a>';
-        html += '</div>';
+        html += '<a href="conversation.html?user_id=' + poProfileUserId + '" class="po-btn po-btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message</a>';
+        html += '<a href="avis.html?user_id=' + poProfileUserId + '" class="po-btn po-btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</a>';
         html += '</div>';
 
-        html += '<div class="po-trust">' + trustHtml + '</div>';
+        // Contact section
+        html += '<div class="po-contact">';
+        html += '<div class="po-contact-row">';
+        html += '<div class="po-contact-icon verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
+        html += '<div><div class="po-contact-label">Email</div><div class="po-contact-value">V\u00e9rifi\u00e9</div></div>';
+        html += '</div>';
+        if (data.telephone) {
+            html += '<div class="po-contact-row">';
+            html += '<div class="po-contact-icon verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c1.21.34 2 .57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>';
+            html += '<div><div class="po-contact-label">T\u00e9l\u00e9phone</div><div class="po-contact-value">V\u00e9rifi\u00e9</div></div>';
+            html += '</div>';
+        }
+        if (data.identite_verifiee === 'verifiee') {
+            html += '<div class="po-contact-row">';
+            html += '<div class="po-contact-icon verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>';
+            html += '<div><div class="po-contact-label">Identit\u00e9</div><div class="po-contact-value">V\u00e9rifi\u00e9e</div></div>';
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // À propos
         html += aboutHtml;
-        if (infoHtml) html += '<div class="po-section"><div class="po-section-title">Informations</div><div class="po-info-compact">' + infoHtml + '</div></div>';
 
-        // Zone annonces (remplie après)
+        // Informations
+        if (infoHtml) {
+            html += '<div class="po-section"><div class="po-section-title">Informations</div><div class="po-info-tags">' + infoHtml + '</div></div>';
+        }
+
+        // Annonces (remplie après)
         html += '<div class="po-section" id="poAnnoncesSection" style="display:none;"><div class="po-section-title">Annonces</div><div id="poAnnoncesList"></div></div>';
 
         // Avis
-        html += '<div class="po-section"><div class="po-section-title">Avis re\u00e7us</div><div class="po-cat-avgs" id="poCatAvgs" style="display:none;"></div><div class="po-avis-list" id="poAvisList"><div class="po-loading">Chargement des avis...</div></div></div>';
+        html += '<div class="po-section"><div class="po-section-title">Avis re\u00e7us</div><div class="po-cat-avgs" id="poCatAvgs" style="display:none;"></div><div class="po-avis-list" id="poAvisList"><div class="po-loading" style="padding:12px;">Chargement...</div></div></div>';
 
         // Signaler
         if (poCurrentUser && poProfileUserId !== poCurrentUser.id) {
@@ -669,13 +782,13 @@
 
         var ratingEl = document.getElementById('poRating');
         if (!ratingEl) return;
-        ratingEl.style.display = 'flex';
 
         if (result.data && result.data.length > 0) {
             var moy = result.data.reduce(function (s, a) { return s + a.note; }, 0) / result.data.length;
             var moyR = Math.round(moy * 10) / 10;
             document.getElementById('poStars').textContent = poGenStars(moy);
             document.getElementById('poRatingText').textContent = moyR + '/5 \u2014 ' + result.data.length + ' avis';
+            ratingEl.style.display = 'flex';
 
             var labels = poGetCategoryLabels(poProfileData.type_user);
             var catData = { communication: [], categorie2: [], categorie3: [] };
@@ -704,10 +817,8 @@
                     avgContainer.style.display = 'flex';
                 }
             }
-        } else {
-            document.getElementById('poStars').textContent = '\u2606\u2606\u2606\u2606\u2606';
-            document.getElementById('poRatingText').textContent = 'Aucun avis encore';
         }
+        // Si aucun avis, on ne montre pas la section rating du tout
     }
 
     // ─── Charger avis ───
@@ -722,7 +833,7 @@
             .order('created_at', { ascending: false });
 
         if (!result.data || result.data.length === 0) {
-            container.innerHTML = '<div class="po-empty"><div class="po-empty-icon">\u2b50</div><div class="po-empty-title">Pas encore d\'avis</div><div class="po-empty-text">Les premiers avis appara\u00eetront ici apr\u00e8s des s\u00e9jours.</div></div>';
+            container.innerHTML = '<div class="po-empty"><div class="po-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="po-empty-title">Pas encore d\'avis</div><div class="po-empty-text">Les avis appara\u00eetront apr\u00e8s des s\u00e9jours.</div></div>';
             return;
         }
 
@@ -752,7 +863,7 @@
             html += '<div class="po-avis"><div class="po-avis-avatar">' + avatarInner + '</div><div class="po-avis-content"><div class="po-avis-header"><span class="po-avis-name">' + nom + '</span><span class="po-avis-date">' + date + '</span></div><div class="po-avis-stars">' + stars + '</div>' + catHtml + (avis.commentaire ? '<div class="po-avis-comment">' + poEscape(avis.commentaire) + '</div>' : '') + '</div></div>';
         }
         if (total > maxAvis) {
-            html += '<a href="avis.html?user_id=' + poProfileUserId + '" style="display:block;text-align:center;font-size:12px;font-weight:600;color:#E8622A;text-decoration:none;padding:4px 0;">Voir les ' + total + ' avis →</a>';
+            html += '<a href="avis.html?user_id=' + poProfileUserId + '" class="po-voir-tous">Voir les ' + total + ' avis \u2192</a>';
         }
         container.innerHTML = html;
     }
