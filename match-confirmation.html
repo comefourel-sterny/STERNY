@@ -990,7 +990,8 @@
             document.getElementById('role' + num).textContent = role;
             document.getElementById('nom' + num).textContent = nom;
             if (userId) {
-                document.getElementById('participantLink' + num).href = `profil.html?user_id=${userId}`;
+                document.getElementById('participantLink' + num).href = '#';
+                document.getElementById('participantLink' + num).onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(userId); };
             }
             const contactEl = document.getElementById('contact' + num);
             contactEl.innerHTML = `

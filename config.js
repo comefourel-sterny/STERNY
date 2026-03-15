@@ -11,3 +11,10 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiY29tZWZvdXJlbCIsImEiOiJjbWx2Mmo4Nm4wMzJvM2NzYW5
 
 // Ne change rien en dessous
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Charger le composant profil overlay sur toutes les pages
+(function() {
+    var s = document.createElement('script');
+    s.src = 'profil-overlay.js';
+    document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(s); });
+})();

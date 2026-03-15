@@ -4526,7 +4526,7 @@
 
             return `
                 <div class="message-item ${c.nonLu ? 'message-unread' : ''}" onclick="ouvrirConversationOverlay('${c.userId}', '${prenomEscaped}', '${nomEscaped}', '${typeEscaped}')" style="cursor:pointer;">
-                    <a href="profil.html?user_id=${c.userId}" onclick="event.stopPropagation();" class="message-avatar-link">
+                    <a href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${c.userId}');" class="message-avatar-link">
                         <div class="message-avatar">${initials}</div>
                     </a>
                     <div class="message-content">
@@ -4607,7 +4607,8 @@
             else if (typeUser === 'proprietaire') roleLabel = 'Propriétaire';
             else if (typeUser === 'hote') roleLabel = 'Hôte';
             document.getElementById('overlayChatRole').textContent = roleLabel;
-            document.getElementById('overlayChatProfileLink').href = `profil.html?user_id=${userId}`;
+            document.getElementById('overlayChatProfileLink').href = '#';
+            document.getElementById('overlayChatProfileLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(userId); };
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);

@@ -110,7 +110,7 @@
         .dashboard-container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 48px 24px 20px;
+            padding: 48px 24px 80px;
         }
 
         /* HEADER */
@@ -464,7 +464,7 @@
         .profile-link:hover .cand-avatar,
         .profile-link:hover .renouv-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .loc-avatar, .cand-avatar, .renouv-avatar { transition: box-shadow 0.2s; }
-        .loc-name, .loc-label, .cand-name, .cand-subtitle, .renouv-name { transition: color 0.2s; }
+        .loc-name, .cand-name, .renouv-name { transition: color 0.2s; }
         .message-avatar-link { text-decoration: none; color: inherit; flex-shrink: 0; }
         .message-avatar-link:hover .message-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .overlay-chat-messages {
@@ -707,19 +707,18 @@
         }
 
         .locataire-bloc .loc-avatar {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
-            min-height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #1E293B;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: white;
+            letter-spacing: 0.5px;
         }
 
         .locataire-bloc .loc-info {
@@ -727,17 +726,20 @@
             min-width: 0;
         }
 
-        .locataire-bloc .loc-name {
-            font-size: 15px;
+        .locataire-bloc .loc-label {
+            font-size: 11px;
             font-weight: 600;
-            color: #1E293B;
-            line-height: 1.2;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1;
+            margin-bottom: 3px;
         }
 
-        .locataire-bloc .loc-label {
-            font-size: 13px;
-            color: #6B7280;
-            margin-top: 2px;
+        .locataire-bloc .loc-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
         }
 
         .locataire-bloc .btn {
@@ -749,7 +751,6 @@
             background: white;
             color: #475569;
             border: 1px solid #E2E5EA;
-            margin-left: auto;
         }
 
         .locataire-bloc .btn:hover {
@@ -2593,12 +2594,10 @@
     </div>
 
     <!-- Zone actions compte -->
-    <div style="text-align:center;padding:20px 0 40px 0;max-width:960px;margin:0 auto;">
-        <a onclick="ouvrirModalMotDePasse()" style="color:#475569;font-size:13px;cursor:pointer;text-decoration:none;font-weight:500;transition:color 0.2s;margin:0 12px;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='#475569'">Changer mon mot de passe</a>
-        <span style="color:#CBD5E1;">&middot;</span>
-        <a onclick="exporterDonnees()" style="color:#475569;font-size:13px;cursor:pointer;text-decoration:none;font-weight:500;transition:color 0.2s;margin:0 12px;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='#475569'">Exporter mes donn&eacute;es</a>
-        <span style="color:#CBD5E1;">&middot;</span>
-        <a onclick="ouvrirModalSuppression()" style="color:#475569;font-size:13px;cursor:pointer;text-decoration:none;font-weight:500;transition:color 0.2s;margin:0 12px;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='#475569'">Supprimer mon compte</a>
+    <div class="delete-account-zone">
+        <a class="delete-account-link" onclick="ouvrirModalMotDePasse()" style="margin-right: 24px;">Changer mon mot de passe</a>
+        <a class="delete-account-link" onclick="exporterDonnees()" style="margin-right: 24px;">Exporter mes données</a>
+        <a class="delete-account-link" onclick="ouvrirModalSuppression()">Supprimer mon compte</a>
     </div>
 
     <!-- Modale changement mot de passe -->
@@ -2815,12 +2814,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="locataire-bloc">
-                    <a class="profile-link" href="profil.html?user_id=demo" onclick="event.stopPropagation();">
+                <div class="locataire-bloc" style="cursor:pointer;">
+                    <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault();">
                         <div class="loc-avatar">MM</div>
                         <div class="loc-info">
-                            <div class="loc-name">Marie Martin</div>
                             <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${joursRestants}j restants</span></div>
+                            <div class="loc-name">Marie Martin</div>
                         </div>
                     </a>
                     <a href="conversation.html" class="btn btn-orange" style="text-decoration:none;">
@@ -2991,11 +2990,11 @@
 
             return `
                 <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor: pointer;">
-                    <a class="profile-link" href="profil.html?user_id=${loc.id}" onclick="event.stopPropagation();">
+                    <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${loc.id}');">
                         <div class="loc-avatar">${initials}</div>
                         <div class="loc-info">
-                            <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
                             <div class="loc-label">Locataire</div>
+                            <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
                         </div>
                     </a>
                     <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${loc.id}', '${prenomEscaped}', '${nomEscaped}', 'locataire')">
@@ -3077,11 +3076,11 @@
                     // Injecter le locataire-bloc apr\u00e8s le container (sous les annonces)
                     const blocHtml = `
                         <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor:pointer;">
-                            <a class="profile-link" href="profil.html?user_id=${locataire.id}" onclick="event.stopPropagation();">
+                            <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${locataire.id}');">
                                 <div class="loc-avatar">${initials}</div>
                                 <div class="loc-info">
-                                    <div class="loc-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
                                     <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${countdownText}</span></div>
+                                    <div class="loc-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
                                 </div>
                             </a>
                             <div style="display:flex;gap:8px;align-items:center;">
@@ -3328,7 +3327,7 @@
 
                     container.innerHTML += `
                         <div class="candidature-bloc" onclick="ouvrirOverlayCandidature(${index})">
-                            <a class="profile-link" href="profil.html?user_id=${c.users.id}" onclick="event.stopPropagation();">
+                            <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${c.users.id}');">
                                 <div class="cand-avatar">${avatarHtml}</div>
                                 <div class="cand-info">
                                     <div class="cand-name">${c.users.prenom} ${c.users.nom}</div>
@@ -3712,7 +3711,7 @@
 
                     container.innerHTML += `
                         <div class="renouv-card">
-                            <a class="profile-link" href="profil.html?user_id=${demande.locataire_id}">
+                            <a class="profile-link" href="#" onclick="event.preventDefault(); ouvrirProfilOverlay('${demande.locataire_id}');">
                                 <div class="renouv-avatar">${initiales}</div>
                                 <div class="renouv-info">
                                     <div class="renouv-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
@@ -3798,12 +3797,12 @@
 
             return `
                 <div class="message-item ${c.nonLu ? 'message-unread' : ''}" onclick="ouvrirConversationOverlay('${c.userId}', '${prenomEscaped}', '${nomEscaped}', '${typeEscaped}')" style="cursor:pointer;">
-                    <a href="profil.html?user_id=${c.userId}" onclick="event.stopPropagation();" class="message-avatar-link">
+                    <a href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${c.userId}');" class="message-avatar-link">
                         <div class="message-avatar">${initials}</div>
                     </a>
                     <div class="message-content">
                         <div class="message-top-row">
-                            <div class="message-name"><a href="profil.html?user_id=${c.userId}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'" onclick="event.stopPropagation()">${c.prenom} ${c.nom || ''}</a>${roleLabel ? ' <span style="color:#6B7280;font-size:12px;font-weight:400;">· ' + roleLabel + '</span>' : ''}</div>
+                            <div class="message-name">${c.prenom} ${c.nom || ''}</div>
                             <span class="message-time">${timeAgo}</span>
                         </div>
                         <div class="message-bottom-row">
@@ -4061,7 +4060,8 @@
             else if (typeUser === 'proprietaire') roleLabel = 'Propriétaire';
             else if (typeUser === 'hote') roleLabel = 'Hôte';
             document.getElementById('overlayChatRole').textContent = roleLabel;
-            document.getElementById('overlayChatProfileLink').href = `profil.html?user_id=${userId}`;
+            document.getElementById('overlayChatProfileLink').href = '#';
+            document.getElementById('overlayChatProfileLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(userId); };
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);
@@ -4275,17 +4275,17 @@
     </script>
 <script src="cookie-banner.js"></script>
 <script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
-    <footer role="contentinfo" style="background:#1E293B;color:white;padding:40px 20px;text-align:center;margin-top:auto;">
-        <div style="max-width:960px;margin:0 auto;">
+    <footer role="contentinfo">
+        <div class="container">
             <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
             <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
-                <a href="cgv.html" style="color:#E8622A;text-decoration:none;">CGV</a> &middot;
-                <a href="cgu.html" style="color:#E8622A;text-decoration:none;">CGU</a> &middot;
-                <a href="mentions-legales.html" style="color:#E8622A;text-decoration:none;">Mentions l&eacute;gales</a> &middot;
-                <a href="politique-confidentialite.html" style="color:#E8622A;text-decoration:none;">Confidentialit&eacute;</a> &middot;
-                <a href="faq.html" style="color:#E8622A;text-decoration:none;">FAQ</a> &middot;
-                <a href="contact.html" style="color:#E8622A;text-decoration:none;">Contact</a> &middot;
-                <a href="a-propos.html" style="color:#E8622A;text-decoration:none;">&Agrave; propos</a>
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
             </p>
         </div>
     </footer>
