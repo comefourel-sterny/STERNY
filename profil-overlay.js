@@ -28,13 +28,14 @@
         .profil-overlay-panel {
             position: relative;
             width: 100%;
-            max-width: 480px;
+            max-width: 460px;
             max-height: 85vh;
             background: white;
             z-index: 99991;
             overflow-y: auto;
             border-radius: 20px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1.5px solid #E8EAF0;
             transform: scale(0.95);
             opacity: 0;
             transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
