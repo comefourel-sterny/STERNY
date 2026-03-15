@@ -328,6 +328,80 @@
             font-weight: 400;
         }
 
+        /* NOTES PAR CATÉGORIE */
+        .category-ratings {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .category-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #fafbfc;
+            border-radius: 12px;
+        }
+        .category-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-700);
+            min-width: 0;
+            flex: 1;
+        }
+        .category-stars {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .cat-star-btn {
+            background: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            transition: transform 0.15s;
+            padding: 0;
+        }
+        .cat-star-btn:hover { transform: scale(1.15); }
+        .cat-star-btn svg {
+            width: 100%;
+            height: 100%;
+            stroke: #d1d5db;
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.2s;
+        }
+        .cat-star-btn.active svg {
+            fill: #fbbf24;
+            stroke: #f59e0b;
+        }
+        .cat-star-btn:hover svg {
+            stroke: #fbbf24;
+        }
+        .note-global-preview {
+            text-align: center;
+            margin-top: 16px;
+            padding: 12px;
+            background: #fafbfc;
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        .note-global-preview strong {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        @media (max-width: 480px) {
+            .category-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
         /* Bouton submit — même btn-primary que dashboard-hote */
         .btn-primary {
             display: inline-block;
@@ -513,41 +587,17 @@
                     </select>
                 </div>
 
-                <!-- SECTION 2 : NOTE -->
+                <!-- SECTION 2 : NOTES PAR CATÉGORIE -->
                 <div class="form-section">
                     <div class="section-title">
                         <span class="section-title-icon">⭐</span>
-                        Ta note globale
+                        Tes notes
                     </div>
-                    <div class="stars-container">
-                        <div class="stars-interactive" id="starsInteractive">
-                            <button class="star-btn" data-value="1" onclick="setNote(1)">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </button>
-                            <button class="star-btn" data-value="2" onclick="setNote(2)">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </button>
-                            <button class="star-btn" data-value="3" onclick="setNote(3)">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </button>
-                            <button class="star-btn" data-value="4" onclick="setNote(4)">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </button>
-                            <button class="star-btn" data-value="5" onclick="setNote(5)">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="stars-label stars-label-empty" id="starsLabel">Clique sur une étoile pour noter</div>
+                    <div class="category-ratings" id="categoryRatings">
+                        <!-- Rempli dynamiquement selon le type_user du profil évalué -->
+                    </div>
+                    <div class="note-global-preview" id="noteGlobalPreview" style="display:none;">
+                        Note globale : <strong id="noteGlobalValue">—</strong>/5
                     </div>
                 </div>
 
@@ -589,7 +639,9 @@ function escapeHtml(text) {
 // ─── ÉTAT ───
 let currentUser = null;
 let targetUserId = null;
+let targetTypeUser = null;
 let noteSelectionnee = 0;
+let categoryNotes = { communication: 0, categorie2: 0, categorie3: 0 };
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
@@ -617,6 +669,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     await chargerProfil(targetUserId);
+    buildCategoryRatings();
     await chargerAnnonces();
 
     // Définir le lien "Voir le profil"
@@ -633,11 +686,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function chargerProfil(userId) {
     const { data } = await supabaseClient
         .from('users')
-        .select('prenom, nom, ecole, annee_etudes, photo_profil_url')
+        .select('prenom, nom, ecole, annee_etudes, photo_profil_url, type_user')
         .eq('id', userId)
         .single();
 
     if (data) {
+        targetTypeUser = data.type_user || 'locataire';
         document.getElementById('heroName').textContent = `${data.prenom} ${data.nom}`;
         document.getElementById('heroSchool').textContent = data.ecole ? `${data.ecole} — ${data.annee_etudes || ''}` : '';
 
@@ -697,37 +751,79 @@ async function chargerAnnonces() {
     }
 }
 
-// ─── ÉTOILES ───
-function setNote(valeur) {
-    noteSelectionnee = valeur;
-    const labels = ['', 'Très décevant 😞', 'Pas génial 😐', 'Correct 🙂', 'Bien 😊', 'Excellent ! 🌟'];
-    const labelEl = document.getElementById('starsLabel');
-    labelEl.textContent = labels[valeur];
-    labelEl.classList.remove('stars-label-empty');
-
-    document.querySelectorAll('.star-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.value) <= valeur);
-    });
-
-    document.getElementById('btnSubmit').disabled = (noteSelectionnee === 0);
+// ─── CATÉGORIES DE NOTATION ───
+function getCategoryLabels() {
+    if (targetTypeUser === 'proprietaire' || targetTypeUser === 'hote') {
+        return {
+            communication: 'Communication',
+            categorie2: 'État du logement',
+            categorie3: 'Rapport qualité-prix'
+        };
+    }
+    return {
+        communication: 'Communication',
+        categorie2: 'Propreté',
+        categorie3: 'Respect du logement'
+    };
 }
 
-// Hover preview étoiles
-document.querySelectorAll('.star-btn').forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-        const val = parseInt(btn.dataset.value);
-        document.querySelectorAll('.star-btn').forEach(b => {
-            const isActive = parseInt(b.dataset.value) <= val;
-            b.classList.toggle('active', isActive);
+function buildCategoryRatings() {
+    const labels = getCategoryLabels();
+    const container = document.getElementById('categoryRatings');
+    const starSvg = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+    let html = '';
+    for (const [key, label] of Object.entries(labels)) {
+        html += `<div class="category-row">
+            <span class="category-label">${label}</span>
+            <div class="category-stars" data-category="${key}">`;
+        for (let i = 1; i <= 5; i++) {
+            html += `<button class="cat-star-btn" data-value="${i}" data-cat="${key}" onclick="setCategoryNote('${key}', ${i})">${starSvg}</button>`;
+        }
+        html += `</div></div>`;
+    }
+    container.innerHTML = html;
+
+    // Hover preview par catégorie
+    container.querySelectorAll('.cat-star-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            const cat = btn.dataset.cat;
+            const val = parseInt(btn.dataset.value);
+            container.querySelectorAll(`.cat-star-btn[data-cat="${cat}"]`).forEach(b => {
+                b.classList.toggle('active', parseInt(b.dataset.value) <= val);
+            });
+        });
+        btn.addEventListener('mouseleave', () => {
+            const cat = btn.dataset.cat;
+            container.querySelectorAll(`.cat-star-btn[data-cat="${cat}"]`).forEach(b => {
+                b.classList.toggle('active', parseInt(b.dataset.value) <= categoryNotes[cat]);
+            });
         });
     });
-    btn.addEventListener('mouseleave', () => {
-        document.querySelectorAll('.star-btn').forEach(b => {
-            const isActive = parseInt(b.dataset.value) <= noteSelectionnee;
-            b.classList.toggle('active', isActive);
-        });
+}
+
+function setCategoryNote(category, value) {
+    categoryNotes[category] = value;
+
+    // Mettre à jour les étoiles visuellement
+    document.querySelectorAll(`.cat-star-btn[data-cat="${category}"]`).forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.value) <= value);
     });
-});
+
+    // Calculer la note globale
+    const notes = Object.values(categoryNotes).filter(n => n > 0);
+    if (notes.length === 3) {
+        const moy = notes.reduce((a, b) => a + b, 0) / notes.length;
+        noteSelectionnee = Math.round(moy);
+        document.getElementById('noteGlobalPreview').style.display = 'block';
+        document.getElementById('noteGlobalValue').textContent = (Math.round(moy * 10) / 10).toString();
+        document.getElementById('btnSubmit').disabled = false;
+    } else {
+        noteSelectionnee = 0;
+        document.getElementById('noteGlobalPreview').style.display = 'none';
+        document.getElementById('btnSubmit').disabled = true;
+    }
+}
 
 // ─── SOUMETTRE UN AVIS ───
 async function submitAvis() {
@@ -748,6 +844,9 @@ async function submitAvis() {
         evaluateur_id: currentUser.id,
         profil_evalue_id: targetUserId,
         note: noteSelectionnee,
+        note_communication: categoryNotes.communication || null,
+        note_categorie_2: categoryNotes.categorie2 || null,
+        note_categorie_3: categoryNotes.categorie3 || null,
         commentaire: commentaire || null,
     };
     if (annonce_id) payload.annonce_id = annonce_id;
@@ -768,10 +867,11 @@ async function submitAvis() {
 
     setTimeout(() => {
         noteSelectionnee = 0;
-        setNote(0);
+        categoryNotes = { communication: 0, categorie2: 0, categorie3: 0 };
+        document.querySelectorAll('.cat-star-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('noteGlobalPreview').style.display = 'none';
         document.getElementById('commentaire').value = '';
         document.getElementById('selectAnnonce').value = '';
-        document.getElementById('starsLabel').classList.add('stars-label-empty');
         btnText.textContent = '📤 Envoyer mon avis';
         btn.disabled = true;
         document.getElementById('successMsg').classList.remove('show');
@@ -787,7 +887,7 @@ async function chargerAvis() {
     const { data } = await supabaseClient
         .from('avis')
         .select(`
-            id, note, commentaire, created_at, annonce_id,
+            id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at, annonce_id,
             evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
         `)
         .eq('profil_evalue_id', targetUserId)
@@ -816,6 +916,17 @@ async function chargerAvis() {
             ? `<img loading="lazy" src="${escapeHtml(photo)}" alt="${nom}">`
             : initials;
 
+        // Construire les détails catégories si dispo
+        let catHtml = '';
+        if (avis.note_communication || avis.note_categorie_2 || avis.note_categorie_3) {
+            const labels = getCategoryLabels();
+            catHtml = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">';
+            if (avis.note_communication) catHtml += `<span style="font-size:12px;color:#6B7280;background:#F4F5F7;padding:3px 8px;border-radius:6px;">${labels.communication} ${genStars(avis.note_communication)}</span>`;
+            if (avis.note_categorie_2) catHtml += `<span style="font-size:12px;color:#6B7280;background:#F4F5F7;padding:3px 8px;border-radius:6px;">${labels.categorie2} ${genStars(avis.note_categorie_2)}</span>`;
+            if (avis.note_categorie_3) catHtml += `<span style="font-size:12px;color:#6B7280;background:#F4F5F7;padding:3px 8px;border-radius:6px;">${labels.categorie3} ${genStars(avis.note_categorie_3)}</span>`;
+            catHtml += '</div>';
+        }
+
         container.innerHTML += `
             <div class="avis-item">
                 <div class="avis-avatar">${avatarHtml}</div>
@@ -825,8 +936,9 @@ async function chargerAvis() {
                         <span class="avis-date">${date}</span>
                     </div>
                     <div class="avis-stars">${stars}</div>
+                    ${catHtml}
                     ${avis.commentaire ? `<div class="avis-comment">${escapeHtml(avis.commentaire)}</div>` : ''}
-                    ${avis.annonce_id ? `<div class="avis-annonce">📄 Liée à une annonce</div>` : ''}
+                    ${avis.annonce_id ? `<div class="avis-annonce">Liée à une annonce</div>` : ''}
                 </div>
             </div>`;
     }
