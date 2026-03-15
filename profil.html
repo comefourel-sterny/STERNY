@@ -15,17 +15,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        html { background: #E8622A; }
-        body { background: #F4F5F7; }
-
         /* HERO PROFIL */
         .profile-hero {
             background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
-            padding: 48px 20px 56px;
+            padding: 48px 20px;
             color: white;
         }
         .profile-hero .container {
-            max-width: 960px;
+            max-width: 900px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -43,7 +40,6 @@
             font-size: 36px;
             flex-shrink: 0;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
         .profile-photo img {
             width: 100%;
@@ -56,12 +52,12 @@
         }
         .profile-info { flex: 1; min-width: 0; }
         .profile-name {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -69,34 +65,34 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: rgba(5, 150, 105, 0.15);
-            color: #6EE7B7;
-            font-size: 11px;
+            background: rgba(236,253,245,0.9);
+            color: #059669;
+            font-size: 12px;
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(110, 231, 183, 0.3);
+            border: 1px solid rgba(167,243,208,0.6);
         }
-        .badge-verifie svg { width: 12px; height: 12px; }
+        .badge-verifie svg { width: 13px; height: 13px; }
 
         .badge-documents {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: rgba(96, 165, 250, 0.15);
-            color: #93C5FD;
-            font-size: 11px;
+            background: rgba(239,246,255,0.9);
+            color: #2563EB;
+            font-size: 12px;
             font-weight: 600;
             padding: 3px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(147, 197, 253, 0.3);
+            border: 1px solid rgba(191,219,254,0.6);
         }
-        .badge-documents svg { width: 12px; height: 12px; }
+        .badge-documents svg { width: 13px; height: 13px; }
 
         .profile-details {
             font-size: 15px;
             opacity: 0.85;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .hero-rating {
@@ -105,22 +101,22 @@
             gap: 8px;
             margin-top: 8px;
         }
-        .hero-stars { color: #fbbf24; font-size: 18px; letter-spacing: 1px; }
-        .hero-rating-text { font-size: 14px; opacity: 0.8; }
+        .hero-stars { color: #fbbf24; font-size: 18px; letter-spacing: 2px; }
+        .hero-rating-text { font-size: 14px; opacity: 0.85; }
 
         .profile-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            flex-shrink: 0;
+            margin-top: 16px;
         }
         .btn-profile {
             padding: 10px 20px;
             background: rgba(255,255,255,0.12);
             color: white;
-            border: 1.5px solid rgba(255,255,255,0.25);
-            border-radius: 12px;
-            font-size: 13px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -131,8 +127,8 @@
             font-family: inherit;
         }
         .btn-profile:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.22);
+            border-color: rgba(255,255,255,0.5);
         }
         .btn-profile.primary {
             background: #E8622A;
@@ -140,21 +136,29 @@
             color: white;
         }
         .btn-profile.primary:hover {
-            background: #d4561f;
-            border-color: #d4561f;
+            background: #d4571f;
+            border-color: #d4571f;
+        }
+        .btn-profile.danger {
+            color: #FCA5A5;
+            border-color: rgba(252,165,165,0.3);
+        }
+        .btn-profile.danger:hover {
+            background: rgba(239,68,68,0.15);
+            border-color: rgba(252,165,165,0.5);
         }
 
         /* CONTENU */
         .content-section {
-            max-width: 960px;
-            margin: 32px auto 50px;
+            max-width: 900px;
+            margin: 32px auto 48px;
             padding: 0 20px;
         }
 
         .section-title {
             font-size: 20px;
             font-weight: 700;
-            color: #1E293B;
+            color: var(--primary);
             margin: 0 0 16px;
         }
 
@@ -162,16 +166,15 @@
         .info-card {
             background: white;
             border-radius: 16px;
-            padding: 24px 28px;
-            border: 1.5px solid #E8EAF0;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.06);
-            margin-bottom: 24px;
+            padding: 28px;
+            border: 1.5px solid var(--gray-200);
+            margin-bottom: 28px;
         }
         .info-card h3 {
             font-size: 16px;
             font-weight: 700;
-            color: #1E293B;
-            margin: 0 0 14px;
+            color: var(--primary);
+            margin: 0 0 16px;
         }
         .info-row {
             display: flex;
@@ -181,8 +184,8 @@
         }
         .info-label {
             font-weight: 600;
-            color: #475569;
-            min-width: 120px;
+            color: var(--gray-700);
+            min-width: 130px;
         }
         .info-value {
             color: #64748B;
@@ -195,15 +198,12 @@
             background: white;
             border-radius: 16px;
             padding: 20px 24px;
-            border: 1.5px solid #E8EAF0;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.06);
+            border: 1.5px solid var(--gray-200);
             display: flex;
-            gap: 14px;
-            transition: box-shadow 0.2s;
+            gap: 16px;
+            transition: border-color 0.2s;
         }
-        .avis-item:hover {
-            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
-        }
+        .avis-item:hover { border-color: #E8622A; }
 
         .avis-avatar {
             width: 44px;
@@ -229,10 +229,10 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        .avis-name { font-weight: 600; color: #1E293B; font-size: 14px; }
-        .avis-date { font-size: 12px; color: #94A3B8; }
+        .avis-name { font-weight: 600; color: var(--primary); font-size: 14px; }
+        .avis-date { font-size: 12px; color: var(--gray-500); }
         .avis-stars { color: #fbbf24; font-size: 15px; margin-top: 4px; letter-spacing: 1px; }
-        .avis-comment { font-size: 13px; color: #64748B; margin-top: 6px; line-height: 1.5; }
+        .avis-comment { font-size: 14px; color: var(--gray-600); margin-top: 6px; line-height: 1.5; }
 
         /* EMPTY STATE */
         .empty-state {
@@ -240,29 +240,43 @@
             border-radius: 16px;
             padding: 56px 20px;
             text-align: center;
-            border: 1.5px solid #E8EAF0;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.06);
+            border: 1.5px solid var(--gray-200);
         }
         .empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
-        .empty-title { font-size: 18px; font-weight: 600; color: #1E293B; margin-bottom: 8px; }
-        .empty-text { color: #94A3B8; margin-bottom: 20px; font-size: 14px; }
+        .empty-title { font-size: 18px; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+        .empty-text { color: var(--gray-500); font-size: 14px; }
 
         /* Loading */
-        .loading { text-align: center; padding: 40px 20px; color: #94A3B8; font-size: 14px; }
+        .loading { text-align: center; padding: 50px 20px; color: var(--gray-500); font-size: 15px; }
+
+        /* Signaler zone sous le contenu */
+        .signaler-zone {
+            text-align: center;
+            padding: 20px 0 0;
+        }
+        .signaler-zone a {
+            font-size: 13px;
+            color: #94A3B8;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .signaler-zone a:hover { color: #E8622A; }
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .profile-hero { padding: 32px 20px 40px; }
+            .profile-hero { padding: 32px 20px; }
             .profile-hero .container {
                 flex-direction: column;
                 text-align: center;
             }
+            .profile-name { justify-content: center; }
+            .hero-rating { justify-content: center; }
             .profile-actions {
                 justify-content: center;
                 width: 100%;
             }
-            .profile-name { justify-content: center; }
-            .hero-rating { justify-content: center; }
+            .btn-profile { flex: 1; justify-content: center; min-width: 140px; }
             .avis-item {
                 flex-direction: column;
                 align-items: center;
@@ -287,8 +301,6 @@
         <ul>
             <li><a href="index.html">Accueil</a></li>
             <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
-            <li><a href="#">Comment ça marche</a></li>
-            <li><a href="#">Devenir hôte</a></li>
         </ul>
     </div>
 </nav>
@@ -301,17 +313,22 @@
         </div>
         <div class="profile-info">
             <div class="profile-name" id="heroName">Chargement...<span id="badgeVerification" style="display:none;"></span></div>
-            <div class="profile-details" id="heroDetails">...</div>
-            <div class="profile-details" id="heroSchool">...</div>
+            <div class="profile-details" id="heroDetails"></div>
+            <div class="profile-details" id="heroSchool"></div>
             <div class="hero-rating" id="heroRating" style="display:none;">
                 <span class="hero-stars" id="heroStars">☆☆☆☆☆</span>
                 <span class="hero-rating-text" id="heroRatingText">Aucun avis</span>
             </div>
-        </div>
-        <div class="profile-actions">
-            <a href="#" id="btnMessage" class="btn-profile primary">Envoyer un message</a>
-            <a href="#" id="btnAvis" class="btn-profile">Laisser un avis</a>
-            <a href="#" id="btnSignaler" class="btn-profile" onclick="ouvrirSignalementUser()" style="color:#FCA5A5;border-color:rgba(252,165,165,0.3);display:none;">Signaler</a>
+            <div class="profile-actions">
+                <a href="#" id="btnMessage" class="btn-profile primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Envoyer un message
+                </a>
+                <a href="#" id="btnAvis" class="btn-profile">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Laisser un avis
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -331,6 +348,11 @@
         <div id="avisList" class="avis-list">
             <div class="loading">Chargement des avis...</div>
         </div>
+    </div>
+
+    <!-- SIGNALER -->
+    <div class="signaler-zone">
+        <a href="#" id="btnSignaler" onclick="ouvrirSignalementUser(); return false;" style="display:none;">Signaler cet utilisateur</a>
     </div>
 </div>
 
@@ -644,7 +666,27 @@ document.getElementById('modalSignalUser').addEventListener('click', function(e)
     if (e.target === this) fermerSignalementUser();
 });
 </script>
+<script>
+// Mon espace link
+async function gererLienMonEspace() {
+    const lien = document.getElementById('monEspaceLink');
+    if (!lien) return;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+        const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+        if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-locataire.html';
+        } else {
+            lien.href = 'dashboard-locataire.html';
+        }
+    } else {
+        lien.href = 'connexion.html';
+    }
+}
+if (typeof supabaseClient !== 'undefined') { gererLienMonEspace(); }
+</script>
 <script src="cookie-banner.js"></script>
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
     <footer role="contentinfo">
         <div class="container">
             <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
