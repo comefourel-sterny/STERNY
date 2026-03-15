@@ -1323,7 +1323,8 @@
             document.getElementById('contactInfo').innerHTML = `${emailLine}<br>${telLine}`;
 
             document.getElementById('btnContact').href = `conversation.html?user_id=${contactPerson.id}`;
-            document.getElementById('contactProfileLink').href = `profil.html?user_id=${contactPerson.id}`;
+            document.getElementById('contactProfileLink').href = '#';
+            document.getElementById('contactProfileLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(contactPerson.id); };
 
             // Dates du contrat
             if (contrat) {

@@ -2814,12 +2814,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="locataire-bloc">
-                    <div class="loc-avatar">MM</div>
-                    <div class="loc-info">
-                        <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${joursRestants}j restants</span></div>
-                        <div class="loc-name">Marie Martin</div>
-                    </div>
+                <div class="locataire-bloc" style="cursor:pointer;">
+                    <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault();">
+                        <div class="loc-avatar">MM</div>
+                        <div class="loc-info">
+                            <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${joursRestants}j restants</span></div>
+                            <div class="loc-name">Marie Martin</div>
+                        </div>
+                    </a>
                     <a href="conversation.html" class="btn btn-orange" style="text-decoration:none;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         Contacter
@@ -2988,11 +2990,13 @@
 
             return `
                 <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor: pointer;">
-                    <div class="loc-avatar">${initials}</div>
-                    <div class="loc-info">
-                        <div class="loc-label">Locataire</div>
-                        <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
-                    </div>
+                    <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${loc.id}');">
+                        <div class="loc-avatar">${initials}</div>
+                        <div class="loc-info">
+                            <div class="loc-label">Locataire</div>
+                            <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
+                        </div>
+                    </a>
                     <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${loc.id}', '${prenomEscaped}', '${nomEscaped}', 'locataire')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         Contacter
@@ -3072,7 +3076,7 @@
                     // Injecter le locataire-bloc apr\u00e8s le container (sous les annonces)
                     const blocHtml = `
                         <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor:pointer;">
-                            <a class="profile-link" href="profil.html?user_id=${locataire.id}" onclick="event.stopPropagation();">
+                            <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${locataire.id}');">
                                 <div class="loc-avatar">${initials}</div>
                                 <div class="loc-info">
                                     <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${countdownText}</span></div>
@@ -3323,7 +3327,7 @@
 
                     container.innerHTML += `
                         <div class="candidature-bloc" onclick="ouvrirOverlayCandidature(${index})">
-                            <a class="profile-link" href="profil.html?user_id=${c.users.id}" onclick="event.stopPropagation();">
+                            <a class="profile-link" href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${c.users.id}');">
                                 <div class="cand-avatar">${avatarHtml}</div>
                                 <div class="cand-info">
                                     <div class="cand-name">${c.users.prenom} ${c.users.nom}</div>
@@ -3707,7 +3711,7 @@
 
                     container.innerHTML += `
                         <div class="renouv-card">
-                            <a class="profile-link" href="profil.html?user_id=${demande.locataire_id}">
+                            <a class="profile-link" href="#" onclick="event.preventDefault(); ouvrirProfilOverlay('${demande.locataire_id}');">
                                 <div class="renouv-avatar">${initiales}</div>
                                 <div class="renouv-info">
                                     <div class="renouv-name">${locataire.prenom || ''} ${locataire.nom || ''}</div>
@@ -3793,7 +3797,7 @@
 
             return `
                 <div class="message-item ${c.nonLu ? 'message-unread' : ''}" onclick="ouvrirConversationOverlay('${c.userId}', '${prenomEscaped}', '${nomEscaped}', '${typeEscaped}')" style="cursor:pointer;">
-                    <a href="profil.html?user_id=${c.userId}" onclick="event.stopPropagation();" class="message-avatar-link">
+                    <a href="#" onclick="event.stopPropagation(); event.preventDefault(); ouvrirProfilOverlay('${c.userId}');" class="message-avatar-link">
                         <div class="message-avatar">${initials}</div>
                     </a>
                     <div class="message-content">
@@ -4056,7 +4060,8 @@
             else if (typeUser === 'proprietaire') roleLabel = 'Propriétaire';
             else if (typeUser === 'hote') roleLabel = 'Hôte';
             document.getElementById('overlayChatRole').textContent = roleLabel;
-            document.getElementById('overlayChatProfileLink').href = `profil.html?user_id=${userId}`;
+            document.getElementById('overlayChatProfileLink').href = '#';
+            document.getElementById('overlayChatProfileLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(userId); };
 
             // Marquer comme lu dans allConversations
             var conv = allConversations.find(c => c.userId === userId);

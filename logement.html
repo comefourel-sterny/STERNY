@@ -1994,7 +1994,8 @@
                     }
 
                     document.getElementById('hostInfo').style.display = 'flex';
-                    document.getElementById('hostLink').href = `profil.html?user_id=${userId}`;
+                    document.getElementById('hostLink').href = '#';
+                    document.getElementById('hostLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(userId); };
                 }
             } catch (error) {
                 console.error('Erreur chargement propriétaire:', error);

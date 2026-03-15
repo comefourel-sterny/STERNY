@@ -673,7 +673,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chargerAnnonces();
 
     // Définir le lien "Voir le profil"
-    document.getElementById('btnVoirProfil').href = `profil.html?user_id=${targetUserId}`;
+    document.getElementById('btnVoirProfil').href = '#';
+    document.getElementById('btnVoirProfil').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(targetUserId); };
 
     // Si même user → cacher "Laisser un avis", aller sur "Avis reçus"
     if (targetUserId === currentUser.id) {
