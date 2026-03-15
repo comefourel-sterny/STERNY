@@ -464,7 +464,7 @@
         .profile-link:hover .cand-avatar,
         .profile-link:hover .renouv-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .loc-avatar, .cand-avatar, .renouv-avatar { transition: box-shadow 0.2s; }
-        .loc-name, .cand-name, .renouv-name { transition: color 0.2s; }
+        .loc-name, .loc-label, .cand-name, .cand-subtitle, .renouv-name { transition: color 0.2s; }
         .message-avatar-link { text-decoration: none; color: inherit; flex-shrink: 0; }
         .message-avatar-link:hover .message-avatar { box-shadow: 0 0 0 2px #E8622A; }
         .overlay-chat-messages {
@@ -2816,11 +2816,13 @@
                     </div>
                 </div>
                 <div class="locataire-bloc">
-                    <div class="loc-avatar">MM</div>
-                    <div class="loc-info">
-                        <div class="loc-name">Marie Martin</div>
-                        <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${joursRestants}j restants</span></div>
-                    </div>
+                    <a class="profile-link" href="profil.html?user_id=demo" onclick="event.stopPropagation();">
+                        <div class="loc-avatar">MM</div>
+                        <div class="loc-info">
+                            <div class="loc-name">Marie Martin</div>
+                            <div class="loc-label">Locataire &middot; <span class="la-countdown ${countdownClass}" style="font-size:10px;padding:2px 8px;">${joursRestants}j restants</span></div>
+                        </div>
+                    </a>
                     <a href="conversation.html" class="btn btn-orange" style="text-decoration:none;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         Contacter
@@ -2989,11 +2991,13 @@
 
             return `
                 <div class="locataire-bloc" onclick="ouvrirOverlayLocataire()" style="cursor: pointer;">
-                    <div class="loc-avatar">${initials}</div>
-                    <div class="loc-info">
-                        <div class="loc-label">Locataire</div>
-                        <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
-                    </div>
+                    <a class="profile-link" href="profil.html?user_id=${loc.id}" onclick="event.stopPropagation();">
+                        <div class="loc-avatar">${initials}</div>
+                        <div class="loc-info">
+                            <div class="loc-name">${loc.prenom || ''} ${loc.nom || ''}</div>
+                            <div class="loc-label">Locataire</div>
+                        </div>
+                    </a>
                     <button class="btn btn-orange" onclick="event.stopPropagation(); ouvrirConversationOverlay('${loc.id}', '${prenomEscaped}', '${nomEscaped}', 'locataire')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         Contacter
