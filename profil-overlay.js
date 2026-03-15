@@ -60,8 +60,8 @@
         /* BOUTON FERMER */
         .po-close {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 16px;
+            right: 16px;
             width: 28px;
             height: 28px;
             border: none;
@@ -80,30 +80,30 @@
 
         /* HEADER */
         .po-header {
-            padding: 20px 28px 0;
+            padding: 36px 36px 0;
             text-align: center;
         }
         .po-avatar {
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             background: #1e2d3d;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: white;
             overflow: hidden;
-            margin: 0 auto 8px;
+            margin: 0 auto 12px;
             letter-spacing: 0.5px;
         }
         .po-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .po-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #1e2d3d;
-            margin: 0 0 2px;
+            margin: 0 0 4px;
             line-height: 1.2;
         }
         .po-role-label {
@@ -112,7 +112,7 @@
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .po-badge-row {
             display: flex;
@@ -162,11 +162,11 @@
         .po-actions {
             display: flex;
             gap: 10px;
-            padding: 14px 28px 0;
+            padding: 20px 36px 0;
         }
         .po-btn {
             flex: 1;
-            padding: 9px 0;
+            padding: 10px 0;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
@@ -217,7 +217,7 @@
 
         /* SECTIONS */
         .po-section {
-            padding: 12px 28px;
+            padding: 16px 36px;
             border-top: 1px solid #f3f4f6;
         }
         .po-section-title {
@@ -226,7 +226,7 @@
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         /* À PROPOS */
@@ -331,7 +331,7 @@
         /* EMPTY STATE */
         .po-empty {
             text-align: center;
-            padding: 10px 12px;
+            padding: 16px 12px;
         }
         .po-empty-icon {
             width: 28px;
@@ -353,7 +353,7 @@
         /* SIGNALER */
         .po-signaler {
             text-align: center;
-            padding: 8px 28px 14px;
+            padding: 12px 36px 20px;
         }
         .po-signaler a {
             font-size: 11px;
