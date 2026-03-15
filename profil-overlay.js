@@ -60,8 +60,8 @@
         /* BOUTON FERMER */
         .po-close {
             position: absolute;
-            top: 16px;
-            right: 16px;
+            top: 12px;
+            right: 12px;
             width: 28px;
             height: 28px;
             border: none;
@@ -80,30 +80,30 @@
 
         /* HEADER */
         .po-header {
-            padding: 28px 28px 0;
+            padding: 20px 28px 0;
             text-align: center;
         }
         .po-avatar {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: #1e2d3d;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: white;
             overflow: hidden;
-            margin: 0 auto 12px;
+            margin: 0 auto 8px;
             letter-spacing: 0.5px;
         }
         .po-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .po-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #1e2d3d;
-            margin: 0 0 4px;
+            margin: 0 0 2px;
             line-height: 1.2;
         }
         .po-role-label {
@@ -112,7 +112,7 @@
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .po-badge-row {
             display: flex;
@@ -162,11 +162,11 @@
         .po-actions {
             display: flex;
             gap: 10px;
-            padding: 20px 28px 0;
+            padding: 14px 28px 0;
         }
         .po-btn {
             flex: 1;
-            padding: 10px 0;
+            padding: 9px 0;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
@@ -195,15 +195,15 @@
 
         /* SECTION CONTACT */
         .po-contact {
-            padding: 16px 28px;
-            margin-top: 20px;
+            padding: 10px 28px;
+            margin-top: 14px;
             border-top: 1px solid #f3f4f6;
         }
         .po-contact-row {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 0;
+            padding: 6px 0;
         }
         .po-contact-row + .po-contact-row {
             border-top: 1px solid #f3f4f6;
@@ -238,7 +238,7 @@
 
         /* SECTIONS */
         .po-section {
-            padding: 16px 28px;
+            padding: 12px 28px;
             border-top: 1px solid #f3f4f6;
         }
         .po-section-title {
@@ -247,7 +247,7 @@
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         /* À PROPOS */
@@ -352,21 +352,21 @@
         /* EMPTY STATE */
         .po-empty {
             text-align: center;
-            padding: 16px 12px;
+            padding: 10px 12px;
         }
         .po-empty-icon {
-            width: 36px;
-            height: 36px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 8px;
+            margin: 0 auto 6px;
         }
-        .po-empty-icon svg { width: 18px; height: 18px; color: #94a3b8; }
-        .po-empty-title { font-size: 13px; font-weight: 600; color: #1e2d3d; margin-bottom: 2px; }
-        .po-empty-text { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+        .po-empty-icon svg { width: 14px; height: 14px; color: #94a3b8; }
+        .po-empty-title { font-size: 12px; font-weight: 600; color: #1e2d3d; margin-bottom: 1px; }
+        .po-empty-text { font-size: 11px; color: #94a3b8; line-height: 1.3; }
 
         /* LOADING */
         .po-loading { text-align: center; padding: 32px 20px; color: #94a3b8; font-size: 13px; }
@@ -374,7 +374,7 @@
         /* SIGNALER */
         .po-signaler {
             text-align: center;
-            padding: 12px 28px 20px;
+            padding: 8px 28px 14px;
         }
         .po-signaler a {
             font-size: 11px;
