@@ -20,14 +20,17 @@
             opacity: 0;
             transition: opacity 0.25s ease;
             cursor: pointer;
+            display: none;
+            pointer-events: none;
         }
-        .profil-overlay-backdrop.visible { opacity: 1; }
+        .profil-overlay-backdrop.visible { opacity: 1; display: block; pointer-events: auto; }
 
         /* PANNEAU PROFIL */
         .profil-overlay-panel {
             position: fixed;
             top: 0;
             right: -480px;
+            display: none;
             width: 420px;
             max-width: 92vw;
             height: 100vh;
