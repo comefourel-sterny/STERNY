@@ -15,34 +15,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
-        body {
-            background: #F4F5F7;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* PAGE LAYOUT */
         .profil-page {
-            max-width: 720px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px 0;
-            width: 100%;
-            box-sizing: border-box;
-            flex: 1;
+            padding: 32px 20px 48px;
         }
 
-        /* PROFIL CARD */
+        /* CARTE PROFIL PRINCIPALE */
         .profil-card {
             background: white;
             border-radius: 16px;
             border: 1.5px solid #E8EAF0;
             padding: 32px;
+            margin-bottom: 24px;
+        }
+        .profil-header {
             display: flex;
             align-items: flex-start;
             gap: 24px;
         }
-
         .profil-avatar {
             width: 88px;
             height: 88px;
@@ -52,9 +43,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 700;
             font-size: 32px;
+            font-weight: 700;
+            color: white;
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -63,53 +54,30 @@
             height: 100%;
             object-fit: cover;
         }
-
-        .profil-details {
+        .profil-identity {
             flex: 1;
             min-width: 0;
         }
-
-        .profil-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1E293B;
-            line-height: 1.3;
+        .profil-name-row {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 4px;
         }
-
-        .profil-type {
+        .profil-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E293B;
+            line-height: 1.2;
+        }
+        .profil-role {
             font-size: 14px;
             color: #6B7280;
-            margin-top: 2px;
+            margin-bottom: 8px;
         }
 
-        .profil-meta {
-            font-size: 14px;
-            color: #6B7280;
-            margin-top: 6px;
-            line-height: 1.5;
-        }
-
-        .profil-rating {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .profil-stars {
-            color: #fbbf24;
-            font-size: 17px;
-            letter-spacing: 2px;
-        }
-        .profil-rating-text {
-            font-size: 13px;
-            color: #6B7280;
-        }
-
-        /* BADGES */
+        /* Badges vérification */
         .badge-verifie {
             display: inline-flex;
             align-items: center;
@@ -123,7 +91,6 @@
             border: 1px solid rgba(167,243,208,0.6);
         }
         .badge-verifie svg { width: 13px; height: 13px; }
-
         .badge-documents {
             display: inline-flex;
             align-items: center;
@@ -138,17 +105,25 @@
         }
         .badge-documents svg { width: 13px; height: 13px; }
 
-        /* ACTION BUTTONS */
+        /* Étoiles */
+        .profil-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .profil-stars { color: #fbbf24; font-size: 16px; letter-spacing: 1px; }
+        .profil-rating-text { font-size: 13px; color: #6B7280; }
+
+        /* Boutons action */
         .profil-actions {
             display: flex;
             gap: 10px;
-            margin-top: 16px;
             flex-wrap: wrap;
         }
-
         .btn-action {
-            padding: 10px 22px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -156,7 +131,7 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             font-family: inherit;
             border: 1.5px solid #E8EAF0;
             background: white;
@@ -176,61 +151,144 @@
             border-color: #d4571f;
         }
 
-        /* SECTION TITLE */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1E293B;
-            margin: 28px 0 14px;
+        /* BADGES DE CONFIANCE */
+        .trust-badges {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #E8EAF0;
         }
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .trust-badge svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .trust-badge.verified { color: #059669; }
+        .trust-badge.verified svg { color: #059669; }
 
-        /* INFO CARD */
-        .info-card {
+        /* SECTION CARD GÉNÉRIQUE */
+        .section-card {
             background: white;
             border-radius: 16px;
-            padding: 24px 28px;
             border: 1.5px solid #E8EAF0;
+            padding: 28px 32px;
+            margin-bottom: 24px;
         }
-        .info-card h3 {
-            font-size: 16px;
+        .section-card-title {
+            font-size: 17px;
             font-weight: 700;
             color: #1E293B;
-            margin: 0 0 14px;
+            margin: 0 0 16px;
         }
-        .info-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .info-label {
-            font-weight: 600;
+
+        /* À PROPOS */
+        .about-text {
+            font-size: 15px;
             color: #475569;
-            min-width: 130px;
+            line-height: 1.7;
         }
-        .info-value {
+
+        /* INFOS ALTERNANCE */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .info-item-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            background: #F4F5F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #6B7280;
-            line-height: 1.5;
+        }
+        .info-item-icon svg { width: 18px; height: 18px; }
+        .info-item-label {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .info-item-value {
+            font-size: 14px;
+            color: #1E293B;
+            font-weight: 500;
+        }
+
+        /* ANNONCES ACTIVES */
+        .annonce-mini {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+        .annonce-mini:last-child { margin-bottom: 0; }
+        .annonce-mini:hover { border-color: #E8622A; }
+        .annonce-mini-photo {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #F4F5F7;
+        }
+        .annonce-mini-info { flex: 1; min-width: 0; }
+        .annonce-mini-titre {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+        .annonce-mini-detail {
+            font-size: 13px;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+        .annonce-mini-detail svg { width: 14px; height: 14px; flex-shrink: 0; }
+        .annonce-mini-prix {
+            font-size: 15px;
+            font-weight: 700;
+            color: #E8622A;
+            margin-top: 4px;
         }
 
         /* AVIS */
         .avis-list { display: flex; flex-direction: column; gap: 12px; }
-
         .avis-item {
-            background: white;
-            border-radius: 16px;
-            padding: 20px 24px;
-            border: 1.5px solid #E8EAF0;
             display: flex;
             gap: 16px;
+            padding: 20px 24px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
             transition: border-color 0.2s;
         }
         .avis-item:hover { border-color: #E8622A; }
-
         .avis-avatar {
-            width: 44px;
-            height: 44px;
-            min-width: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             display: flex;
@@ -238,13 +296,11 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
             flex-shrink: 0;
             overflow: hidden;
-            transition: box-shadow 0.2s;
         }
         .avis-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
         .avis-content { flex: 1; min-width: 0; }
         .avis-header {
             display: flex;
@@ -253,78 +309,54 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        .avis-name {
-            font-weight: 600;
-            color: #1E293B;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
-        .avis-date { font-size: 12px; color: #6B7280; }
-        .avis-stars { color: #fbbf24; font-size: 15px; margin-top: 4px; letter-spacing: 1px; }
-        .avis-comment { font-size: 14px; color: #6B7280; margin-top: 6px; line-height: 1.5; }
-
-        /* Profile link hover on avis */
-        .avis-profile-link {
-            display: flex;
-            gap: 16px;
-            text-decoration: none;
-            color: inherit;
-            cursor: pointer;
-        }
-        .avis-profile-link:hover .avis-name { color: #E8622A; }
-        .avis-profile-link:hover .avis-avatar { box-shadow: 0 0 0 2px #E8622A; }
+        .avis-name { font-weight: 600; color: #1E293B; font-size: 14px; }
+        .avis-date { font-size: 12px; color: #94A3B8; }
+        .avis-stars { color: #fbbf24; font-size: 14px; margin-top: 4px; letter-spacing: 1px; }
+        .avis-comment { font-size: 14px; color: #475569; margin-top: 6px; line-height: 1.6; }
 
         /* EMPTY STATE */
         .empty-state {
-            background: white;
-            border-radius: 16px;
-            padding: 56px 20px;
-            text-align: center;
             border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            padding: 48px 20px;
+            text-align: center;
         }
-        .empty-icon { font-size: 48px; margin-bottom: 14px; opacity: 0.35; }
-        .empty-title { font-size: 17px; font-weight: 600; color: #1E293B; margin-bottom: 6px; }
-        .empty-text { color: #6B7280; font-size: 14px; }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.35; }
+        .empty-title { font-size: 16px; font-weight: 600; color: #1E293B; margin-bottom: 6px; }
+        .empty-text { color: #94A3B8; font-size: 14px; }
 
-        /* Loading */
-        .loading { text-align: center; padding: 50px 20px; color: #6B7280; font-size: 15px; }
-
-        /* Signaler zone */
+        /* SIGNALER */
         .signaler-zone {
             text-align: center;
-            padding: 20px 0 40px 0;
+            padding: 20px 0 0;
         }
         .signaler-zone a {
             font-size: 13px;
-            font-weight: 500;
-            color: #475569;
+            color: #94A3B8;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s;
         }
         .signaler-zone a:hover { color: #E8622A; }
 
+        /* LOADING */
+        .loading { text-align: center; padding: 40px 20px; color: #94A3B8; font-size: 14px; }
+
         /* RESPONSIVE */
         @media (max-width: 640px) {
-            .profil-card {
+            .profil-header {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
-                padding: 28px 20px;
             }
-            .profil-name { justify-content: center; }
+            .profil-name-row { justify-content: center; }
+            .profil-role { text-align: center; }
             .profil-rating { justify-content: center; }
-            .profil-actions { justify-content: center; width: 100%; }
-            .btn-action { flex: 1; justify-content: center; min-width: 130px; }
-            .avis-item {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .avis-profile-link {
-                flex-direction: column;
-                align-items: center;
-            }
+            .profil-actions { justify-content: center; }
+            .trust-badges { justify-content: center; }
+            .info-grid { grid-template-columns: 1fr; }
+            .annonce-mini { flex-direction: column; align-items: center; text-align: center; }
+            .avis-item { flex-direction: column; align-items: center; text-align: center; }
             .avis-header { justify-content: center; }
         }
     </style>
@@ -348,47 +380,76 @@
     </div>
 </nav>
 
-<!-- CONTENU -->
+<!-- CONTENU PROFIL -->
 <div class="profil-page">
 
-    <!-- PROFIL CARD -->
-    <div class="profil-card" id="profilCard">
-        <div class="profil-avatar" id="profilAvatar">
-            <span id="profilInitials">?</span>
-        </div>
-        <div class="profil-details">
-            <div class="profil-name" id="profilName">Chargement...</div>
-            <div class="profil-type" id="profilType"></div>
-            <div class="profil-meta" id="profilMeta"></div>
-            <div class="profil-meta" id="profilSchool"></div>
-            <div class="profil-rating" id="profilRating" style="display:none;">
-                <span class="profil-stars" id="profilStars"></span>
-                <span class="profil-rating-text" id="profilRatingText">Aucun avis</span>
+    <!-- CARTE PROFIL -->
+    <div class="profil-card">
+        <div class="profil-header">
+            <div class="profil-avatar" id="profilAvatar">
+                <span id="profilInitials">?</span>
             </div>
-            <div class="profil-actions" id="profilActions">
-                <a href="#" id="btnMessage" class="btn-action primary">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Envoyer un message
-                </a>
-                <a href="#" id="btnAvis" class="btn-action">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    Laisser un avis
-                </a>
+            <div class="profil-identity">
+                <div class="profil-name-row">
+                    <span class="profil-name" id="profilName">Chargement...</span>
+                    <span id="badgeVerification" style="display:none;"></span>
+                </div>
+                <div class="profil-role" id="profilRole"></div>
+                <div class="profil-rating" id="profilRating" style="display:none;">
+                    <span class="profil-stars" id="profilStars">☆☆☆☆☆</span>
+                    <span class="profil-rating-text" id="profilRatingText">Aucun avis</span>
+                </div>
+                <div class="profil-actions">
+                    <a href="#" id="btnMessage" class="btn-action primary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Envoyer un message
+                    </a>
+                    <a href="#" id="btnAvis" class="btn-action">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Laisser un avis
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges de confiance -->
+        <div class="trust-badges" id="trustBadges">
+            <div class="trust-badge" id="badgeEmail">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Email vérifié
+            </div>
+            <div class="trust-badge" id="badgePhone" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Téléphone vérifié
+            </div>
+            <div class="trust-badge" id="badgeIdentity" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                Identité vérifiée
             </div>
         </div>
     </div>
 
-    <!-- INFORMATIONS -->
-    <div id="infoSection" style="display:none;">
-        <h2 class="section-title">Informations</h2>
-        <div class="info-card" id="infoCard">
-            <div id="infoContent"></div>
-        </div>
+    <!-- À PROPOS -->
+    <div class="section-card" id="sectionAbout" style="display:none;">
+        <h2 class="section-card-title">À propos</h2>
+        <p class="about-text" id="aboutText"></p>
+    </div>
+
+    <!-- INFOS ALTERNANCE -->
+    <div class="section-card" id="sectionInfos" style="display:none;">
+        <h2 class="section-card-title">Informations</h2>
+        <div class="info-grid" id="infoGrid"></div>
+    </div>
+
+    <!-- ANNONCES ACTIVES -->
+    <div class="section-card" id="sectionAnnonces" style="display:none;">
+        <h2 class="section-card-title">Annonces</h2>
+        <div id="annoncesList"></div>
     </div>
 
     <!-- AVIS REÇUS -->
-    <div>
-        <h2 class="section-title">Avis reçus</h2>
+    <div class="section-card">
+        <h2 class="section-card-title">Avis reçus</h2>
         <div id="avisList" class="avis-list">
             <div class="loading">Chargement des avis...</div>
         </div>
@@ -428,25 +489,11 @@
     </div>
 </div>
 
-<footer role="contentinfo">
-    <div class="container">
-        <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
-        <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
-            <a href="cgv.html">CGV</a> &middot;
-            <a href="cgu.html">CGU</a> &middot;
-            <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
-            <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
-            <a href="faq.html">FAQ</a> &middot;
-            <a href="contact.html">Contact</a> &middot;
-            <a href="a-propos.html">&Agrave; propos</a>
-        </p>
-    </div>
-</footer>
-
 <script>
 // ─── ÉTAT ───
 let currentUser = null;
 let profileUserId = null;
+let profileData = null;
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
@@ -455,7 +502,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
     }
-
     if (typeof supabaseClient === 'undefined') {
         alert('Erreur de chargement. Rafraîchis la page.');
         return;
@@ -510,76 +556,174 @@ async function chargerProfil() {
         return;
     }
 
-    // Nom + badges
-    let nameBadge = '';
+    profileData = data;
+
+    // Nom
+    document.getElementById('profilName').textContent = `${data.prenom} ${data.nom}`;
+
+    // Badge vérification dans le nom
+    const badgeEl = document.getElementById('badgeVerification');
     if (data.identite_verifiee === 'verifiee') {
-        nameBadge = '<span class="badge-verifie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Identité vérifiée</span>';
+        badgeEl.className = 'badge-verifie';
+        badgeEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Identité vérifiée';
+        badgeEl.style.display = '';
     } else if (data.identite_verifiee === 'documents_fournis') {
-        nameBadge = '<span class="badge-documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Documents fournis</span>';
-    }
-    document.getElementById('profilName').innerHTML = `${escapeHtml(data.prenom)} ${escapeHtml(data.nom)}${nameBadge ? ' ' + nameBadge : ''}`;
-
-    // Type utilisateur
-    const typeLabels = { locataire: 'Locataire', proprietaire: 'Propriétaire', hote: 'Hôte' };
-    const typeLabel = typeLabels[data.type_user] || '';
-    if (typeLabel) {
-        document.getElementById('profilType').textContent = typeLabel;
+        badgeEl.className = 'badge-documents';
+        badgeEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Documents fournis';
+        badgeEl.style.display = '';
     }
 
-    // Détails (âge + sexe)
-    let details = '';
+    // Rôle
+    const roleLabels = { locataire: 'Locataire', proprietaire: 'Propriétaire', hote: 'Hôte' };
+    const role = roleLabels[data.type_user] || '';
+    let roleDetails = role;
     if (data.date_naissance) {
         const age = calculerAge(data.date_naissance);
-        details = `${age} ans`;
+        roleDetails += roleDetails ? ` · ${age} ans` : `${age} ans`;
     }
-    if (data.sexe && data.sexe !== 'non-precise') {
-        const sexeLabel = data.sexe.charAt(0).toUpperCase() + data.sexe.slice(1);
-        details += details ? ` · ${sexeLabel}` : sexeLabel;
+    if (data.ville_origine) {
+        roleDetails += roleDetails ? ` · ${escapeHtml(data.ville_origine)}` : escapeHtml(data.ville_origine);
     }
-    document.getElementById('profilMeta').textContent = details || '';
-
-    // École
-    let schoolInfo = '';
-    if (data.ecole) {
-        schoolInfo = data.ecole;
-        if (data.annee_etudes) schoolInfo += ` · ${data.annee_etudes}`;
-        if (data.filiere) schoolInfo += ` · ${data.filiere}`;
-    }
-    document.getElementById('profilSchool').textContent = schoolInfo || '';
+    document.getElementById('profilRole').textContent = roleDetails;
 
     // Photo
     if (data.photo_profil_url) {
-        const img = document.createElement('img');
-        img.src = data.photo_profil_url;
-        img.alt = 'Photo';
-        const avatar = document.getElementById('profilAvatar');
-        avatar.innerHTML = '';
-        avatar.appendChild(img);
+        const avatarEl = document.getElementById('profilAvatar');
+        avatarEl.innerHTML = `<img src="${escapeHtml(data.photo_profil_url)}" alt="Photo">`;
     } else {
         document.getElementById('profilInitials').textContent = `${data.prenom[0]}${data.nom[0]}`;
     }
 
-    // Informations supplémentaires
-    const infoSection = document.getElementById('infoSection');
-    const infoContent = document.getElementById('infoContent');
-    let hasInfo = false;
-    let html = '';
+    // Badges de confiance
+    // Email toujours vérifié (Supabase Auth)
+    document.getElementById('badgeEmail').classList.add('verified');
 
-    if (data.ville_origine) {
-        html += `<div class="info-row"><span class="info-label">Ville d'origine :</span><span class="info-value">${escapeHtml(data.ville_origine)}</span></div>`;
-        hasInfo = true;
+    if (data.telephone) {
+        const phoneEl = document.getElementById('badgePhone');
+        phoneEl.style.display = 'flex';
+        phoneEl.classList.add('verified');
     }
+
+    if (data.identite_verifiee === 'verifiee') {
+        const idEl = document.getElementById('badgeIdentity');
+        idEl.style.display = 'flex';
+        idEl.classList.add('verified');
+    }
+
+    // À propos
     if (data.description) {
-        html += `<div class="info-row"><span class="info-label">Description :</span><span class="info-value">${escapeHtml(data.description)}</span></div>`;
-        hasInfo = true;
+        document.getElementById('aboutText').textContent = data.description;
+        document.getElementById('sectionAbout').style.display = 'block';
     }
 
-    if (hasInfo) {
-        infoContent.innerHTML = html;
-        infoSection.style.display = 'block';
+    // Infos alternance / logement
+    buildInfoGrid(data);
+
+    // Annonces (si propriétaire ou hôte)
+    if (data.type_user === 'proprietaire' || data.type_user === 'hote') {
+        await chargerAnnonces();
     }
 
     await chargerMoyenne();
+}
+
+// ─── BUILD INFO GRID ───
+function buildInfoGrid(data) {
+    const grid = document.getElementById('infoGrid');
+    let html = '';
+    let hasInfo = false;
+
+    const items = [];
+
+    if (data.ecole) {
+        items.push({
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/></svg>',
+            label: 'École',
+            value: data.ecole + (data.filiere ? ` · ${data.filiere}` : '')
+        });
+    }
+
+    if (data.annee_etudes) {
+        items.push({
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+            label: 'Année',
+            value: data.annee_etudes
+        });
+    }
+
+    if (data.rythme_alternance) {
+        items.push({
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+            label: 'Rythme',
+            value: data.rythme_alternance
+        });
+    }
+
+    if (data.ville_ecole) {
+        items.push({
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+            label: 'Ville école',
+            value: data.ville_ecole
+        });
+    }
+
+    if (data.ville_entreprise) {
+        items.push({
+            icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+            label: 'Ville entreprise',
+            value: data.ville_entreprise
+        });
+    }
+
+    if (items.length > 0) {
+        for (const item of items) {
+            html += `
+                <div class="info-item">
+                    <div class="info-item-icon">${item.icon}</div>
+                    <div>
+                        <div class="info-item-label">${item.label}</div>
+                        <div class="info-item-value">${escapeHtml(item.value)}</div>
+                    </div>
+                </div>`;
+        }
+        grid.innerHTML = html;
+        document.getElementById('sectionInfos').style.display = 'block';
+    }
+}
+
+// ─── CHARGER ANNONCES ───
+async function chargerAnnonces() {
+    const { data } = await supabaseClient
+        .from('annonces')
+        .select('id, titre, ville, type_logement, surface, prix_semaine, photos')
+        .eq('proprietaire_id', profileUserId)
+        .eq('statut', 'active');
+
+    if (!data || data.length === 0) return;
+
+    const container = document.getElementById('annoncesList');
+    let html = '';
+    for (const a of data) {
+        const photo = a.photos && a.photos.length > 0 ? a.photos[0] : '';
+        const photoHtml = photo
+            ? `<img class="annonce-mini-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(a.titre)}" loading="lazy">`
+            : `<div class="annonce-mini-photo"></div>`;
+
+        html += `
+            <a href="logement.html?id=${a.id}" class="annonce-mini">
+                ${photoHtml}
+                <div class="annonce-mini-info">
+                    <div class="annonce-mini-titre">${escapeHtml(a.titre)}</div>
+                    <div class="annonce-mini-detail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        ${escapeHtml(a.ville || '')}${a.type_logement ? ' · ' + escapeHtml(a.type_logement) : ''}${a.surface ? ' · ' + a.surface + ' m²' : ''}
+                    </div>
+                    <div class="annonce-mini-prix">${a.prix_semaine}€/sem</div>
+                </div>
+            </a>`;
+    }
+    container.innerHTML = html;
+    document.getElementById('sectionAnnonces').style.display = 'block';
 }
 
 // ─── CHARGER MOYENNE ───
@@ -635,27 +779,22 @@ async function chargerAvis() {
         const initials = eval_ ? `${escapeHtml(eval_.prenom[0])}${escapeHtml(eval_.nom[0])}` : '?';
         const date = new Date(avis.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         const stars = genStars(avis.note);
-        const evalId = eval_?.id || '';
 
         const avatarHtml = photo
             ? `<img loading="lazy" src="${escapeHtml(photo)}" alt="${nom}">`
             : initials;
 
-        const profileHref = evalId ? `profil.html?user_id=${evalId}` : '#';
-
         container.innerHTML += `
             <div class="avis-item">
-                <a class="avis-profile-link" href="${profileHref}" onclick="event.stopPropagation();">
-                    <div class="avis-avatar">${avatarHtml}</div>
-                    <div class="avis-content">
-                        <div class="avis-header">
-                            <span class="avis-name">${nom}</span>
-                            <span class="avis-date">${date}</span>
-                        </div>
-                        <div class="avis-stars">${stars}</div>
-                        ${avis.commentaire ? `<div class="avis-comment">${escapeHtml(avis.commentaire)}</div>` : ''}
+                <div class="avis-avatar">${avatarHtml}</div>
+                <div class="avis-content">
+                    <div class="avis-header">
+                        <span class="avis-name">${nom}</span>
+                        <span class="avis-date">${date}</span>
                     </div>
-                </a>
+                    <div class="avis-stars">${stars}</div>
+                    ${avis.commentaire ? `<div class="avis-comment">${escapeHtml(avis.commentaire)}</div>` : ''}
+                </div>
             </div>`;
     }
 }
@@ -678,9 +817,7 @@ function calculerAge(dateNaissance) {
     const birthDate = new Date(dateNaissance);
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
     return age;
 }
 
@@ -727,15 +864,14 @@ document.getElementById('modalSignalUser').addEventListener('click', function(e)
 });
 </script>
 <script>
-// Mon espace link
 async function gererLienMonEspace() {
     const lien = document.getElementById('monEspaceLink');
     if (!lien) return;
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
         const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
-        if (userData?.type_user === 'proprietaire') {
-            lien.href = 'dashboard-proprietaire.html';
+        if (userData?.type_user === 'hote') {
+            lien.href = 'dashboard-locataire.html';
         } else {
             lien.href = 'dashboard-locataire.html';
         }
@@ -747,5 +883,19 @@ if (typeof supabaseClient !== 'undefined') { gererLienMonEspace(); }
 </script>
 <script src="cookie-banner.js"></script>
 <script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
