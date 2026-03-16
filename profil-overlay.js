@@ -731,14 +731,6 @@
         html += '<div class="po-role-label">' + poEscape(role) + '</div>';
         if (badgeHtml) html += '<div class="po-badge-row">' + badgeHtml + '</div>';
 
-        // Trust pills
-        var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-        html += '<div class="po-trust-pills">';
-        html += '<span class="po-trust-pill">' + checkSvg + 'Email</span>';
-        if (data.telephone) html += '<span class="po-trust-pill">' + checkSvg + 'T\u00e9l\u00e9phone</span>';
-        if (data.identite_verifiee === 'verifiee') html += '<span class="po-trust-pill">' + checkSvg + 'Identit\u00e9</span>';
-        html += '</div>';
-
         html += '<div class="po-rating" id="poRating" style="display:none;"><span class="po-stars" id="poStars"></span><span class="po-rating-text" id="poRatingText"></span></div>';
         html += '</div>';
 
