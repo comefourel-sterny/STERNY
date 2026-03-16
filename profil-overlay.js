@@ -167,7 +167,7 @@
         .po-actions {
             display: flex;
             gap: 10px;
-            padding: 20px 36px 16px;
+            padding: 20px 36px 0;
         }
         .po-btn {
             flex: 1;
@@ -504,6 +504,7 @@
 
     // ─── État ───
     let poCurrentUser = null;
+    let poCurrentUserData = null; // données complètes du user connecté (type_user, etc.)
     let poProfileUserId = null;
     let poProfileData = null;
     let poIsOpen = false;
@@ -650,6 +651,16 @@
         if (!poCurrentUser) {
             var authResult = await supabaseClient.auth.getUser();
             poCurrentUser = authResult.data.user;
+        }
+
+        // Récupérer le type_user du user connecté (une seule fois)
+        if (poCurrentUser && !poCurrentUserData) {
+            var userData = await supabaseClient
+                .from('users')
+                .select('type_user')
+                .eq('id', poCurrentUser.id)
+                .single();
+            if (userData.data) poCurrentUserData = userData.data;
         }
 
         if (poCurrentUser && userId === poCurrentUser.id) {
@@ -799,14 +810,53 @@
         ]);
     }
 
+    // ─── Calcul âge ───
+    function poCalculerAge(dateNaissance) {
+        var today = new Date();
+        var bd = new Date(dateNaissance);
+        var age = today.getFullYear() - bd.getFullYear();
+        var m = today.getMonth() - bd.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) age--;
+        return age;
+    }
+
     // ─── Infos en lignes lisibles ───
     function poBuilInfoLines(data) {
         var html = '';
+
+        // SVGs
+        var userSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
         var ecoleSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/></svg>';
         var rythmeSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
         var pinSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
         var entrepriseSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+        var bookSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
 
+        // Le user connecté est propriétaire/hôte et regarde un locataire → afficher âge + sexe
+        var viewerIsProprietaire = poCurrentUserData && (poCurrentUserData.type_user === 'proprietaire' || poCurrentUserData.type_user === 'hote');
+        var profileIsLocataire = data.type_user === 'locataire';
+
+        if (viewerIsProprietaire && profileIsLocataire) {
+            // Âge + Sexe sur une ligne
+            var ageSexeParts = [];
+            if (data.date_naissance) {
+                ageSexeParts.push(poCalculerAge(data.date_naissance) + ' ans');
+            }
+            if (data.sexe) {
+                var sexeLabels = { homme: 'Homme', femme: 'Femme', autre: 'Autre' };
+                ageSexeParts.push(sexeLabels[data.sexe] || poEscape(data.sexe));
+            }
+            if (ageSexeParts.length > 0) {
+                html += '<div class="po-info-line">' + userSvg + '<span class="po-info-label">Profil</span><span class="po-info-value">' + ageSexeParts.join(' \u00b7 ') + '</span></div>';
+            }
+
+            // Année d'études
+            if (data.annee_etudes) {
+                html += '<div class="po-info-line">' + bookSvg + '<span class="po-info-label">Ann\u00e9e</span><span class="po-info-value">' + poEscape(data.annee_etudes) + '</span></div>';
+            }
+        }
+
+        // Infos communes (tous les profils)
         if (data.ecole) {
             html += '<div class="po-info-line">' + ecoleSvg + '<span class="po-info-label">\u00c9cole</span><span class="po-info-value">' + poEscape(data.ecole) + (data.filiere ? ' \u2014 ' + poEscape(data.filiere) : '') + '</span></div>';
         }
