@@ -419,6 +419,155 @@
         /* LOADING */
         .po-loading { text-align: center; padding: 32px 20px; color: #94a3b8; font-size: 13px; }
 
+        /* VUE HEADER (retour) — pour avis et messages */
+        .po-view-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 36px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 2;
+            border-radius: 20px 20px 0 0;
+        }
+        .po-back-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .po-back-btn:hover { background: #e2e8f0; }
+        .po-back-btn svg { width: 16px; height: 16px; color: #1e2d3d; }
+        .po-view-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e2d3d;
+        }
+        .po-view-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        /* CHAT */
+        .po-chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .po-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .po-chat-messages::-webkit-scrollbar { width: 4px; }
+        .po-chat-messages::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+        .po-msg {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+        .po-msg-sent {
+            align-self: flex-end;
+            background: #e8642a;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .po-msg-received {
+            align-self: flex-start;
+            background: #f3f4f6;
+            color: #1e2d3d;
+            border-bottom-left-radius: 4px;
+        }
+        .po-msg-time {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .po-msg-sent .po-msg-time { color: rgba(255,255,255,0.7); text-align: right; }
+        .po-msg-received .po-msg-time { text-align: left; }
+        .po-chat-input-bar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px 16px;
+            border-top: 1px solid #f3f4f6;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+        .po-chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            background: #f9fafb;
+            transition: border-color 0.15s;
+        }
+        .po-chat-input:focus { border-color: #e8642a; }
+        .po-chat-input::placeholder { color: #94a3b8; }
+        .po-chat-send {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #e8642a;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .po-chat-send:hover { background: #d4571f; }
+        .po-chat-send:disabled { background: #d1d5db; cursor: default; }
+        .po-chat-send svg { width: 18px; height: 18px; color: white; }
+        .po-chat-empty {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* AVIS VIEW */
+        .po-avis-view-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .po-avis-view-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .po-avis-view-list::-webkit-scrollbar { width: 4px; }
+        .po-avis-view-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
         /* SIGNALER — toujours en bas de la carte */
         .po-signaler {
             text-align: center;
@@ -519,6 +668,7 @@
     let poProfileData = null;
     let poIsOpen = false;
     let poRelationLevel = 'none'; // 'none' | 'candidature' | 'contrat'
+    let poProfileHtmlCache = ''; // sauvegarde du HTML vue profil pour retour
 
     // ─── Fermer ───
     function fermerProfilOverlay() {
@@ -757,8 +907,8 @@
 
         // Action buttons
         html += '<div class="po-actions">';
-        html += '<a href="conversation.html?user_id=' + poProfileUserId + '" class="po-btn po-btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message</a>';
-        html += '<a href="avis.html?user_id=' + poProfileUserId + '" class="po-btn po-btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</a>';
+        html += '<button class="po-btn po-btn-primary" id="poBtnMessage"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message</button>';
+        html += '<button class="po-btn po-btn-secondary" id="poBtnAvis"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</button>';
         html += '</div>';
 
         // ─── Section Contact (visible uniquement si contrat signé) ───
@@ -813,11 +963,212 @@
             });
         }
 
+        // Boutons vue message et avis
+        var btnMsg = document.getElementById('poBtnMessage');
+        if (btnMsg) {
+            btnMsg.addEventListener('click', function () {
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueMessages();
+            });
+        }
+        var btnAvis = document.getElementById('poBtnAvis');
+        if (btnAvis) {
+            btnAvis.addEventListener('click', function () {
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueAvis();
+            });
+        }
+
         // Charger données async
         await Promise.all([
             poChargerMoyenne(),
             (data.type_user === 'proprietaire' || data.type_user === 'hote') ? poChargerAnnonces() : Promise.resolve()
         ]);
+    }
+
+    // ─── Retour au profil ───
+    function poRetourProfil() {
+        var content = document.getElementById('poContent');
+        if (poProfileHtmlCache) {
+            content.innerHTML = poProfileHtmlCache;
+            // Rebrancher les event listeners
+            var btnMsg = document.getElementById('poBtnMessage');
+            if (btnMsg) btnMsg.addEventListener('click', function () {
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueMessages();
+            });
+            var btnAvis = document.getElementById('poBtnAvis');
+            if (btnAvis) btnAvis.addEventListener('click', function () {
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueAvis();
+            });
+            var sigLink = document.getElementById('poSignalerLink');
+            if (sigLink) sigLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.getElementById('poSignalMsg').style.display = 'none';
+                document.getElementById('poSignalMotif').value = '';
+                document.getElementById('poSignalDesc').value = '';
+                document.getElementById('poModalSignal').classList.add('visible');
+            });
+        }
+    }
+
+    // ─── Vue Avis ───
+    async function poAfficherVueAvis() {
+        var content = document.getElementById('poContent');
+        var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
+        var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+
+        content.innerHTML = '<div class="po-avis-view-wrapper">' +
+            '<div class="po-view-header">' +
+                '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
+                '<div><div class="po-view-title">Avis sur ' + nom + '</div></div>' +
+            '</div>' +
+            '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
+        '</div>';
+
+        document.getElementById('poBackBtn').addEventListener('click', poRetourProfil);
+
+        // Charger les avis
+        var result = await supabaseClient
+            .from('avis')
+            .select('id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at, evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)')
+            .eq('profil_evalue_id', poProfileUserId)
+            .order('created_at', { ascending: false });
+
+        var listEl = document.getElementById('poAvisViewList');
+        if (!listEl) return;
+
+        if (!result.data || result.data.length === 0) {
+            listEl.innerHTML = '<div class="po-empty" style="margin-top:40px;"><div class="po-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="po-empty-title">Pas encore d\'avis</div><div class="po-empty-text">Les avis appara\u00eetront apr\u00e8s des s\u00e9jours.</div></div>';
+            return;
+        }
+
+        var html = '';
+        for (var i = 0; i < result.data.length; i++) {
+            var avis = result.data[i];
+            var eval_ = avis.evaluateur;
+            var evalNom = eval_ ? poEscape(eval_.prenom) + ' ' + poEscape(eval_.nom) : 'Utilisateur';
+            var photo = eval_ ? eval_.photo_profil_url : null;
+            var initials = eval_ ? poEscape(eval_.prenom[0]) + poEscape(eval_.nom[0]) : '?';
+            var date = new Date(avis.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+            var stars = poGenStars(avis.note);
+            var avatarInner = photo ? '<img loading="lazy" src="' + poEscape(photo) + '" alt="' + evalNom + '">' : initials;
+
+            var catHtml = '';
+            if (avis.note_communication || avis.note_categorie_2 || avis.note_categorie_3) {
+                var labels = poGetCategoryLabels(poProfileData.type_user);
+                catHtml = '<div class="po-avis-cats">';
+                if (avis.note_communication) catHtml += '<span class="po-avis-cat-tag">' + labels.communication + ' ' + poGenStars(avis.note_communication) + '</span>';
+                if (avis.note_categorie_2) catHtml += '<span class="po-avis-cat-tag">' + labels.categorie2 + ' ' + poGenStars(avis.note_categorie_2) + '</span>';
+                if (avis.note_categorie_3) catHtml += '<span class="po-avis-cat-tag">' + labels.categorie3 + ' ' + poGenStars(avis.note_categorie_3) + '</span>';
+                catHtml += '</div>';
+            }
+
+            html += '<div class="po-avis"><div class="po-avis-avatar">' + avatarInner + '</div><div class="po-avis-content"><div class="po-avis-header"><span class="po-avis-name">' + evalNom + '</span><span class="po-avis-date">' + date + '</span></div><div class="po-avis-stars">' + stars + '</div>' + catHtml + (avis.commentaire ? '<div class="po-avis-comment" style="-webkit-line-clamp:unset;">' + poEscape(avis.commentaire) + '</div>' : '') + '</div></div>';
+        }
+        listEl.innerHTML = html;
+    }
+
+    // ─── Vue Messages ───
+    async function poAfficherVueMessages() {
+        var content = document.getElementById('poContent');
+        var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
+        var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+        var sendSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+
+        content.innerHTML = '<div class="po-chat-wrapper">' +
+            '<div class="po-view-header">' +
+                '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
+                '<div><div class="po-view-title">' + nom + '</div><div class="po-view-subtitle">Conversation</div></div>' +
+            '</div>' +
+            '<div class="po-chat-messages" id="poChatMessages"><div class="po-loading">Chargement...</div></div>' +
+            '<div class="po-chat-input-bar">' +
+                '<input type="text" class="po-chat-input" id="poChatInput" placeholder="\u00c9crire un message..." maxlength="2000">' +
+                '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
+            '</div>' +
+        '</div>';
+
+        document.getElementById('poBackBtn').addEventListener('click', poRetourProfil);
+
+        // Charger les messages
+        var currentUserId = poCurrentUser.id;
+        var result = await supabaseClient
+            .from('messages')
+            .select('*')
+            .or('and(expediteur_id.eq.' + currentUserId + ',destinataire_id.eq.' + poProfileUserId + '),and(expediteur_id.eq.' + poProfileUserId + ',destinataire_id.eq.' + currentUserId + ')')
+            .order('created_at', { ascending: true });
+
+        var messagesEl = document.getElementById('poChatMessages');
+        if (!messagesEl) return;
+
+        if (!result.data || result.data.length === 0) {
+            messagesEl.innerHTML = '<div class="po-chat-empty">Aucun message pour l\'instant.<br>Envoie le premier !</div>';
+        } else {
+            var html = '';
+            for (var i = 0; i < result.data.length; i++) {
+                var m = result.data[i];
+                var isSent = m.expediteur_id === currentUserId;
+                var time = new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                var dateStr = new Date(m.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+                html += '<div class="po-msg ' + (isSent ? 'po-msg-sent' : 'po-msg-received') + '">' +
+                    poEscape(m.contenu) +
+                    '<div class="po-msg-time">' + dateStr + ' ' + time + '</div>' +
+                '</div>';
+            }
+            messagesEl.innerHTML = html;
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        // Marquer comme lu
+        await supabaseClient
+            .from('messages')
+            .update({ lu: true })
+            .eq('destinataire_id', currentUserId)
+            .eq('expediteur_id', poProfileUserId)
+            .eq('lu', false);
+
+        // Envoyer un message
+        var inputEl = document.getElementById('poChatInput');
+        var sendBtn = document.getElementById('poChatSend');
+
+        async function poEnvoyerMessage() {
+            var text = inputEl.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            inputEl.value = '';
+
+            var insertResult = await supabaseClient
+                .from('messages')
+                .insert([{
+                    expediteur_id: currentUserId,
+                    destinataire_id: poProfileUserId,
+                    contenu: text,
+                    lu: false
+                }]);
+
+            if (!insertResult.error) {
+                var now = new Date();
+                var time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                var dateStr = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+                var msgHtml = '<div class="po-msg po-msg-sent">' + poEscape(text) + '<div class="po-msg-time">' + dateStr + ' ' + time + '</div></div>';
+                var emptyEl = messagesEl.querySelector('.po-chat-empty');
+                if (emptyEl) messagesEl.innerHTML = '';
+                messagesEl.insertAdjacentHTML('beforeend', msgHtml);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+            sendBtn.disabled = false;
+            inputEl.focus();
+        }
+
+        sendBtn.addEventListener('click', poEnvoyerMessage);
+        inputEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                poEnvoyerMessage();
+            }
+        });
+        inputEl.focus();
     }
 
     // ─── Calcul âge ───
