@@ -41,7 +41,7 @@
             position: relative;
             width: 100%;
             max-width: 460px;
-            max-height: 85vh;
+            height: 546px;
             background: white;
             z-index: 99991;
             overflow-y: auto;
@@ -446,7 +446,7 @@
         /* RESPONSIVE */
         @media (max-width: 480px) {
             .profil-overlay-backdrop.visible { padding: 12px; }
-            .profil-overlay-panel { max-height: 90vh; }
+            .profil-overlay-panel { height: 90vh; }
             .po-header { padding: 24px 20px 0; }
             .po-actions { padding: 16px 20px 0; }
             .po-section { padding: 14px 20px; }
