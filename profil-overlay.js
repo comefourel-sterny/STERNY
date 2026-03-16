@@ -4,6 +4,11 @@
 // Usage : inclure <script src="profil-overlay.js"></script> sur la page
 // Appeler : ouvrirProfilOverlay(userId)
 // ============================================================
+// Niveaux de visibilité :
+//   'none'         → aucun lien → email/téléphone masqués
+//   'candidature'  → candidature en cours → email visible
+//   'contrat'      → contrat signé → email + téléphone visibles
+// ============================================================
 
 (function () {
     'use strict';
@@ -229,6 +234,75 @@
             margin-bottom: 10px;
         }
 
+        /* CONTACT LINES */
+        .po-contact-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .po-contact-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #1e2d3d;
+            line-height: 1.4;
+        }
+        .po-contact-line svg {
+            width: 16px;
+            height: 16px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        .po-contact-label {
+            font-weight: 600;
+            color: #1e2d3d;
+            min-width: 75px;
+        }
+        .po-contact-value {
+            color: #475569;
+        }
+        .po-contact-value a {
+            color: #e8642a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .po-contact-value a:hover { text-decoration: underline; }
+        .po-contact-hidden {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        /* INFO LINES */
+        .po-info-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .po-info-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #1e2d3d;
+            line-height: 1.4;
+        }
+        .po-info-line svg {
+            width: 16px;
+            height: 16px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        .po-info-label {
+            font-weight: 600;
+            color: #1e2d3d;
+            min-width: 75px;
+        }
+        .po-info-value {
+            color: #475569;
+        }
+
         /* À PROPOS */
         .po-about {
             font-size: 13px;
@@ -240,20 +314,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        /* BADGES INFO */
-        .po-info-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-        .po-info-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            color: #1e2d3d;
-            background: #f3f4f6;
-            padding: 5px 12px;
-            border-radius: 8px;
-        }
-        .po-info-tag svg { width: 14px; height: 14px; color: #94a3b8; flex-shrink: 0; }
 
         /* ANNONCES MINI */
         .po-annonce {
@@ -389,11 +449,12 @@
             .profil-overlay-panel { max-height: 90vh; }
             .po-header { padding: 24px 20px 0; }
             .po-actions { padding: 16px 20px 0; }
-            .po-contact { padding: 14px 20px; }
             .po-section { padding: 14px 20px; }
             .po-signaler { padding: 10px 20px 16px; }
             .po-avatar { width: 56px; height: 56px; font-size: 20px; }
             .po-name { font-size: 18px; }
+            .po-contact-label { min-width: 65px; }
+            .po-info-label { min-width: 65px; }
         }
     `;
     document.head.appendChild(style);
@@ -446,6 +507,7 @@
     let poProfileUserId = null;
     let poProfileData = null;
     let poIsOpen = false;
+    let poRelationLevel = 'none'; // 'none' | 'candidature' | 'contrat'
 
     // ─── Fermer ───
     function fermerProfilOverlay() {
@@ -523,19 +585,55 @@
         var plein = Math.round(note);
         return '\u2605'.repeat(plein) + '\u2606'.repeat(5 - plein);
     }
-    function poCalculerAge(dateNaissance) {
-        var today = new Date();
-        var bd = new Date(dateNaissance);
-        var age = today.getFullYear() - bd.getFullYear();
-        var m = today.getMonth() - bd.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) age--;
-        return age;
-    }
     function poGetCategoryLabels(typeUser) {
         if (typeUser === 'proprietaire' || typeUser === 'hote') {
             return { communication: 'Communication', categorie2: '\u00c9tat du logement', categorie3: 'Rapport qualit\u00e9-prix' };
         }
         return { communication: 'Communication', categorie2: 'Propret\u00e9', categorie3: 'Respect du logement' };
+    }
+
+    // ─── Déterminer le niveau de relation entre l'utilisateur connecté et le profil ───
+    async function poDetecterRelation(currentUserId, profileUserId) {
+        // 1) Vérifier s'il y a un contrat signé entre les deux
+        var contratResult = await supabaseClient
+            .from('contrats')
+            .select('id')
+            .or('and(locataire_id.eq.' + currentUserId + ',proprietaire_id.eq.' + profileUserId + '),and(locataire_id.eq.' + profileUserId + ',proprietaire_id.eq.' + currentUserId + ')')
+            .eq('statut', 'signe')
+            .limit(1);
+
+        if (contratResult.data && contratResult.data.length > 0) {
+            return 'contrat';
+        }
+
+        // 2) Vérifier s'il y a une candidature entre les deux
+        // Cas A : le user connecté a candidaté sur une annonce du profil
+        var candA = await supabaseClient
+            .from('candidatures')
+            .select('id, annonces!inner(proprietaire_id)')
+            .eq('locataire_id', currentUserId)
+            .eq('annonces.proprietaire_id', profileUserId)
+            .in('statut', ['en_attente', 'acceptee'])
+            .limit(1);
+
+        if (candA.data && candA.data.length > 0) {
+            return 'candidature';
+        }
+
+        // Cas B : le profil a candidaté sur une annonce du user connecté
+        var candB = await supabaseClient
+            .from('candidatures')
+            .select('id, annonces!inner(proprietaire_id)')
+            .eq('locataire_id', profileUserId)
+            .eq('annonces.proprietaire_id', currentUserId)
+            .in('statut', ['en_attente', 'acceptee'])
+            .limit(1);
+
+        if (candB.data && candB.data.length > 0) {
+            return 'candidature';
+        }
+
+        return 'none';
     }
 
     // ─── Ouvrir l'overlay ───
@@ -561,6 +659,7 @@
 
         poProfileUserId = userId;
         poProfileData = null;
+        poRelationLevel = 'none';
 
         document.getElementById('poContent').innerHTML = '<div class="po-loading">Chargement du profil...</div>';
         document.body.style.overflow = 'hidden';
@@ -574,6 +673,10 @@
         poIsOpen = true;
 
         try {
+            // Détecter la relation en parallèle du chargement profil
+            if (poCurrentUser) {
+                poRelationLevel = await poDetecterRelation(poCurrentUser.id, userId);
+            }
             await poChargerProfil();
         } catch (e) {
             console.error('Erreur chargement profil overlay:', e);
@@ -618,15 +721,6 @@
             badgeHtml = '<span class="po-badge-documents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Documents fournis</span>';
         }
 
-        // À propos
-        var aboutHtml = '';
-        if (data.description) {
-            aboutHtml = '<div class="po-section"><div class="po-section-title">\u00c0 propos</div><p class="po-about">' + poEscape(data.description) + '</p></div>';
-        }
-
-        // Infos compactes
-        var infoHtml = poBuilInfoCompact(data);
-
         // ─── Construire le HTML ───
         var html = '';
 
@@ -637,7 +731,7 @@
         html += '<div class="po-role-label">' + poEscape(role) + '</div>';
         if (badgeHtml) html += '<div class="po-badge-row">' + badgeHtml + '</div>';
 
-        // Trust pills (Email, Téléphone, Identité)
+        // Trust pills
         var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         html += '<div class="po-trust-pills">';
         html += '<span class="po-trust-pill">' + checkSvg + 'Email</span>';
@@ -654,12 +748,34 @@
         html += '<a href="avis.html?user_id=' + poProfileUserId + '" class="po-btn po-btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</a>';
         html += '</div>';
 
-        // À propos
-        html += aboutHtml;
+        // ─── Section Contact (visible uniquement si contrat signé) ───
+        if (poRelationLevel === 'contrat') {
+            var emailSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>';
+            var phoneSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
 
-        // Informations
-        if (infoHtml) {
-            html += '<div class="po-section"><div class="po-section-title">Informations</div><div class="po-info-tags">' + infoHtml + '</div></div>';
+            html += '<div class="po-section">';
+            html += '<div class="po-section-title">Contact</div>';
+            html += '<div class="po-contact-lines">';
+
+            if (data.email) {
+                html += '<div class="po-contact-line">' + emailSvg + '<span class="po-contact-label">Email</span><span class="po-contact-value"><a href="mailto:' + poEscape(data.email) + '">' + poEscape(data.email) + '</a></span></div>';
+            }
+            if (data.telephone) {
+                html += '<div class="po-contact-line">' + phoneSvg + '<span class="po-contact-label">T\u00e9l\u00e9phone</span><span class="po-contact-value"><a href="tel:' + poEscape(data.telephone) + '">' + poEscape(data.telephone) + '</a></span></div>';
+            }
+
+            html += '</div></div>';
+        }
+
+        // ─── Section Informations en lignes ───
+        var infoLines = poBuilInfoLines(data);
+        if (infoLines) {
+            html += '<div class="po-section"><div class="po-section-title">Informations</div><div class="po-info-lines">' + infoLines + '</div></div>';
+        }
+
+        // À propos
+        if (data.description) {
+            html += '<div class="po-section"><div class="po-section-title">\u00c0 propos</div><p class="po-about">' + poEscape(data.description) + '</p></div>';
         }
 
         // Annonces (remplie après)
@@ -695,20 +811,25 @@
         ]);
     }
 
-    // ─── Infos compactes ───
-    function poBuilInfoCompact(data) {
+    // ─── Infos en lignes lisibles ───
+    function poBuilInfoLines(data) {
         var html = '';
+        var ecoleSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/></svg>';
+        var rythmeSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+        var pinSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+        var entrepriseSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+
         if (data.ecole) {
-            html += '<span class="po-info-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/></svg>' + poEscape(data.ecole) + (data.filiere ? ' \u00b7 ' + poEscape(data.filiere) : '') + '</span>';
+            html += '<div class="po-info-line">' + ecoleSvg + '<span class="po-info-label">\u00c9cole</span><span class="po-info-value">' + poEscape(data.ecole) + (data.filiere ? ' \u2014 ' + poEscape(data.filiere) : '') + '</span></div>';
         }
         if (data.rythme_alternance) {
-            html += '<span class="po-info-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rythme ' + poEscape(data.rythme_alternance) + '</span>';
+            html += '<div class="po-info-line">' + rythmeSvg + '<span class="po-info-label">Rythme</span><span class="po-info-value">' + poEscape(data.rythme_alternance) + '</span></div>';
         }
         if (data.ville_ecole) {
-            html += '<span class="po-info-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>\u00c9cole \u00e0 ' + poEscape(data.ville_ecole) + '</span>';
+            html += '<div class="po-info-line">' + pinSvg + '<span class="po-info-label">Ville \u00e9cole</span><span class="po-info-value">' + poEscape(data.ville_ecole) + '</span></div>';
         }
         if (data.ville_entreprise) {
-            html += '<span class="po-info-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Entreprise \u00e0 ' + poEscape(data.ville_entreprise) + '</span>';
+            html += '<div class="po-info-line">' + entrepriseSvg + '<span class="po-info-label">Entreprise</span><span class="po-info-value">' + poEscape(data.ville_entreprise) + '</span></div>';
         }
         return html;
     }
@@ -784,7 +905,6 @@
                 }
             }
         }
-        // Si aucun avis, on ne montre pas la section rating du tout
     }
 
     // ─── Charger avis ───
