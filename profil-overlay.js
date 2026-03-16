@@ -167,36 +167,38 @@
         .po-actions {
             display: flex;
             gap: 10px;
-            padding: 20px 36px 0;
+            padding: 20px 36px 20px;
         }
         .po-btn {
             flex: 1;
-            padding: 10px 0;
-            border-radius: 10px;
+            padding: 12px 0;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.18s ease;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             font-family: inherit;
             text-align: center;
         }
+        .po-btn svg { flex-shrink: 0; }
         .po-btn-primary {
             background: #e8642a;
             color: #fff;
             border: none;
+            box-shadow: 0 2px 8px rgba(232, 100, 42, 0.25);
         }
-        .po-btn-primary:hover { background: #d4571f; }
+        .po-btn-primary:hover { background: #d4571f; box-shadow: 0 4px 12px rgba(232, 100, 42, 0.35); transform: translateY(-1px); }
         .po-btn-secondary {
             background: #fff;
             color: #1e2d3d;
             border: 1.5px solid #e2e8f0;
         }
-        .po-btn-secondary:hover { border-color: #e8642a; color: #e8642a; }
+        .po-btn-secondary:hover { border-color: #e8642a; color: #e8642a; transform: translateY(-1px); }
 
         /* TRUST PILLS (sous le rôle) */
         .po-trust-pills {
@@ -407,21 +409,29 @@
         .po-empty-title { font-size: 12px; font-weight: 600; color: #1e2d3d; margin-bottom: 1px; }
         .po-empty-text { font-size: 11px; color: #94a3b8; line-height: 1.3; }
 
+        /* CONTENU — flex pour coller signaler en bas */
+        #poContent {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
         /* LOADING */
         .po-loading { text-align: center; padding: 32px 20px; color: #94a3b8; font-size: 13px; }
 
-        /* SIGNALER */
+        /* SIGNALER — toujours en bas de la carte */
         .po-signaler {
             text-align: center;
-            padding: 12px 36px 20px;
+            padding: 14px 36px 20px;
+            margin-top: auto;
         }
         .po-signaler a {
             font-size: 11px;
-            color: #c4c9d0;
+            color: #6b7280;
             text-decoration: none;
             transition: color 0.15s;
         }
-        .po-signaler a:hover { color: #6b7280; }
+        .po-signaler a:hover { color: #374151; }
 
         /* MODALE SIGNALEMENT */
         .po-modal-signal {
