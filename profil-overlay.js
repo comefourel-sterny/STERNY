@@ -985,36 +985,8 @@
         document.getElementById('poContent').innerHTML = html;
 
         // Délégation d'événements — fonctionne même après restauration du cache HTML
-        var contentEl = document.getElementById('poContent');
-        if (!contentEl._poDelegated) {
-            contentEl.addEventListener('click', function (e) {
-                // Bouton Message
-                var btnMsg = e.target.closest('#poBtnMessage');
-                if (btnMsg) {
-                    poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                    poAfficherVueMessages();
-                    return;
-                }
-                // Bouton Avis
-                var btnAvis = e.target.closest('#poBtnAvis');
-                if (btnAvis) {
-                    poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                    poAfficherVueAvis();
-                    return;
-                }
-                // Lien Signaler
-                var sigLink = e.target.closest('#poSignalerLink');
-                if (sigLink) {
-                    e.preventDefault();
-                    document.getElementById('poSignalMsg').style.display = 'none';
-                    document.getElementById('poSignalMotif').value = '';
-                    document.getElementById('poSignalDesc').value = '';
-                    document.getElementById('poModalSignal').classList.add('visible');
-                    return;
-                }
-            });
-            contentEl._poDelegated = true;
-        }
+        // Attacher les listeners aux boutons
+        poAttachProfileListeners();
 
         // Charger données async
         await Promise.all([
@@ -1023,14 +995,45 @@
         ]);
     }
 
+    // ─── Attacher les listeners aux boutons profil ───
+    function poAttachProfileListeners() {
+        var btnMsg = document.getElementById('poBtnMessage');
+        if (btnMsg) {
+            btnMsg.onclick = function () {
+                console.log('[PO] Click Message');
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueMessages();
+            };
+        }
+        var btnAvis = document.getElementById('poBtnAvis');
+        if (btnAvis) {
+            btnAvis.onclick = function () {
+                console.log('[PO] Click Avis');
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueAvis();
+            };
+        }
+        var sigLink = document.getElementById('poSignalerLink');
+        if (sigLink) {
+            sigLink.onclick = function (e) {
+                e.preventDefault();
+                document.getElementById('poSignalMsg').style.display = 'none';
+                document.getElementById('poSignalMotif').value = '';
+                document.getElementById('poSignalDesc').value = '';
+                document.getElementById('poModalSignal').classList.add('visible');
+            };
+        }
+    }
+
     // ─── Retour au profil ───
     function poRetourProfil() {
+        console.log('[PO] Retour profil');
         var panel = document.getElementById('poPanel');
         if (panel) panel.style.overflow = '';
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
-            // Pas besoin de rebrancher les listeners — la délégation sur #poContent gère tout
+            poAttachProfileListeners();
         }
     }
 

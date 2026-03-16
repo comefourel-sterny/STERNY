@@ -15,6 +15,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // Charger le composant profil overlay sur toutes les pages
 (function() {
     var s = document.createElement('script');
-    s.src = 'profil-overlay.js';
+    s.src = 'profil-overlay.js?v=' + Date.now();
     document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(s); });
 })();
