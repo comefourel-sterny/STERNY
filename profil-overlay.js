@@ -984,32 +984,36 @@
 
         document.getElementById('poContent').innerHTML = html;
 
-        // Bouton signaler
-        var sigLink = document.getElementById('poSignalerLink');
-        if (sigLink) {
-            sigLink.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.getElementById('poSignalMsg').style.display = 'none';
-                document.getElementById('poSignalMotif').value = '';
-                document.getElementById('poSignalDesc').value = '';
-                document.getElementById('poModalSignal').classList.add('visible');
+        // Délégation d'événements — fonctionne même après restauration du cache HTML
+        var contentEl = document.getElementById('poContent');
+        if (!contentEl._poDelegated) {
+            contentEl.addEventListener('click', function (e) {
+                // Bouton Message
+                var btnMsg = e.target.closest('#poBtnMessage');
+                if (btnMsg) {
+                    poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                    poAfficherVueMessages();
+                    return;
+                }
+                // Bouton Avis
+                var btnAvis = e.target.closest('#poBtnAvis');
+                if (btnAvis) {
+                    poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                    poAfficherVueAvis();
+                    return;
+                }
+                // Lien Signaler
+                var sigLink = e.target.closest('#poSignalerLink');
+                if (sigLink) {
+                    e.preventDefault();
+                    document.getElementById('poSignalMsg').style.display = 'none';
+                    document.getElementById('poSignalMotif').value = '';
+                    document.getElementById('poSignalDesc').value = '';
+                    document.getElementById('poModalSignal').classList.add('visible');
+                    return;
+                }
             });
-        }
-
-        // Boutons vue message et avis
-        var btnMsg = document.getElementById('poBtnMessage');
-        if (btnMsg) {
-            btnMsg.addEventListener('click', function () {
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueMessages();
-            });
-        }
-        var btnAvis = document.getElementById('poBtnAvis');
-        if (btnAvis) {
-            btnAvis.addEventListener('click', function () {
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueAvis();
-            });
+            contentEl._poDelegated = true;
         }
 
         // Charger données async
@@ -1026,25 +1030,7 @@
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
-            // Rebrancher les event listeners
-            var btnMsg = document.getElementById('poBtnMessage');
-            if (btnMsg) btnMsg.addEventListener('click', function () {
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueMessages();
-            });
-            var btnAvis = document.getElementById('poBtnAvis');
-            if (btnAvis) btnAvis.addEventListener('click', function () {
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueAvis();
-            });
-            var sigLink = document.getElementById('poSignalerLink');
-            if (sigLink) sigLink.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.getElementById('poSignalMsg').style.display = 'none';
-                document.getElementById('poSignalMotif').value = '';
-                document.getElementById('poSignalDesc').value = '';
-                document.getElementById('poModalSignal').classList.add('visible');
-            });
+            // Pas besoin de rebrancher les listeners — la délégation sur #poContent gère tout
         }
     }
 
