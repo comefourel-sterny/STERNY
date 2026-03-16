@@ -167,7 +167,7 @@
         .po-actions {
             display: flex;
             gap: 10px;
-            padding: 20px 36px 0;
+            padding: 20px 36px 16px;
         }
         .po-btn {
             flex: 1;
@@ -773,9 +773,6 @@
         // Annonces (remplie après)
         html += '<div class="po-section" id="poAnnoncesSection" style="display:none;"><div class="po-section-title">Annonces</div><div id="poAnnoncesList"></div></div>';
 
-        // Avis
-        html += '<div class="po-section"><div class="po-section-title">Avis re\u00e7us</div><div class="po-cat-avgs" id="poCatAvgs" style="display:none;"></div><div class="po-avis-list" id="poAvisList"><div class="po-loading" style="padding:12px;">Chargement...</div></div></div>';
-
         // Signaler
         if (poCurrentUser && poProfileUserId !== poCurrentUser.id) {
             html += '<div class="po-signaler"><a href="#" id="poSignalerLink">Signaler cet utilisateur</a></div>';
@@ -798,7 +795,6 @@
         // Charger données async
         await Promise.all([
             poChargerMoyenne(),
-            poChargerAvis(),
             (data.type_user === 'proprietaire' || data.type_user === 'hote') ? poChargerAnnonces() : Promise.resolve()
         ]);
     }
