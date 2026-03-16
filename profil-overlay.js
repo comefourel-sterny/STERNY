@@ -414,6 +414,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100%;
+            position: relative;
+            height: 100%;
         }
 
         /* LOADING */
@@ -458,12 +460,39 @@
             color: #6b7280;
             font-weight: 400;
         }
+        .po-view-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #1e2d3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            overflow: hidden;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+        .po-view-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .po-view-role {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
 
         /* CHAT */
         .po-chat-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: white;
+            z-index: 2;
         }
         .po-chat-messages {
             flex: 1;
@@ -555,7 +584,11 @@
         .po-avis-view-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: white;
+            z-index: 2;
         }
         .po-avis-view-list {
             flex: 1;
@@ -988,6 +1021,8 @@
 
     // ─── Retour au profil ───
     function poRetourProfil() {
+        var panel = document.getElementById('poPanel');
+        if (panel) panel.style.overflow = '';
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
@@ -1013,8 +1048,26 @@
         }
     }
 
+    // ─── Helper: mini avatar pour headers ───
+    function poMiniAvatarHtml() {
+        if (!poProfileData) return '';
+        var roleLabels = { locataire: 'Locataire', proprietaire: 'Propriétaire', hote: 'Hôte' };
+        var role = roleLabels[poProfileData.type_user] || '';
+        var avatarInner;
+        if (poProfileData.photo_profil_url) {
+            avatarInner = '<img src="' + poEscape(poProfileData.photo_profil_url) + '" alt="Photo">';
+        } else {
+            avatarInner = poEscape(poProfileData.prenom[0]) + poEscape(poProfileData.nom[0]);
+        }
+        return '<div class="po-view-avatar">' + avatarInner + '</div>' +
+            '<div><div class="po-view-title">' + poEscape(poProfileData.prenom) + ' ' + poEscape(poProfileData.nom) + '</div>' +
+            '<div class="po-view-role">' + poEscape(role) + '</div></div>';
+    }
+
     // ─── Vue Avis ───
     async function poAfficherVueAvis() {
+        var panel = document.getElementById('poPanel');
+        if (panel) panel.style.overflow = 'hidden';
         var content = document.getElementById('poContent');
         var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
@@ -1022,7 +1075,7 @@
         content.innerHTML = '<div class="po-avis-view-wrapper">' +
             '<div class="po-view-header">' +
                 '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
-                '<div><div class="po-view-title">Avis sur ' + nom + '</div></div>' +
+                poMiniAvatarHtml() +
             '</div>' +
             '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
         '</div>';
@@ -1072,6 +1125,8 @@
 
     // ─── Vue Messages ───
     async function poAfficherVueMessages() {
+        var panel = document.getElementById('poPanel');
+        if (panel) panel.style.overflow = 'hidden';
         var content = document.getElementById('poContent');
         var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
@@ -1080,7 +1135,7 @@
         content.innerHTML = '<div class="po-chat-wrapper">' +
             '<div class="po-view-header">' +
                 '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
-                '<div><div class="po-view-title">' + nom + '</div><div class="po-view-subtitle">Conversation</div></div>' +
+                poMiniAvatarHtml() +
             '</div>' +
             '<div class="po-chat-messages" id="poChatMessages"><div class="po-loading">Chargement...</div></div>' +
             '<div class="po-chat-input-bar">' +
