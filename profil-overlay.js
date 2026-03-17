@@ -1000,8 +1000,10 @@
 
     // ─── Retour au profil ───
     function poRetourProfil() {
-        document.getElementById('poPanel').scrollTop = 0;
-        poChargerProfil();
+        var panel = document.getElementById('poPanel');
+        var wrapper = panel.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
+        if (wrapper) wrapper.remove();
+        panel.scrollTop = 0;
     }
 
     // ─── Fonctions globales (inline onclick dans le HTML généré) ───
@@ -1039,17 +1041,21 @@
 
     // ─── Vue Avis ───
     async function poAfficherVueAvis() {
-        var content = document.getElementById('poContent');
-        var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
+        var panel = document.getElementById('poPanel');
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
 
-        content.innerHTML = '<div class="po-avis-view-wrapper">' +
+        var existing = panel.querySelector('.po-avis-view-wrapper, .po-chat-wrapper');
+        if (existing) existing.remove();
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'po-avis-view-wrapper';
+        wrapper.innerHTML =
             '<div class="po-view-header">' +
                 '<button class="po-back-btn" onclick="window._poRetour()">' + backSvg + '</button>' +
                 poMiniAvatarHtml() +
             '</div>' +
-            '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
-        '</div>';
+            '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>';
+        panel.appendChild(wrapper);
 
         // Charger les avis
         var result = await supabaseClient
@@ -1094,12 +1100,16 @@
 
     // ─── Vue Messages ───
     async function poAfficherVueMessages() {
-        var content = document.getElementById('poContent');
-        var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
+        var panel = document.getElementById('poPanel');
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
         var sendSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
 
-        content.innerHTML = '<div class="po-chat-wrapper">' +
+        var existing = panel.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
+        if (existing) existing.remove();
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'po-chat-wrapper';
+        wrapper.innerHTML =
             '<div class="po-view-header">' +
                 '<button class="po-back-btn" onclick="window._poRetour()">' + backSvg + '</button>' +
                 poMiniAvatarHtml() +
@@ -1108,8 +1118,8 @@
             '<div class="po-chat-input-bar">' +
                 '<input type="text" class="po-chat-input" id="poChatInput" placeholder="\u00c9crire un message..." maxlength="2000">' +
                 '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
-            '</div>' +
-        '</div>';
+            '</div>';
+        panel.appendChild(wrapper);
 
         // Charger les messages
         var currentUserId = poCurrentUser.id;
