@@ -57,10 +57,9 @@
             opacity: 1;
         }
 
-        /* Scrollbar discrète */
-        .profil-overlay-panel::-webkit-scrollbar { width: 4px; }
-        .profil-overlay-panel::-webkit-scrollbar-track { background: transparent; }
-        .profil-overlay-panel::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+        /* Scrollbar cachée */
+        .profil-overlay-panel { scrollbar-width: none; -ms-overflow-style: none; }
+        .profil-overlay-panel::-webkit-scrollbar { display: none; }
 
         /* BOUTON FERMER */
         .po-close {
