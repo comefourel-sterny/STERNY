@@ -699,7 +699,7 @@
     let poProfileData = null;
     let poIsOpen = false;
     let poRelationLevel = 'none'; // 'none' | 'candidature' | 'contrat'
-    let poProfileHtmlCache = ''; // sauvegarde du HTML vue profil pour retour
+    let poProfileHtmlCache = null; // unused, kept for safety
 
     // ─── Fermer ───
     function fermerProfilOverlay() {
@@ -1000,19 +1000,15 @@
 
     // ─── Retour au profil ───
     function poRetourProfil() {
-        var content = document.getElementById('poContent');
-        if (poProfileHtmlCache) {
-            content.innerHTML = poProfileHtmlCache;
-        }
+        document.getElementById('poPanel').scrollTop = 0;
+        poChargerProfil();
     }
 
     // ─── Fonctions globales (inline onclick dans le HTML généré) ───
     window._poVueMessages = function () {
-        poProfileHtmlCache = document.getElementById('poContent').innerHTML;
         poAfficherVueMessages();
     };
     window._poVueAvis = function () {
-        poProfileHtmlCache = document.getElementById('poContent').innerHTML;
         poAfficherVueAvis();
     };
     window._poRetour = function () {
