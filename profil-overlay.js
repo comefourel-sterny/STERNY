@@ -414,8 +414,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100%;
-            position: relative;
             height: 100%;
+            overflow: hidden;
         }
 
         /* LOADING */
@@ -488,11 +488,10 @@
         .po-chat-wrapper {
             display: flex;
             flex-direction: column;
-            position: absolute;
-            inset: 0;
+            flex: 1;
+            min-height: 0;
             border-radius: 20px;
             background: white;
-            z-index: 2;
         }
         .po-chat-messages {
             flex: 1;
@@ -584,11 +583,10 @@
         .po-avis-view-wrapper {
             display: flex;
             flex-direction: column;
-            position: absolute;
-            inset: 0;
+            flex: 1;
+            min-height: 0;
             border-radius: 20px;
             background: white;
-            z-index: 2;
         }
         .po-avis-view-list {
             flex: 1;
@@ -984,10 +982,6 @@
 
         document.getElementById('poContent').innerHTML = html;
 
-        // Délégation d'événements — fonctionne même après restauration du cache HTML
-        // Attacher les listeners aux boutons
-        poAttachProfileListeners();
-
         // Charger données async
         await Promise.all([
             poChargerMoyenne(),
@@ -995,45 +989,46 @@
         ]);
     }
 
-    // ─── Attacher les listeners aux boutons profil ───
-    function poAttachProfileListeners() {
-        var btnMsg = document.getElementById('poBtnMessage');
-        if (btnMsg) {
-            btnMsg.onclick = function () {
-                console.log('[PO] Click Message');
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueMessages();
-            };
+    // ─── Délégation d'événements unique sur le panel ───
+    // Un seul listener attaché UNE FOIS — fonctionne après restauration du cache HTML
+    document.getElementById('poPanel').addEventListener('click', function (e) {
+        // Bouton Message
+        if (e.target.closest('#poBtnMessage')) {
+            e.preventDefault();
+            poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+            poAfficherVueMessages();
+            return;
         }
-        var btnAvis = document.getElementById('poBtnAvis');
-        if (btnAvis) {
-            btnAvis.onclick = function () {
-                console.log('[PO] Click Avis');
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueAvis();
-            };
+        // Bouton Avis
+        if (e.target.closest('#poBtnAvis')) {
+            e.preventDefault();
+            poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+            poAfficherVueAvis();
+            return;
         }
-        var sigLink = document.getElementById('poSignalerLink');
+        // Lien Signaler
+        var sigLink = e.target.closest('#poSignalerLink');
         if (sigLink) {
-            sigLink.onclick = function (e) {
-                e.preventDefault();
-                document.getElementById('poSignalMsg').style.display = 'none';
-                document.getElementById('poSignalMotif').value = '';
-                document.getElementById('poSignalDesc').value = '';
-                document.getElementById('poModalSignal').classList.add('visible');
-            };
+            e.preventDefault();
+            document.getElementById('poSignalMsg').style.display = 'none';
+            document.getElementById('poSignalMotif').value = '';
+            document.getElementById('poSignalDesc').value = '';
+            document.getElementById('poModalSignal').classList.add('visible');
+            return;
         }
-    }
+        // Bouton Retour (avis / messages)
+        if (e.target.closest('#poBackBtn')) {
+            e.preventDefault();
+            poRetourProfil();
+            return;
+        }
+    });
 
     // ─── Retour au profil ───
     function poRetourProfil() {
-        console.log('[PO] Retour profil');
-        var panel = document.getElementById('poPanel');
-        if (panel) panel.style.overflow = '';
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
-            poAttachProfileListeners();
         }
     }
 
@@ -1055,8 +1050,6 @@
 
     // ─── Vue Avis ───
     async function poAfficherVueAvis() {
-        var panel = document.getElementById('poPanel');
-        if (panel) panel.style.overflow = 'hidden';
         var content = document.getElementById('poContent');
         var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
@@ -1068,8 +1061,6 @@
             '</div>' +
             '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
         '</div>';
-
-        document.getElementById('poBackBtn').addEventListener('click', poRetourProfil);
 
         // Charger les avis
         var result = await supabaseClient
@@ -1114,8 +1105,6 @@
 
     // ─── Vue Messages ───
     async function poAfficherVueMessages() {
-        var panel = document.getElementById('poPanel');
-        if (panel) panel.style.overflow = 'hidden';
         var content = document.getElementById('poContent');
         var nom = poProfileData ? poEscape(poProfileData.prenom) : '';
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
@@ -1132,8 +1121,6 @@
                 '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
             '</div>' +
         '</div>';
-
-        document.getElementById('poBackBtn').addEventListener('click', poRetourProfil);
 
         // Charger les messages
         var currentUserId = poCurrentUser.id;
