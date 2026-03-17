@@ -1005,8 +1005,10 @@
         var btnMsg = document.getElementById('poBtnMessage');
         var btnAvis = document.getElementById('poBtnAvis');
         var sigLink = document.getElementById('poSignalerLink');
+        console.log('[PO] poAttachProfileListeners — btnMsg:', !!btnMsg, '| btnAvis:', !!btnAvis);
         if (btnMsg) {
             btnMsg.onclick = function (e) {
+                console.log('[PO] btnMsg clicked');
                 e.stopPropagation();
                 poProfileHtmlCache = document.getElementById('poContent').innerHTML;
                 poAfficherVueMessages();
@@ -1033,6 +1035,7 @@
 
     // ─── Retour au profil ───
     function poRetourProfil() {
+        console.log('[PO] poRetourProfil — cache:', !!poProfileHtmlCache);
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
