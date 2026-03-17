@@ -798,31 +798,40 @@
             return 'contrat';
         }
 
-        // 2) Vérifier s'il y a une candidature entre les deux
-        // Cas A : le user connecté a candidaté sur une annonce du profil
-        var candA = await supabaseClient
-            .from('candidatures')
-            .select('id, annonces!inner(proprietaire_id)')
-            .eq('locataire_id', currentUserId)
-            .eq('annonces.proprietaire_id', profileUserId)
-            .in('statut', ['en_attente', 'acceptee'])
-            .limit(1);
+        // 2) Cas A : le user connecté a candidaté sur une annonce du profil
+        var annoncesProfile = await supabaseClient
+            .from('annonces')
+            .select('id')
+            .eq('user_id', profileUserId);
 
-        if (candA.data && candA.data.length > 0) {
-            return 'candidature';
+        if (annoncesProfile.data && annoncesProfile.data.length > 0) {
+            var idsA = annoncesProfile.data.map(function (a) { return a.id; });
+            var candA = await supabaseClient
+                .from('candidatures')
+                .select('id')
+                .eq('locataire_id', currentUserId)
+                .in('annonce_id', idsA)
+                .in('statut', ['en_attente', 'acceptee'])
+                .limit(1);
+            if (candA.data && candA.data.length > 0) return 'candidature';
         }
 
         // Cas B : le profil a candidaté sur une annonce du user connecté
-        var candB = await supabaseClient
-            .from('candidatures')
-            .select('id, annonces!inner(proprietaire_id)')
-            .eq('locataire_id', profileUserId)
-            .eq('annonces.proprietaire_id', currentUserId)
-            .in('statut', ['en_attente', 'acceptee'])
-            .limit(1);
+        var annoncesUser = await supabaseClient
+            .from('annonces')
+            .select('id')
+            .eq('user_id', currentUserId);
 
-        if (candB.data && candB.data.length > 0) {
-            return 'candidature';
+        if (annoncesUser.data && annoncesUser.data.length > 0) {
+            var idsB = annoncesUser.data.map(function (a) { return a.id; });
+            var candB = await supabaseClient
+                .from('candidatures')
+                .select('id')
+                .eq('locataire_id', profileUserId)
+                .in('annonce_id', idsB)
+                .in('statut', ['en_attente', 'acceptee'])
+                .limit(1);
+            if (candB.data && candB.data.length > 0) return 'candidature';
         }
 
         return 'none';
@@ -1306,9 +1315,9 @@
     async function poChargerAnnonces() {
         var result = await supabaseClient
             .from('annonces')
-            .select('id, titre, ville, type_logement, surface, prix_semaine, photos')
-            .eq('proprietaire_id', poProfileUserId)
-            .eq('statut', 'active');
+            .select('id, titre, ville, type_logement, surface, prix, photos')
+            .eq('user_id', poProfileUserId)
+            .eq('disponible', true);
 
         if (!result.data || result.data.length === 0) return;
 
@@ -1322,7 +1331,7 @@
                 ? '<img class="po-annonce-photo" src="' + poEscape(photo) + '" alt="' + poEscape(a.titre) + '" loading="lazy">'
                 : '<div class="po-annonce-photo"></div>';
 
-            html += '<a href="logement.html?id=' + a.id + '" class="po-annonce">' + photoTag + '<div class="po-annonce-info"><div class="po-annonce-titre">' + poEscape(a.titre) + '</div><div class="po-annonce-detail">' + poEscape(a.ville || '') + (a.type_logement ? ' \u00b7 ' + poEscape(a.type_logement) : '') + (a.surface ? ' \u00b7 ' + a.surface + ' m\u00b2' : '') + '</div><div class="po-annonce-prix">' + a.prix_semaine + '\u20ac/sem</div></div></a>';
+            html += '<a href="logement.html?id=' + a.id + '" class="po-annonce">' + photoTag + '<div class="po-annonce-info"><div class="po-annonce-titre">' + poEscape(a.titre) + '</div><div class="po-annonce-detail">' + poEscape(a.ville || '') + (a.type_logement ? ' \u00b7 ' + poEscape(a.type_logement) : '') + (a.surface ? ' \u00b7 ' + a.surface + ' m\u00b2' : '') + '</div><div class="po-annonce-prix">' + a.prix + '\u20ac/sem</div></div></a>';
         }
         container.innerHTML = html;
         document.getElementById('poAnnoncesSection').style.display = 'block';
@@ -1332,7 +1341,7 @@
     async function poChargerMoyenne() {
         var result = await supabaseClient
             .from('avis')
-            .select('note, note_communication, note_categorie_2, note_categorie_3')
+            .select('note')
             .eq('profil_evalue_id', poProfileUserId);
 
         var ratingEl = document.getElementById('poRating');
