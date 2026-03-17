@@ -414,8 +414,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100%;
-            height: 100%;
-            overflow: hidden;
         }
 
         /* LOADING */
@@ -486,12 +484,13 @@
 
         /* CHAT */
         .po-chat-wrapper {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 0;
             border-radius: 20px;
             background: white;
+            z-index: 1;
         }
         .po-chat-messages {
             flex: 1;
@@ -581,12 +580,13 @@
 
         /* AVIS VIEW */
         .po-avis-view-wrapper {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 0;
             border-radius: 20px;
             background: white;
+            z-index: 1;
         }
         .po-avis-view-list {
             flex: 1;
@@ -987,6 +987,8 @@
             poChargerMoyenne(),
             (data.type_user === 'proprietaire' || data.type_user === 'hote') ? poChargerAnnonces() : Promise.resolve()
         ]);
+
+        poAttachProfileListeners();
     }
 
     // ─── Délégation d'événements unique sur le panel ───
@@ -1024,11 +1026,43 @@
         }
     });
 
+    // ─── Attacher les listeners de la vue profil ───
+    function poAttachProfileListeners() {
+        var btnMsg = document.getElementById('poBtnMessage');
+        var btnAvis = document.getElementById('poBtnAvis');
+        var sigLink = document.getElementById('poSignalerLink');
+        if (btnMsg) {
+            btnMsg.onclick = function (e) {
+                e.stopPropagation();
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueMessages();
+            };
+        }
+        if (btnAvis) {
+            btnAvis.onclick = function (e) {
+                e.stopPropagation();
+                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+                poAfficherVueAvis();
+            };
+        }
+        if (sigLink) {
+            sigLink.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                document.getElementById('poSignalMsg').style.display = 'none';
+                document.getElementById('poSignalMotif').value = '';
+                document.getElementById('poSignalDesc').value = '';
+                document.getElementById('poModalSignal').classList.add('visible');
+            };
+        }
+    }
+
     // ─── Retour au profil ───
     function poRetourProfil() {
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
+            poAttachProfileListeners();
         }
     }
 
@@ -1061,6 +1095,8 @@
             '</div>' +
             '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
         '</div>';
+
+        document.getElementById('poBackBtn').onclick = function (e) { e.stopPropagation(); poRetourProfil(); };
 
         // Charger les avis
         var result = await supabaseClient
@@ -1121,6 +1157,8 @@
                 '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
             '</div>' +
         '</div>';
+
+        document.getElementById('poBackBtn').onclick = function (e) { e.stopPropagation(); poRetourProfil(); };
 
         // Charger les messages
         var currentUserId = poCurrentUser.id;
