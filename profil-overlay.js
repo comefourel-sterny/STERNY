@@ -1000,41 +1000,6 @@
         poAttachProfileListeners();
     }
 
-    // ─── Délégation d'événements unique sur le panel ───
-    // Un seul listener attaché UNE FOIS — fonctionne après restauration du cache HTML
-    document.getElementById('poPanel').addEventListener('click', function (e) {
-        // Bouton Message
-        if (e.target.closest('#poBtnMessage')) {
-            e.preventDefault();
-            poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-            poAfficherVueMessages();
-            return;
-        }
-        // Bouton Avis
-        if (e.target.closest('#poBtnAvis')) {
-            e.preventDefault();
-            poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-            poAfficherVueAvis();
-            return;
-        }
-        // Lien Signaler
-        var sigLink = e.target.closest('#poSignalerLink');
-        if (sigLink) {
-            e.preventDefault();
-            document.getElementById('poSignalMsg').style.display = 'none';
-            document.getElementById('poSignalMotif').value = '';
-            document.getElementById('poSignalDesc').value = '';
-            document.getElementById('poModalSignal').classList.add('visible');
-            return;
-        }
-        // Bouton Retour (avis / messages)
-        if (e.target.closest('#poBackBtn')) {
-            e.preventDefault();
-            poRetourProfil();
-            return;
-        }
-    });
-
     // ─── Attacher les listeners de la vue profil ───
     function poAttachProfileListeners() {
         var btnMsg = document.getElementById('poBtnMessage');
