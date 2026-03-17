@@ -699,13 +699,16 @@
     let poProfileData = null;
     let poIsOpen = false;
     let poRelationLevel = 'none'; // 'none' | 'candidature' | 'contrat'
-    let poProfileHtmlCache = null; // unused, kept for safety
 
     // ─── Fermer ───
     function fermerProfilOverlay() {
         if (!poIsOpen) return;
         poIsOpen = false;
-        document.getElementById('poPanel').classList.remove('open');
+        var panel = document.getElementById('poPanel');
+        var wrapper = panel.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
+        if (wrapper) wrapper.remove();
+        panel.scrollTop = 0;
+        panel.classList.remove('open');
         document.getElementById('poBackdrop').classList.remove('visible');
         document.body.style.overflow = '';
     }
@@ -871,6 +874,12 @@
         poProfileUserId = userId;
         poProfileData = null;
         poRelationLevel = 'none';
+
+        // Nettoyer tout wrapper de vue précédent
+        var panelEl = document.getElementById('poPanel');
+        var stale = panelEl.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
+        if (stale) stale.remove();
+        panelEl.scrollTop = 0;
 
         document.getElementById('poContent').innerHTML = '<div class="po-loading">Chargement du profil...</div>';
         document.body.style.overflow = 'hidden';
@@ -1046,6 +1055,7 @@
 
         var existing = panel.querySelector('.po-avis-view-wrapper, .po-chat-wrapper');
         if (existing) existing.remove();
+        panel.scrollTop = 0;
 
         var wrapper = document.createElement('div');
         wrapper.className = 'po-avis-view-wrapper';
@@ -1106,6 +1116,7 @@
 
         var existing = panel.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
         if (existing) existing.remove();
+        panel.scrollTop = 0;
 
         var wrapper = document.createElement('div');
         wrapper.className = 'po-chat-wrapper';
