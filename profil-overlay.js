@@ -947,8 +947,8 @@
 
         // Action buttons
         html += '<div class="po-actions">';
-        html += '<button class="po-btn po-btn-primary" id="poBtnMessage"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message</button>';
-        html += '<button class="po-btn po-btn-secondary" id="poBtnAvis"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</button>';
+        html += '<button class="po-btn po-btn-primary" onclick="window._poVueMessages()" id="poBtnMessage"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message</button>';
+        html += '<button class="po-btn po-btn-secondary" onclick="window._poVueAvis()" id="poBtnAvis"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Voir les avis</button>';
         html += '</div>';
 
         // ─── Section Contact (visible uniquement si contrat signé) ───
@@ -986,7 +986,7 @@
 
         // Signaler
         if (poCurrentUser && poProfileUserId !== poCurrentUser.id) {
-            html += '<div class="po-signaler"><a href="#" id="poSignalerLink">Signaler cet utilisateur</a></div>';
+            html += '<div class="po-signaler"><a href="#" onclick="window._poSignaler();return false;">Signaler cet utilisateur</a></div>';
         }
 
         document.getElementById('poContent').innerHTML = html;
@@ -996,52 +996,34 @@
             poChargerMoyenne(),
             (data.type_user === 'proprietaire' || data.type_user === 'hote') ? poChargerAnnonces() : Promise.resolve()
         ]);
-
-        poAttachProfileListeners();
-    }
-
-    // ─── Attacher les listeners de la vue profil ───
-    function poAttachProfileListeners() {
-        var btnMsg = document.getElementById('poBtnMessage');
-        var btnAvis = document.getElementById('poBtnAvis');
-        var sigLink = document.getElementById('poSignalerLink');
-        console.log('[PO] poAttachProfileListeners — btnMsg:', !!btnMsg, '| btnAvis:', !!btnAvis);
-        if (btnMsg) {
-            btnMsg.onclick = function (e) {
-                console.log('[PO] btnMsg clicked');
-                e.stopPropagation();
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueMessages();
-            };
-        }
-        if (btnAvis) {
-            btnAvis.onclick = function (e) {
-                e.stopPropagation();
-                poProfileHtmlCache = document.getElementById('poContent').innerHTML;
-                poAfficherVueAvis();
-            };
-        }
-        if (sigLink) {
-            sigLink.onclick = function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                document.getElementById('poSignalMsg').style.display = 'none';
-                document.getElementById('poSignalMotif').value = '';
-                document.getElementById('poSignalDesc').value = '';
-                document.getElementById('poModalSignal').classList.add('visible');
-            };
-        }
     }
 
     // ─── Retour au profil ───
     function poRetourProfil() {
-        console.log('[PO] poRetourProfil — cache:', !!poProfileHtmlCache);
         var content = document.getElementById('poContent');
         if (poProfileHtmlCache) {
             content.innerHTML = poProfileHtmlCache;
-            poAttachProfileListeners();
         }
     }
+
+    // ─── Fonctions globales (inline onclick dans le HTML généré) ───
+    window._poVueMessages = function () {
+        poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+        poAfficherVueMessages();
+    };
+    window._poVueAvis = function () {
+        poProfileHtmlCache = document.getElementById('poContent').innerHTML;
+        poAfficherVueAvis();
+    };
+    window._poRetour = function () {
+        poRetourProfil();
+    };
+    window._poSignaler = function () {
+        document.getElementById('poSignalMsg').style.display = 'none';
+        document.getElementById('poSignalMotif').value = '';
+        document.getElementById('poSignalDesc').value = '';
+        document.getElementById('poModalSignal').classList.add('visible');
+    };
 
     // ─── Helper: mini avatar pour headers ───
     function poMiniAvatarHtml() {
@@ -1067,13 +1049,11 @@
 
         content.innerHTML = '<div class="po-avis-view-wrapper">' +
             '<div class="po-view-header">' +
-                '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
+                '<button class="po-back-btn" onclick="window._poRetour()">' + backSvg + '</button>' +
                 poMiniAvatarHtml() +
             '</div>' +
             '<div class="po-avis-view-list" id="poAvisViewList"><div class="po-loading">Chargement des avis...</div></div>' +
         '</div>';
-
-        document.getElementById('poBackBtn').onclick = function (e) { e.stopPropagation(); poRetourProfil(); };
 
         // Charger les avis
         var result = await supabaseClient
@@ -1125,7 +1105,7 @@
 
         content.innerHTML = '<div class="po-chat-wrapper">' +
             '<div class="po-view-header">' +
-                '<button class="po-back-btn" id="poBackBtn">' + backSvg + '</button>' +
+                '<button class="po-back-btn" onclick="window._poRetour()">' + backSvg + '</button>' +
                 poMiniAvatarHtml() +
             '</div>' +
             '<div class="po-chat-messages" id="poChatMessages"><div class="po-loading">Chargement...</div></div>' +
@@ -1134,8 +1114,6 @@
                 '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
             '</div>' +
         '</div>';
-
-        document.getElementById('poBackBtn').onclick = function (e) { e.stopPropagation(); poRetourProfil(); };
 
         // Charger les messages
         var currentUserId = poCurrentUser.id;
