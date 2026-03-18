@@ -128,30 +128,44 @@ select option:disabled {
 /* AUTOCOMPLÉTION VILLE */
 .ville-suggestions {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 20px);
     left: 0;
     right: 0;
     background: white;
-    border: 2px solid var(--gray-200);
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    max-height: 200px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    max-height: 220px;
     overflow-y: auto;
     z-index: 1050;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    animation: modalIn 0.15s ease;
 }
 
+.ville-suggestions::-webkit-scrollbar { width: 5px; }
+.ville-suggestions::-webkit-scrollbar-track { background: transparent; }
+.ville-suggestions::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+
 .ville-suggestion-item {
-    padding: 10px 16px;
+    padding: 11px 16px;
     cursor: pointer;
     font-size: 14px;
-    color: #374151;
-    transition: background 0.2s;
+    font-weight: 500;
+    color: #1E293B;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .ville-suggestion-item:hover {
-    background: #FFF4ED;
+    background: #FDF0EB;
     color: #E8622A;
+}
+
+.ville-suggestion-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.ville-suggestion-item:last-child {
+    border-radius: 0 0 12px 12px;
 }
 
 .ville-message {
