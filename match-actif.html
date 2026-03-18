@@ -9,7 +9,7 @@
     <link rel="icon" href="favicon-dark.ico?v=2" sizes="any" media="(prefers-color-scheme: dark)">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
-    <title>Votre logement actif — STERNY</title>
+    <title>Votre logement actif &mdash; STERNY</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,543 +18,697 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html { background: #E8622A; }
         body {
-            background: var(--gray-50);
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F4F5F7;
+            min-height: 100vh;
+            color: #1E293B;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* SUCCESS HERO */
-        .success-hero {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .success-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: success-bounce 1s ease-out;
-        }
-
-        @keyframes success-bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .success-hero h1 {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-
-        .success-hero p {
-            font-size: 18px;
-            opacity: 0.95;
-        }
-
-        /* MAIN CARD */
-        .match-card {
-            max-width: 1000px;
-            margin: -40px auto 40px;
+        /* NAVIGATION */
+        nav {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid rgba(232, 98, 42, 0.12);
         }
-
-        /* STATUS BAR */
-        .status-bar {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 20px 40px;
+        nav .container {
+            max-width: none;
+            margin: 0;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 85px;
         }
-
-        .status-label {
-            font-size: 14px;
-            font-weight: 600;
-            opacity: 0.9;
-        }
-
-        .status-value {
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        /* CONTENT */
-        .content {
-            padding: 40px;
-        }
-
-        /* GRID 2 COLONNES */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        /* SECTION GAUCHE */
-        .main-info {
+        .logo {
+            text-decoration: none;
             display: flex;
-            flex-direction: column;
-            gap: 25px;
+            align-items: center;
+            padding: 0;
         }
-
-        .info-card {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
+        .logo img { height: 55px; width: auto; }
+        nav ul {
+            display: flex;
+            gap: 8px;
+            list-style: none;
         }
+        nav a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        nav a:hover {
+            color: #E8622A;
+            background: rgba(232, 98, 42, 0.06);
+        }
+        nav .logo:hover { background: none; }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .menu-overlay { display: none; }
 
-        .info-card-title {
-            font-size: 18px;
+        /* HERO SECTION */
+        .match-hero {
+            width: 100%;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 50%, #1E293B 100%);
+            padding: 48px 24px 56px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232, 98, 42, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .match-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 98, 42, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6EE7B7;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge svg { width: 14px; height: 14px; }
+        .match-hero h1 {
+            font-size: 32px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 15px;
+            color: white;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+        .match-hero p {
+            font-size: 15px;
+            color: #94A3B8;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* STATUS PILLS */
+        .status-pills {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+        .status-pill-label {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-pill-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* CONTAINER */
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px 20px;
+        }
+
+        /* SECTIONS */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 14px;
+            border: 1px solid #E8EAF0;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            overflow: visible;
+        }
+        .section-header { margin-bottom: 20px; }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 4px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
-        .info-card-icon {
-            font-size: 24px;
-        }
-
-        .detail-row {
+        .section-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #EEF2F7;
             display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-icon svg {
+            width: 15px;
+            height: 15px;
+            stroke: #475569;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .section-icon.orange { background: #FDF0EB; }
+        .section-icon.orange svg { stroke: #E8622A; }
+        .section-icon.navy { background: #EEF1F8; }
+        .section-icon.navy svg { stroke: #1E293B; }
+        .section-icon.green { background: #ECFDF5; }
+        .section-icon.green svg { stroke: #059669; }
+        .section-icon.blue { background: #EFF6FF; }
+        .section-icon.blue svg { stroke: #2563EB; }
+        .section-icon.red { background: #FEF2F2; }
+        .section-icon.red svg { stroke: #DC2626; }
+        .section-description {
+            font-size: 14px;
+            color: #94A3B8;
+            margin-left: 40px;
         }
 
-        .detail-row:last-child {
-            border-bottom: none;
+        /* GRID INFO (logement details) */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
         .detail-label {
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 12px;
             font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
         .detail-value {
-            font-size: 14px;
-            color: #1f2937;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
         }
 
-        .contact-card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+        /* CONTACT CARD */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
-
         .contact-avatar {
-            width: 80px;
-            height: 80px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background: #1E293B;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 17px;
             font-weight: 700;
             color: white;
-            margin: 0 auto 15px;
+            flex-shrink: 0;
+            overflow: hidden;
             transition: box-shadow 0.2s;
         }
-
+        .contact-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .contact-info-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .contact-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .contact-role {
+            font-size: 13px;
+            color: #64748B;
+            margin-top: 2px;
+        }
         .contact-profile-link {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 16px;
             text-decoration: none;
             color: inherit;
             cursor: pointer;
+            flex: 1;
         }
         .contact-profile-link:hover .contact-name,
         .contact-profile-link:hover .contact-role { color: #E8622A; }
         .contact-profile-link:hover .contact-avatar { box-shadow: 0 0 0 2px #E8622A; }
-
-        .contact-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 5px;
-        }
-
-        .contact-role {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 15px;
-        }
-
-        .contact-info {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 15px;
-            line-height: 1.8;
-        }
-
         .btn-contact {
-            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: #E8622A;
             color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             border: none;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
             transition: all 0.3s;
+            font-family: 'DM Sans', sans-serif;
+            flex-shrink: 0;
         }
-
         .btn-contact:hover {
+            background: #d4571f;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+        }
+        .btn-contact svg {
+            width: 16px;
+            height: 16px;
         }
 
-        /* SIDEBAR DROITE */
-        .sidebar {
+        /* COUNTDOWN */
+        .countdown-row {
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 20px;
+        }
+        .countdown-number {
+            font-size: 40px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #E8622A, #F59E0B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .countdown-info {
+            flex: 1;
+        }
+        .countdown-label-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .countdown-sub {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-top: 2px;
         }
 
         /* DOCUMENTS */
-        .documents-section {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
-        }
-
-        .documents-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .document-item {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: all 0.3s;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
             cursor: pointer;
         }
-
+        .document-item:last-child { margin-bottom: 0; }
         .document-item:hover {
             border-color: #E8622A;
-            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
         }
-
         .document-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .document-icon {
-            font-size: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #F4F5F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-
+        .document-icon svg {
+            width: 18px;
+            height: 18px;
+        }
         .document-name {
             font-size: 14px;
             font-weight: 600;
-            color: #374151;
+            color: #1E293B;
         }
-
         .document-action {
             color: #E8622A;
-            font-size: 18px;
+            display: flex;
+            align-items: center;
         }
 
-        /* ACTIONS RAPIDES */
-        .quick-actions {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 25px;
+        /* ACTION BUTTONS */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
-
-        .quick-actions-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 15px;
-        }
-
         .action-btn {
-            width: 100%;
-            background: white;
-            color: #374151;
-            border: 2px solid #e5e7eb;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            text-align: left;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .action-btn:hover {
-            border-color: #E8622A;
-            color: #E8622A;
-        }
-
-        .action-icon {
-            font-size: 18px;
-        }
-
-        /* ALERT WARNING */
-        .alert-warning {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
-            display: flex;
-            gap: 15px;
-            align-items: start;
-        }
-
-        .alert-icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-
-        .alert-content {
-            flex: 1;
-        }
-
-        .alert-title {
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 5px;
-            font-size: 15px;
-        }
-
-        .alert-text {
-            color: #92400e;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* COUNTDOWN */
-        .countdown-box {
             background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .countdown-label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        .countdown-value {
-            font-size: 32px;
-            font-weight: 800;
-            background: #E8622A;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .countdown-unit {
-            font-size: 14px;
-            color: #9ca3af;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        /* BOUTON RESILIER (rouge) */
-        .action-btn.action-btn-danger {
-            color: #dc2626;
-            border-color: #fecaca;
-            background: #fef2f2;
-        }
-        .action-btn.action-btn-danger:hover {
-            border-color: #dc2626;
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        /* MODAL RÉSILIATION */
-        .modal-resiliation-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-resiliation-overlay.active {
-            display: flex;
-        }
-        .modal-resiliation {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-        }
-        .modal-resiliation h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #dc2626;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .modal-resiliation p {
-            font-size: 14px;
-            color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .modal-resiliation label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-        .modal-resiliation select,
-        .modal-resiliation textarea {
-            width: 100%;
-            padding: 10px 14px;
+            color: #1E293B;
             border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
+            padding: 12px 20px;
+            height: 48px;
+            border-radius: 12px;
             font-size: 14px;
-            margin-bottom: 16px;
-            resize: vertical;
-            transition: border-color 0.2s;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            text-decoration: none;
+            font-family: 'DM Sans', sans-serif;
             box-sizing: border-box;
         }
-        .modal-resiliation select:focus,
-        .modal-resiliation textarea:focus {
-            outline: none;
-            border-color: #dc2626;
+        .action-btn:hover {
+            border-color: #E8622A;
+            color: #1E293B;
         }
-        .modal-resiliation-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 8px;
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
         }
-        .btn-annuler-resiliation {
-            flex: 1;
-            padding: 12px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
+        /* ZONE DANGEREUSE */
+        .danger-zone {
             background: white;
-            color: #374151;
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 80px;
+            border: 1.5px solid #FECACA;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+        }
+        .danger-zone-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #FF6B6B;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+        .danger-zone-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            background: white;
+            color: #FF6B6B;
+            border: 1.5px solid #FF6B6B;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
         }
-        .btn-annuler-resiliation:hover {
-            border-color: #9ca3af;
+        .danger-zone-btn svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
         }
-        .btn-confirmer-resiliation {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #dc2626;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
+        .danger-zone-btn:hover {
+            background: #FFF0F0;
+            border-color: #FF6B6B;
+            transform: translateY(-1px);
         }
-        .btn-confirmer-resiliation:hover {
-            background: #b91c1c;
-        }
-        .btn-confirmer-resiliation:disabled {
-            background: #d1d5db;
-            cursor: not-allowed;
-        }
-        .modal-resiliation .info-box {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 8px;
-            padding: 12px 14px;
-            font-size: 13px;
-            color: #92400e;
+        .danger-zone-sub {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 10px;
+            text-align: center;
             line-height: 1.5;
-            margin-bottom: 20px;
         }
-
-        /* BOUTON RESTITUTION CAUTION (vert) */
         .action-btn.action-btn-caution {
             color: #059669;
             border-color: #a7f3d0;
             background: #ecfdf5;
-            display: none; /* Visible seulement pour propriétaire */
+            display: none;
         }
         .action-btn.action-btn-caution:hover {
             border-color: #059669;
             background: #d1fae5;
             color: #047857;
         }
+        .action-btn.full-width {
+            grid-column: 1 / -1;
+        }
 
-        /* MODAL RESTITUTION CAUTION */
-        .modal-caution-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
+        /* ALERT */
+        .alert-section {
+            background: #FFFBEB;
+            border: 1.5px solid #FCD34D;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .alert-icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #FEF3C7;
+            display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
-        .modal-caution-overlay.active {
+        .alert-icon-wrap svg {
+            width: 18px;
+            height: 18px;
+        }
+        .alert-content { flex: 1; }
+        .alert-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .alert-text {
+            color: #92400e;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* MODAL STANDARD STERNY */
+        .modal-resiliation-overlay,
+        .modal-caution-overlay,
+        .modal-litige-overlay,
+        .modal-quittances-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-resiliation-overlay.active,
+        .modal-caution-overlay.active,
+        .modal-litige-overlay.active,
+        .modal-quittances-overlay.active {
             display: flex;
         }
+
+        /* MODAL RÉSILIATION */
+        .modal-resiliation {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 480px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.25s ease;
+        }
+        .modal-resiliation-header {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E8EAF0;
+        }
+        .modal-resiliation h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-resiliation h3 svg {
+            flex-shrink: 0;
+        }
+        .modal-resiliation .modal-subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+        .modal-resiliation label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 6px;
+        }
+        .modal-resiliation .custom-select {
+            margin-bottom: 12px;
+        }
+        .modal-resiliation textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 12px;
+            resize: vertical;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            background: #F4F5F7;
+            color: #1E293B;
+            outline: none;
+        }
+        .modal-resiliation textarea:focus {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.08);
+            background: white;
+            outline: none;
+        }
+        .modal-resiliation .custom-select.open .custom-select-trigger {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.08);
+        }
+        .modal-resiliation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-confirmer-resiliation {
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
+            border: none;
+            background: #1E293B;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
+        }
+        .btn-confirmer-resiliation:hover { background: #FF6B6B; }
+        .btn-annuler-resiliation {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: 1.5px solid #E8EAF0;
+            background: white;
+            color: #1E293B;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
+        }
+        .btn-annuler-resiliation:hover { border-color: #9CA3AF; color: #374151; }
+        .btn-confirmer-resiliation:disabled { background: #E8EAF0; cursor: not-allowed; color: #9CA3AF; }
+        .modal-resiliation .info-box {
+            background: #FFF0F0;
+            border: none;
+            border-left: 3px solid #FF6B6B;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        /* MODAL RESTITUTION CAUTION */
         .modal-caution {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 32px;
             max-width: 520px;
-            width: 90%;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.25s ease;
         }
         .modal-caution h3 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #059669;
             margin-bottom: 12px;
@@ -572,30 +726,34 @@
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #374151;
+            color: #1E293B;
             margin-bottom: 6px;
         }
         .modal-caution input,
         .modal-caution textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 11px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             margin-bottom: 16px;
-            transition: border-color 0.2s;
+            transition: all 0.3s;
             box-sizing: border-box;
+            background: #F4F5F7;
+            color: #1E293B;
+            outline: none;
         }
         .modal-caution input:focus,
         .modal-caution textarea:focus {
-            outline: none;
-            border-color: #059669;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
         }
         .caution-recap {
             background: #f0fdf4;
             border: 1px solid #a7f3d0;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 16px;
             margin-bottom: 20px;
         }
@@ -615,196 +773,232 @@
         }
         .modal-caution-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-top: 8px;
         }
         .btn-annuler-caution {
-            flex: 1;
-            padding: 12px;
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
             background: white;
-            color: #374151;
+            color: #1E293B;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
         }
-        .btn-annuler-caution:hover { border-color: #9ca3af; }
+        .btn-annuler-caution:hover { border-color: #9CA3AF; color: #374151; }
         .btn-confirmer-caution {
             flex: 1;
             padding: 12px;
+            border-radius: 12px;
             border: none;
-            border-radius: 8px;
             background: #059669;
             color: white;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
         .btn-confirmer-caution:hover { background: #047857; }
         .btn-confirmer-caution:disabled { background: #d1d5db; cursor: not-allowed; }
 
         /* MODAL LITIGE */
-        .modal-litige-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-litige-overlay.active {
-            display: flex;
-        }
         .modal-litige {
             background: white;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 520px;
-            width: 90%;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 480px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             max-height: 90vh;
             overflow-y: auto;
+            animation: modalIn 0.25s ease;
         }
         .modal-litige h3 {
             font-size: 20px;
             font-weight: 700;
             color: #1E293B;
-            margin-bottom: 8px;
+            margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .modal-litige .subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            margin-top: 4px;
         }
         .modal-litige label {
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
+            color: #1E293B;
+            margin-bottom: 8px;
         }
-        .modal-litige select,
+        /* CUSTOM SELECT */
+        .custom-select {
+            position: relative;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        .custom-select-trigger {
+            width: 100%;
+            height: 48px;
+            padding: 12px 16px;
+            padding-right: 40px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            background: #F4F5F7;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: #94A3B8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        .custom-select-trigger.has-value {
+            color: #1E293B;
+        }
+        .custom-select-trigger:hover {
+            border-color: #CBD5E1;
+        }
+        .custom-select.open .custom-select-trigger {
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
+        }
+        .custom-select-chevron {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.2s ease;
+            pointer-events: none;
+        }
+        .custom-select.open .custom-select-chevron {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        .custom-select-options {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            z-index: 10;
+            max-height: 220px;
+            overflow-y: auto;
+            animation: modalIn 0.15s ease;
+        }
+        .custom-select-options::-webkit-scrollbar { width: 5px; }
+        .custom-select-options::-webkit-scrollbar-track { background: transparent; }
+        .custom-select-options::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+        .custom-select.open .custom-select-options {
+            display: block;
+        }
+        .custom-select-option {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1E293B;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .custom-select-option:hover {
+            background: #FDF0EB;
+            color: #E8622A;
+        }
+        .custom-select-option.selected {
+            background: #FDF0EB;
+            color: #E8622A;
+            font-weight: 600;
+        }
+
         .modal-litige textarea {
             width: 100%;
-            padding: 10px 14px;
+            padding: 14px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             margin-bottom: 16px;
             resize: vertical;
-            transition: border-color 0.2s;
+            transition: all 0.3s;
             box-sizing: border-box;
-        }
-        .modal-litige select:focus,
-        .modal-litige textarea:focus {
+            background: #F4F5F7;
+            color: #1E293B;
             outline: none;
+        }
+        .modal-litige textarea:focus {
             border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            background: white;
         }
         .modal-litige-actions {
             display: flex;
-            gap: 12px;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 8px;
         }
-        .btn-annuler-litige {
-            flex: 1;
-            padding: 12px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 8px;
-            background: white;
-            color: #374151;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
-        }
-        .btn-annuler-litige:hover {
-            border-color: #9ca3af;
-        }
         .btn-envoyer-litige {
-            flex: 1;
-            padding: 12px;
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
             border: none;
-            border-radius: 8px;
-            background: #E8622A;
+            background: #1E293B;
             color: white;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
-        .btn-envoyer-litige:hover {
-            background: #d4571f;
+        .btn-envoyer-litige:hover { background: #334155; }
+        .btn-envoyer-litige:disabled { background: #E8EAF0; cursor: not-allowed; color: #9CA3AF; }
+        .btn-annuler-litige {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: 1.5px solid #E8EAF0;
+            background: white;
+            color: #1E293B;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
         }
-        .btn-envoyer-litige:disabled {
-            background: #d1d5db;
-            cursor: not-allowed;
-        }
+        .btn-annuler-litige:hover { border-color: #9CA3AF; color: #374151; }
 
-        /* RESPONSIVE */
-        @media (max-width: 968px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                order: -1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .success-hero {
-                padding: 40px 20px;
-            }
-
-            .success-hero h1 {
-                font-size: 28px;
-            }
-
-            .content {
-                padding: 25px;
-            }
-
-            .status-bar {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-        }
         /* MODAL QUITTANCES */
-        .modal-quittances-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal-quittances-overlay.active { display: flex; }
         .modal-quittances {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 32px;
             max-width: 520px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.25s ease;
         }
         .modal-quittances h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #1E293B;
             margin: 0 0 6px;
@@ -820,7 +1014,7 @@
             justify-content: space-between;
             padding: 14px 16px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 8px;
             transition: all 0.2s;
         }
@@ -851,24 +1045,93 @@
             font-weight: 600;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .btn-dl-quittance:hover { background: #d4571f; }
+        .btn-dl-quittance:hover {
+            background: #d4571f;
+            transform: translateY(-1px);
+        }
         .btn-fermer-quittances {
             display: block;
             width: 100%;
-            padding: 12px;
+            height: 48px;
             margin-top: 16px;
-            background: #F4F5F7;
-            color: #64748B;
-            border: none;
-            border-radius: 10px;
+            background: white;
+            color: #1E293B;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
         }
-        .btn-fermer-quittances:hover { background: #E8EAF0; }
+        .btn-fermer-quittances:hover { border-color: #9CA3AF; color: #374151; }
+
+        /* ANIMATIONS */
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav .container {
+                padding: 0 20px;
+                height: 72px;
+            }
+            .logo img { height: 42px; }
+            nav ul { display: none; }
+            nav ul.open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 72px;
+                right: 0;
+                bottom: 0;
+                width: 280px;
+                background: white;
+                padding: 24px 20px;
+                gap: 4px;
+                box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+                z-index: 999;
+                animation: modalIn 0.2s ease;
+            }
+            nav ul.open a {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            .hamburger { display: flex; flex-direction: column; gap: 5px; }
+            .hamburger span {
+                width: 22px;
+                height: 2px;
+                background: #1E293B;
+                border-radius: 2px;
+                transition: all 0.3s;
+            }
+            .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+            .hamburger.active span:nth-child(2) { opacity: 0; }
+            .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+            .menu-overlay.active {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.3);
+                z-index: 998;
+            }
+
+            .match-hero { padding: 32px 20px 40px; }
+            .match-hero h1 { font-size: 26px; }
+            .status-pills { gap: 8px; }
+            .status-pill { padding: 8px 14px; }
+
+            .dashboard-container { padding: 20px 16px; }
+            .section { padding: 20px; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .contact-row { flex-wrap: wrap; }
+            .btn-contact { width: 100%; justify-content: center; }
+            .actions-grid { grid-template-columns: 1fr; }
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <script src="analytics.js" defer></script>
@@ -880,209 +1143,231 @@
         <div class="container">
             <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
             <div id="notif-bell-container"></div>
-        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
-        <div class="menu-overlay" onclick="toggleMenu()"></div>
-        <ul>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+            <div class="menu-overlay" onclick="toggleMenu()"></div>
+            <ul>
                 <li><a href="index.html">Accueil</a></li>
-                <li><a href="#" id="dashboardLink">Mon espace</a></li>
+                <li><a href="#" id="dashboardLink" class="nav-highlight">Mon espace</a></li>
                 <li><a href="messages.html">Messages</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- SUCCESS HERO -->
-    <div class="success-hero">
-        <div class="success-icon">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <!-- HERO -->
+    <div class="match-hero">
+        <div class="hero-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Logement actif
         </div>
         <h1>Votre logement est actif</h1>
         <p>Toutes les d&eacute;marches sont termin&eacute;es. Profitez de votre logement en toute s&eacute;r&eacute;nit&eacute;.</p>
+        <div class="status-pills">
+            <div class="status-pill">
+                <span class="status-pill-label">D&eacute;but</span>
+                <span class="status-pill-value" id="dateDebut">01/03/2026</span>
+            </div>
+            <div class="status-pill">
+                <span class="status-pill-label">Fin</span>
+                <span class="status-pill-value" id="dateFin">31/08/2026</span>
+            </div>
+            <div class="status-pill">
+                <span class="status-pill-label">Restant</span>
+                <span class="status-pill-value"><span id="joursRestants">--</span> jours</span>
+            </div>
+        </div>
     </div>
 
-    <!-- MAIN CARD -->
-    <div class="match-card">
-        <!-- STATUS BAR -->
-        <div class="status-bar">
-            <div>
-                <div class="status-label">Statut</div>
-                <div class="status-value">Actif</div>
+    <!-- MAIN CONTENT -->
+    <div class="dashboard-container">
+
+        <!-- ALERT RAPPEL (hidden by default) -->
+        <div class="alert-section" id="alertRappel" style="display: none;">
+            <div class="alert-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </div>
-            <div>
-                <div class="status-label">Début</div>
-                <div class="status-value" id="dateDebut">01/03/2026</div>
-            </div>
-            <div>
-                <div class="status-label">Fin</div>
-                <div class="status-value" id="dateFin">31/08/2026</div>
-            </div>
-        </div>
-
-        <!-- CONTENT -->
-        <div class="content">
-            <div class="info-grid">
-                <!-- COLONNE GAUCHE -->
-                <div class="main-info">
-                    <!-- LOGEMENT -->
-                    <div class="info-card">
-                        <div class="info-card-title">
-                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-                            Votre logement
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Adresse</span>
-                            <span class="detail-value" id="logementAdresse">Chargement...</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Ville</span>
-                            <span class="detail-value" id="logementVille">Chargement...</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Surface</span>
-                            <span class="detail-value" id="logementSurface">--m²</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Loyer hebdomadaire</span>
-                            <span class="detail-value" id="logementPrix">275€</span>
-                        </div>
-                    </div>
-
-                    <!-- CONTACT -->
-                    <div class="info-card">
-                        <div class="info-card-title">
-                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-                            <span id="contactTitle">Votre propri&eacute;taire</span>
-                        </div>
-                        <div class="contact-card">
-                            <a class="contact-profile-link" id="contactProfileLink" href="#">
-                                <div class="contact-avatar" id="contactAvatar"></div>
-                                <div class="contact-name" id="contactNom">Chargement...</div>
-                                <div class="contact-role" id="contactRole">Propriétaire</div>
-                            </a>
-                            <div class="contact-info" id="contactInfo">
-                                📧 Email<br>
-                                📞 Téléphone
-                            </div>
-                            <a href="conversation.html?user_id=xxx" class="btn-contact" id="btnContact">
-                                Envoyer un message
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- COLONNE DROITE -->
-                <div class="sidebar">
-                    <!-- COUNTDOWN -->
-                    <div class="info-card">
-                        <div class="info-card-title">
-                            <span class="info-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-                            Temps restant
-                        </div>
-                        <div class="countdown-box">
-                            <div class="countdown-label">Il vous reste</div>
-                            <div class="countdown-value" id="joursRestants">--</div>
-                            <div class="countdown-unit">jours</div>
-                        </div>
-                    </div>
-
-                    <!-- DOCUMENTS -->
-                    <div class="documents-section">
-                        <div class="documents-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            Documents
-                        </div>
-                        <div class="document-item" onclick="telechargerDocument('contrat')">
-                            <div class="document-info">
-                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-                                <span class="document-name">Contrat de location</span>
-                            </div>
-                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                        </div>
-                        <div class="document-item" onclick="telechargerDocument('etat-lieux')">
-                            <div class="document-info">
-                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span>
-                                <span class="document-name">&Eacute;tat des lieux d'entr&eacute;e</span>
-                            </div>
-                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                        </div>
-                        <div class="document-item" onclick="telechargerDocument('quittances')">
-                            <div class="document-info">
-                                <span class="document-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><polyline points="14 2 14 8 20 8"/><line x1="3" y1="15" x2="15" y2="15"/></svg></span>
-                                <span class="document-name">Quittances de loyer</span>
-                            </div>
-                            <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-                        </div>
-                    </div>
-
-                    <!-- ACTIONS RAPIDES -->
-                    <div class="quick-actions">
-                        <div class="quick-actions-title">Actions rapides</div>
-                        <button class="action-btn" onclick="signalerProbleme()">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
-                            Signaler un probl&egrave;me
-                        </button>
-                        <button class="action-btn" onclick="voirAnnonce()">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
-                            Voir l'annonce
-                        </button>
-                        <button class="action-btn" id="btnGererRIB" style="display: none;" onclick="ouvrirPortailPaiement()">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
-                            G&eacute;rer mon RIB
-                        </button>
-                        <a href="#" id="dashboardLinkAction" class="action-btn" style="text-decoration: none;">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
-                            Retour au dashboard
-                        </a>
-                        <button class="action-btn action-btn-caution" id="btnRestitutionCaution" onclick="ouvrirRestitutionCaution()">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-                            Restituer la caution
-                        </button>
-                        <button class="action-btn action-btn-danger" onclick="ouvrirResiliation()">
-                            <span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>
-                            R&eacute;silier le contrat
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ALERT RAPPEL -->
-            <div class="alert-warning" id="alertRappel" style="display: none;">
-                <div class="alert-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-                <div class="alert-content">
-                    <div class="alert-title">Rappel : &Eacute;tat des lieux de sortie</div>
-                    <div class="alert-text">
-                        Votre contrat se termine bient&ocirc;t. N'oubliez pas de planifier l'&eacute;tat des lieux de sortie avec le propri&eacute;taire au moins 2 semaines avant votre d&eacute;part.
-                    </div>
+            <div class="alert-content">
+                <div class="alert-title">Rappel : &Eacute;tat des lieux de sortie</div>
+                <div class="alert-text">
+                    Votre contrat se termine bient&ocirc;t. N'oubliez pas de planifier l'&eacute;tat des lieux de sortie avec le propri&eacute;taire au moins 2 semaines avant votre d&eacute;part.
                 </div>
             </div>
         </div>
+
+        <!-- SECTION: LOGEMENT -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon orange">
+                        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    Votre logement
+                </div>
+                <div class="section-description">Informations sur votre logement actuel</div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Adresse</span>
+                    <span class="detail-value" id="logementAdresse">Chargement...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Ville</span>
+                    <span class="detail-value" id="logementVille">Chargement...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Surface</span>
+                    <span class="detail-value" id="logementSurface">--m&sup2;</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Loyer hebdomadaire</span>
+                    <span class="detail-value" id="logementPrix" style="color: #E8622A;">275&euro;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: CONTACT -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon navy">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <span id="contactTitle">Votre propri&eacute;taire</span>
+                </div>
+            </div>
+            <div class="contact-row">
+                <a class="contact-profile-link" id="contactProfileLink" href="#" onclick="event.preventDefault(); if(window._testProfilId && typeof ouvrirProfilOverlay==='function') ouvrirProfilOverlay(window._testProfilId);">
+                    <div class="contact-avatar" id="contactAvatar"></div>
+                    <div class="contact-info-col">
+                        <div class="contact-name" id="contactNom">Chargement...</div>
+                        <div class="contact-role" id="contactRole">Propri&eacute;taire</div>
+                    </div>
+                </a>
+                <a href="conversation.html?user_id=xxx" class="btn-contact" id="btnContact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Message
+                </a>
+            </div>
+        </div>
+
+        <!-- SECTION: DOCUMENTS -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon orange">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    Documents
+                </div>
+                <div class="section-description">Contrat, &eacute;tat des lieux et quittances</div>
+            </div>
+            <div class="document-item" onclick="telechargerDocument('contrat')">
+                <div class="document-info">
+                    <div class="document-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <span class="document-name">Contrat de location</span>
+                </div>
+                <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            </div>
+            <div class="document-item" onclick="telechargerDocument('etat-lieux')">
+                <div class="document-info">
+                    <div class="document-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                    </div>
+                    <span class="document-name">&Eacute;tat des lieux d'entr&eacute;e</span>
+                </div>
+                <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            </div>
+            <div class="document-item" onclick="telechargerDocument('quittances')">
+                <div class="document-info">
+                    <div class="document-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><polyline points="14 2 14 8 20 8"/><line x1="3" y1="15" x2="15" y2="15"/></svg>
+                    </div>
+                    <span class="document-name">Quittances de loyer</span>
+                </div>
+                <span class="document-action"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            </div>
+        </div>
+
+        <!-- SECTION: ACTIONS -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon navy">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                    </div>
+                    Actions
+                </div>
+                <div class="section-description">G&eacute;rez votre s&eacute;jour et vos d&eacute;marches</div>
+            </div>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="signalerProbleme()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Signaler un probl&egrave;me
+                </button>
+                <button class="action-btn" onclick="voirAnnonce()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Voir l'annonce
+                </button>
+                <button class="action-btn" id="btnGererRIB" style="display: none;" onclick="ouvrirPortailPaiement()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    G&eacute;rer mon RIB
+                </button>
+                <button class="action-btn action-btn-caution" id="btnRestitutionCaution" onclick="ouvrirRestitutionCaution()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Restituer la caution
+                </button>
+            </div>
+        </div>
+
+        <!-- ZONE DANGEREUSE -->
+        <div class="danger-zone">
+            <div class="danger-zone-label">Zone dangereuse</div>
+            <button class="danger-zone-btn" onclick="ouvrirResiliation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                R&eacute;silier le contrat
+            </button>
+        </div>
+
+        <!-- dashboardLinkAction hidden, kept for JS compatibility -->
+        <a href="#" id="dashboardLinkAction" style="display:none;"></a>
     </div>
 
     <!-- MODAL RÉSILIATION -->
     <div class="modal-resiliation-overlay" id="modalResiliation">
         <div class="modal-resiliation">
-            <h3>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                R&eacute;silier le contrat
-            </h3>
-            <p>Cette action est irr&eacute;versible. La r&eacute;siliation sera envoy&eacute;e &agrave; l'autre partie pour validation. Un pr&eacute;avis peut s'appliquer selon les conditions de votre contrat.</p>
-            <div class="info-box">
-                ⚠️ <strong>Important :</strong> En cas de r&eacute;siliation anticip&eacute;e, des frais peuvent s'appliquer selon les conditions g&eacute;n&eacute;rales et votre contrat. Consultez votre contrat avant de confirmer.
+            <div class="modal-resiliation-header">
+                <h3><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>R&eacute;silier le contrat</h3>
+                <p class="modal-subtitle">Confirmez votre demande de r&eacute;siliation</p>
             </div>
-            <label for="motifResiliation">Motif de la r&eacute;siliation *</label>
-            <select id="motifResiliation" onchange="checkResiliationForm()">
-                <option value="">-- S&eacute;lectionnez un motif --</option>
-                <option value="fin_alternance">Fin de mon alternance</option>
-                <option value="changement_ville">Changement de ville</option>
-                <option value="logement_non_conforme">Logement non conforme</option>
-                <option value="probleme_proprietaire">Probl&egrave;me avec le propri&eacute;taire</option>
-                <option value="raison_personnelle">Raison personnelle</option>
-                <option value="autre">Autre</option>
-            </select>
+
+            <div class="info-box">
+                <strong style="color:#FF6B6B">Important :</strong> En cas de r&eacute;siliation anticip&eacute;e, des frais peuvent s'appliquer selon les <a href="cgv.html" target="_blank" style="color:#FF6B6B;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">conditions g&eacute;n&eacute;rales</a> et votre contrat. La r&eacute;siliation sera envoy&eacute;e &agrave; l'autre partie pour validation. Un pr&eacute;avis peut s'appliquer.
+            </div>
+
+            <label>Motif de la r&eacute;siliation *</label>
+            <input type="hidden" id="motifResiliation" value="">
+            <div class="custom-select" id="customSelectResiliation">
+                <div class="custom-select-trigger" id="customSelectTriggerResiliation" onclick="toggleCustomSelectResiliation()">
+                    <span class="custom-select-text" id="customSelectTextResiliation">Choisir un motif</span>
+                    <svg class="custom-select-chevron" id="customSelectChevronResiliation" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="custom-select-options" id="customSelectOptionsResiliation">
+                    <div class="custom-select-option" data-value="fin_alternance">Fin de mon alternance</div>
+                    <div class="custom-select-option" data-value="changement_ville">Changement de ville</div>
+                    <div class="custom-select-option" data-value="logement_non_conforme">Logement non conforme</div>
+                    <div class="custom-select-option" data-value="probleme_proprietaire">Probl&egrave;me avec le propri&eacute;taire</div>
+                    <div class="custom-select-option" data-value="raison_personnelle">Raison personnelle</div>
+                    <div class="custom-select-option" data-value="autre">Autre</div>
+                </div>
+            </div>
+
             <label for="commentaireResiliation">Commentaire (optionnel)</label>
-            <textarea id="commentaireResiliation" rows="3" placeholder="Pr&eacute;cisez si besoin..."></textarea>
+            <textarea id="commentaireResiliation" rows="3" placeholder="Expliquez bri&egrave;vement votre situation (optionnel)"></textarea>
+
             <div class="modal-resiliation-actions">
-                <button class="btn-annuler-resiliation" onclick="fermerResiliation()">Annuler</button>
                 <button class="btn-confirmer-resiliation" id="btnConfirmerResiliation" disabled onclick="confirmerResiliation()">Confirmer la r&eacute;siliation</button>
+                <button class="btn-annuler-resiliation" onclick="fermerResiliation()">Annuler</button>
             </div>
         </div>
     </div>
@@ -1097,9 +1382,9 @@
             <p>Conform&eacute;ment &agrave; la loi, le d&eacute;p&ocirc;t de garantie doit &ecirc;tre restitu&eacute; dans un d&eacute;lai d'1 mois (si &eacute;tat des lieux conforme) ou 2 mois (si diff&eacute;rences). Vous pouvez d&eacute;duire les montants justifi&eacute;s.</p>
 
             <label>Montant du d&eacute;p&ocirc;t de garantie</label>
-            <input type="text" id="cautionMontantTotal" readonly style="background: #f9fafb; font-weight: 700;">
+            <input type="text" id="cautionMontantTotal" readonly style="font-weight: 700;">
 
-            <label for="cautionMontantRetenu">Montant retenu (&euro;) — d&eacute;gradations, impay&eacute;s...</label>
+            <label for="cautionMontantRetenu">Montant retenu (&euro;) &mdash; d&eacute;gradations, impay&eacute;s...</label>
             <input type="number" id="cautionMontantRetenu" min="0" step="0.01" value="0" oninput="calculerRestitution()">
 
             <label for="cautionMotifRetenue">Justification des retenues (obligatoire si montant &gt; 0)</label>
@@ -1108,7 +1393,7 @@
             <div class="caution-recap">
                 <div class="caution-recap-row">
                     <span>D&eacute;p&ocirc;t de garantie</span>
-                    <span id="recapCautionTotal">—</span>
+                    <span id="recapCautionTotal">&mdash;</span>
                 </div>
                 <div class="caution-recap-row">
                     <span>Retenue</span>
@@ -1116,7 +1401,7 @@
                 </div>
                 <div class="caution-recap-row total">
                     <span>Montant restitu&eacute;</span>
-                    <span id="recapRestitue">—</span>
+                    <span id="recapRestitue">&mdash;</span>
                 </div>
             </div>
 
@@ -1131,29 +1416,35 @@
     <div class="modal-litige-overlay" id="modalLitige">
         <div class="modal-litige">
             <h3>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 Signaler un probl&egrave;me
             </h3>
             <p class="subtitle">D&eacute;crivez le probl&egrave;me rencontr&eacute;. Votre signalement sera enregistr&eacute; et l'autre partie sera notifi&eacute;e. L'&eacute;quipe STERNY pourra intervenir si n&eacute;cessaire.</p>
 
-            <label for="categorieLitige">Cat&eacute;gorie du probl&egrave;me *</label>
-            <select id="categorieLitige" onchange="checkLitigeForm()">
-                <option value="">-- S&eacute;lectionnez une cat&eacute;gorie --</option>
-                <option value="logement_non_conforme">Logement non conforme &agrave; l'annonce</option>
-                <option value="equipement_defectueux">&Eacute;quipement d&eacute;fectueux ou manquant</option>
-                <option value="nuisances">Nuisances (bruit, voisinage...)</option>
-                <option value="probleme_paiement">Probl&egrave;me de paiement</option>
-                <option value="comportement">Comportement inappropri&eacute;</option>
-                <option value="securite">Probl&egrave;me de s&eacute;curit&eacute;</option>
-                <option value="autre">Autre</option>
-            </select>
+            <label>Cat&eacute;gorie du probl&egrave;me *</label>
+            <input type="hidden" id="categorieLitige" value="">
+            <div class="custom-select" id="customSelectLitige">
+                <div class="custom-select-trigger" id="customSelectTrigger" onclick="toggleCustomSelect()">
+                    <span class="custom-select-text" id="customSelectText">Choisir une cat&eacute;gorie</span>
+                    <svg class="custom-select-chevron" id="customSelectChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="custom-select-options" id="customSelectOptions">
+                    <div class="custom-select-option" data-value="logement_non_conforme">Logement non conforme &agrave; l'annonce</div>
+                    <div class="custom-select-option" data-value="equipement_defectueux">&Eacute;quipement d&eacute;fectueux ou manquant</div>
+                    <div class="custom-select-option" data-value="nuisances">Nuisances (bruit, voisinage...)</div>
+                    <div class="custom-select-option" data-value="probleme_paiement">Probl&egrave;me de paiement</div>
+                    <div class="custom-select-option" data-value="comportement">Comportement inappropri&eacute;</div>
+                    <div class="custom-select-option" data-value="securite">Probl&egrave;me de s&eacute;curit&eacute;</div>
+                    <div class="custom-select-option" data-value="autre">Autre</div>
+                </div>
+            </div>
 
             <label for="descriptionLitige">Description d&eacute;taill&eacute;e *</label>
             <textarea id="descriptionLitige" rows="5" placeholder="D&eacute;crivez le probl&egrave;me avec le plus de d&eacute;tails possible..." oninput="checkLitigeForm()"></textarea>
 
             <div class="modal-litige-actions">
-                <button class="btn-annuler-litige" onclick="fermerLitige()">Annuler</button>
                 <button class="btn-envoyer-litige" id="btnEnvoyerLitige" disabled onclick="envoyerLitige()">Envoyer le signalement</button>
+                <button class="btn-annuler-litige" onclick="fermerLitige()">Annuler</button>
             </div>
         </div>
     </div>
@@ -1170,22 +1461,14 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer style="margin-top: 40px;">
-        <div class="container">
-            <p>STERNY &copy; 2026 — Le logement pensé pour les alternants.</p>
-            <p style="margin-top: 8px; font-size: 13px;">
-                <a href="cgv.html">CGV</a> ·
-                <a href="cgu.html">CGU</a> ·
-                <a href="mentions-legales.html">Mentions légales</a> ·
-                <a href="politique-confidentialite.html">Confidentialité</a>
-            </p>
-        </div>
-    </footer>
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const matchId = urlParams.get('match_id');
+
+        // Ouvrir automatiquement la modale résiliation si #resilier dans l'URL
+        if (window.location.hash === '#resilier') {
+            setTimeout(function() { ouvrirResiliation(); }, 500);
+        }
 
         let matchData = null;
         let currentUser = null;
@@ -1214,7 +1497,6 @@
                     document.getElementById('logementPrix').textContent = '95\u20ac/sem';
                     document.getElementById('contactNom').textContent = 'Jean Dupont';
                     document.getElementById('contactRole').textContent = 'Propri\u00e9taire';
-                    document.getElementById('contactInfo').textContent = 'jean.dupont@email.com';
                     document.getElementById('contactAvatar').textContent = 'JD';
                     document.getElementById('joursRestants').textContent = '152';
                     return;
@@ -1237,7 +1519,7 @@
                 const isLocataire = user.id === candidature.locataire_id;
                 const isProprietaire = user.id === candidature.annonces?.user_id;
                 if (!isLocataire && !isProprietaire && !isAdmin) {
-                    alert('Accès non autorisé à ce match.');
+                    alert('Acc\u00e8s non autoris\u00e9 \u00e0 ce match.');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -1292,16 +1574,16 @@
             // Logement
             document.getElementById('logementAdresse').textContent = annonce.adresse || 'Adresse';
             document.getElementById('logementVille').textContent = annonce.ville || 'Ville';
-            document.getElementById('logementSurface').textContent = (annonce.surface || '--') + 'm²';
-            document.getElementById('logementPrix').textContent = annonce.prix + '€/sem';
+            document.getElementById('logementSurface').textContent = (annonce.surface || '--') + 'm\u00b2';
+            document.getElementById('logementPrix').textContent = annonce.prix + '\u20ac/sem';
 
             // Déterminer qui est l'autre personne
             let contactPerson, contactTitle, contactRoleText;
             if (currentUser.id === locataire.id) {
                 // Je suis le locataire → Afficher propriétaire
                 contactPerson = proprietaire;
-                contactTitle = 'Votre propriétaire';
-                contactRoleText = 'Propriétaire';
+                contactTitle = 'Votre propri\u00e9taire';
+                contactRoleText = 'Propri\u00e9taire';
             } else {
                 // Je suis le propriétaire → Afficher locataire
                 contactPerson = locataire;
@@ -1311,19 +1593,15 @@
 
             document.getElementById('contactTitle').textContent = contactTitle;
             const contactNomEl = document.getElementById('contactNom');
-            contactNomEl.innerHTML = `<a href="profil.html?user_id=${contactPerson.id}" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='#E8622A'" onmouseout="this.style.color='inherit'">${contactPerson.prenom} ${contactPerson.nom}</a>`;
+            contactNomEl.textContent = `${contactPerson.prenom} ${contactPerson.nom}`;
             document.getElementById('contactRole').textContent = contactRoleText;
 
             // Avatar avec initiales
             const initiales = (contactPerson.prenom || '')[0] + (contactPerson.nom || '')[0];
             document.getElementById('contactAvatar').textContent = initiales.toUpperCase();
 
-            // Contact info
-            const emailLine = contactPerson.email || '';
-            const telLine = contactPerson.telephone || 'Non renseign\u00e9';
-            document.getElementById('contactInfo').innerHTML = `${emailLine}<br>${telLine}`;
-
             document.getElementById('btnContact').href = `conversation.html?user_id=${contactPerson.id}`;
+            window._testProfilId = contactPerson.id;
             document.getElementById('contactProfileLink').href = '#';
             document.getElementById('contactProfileLink').onclick = function(e) { e.preventDefault(); ouvrirProfilOverlay(contactPerson.id); };
 
@@ -1363,8 +1641,29 @@
                 return;
             }
             alert('T\u00e9l\u00e9chargement de document\n\nCette fonctionnalit\u00e9 sera bient\u00f4t disponible.\nType: ' + type);
-            // TODO: Implémenter téléchargement depuis Supabase Storage
         }
+
+        // --- CUSTOM SELECT ---
+        function toggleCustomSelect() {
+            document.getElementById('customSelectLitige').classList.toggle('open');
+        }
+        document.querySelectorAll('.custom-select-option').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var val = this.getAttribute('data-value');
+                var text = this.textContent;
+                document.getElementById('categorieLitige').value = val;
+                document.getElementById('customSelectText').textContent = text;
+                document.getElementById('customSelectTrigger').classList.add('has-value');
+                document.querySelectorAll('.custom-select-option').forEach(function(o) { o.classList.remove('selected'); });
+                this.classList.add('selected');
+                document.getElementById('customSelectLitige').classList.remove('open');
+                checkLitigeForm();
+            });
+        });
+        document.addEventListener('click', function(e) {
+            var cs = document.getElementById('customSelectLitige');
+            if (cs && !cs.contains(e.target)) cs.classList.remove('open');
+        });
 
         // --- LITIGE / SIGNALEMENT ---
         function signalerProbleme() {
@@ -1373,6 +1672,10 @@
         function fermerLitige() {
             document.getElementById('modalLitige').classList.remove('active');
             document.getElementById('categorieLitige').value = '';
+            document.getElementById('customSelectText').textContent = 'Choisir une cat\u00e9gorie';
+            document.getElementById('customSelectTrigger').classList.remove('has-value');
+            document.getElementById('customSelectLitige').classList.remove('open');
+            document.querySelectorAll('.custom-select-option').forEach(function(o) { o.classList.remove('selected'); });
             document.getElementById('descriptionLitige').value = '';
             document.getElementById('btnEnvoyerLitige').disabled = true;
         }
@@ -1392,10 +1695,8 @@
             btn.textContent = 'Envoi en cours...';
 
             try {
-                // Déterminer l'autre partie
                 const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
 
-                // Insérer le litige en base
                 const { error } = await supabaseClient
                     .from('litiges')
                     .insert({
@@ -1410,18 +1711,17 @@
 
                 if (error) throw error;
 
-                // Envoyer un message informatif à l'autre partie
                 if (contactUserId && currentUser) {
                     const categoriesLabels = {
                         'logement_non_conforme': 'Logement non conforme',
-                        'equipement_defectueux': 'Équipement défectueux',
+                        'equipement_defectueux': '\u00c9quipement d\u00e9fectueux',
                         'nuisances': 'Nuisances',
-                        'probleme_paiement': 'Problème de paiement',
-                        'comportement': 'Comportement inapproprié',
-                        'securite': 'Problème de sécurité',
+                        'probleme_paiement': 'Probl\u00e8me de paiement',
+                        'comportement': 'Comportement inappropri\u00e9',
+                        'securite': 'Probl\u00e8me de s\u00e9curit\u00e9',
                         'autre': 'Autre'
                     };
-                    const msg = `⚠️ Un signalement a été ouvert\n\nCatégorie : ${categoriesLabels[categorie] || categorie}\n\nCe signalement a été enregistré sur la plateforme STERNY. Vous pouvez discuter directement avec l'autre partie pour résoudre le problème.`;
+                    const msg = `\u26a0\ufe0f Un signalement a \u00e9t\u00e9 ouvert\n\nCat\u00e9gorie : ${categoriesLabels[categorie] || categorie}\n\nCe signalement a \u00e9t\u00e9 enregistr\u00e9 sur la plateforme STERNY. Vous pouvez discuter directement avec l'autre partie pour r\u00e9soudre le probl\u00e8me.`;
 
                     await supabaseClient
                         .from('messages')
@@ -1432,18 +1732,17 @@
                         });
                 }
 
-                alert('Votre signalement a bien été enregistré.\nL\'autre partie a été notifiée.\nL\'équipe STERNY suivra votre dossier.');
+                alert('Votre signalement a bien \u00e9t\u00e9 enregistr\u00e9.\nL\'autre partie a \u00e9t\u00e9 notifi\u00e9e.\nL\'\u00e9quipe STERNY suivra votre dossier.');
                 fermerLitige();
 
             } catch (error) {
                 console.error('Erreur litige:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
+                alert('Une erreur est survenue. Veuillez r\u00e9essayer.');
                 btn.disabled = false;
                 btn.textContent = 'Envoyer le signalement';
             }
         }
 
-        // Fermer modale litige en cliquant en dehors
         document.getElementById('modalLitige').addEventListener('click', function(e) {
             if (e.target === this) fermerLitige();
         });
@@ -1460,19 +1759,19 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             const dashboardLink = document.getElementById('dashboardLink');
             const dashboardAction = document.getElementById('dashboardLinkAction');
-            
+
             if (user) {
                 const { data: userData } = await supabaseClient
                     .from('users')
                     .select('type_user')
                     .eq('id', user.id)
                     .single();
-                
+
                 let dashboardUrl = 'dashboard-locataire.html';
                 if (userData?.type_user === 'proprietaire') {
                     dashboardUrl = 'dashboard-proprietaire.html';
                 }
-                
+
                 dashboardLink.href = dashboardUrl;
                 dashboardAction.href = dashboardUrl;
             }
@@ -1484,12 +1783,12 @@
 
         function ouvrirRestitutionCaution() {
             if (!contratData) {
-                alert('Données du contrat non disponibles.');
+                alert('Donn\u00e9es du contrat non disponibles.');
                 return;
             }
             montantCautionTotal = contratData.depot_garantie || 0;
-            document.getElementById('cautionMontantTotal').value = montantCautionTotal + ' €';
-            document.getElementById('recapCautionTotal').textContent = montantCautionTotal + ' €';
+            document.getElementById('cautionMontantTotal').value = montantCautionTotal + ' \u20ac';
+            document.getElementById('recapCautionTotal').textContent = montantCautionTotal + ' \u20ac';
             document.getElementById('cautionMontantRetenu').value = 0;
             document.getElementById('cautionMotifRetenue').value = '';
             calculerRestitution();
@@ -1503,8 +1802,8 @@
         function calculerRestitution() {
             const retenu = parseFloat(document.getElementById('cautionMontantRetenu').value) || 0;
             const restitue = Math.max(0, montantCautionTotal - retenu);
-            document.getElementById('recapRetenue').textContent = '- ' + retenu.toFixed(2) + ' €';
-            document.getElementById('recapRestitue').textContent = restitue.toFixed(2) + ' €';
+            document.getElementById('recapRetenue').textContent = '- ' + retenu.toFixed(2) + ' \u20ac';
+            document.getElementById('recapRestitue').textContent = restitue.toFixed(2) + ' \u20ac';
         }
 
         async function confirmerRestitutionCaution() {
@@ -1513,15 +1812,15 @@
             const restitue = Math.max(0, montantCautionTotal - retenu);
 
             if (retenu > 0 && !motif) {
-                alert('Veuillez justifier les retenues effectuées.');
+                alert('Veuillez justifier les retenues effectu\u00e9es.');
                 return;
             }
             if (retenu > montantCautionTotal) {
-                alert('Le montant retenu ne peut pas dépasser le dépôt de garantie.');
+                alert('Le montant retenu ne peut pas d\u00e9passer le d\u00e9p\u00f4t de garantie.');
                 return;
             }
 
-            if (!confirm(`Confirmer la restitution de ${restitue.toFixed(2)} € au locataire ?`)) return;
+            if (!confirm(`Confirmer la restitution de ${restitue.toFixed(2)} \u20ac au locataire ?`)) return;
 
             const btn = document.getElementById('btnConfirmerCaution');
             btn.disabled = true;
@@ -1530,7 +1829,6 @@
             try {
                 const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
 
-                // Créer la restitution en base
                 const { data: restitution, error } = await supabaseClient
                     .from('restitutions_caution')
                     .insert({
@@ -1549,13 +1847,12 @@
 
                 if (error) throw error;
 
-                // Notifier le locataire
-                let msg = `💰 Restitution du dépôt de garantie\n\nLe propriétaire a initié la restitution de votre dépôt de garantie.\n\n`;
-                msg += `• Dépôt initial : ${montantCautionTotal} €\n`;
+                let msg = `\ud83d\udcb0 Restitution du d\u00e9p\u00f4t de garantie\n\nLe propri\u00e9taire a initi\u00e9 la restitution de votre d\u00e9p\u00f4t de garantie.\n\n`;
+                msg += `\u2022 D\u00e9p\u00f4t initial : ${montantCautionTotal} \u20ac\n`;
                 if (retenu > 0) {
-                    msg += `• Retenue : ${retenu.toFixed(2)} € (${motif})\n`;
+                    msg += `\u2022 Retenue : ${retenu.toFixed(2)} \u20ac (${motif})\n`;
                 }
-                msg += `• Montant restitué : ${restitue.toFixed(2)} €\n\n`;
+                msg += `\u2022 Montant restitu\u00e9 : ${restitue.toFixed(2)} \u20ac\n\n`;
                 msg += `Vous pouvez accepter ou contester cette restitution depuis votre espace.`;
 
                 await supabaseClient
@@ -1566,18 +1863,17 @@
                         contenu: msg
                     });
 
-                alert('La restitution a été initiée.\nLe locataire a été notifié et pourra accepter ou contester.');
+                alert('La restitution a \u00e9t\u00e9 initi\u00e9e.\nLe locataire a \u00e9t\u00e9 notifi\u00e9 et pourra accepter ou contester.');
                 fermerRestitutionCaution();
 
             } catch (error) {
                 console.error('Erreur restitution:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
+                alert('Une erreur est survenue. Veuillez r\u00e9essayer.');
                 btn.disabled = false;
                 btn.textContent = 'Initier la restitution';
             }
         }
 
-        // Fermer modale caution en cliquant en dehors
         document.getElementById('modalCaution').addEventListener('click', function(e) {
             if (e.target === this) fermerRestitutionCaution();
         });
@@ -1591,25 +1887,49 @@
             document.getElementById('motifResiliation').value = '';
             document.getElementById('commentaireResiliation').value = '';
             document.getElementById('btnConfirmerResiliation').disabled = true;
+            document.getElementById('customSelectTextResiliation').textContent = 'Choisir un motif';
+            document.getElementById('customSelectTriggerResiliation').classList.remove('has-value');
+            document.getElementById('customSelectResiliation').classList.remove('open');
+            document.querySelectorAll('#customSelectResiliation .custom-select-option').forEach(function(o) { o.classList.remove('selected'); });
         }
         function checkResiliationForm() {
             const motif = document.getElementById('motifResiliation').value;
             document.getElementById('btnConfirmerResiliation').disabled = !motif;
         }
+        // --- CUSTOM SELECT RÉSILIATION ---
+        function toggleCustomSelectResiliation() {
+            document.getElementById('customSelectResiliation').classList.toggle('open');
+        }
+        document.querySelectorAll('#customSelectResiliation .custom-select-option').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var val = this.getAttribute('data-value');
+                var text = this.textContent;
+                document.getElementById('motifResiliation').value = val;
+                document.getElementById('customSelectTextResiliation').textContent = text;
+                document.getElementById('customSelectTriggerResiliation').classList.add('has-value');
+                document.querySelectorAll('#customSelectResiliation .custom-select-option').forEach(function(o) { o.classList.remove('selected'); });
+                this.classList.add('selected');
+                document.getElementById('customSelectResiliation').classList.remove('open');
+                checkResiliationForm();
+            });
+        });
+        document.addEventListener('click', function(e) {
+            var cs = document.getElementById('customSelectResiliation');
+            if (cs && !cs.contains(e.target)) cs.classList.remove('open');
+        });
         async function confirmerResiliation() {
             const motif = document.getElementById('motifResiliation').value;
             const commentaire = document.getElementById('commentaireResiliation').value.trim();
 
             if (!motif) return;
 
-            if (!confirm('Êtes-vous sûr de vouloir résilier ce contrat ?\nCette action ne peut pas être annulée.')) return;
+            if (!confirm('\u00cates-vous s\u00fbr de vouloir r\u00e9silier ce contrat ?\nCette action ne peut pas \u00eatre annul\u00e9e.')) return;
 
             const btn = document.getElementById('btnConfirmerResiliation');
             btn.disabled = true;
-            btn.textContent = 'Résiliation en cours...';
+            btn.textContent = 'R\u00e9siliation en cours...';
 
             try {
-                // Mettre à jour le statut de la candidature / match
                 if (matchId) {
                     await supabaseClient
                         .from('candidatures')
@@ -1621,7 +1941,6 @@
                         })
                         .eq('id', matchId);
 
-                    // Mettre à jour le contrat si existant
                     await supabaseClient
                         .from('contrats')
                         .update({
@@ -1630,20 +1949,19 @@
                         })
                         .eq('candidature_id', matchId);
 
-                    // Envoyer un message à l'autre partie
                     const contactUserId = document.getElementById('btnContact').href.split('user_id=')[1];
                     if (contactUserId && currentUser) {
                         const motifsLabels = {
                             'fin_alternance': 'Fin d\'alternance',
                             'changement_ville': 'Changement de ville',
                             'logement_non_conforme': 'Logement non conforme',
-                            'probleme_proprietaire': 'Problème avec le propriétaire',
+                            'probleme_proprietaire': 'Probl\u00e8me avec le propri\u00e9taire',
                             'raison_personnelle': 'Raison personnelle',
                             'autre': 'Autre'
                         };
-                        let msg = `📋 Demande de résiliation de contrat\n\nMotif : ${motifsLabels[motif] || motif}`;
+                        let msg = `\ud83d\udccb Demande de r\u00e9siliation de contrat\n\nMotif : ${motifsLabels[motif] || motif}`;
                         if (commentaire) msg += `\nCommentaire : ${commentaire}`;
-                        msg += '\n\nCette résiliation a été initiée via la plateforme STERNY.';
+                        msg += '\n\nCette r\u00e9siliation a \u00e9t\u00e9 initi\u00e9e via la plateforme STERNY.';
 
                         await supabaseClient
                             .from('messages')
@@ -1655,22 +1973,20 @@
                     }
                 }
 
-                alert('Votre demande de résiliation a été enregistrée.\nL\'autre partie sera notifiée.');
+                alert('Votre demande de r\u00e9siliation a \u00e9t\u00e9 enregistr\u00e9e.\nL\'autre partie sera notifi\u00e9e.');
                 fermerResiliation();
 
-                // Rediriger vers le dashboard
                 const dashboardUrl = document.getElementById('dashboardLinkAction').href || 'dashboard-locataire.html';
                 window.location.href = dashboardUrl;
 
             } catch (error) {
-                console.error('Erreur résiliation:', error);
-                alert('Une erreur est survenue. Veuillez réessayer.');
+                console.error('Erreur r\u00e9siliation:', error);
+                alert('Une erreur est survenue. Veuillez r\u00e9essayer.');
                 btn.disabled = false;
-                btn.textContent = 'Confirmer la résiliation';
+                btn.textContent = 'Confirmer la r\u00e9siliation';
             }
         }
 
-        // Fermer modale en cliquant en dehors
         document.getElementById('modalResiliation').addEventListener('click', function(e) {
             if (e.target === this) fermerResiliation();
         });
@@ -1685,7 +2001,6 @@
             const container = document.getElementById('listeQuittances');
             container.innerHTML = '';
 
-            // Calculer les mois entre date_debut et aujourd'hui (ou date_fin si passée)
             const debut = new Date(contratData.date_debut);
             const maintenant = new Date();
             const fin = contratData.date_fin ? new Date(contratData.date_fin) : maintenant;
@@ -1699,7 +2014,7 @@
 
             while (moisCourant <= limiteMax) {
                 const moisLabel = moisNoms[moisCourant.getMonth()] + ' ' + moisCourant.getFullYear();
-                const moisISO = moisCourant.toISOString().slice(0, 7); // 2026-03
+                const moisISO = moisCourant.toISOString().slice(0, 7);
                 const loyer = contratData.loyer_mensuel || (matchData?.annonces?.prix ? matchData.annonces.prix * 4 : 0);
 
                 const item = document.createElement('div');
@@ -1717,7 +2032,6 @@
                 container.appendChild(item);
                 compteur++;
 
-                // Mois suivant
                 moisCourant.setMonth(moisCourant.getMonth() + 1);
             }
 
@@ -1732,7 +2046,6 @@
             document.getElementById('modalQuittances').classList.remove('active');
         }
 
-        // Fermer modale quittances en cliquant en dehors
         document.getElementById('modalQuittances').addEventListener('click', function(e) {
             if (e.target === this) fermerQuittances();
         });
@@ -1741,7 +2054,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Données
             const locataire = matchData?.users || {};
             const annonce = matchData?.annonces || {};
             const proprio = proprietaireData || {};
@@ -1755,17 +2067,14 @@
             const dateDebut = contratData.date_debut ? new Date(contratData.date_debut).toLocaleDateString('fr-FR') : '--';
             const dateFin = contratData.date_fin ? new Date(contratData.date_fin).toLocaleDateString('fr-FR') : '--';
 
-            // Mois de la quittance
             const [annee, mois] = moisISO.split('-');
             const premierJour = '01';
             const dernierJour = new Date(parseInt(annee), parseInt(mois), 0).getDate();
             const periodeDebut = `${premierJour}/${mois}/${annee}`;
             const periodeFin = `${dernierJour}/${mois}/${annee}`;
 
-            // --- MISE EN PAGE ---
-
             // En-tête STERNY
-            doc.setFillColor(30, 41, 59); // #1E293B
+            doc.setFillColor(30, 41, 59);
             doc.rect(0, 0, 210, 40, 'F');
 
             doc.setTextColor(255, 255, 255);
@@ -1777,7 +2086,6 @@
             doc.setFont('helvetica', 'normal');
             doc.text('Plateforme de logement pour alternants', 68, 26);
 
-            // Titre du document
             doc.setTextColor(30, 41, 59);
             doc.setFontSize(20);
             doc.setFont('helvetica', 'bold');
@@ -1788,12 +2096,10 @@
             doc.setTextColor(100, 116, 139);
             doc.text(`P\u00e9riode : ${moisLabel}`, 105, 67, { align: 'center' });
 
-            // Ligne séparatrice
-            doc.setDrawColor(232, 98, 42); // #E8622A
+            doc.setDrawColor(232, 98, 42);
             doc.setLineWidth(1);
             doc.line(20, 74, 190, 74);
 
-            // BLOC PROPRIÉTAIRE
             let y = 86;
             doc.setFontSize(11);
             doc.setFont('helvetica', 'bold');
@@ -1805,16 +2111,9 @@
             doc.setTextColor(55, 65, 81);
             doc.setFontSize(10);
             doc.text(nomProprio, 20, y);
-            if (proprio.email) {
-                y += 6;
-                doc.text(proprio.email, 20, y);
-            }
-            if (proprio.telephone) {
-                y += 6;
-                doc.text(proprio.telephone, 20, y);
-            }
+            if (proprio.email) { y += 6; doc.text(proprio.email, 20, y); }
+            if (proprio.telephone) { y += 6; doc.text(proprio.telephone, 20, y); }
 
-            // BLOC LOCATAIRE
             y = 86;
             doc.setFontSize(11);
             doc.setFont('helvetica', 'bold');
@@ -1826,12 +2125,8 @@
             doc.setTextColor(55, 65, 81);
             doc.setFontSize(10);
             doc.text(nomLocataire, 115, y);
-            if (locataire.email) {
-                y += 6;
-                doc.text(locataire.email, 115, y);
-            }
+            if (locataire.email) { y += 6; doc.text(locataire.email, 115, y); }
 
-            // BLOC LOGEMENT
             y = 120;
             doc.setFontSize(11);
             doc.setFont('helvetica', 'bold');
@@ -1846,9 +2141,8 @@
             y += 6;
             doc.text(`Contrat du ${dateDebut} au ${dateFin}`, 20, y);
 
-            // DÉTAILS PAIEMENT
             y += 20;
-            doc.setFillColor(248, 249, 252); // #F8F9FC
+            doc.setFillColor(248, 249, 252);
             doc.roundedRect(20, y - 4, 170, 50, 3, 3, 'F');
 
             doc.setFontSize(11);
@@ -1878,11 +2172,10 @@
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(100, 116, 139);
             doc.text('Statut', 28, y + 38);
-            doc.setTextColor(16, 185, 129); // vert
+            doc.setTextColor(16, 185, 129);
             doc.setFont('helvetica', 'bold');
             doc.text('ACQUITT\u00c9', 120, y + 38);
 
-            // MENTION LÉGALE
             y += 66;
             doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
@@ -1893,7 +2186,6 @@
             const mentionLines = doc.splitTextToSize(mention, 170);
             doc.text(mentionLines, 20, y);
 
-            // DATE ET SIGNATURE
             y += mentionLines.length * 5 + 16;
             const dateQuittance = new Date().toLocaleDateString('fr-FR');
             doc.setFontSize(10);
@@ -1907,12 +2199,10 @@
             doc.setFont('helvetica', 'normal');
             doc.text(nomProprio, 20, y);
 
-            // PIED DE PAGE
             doc.setFontSize(8);
             doc.setTextColor(148, 163, 184);
             doc.text('Document g\u00e9n\u00e9r\u00e9 par STERNY \u2014 sterny.co', 105, 285, { align: 'center' });
 
-            // Télécharger
             doc.save(`Quittance_${moisISO}_${nomLocataire.replace(/\s+/g, '_')}.pdf`);
         }
 
@@ -1926,7 +2216,7 @@
             const btn = document.getElementById('btnGererRIB');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span> Chargement...';
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Chargement...';
 
             try {
                 const { data, error } = await supabaseClient.functions.invoke('create-stripe-portal', {
@@ -1951,11 +2241,43 @@
         }
 
         // Init
-        if (typeof supabaseClient !== 'undefined') {
+        // <!-- DONNÉES DE TEST : chargement immédiat sans Supabase -->
+        if (!matchId) {
+            // Données fictives pour prévisualisation locale
+            document.getElementById('logementAdresse').textContent = '12 rue de la Paix';
+            document.getElementById('logementVille').textContent = 'Paris';
+            document.getElementById('logementSurface').textContent = '25m\u00b2';
+            document.getElementById('logementPrix').textContent = '95\u20ac/sem';
+            document.getElementById('contactNom').textContent = 'Jean Dupont';
+            document.getElementById('contactRole').textContent = 'Propri\u00e9taire';
+            document.getElementById('contactAvatar').textContent = 'JD';
+            document.getElementById('joursRestants').textContent = '152';
+            document.getElementById('dateDebut').textContent = '01/03/2026';
+            document.getElementById('dateFin').textContent = '31/08/2026';
+            document.getElementById('dashboardLink').href = 'dashboard-locataire.html';
+            document.getElementById('dashboardLinkAction').href = 'dashboard-locataire.html';
+            // <!-- DONNÉES DE TEST --> ID fictif pour tester l'overlay profil
+            window._testProfilId = '00000000-0000-0000-0000-000000000001';
+        } else if (typeof supabaseClient !== 'undefined') {
             chargerMatch();
             gererDashboard();
         }
     </script>
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
+
 <script src="cookie-banner.js"></script>
 <script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
 </body>
