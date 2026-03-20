@@ -1025,12 +1025,12 @@
         .modal-profils {
             background: white;
             border-radius: 20px;
-            padding: 36px;
-            max-width: 460px;
+            padding: 32px;
+            max-width: 420px;
             width: calc(100% - 40px);
             height: 546px;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
-            border: 1.5px solid #E8EAF0;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            border: 1px solid #E8EAF0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -1156,57 +1156,72 @@
             border: none;
             color: #64748B;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            padding: 8px 0;
-            margin-bottom: 16px;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
         }
         .profil-back:hover {
-            color: #1E293B;
+            color: #E8622A;
         }
         .profil-detail-header {
             text-align: center;
-            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E8EAF0;
+            margin-bottom: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
         .profil-detail-avatar {
-            width: 72px;
-            height: 72px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: #1E293B;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            margin: 0 auto 12px;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
         }
         .profil-detail-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #1E293B;
-            margin: 0 0 4px;
+            margin: 0 0 6px;
         }
         .profil-detail-status {
-            font-size: 12px;
-            color: #64748B;
+            display: inline-block;
+            font-size: 11px;
+            color: #E8622A;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            background: #FDF0EB;
+            padding: 4px 12px;
+            border-radius: 20px;
         }
         .profil-detail-info {
             background: #F8FAFC;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #E8EAF0;
         }
         .profil-detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            align-items: center;
+            padding: 12px 0;
         }
         .profil-detail-row:not(:last-child) {
             border-bottom: 1px solid #E8EAF0;
@@ -1214,32 +1229,35 @@
         .profil-detail-label {
             color: #64748B;
             font-size: 14px;
+            font-weight: 500;
         }
         .profil-detail-value {
             color: #1E293B;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
         }
         .btn-envoyer-message {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: #E8622A;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.2s;
             font-family: 'DM Sans', sans-serif;
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.25);
         }
         .btn-envoyer-message:hover {
             background: #D4571F;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
         .message-zone {
             margin-top: 16px;
