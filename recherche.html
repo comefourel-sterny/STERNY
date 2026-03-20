@@ -1028,12 +1028,9 @@
             padding: 28px;
             max-width: 480px;
             width: calc(100% - 40px);
-            min-height: 500px;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
         }
         .modal-profils-header {
             display: flex;
@@ -1071,7 +1068,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            flex: 1;
+            max-height: 400px;
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -1145,10 +1142,6 @@
         /* === VUE DÉTAIL PROFIL === */
         .profil-detail {
             padding: 8px 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
         .profil-back {
             background: none;
