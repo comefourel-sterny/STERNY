@@ -1064,18 +1064,11 @@
             gap: 12px;
             max-height: 400px;
             overflow-y: auto;
-            padding-right: 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
         .modal-profils-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-profils-list::-webkit-scrollbar-track {
-            background: #F4F5F7;
-            border-radius: 3px;
-        }
-        .modal-profils-list::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 3px;
+            display: none;
         }
         .modal-profils-list::-webkit-scrollbar-thumb:hover {
             background: #94A3B8;
