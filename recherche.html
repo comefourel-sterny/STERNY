@@ -4269,39 +4269,45 @@ document.querySelector('.modal-close-detail')?.addEventListener('click', () => {
 });
 
 // Clic sur "Envoyer un message" - affiche la conversation
-document.querySelector('.btn-envoyer-message')?.addEventListener('click', () => {
-    document.querySelector('.profil-detail-topbar').style.display = 'none';
-    document.querySelector('.profil-detail-header').style.display = 'none';
-    document.querySelector('.profil-detail-info').style.display = 'none';
-    document.querySelector('.btn-envoyer-message').style.display = 'none';
-    document.querySelector('.profil-conversation').style.display = 'flex';
-    const prenom = currentProfilName.split(' ')[0];
-    document.querySelector('.conv-name').textContent = prenom;
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-envoyer-message')) {
+        document.querySelector('.profil-detail-topbar').style.display = 'none';
+        document.querySelector('.profil-detail-header').style.display = 'none';
+        document.querySelector('.profil-detail-info').style.display = 'none';
+        document.querySelector('.btn-envoyer-message').style.display = 'none';
+        document.querySelector('.profil-conversation').style.display = 'flex';
+        const prenom = currentProfilName.split(' ')[0];
+        document.querySelector('.conv-name').textContent = prenom;
+    }
 });
 
 // Retour au profil depuis la conversation
-document.querySelector('.conversation-back')?.addEventListener('click', () => {
-    document.querySelector('.profil-conversation').style.display = 'none';
-    document.querySelector('.profil-detail-topbar').style.display = '';
-    document.querySelector('.profil-detail-header').style.display = '';
-    document.querySelector('.profil-detail-info').style.display = '';
-    document.querySelector('.btn-envoyer-message').style.display = 'flex';
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.conversation-back')) {
+        document.querySelector('.profil-conversation').style.display = 'none';
+        document.querySelector('.profil-detail-topbar').style.display = '';
+        document.querySelector('.profil-detail-header').style.display = '';
+        document.querySelector('.profil-detail-info').style.display = '';
+        document.querySelector('.btn-envoyer-message').style.display = 'flex';
+    }
 });
 
 // Envoyer un message
-document.querySelector('.btn-send')?.addEventListener('click', () => {
-    const textarea = document.querySelector('.conversation-input textarea');
-    const message = textarea.value.trim();
-    if (message) {
-        const messagesContainer = document.querySelector('.conversation-messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message-sent';
-        messageDiv.textContent = message;
-        messagesContainer.appendChild(messageDiv);
-        const systemMsg = messagesContainer.querySelector('.message-system');
-        if (systemMsg) systemMsg.style.display = 'none';
-        textarea.value = '';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-send')) {
+        const textarea = document.querySelector('.conversation-input textarea');
+        const message = textarea.value.trim();
+        if (message) {
+            const messagesContainer = document.querySelector('.conversation-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-sent';
+            messageDiv.textContent = message;
+            messagesContainer.appendChild(messageDiv);
+            const systemMsg = messagesContainer.querySelector('.message-system');
+            if (systemMsg) systemMsg.style.display = 'none';
+            textarea.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     }
 });
 
