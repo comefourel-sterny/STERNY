@@ -1019,7 +1019,7 @@
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
-            .calendar-period {
+            .calendar-period-text {
                 font-size: 16px;
             }
         }
@@ -1129,13 +1129,17 @@
         }
 
         .calendar-period {
-            font-size: 0;
-            color: transparent;
-            position: relative;
+            display: flex;
+            align-items: center;
         }
 
-        .calendar-period::after {
-            content: '📅  Sélectionnez vos semaines de présence';
+        .calendar-period-icon {
+            color: rgba(255,255,255,0.8);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .calendar-period-text {
             font-size: 15px;
             font-weight: 600;
             letter-spacing: 0.3px;
@@ -1552,7 +1556,15 @@
                             <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </button>
-                    <div class="calendar-period" id="calendarPeriodSearch"></div>
+                    <div class="calendar-period" id="calendarPeriodSearch">
+                        <svg class="calendar-period-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span class="calendar-period-text">Sélectionne ton rythme</span>
+                    </div>
                     <button type="button" id="nextMonthBtnSearch" class="calendar-nav-btn">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -3032,13 +3044,7 @@ function initCalendarRecherche() {
     if (!container) return;
     container.innerHTML = '';
 
-    // Afficher la période dynamique (comme creer-annonce)
-    const periodEl = document.getElementById('calendarPeriodSearch');
-    if (periodEl) {
-        const startMonthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche, 1);
-        const endMonthDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffsetRecherche + 2, 1);
-        periodEl.textContent = `${monthNames[startMonthDate.getMonth()]} - ${monthNames[endMonthDate.getMonth()]} ${endMonthDate.getFullYear()}`;
-    }
+    // Le texte de la barre de navigation est statique dans le HTML (pas de mise à jour dynamique)
 
     const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
