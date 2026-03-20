@@ -216,6 +216,13 @@
         .custom-option.selected {
             color: #E8622A;
         }
+        #rythmeDropdown {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #rythmeDropdown::-webkit-scrollbar {
+            display: none;
+        }
         .alt-option:hover > div:first-child { color: #E8622A !important; }
         .alt-option.selected > div:first-child { color: #E8622A !important; font-weight: 600 !important; }
         .alt-option.selected > div:last-child { font-weight: 400 !important; color: #94A3B8 !important; }
@@ -3734,6 +3741,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!wrapper || !dropdown) return;
         wrapper.addEventListener('click', function(e) {
             e.stopPropagation();
+            var rd = document.getElementById('rythmeDropdown');
+            if (rd) rd.classList.remove('open');
             dropdown.classList.toggle('open');
         });
         dropdown.querySelectorAll('.custom-option').forEach(function(opt) {
