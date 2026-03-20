@@ -1139,6 +1139,133 @@
             background: #D4571F;
         }
 
+        /* === VUE DÉTAIL PROFIL === */
+        .profil-detail {
+            padding: 8px 0;
+        }
+        .profil-back {
+            background: none;
+            border: none;
+            color: #64748B;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .profil-back:hover {
+            color: #1E293B;
+        }
+        .profil-detail-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .profil-detail-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #1E293B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 12px;
+        }
+        .profil-detail-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 4px;
+        }
+        .profil-detail-status {
+            font-size: 12px;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .profil-detail-info {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .profil-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+        .profil-detail-row:not(:last-child) {
+            border-bottom: 1px solid #E8EAF0;
+        }
+        .profil-detail-label {
+            color: #64748B;
+            font-size: 14px;
+        }
+        .profil-detail-value {
+            color: #1E293B;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-envoyer-message {
+            width: 100%;
+            padding: 14px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-envoyer-message:hover {
+            background: #D4571F;
+            transform: translateY(-1px);
+        }
+        .message-zone {
+            margin-top: 16px;
+        }
+        .message-zone textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .message-zone textarea:focus {
+            outline: none;
+            border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+        }
+        .btn-send-message {
+            width: 100%;
+            padding: 12px;
+            background: #1E293B;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: background 0.2s;
+        }
+        .btn-send-message:hover {
+            background: #334155;
+        }
+
         /* Alerte sous les annonces — compact inline */
         .alerte-bottom {
             grid-column: 1 / -1;
@@ -3876,23 +4003,109 @@ if (typeof supabaseClient !== 'undefined') {
                 <button class="profil-voir">Voir</button>
             </div>
         </div>
+        <div class="profil-detail" style="display: none;">
+            <button class="profil-back">← Retour</button>
+            <div class="profil-detail-header">
+                <div class="profil-detail-avatar">LM</div>
+                <h3 class="profil-detail-name">Léa M.</h3>
+                <span class="profil-detail-status">ÉTUDIANT</span>
+            </div>
+            <div class="profil-detail-info">
+                <div class="profil-detail-row">
+                    <span class="profil-detail-label">Rythme</span>
+                    <span class="profil-detail-value">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <div class="profil-detail-row">
+                    <span class="profil-detail-label">Ville</span>
+                    <span class="profil-detail-value">Rennes</span>
+                </div>
+            </div>
+            <button class="btn-envoyer-message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Envoyer un message
+            </button>
+            <div class="message-zone" style="display: none;">
+                <textarea placeholder="Écris ton message..."></textarea>
+                <button class="btn-send-message">Envoyer</button>
+            </div>
+        </div>
     </div>
 </div>
 <script>
+// Données mockup des profils
+const profilsData = {
+    1: { initials: 'LM', name: 'Léa M.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    2: { initials: 'AC', name: 'Antoine C.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    3: { initials: 'TR', name: 'Thomas R.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    4: { initials: 'SM', name: 'Sophie M.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    5: { initials: 'JD', name: 'Julie D.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    6: { initials: 'MB', name: 'Maxime B.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    7: { initials: 'CL', name: 'Camille L.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
+    8: { initials: 'NP', name: 'Nicolas P.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' }
+};
+
+function resetModalToList() {
+    document.querySelector('.profil-detail').style.display = 'none';
+    document.querySelector('.message-zone').style.display = 'none';
+    document.querySelector('.btn-envoyer-message').style.display = 'flex';
+    document.querySelector('.modal-profils-list').style.display = 'flex';
+    document.querySelector('.modal-profils-subtitle').style.display = 'block';
+}
+
 // Ouvrir la modal profils compatibles
 document.addEventListener('click', function(e) {
     if (e.target.closest('.btn-voir-profils')) {
+        resetModalToList();
         document.querySelector('.modal-profils-overlay').classList.add('active');
     }
 });
+
+// Clic sur "Voir" - affiche le détail
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.profil-voir');
+    if (!btn) return;
+    const card = btn.closest('.profil-card');
+    const profilId = card.dataset.profil;
+    const profil = profilsData[profilId];
+    if (!profil) return;
+
+    // Remplir les infos
+    document.querySelector('.profil-detail-avatar').textContent = profil.initials;
+    document.querySelector('.profil-detail-name').textContent = profil.name;
+    const values = document.querySelectorAll('.profil-detail-value');
+    values[0].textContent = profil.rythme;
+    values[1].textContent = profil.ville;
+
+    // Basculer la vue
+    document.querySelector('.modal-profils-list').style.display = 'none';
+    document.querySelector('.modal-profils-subtitle').style.display = 'none';
+    document.querySelector('.message-zone').style.display = 'none';
+    document.querySelector('.btn-envoyer-message').style.display = 'flex';
+    document.querySelector('.profil-detail').style.display = 'block';
+});
+
+// Clic sur "Retour" - revient à la liste
+document.querySelector('.profil-back')?.addEventListener('click', () => {
+    resetModalToList();
+});
+
+// Clic sur "Envoyer un message" - affiche la zone de texte
+document.querySelector('.btn-envoyer-message')?.addEventListener('click', () => {
+    document.querySelector('.message-zone').style.display = 'block';
+    document.querySelector('.btn-envoyer-message').style.display = 'none';
+});
+
 // Fermer la modal
 document.querySelector('.modal-profils .modal-close')?.addEventListener('click', () => {
     document.querySelector('.modal-profils-overlay').classList.remove('active');
+    resetModalToList();
 });
+
 // Fermer en cliquant sur l'overlay
 document.querySelector('.modal-profils-overlay')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) {
         e.currentTarget.classList.remove('active');
+        resetModalToList();
     }
 });
 </script>
