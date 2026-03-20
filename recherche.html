@@ -3142,7 +3142,6 @@ function handleCalendarDateClickRecherche(clickedDate) {
 
 function genererPatternCalendrierRecherche(startDate, weeksOn, weeksOff, endDate) {
     const dates = [];
-    const dayInMs = 24 * 60 * 60 * 1000;
     const onDays = weeksOn * 7;
     const offDays = (weeksOff || weeksOn) * 7;
     const cycleDays = onDays + offDays;
@@ -3150,15 +3149,17 @@ function genererPatternCalendrierRecherche(startDate, weeksOn, weeksOff, endDate
     // Reculer le startDate de ~2 mois pour inclure les semaines passées
     // (permet de capturer les dates du mois en cours même si le clic est plus tard)
     const cyclesBack = Math.ceil(60 / cycleDays);
-    const adjustedStart = new Date(startDate.getTime() - (cyclesBack * cycleDays * dayInMs));
+    const adjustedStart = new Date(startDate);
+    adjustedStart.setDate(adjustedStart.getDate() - (cyclesBack * cycleDays));
 
     // Générer depuis adjustedStart (~14 mois : 2 mois passé + 12 mois futur)
-    const totalDays = (cyclesBack * cycleDays) + (endDate ? Math.round((endDate - startDate) / dayInMs) + 1 : 365);
+    const totalDays = (cyclesBack * cycleDays) + (endDate ? Math.round((endDate - startDate) / 86400000) + 1 : 365);
 
     for (let i = 0; i < totalDays; i++) {
         const positionInCycle = i % cycleDays;
         if (positionInCycle < onDays) {
-            const date = new Date(adjustedStart.getTime() + (i * dayInMs));
+            const date = new Date(adjustedStart);
+            date.setDate(adjustedStart.getDate() + i);
             dates.push(date);
         }
     }
