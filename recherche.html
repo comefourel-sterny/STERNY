@@ -1099,37 +1099,43 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #F4F5F7;
-            padding: 10px 20px;
-            border-radius: 10px;
+            background: #1E293B;
+            padding: 14px 20px;
+            border-radius: 12px;
             margin-bottom: 16px;
         }
 
         .calendar-nav-btn {
             width: 32px;
             height: 32px;
-            border: 1px solid #E8EAF0;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 8px;
-            background: white;
+            background: rgba(255,255,255,0.1);
             cursor: pointer;
             transition: all 0.25s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #94A3B8;
+            color: white;
         }
 
         .calendar-nav-btn:hover {
-            border-color: #E8622A;
-            color: #E8622A;
-            background: #FFF8F5;
+            background: rgba(232, 98, 42, 0.4);
+            border-color: rgba(232, 98, 42, 0.5);
         }
 
         .calendar-period {
             font-size: 0;
-            visibility: hidden;
-            height: 0;
-            overflow: hidden;
+            color: transparent;
+            position: relative;
+        }
+
+        .calendar-period::after {
+            content: 'Sélectionnez vos semaines de présence';
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
         }
 
         .calendar-months-grid {
@@ -1226,23 +1232,24 @@
             color: #CBD5E1;
         }
 
-        /* Jour sélectionné — subtil */
+        /* Jour sélectionné */
         .day-cell.selected {
-            background: rgba(232, 98, 42, 0.15);
-            color: #E8622A;
-            font-weight: 700;
-            border: 1.5px solid #E8622A;
+            background: #E8622A;
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
         }
 
         .day-cell.selected:hover {
-            background: rgba(232, 98, 42, 0.25);
+            background: #D4571F;
         }
 
         .day-cell.past.selected {
             opacity: 0.6;
-            background: rgba(232, 98, 42, 0.1);
-            color: #E8622A;
-            border: 1.5px solid rgba(232, 98, 42, 0.4);
+            background: #E8622A;
+            color: white;
+            border: none;
         }
 
         /* SECTION ICONS — design system */
