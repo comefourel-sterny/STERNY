@@ -4085,6 +4085,10 @@ if (typeof supabaseClient !== 'undefined') {
                     <span class="profil-info-value profil-val-type">Asymétrique</span>
                 </div>
                 <div class="profil-info-item">
+                    <span class="profil-info-label">Âge</span>
+                    <span class="profil-info-value profil-val-age">22 ans</span>
+                </div>
+                <div class="profil-info-item">
                     <span class="profil-info-label">Rythme</span>
                     <span class="profil-info-value profil-val-rythme">2 sem. / 1 sem.</span>
                 </div>
@@ -4115,14 +4119,14 @@ if (typeof supabaseClient !== 'undefined') {
 <script>
 // Données mockup des profils
 const profilsData = {
-    1: { initials: 'LM', name: 'Léa M.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
-    2: { initials: 'AC', name: 'Antoine C.', genre: 'M', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
-    3: { initials: 'TR', name: 'Thomas R.', genre: 'M', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-    4: { initials: 'SM', name: 'Sophie M.', genre: 'F', type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
-    5: { initials: 'JD', name: 'Julie D.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
-    6: { initials: 'MB', name: 'Maxime B.', genre: 'M', type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-    7: { initials: 'CL', name: 'Camille L.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
-    8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
+    1: { initials: 'LM', name: 'Léa M.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
+    2: { initials: 'AC', name: 'Antoine C.', genre: 'M', age: 24, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
+    3: { initials: 'TR', name: 'Thomas R.', genre: 'M', age: 21, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    4: { initials: 'SM', name: 'Sophie M.', genre: 'F', age: 23, type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
+    5: { initials: 'JD', name: 'Julie D.', genre: 'F', age: 20, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
+    6: { initials: 'MB', name: 'Maxime B.', genre: 'M', age: 25, type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    7: { initials: 'CL', name: 'Camille L.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
+    8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', age: 23, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
 };
 
 function resetModalToList() {
@@ -4156,6 +4160,7 @@ document.addEventListener('click', function(e) {
     document.querySelector('.profil-detail-name').textContent = profil.name;
     document.querySelector('.profil-detail-status').textContent = profil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT';
     document.querySelector('.profil-val-type').textContent = profil.type;
+    document.querySelector('.profil-val-age').textContent = profil.age + ' ans';
     document.querySelector('.profil-val-rythme').textContent = profil.rythme;
     document.querySelector('.profil-val-ville').textContent = profil.villeRecherche;
     document.querySelector('.profil-val-ecole').textContent = profil.villeEcole;
