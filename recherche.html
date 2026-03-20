@@ -1036,12 +1036,14 @@
         .modal-profils {
             background: white;
             border-radius: 20px;
-            padding: 36px;
+            padding: 0;
             max-width: 460px;
             width: calc(100% - 40px);
-            height: 500px;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
-            border: 1px solid #E8EAF0;
+            height: auto;
+            min-height: 450px;
+            max-height: 550px;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1.5px solid #E8EAF0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -1053,6 +1055,7 @@
             align-items: center;
             margin-bottom: 4px;
             flex-shrink: 0;
+            padding: 36px 36px 0;
         }
         .modal-profils-header h3 {
             font-size: 18px;
@@ -1080,6 +1083,7 @@
             color: #64748B;
             margin: 0 0 20px;
             flex-shrink: 0;
+            padding: 0 36px;
         }
         .modal-profils-list {
             display: flex;
@@ -1089,6 +1093,7 @@
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            padding: 0 36px 36px;
         }
         .modal-profils-list::-webkit-scrollbar {
             display: none;
@@ -1158,7 +1163,7 @@
 
         /* === VUE DÉTAIL PROFIL === */
         .profil-detail {
-            padding: 0;
+            padding: 0 36px 36px;
             flex: 1;
             display: none;
             flex-direction: column;
@@ -1174,6 +1179,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            padding-top: 36px;
             flex-shrink: 0;
         }
         .profil-back {
@@ -1306,6 +1312,7 @@
             display: flex;
             flex-direction: column;
             padding: 0;
+            height: 450px;
         }
         .overlay-chat-header {
             display: flex;
