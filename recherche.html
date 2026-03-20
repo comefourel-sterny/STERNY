@@ -1094,40 +1094,38 @@
             }
         }
         
-        /* ============ CALENDRIER — style dashboard ============ */
+        /* ============ CALENDRIER — style raffiné ============ */
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
-            padding-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
             border-bottom: 1px solid #E8EAF0;
         }
 
         .calendar-nav-btn {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 12px;
-            background: #FFF8F5;
+            border-radius: 10px;
+            background: white;
             cursor: pointer;
             transition: all 0.25s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #E8622A;
+            color: #94A3B8;
         }
 
         .calendar-nav-btn:hover {
-            background: #E8622A;
             border-color: #E8622A;
-            color: white;
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.3);
-            transform: translateY(-1px);
+            color: #E8622A;
+            background: #FFF8F5;
         }
 
         .calendar-period {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #1E293B;
             letter-spacing: -0.3px;
@@ -1136,29 +1134,29 @@
         .calendar-months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
         .calendar-month {
-            background: #FEFCFA;
-            border: 1.5px solid #F0E6DF;
-            border-radius: 16px;
-            padding: 20px;
+            background: #FAFBFC;
+            border: 1px solid #E8EAF0;
+            border-radius: 14px;
+            padding: 18px;
             transition: all 0.25s;
         }
 
         .calendar-month:hover {
-            border-color: rgba(232, 98, 42, 0.3);
-            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+            border-color: rgba(232, 98, 42, 0.2);
+            box-shadow: 0 4px 16px rgba(232, 98, 42, 0.08);
         }
 
         .month-header {
             text-align: center;
             font-size: 14px;
             font-weight: 700;
-            color: #E8622A;
-            margin-bottom: 16px;
+            color: #1E293B;
+            margin-bottom: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1167,26 +1165,28 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .weekday {
             text-align: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: #1E293B;
-            padding: 6px 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #94A3B8;
+            padding: 4px 0;
             letter-spacing: 0.3px;
         }
 
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
+            gap: 4px;
         }
 
         .day-cell {
-            aspect-ratio: 1;
+            width: 36px;
+            height: 36px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1202,20 +1202,43 @@
             visibility: hidden;
         }
 
+        /* Jours disponibles (orange subtil) */
+        .day-cell.available {
+            background: rgba(232, 98, 42, 0.12);
+            color: #E8622A;
+            font-weight: 600;
+        }
+
+        .day-cell.available:hover {
+            background: rgba(232, 98, 42, 0.25);
+        }
+
         .day-cell:hover {
             background: rgba(232, 98, 42, 0.08);
             color: #E8622A;
         }
 
+        /* Jours non disponibles */
         .day-cell.past {
+            color: #CBD5E1;
+            cursor: default;
+        }
+
+        .day-cell.past:hover {
+            background: transparent;
             color: #CBD5E1;
         }
 
+        /* Jour sélectionné/actif */
         .day-cell.selected {
             background: #E8622A;
             color: white;
             font-weight: 700;
             box-shadow: 0 2px 8px rgba(232, 98, 42, 0.35);
+        }
+
+        .day-cell.selected:hover {
+            background: #D4571F;
         }
 
         .day-cell.past.selected {
@@ -1511,7 +1534,7 @@
     <div class="main-content">
             
             <!-- CALENDRIER DE DISPONIBILITÉS -->
-            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px 32px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
+            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);">
 
                 <!-- NAVIGATION AVEC TITRE AU CENTRE -->
                 <div class="calendar-header">
