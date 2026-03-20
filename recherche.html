@@ -946,12 +946,13 @@
             background: #D4571F;
         }
         .no-results-match .match-footer-text {
-            font-size: 13px;
+            font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
             text-align: center;
             margin: 16px auto 0;
-            max-width: 400px;
-            line-height: 1.5;
+            max-width: 520px;
+            line-height: 1.4;
+            white-space: nowrap;
         }
         .no-results-match .match-tip {
             font-size: 13px;
@@ -964,6 +965,123 @@
             gap: 8px;
             max-width: 500px;
             text-align: center;
+        }
+
+        /* === MODAL PROFILS COMPATIBLES === */
+        .modal-profils-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-profils-overlay.active { display: flex; }
+        .modal-profils {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 480px;
+            width: calc(100% - 40px);
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-profils-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .modal-profils-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F4F5F7;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: #E8EAF0; }
+        .modal-profils-subtitle {
+            font-size: 14px;
+            color: #64748B;
+            margin: 0 0 20px;
+        }
+        .modal-profils-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .profil-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .profil-card:hover {
+            border-color: #E8622A;
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.1);
+        }
+        .profil-avatar-modal {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1E293B;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .profil-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .profil-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+        }
+        .profil-rythme {
+            font-size: 13px;
+            color: #64748B;
+        }
+        .profil-voir {
+            padding: 8px 16px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .profil-voir:hover {
+            background: #D4571F;
         }
 
         /* Alerte sous les annonces — compact inline */
@@ -2324,7 +2442,7 @@ function mettreAJourCompteursFiltres() {
                             <span class="match-avatars-more">+9 autres</span>
                         </div>
                         <div class="match-buttons">
-                            <button class="btn-match-outline">Voir les profils</button>
+                            <button class="btn-match-outline btn-voir-profils">Voir les profils</button>
                             <button class="btn-match-primary">Trouver mon logement</button>
                         </div>
                         <p class="match-footer-text">Votre futur colocataire vous attend — trouvez votre logement pour matcher</p>
@@ -3588,5 +3706,59 @@ if (typeof supabaseClient !== 'undefined') {
 </script>
 <script src="cookie-banner.js"></script>
 <script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+<!-- Modal profils compatibles -->
+<div class="modal-profils-overlay">
+    <div class="modal-profils">
+        <div class="modal-profils-header">
+            <h3>Profils compatibles à Rennes</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <p class="modal-profils-subtitle">Leur rythme matche avec le tien</p>
+        <div class="modal-profils-list">
+            <div class="profil-card" data-profil="1">
+                <div class="profil-avatar-modal">LM</div>
+                <div class="profil-info">
+                    <span class="profil-name">Léa M.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="2">
+                <div class="profil-avatar-modal">AC</div>
+                <div class="profil-info">
+                    <span class="profil-name">Antoine C.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="3">
+                <div class="profil-avatar-modal">TR</div>
+                <div class="profil-info">
+                    <span class="profil-name">Thomas R.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// Ouvrir la modal profils compatibles
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-voir-profils')) {
+        document.querySelector('.modal-profils-overlay').classList.add('active');
+    }
+});
+// Fermer la modal
+document.querySelector('.modal-profils .modal-close')?.addEventListener('click', () => {
+    document.querySelector('.modal-profils-overlay').classList.remove('active');
+});
+// Fermer en cliquant sur l'overlay
+document.querySelector('.modal-profils-overlay')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        e.currentTarget.classList.remove('active');
+    }
+});
+</script>
 </body>
 </html>
