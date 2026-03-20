@@ -1190,7 +1190,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 500;
             color: #475569;
@@ -1202,15 +1202,15 @@
             visibility: hidden;
         }
 
-        /* Jours disponibles (orange subtil) */
+        /* Jours disponibles (fond orange léger) */
         .day-cell.available {
-            background: rgba(232, 98, 42, 0.12);
+            background: rgba(232, 98, 42, 0.15);
             color: #E8622A;
             font-weight: 600;
         }
 
         .day-cell.available:hover {
-            background: rgba(232, 98, 42, 0.25);
+            background: rgba(232, 98, 42, 0.3);
         }
 
         .day-cell:hover {
@@ -1218,9 +1218,10 @@
             color: #E8622A;
         }
 
-        /* Jours non disponibles */
+        /* Jours passés / non disponibles */
         .day-cell.past {
             color: #CBD5E1;
+            background: transparent;
             cursor: default;
         }
 
@@ -1229,7 +1230,7 @@
             color: #CBD5E1;
         }
 
-        /* Jour sélectionné/actif */
+        /* Jour sélectionné / aujourd'hui */
         .day-cell.selected {
             background: #E8622A;
             color: white;
