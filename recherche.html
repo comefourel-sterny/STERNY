@@ -1099,14 +1099,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #E8EAF0;
         }
 
         .calendar-nav-btn {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: 1.5px solid #E8EAF0;
             border-radius: 10px;
             background: white;
@@ -1125,7 +1125,7 @@
         }
 
         .calendar-period {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: #1E293B;
             letter-spacing: -0.3px;
@@ -1134,15 +1134,15 @@
         .calendar-months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .calendar-month {
             background: #FAFBFC;
             border: 1px solid #E8EAF0;
-            border-radius: 14px;
-            padding: 18px;
+            border-radius: 12px;
+            padding: 12px;
             transition: all 0.25s;
         }
 
@@ -1153,10 +1153,10 @@
 
         .month-header {
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             color: #1E293B;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1164,36 +1164,36 @@
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 6px;
+            gap: 2px;
+            margin-bottom: 4px;
         }
 
         .weekday {
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
             color: #94A3B8;
-            padding: 4px 0;
+            padding: 2px 0;
             letter-spacing: 0.3px;
         }
 
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 2px;
         }
 
         .day-cell {
-            width: 36px;
-            height: 36px;
+            width: 28px;
+            height: 28px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #1E293B;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #475569;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -1203,40 +1203,40 @@
         }
 
         .day-cell:hover {
-            background: rgba(232, 98, 42, 0.15);
+            background: rgba(232, 98, 42, 0.1);
             color: #E8622A;
         }
 
         /* Jours passés / non disponibles */
         .day-cell.past {
-            color: #CBD5E1;
+            color: #D1D5DB;
             background: transparent;
             cursor: default;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         .day-cell.past:hover {
             background: transparent;
-            color: #CBD5E1;
+            color: #D1D5DB;
         }
 
-        /* Jour sélectionné */
+        /* Jour sélectionné — subtil */
         .day-cell.selected {
-            background: #E8622A;
-            color: white;
+            background: rgba(232, 98, 42, 0.15);
+            color: #E8622A;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.3);
+            border: 1.5px solid #E8622A;
         }
 
         .day-cell.selected:hover {
-            background: #D4571F;
+            background: rgba(232, 98, 42, 0.25);
         }
 
         .day-cell.past.selected {
-            opacity: 0.75;
-            background: #E8622A;
-            color: white;
-            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.2);
+            opacity: 0.6;
+            background: rgba(232, 98, 42, 0.1);
+            color: #E8622A;
+            border: 1.5px solid rgba(232, 98, 42, 0.4);
         }
 
         /* SECTION ICONS — design system */
@@ -1525,7 +1525,7 @@
     <div class="main-content">
             
             <!-- CALENDRIER DE DISPONIBILITÉS -->
-            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
+            <div id="calendrierRecherche" style="display: none; background: white; padding: 20px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16); max-width: 100%; overflow: hidden;">
 
                 <!-- NAVIGATION AVEC TITRE AU CENTRE -->
                 <div class="calendar-header">
