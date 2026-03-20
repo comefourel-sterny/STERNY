@@ -1025,16 +1025,35 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        .modal-profils-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-profils-list::-webkit-scrollbar-track {
+            background: #F4F5F7;
+            border-radius: 3px;
+        }
+        .modal-profils-list::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        .modal-profils-list::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
         }
         .profil-card {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 14px 16px;
+            padding: 16px;
+            min-height: 72px;
             border: 1.5px solid #E8EAF0;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
+            box-sizing: border-box;
         }
         .profil-card:hover {
             border-color: #E8622A;
@@ -3735,6 +3754,46 @@ if (typeof supabaseClient !== 'undefined') {
                 <div class="profil-avatar-modal">TR</div>
                 <div class="profil-info">
                     <span class="profil-name">Thomas R.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="4">
+                <div class="profil-avatar-modal">SM</div>
+                <div class="profil-info">
+                    <span class="profil-name">Sophie M.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="5">
+                <div class="profil-avatar-modal">JD</div>
+                <div class="profil-info">
+                    <span class="profil-name">Julie D.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="6">
+                <div class="profil-avatar-modal">MB</div>
+                <div class="profil-info">
+                    <span class="profil-name">Maxime B.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="7">
+                <div class="profil-avatar-modal">CL</div>
+                <div class="profil-info">
+                    <span class="profil-name">Camille L.</span>
+                    <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
+                </div>
+                <button class="profil-voir">Voir</button>
+            </div>
+            <div class="profil-card" data-profil="8">
+                <div class="profil-avatar-modal">NP</div>
+                <div class="profil-info">
+                    <span class="profil-name">Nicolas P.</span>
                     <span class="profil-rythme">2 sem. école / 1 sem. entreprise</span>
                 </div>
                 <button class="profil-voir">Voir</button>
