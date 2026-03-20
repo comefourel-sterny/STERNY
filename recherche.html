@@ -745,40 +745,55 @@
             font-weight: 500;
         }
 
+        /* === BLOC 1 : ALERTE LOGEMENT === */
         .no-results {
+            grid-column: 1 / -1;
+        }
+        .no-results-alert {
             text-align: center;
-            padding: 48px 24px;
+            padding: 32px;
             background: white;
             border-radius: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            grid-column: 1 / -1;
             box-sizing: border-box;
             border: 1px solid #E8EAF0;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
         }
-        .no-results h3 {
-            font-size: 18px;
+        .no-results-alert .nr-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(232, 98, 42, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .no-results-alert .nr-icon svg {
+            color: #E8622A;
+        }
+        .no-results-alert h3 {
+            font-size: 20px;
             color: #1E293B;
-            margin: 16px 0 6px;
+            margin: 0 0 6px;
             font-weight: 700;
         }
-        .no-results p {
+        .no-results-alert .nr-subtitle {
             font-size: 14px;
-            color: #94A3B8;
-            max-width: 360px;
+            color: #64748B;
+            margin: 0 0 20px;
             line-height: 1.5;
         }
-        .no-results .alert-form {
+        .no-results-alert .alert-form {
             display: flex;
             gap: 8px;
-            margin-top: 20px;
             max-width: 400px;
             width: 100%;
         }
-        .no-results .alert-form input {
+        .no-results-alert .alert-form input {
             flex: 1;
             padding: 12px 16px;
             border: 1.5px solid #E8EAF0;
@@ -790,14 +805,14 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        .no-results .alert-form input:focus {
+        .no-results-alert .alert-form input:focus {
             border-color: #E8622A;
             box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
-        .no-results .alert-form input::placeholder {
+        .no-results-alert .alert-form input::placeholder {
             color: #9CA3AF;
         }
-        .no-results .alert-form button {
+        .no-results-alert .alert-form button {
             padding: 12px 24px;
             background: #E8622A;
             color: white;
@@ -810,13 +825,115 @@
             transition: all 0.2s;
             font-family: 'DM Sans', sans-serif;
         }
-        .no-results .alert-form button:hover {
+        .no-results-alert .alert-form button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
+        }
+
+        /* === BLOC 2 : PERSONNES QUI MATCHENT === */
+        .no-results-match {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 16px;
+            color: white;
+            text-align: center;
+        }
+        .no-results-match .match-badge {
+            background: rgba(232, 98, 42, 0.2);
+            border: 1px solid rgba(232, 98, 42, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+        .no-results-match .match-explain {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0 auto 24px;
+            max-width: 500px;
+            line-height: 1.5;
+        }
+        .no-results-match .match-avatars {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .no-results-match .match-avatar {
+            width: 48px;
+            height: 48px;
+            background: #E8622A;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+        }
+        .no-results-match .match-avatars-more {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+        .no-results-match .match-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .no-results-match .btn-match-outline {
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .no-results-match .btn-match-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .no-results-match .btn-match-primary {
+            background: #E8622A;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .no-results-match .btn-match-primary:hover {
+            background: #D4571F;
+        }
+        .no-results-match .match-tip {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* Alerte sous les annonces — compact inline */
@@ -1080,8 +1197,12 @@
                 flex: 1;
             }
 
-            .no-results .alert-form {
+            .no-results-alert .alert-form {
                 flex-direction: column;
+            }
+            .no-results-match .match-buttons {
+                flex-direction: column;
+                align-items: center;
             }
 
             .main-content {
@@ -2146,19 +2267,39 @@ function mettreAJourCompteursFiltres() {
         if (liste.length === 0) {
             grid.innerHTML = `
                 <div class="no-results">
-                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #FFF1E8; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="M21 21l-4.35-4.35"/>
-                        </svg>
+                    <!-- BLOC 1 : ALERTE LOGEMENT -->
+                    <div class="no-results-alert">
+                        <div class="nr-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <h3>Pas encore de logement disponible</h3>
+                        <p class="nr-subtitle">Sois notifié dès qu'un logement correspond</p>
+                        <div class="alert-form">
+                            <input type="email" id="alertEmail" placeholder="ton@email.com">
+                            <button onclick="creerAlerte()">M'alerter</button>
+                        </div>
+                        <p id="alertMessage"></p>
                     </div>
-                    <h3>Aucun logement trouv\u00e9</h3>
-                    <p>Modifie tes crit\u00e8res ou active une alerte pour \u00eatre notifi\u00e9 d\u00e8s qu'un logement correspond.</p>
-                    <div class="alert-form">
-                        <input type="email" id="alertEmail" placeholder="ton@email.com">
-                        <button onclick="creerAlerte()">Activer l'alerte</button>
+
+                    <!-- BLOC 2 : PERSONNES QUI MATCHENT -->
+                    <div class="no-results-match">
+                        <div class="match-badge">🤝 12 personnes matchent avec ton rythme à Rennes</div>
+                        <p class="match-explain">Leur rythme est complémentaire au tien : quand tu es en entreprise, ils sont à l'école.</p>
+                        <div class="match-avatars">
+                            <div class="match-avatar">LM</div>
+                            <div class="match-avatar">AC</div>
+                            <div class="match-avatar">TR</div>
+                            <span class="match-avatars-more">+9 autres</span>
+                        </div>
+                        <div class="match-buttons">
+                            <button class="btn-match-outline">Voir les profils</button>
+                            <button class="btn-match-primary">Chercher via une agence</button>
+                        </div>
+                        <div class="match-tip">💡 Trouvez chacun un logement, puis revenez matcher ensemble sur STERNY !</div>
                     </div>
-                    <p id="alertMessage"></p>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
@@ -2984,7 +3125,7 @@ function genererBlocDemande(ville, contexte) {
 async function creerAlerte() {
     const email = document.getElementById('alertEmail').value.trim();
     const messageDiv = document.getElementById('alertMessage');
-    const btn = document.querySelector('.no-results .alert-form button');
+    const btn = document.querySelector('.no-results-alert .alert-form button');
     await envoyerAlerte(email, 'alertEmail', messageDiv, btn);
 }
 
