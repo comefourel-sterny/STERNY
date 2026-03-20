@@ -1146,7 +1146,7 @@
 
         /* === VUE DÉTAIL PROFIL === */
         .profil-detail {
-            padding: 8px 0;
+            padding: 0;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -1157,6 +1157,13 @@
         .profil-detail::-webkit-scrollbar {
             display: none;
         }
+        .profil-detail-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
         .profil-back {
             background: none;
             border: none;
@@ -1165,15 +1172,28 @@
             font-weight: 500;
             cursor: pointer;
             padding: 0;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
             font-family: 'DM Sans', sans-serif;
             transition: color 0.2s;
         }
         .profil-back:hover {
             color: #E8622A;
+        }
+        .modal-close-detail {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F4F5F7;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close-detail:hover {
+            background: #E8EAF0;
         }
         .profil-detail-header {
             text-align: center;
@@ -1217,27 +1237,26 @@
             border-radius: 20px;
         }
         .profil-detail-info {
-            background: #F8FAFC;
-            border-radius: 14px;
-            padding: 20px;
+            background: transparent;
+            border: none;
+            padding: 0;
             margin-bottom: 24px;
-            border: 1px solid #E8EAF0;
         }
-        .profil-detail-row {
+        .profil-info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-        }
-        .profil-detail-row:not(:last-child) {
             border-bottom: 1px solid #E8EAF0;
         }
-        .profil-detail-label {
+        .profil-info-item:last-child {
+            border-bottom: none;
+        }
+        .profil-info-label {
             color: #64748B;
             font-size: 14px;
-            font-weight: 500;
         }
-        .profil-detail-value {
+        .profil-info-value {
             color: #1E293B;
             font-size: 14px;
             font-weight: 600;
@@ -4040,32 +4059,35 @@ if (typeof supabaseClient !== 'undefined') {
             </div>
         </div>
         <div class="profil-detail" style="display: none;">
-            <button class="profil-back">Retour</button>
+            <div class="profil-detail-topbar">
+                <button class="profil-back">Retour</button>
+                <button class="modal-close-detail">&times;</button>
+            </div>
             <div class="profil-detail-header">
                 <div class="profil-detail-avatar">LM</div>
                 <h3 class="profil-detail-name">Léa M.</h3>
                 <span class="profil-detail-status">ÉTUDIANT</span>
             </div>
             <div class="profil-detail-info">
-                <div class="profil-detail-row">
-                    <span class="profil-detail-label">Type</span>
-                    <span class="profil-detail-value profil-val-type">Asymétrique</span>
+                <div class="profil-info-item">
+                    <span class="profil-info-label">Type</span>
+                    <span class="profil-info-value profil-val-type">Asymétrique</span>
                 </div>
-                <div class="profil-detail-row">
-                    <span class="profil-detail-label">Rythme</span>
-                    <span class="profil-detail-value profil-val-rythme">2 sem. / 1 sem.</span>
+                <div class="profil-info-item">
+                    <span class="profil-info-label">Rythme</span>
+                    <span class="profil-info-value profil-val-rythme">2 sem. / 1 sem.</span>
                 </div>
-                <div class="profil-detail-row">
-                    <span class="profil-detail-label">Ville recherchée</span>
-                    <span class="profil-detail-value profil-val-ville">Rennes</span>
+                <div class="profil-info-item">
+                    <span class="profil-info-label">Ville recherchée</span>
+                    <span class="profil-info-value profil-val-ville">Rennes</span>
                 </div>
-                <div class="profil-detail-row">
-                    <span class="profil-detail-label">École</span>
-                    <span class="profil-detail-value profil-val-ecole">Rennes</span>
+                <div class="profil-info-item">
+                    <span class="profil-info-label">École</span>
+                    <span class="profil-info-value profil-val-ecole">Rennes</span>
                 </div>
-                <div class="profil-detail-row">
-                    <span class="profil-detail-label">Entreprise</span>
-                    <span class="profil-detail-value profil-val-entreprise">Nantes</span>
+                <div class="profil-info-item">
+                    <span class="profil-info-label">Entreprise</span>
+                    <span class="profil-info-value profil-val-entreprise">Nantes</span>
                 </div>
             </div>
             <button class="btn-envoyer-message">
@@ -4098,7 +4120,7 @@ function resetModalToList() {
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
     document.querySelector('.modal-profils-list').style.display = 'flex';
     document.querySelector('.modal-profils-subtitle').style.display = 'block';
-    document.querySelector('.modal-profils-header h3').style.display = 'block';
+    document.querySelector('.modal-profils-header').style.display = 'flex';
 }
 
 // Ouvrir la modal profils compatibles
@@ -4130,7 +4152,7 @@ document.addEventListener('click', function(e) {
     // Basculer la vue
     document.querySelector('.modal-profils-list').style.display = 'none';
     document.querySelector('.modal-profils-subtitle').style.display = 'none';
-    document.querySelector('.modal-profils-header h3').style.display = 'none';
+    document.querySelector('.modal-profils-header').style.display = 'none';
     document.querySelector('.message-zone').style.display = 'none';
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
     document.querySelector('.profil-detail').style.display = 'block';
@@ -4138,6 +4160,12 @@ document.addEventListener('click', function(e) {
 
 // Clic sur "Retour" - revient à la liste
 document.querySelector('.profil-back')?.addEventListener('click', () => {
+    resetModalToList();
+});
+
+// Croix de la vue détail - ferme toute la modal
+document.querySelector('.modal-close-detail')?.addEventListener('click', () => {
+    document.querySelector('.modal-profils-overlay').classList.remove('active');
     resetModalToList();
 });
 
