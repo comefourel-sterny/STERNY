@@ -1310,27 +1310,26 @@
             border-bottom: 1px solid #F1F5F9;
             flex-shrink: 0;
         }
-        .conversation-back {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #F3F4F6;
-            border-radius: 8px;
+        .conversation-back,
+        .conversation-close {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #E8EAF0;
+            background: #F8FAFC;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6B7280;
+            color: #64748B;
+            padding: 0;
             flex-shrink: 0;
             transition: all 0.2s;
         }
-        .conversation-back:hover {
-            background: #E5E7EB;
-            color: #1E293B;
-        }
-        .conversation-back svg {
-            width: 16px;
-            height: 16px;
+        .conversation-back:hover,
+        .conversation-close:hover {
+            border-color: #E8622A;
+            color: #E8622A;
         }
         .conversation-user {
             display: flex;
@@ -1365,25 +1364,6 @@
             color: #64748B;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        .conversation-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: #F3F4F6;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6B7280;
-            flex-shrink: 0;
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-        .conversation-close:hover {
-            background: #E5E7EB;
-            color: #1E293B;
         }
         .conversation-messages {
             flex: 1;
