@@ -1295,41 +1295,100 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
-        .message-zone {
-            margin-top: 16px;
+        /* === CONVERSATION === */
+        .profil-conversation {
+            display: flex;
+            flex-direction: column;
         }
-        .message-zone textarea {
-            width: 100%;
-            min-height: 100px;
+        .conversation-header {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E8EAF0;
+            margin-bottom: 16px;
+        }
+        .conversation-back {
+            background: none;
+            border: none;
+            color: #64748B;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
+        }
+        .conversation-back:hover {
+            color: #E8622A;
+        }
+        .conversation-messages {
+            flex: 1;
+            min-height: 150px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 12px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .conversation-messages::-webkit-scrollbar {
+            display: none;
+        }
+        .message-system {
+            text-align: center;
+            color: #64748B;
+            font-size: 14px;
+            padding: 20px;
+            background: #F8FAFC;
+            border-radius: 12px;
+        }
+        .message-sent {
+            background: #E8622A;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 16px 16px 4px 16px;
+            margin-left: auto;
+            max-width: 80%;
+            margin-bottom: 8px;
+            font-size: 14px;
+            width: fit-content;
+        }
+        .conversation-input {
+            display: flex;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px solid #E8EAF0;
+            align-items: flex-end;
+        }
+        .conversation-input textarea {
+            flex: 1;
             padding: 12px;
             border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
+            border-radius: 12px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            resize: vertical;
-            margin-bottom: 12px;
+            resize: none;
             box-sizing: border-box;
         }
-        .message-zone textarea:focus {
+        .conversation-input textarea:focus {
             outline: none;
             border-color: #E8622A;
             box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
-        .btn-send-message {
-            width: 100%;
-            padding: 12px;
-            background: #1E293B;
-            color: white;
+        .btn-send {
+            width: 44px;
+            height: 44px;
+            background: #E8622A;
             border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
+            border-radius: 12px;
+            color: white;
             cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
         }
-        .btn-send-message:hover {
-            background: #334155;
+        .btn-send:hover {
+            background: #D4571F;
+            transform: scale(1.05);
         }
 
         /* Alerte sous les annonces — compact inline */
@@ -4109,9 +4168,21 @@ if (typeof supabaseClient !== 'undefined') {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Envoyer un message
             </button>
-            <div class="message-zone" style="display: none;">
-                <textarea placeholder="Écris ton message..."></textarea>
-                <button class="btn-send-message">Envoyer</button>
+            <div class="profil-conversation" style="display: none;">
+                <div class="conversation-header">
+                    <button class="conversation-back">← Retour au profil</button>
+                </div>
+                <div class="conversation-messages">
+                    <div class="message-system">
+                        Envoie ton premier message à <span class="conv-name">Sophie</span> !
+                    </div>
+                </div>
+                <div class="conversation-input">
+                    <textarea placeholder="Écris ton message..." rows="3"></textarea>
+                    <button class="btn-send">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -4129,13 +4200,23 @@ const profilsData = {
     8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', age: 23, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
 };
 
+let currentProfilName = '';
+
 function resetModalToList() {
     document.querySelector('.profil-detail').style.display = 'none';
-    document.querySelector('.message-zone').style.display = 'none';
+    document.querySelector('.profil-conversation').style.display = 'none';
+    document.querySelector('.profil-detail-header').style.display = '';
+    document.querySelector('.profil-detail-info').style.display = '';
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
     document.querySelector('.modal-profils-list').style.display = 'flex';
     document.querySelector('.modal-profils-subtitle').style.display = 'block';
     document.querySelector('.modal-profils-header').style.display = 'flex';
+    // Reset conversation
+    const msgs = document.querySelector('.conversation-messages');
+    const systemMsg = msgs.querySelector('.message-system');
+    if (systemMsg) systemMsg.style.display = '';
+    msgs.querySelectorAll('.message-sent').forEach(m => m.remove());
+    document.querySelector('.conversation-input textarea').value = '';
 }
 
 // Ouvrir la modal profils compatibles
@@ -4158,6 +4239,7 @@ document.addEventListener('click', function(e) {
     // Remplir les infos
     document.querySelector('.profil-detail-avatar').textContent = profil.initials;
     document.querySelector('.profil-detail-name').textContent = profil.name;
+    currentProfilName = profil.name;
     document.querySelector('.profil-detail-status').textContent = profil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT';
     document.querySelector('.profil-val-type').textContent = profil.type;
     document.querySelector('.profil-val-age').textContent = profil.age + ' ans';
@@ -4186,10 +4268,41 @@ document.querySelector('.modal-close-detail')?.addEventListener('click', () => {
     resetModalToList();
 });
 
-// Clic sur "Envoyer un message" - affiche la zone de texte
+// Clic sur "Envoyer un message" - affiche la conversation
 document.querySelector('.btn-envoyer-message')?.addEventListener('click', () => {
-    document.querySelector('.message-zone').style.display = 'block';
+    document.querySelector('.profil-detail-topbar').style.display = 'none';
+    document.querySelector('.profil-detail-header').style.display = 'none';
+    document.querySelector('.profil-detail-info').style.display = 'none';
     document.querySelector('.btn-envoyer-message').style.display = 'none';
+    document.querySelector('.profil-conversation').style.display = 'flex';
+    const prenom = currentProfilName.split(' ')[0];
+    document.querySelector('.conv-name').textContent = prenom;
+});
+
+// Retour au profil depuis la conversation
+document.querySelector('.conversation-back')?.addEventListener('click', () => {
+    document.querySelector('.profil-conversation').style.display = 'none';
+    document.querySelector('.profil-detail-topbar').style.display = '';
+    document.querySelector('.profil-detail-header').style.display = '';
+    document.querySelector('.profil-detail-info').style.display = '';
+    document.querySelector('.btn-envoyer-message').style.display = 'flex';
+});
+
+// Envoyer un message
+document.querySelector('.btn-send')?.addEventListener('click', () => {
+    const textarea = document.querySelector('.conversation-input textarea');
+    const message = textarea.value.trim();
+    if (message) {
+        const messagesContainer = document.querySelector('.conversation-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-sent';
+        messageDiv.textContent = message;
+        messagesContainer.appendChild(messageDiv);
+        const systemMsg = messagesContainer.querySelector('.message-system');
+        if (systemMsg) systemMsg.style.display = 'none';
+        textarea.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 });
 
 // Fermer la modal
