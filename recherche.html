@@ -138,6 +138,7 @@
         .search-header .search-field select:focus,
         .search-header .search-field input:focus {
             border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
 
         .search-header .search-btn {
@@ -159,9 +160,9 @@
         }
 
         .search-header .search-btn:hover {
-            background: #D4561F;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            background: #D4571F;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
 
         /* ===== LAYOUT PRINCIPAL ===== */
@@ -327,8 +328,8 @@
         }
 
         .drawer-footer .btn-apply:not(:disabled):hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
 
         /* FILTRES (réutilisés dans le drawer) */
@@ -440,6 +441,7 @@
 
         .sort-select:focus {
             border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
 
         .results-grid {
@@ -544,7 +546,7 @@
         }
 
         .logement-card:hover {
-            transform: translateY(-6px) scale(1.02);
+            transform: translateY(-4px);
             box-shadow: 0 12px 36px rgba(232, 98, 42, 0.22);
         }
 
@@ -736,6 +738,7 @@
         }
         .no-results .alert-form input:focus {
             border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
         .no-results .alert-form input::placeholder {
             color: #9CA3AF;
@@ -754,8 +757,8 @@
             font-family: 'DM Sans', sans-serif;
         }
         .no-results .alert-form button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
@@ -776,8 +779,11 @@
             position: relative;
             margin-top: 20px;
         }
-        .alerte-bottom svg {
+        .alerte-bottom > svg {
             flex-shrink: 0;
+            padding: 10px;
+            background: #FDF0EB;
+            border-radius: 12px;
         }
         .alerte-bottom .alerte-text {
             flex: 1;
@@ -814,6 +820,7 @@
         }
         .alerte-bottom .alert-form input:focus {
             border-color: #E8622A;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
         .alerte-bottom .alert-form input::placeholder {
             color: #9CA3AF;
@@ -832,8 +839,8 @@
             font-family: 'DM Sans', sans-serif;
         }
         .alerte-bottom .alert-form button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
         @media (max-width: 768px) {
             .alerte-bottom {
@@ -919,8 +926,8 @@
             font-family: 'DM Sans', sans-serif;
         }
         .demande-block .btn-devenir-hote:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
         }
         .demande-block .btn-agences {
             padding: 12px 24px;
@@ -937,8 +944,8 @@
         }
         .demande-block .btn-agences:hover {
             background: #FFF8F5;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.15);
         }
         @media (max-width: 768px) {
             .demande-block {
@@ -1145,6 +1152,38 @@
             box-shadow: 0 2px 6px rgba(232, 98, 42, 0.2);
         }
 
+        /* SECTION ICONS — design system */
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-icon.orange { background: #FDF0EB; }
+        .section-icon.orange svg { stroke: #E8622A; }
+        .section-icon.navy { background: #EEF1F8; }
+        .section-icon.navy svg { stroke: #1E293B; }
+        .section-icon.blue { background: #EFF6FF; }
+        .section-icon.blue svg { stroke: #2563EB; }
+
+        /* DRAWER INPUTS — focus states */
+        .drawer-body input {
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+        .drawer-body input:focus {
+            border-color: #E8622A !important;
+            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08) !important;
+        }
+
+        /* CLEAR FILTERS — hover amélioré */
+        .drawer-footer .clear-filters:hover {
+            border-color: #E8622A;
+            color: #E8622A;
+            background: #FFF8F5;
+        }
 
     </style>
 <!-- Notification modale -->
@@ -1216,8 +1255,8 @@
         transition: all 0.2s;
     }
     .notification-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(232, 98, 42, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
     }
     @keyframes fadeIn {
         from { opacity: 0; }
