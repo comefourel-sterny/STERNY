@@ -184,6 +184,43 @@
             outline: none;
         }
 
+        /* ===== CUSTOM DROPDOWN ALTERNANCE ===== */
+        .custom-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            width: 100%;
+            min-width: unset;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: 1px solid #E8EAF0;
+            z-index: 100;
+            overflow: hidden;
+        }
+        .custom-dropdown.open { display: block; }
+        .custom-option {
+            padding: 13px 18px;
+            font-size: 15px;
+            color: #1E293B;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .custom-option:hover {
+            background: #F4F5F7;
+            color: #E8622A;
+        }
+        .custom-option.selected {
+            color: #E8622A;
+            font-weight: 600;
+        }
+        .alt-option:hover > div:first-child { color: #E8622A !important; }
+        .alt-option.selected > div:first-child { color: #E8622A !important; }
+
         .search-header .search-btn {
             height: 40px;
             box-sizing: border-box;
@@ -1792,14 +1829,27 @@
                 <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
             </div>
 
-            <div class="search-field">
-                <label>Type d'alternance</label>
-                <select id="rythme" onchange="updateDisponibilites()">
-                    <option value="" disabled selected>Type d'alternance</option>
-                    <option value="symmetric">Symétrique (même durée)</option>
-                    <option value="asymmetric">Asymétrique (durées différentes)</option>
-                    <option value="custom">Personnalisé</option>
-                </select>
+            <div class="search-field custom-select-wrapper" style="position:relative;cursor:pointer;" id="alternanceWrapper">
+                <label>TYPE D'ALTERNANCE</label>
+                <input type="hidden" id="rythme" value="">
+                <div class="custom-select-display" id="alternanceDisplay" style="display:flex;align-items:center;justify-content:space-between;font-size:15px;color:#94A3B8;user-select:none;height:48px;">
+                    <span id="alternanceValue">Type d'alternance</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="custom-dropdown" id="alternanceDropdown">
+                    <div class="custom-option alt-option" data-value="symmetric" data-label="Symétrique" style="display:flex;flex-direction:column;padding:12px 16px;">
+                        <div style="font-weight:600;font-size:15px;color:#1E293B;line-height:1.2;">Symétrique</div>
+                        <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Même durée entreprise et école</div>
+                    </div>
+                    <div class="custom-option alt-option" data-value="asymmetric" data-label="Asymétrique" style="display:flex;flex-direction:column;padding:12px 16px;">
+                        <div style="font-weight:600;font-size:15px;color:#1E293B;line-height:1.2;">Asymétrique</div>
+                        <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Durées différentes entreprise / école</div>
+                    </div>
+                    <div class="custom-option alt-option" data-value="custom" data-label="Personnalisé" style="display:flex;flex-direction:column;padding:12px 16px;">
+                        <div style="font-weight:600;font-size:15px;color:#1E293B;line-height:1.2;">Personnalisé</div>
+                        <div style="font-size:12px;color:#94A3B8;margin-top:2px;">Rythme sur mesure</div>
+                    </div>
+                </div>
             </div>
 
             <div class="search-field" id="disponibilitesField" style="display: none;">
@@ -3584,12 +3634,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         const typeVal = urlParams.get('type');
         const rythmeEl = document.getElementById('rythme');
         rythmeEl.value = typeVal;
+        // Mettre à jour l'affichage du custom dropdown
+        const rShort = { symmetric: 'Symétrique', asymmetric: 'Asymétrique', custom: 'Personnalisé' };
+        const alternanceValueEl = document.getElementById('alternanceValue');
+        if (alternanceValueEl && rShort[typeVal]) {
+            alternanceValueEl.textContent = rShort[typeVal];
+            alternanceValueEl.style.color = '#1E293B';
+        }
+        // Marquer l'option sélectionnée dans le dropdown
+        const dropdown = document.getElementById('alternanceDropdown');
+        if (dropdown) {
+            dropdown.querySelectorAll('.custom-option').forEach(function(o) {
+                o.classList.toggle('selected', o.dataset.value === typeVal);
+            });
+        }
         // Peupler le select disponibilités dynamiquement
         updateDisponibilites();
-        // Raccourcir le texte du rythme pré-sélectionné
-        const rShort = { symmetric: 'Symétrique', asymmetric: 'Asymétrique', custom: 'Personnalisé' };
-        const selectedOpt = rythmeEl.selectedOptions[0];
-        if (selectedOpt && rShort[selectedOpt.value]) selectedOpt.textContent = rShort[selectedOpt.value];
     }
     if (urlParams.has('pattern')) {
         const patternVal = urlParams.get('pattern');
@@ -3624,34 +3684,35 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // ========== RACCOURCIR TEXTE SELECTS ==========
 
-    // Raccourcir "Type d'alternance" après sélection
-    const rythmeSelectEl = document.getElementById('rythme');
-    if (rythmeSelectEl) {
-        const rythmeFullTexts = {
-            'symmetric': 'Symétrique (même durée)',
-            'asymmetric': 'Asymétrique (durées différentes)',
-            'custom': 'Personnalisé'
-        };
-        const rythmeShortTexts = {
-            'symmetric': 'Symétrique',
-            'asymmetric': 'Asymétrique',
-            'custom': 'Personnalisé'
-        };
-
-        rythmeSelectEl.addEventListener('focus', function() {
-            Array.from(this.options).forEach(opt => {
-                if (rythmeFullTexts[opt.value]) opt.textContent = rythmeFullTexts[opt.value];
+    // Custom dropdown for Type d'alternance
+    (function initAlternanceDropdown() {
+        var wrapper = document.getElementById('alternanceWrapper');
+        var dropdown = document.getElementById('alternanceDropdown');
+        var valueEl = document.getElementById('alternanceValue');
+        var hiddenInput = document.getElementById('rythme');
+        if (!wrapper || !dropdown) return;
+        wrapper.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        dropdown.querySelectorAll('.custom-option').forEach(function(opt) {
+            opt.addEventListener('click', function(e) {
+                e.stopPropagation();
+                valueEl.textContent = opt.dataset.label || opt.textContent.trim();
+                valueEl.style.color = '#1E293B';
+                hiddenInput.value = opt.dataset.value;
+                dropdown.querySelectorAll('.custom-option').forEach(function(o) {
+                    o.classList.remove('selected');
+                });
+                opt.classList.add('selected');
+                dropdown.classList.remove('open');
+                updateDisponibilites();
             });
         });
-        rythmeSelectEl.addEventListener('change', function() {
-            const opt = this.selectedOptions[0];
-            if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('open');
         });
-        rythmeSelectEl.addEventListener('blur', function() {
-            const opt = this.selectedOptions[0];
-            if (opt && rythmeShortTexts[opt.value]) opt.textContent = rythmeShortTexts[opt.value];
-        });
-    }
+    })();
 
     // Raccourcir "Mon rythme" après sélection
     const dispoSelectEl = document.getElementById('monRythmeRecherche');
