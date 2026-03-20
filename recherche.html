@@ -1192,8 +1192,8 @@
             justify-content: center;
             border-radius: 8px;
             font-size: 13px;
-            font-weight: 500;
-            color: #475569;
+            font-weight: 600;
+            color: #1E293B;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -1202,19 +1202,8 @@
             visibility: hidden;
         }
 
-        /* Jours disponibles (fond orange léger) */
-        .day-cell.available {
-            background: rgba(232, 98, 42, 0.15);
-            color: #E8622A;
-            font-weight: 600;
-        }
-
-        .day-cell.available:hover {
-            background: rgba(232, 98, 42, 0.3);
-        }
-
         .day-cell:hover {
-            background: rgba(232, 98, 42, 0.08);
+            background: rgba(232, 98, 42, 0.15);
             color: #E8622A;
         }
 
@@ -1223,6 +1212,7 @@
             color: #CBD5E1;
             background: transparent;
             cursor: default;
+            font-weight: 500;
         }
 
         .day-cell.past:hover {
@@ -1230,12 +1220,12 @@
             color: #CBD5E1;
         }
 
-        /* Jour sélectionné / aujourd'hui */
+        /* Jour sélectionné */
         .day-cell.selected {
             background: #E8622A;
             color: white;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.35);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.3);
         }
 
         .day-cell.selected:hover {
@@ -1535,7 +1525,7 @@
     <div class="main-content">
             
             <!-- CALENDRIER DE DISPONIBILITÉS -->
-            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);">
+            <div id="calendrierRecherche" style="display: none; background: white; padding: 28px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
 
                 <!-- NAVIGATION AVEC TITRE AU CENTRE -->
                 <div class="calendar-header">
