@@ -1054,12 +1054,12 @@
             border: none;
             background: #F4F5F7;
             border-radius: 8px;
-            font-size: 20px;
             cursor: pointer;
             color: #64748B;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
             transition: background 0.2s;
         }
         .modal-close:hover { background: #E8EAF0; }
@@ -1184,13 +1184,11 @@
             border: none;
             background: #F4F5F7;
             border-radius: 8px;
-            font-size: 20px;
             cursor: pointer;
             color: #64748B;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1;
             padding: 0;
             transition: background 0.2s;
         }
@@ -3991,7 +3989,7 @@ if (typeof supabaseClient !== 'undefined') {
     <div class="modal-profils">
         <div class="modal-profils-header">
             <h3>Profils compatibles à Rennes</h3>
-            <button class="modal-close">&times;</button>
+            <button class="modal-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
         </div>
         <p class="modal-profils-subtitle">Leur rythme matche avec le tien</p>
         <div class="modal-profils-list">
@@ -4063,7 +4061,7 @@ if (typeof supabaseClient !== 'undefined') {
         <div class="profil-detail" style="display: none;">
             <div class="profil-detail-topbar">
                 <button class="profil-back">Retour</button>
-                <button class="modal-close-detail">&times;</button>
+                <button class="modal-close-detail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="profil-detail-header">
                 <div class="profil-detail-avatar">LM</div>
