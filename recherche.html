@@ -1095,19 +1095,20 @@
         }
         
         /* ============ CALENDRIER — style pro ============ */
-        .calendar-hint {
-            text-align: center;
-            font-size: 13px;
-            color: #94A3B8;
-            font-weight: 500;
-            margin: 0 0 16px;
-        }
-
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            padding: 0 0 16px 0;
+            background: transparent;
+            border: none;
+        }
+
+        .calendar-hint {
+            font-size: 13px;
+            color: #94A3B8;
+            font-weight: 500;
+            margin: 0;
         }
 
         .calendar-nav-btn {
@@ -1138,8 +1139,7 @@
 
         .calendar-month {
             background: white;
-            border: 1px solid #E8EAF0;
-            border-left: 3px solid #E8622A;
+            border: 1.5px solid #E8622A;
             border-radius: 12px;
             padding: 14px;
             min-height: 280px;
@@ -1532,9 +1532,6 @@
             <!-- CALENDRIER DE DISPONIBILITÉS -->
             <div id="calendrierRecherche" style="display: none; background: white; padding: 24px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
 
-                <!-- TEXTE GUIDE -->
-                <p class="calendar-hint">Clique sur un jour pour définir ton rythme</p>
-
                 <!-- NAVIGATION -->
                 <div class="calendar-header">
                     <button type="button" id="prevMonthBtnSearch" class="calendar-nav-btn">
@@ -1542,6 +1539,7 @@
                             <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </button>
+                    <p class="calendar-hint">Clique sur un jour pour définir ton rythme</p>
                     <button type="button" id="nextMonthBtnSearch" class="calendar-nav-btn">
                         <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                             <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
