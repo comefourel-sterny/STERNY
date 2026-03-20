@@ -1139,10 +1139,10 @@
         }
 
         .calendar-month {
-            background: #F8FAFC;
+            background: white;
             border: 1px solid #E8EAF0;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             min-height: 280px;
             transition: all 0.25s;
         }
@@ -1154,12 +1154,13 @@
 
         .month-header {
             text-align: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
-            color: white;
-            background: #1E293B;
-            padding: 8px 12px;
-            border-radius: 8px;
+            color: #1E293B;
+            background: transparent;
+            padding: 0 0 10px;
+            border-radius: 0;
+            border-bottom: 2px solid #E8EAF0;
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1188,16 +1189,16 @@
         }
 
         .day-cell {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
             font-size: 12px;
-            font-weight: 600;
-            color: #1E293B;
+            font-weight: 500;
+            color: #334155;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -1224,25 +1225,23 @@
             color: #CBD5E1;
         }
 
-        /* Jour sélectionné */
+        /* Jour sélectionné — subtil */
         .day-cell.selected {
-            background: #E8622A;
-            color: white;
+            background: rgba(232, 98, 42, 0.15);
+            color: #E8622A;
             font-weight: 700;
-            border: none;
-            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+            border: 1.5px solid #E8622A;
         }
 
         .day-cell.selected:hover {
-            background: #D4571F;
+            background: rgba(232, 98, 42, 0.25);
         }
 
         .day-cell.past.selected {
             opacity: 0.6;
-            background: #E8622A;
-            color: white;
-            border: none;
-            box-shadow: 0 2px 4px rgba(232, 98, 42, 0.2);
+            background: rgba(232, 98, 42, 0.1);
+            color: #E8622A;
+            border: 1.5px solid rgba(232, 98, 42, 0.4);
         }
 
         /* SECTION ICONS — design system */
