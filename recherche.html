@@ -1429,21 +1429,19 @@
         }
 
         .calendar-nav-btn {
-            width: 36px;
-            height: 36px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            background: white;
-            color: #64748B;
+            background: transparent;
+            border: none;
+            color: #1E293B;
+            font-size: 20px;
             cursor: pointer;
-            transition: all 0.25s;
+            padding: 8px;
+            transition: color 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .calendar-nav-btn:hover {
-            border-color: #E8622A;
             color: #E8622A;
         }
 
@@ -1475,7 +1473,7 @@
             background: transparent;
             padding: 0 0 10px;
             border-radius: 0;
-            border-bottom: 2px solid #E8EAF0;
+            border-bottom: 2px solid rgba(30, 41, 59, 0.15);
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1486,6 +1484,8 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 2px;
             margin-bottom: 4px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.15);
         }
 
         .weekday {
