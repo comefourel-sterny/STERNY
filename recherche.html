@@ -72,57 +72,91 @@
             color: #E8622A !important;
         }
 
-        /* ===== SEARCH HEADER — card sobre et alignée ===== */
+        /* ===== SEARCH HEADER — hero navy compact ===== */
         .search-header {
-            background: #F4F5F7;
-            padding: 24px 20px 0;
+            background: #1E293B;
+            padding: 32px 20px 36px;
+            text-align: center;
+        }
+
+        .search-header .hero-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .search-header .hero-title span {
+            color: #E8622A;
+        }
+
+        .search-header .hero-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 24px;
         }
 
         .search-header .container {
             background: white;
-            border-radius: 16px;
-            padding: 24px 28px;
-            max-width: 960px;
+            border-radius: 14px;
+            padding: 6px 6px 6px 0;
+            max-width: 820px;
             margin: 0 auto;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
-            border: 1px solid #E8EAF0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08);
+            border: none;
             display: flex;
-            gap: 14px;
-            align-items: end;
-            flex-wrap: wrap;
+            gap: 0;
+            align-items: center;
+            flex-wrap: nowrap;
         }
 
         .search-header .search-field {
+            min-width: 0;
             flex: 1;
-            min-width: 160px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             text-align: left;
+            padding: 4px 20px;
+            position: relative;
+        }
+
+        .search-header .search-field:not(:last-of-type)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 18%;
+            height: 64%;
+            width: 1px;
+            background: #E8EAF0;
         }
 
         .search-header .search-field label {
             font-size: 11px;
             font-weight: 600;
-            color: #94A3B8;
-            margin-bottom: 6px;
+            color: #1E293B;
+            margin-bottom: 2px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .search-header .search-field select,
         .search-header .search-field input {
-            padding: 12px 16px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 12px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
             font-size: 15px;
             font-family: 'DM Sans', sans-serif;
             font-weight: 500;
             outline: none;
-            transition: border-color 0.2s;
-            height: 46px;
+            transition: none;
+            height: 26px;
             box-sizing: border-box;
-            background-color: white;
+            background-color: transparent;
             color: #1E293B;
+            width: 100%;
         }
 
         .search-header .search-field select {
@@ -131,25 +165,34 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 36px;
+            background-position: right 4px center;
+            padding-right: 24px;
+            background-color: transparent;
+        }
+
+        .search-header .search-field select:invalid,
+        .search-header .search-field select option[value=""][disabled] {
+            color: rgba(0,0,0,0.35);
+        }
+
+        .search-header .search-field input::placeholder {
+            color: rgba(0,0,0,0.35);
         }
 
         .search-header .search-field select:focus,
         .search-header .search-field input:focus {
-            border-color: #E8622A;
-            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            outline: none;
         }
 
         .search-header .search-btn {
-            align-self: flex-end;
-            height: 46px;
+            height: 40px;
             box-sizing: border-box;
-            padding: 0 32px;
+            padding: 0 20px;
+            margin: 6px;
             background: #E8622A;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -157,12 +200,15 @@
             white-space: nowrap;
             flex-shrink: 0;
             font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .search-header .search-btn:hover {
             background: #D4571F;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.35);
         }
 
         /* ===== LAYOUT PRINCIPAL ===== */
@@ -196,7 +242,15 @@
         .btn-filtres:hover {
             border-color: #E8622A;
             color: #E8622A;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.1);
+            background: #FFF8F5;
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-filtres.has-filters {
+            border-color: #E8622A;
+            color: #E8622A;
+            background: #FFF8F5;
         }
 
         .btn-filtres svg {
@@ -546,8 +600,8 @@
         }
 
         .logement-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 36px rgba(232, 98, 42, 0.22);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(232, 98, 42, 0.24);
         }
 
         .logement-image {
@@ -975,22 +1029,41 @@
             }
 
             .search-header {
-                padding: 16px 16px 0;
+                padding: 24px 16px 28px;
+            }
+
+            .search-header .hero-title {
+                font-size: 22px;
             }
 
             .search-header .container {
                 flex-direction: column;
-                gap: 10px;
-                padding: 16px;
+                gap: 0;
+                padding: 12px;
+                border-radius: 16px;
             }
 
             .search-header .search-field {
                 min-width: 100%;
+                padding: 10px 14px;
+                border-bottom: 1px solid #E8EAF0;
+            }
+
+            .search-header .search-field:not(:last-of-type)::after {
+                display: none;
+            }
+
+            .search-header .search-field select,
+            .search-header .search-field input {
+                height: 30px;
+                font-size: 15px;
             }
 
             .search-header .search-btn {
-                width: 100%;
+                width: calc(100% - 12px);
                 height: 44px;
+                margin: 10px 6px 6px;
+                justify-content: center;
             }
 
             .results-header {
@@ -1185,6 +1258,110 @@
             background: #FFF8F5;
         }
 
+        /* ===== FOOTER NAVY ===== */
+        .site-footer {
+            background: #1E293B;
+            color: white;
+            padding: 48px 20px 32px;
+        }
+
+        .footer-inner {
+            max-width: 960px;
+            margin: 0 auto 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+        }
+
+        .footer-brand p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            max-width: 280px;
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 48px;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding-left: 48px;
+        }
+
+        .footer-col h4 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #E8622A;
+            margin-bottom: 14px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: #E8622A;
+        }
+
+        .footer-bottom {
+            max-width: 960px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .footer-bottom a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-bottom a:hover {
+            color: #E8622A;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-inner {
+                flex-direction: column;
+                gap: 28px;
+            }
+            .footer-links {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                padding-top: 24px;
+                gap: 32px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            .footer-legal-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+        }
+
     </style>
 <!-- Notification modale -->
 <style>
@@ -1298,6 +1475,8 @@
 
     <!-- BARRE DE RECHERCHE HEADER -->
     <div class="search-header">
+        <h1 class="hero-title">Trouve ton <span>logement</span></h1>
+        <p class="hero-subtitle">Flexible, meublé, adapté à ton rythme d'alternance.</p>
         <div class="container">
             <div class="search-field" style="position: relative;">
                 <label>Ville</label>
@@ -1503,16 +1682,35 @@
     </div>
 
     <!-- FOOTER -->
-    <footer role="contentinfo">
-        <div class="container">
-            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
-            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
-                <a href="cgv.html">CGV</a> &middot;
-                <a href="cgu.html">CGU</a> &middot;
-                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
-                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
-                <a href="mailto:contact@sterny.co">contact@sterny.co</a>
-            </p>
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="Logo-Sterny-V1-white.svg" alt="STERNY" style="height: 40px;">
+                <p>Le logement pensé pour les alternants. Flexible, vérifié, 100% en ligne.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Plateforme</h4>
+                    <a href="recherche.html">Rechercher</a>
+                    <a href="comment-ca-marche.html">Comment ça marche</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Entreprise</h4>
+                    <a href="a-propos.html">À propos</a>
+                    <a href="choix-inscription.html">Devenir hôte</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>STERNY &copy; 2026</span>
+            <div class="footer-legal-links">
+                <a href="cgv.html">CGV</a>
+                <a href="cgu.html">CGU</a>
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="politique-confidentialite.html">Confidentialité</a>
+            </div>
         </div>
     </footer>
 
