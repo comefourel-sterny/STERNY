@@ -1150,6 +1150,12 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .profil-detail::-webkit-scrollbar {
+            display: none;
         }
         .profil-back {
             background: none;
@@ -4034,7 +4040,7 @@ if (typeof supabaseClient !== 'undefined') {
             </div>
         </div>
         <div class="profil-detail" style="display: none;">
-            <button class="profil-back">← Retour</button>
+            <button class="profil-back">Retour</button>
             <div class="profil-detail-header">
                 <div class="profil-detail-avatar">LM</div>
                 <h3 class="profil-detail-name">Léa M.</h3>
@@ -4092,6 +4098,7 @@ function resetModalToList() {
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
     document.querySelector('.modal-profils-list').style.display = 'flex';
     document.querySelector('.modal-profils-subtitle').style.display = 'block';
+    document.querySelector('.modal-profils-header h3').style.display = 'block';
 }
 
 // Ouvrir la modal profils compatibles
@@ -4123,6 +4130,7 @@ document.addEventListener('click', function(e) {
     // Basculer la vue
     document.querySelector('.modal-profils-list').style.display = 'none';
     document.querySelector('.modal-profils-subtitle').style.display = 'none';
+    document.querySelector('.modal-profils-header h3').style.display = 'none';
     document.querySelector('.message-zone').style.display = 'none';
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
     document.querySelector('.profil-detail').style.display = 'block';
