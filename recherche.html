@@ -838,7 +838,7 @@
         .no-results-match {
             background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
             border-radius: 16px;
-            padding: 32px;
+            padding: 28px;
             margin-top: 16px;
             color: white;
             text-align: center;
@@ -880,7 +880,7 @@
             justify-content: center;
             align-items: center;
             gap: 0;
-            margin-bottom: 24px;
+            margin: 20px 0;
         }
         .no-results-match .match-avatar {
             width: 48px;
@@ -909,7 +909,7 @@
             display: flex;
             justify-content: center;
             gap: 12px;
-            margin: 24px 0;
+            margin: 0;
             flex-wrap: wrap;
         }
         .no-results-match .btn-match-outline {
@@ -2305,9 +2305,7 @@ function mettreAJourCompteursFiltres() {
 
                     <!-- BLOC 2 : PERSONNES QUI MATCHENT -->
                     <div class="no-results-match">
-                        <div class="match-badge">🤝 12 personnes matchent avec ton rythme à Rennes</div>
-                        <h3 class="match-title">Tu n'es pas seul !</h3>
-                        <p class="match-explain">Leur rythme est complémentaire au tien : quand tu es en entreprise, ils sont à l'école.</p>
+                        <div class="match-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>12 personnes matchent avec toi à Rennes</div>
                         <div class="match-avatars">
                             <div class="match-avatar">LM</div>
                             <div class="match-avatar">AC</div>
@@ -2318,7 +2316,6 @@ function mettreAJourCompteursFiltres() {
                             <button class="btn-match-outline">Voir les profils</button>
                             <button class="btn-match-primary">Chercher via une agence</button>
                         </div>
-                        <div class="match-tip">💡 Trouvez chacun un logement, puis revenez matcher ensemble sur STERNY !</div>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
