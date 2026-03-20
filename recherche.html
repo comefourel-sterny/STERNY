@@ -945,6 +945,14 @@
         .no-results-match .btn-match-primary:hover {
             background: #D4571F;
         }
+        .no-results-match .match-footer-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin: 16px auto 0;
+            max-width: 400px;
+            line-height: 1.5;
+        }
         .no-results-match .match-tip {
             font-size: 13px;
             color: rgba(255, 255, 255, 0.6);
@@ -2317,15 +2325,18 @@ function mettreAJourCompteursFiltres() {
                         </div>
                         <div class="match-buttons">
                             <button class="btn-match-outline">Voir les profils</button>
-                            <button class="btn-match-primary">Chercher via une agence</button>
+                            <button class="btn-match-primary">Trouver mon logement</button>
                         </div>
+                        <p class="match-footer-text">Votre futur colocataire vous attend — trouvez votre logement pour matcher</p>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
-            // Afficher le bloc matching seulement si un rythme est sélectionné
+            // Afficher le bloc matching seulement si rythme sélectionné ET count > 0
+            // matchCount sera dynamique via Supabase plus tard — pour l'instant mockup statique
+            const matchCount = 12; // TODO: remplacer par requête Supabase
             const matchBlock = document.querySelector('.match-suggestions-block');
-            if (matchBlock && selectedRhythmRecherche) {
+            if (matchBlock && selectedRhythmRecherche && matchCount > 0) {
                 matchBlock.classList.add('visible');
             }
             // Mettre à jour le compteur de résultats
