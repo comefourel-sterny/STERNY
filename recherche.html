@@ -1159,7 +1159,7 @@
         .profil-detail {
             padding: 0;
             flex: 1;
-            display: flex;
+            display: none;
             flex-direction: column;
             overflow-y: auto;
             scrollbar-width: none;
@@ -1297,7 +1297,7 @@
         }
         /* === CONVERSATION === */
         .profil-conversation {
-            display: flex;
+            display: none;
             flex-direction: column;
         }
         .conversation-header {
@@ -4321,7 +4321,7 @@ document.addEventListener('click', function(e) {
     document.querySelector('.modal-profils-subtitle').style.display = 'none';
     document.querySelector('.modal-profils-header').style.display = 'none';
     document.querySelector('.btn-envoyer-message').style.display = 'flex';
-    document.querySelector('.profil-detail').style.display = 'block';
+    document.querySelector('.profil-detail').style.display = 'flex';
 });
 
 // Clic sur "Retour" - revient à la liste
