@@ -1299,36 +1299,43 @@
         .profil-conversation {
             display: none;
             flex-direction: column;
+            flex: 1;
+            min-height: 0;
         }
         .conversation-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #E8EAF0;
+            gap: 14px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #F1F5F9;
+            flex-shrink: 0;
         }
         .conversation-back {
-            width: 36px;
-            height: 36px;
-            border: 1px solid #E8EAF0;
-            background: white;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F3F4F6;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #64748B;
+            color: #6B7280;
             flex-shrink: 0;
             transition: all 0.2s;
         }
         .conversation-back:hover {
-            border-color: #E8622A;
-            color: #E8622A;
+            background: #E5E7EB;
+            color: #1E293B;
+        }
+        .conversation-back svg {
+            width: 16px;
+            height: 16px;
         }
         .conversation-user {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             flex: 1;
         }
         .conversation-avatar {
@@ -1349,8 +1356,8 @@
             flex-direction: column;
         }
         .conversation-name {
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             color: #1E293B;
         }
         .conversation-status {
@@ -1360,76 +1367,100 @@
             letter-spacing: 0.5px;
         }
         .conversation-close {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
-            background: #F4F5F7;
-            border-radius: 8px;
+            background: #F3F4F6;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #64748B;
+            color: #6B7280;
             flex-shrink: 0;
-            transition: background 0.2s;
+            font-size: 18px;
+            transition: all 0.2s;
         }
         .conversation-close:hover {
-            background: #E8EAF0;
+            background: #E5E7EB;
+            color: #1E293B;
         }
         .conversation-messages {
             flex: 1;
             padding: 20px 0;
-            min-height: 200px;
             display: flex;
             flex-direction: column;
+            gap: 8px;
             overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            min-height: 0;
         }
         .conversation-messages::-webkit-scrollbar {
-            display: none;
+            width: 6px;
+        }
+        .conversation-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .conversation-messages::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 3px;
         }
         .message-system {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            color: #64748B;
-            font-size: 14px;
-            margin: auto;
+            color: #9CA3AF;
+            font-size: 15px;
         }
         .message-sent {
             background: #E8622A;
             color: white;
-            padding: 10px 14px;
-            border-radius: 16px 16px 4px 16px;
+            padding: 10px 16px;
+            border-radius: 16px;
+            border-bottom-right-radius: 4px;
             margin-left: auto;
-            max-width: 80%;
-            margin-bottom: 8px;
+            max-width: 75%;
             font-size: 14px;
+            line-height: 1.5;
             width: fit-content;
+            word-wrap: break-word;
+            animation: chatFadeIn 0.15s ease;
+        }
+        @keyframes chatFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .conversation-input {
             display: flex;
             gap: 10px;
             padding-top: 16px;
-            border-top: 1px solid #E8EAF0;
-            align-items: center;
+            border-top: 1px solid #F1F5F9;
+            align-items: flex-end;
+            flex-shrink: 0;
         }
         .message-input {
             flex: 1;
-            padding: 14px 16px;
-            border: 1px solid #E8EAF0;
+            min-height: 42px;
+            padding: 10px 16px;
+            border: 1.5px solid #E8EAF0;
             border-radius: 12px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
+            color: #1E293B;
             box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .message-input::placeholder {
+            color: #9CA3AF;
         }
         .message-input:focus {
             outline: none;
             border-color: #E8622A;
-            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
         }
         .btn-send {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             background: #E8622A;
             border: none;
             border-radius: 12px;
@@ -1442,7 +1473,12 @@
             transition: all 0.2s;
         }
         .btn-send:hover {
-            background: #D4571F;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+        }
+        .btn-send svg {
+            width: 18px;
+            height: 18px;
         }
 
         /* Alerte sous les annonces — compact inline */
