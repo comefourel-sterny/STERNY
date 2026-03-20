@@ -1094,55 +1094,56 @@
             }
         }
         
-        /* ============ CALENDRIER — style raffiné ============ */
+        /* ============ CALENDRIER — style pro ============ */
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #E8EAF0;
+            background: #1E293B;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
         .calendar-nav-btn {
             width: 32px;
             height: 32px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 10px;
-            background: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
             cursor: pointer;
             transition: all 0.25s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #94A3B8;
+            color: white;
         }
 
         .calendar-nav-btn:hover {
-            border-color: #E8622A;
-            color: #E8622A;
-            background: #FFF8F5;
+            background: rgba(232, 98, 42, 0.3);
+            border-color: rgba(232, 98, 42, 0.5);
         }
 
         .calendar-period {
             font-size: 15px;
             font-weight: 700;
-            color: #1E293B;
+            color: white;
             letter-spacing: -0.3px;
         }
 
         .calendar-months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 12px;
         }
 
         .calendar-month {
-            background: #FAFBFC;
+            background: #F8FAFC;
             border: 1px solid #E8EAF0;
             border-radius: 12px;
-            padding: 12px;
+            padding: 16px;
+            min-height: 280px;
             transition: all 0.25s;
         }
 
@@ -1153,10 +1154,13 @@
 
         .month-header {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            color: #1E293B;
-            margin-bottom: 8px;
+            color: white;
+            background: #1E293B;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1170,10 +1174,10 @@
 
         .weekday {
             text-align: center;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
-            color: #94A3B8;
-            padding: 2px 0;
+            color: #64748B;
+            padding: 4px 0;
             letter-spacing: 0.3px;
         }
 
@@ -1192,8 +1196,8 @@
             justify-content: center;
             border-radius: 6px;
             font-size: 12px;
-            font-weight: 500;
-            color: #475569;
+            font-weight: 600;
+            color: #1E293B;
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -1207,9 +1211,9 @@
             color: #E8622A;
         }
 
-        /* Jours passés / non disponibles */
+        /* Jours passés */
         .day-cell.past {
-            color: #D1D5DB;
+            color: #CBD5E1;
             background: transparent;
             cursor: default;
             font-weight: 400;
@@ -1217,26 +1221,28 @@
 
         .day-cell.past:hover {
             background: transparent;
-            color: #D1D5DB;
+            color: #CBD5E1;
         }
 
-        /* Jour sélectionné — subtil */
+        /* Jour sélectionné */
         .day-cell.selected {
-            background: rgba(232, 98, 42, 0.15);
-            color: #E8622A;
+            background: #E8622A;
+            color: white;
             font-weight: 700;
-            border: 1.5px solid #E8622A;
+            border: none;
+            box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
         }
 
         .day-cell.selected:hover {
-            background: rgba(232, 98, 42, 0.25);
+            background: #D4571F;
         }
 
         .day-cell.past.selected {
             opacity: 0.6;
-            background: rgba(232, 98, 42, 0.1);
-            color: #E8622A;
-            border: 1.5px solid rgba(232, 98, 42, 0.4);
+            background: #E8622A;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 4px rgba(232, 98, 42, 0.2);
         }
 
         /* SECTION ICONS — design system */
@@ -1525,7 +1531,7 @@
     <div class="main-content">
             
             <!-- CALENDRIER DE DISPONIBILITÉS -->
-            <div id="calendrierRecherche" style="display: none; background: white; padding: 20px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16); max-width: 100%; overflow: hidden;">
+            <div id="calendrierRecherche" style="display: none; background: white; padding: 24px; margin-bottom: 16px; border-radius: 16px; border: 1px solid #E8EAF0; box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);">
 
                 <!-- NAVIGATION AVEC TITRE AU CENTRE -->
                 <div class="calendar-header">
