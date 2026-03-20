@@ -1028,15 +1028,18 @@
             padding: 28px;
             max-width: 480px;
             width: calc(100% - 40px);
-            max-height: 80vh;
-            overflow-y: auto;
+            height: 520px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         .modal-profils-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 4px;
+            flex-shrink: 0;
         }
         .modal-profils-header h3 {
             font-size: 18px;
@@ -1063,12 +1066,13 @@
             font-size: 14px;
             color: #64748B;
             margin: 0 0 20px;
+            flex-shrink: 0;
         }
         .modal-profils-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 400px;
+            flex: 1;
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -1142,6 +1146,9 @@
         /* === VUE DÉTAIL PROFIL === */
         .profil-detail {
             padding: 8px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .profil-back {
             background: none;
@@ -1159,6 +1166,10 @@
         .profil-detail-header {
             text-align: center;
             margin-bottom: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .profil-detail-avatar {
             width: 72px;
