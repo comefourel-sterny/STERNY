@@ -842,8 +842,12 @@
             margin-top: 16px;
             color: white;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .no-results-match .match-badge {
+            position: static;
             background: rgba(232, 98, 42, 0.2);
             border: 1px solid rgba(232, 98, 42, 0.4);
             padding: 8px 16px;
@@ -854,20 +858,28 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: none;
+        }
+        .no-results-match .match-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 8px;
         }
         .no-results-match .match-explain {
             font-size: 15px;
             color: rgba(255, 255, 255, 0.8);
             margin: 0 auto 24px;
-            max-width: 500px;
+            max-width: 450px;
             line-height: 1.5;
+            text-align: center;
         }
         .no-results-match .match-avatars {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 0;
             margin-bottom: 24px;
         }
         .no-results-match .match-avatar {
@@ -882,17 +894,22 @@
             font-size: 16px;
             font-weight: 700;
             color: white;
+            position: relative;
+        }
+        .no-results-match .match-avatar:not(:first-child) {
+            margin-left: -8px;
         }
         .no-results-match .match-avatars-more {
             font-size: 13px;
             color: rgba(255, 255, 255, 0.7);
             font-weight: 500;
+            margin-left: 12px;
         }
         .no-results-match .match-buttons {
             display: flex;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 20px;
+            margin: 24px 0;
             flex-wrap: wrap;
         }
         .no-results-match .btn-match-outline {
@@ -934,6 +951,8 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            max-width: 500px;
+            text-align: center;
         }
 
         /* Alerte sous les annonces — compact inline */
@@ -2287,6 +2306,7 @@ function mettreAJourCompteursFiltres() {
                     <!-- BLOC 2 : PERSONNES QUI MATCHENT -->
                     <div class="no-results-match">
                         <div class="match-badge">🤝 12 personnes matchent avec ton rythme à Rennes</div>
+                        <h3 class="match-title">Tu n'es pas seul !</h3>
                         <p class="match-explain">Leur rythme est complémentaire au tien : quand tu es en entreprise, ils sont à l'école.</p>
                         <div class="match-avatars">
                             <div class="match-avatar">LM</div>
