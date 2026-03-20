@@ -4115,14 +4115,14 @@ if (typeof supabaseClient !== 'undefined') {
 <script>
 // Données mockup des profils
 const profilsData = {
-    1: { initials: 'LM', name: 'Léa M.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
-    2: { initials: 'AC', name: 'Antoine C.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
-    3: { initials: 'TR', name: 'Thomas R.', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-    4: { initials: 'SM', name: 'Sophie M.', type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
-    5: { initials: 'JD', name: 'Julie D.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
-    6: { initials: 'MB', name: 'Maxime B.', type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-    7: { initials: 'CL', name: 'Camille L.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
-    8: { initials: 'NP', name: 'Nicolas P.', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
+    1: { initials: 'LM', name: 'Léa M.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
+    2: { initials: 'AC', name: 'Antoine C.', genre: 'M', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
+    3: { initials: 'TR', name: 'Thomas R.', genre: 'M', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    4: { initials: 'SM', name: 'Sophie M.', genre: 'F', type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
+    5: { initials: 'JD', name: 'Julie D.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
+    6: { initials: 'MB', name: 'Maxime B.', genre: 'M', type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    7: { initials: 'CL', name: 'Camille L.', genre: 'F', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
+    8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
 };
 
 function resetModalToList() {
@@ -4154,6 +4154,7 @@ document.addEventListener('click', function(e) {
     // Remplir les infos
     document.querySelector('.profil-detail-avatar').textContent = profil.initials;
     document.querySelector('.profil-detail-name').textContent = profil.name;
+    document.querySelector('.profil-detail-status').textContent = profil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT';
     document.querySelector('.profil-val-type').textContent = profil.type;
     document.querySelector('.profil-val-rythme').textContent = profil.rythme;
     document.querySelector('.profil-val-ville').textContent = profil.villeRecherche;
