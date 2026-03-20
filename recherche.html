@@ -1844,11 +1844,15 @@
                 </div>
             </div>
 
-            <div class="search-field" id="disponibilitesField" style="display: none;">
-                <label>Mon rythme</label>
-                <select id="monRythmeRecherche">
-                    <option value="" disabled selected>Mon rythme</option>
-                </select>
+            <div class="search-field custom-select-wrapper" id="disponibilitesField" style="display:none;position:relative;cursor:pointer;">
+                <label>MON RYTHME</label>
+                <input type="hidden" id="monRythmeRecherche" value="">
+                <div class="custom-select-display" id="rythmeDisplay" style="display:flex;align-items:center;justify-content:space-between;font-size:15px;color:#94A3B8;user-select:none;height:48px;">
+                    <span id="rythmeValue">Mon rythme</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="custom-dropdown" id="rythmeDropdown" style="max-height:260px;overflow-y:auto;">
+                </div>
             </div>
 
             <button class="search-btn" onclick="filtrerLogements()">Rechercher</button>
@@ -2396,9 +2400,14 @@ async function chargerAnnonces() {
     function updateDisponibilites() {
         const type = document.getElementById('rythme').value;
         const field = document.getElementById('disponibilitesField');
-        const select = document.getElementById('monRythmeRecherche');
+        const hiddenInput = document.getElementById('monRythmeRecherche');
+        const dropdown = document.getElementById('rythmeDropdown');
+        const valueEl = document.getElementById('rythmeValue');
 
-        select.innerHTML = '<option value="" disabled selected>Mon rythme</option>';
+        hiddenInput.value = '';
+        dropdown.innerHTML = '';
+        valueEl.textContent = 'Mon rythme';
+        valueEl.style.color = '#94A3B8';
 
         // Cacher le calendrier et réinitialiser
         const calendarDiv = document.getElementById('calendrierRecherche');
@@ -2406,9 +2415,10 @@ async function chargerAnnonces() {
         selectedDatesRecherche = [];
         mesDisponibilites = [];
 
+        let options = [];
         if (type === 'symmetric') {
             field.style.display = 'flex';
-            const options = [
+            options = [
                 { value: '1-1', label: '1 sem. / 1 sem.' },
                 { value: '2-2', label: '2 sem. / 2 sem.' },
                 { value: '3-3', label: '3 sem. / 3 sem.' },
@@ -2417,12 +2427,9 @@ async function chargerAnnonces() {
                 { value: '6-6', label: '6 sem. / 6 sem.' },
                 { value: '8-8', label: '8 sem. / 8 sem.' },
             ];
-            options.forEach(o => {
-                select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
-            });
         } else if (type === 'asymmetric') {
             field.style.display = 'flex';
-            const options = [
+            options = [
                 { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
                 { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
                 { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
@@ -2432,11 +2439,65 @@ async function chargerAnnonces() {
                 { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
                 { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
             ];
-            options.forEach(o => {
-                select.innerHTML += `<option value="${o.value}">${o.label}</option>`;
-            });
         } else {
             field.style.display = 'none';
+            return;
+        }
+
+        options.forEach(o => {
+            const div = document.createElement('div');
+            div.className = 'custom-option rythme-option';
+            div.dataset.value = o.value;
+            div.dataset.label = o.label;
+            div.style.cssText = 'padding:10px 16px;font-size:14px;display:flex;align-items:center;gap:8px;';
+            div.innerHTML = '<span class="rythme-check" style="width:16px;color:#E8622A;font-size:14px;flex-shrink:0;"></span>' + o.label;
+            div.addEventListener('click', function(e) {
+                e.stopPropagation();
+                hiddenInput.value = o.value;
+                valueEl.textContent = o.label;
+                valueEl.style.color = '#1E293B';
+                dropdown.querySelectorAll('.custom-option').forEach(function(el) {
+                    el.classList.remove('selected');
+                    el.querySelector('.rythme-check').textContent = '';
+                });
+                div.classList.add('selected');
+                div.querySelector('.rythme-check').textContent = '✓';
+                dropdown.classList.remove('open');
+                // Trigger calendar logic
+                onRythmeSelected(o.value);
+            });
+            dropdown.appendChild(div);
+        });
+    }
+
+    function onRythmeSelected(pattern) {
+        if (pattern) {
+            const parts = pattern.split('-');
+            selectedRhythmRecherche = parseInt(parts[0]) || 1;
+            selectedOffWeeksRecherche = parseInt(parts[1]) || selectedRhythmRecherche;
+
+            const calendarDiv = document.getElementById('calendrierRecherche');
+            if (calendarDiv.style.display === 'none') {
+                calendarDiv.style.display = 'block';
+                calendarDiv.style.opacity = '0';
+                calendarDiv.style.transform = 'translateY(-20px)';
+                calendarDiv.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                requestAnimationFrame(() => {
+                    calendarDiv.style.opacity = '1';
+                    calendarDiv.style.transform = 'translateY(0)';
+                });
+                setTimeout(() => {
+                    calendarDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+
+            initCalendarRecherche();
+            selectedDatesRecherche = [];
+            calendarStartDateRecherche = null;
+            mesDisponibilites = [];
+        } else {
+            mesDisponibilites = [];
+            filtrerLogements();
         }
     }
 
@@ -3552,41 +3613,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Afficher le calendrier quand on sélectionne un rythme
-    const mesDispoSelect = document.getElementById('monRythmeRecherche');
-
-    mesDispoSelect.addEventListener('change', function() {
-        const pattern = this.value; // ex: "2-2", "3-1"
-        if (pattern) {
-            const parts = pattern.split('-');
-            selectedRhythmRecherche = parseInt(parts[0]) || 1;
-            selectedOffWeeksRecherche = parseInt(parts[1]) || selectedRhythmRecherche;
-
-            // Révéler le calendrier avec animation
-            const calendarDiv = document.getElementById('calendrierRecherche');
-            if (calendarDiv.style.display === 'none') {
-                calendarDiv.style.display = 'block';
-                calendarDiv.style.opacity = '0';
-                calendarDiv.style.transform = 'translateY(-20px)';
-                calendarDiv.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                requestAnimationFrame(() => {
-                    calendarDiv.style.opacity = '1';
-                    calendarDiv.style.transform = 'translateY(0)';
-                });
-                setTimeout(() => {
-                    calendarDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
-
-            initCalendarRecherche();
-            selectedDatesRecherche = [];
-            calendarStartDateRecherche = null;
-            mesDisponibilites = [];
-        } else {
-            mesDisponibilites = [];
-            filtrerLogements();
-        }
-    });
+    // Custom dropdown for Mon rythme
+    (function initRythmeDropdown() {
+        var field = document.getElementById('disponibilitesField');
+        if (!field) return;
+        field.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var rd = document.getElementById('rythmeDropdown');
+            var ad = document.getElementById('alternanceDropdown');
+            if (ad) ad.classList.remove('open');
+            if (rd) rd.classList.toggle('open');
+        });
+        document.addEventListener('click', function() {
+            var rd = document.getElementById('rythmeDropdown');
+            if (rd) rd.classList.remove('open');
+        });
+    })();
     
     // Initialiser l'autocomplete proximité
     setupProximitySearch();
@@ -3645,17 +3687,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     if (urlParams.has('pattern')) {
         const patternVal = urlParams.get('pattern');
-        const dispoSelectUrl = document.getElementById('monRythmeRecherche');
-        if (dispoSelectUrl) {
-            dispoSelectUrl.value = patternVal;
+        const hiddenInput = document.getElementById('monRythmeRecherche');
+        if (hiddenInput) {
+            hiddenInput.value = patternVal;
             // Parser le pattern pour le calendrier (on + off weeks)
             const parts = patternVal.split('-');
             selectedRhythmRecherche = parseInt(parts[0]) || 1;
             selectedOffWeeksRecherche = parseInt(parts[1]) || selectedRhythmRecherche;
-            // Raccourcir le texte du rythme pré-sélectionné
-            const selOpt = dispoSelectUrl.selectedOptions[0];
-            if (selOpt && selOpt.value) {
-                selOpt.textContent = selOpt.textContent.replace(/ entreprise/g, '').replace(/ école/g, '');
+            // Mettre à jour l'affichage du custom dropdown
+            const rythmeValueEl = document.getElementById('rythmeValue');
+            const rythmeDropdown = document.getElementById('rythmeDropdown');
+            if (rythmeValueEl) {
+                // Trouver le label correspondant dans le dropdown
+                const matchOpt = rythmeDropdown ? rythmeDropdown.querySelector('[data-value="' + patternVal + '"]') : null;
+                if (matchOpt) {
+                    rythmeValueEl.textContent = matchOpt.dataset.label;
+                    rythmeValueEl.style.color = '#1E293B';
+                    matchOpt.classList.add('selected');
+                    const check = matchOpt.querySelector('.rythme-check');
+                    if (check) check.textContent = '✓';
+                }
             }
         }
     }
@@ -3706,40 +3757,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     })();
 
-    // Raccourcir "Mon rythme" après sélection
-    const dispoSelectEl = document.getElementById('monRythmeRecherche');
-    if (dispoSelectEl) {
-        function shortenRythmeTextR(text) {
-            return text.replace(/ entreprise/g, '').replace(/ école/g, '');
-        }
-
-        function restoreRythmeOptionR(opt) {
-            const val = opt.value;
-            if (!val) return;
-            const parts = val.split('-');
-            if (parts.length !== 2) return;
-            const a = parts[0], b = parts[1];
-            if (a === b) {
-                opt.textContent = `${a} sem. / ${b} sem.`;
-            } else {
-                opt.textContent = `${a} sem. entreprise / ${b} sem. école`;
-            }
-        }
-
-        dispoSelectEl.addEventListener('focus', function() {
-            Array.from(this.options).forEach(opt => {
-                if (opt.value && !opt.disabled) restoreRythmeOptionR(opt);
-            });
-        });
-        dispoSelectEl.addEventListener('change', function() {
-            const opt = this.selectedOptions[0];
-            if (opt && opt.value) opt.textContent = shortenRythmeTextR(opt.textContent);
-        });
-        dispoSelectEl.addEventListener('blur', function() {
-            const opt = this.selectedOptions[0];
-            if (opt && opt.value) opt.textContent = shortenRythmeTextR(opt.textContent);
-        });
-    }
 });
     </script>
 
