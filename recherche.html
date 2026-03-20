@@ -4042,12 +4042,24 @@ if (typeof supabaseClient !== 'undefined') {
             </div>
             <div class="profil-detail-info">
                 <div class="profil-detail-row">
-                    <span class="profil-detail-label">Rythme</span>
-                    <span class="profil-detail-value">2 sem. école / 1 sem. entreprise</span>
+                    <span class="profil-detail-label">Type</span>
+                    <span class="profil-detail-value profil-val-type">Asymétrique</span>
                 </div>
                 <div class="profil-detail-row">
-                    <span class="profil-detail-label">Ville</span>
-                    <span class="profil-detail-value">Rennes</span>
+                    <span class="profil-detail-label">Rythme</span>
+                    <span class="profil-detail-value profil-val-rythme">2 sem. / 1 sem.</span>
+                </div>
+                <div class="profil-detail-row">
+                    <span class="profil-detail-label">Ville recherchée</span>
+                    <span class="profil-detail-value profil-val-ville">Rennes</span>
+                </div>
+                <div class="profil-detail-row">
+                    <span class="profil-detail-label">École</span>
+                    <span class="profil-detail-value profil-val-ecole">Rennes</span>
+                </div>
+                <div class="profil-detail-row">
+                    <span class="profil-detail-label">Entreprise</span>
+                    <span class="profil-detail-value profil-val-entreprise">Nantes</span>
                 </div>
             </div>
             <button class="btn-envoyer-message">
@@ -4064,14 +4076,14 @@ if (typeof supabaseClient !== 'undefined') {
 <script>
 // Données mockup des profils
 const profilsData = {
-    1: { initials: 'LM', name: 'Léa M.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    2: { initials: 'AC', name: 'Antoine C.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    3: { initials: 'TR', name: 'Thomas R.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    4: { initials: 'SM', name: 'Sophie M.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    5: { initials: 'JD', name: 'Julie D.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    6: { initials: 'MB', name: 'Maxime B.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    7: { initials: 'CL', name: 'Camille L.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' },
-    8: { initials: 'NP', name: 'Nicolas P.', rythme: '2 sem. école / 1 sem. entreprise', ville: 'Rennes' }
+    1: { initials: 'LM', name: 'Léa M.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
+    2: { initials: 'AC', name: 'Antoine C.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
+    3: { initials: 'TR', name: 'Thomas R.', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    4: { initials: 'SM', name: 'Sophie M.', type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
+    5: { initials: 'JD', name: 'Julie D.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
+    6: { initials: 'MB', name: 'Maxime B.', type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
+    7: { initials: 'CL', name: 'Camille L.', type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
+    8: { initials: 'NP', name: 'Nicolas P.', type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
 };
 
 function resetModalToList() {
@@ -4102,9 +4114,11 @@ document.addEventListener('click', function(e) {
     // Remplir les infos
     document.querySelector('.profil-detail-avatar').textContent = profil.initials;
     document.querySelector('.profil-detail-name').textContent = profil.name;
-    const values = document.querySelectorAll('.profil-detail-value');
-    values[0].textContent = profil.rythme;
-    values[1].textContent = profil.ville;
+    document.querySelector('.profil-val-type').textContent = profil.type;
+    document.querySelector('.profil-val-rythme').textContent = profil.rythme;
+    document.querySelector('.profil-val-ville').textContent = profil.villeRecherche;
+    document.querySelector('.profil-val-ecole').textContent = profil.villeEcole;
+    document.querySelector('.profil-val-entreprise').textContent = profil.villeEntreprise;
 
     // Basculer la vue
     document.querySelector('.modal-profils-list').style.display = 'none';
