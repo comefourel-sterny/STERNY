@@ -842,9 +842,12 @@
             margin-top: 16px;
             color: white;
             text-align: center;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
+        }
+        .no-results-match.visible {
+            display: flex;
         }
         .no-results-match .match-badge {
             position: static;
@@ -2295,7 +2298,7 @@ function mettreAJourCompteursFiltres() {
                             </svg>
                         </div>
                         <h3>Pas encore de logement disponible</h3>
-                        <p class="nr-subtitle">Sois notifié dès qu'un logement correspond</p>
+                        <p class="nr-subtitle">Sois notifié dès qu'un logement ou une personne correspond</p>
                         <div class="alert-form">
                             <input type="email" id="alertEmail" placeholder="ton@email.com">
                             <button onclick="creerAlerte()">M'alerter</button>
@@ -2303,8 +2306,8 @@ function mettreAJourCompteursFiltres() {
                         <p id="alertMessage"></p>
                     </div>
 
-                    <!-- BLOC 2 : PERSONNES QUI MATCHENT -->
-                    <div class="no-results-match">
+                    <!-- BLOC 2 : PERSONNES QUI MATCHENT (affiché seulement si rythme sélectionné) -->
+                    <div class="no-results-match match-suggestions-block">
                         <div class="match-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>12 personnes matchent avec toi à Rennes</div>
                         <div class="match-avatars">
                             <div class="match-avatar">LM</div>
@@ -2320,6 +2323,11 @@ function mettreAJourCompteursFiltres() {
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
+            // Afficher le bloc matching seulement si un rythme est sélectionné
+            const matchBlock = document.querySelector('.match-suggestions-block');
+            if (matchBlock && selectedRhythmRecherche) {
+                matchBlock.classList.add('visible');
+            }
             // Mettre à jour le compteur de résultats
             document.getElementById('resultsCount').innerHTML = `<strong>0 logement</strong> disponible`;
             return;
