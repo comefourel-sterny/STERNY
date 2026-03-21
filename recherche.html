@@ -869,236 +869,121 @@
         }
 
         /* === BLOC 1 : ALERTE LOGEMENT === */
-        .no-results {
+        .no-results-card {
             grid-column: 1 / -1;
-        }
-        .no-results-alert {
-            text-align: center;
-            padding: 32px;
             background: white;
+            border-radius: 20px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 40px auto;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            border: 1px solid #E8EAF0;
+        }
+        .no-results-icon {
+            width: 64px;
+            height: 64px;
+            background: #FDF0EB;
             border-radius: 16px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-sizing: border-box;
-            border: 1px solid #E8EAF0;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+            margin: 0 auto 24px;
         }
-        .no-results-alert .nr-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(232, 98, 42, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .no-results-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E293B;
             margin-bottom: 12px;
         }
-        .no-results-alert .nr-icon svg {
+        .no-results-card .no-results-match {
+            font-size: 16px;
+            color: #64748B;
+            margin-bottom: 20px;
+        }
+        .no-results-card .no-results-match strong {
             color: #E8622A;
+            font-weight: 600;
         }
-        .no-results-alert h3 {
-            font-size: 20px;
-            color: #1E293B;
-            margin: 0 0 6px;
+        .no-results-avatars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .no-results-avatars .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #E8622A;
+            color: white;
+            font-size: 14px;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            margin-left: -12px;
         }
-        .no-results-alert .nr-subtitle {
+        .no-results-avatars .avatar:first-child {
+            margin-left: 0;
+        }
+        .avatar-more {
             font-size: 14px;
             color: #64748B;
-            margin: 0 0 20px;
-            line-height: 1.5;
+            margin-left: 8px;
         }
-        .no-results-alert .alert-form {
+        .no-results-actions {
             display: flex;
-            gap: 8px;
-            max-width: 400px;
-            width: 100%;
+            gap: 12px;
+            justify-content: center;
         }
-        .no-results-alert .alert-form input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1.5px solid #E8EAF0;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 500;
+        .no-results-actions .btn-secondary {
+            padding: 12px 24px;
+            background: white;
             color: #1E293B;
-            outline: none;
-            transition: border-color 0.2s;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
-        .no-results-alert .alert-form input:focus {
+        .no-results-actions .btn-secondary:hover {
             border-color: #E8622A;
-            box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+            color: #E8622A;
         }
-        .no-results-alert .alert-form input::placeholder {
-            color: #9CA3AF;
-        }
-        .no-results-alert .alert-form button {
+        .no-results-actions .btn-primary {
             padding: 12px 24px;
             background: #E8622A;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
             font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
-        .no-results-alert .alert-form button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+        .no-results-actions .btn-primary:hover {
+            background: #D4571F;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.25);
         }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
         }
-
-        /* === BLOC 2 : PERSONNES QUI MATCHENT === */
-        .no-results-match {
-            background: #1E293B;
-            border-radius: 16px;
-            padding: 28px;
-            margin-top: 16px;
-            color: white;
-            text-align: center;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-        .no-results-match.visible {
-            display: flex;
-        }
-        @keyframes pulse-subtle {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(232, 98, 42, 0.4);
+        @media (max-width: 768px) {
+            .no-results-card {
+                padding: 32px 24px;
+                margin: 24px auto;
             }
-            50% {
-                transform: scale(1.02);
-                box-shadow: 0 0 20px 5px rgba(232, 98, 42, 0.2);
+            .no-results-actions {
+                flex-direction: column;
             }
-        }
-        .no-results-match .match-badge {
-            position: static;
-            background: rgba(232, 98, 42, 0.2);
-            border: 1px solid rgba(232, 98, 42, 0.4);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 16px;
-            backdrop-filter: none;
-            animation: pulse-subtle 2.5s ease-in-out infinite;
-        }
-        .no-results-match .match-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: white;
-            margin: 0 0 8px;
-        }
-        .no-results-match .match-explain {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0 auto 24px;
-            max-width: 450px;
-            line-height: 1.5;
-            text-align: center;
-        }
-        .no-results-match .match-avatars {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0;
-            margin: 20px 0;
-        }
-        .no-results-match .match-avatar {
-            width: 48px;
-            height: 48px;
-            background: #E8622A;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: white;
-            position: relative;
-        }
-        .no-results-match .match-avatar:not(:first-child) {
-            margin-left: -8px;
-        }
-        .no-results-match .match-avatars-more {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-            margin-left: 12px;
-        }
-        .no-results-match .match-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin: 0;
-            flex-wrap: wrap;
-        }
-        .no-results-match .btn-match-outline {
-            background: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .no-results-match .btn-match-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .no-results-match .btn-match-primary {
-            background: #E8622A;
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .no-results-match .btn-match-primary:hover {
-            background: #D4571F;
-        }
-        .no-results-match .match-footer-text {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-            margin: 16px auto 0;
-            max-width: 520px;
-            line-height: 1.4;
-            white-space: nowrap;
-        }
-        .no-results-match .match-tip {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 20px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            max-width: 500px;
-            text-align: center;
         }
 
         /* === MODAL PROFILS COMPATIBLES === */
@@ -1823,10 +1708,10 @@
                 flex: 1;
             }
 
-            .no-results-alert .alert-form {
-                flex-direction: column;
+            .no-results-card {
+                padding: 32px 20px;
             }
-            .no-results-match .match-buttons {
+            .no-results-actions {
                 flex-direction: column;
                 align-items: center;
             }
@@ -2785,50 +2670,31 @@ function mettreAJourCompteursFiltres() {
 
 
         if (liste.length === 0) {
+            const villeAffichee = villeSelectionneeRecherche ? villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1) : 'ta ville';
+            const matchCount = 12; // TODO: remplacer par requête Supabase
             grid.innerHTML = `
-                <div class="no-results">
-                    <!-- BLOC 1 : ALERTE LOGEMENT -->
-                    <div class="no-results-alert">
-                        <div class="nr-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="M21 21l-4.35-4.35"/>
-                            </svg>
-                        </div>
-                        <h3>Pas encore de logement disponible</h3>
-                        <p class="nr-subtitle">Sois notifié dès qu'un logement ou une personne correspond</p>
-                        <div class="alert-form">
-                            <input type="email" id="alertEmail" placeholder="ton@email.com">
-                            <button onclick="creerAlerte()">M'alerter</button>
-                        </div>
-                        <p id="alertMessage"></p>
+                <div class="no-results-card">
+                    <div class="no-results-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
                     </div>
-
-                    <!-- BLOC 2 : PERSONNES QUI MATCHENT (affiché seulement si rythme sélectionné) -->
-                    <div class="no-results-match match-suggestions-block">
-                        <div class="match-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>12 personnes matchent avec toi à Rennes</div>
-                        <div class="match-avatars">
-                            <div class="match-avatar">LM</div>
-                            <div class="match-avatar">AC</div>
-                            <div class="match-avatar">TR</div>
-                            <span class="match-avatars-more">+9 autres</span>
-                        </div>
-                        <div class="match-buttons">
-                            <button class="btn-match-outline btn-voir-profils">Voir les profils</button>
-                            <button class="btn-match-primary">Trouver mon logement</button>
-                        </div>
-                        <p class="match-footer-text">Votre futur colocataire vous attend — trouvez votre logement pour matcher</p>
+                    <h2 class="no-results-title">Aucun logement ne correspond pour l'instant</h2>
+                    <p class="no-results-match">Mais <strong>${matchCount} personnes</strong> matchent avec toi à ${villeAffichee} !</p>
+                    <div class="no-results-avatars">
+                        <div class="avatar">LM</div>
+                        <div class="avatar">AC</div>
+                        <div class="avatar">TR</div>
+                        <span class="avatar-more">+${matchCount - 3} autres</span>
+                    </div>
+                    <div class="no-results-actions">
+                        <button class="btn-secondary" onclick="ouvrirModalProfils()">Voir les profils</button>
+                        <button class="btn-primary" onclick="ouvrirAlerte()">M'alerter par email</button>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
-            // Afficher le bloc matching seulement si rythme sélectionné ET count > 0
-            // matchCount sera dynamique via Supabase plus tard — pour l'instant mockup statique
-            const matchCount = 12; // TODO: remplacer par requête Supabase
-            const matchBlock = document.querySelector('.match-suggestions-block');
-            if (matchBlock && selectedRhythmRecherche && matchCount > 0) {
-                matchBlock.classList.add('visible');
-            }
             // Mettre à jour le compteur de résultats
             document.getElementById('resultsCount').innerHTML = `<strong>0 logement</strong> disponible`;
             return;
@@ -3647,11 +3513,18 @@ function genererBlocDemande(ville, contexte) {
     `;
 }
 
-async function creerAlerte() {
-    const email = document.getElementById('alertEmail').value.trim();
-    const messageDiv = document.getElementById('alertMessage');
-    const btn = document.querySelector('.no-results-alert .alert-form button');
-    await envoyerAlerte(email, 'alertEmail', messageDiv, btn);
+function ouvrirModalProfils() {
+    document.querySelector('.modal-profils-overlay').classList.add('active');
+}
+
+function ouvrirAlerte() {
+    // Scroll vers la barre d'alerte en bas de page
+    const alertBar = document.querySelector('.alert-bar');
+    if (alertBar) {
+        alertBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const input = alertBar.querySelector('input[type="email"]');
+        if (input) setTimeout(() => input.focus(), 500);
+    }
 }
 
 async function creerAlerteBottom() {
