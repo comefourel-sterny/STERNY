@@ -1192,18 +1192,21 @@
             flex-shrink: 0;
         }
         .profil-back {
-            background: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             border: none;
-            color: #64748B;
-            font-size: 14px;
-            font-weight: 500;
+            background: #F3F4F6;
             cursor: pointer;
-            padding: 0;
-            font-family: 'DM Sans', sans-serif;
-            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            transition: all 0.2s;
         }
         .profil-back:hover {
-            color: #E8622A;
+            background: #E5E7EB;
+            color: #1E293B;
         }
         .modal-close-detail {
             width: 32px;
@@ -4209,7 +4212,7 @@ if (typeof supabaseClient !== 'undefined') {
         </div>
         <div class="profil-detail" style="display: none;">
             <div class="profil-detail-topbar">
-                <button class="profil-back">Retour</button>
+                <button class="profil-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg></button>
                 <button class="modal-close-detail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="profil-detail-header">
