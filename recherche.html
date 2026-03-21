@@ -868,17 +868,17 @@
             font-weight: 500;
         }
 
-        /* === NO RESULTS : 2 CARTES SÉPARÉES === */
-        .nr-card-alert {
-            grid-column: 1 / -1;
-            background: white;
-            border-radius: 16px;
-            border: 1px solid #E8EAF0;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-            padding: 44px 36px 40px;
-            text-align: center;
+        /* === NO RESULTS MODE === */
+        .no-results-mode .results-header {
+            display: none;
         }
-        .nr-card-alert-icon {
+        /* Partie haute : alerte (sans cadre) */
+        .nr-alert-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 20px 0;
+        }
+        .nr-alert-icon {
             width: 64px;
             height: 64px;
             background: #FDF0EB;
@@ -888,14 +888,14 @@
             justify-content: center;
             margin: 0 auto 24px;
         }
-        .nr-card-alert h2 {
+        .nr-alert-section h2 {
             font-size: 24px;
             font-weight: 700;
             color: #1E293B;
             margin: 0 0 10px;
             line-height: 1.3;
         }
-        .nr-card-alert-sub {
+        .nr-alert-sub {
             font-size: 15px;
             color: #64748B;
             margin-bottom: 28px;
@@ -903,7 +903,7 @@
         .nr-alert-form {
             display: flex;
             gap: 10px;
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
         }
         .nr-alert-form input {
@@ -914,6 +914,7 @@
             font-size: 14px;
             font-family: 'DM Sans', sans-serif;
             transition: border-color 0.2s;
+            background: white;
         }
         .nr-alert-form input:focus {
             outline: none;
@@ -941,18 +942,17 @@
             margin-top: 10px;
             text-align: center;
         }
-        /* Carte 2 : Profils compatibles */
-        .nr-card-profils {
+        /* Carte navy : profils compatibles */
+        .nr-card-navy {
             grid-column: 1 / -1;
             display: none;
-            background: rgba(232, 98, 42, 0.03);
-            border: 1px solid rgba(232, 98, 42, 0.1);
+            background: #1E293B;
             border-radius: 16px;
-            padding: 32px 36px;
+            padding: 36px 36px 32px;
             text-align: center;
-            margin-top: 24px;
+            margin-top: 32px;
         }
-        .nr-card-profils.visible {
+        .nr-card-navy.visible {
             display: block;
         }
         .nr-avatars {
@@ -962,8 +962,8 @@
             margin-bottom: 20px;
         }
         .nr-avatars .avatar {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: #E8622A;
             color: white;
@@ -972,44 +972,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid white;
+            border: 2.5px solid white;
             margin-left: -10px;
-            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .nr-avatars .avatar:first-child {
             margin-left: 0;
         }
         .nr-avatars .avatar-more {
             font-size: 13px;
-            color: #64748B;
+            color: rgba(255, 255, 255, 0.6);
             margin-left: 12px;
             font-weight: 600;
         }
-        .nr-card-profils-text {
-            font-size: 16px;
-            color: #1E293B;
+        .nr-navy-text {
+            font-size: 17px;
+            color: white;
             font-weight: 500;
             line-height: 1.5;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        .nr-card-profils-text strong {
+        .nr-navy-text strong {
             font-weight: 700;
             color: #E8622A;
         }
-        .nr-card-profils-sub {
+        .nr-navy-sub {
             font-size: 14px;
-            color: #64748B;
-            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 28px;
         }
-        .nr-card-profils-buttons {
+        .nr-navy-buttons {
             display: flex;
             gap: 12px;
             justify-content: center;
         }
-        .nr-card-profils-buttons .btn-profils {
+        .nr-navy-buttons .btn-profils {
             padding: 12px 28px;
-            background: #1E293B;
-            color: white;
+            background: white;
+            color: #1E293B;
             border: none;
             border-radius: 10px;
             font-size: 14px;
@@ -1020,11 +1020,11 @@
             text-decoration: none;
             min-width: 160px;
         }
-        .nr-card-profils-buttons .btn-profils:hover {
-            background: #334155;
-            box-shadow: 0 4px 14px rgba(30, 41, 59, 0.25);
+        .nr-navy-buttons .btn-profils:hover {
+            background: #F4F5F7;
+            box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
         }
-        .nr-card-profils-buttons .btn-logement {
+        .nr-navy-buttons .btn-logement {
             padding: 12px 28px;
             background: #E8622A;
             color: white;
@@ -1038,30 +1038,30 @@
             text-decoration: none;
             min-width: 160px;
         }
-        .nr-card-profils-buttons .btn-logement:hover {
+        .nr-navy-buttons .btn-logement:hover {
             background: #D4571F;
-            box-shadow: 0 4px 14px rgba(232, 98, 42, 0.3);
+            box-shadow: 0 4px 14px rgba(232, 98, 42, 0.4);
         }
         @media (max-width: 768px) {
-            .nr-card-alert {
-                padding: 32px 20px 28px;
+            .nr-alert-section {
+                padding: 32px 0 0;
             }
-            .nr-card-alert h2 {
+            .nr-alert-section h2 {
                 font-size: 20px;
             }
             .nr-alert-form {
                 flex-direction: column;
                 max-width: none;
             }
-            .nr-card-profils {
-                padding: 28px 20px;
-                margin-top: 16px;
+            .nr-card-navy {
+                padding: 28px 20px 24px;
+                margin-top: 24px;
             }
-            .nr-card-profils-buttons {
+            .nr-navy-buttons {
                 flex-direction: column;
             }
-            .nr-card-profils-buttons .btn-profils,
-            .nr-card-profils-buttons .btn-logement {
+            .nr-navy-buttons .btn-profils,
+            .nr-navy-buttons .btn-logement {
                 width: 100%;
                 min-width: auto;
             }
@@ -1789,7 +1789,7 @@
                 flex: 1;
             }
 
-            .nr-card-alert h2 {
+            .nr-alert-section h2 {
                 font-size: 20px;
             }
 
@@ -2747,21 +2747,24 @@ function mettreAJourCompteursFiltres() {
 
 
         if (liste.length === 0) {
+            // Masquer header (compteur, tri, filtres)
+            document.querySelector('.main-content').classList.add('no-results-mode');
+
             const villeAffichee = villeSelectionneeRecherche ? villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1) : 'ta ville';
             const matchCount = 12; // TODO: remplacer par requête Supabase
             const rythmeInput = document.getElementById('monRythmeRecherche');
             const hasRythme = rythmeInput && rythmeInput.value;
             grid.innerHTML = `
-                <!-- Carte 1 : Alerte -->
-                <div class="nr-card-alert">
-                    <div class="nr-card-alert-icon">
+                <!-- Alerte (sans cadre) -->
+                <div class="nr-alert-section">
+                    <div class="nr-alert-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
                     </div>
                     <h2>Aucun logement disponible<br>pour l'instant</h2>
-                    <p class="nr-card-alert-sub">Crée une alerte pour être notifié en premier</p>
+                    <p class="nr-alert-sub">Crée une alerte pour être notifié en premier</p>
                     <div class="nr-alert-form">
                         <input type="email" id="alertEmail" placeholder="ton@email.com">
                         <button class="btn-alert" onclick="creerAlerte()">M'alerter</button>
@@ -2769,27 +2772,28 @@ function mettreAJourCompteursFiltres() {
                     <p id="alertMessage"></p>
                 </div>
 
-                <!-- Carte 2 : Profils compatibles (visible si rythme) -->
-                <div class="nr-card-profils ${hasRythme ? 'visible' : ''}">
+                <!-- Carte navy : profils compatibles (visible si rythme) -->
+                <div class="nr-card-navy ${hasRythme ? 'visible' : ''}">
                     <div class="nr-avatars">
                         <div class="avatar">LM</div>
                         <div class="avatar">AC</div>
                         <div class="avatar">TR</div>
                         <span class="avatar-more">+${matchCount - 3}</span>
                     </div>
-                    <p class="nr-card-profils-text"><strong>${matchCount} étudiants</strong> cherchent aussi à ${villeAffichee}</p>
-                    <p class="nr-card-profils-sub">avec un rythme compatible au tien</p>
-                    <div class="nr-card-profils-buttons">
+                    <p class="nr-navy-text"><strong>${matchCount} étudiants</strong> cherchent aussi à ${villeAffichee}</p>
+                    <p class="nr-navy-sub">avec un rythme compatible au tien</p>
+                    <div class="nr-navy-buttons">
                         <button class="btn-profils" onclick="ouvrirModalProfils()">Voir les profils</button>
                         <a href="creer-annonce.html" class="btn-logement">Trouver un logement</a>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
-            // Mettre à jour le compteur de résultats
-            document.getElementById('resultsCount').innerHTML = `<strong>0 logement</strong> disponible`;
             return;
         }
+
+        // Réafficher header si résultats
+        document.querySelector('.main-content').classList.remove('no-results-mode');
 
             liste.forEach(logement => {
     // SVG placeholder si pas de photo
