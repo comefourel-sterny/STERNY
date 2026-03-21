@@ -491,10 +491,46 @@
             background: white;
             z-index: 1;
         }
+        .po-chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 36px 36px 20px;
+            border-bottom: 1px solid #E8EAF0;
+        }
+        .po-chat-back {
+            width: 32px; height: 32px; border-radius: 8px; border: none;
+            background: #F3F4F6; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; color: #6B7280;
+            padding: 0; transition: background 0.15s; flex-shrink: 0;
+        }
+        .po-chat-back:hover { background: #E5E7EB; color: #1E293B; }
+        .po-chat-back svg { width: 16px; height: 16px; }
+        .po-chat-contact {
+            display: flex; align-items: center; gap: 12px;
+            flex: 1; justify-content: center;
+        }
+        .po-chat-avatar-sm {
+            width: 46px; height: 46px; border-radius: 50%; background: #1E293B;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px; font-weight: 700; overflow: hidden;
+            flex-shrink: 0;
+        }
+        .po-chat-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+        .po-chat-user-info { display: flex; flex-direction: column; gap: 0; }
+        .po-chat-name { font-size: 18px; font-weight: 700; color: #1E293B; }
+        .po-chat-status { font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+        .po-chat-close {
+            width: 32px; height: 32px; border-radius: 10px; border: none;
+            background: #F3F4F6; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; color: #6B7280;
+            font-size: 18px; padding: 0; transition: background 0.15s; flex-shrink: 0;
+        }
+        .po-chat-close:hover { background: #E5E7EB; color: #1E293B; }
         .po-chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 16px 20px;
+            padding: 20px 36px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -502,21 +538,28 @@
         .po-chat-messages::-webkit-scrollbar { width: 4px; }
         .po-chat-messages::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
         .po-msg {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 14px;
-            font-size: 13px;
-            line-height: 1.45;
-            word-break: break-word;
+            display: flex;
+            max-width: 75%;
         }
         .po-msg-sent {
             align-self: flex-end;
-            background: #e8642a;
-            color: white;
-            border-bottom-right-radius: 4px;
         }
         .po-msg-received {
             align-self: flex-start;
+        }
+        .po-msg-bubble {
+            padding: 10px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .po-msg-sent .po-msg-bubble {
+            background: #E8622A;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .po-msg-received .po-msg-bubble {
             background: #f3f4f6;
             color: #1e2d3d;
             border-bottom-left-radius: 4px;
@@ -529,53 +572,57 @@
         .po-msg-sent .po-msg-time { color: rgba(255,255,255,0.7); text-align: right; }
         .po-msg-received .po-msg-time { text-align: left; }
         .po-chat-input-bar {
+            margin-top: auto;
             display: flex;
-            gap: 8px;
-            padding: 12px 20px 16px;
-            border-top: 1px solid #f3f4f6;
-            background: white;
-            border-radius: 0 0 20px 20px;
+            gap: 12px;
+            padding: 16px 36px 20px;
+            border-top: 1px solid #E8EAF0;
         }
-        .po-chat-input {
+        .po-chat-textarea {
             flex: 1;
-            padding: 10px 14px;
-            border: 1.5px solid #e2e8f0;
+            min-height: 42px;
+            max-height: 100px;
+            padding: 10px 16px;
+            border: 1.5px solid #E8EAF0;
             border-radius: 12px;
-            font-size: 13px;
-            font-family: inherit;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            resize: none;
+            transition: border-color 0.2s;
+            color: #1E293B;
             outline: none;
-            background: #f9fafb;
-            transition: border-color 0.15s;
         }
-        .po-chat-input:focus { border-color: #e8642a; }
-        .po-chat-input::placeholder { color: #94a3b8; }
+        .po-chat-textarea:focus { border-color: #E8622A; }
+        .po-chat-textarea::placeholder { color: #9CA3AF; }
         .po-chat-send {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border: none;
-            background: #e8642a;
+            background: #E8622A;
             border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.15s;
+            transition: all 0.2s;
             flex-shrink: 0;
             padding: 0;
         }
-        .po-chat-send:hover { background: #d4571f; }
-        .po-chat-send:disabled { background: #d1d5db; cursor: default; }
-        .po-chat-send svg { width: 18px; height: 18px; color: white; }
+        .po-chat-send:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+        .po-chat-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .po-chat-send svg { width: 18px; height: 18px; }
         .po-chat-empty {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #94a3b8;
-            font-size: 13px;
+            color: #9CA3AF;
+            font-size: 15px;
             text-align: center;
             padding: 20px;
         }
+        @keyframes poChatFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+        .po-msg { animation: poChatFadeIn 0.15s ease; }
 
         /* AVIS VIEW */
         .po-avis-view-wrapper {
@@ -1107,11 +1154,37 @@
         listEl.innerHTML = html;
     }
 
+    // ─── Helper: statut chat (ÉTUDIANT/ÉTUDIANTE, PROPRIÉTAIRE, HÔTE) ───
+    function poChatStatusLabel() {
+        if (!poProfileData) return '';
+        var type = poProfileData.type_user;
+        if (type === 'proprietaire') return 'PROPRI\u00c9TAIRE';
+        if (type === 'hote') return 'H\u00d4TE';
+        // locataire : genre
+        return poProfileData.sexe === 'femme' ? '\u00c9TUDIANTE' : '\u00c9TUDIANT';
+    }
+
+    // ─── Helper: chat header avatar HTML ───
+    function poChatHeaderHtml() {
+        if (!poProfileData) return '';
+        var avatarInner;
+        if (poProfileData.photo_profil_url) {
+            avatarInner = '<img src="' + poEscape(poProfileData.photo_profil_url) + '" alt="Photo">';
+        } else {
+            avatarInner = poEscape(poProfileData.prenom[0]) + poEscape(poProfileData.nom[0]);
+        }
+        return '<div class="po-chat-avatar-sm">' + avatarInner + '</div>' +
+            '<div class="po-chat-user-info">' +
+                '<span class="po-chat-name">' + poEscape(poProfileData.prenom) + ' ' + poEscape(poProfileData.nom) + '</span>' +
+                '<span class="po-chat-status">' + poChatStatusLabel() + '</span>' +
+            '</div>';
+    }
+
     // ─── Vue Messages ───
     async function poAfficherVueMessages() {
         var panel = document.getElementById('poPanel');
         var backSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-        var sendSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+        var sendSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
 
         var existing = panel.querySelector('.po-chat-wrapper, .po-avis-view-wrapper');
         if (existing) existing.remove();
@@ -1120,13 +1193,14 @@
         var wrapper = document.createElement('div');
         wrapper.className = 'po-chat-wrapper';
         wrapper.innerHTML =
-            '<div class="po-view-header">' +
-                '<button class="po-back-btn" onclick="window._poRetour()">' + backSvg + '</button>' +
-                poMiniAvatarHtml() +
+            '<div class="po-chat-header">' +
+                '<button class="po-chat-back" onclick="window._poRetour()">' + backSvg + '</button>' +
+                '<div class="po-chat-contact">' + poChatHeaderHtml() + '</div>' +
+                '<button class="po-chat-close" onclick="window.fermerProfilOverlay()">&times;</button>' +
             '</div>' +
             '<div class="po-chat-messages" id="poChatMessages"><div class="po-loading">Chargement...</div></div>' +
             '<div class="po-chat-input-bar">' +
-                '<input type="text" class="po-chat-input" id="poChatInput" placeholder="\u00c9crire un message..." maxlength="2000">' +
+                '<textarea class="po-chat-textarea" id="poChatInput" placeholder="Ecris ton message..." rows="1" maxlength="2000"></textarea>' +
                 '<button class="po-chat-send" id="poChatSend">' + sendSvg + '</button>' +
             '</div>';
         panel.appendChild(wrapper);
@@ -1143,7 +1217,7 @@
         if (!messagesEl) return;
 
         if (!result.data || result.data.length === 0) {
-            messagesEl.innerHTML = '<div class="po-chat-empty">Aucun message pour l\'instant.<br>Envoie le premier !</div>';
+            messagesEl.innerHTML = '<div class="po-chat-empty">Envoie ton premier message !</div>';
         } else {
             var html = '';
             for (var i = 0; i < result.data.length; i++) {
@@ -1152,8 +1226,7 @@
                 var time = new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                 var dateStr = new Date(m.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
                 html += '<div class="po-msg ' + (isSent ? 'po-msg-sent' : 'po-msg-received') + '">' +
-                    poEscape(m.contenu) +
-                    '<div class="po-msg-time">' + dateStr + ' ' + time + '</div>' +
+                    '<div class="po-msg-bubble">' + poEscape(m.contenu) + '</div>' +
                 '</div>';
             }
             messagesEl.innerHTML = html;
@@ -1177,6 +1250,7 @@
             if (!text) return;
             sendBtn.disabled = true;
             inputEl.value = '';
+            inputEl.style.height = 'auto';
 
             var insertResult = await supabaseClient
                 .from('messages')
@@ -1188,10 +1262,7 @@
                 }]);
 
             if (!insertResult.error) {
-                var now = new Date();
-                var time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                var dateStr = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-                var msgHtml = '<div class="po-msg po-msg-sent">' + poEscape(text) + '<div class="po-msg-time">' + dateStr + ' ' + time + '</div></div>';
+                var msgHtml = '<div class="po-msg po-msg-sent"><div class="po-msg-bubble">' + poEscape(text) + '</div></div>';
                 var emptyEl = messagesEl.querySelector('.po-chat-empty');
                 if (emptyEl) messagesEl.innerHTML = '';
                 messagesEl.insertAdjacentHTML('beforeend', msgHtml);
