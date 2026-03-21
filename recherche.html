@@ -63,15 +63,16 @@
         /* ===== VILLE SUGGESTIONS (identique à index.html / style.css) ===== */
         .ville-suggestions {
             position: absolute;
-            top: calc(100% + 8px);
+            top: 100%;
             left: 0;
-            width: 280px;
+            width: 100%;
+            margin-top: 4px;
             background: white;
             border: 1px solid #E8EAF0;
             border-radius: 14px;
             max-height: 220px;
             overflow-y: auto;
-            z-index: 1050;
+            z-index: 100;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
             animation: modalIn 0.15s ease;
         }
@@ -140,7 +141,6 @@
             gap: 0;
             align-items: center;
             flex-wrap: nowrap;
-            position: relative;
         }
 
         .search-header .search-field {
@@ -2195,6 +2195,7 @@
                 <div style="position: relative;">
                     <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off" style="width: 100%;">
                 </div>
+                <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
             </div>
 
             <div class="search-field custom-select-wrapper" style="position:relative;cursor:pointer;" id="alternanceWrapper">
@@ -2232,7 +2233,6 @@
             </div>
 
             <button class="search-btn" onclick="filtrerLogements()">Rechercher</button>
-            <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
         </div>
     </div>
 
