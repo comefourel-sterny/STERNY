@@ -63,10 +63,10 @@
         /* ===== VILLE SUGGESTIONS (identique à index.html / style.css) ===== */
         .ville-suggestions {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 8px);
             left: 0;
+            right: 0;
             width: 100%;
-            margin-top: 4px;
             background: white;
             border: 1px solid #E8EAF0;
             border-radius: 14px;
@@ -74,6 +74,7 @@
             overflow-y: auto;
             z-index: 100;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            overflow: hidden;
             animation: modalIn 0.15s ease;
         }
         .ville-suggestions::-webkit-scrollbar { width: 5px; }
