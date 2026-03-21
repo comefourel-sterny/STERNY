@@ -1330,13 +1330,15 @@
         .overlay-chat-header {
             display: flex;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 20px 24px;
             border-bottom: 1px solid #E8EAF0;
             position: relative;
         }
         .overlay-chat-back {
             position: absolute;
-            left: 20px;
+            left: 24px;
+            top: 20px;
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -1351,11 +1353,10 @@
         .overlay-chat-back:hover { background: #E5E7EB; color: #1E293B; }
         .overlay-chat-back svg { width: 16px; height: 16px; }
         .overlay-chat-contact {
-            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
+            justify-content: center;
         }
         .overlay-chat-avatar {
             width: 40px;
@@ -1376,7 +1377,8 @@
         }
         .messages-overlay-close {
             position: absolute;
-            right: 20px;
+            right: 24px;
+            top: 20px;
             width: 36px;
             height: 36px;
             border-radius: 10px;
