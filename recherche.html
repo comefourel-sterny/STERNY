@@ -868,78 +868,111 @@
             font-weight: 500;
         }
 
-        /* === BLOC 1 : ALERTE LOGEMENT === */
-        .no-results-card {
+        /* === NO RESULTS : 2 COLONNES === */
+        .no-results-container {
             grid-column: 1 / -1;
-            background: white;
-            border-radius: 20px;
-            padding: 48px 40px;
-            text-align: center;
-            max-width: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 900px;
             margin: 40px auto;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+            padding: 0 20px;
+        }
+        .no-results-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             border: 1px solid #E8EAF0;
         }
-        .no-results-icon {
-            width: 64px;
-            height: 64px;
+        .no-results-card.card-highlight {
+            background: #FFFBF9;
+            border-color: rgba(232, 98, 42, 0.2);
+        }
+        .card-icon {
+            width: 52px;
+            height: 52px;
             background: #FDF0EB;
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 24px;
+            margin: 0 auto 20px;
         }
-        .no-results-title {
-            font-size: 22px;
+        .card-title {
+            font-size: 18px;
             font-weight: 700;
             color: #1E293B;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
-        .no-results-card .no-results-match {
-            font-size: 16px;
+        .card-subtitle {
+            font-size: 14px;
             color: #64748B;
             margin-bottom: 20px;
         }
-        .no-results-card .no-results-match strong {
-            color: #E8622A;
-            font-weight: 600;
+        .card-form {
+            display: flex;
+            gap: 10px;
         }
-        .no-results-avatars {
+        .card-form input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1.5px solid #E8EAF0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .card-form input:focus {
+            outline: none;
+            border-color: #E8622A;
+        }
+        .card-form .btn-primary {
+            padding: 12px 20px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .card-form .btn-primary:hover {
+            background: #D4571F;
+        }
+        .card-avatars {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
-        .no-results-avatars .avatar {
-            width: 44px;
-            height: 44px;
+        .card-avatars .avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #E8622A;
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 3px solid white;
-            margin-left: -12px;
+            margin-left: -10px;
         }
-        .no-results-avatars .avatar:first-child {
+        .card-avatars .avatar:first-child {
             margin-left: 0;
         }
         .avatar-more {
-            font-size: 14px;
+            font-size: 13px;
             color: #64748B;
-            margin-left: 8px;
+            margin-left: 10px;
+            font-weight: 500;
         }
-        .no-results-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        .no-results-actions .btn-secondary {
+        .no-results-card .btn-secondary {
             padding: 12px 24px;
             background: white;
             color: #1E293B;
@@ -950,39 +983,19 @@
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
+            width: 100%;
         }
-        .no-results-actions .btn-secondary:hover {
+        .no-results-card .btn-secondary:hover {
             border-color: #E8622A;
             color: #E8622A;
-        }
-        .no-results-actions .btn-primary {
-            padding: 12px 24px;
-            background: #E8622A;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
-        }
-        .no-results-actions .btn-primary:hover {
-            background: #D4571F;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(232, 98, 42, 0.25);
         }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
         }
         @media (max-width: 768px) {
-            .no-results-card {
-                padding: 32px 24px;
-                margin: 24px auto;
-            }
-            .no-results-actions {
-                flex-direction: column;
+            .no-results-container {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1709,11 +1722,10 @@
             }
 
             .no-results-card {
-                padding: 32px 20px;
+                padding: 24px 20px;
             }
-            .no-results-actions {
+            .card-form {
                 flex-direction: column;
-                align-items: center;
             }
 
             .main-content {
@@ -2673,24 +2685,43 @@ function mettreAJourCompteursFiltres() {
             const villeAffichee = villeSelectionneeRecherche ? villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1) : 'ta ville';
             const matchCount = 12; // TODO: remplacer par requête Supabase
             grid.innerHTML = `
-                <div class="no-results-card">
-                    <div class="no-results-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
+                <div class="no-results-container">
+                    <!-- Colonne gauche : Alerte logement -->
+                    <div class="no-results-card">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Aucun logement trouvé</h3>
+                        <p class="card-subtitle">On te prévient dès qu'un logement correspond</p>
+                        <div class="card-form">
+                            <input type="email" id="alertEmail" placeholder="ton@email.com">
+                            <button class="btn-primary" onclick="creerAlerte()">M'alerter</button>
+                        </div>
+                        <p id="alertMessage"></p>
                     </div>
-                    <h2 class="no-results-title">Aucun logement ne correspond pour l'instant</h2>
-                    <p class="no-results-match">Mais <strong>${matchCount} personnes</strong> matchent avec toi à ${villeAffichee} !</p>
-                    <div class="no-results-avatars">
-                        <div class="avatar">LM</div>
-                        <div class="avatar">AC</div>
-                        <div class="avatar">TR</div>
-                        <span class="avatar-more">+${matchCount - 3} autres</span>
-                    </div>
-                    <div class="no-results-actions">
+
+                    <!-- Colonne droite : Profils compatibles -->
+                    <div class="no-results-card card-highlight">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">${matchCount} profils compatibles</h3>
+                        <p class="card-subtitle">Des étudiants cherchent aussi à ${villeAffichee}</p>
+                        <div class="card-avatars">
+                            <div class="avatar">LM</div>
+                            <div class="avatar">AC</div>
+                            <div class="avatar">TR</div>
+                            <span class="avatar-more">+${matchCount - 3}</span>
+                        </div>
                         <button class="btn-secondary" onclick="ouvrirModalProfils()">Voir les profils</button>
-                        <button class="btn-primary" onclick="ouvrirAlerte()">M'alerter par email</button>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
@@ -3517,14 +3548,11 @@ function ouvrirModalProfils() {
     document.querySelector('.modal-profils-overlay').classList.add('active');
 }
 
-function ouvrirAlerte() {
-    // Scroll vers la barre d'alerte en bas de page
-    const alertBar = document.querySelector('.alert-bar');
-    if (alertBar) {
-        alertBar.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const input = alertBar.querySelector('input[type="email"]');
-        if (input) setTimeout(() => input.focus(), 500);
-    }
+async function creerAlerte() {
+    const email = document.getElementById('alertEmail').value.trim();
+    const messageDiv = document.getElementById('alertMessage');
+    const btn = document.querySelector('.card-form .btn-primary');
+    await envoyerAlerte(email, 'alertEmail', messageDiv, btn);
 }
 
 async function creerAlerteBottom() {
