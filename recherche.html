@@ -868,67 +868,112 @@
             font-weight: 500;
         }
 
-        /* === NO RESULTS : 2 COLONNES === */
-        .no-results-container {
+        /* === NO RESULTS : CARTE PLEINE LARGEUR === */
+        .no-results-wrapper {
             grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        .no-results-card {
             background: white;
             border-radius: 16px;
-            padding: 32px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             border: 1px solid #E8EAF0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
         }
-        .no-results-card.card-highlight {
-            background: #FFFBF9;
-            border-color: rgba(232, 98, 42, 0.2);
+        .no-results-header {
+            padding: 32px 36px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #F1F3F5;
         }
-        .card-icon {
-            width: 52px;
-            height: 52px;
+        .no-results-header-icon {
+            width: 44px;
+            height: 44px;
             background: #FDF0EB;
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            flex-shrink: 0;
         }
-        .card-title {
-            font-size: 18px;
+        .no-results-header h2 {
+            font-size: 20px;
             font-weight: 700;
             color: #1E293B;
-            margin-bottom: 8px;
+            margin: 0;
         }
-        .card-subtitle {
+        .no-results-header h2 span {
+            color: #64748B;
+            font-weight: 400;
+            font-size: 15px;
+            display: block;
+            margin-top: 2px;
+        }
+        .no-results-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .no-results-sections.single-section {
+            grid-template-columns: 1fr;
+        }
+        .nr-section {
+            padding: 28px 36px 32px;
+        }
+        .nr-section + .nr-section {
+            border-left: 1px solid #F1F3F5;
+        }
+        .nr-section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .nr-section-label.label-orange {
+            color: #E8622A;
+        }
+        .nr-section-label.label-navy {
+            color: #1E293B;
+        }
+        .nr-section-label-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .label-orange .nr-section-label-dot {
+            background: #E8622A;
+        }
+        .label-navy .nr-section-label-dot {
+            background: #1E293B;
+        }
+        .nr-section-text {
             font-size: 14px;
             color: #64748B;
-            margin-bottom: 20px;
+            line-height: 1.5;
+            margin-bottom: 18px;
         }
-        .card-form {
+        .nr-section-form {
             display: flex;
             gap: 10px;
         }
-        .card-form input {
+        .nr-section-form input {
             flex: 1;
-            padding: 12px 14px;
+            padding: 11px 14px;
             border: 1.5px solid #E8EAF0;
             border-radius: 10px;
             font-size: 14px;
             font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s;
         }
-        .card-form input:focus {
+        .nr-section-form input:focus {
             outline: none;
             border-color: #E8622A;
         }
-        .card-form .btn-primary {
-            padding: 12px 20px;
+        .nr-section-form .btn-alert {
+            padding: 11px 20px;
             background: #E8622A;
             color: white;
             border: none;
@@ -940,62 +985,96 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-        .card-form .btn-primary:hover {
+        .nr-section-form .btn-alert:hover {
             background: #D4571F;
+            box-shadow: 0 4px 14px rgba(232, 98, 42, 0.3);
         }
-        .card-avatars {
+        .nr-section-profils {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+            gap: 16px;
         }
-        .card-avatars .avatar {
-            width: 40px;
-            height: 40px;
+        .nr-avatars {
+            display: flex;
+            align-items: center;
+        }
+        .nr-avatars .avatar {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: #E8622A;
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid white;
+            border: 2.5px solid white;
             margin-left: -10px;
         }
-        .card-avatars .avatar:first-child {
+        .nr-avatars .avatar:first-child {
             margin-left: 0;
         }
-        .avatar-more {
-            font-size: 13px;
+        .nr-avatars .avatar-more {
+            font-size: 12px;
             color: #64748B;
-            margin-left: 10px;
-            font-weight: 500;
+            margin-left: 8px;
+            font-weight: 600;
         }
-        .no-results-card .btn-secondary {
-            padding: 12px 24px;
-            background: white;
-            color: #1E293B;
-            border: 1.5px solid #E8EAF0;
+        .nr-section-profils .btn-profils {
+            padding: 10px 20px;
+            background: #1E293B;
+            color: white;
+            border: none;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
-            width: 100%;
+            white-space: nowrap;
+            margin-left: auto;
         }
-        .no-results-card .btn-secondary:hover {
-            border-color: #E8622A;
-            color: #E8622A;
+        .nr-section-profils .btn-profils:hover {
+            background: #334155;
+            box-shadow: 0 4px 14px rgba(30, 41, 59, 0.25);
         }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
         }
+        /* Section profils cachée par défaut, visible si rythme sélectionné */
+        .nr-section-match {
+            display: none;
+        }
+        .nr-section-match.visible {
+            display: block;
+        }
         @media (max-width: 768px) {
-            .no-results-container {
+            .no-results-sections {
                 grid-template-columns: 1fr;
+            }
+            .nr-section + .nr-section {
+                border-left: none;
+                border-top: 1px solid #F1F3F5;
+            }
+            .no-results-header {
+                padding: 24px 20px 20px;
+            }
+            .nr-section {
+                padding: 24px 20px;
+            }
+            .nr-section-form {
+                flex-direction: column;
+            }
+            .nr-section-profils {
+                flex-direction: column;
+                gap: 14px;
+            }
+            .nr-section-profils .btn-profils {
+                width: 100%;
+                text-align: center;
+                margin-left: 0;
             }
         }
 
@@ -1721,11 +1800,8 @@
                 flex: 1;
             }
 
-            .no-results-card {
-                padding: 24px 20px;
-            }
-            .card-form {
-                flex-direction: column;
+            .no-results-header h2 {
+                font-size: 18px;
             }
 
             .main-content {
@@ -2684,44 +2760,51 @@ function mettreAJourCompteursFiltres() {
         if (liste.length === 0) {
             const villeAffichee = villeSelectionneeRecherche ? villeSelectionneeRecherche.charAt(0).toUpperCase() + villeSelectionneeRecherche.slice(1) : 'ta ville';
             const matchCount = 12; // TODO: remplacer par requête Supabase
+            const rythmeInput = document.getElementById('monRythmeRecherche');
+            const hasRythme = rythmeInput && rythmeInput.value;
             grid.innerHTML = `
-                <div class="no-results-container">
-                    <!-- Colonne gauche : Alerte logement -->
-                    <div class="no-results-card">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div class="no-results-wrapper">
+                    <div class="no-results-header">
+                        <div class="no-results-header-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
                         </div>
-                        <h3 class="card-title">Aucun logement trouvé</h3>
-                        <p class="card-subtitle">On te prévient dès qu'un logement correspond</p>
-                        <div class="card-form">
-                            <input type="email" id="alertEmail" placeholder="ton@email.com">
-                            <button class="btn-primary" onclick="creerAlerte()">M'alerter</button>
-                        </div>
-                        <p id="alertMessage"></p>
+                        <h2>Aucun logement disponible pour l'instant<span>Modifie tes critères ou active une alerte</span></h2>
                     </div>
+                    <div class="no-results-sections ${hasRythme ? '' : 'single-section'}">
+                        <!-- Section : Alerte logement -->
+                        <div class="nr-section">
+                            <div class="nr-section-label label-orange">
+                                <span class="nr-section-label-dot"></span>
+                                Alerte logement
+                            </div>
+                            <p class="nr-section-text">Reçois un email dès qu'un logement correspond à tes critères de recherche.</p>
+                            <div class="nr-section-form">
+                                <input type="email" id="alertEmail" placeholder="ton@email.com">
+                                <button class="btn-alert" onclick="creerAlerte()">M'alerter</button>
+                            </div>
+                            <p id="alertMessage"></p>
+                        </div>
 
-                    <!-- Colonne droite : Profils compatibles -->
-                    <div class="no-results-card card-highlight">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
+                        <!-- Section : Profils compatibles (visible si rythme sélectionné) -->
+                        <div class="nr-section nr-section-match ${hasRythme ? 'visible' : ''}">
+                            <div class="nr-section-label label-navy">
+                                <span class="nr-section-label-dot"></span>
+                                Alerte profil
+                            </div>
+                            <p class="nr-section-text">${matchCount} étudiants cherchent aussi à ${villeAffichee} avec un rythme compatible.</p>
+                            <div class="nr-section-profils">
+                                <div class="nr-avatars">
+                                    <div class="avatar">LM</div>
+                                    <div class="avatar">AC</div>
+                                    <div class="avatar">TR</div>
+                                    <span class="avatar-more">+${matchCount - 3}</span>
+                                </div>
+                                <button class="btn-profils" onclick="ouvrirModalProfils()">Voir les profils</button>
+                            </div>
                         </div>
-                        <h3 class="card-title">${matchCount} profils compatibles</h3>
-                        <p class="card-subtitle">Des étudiants cherchent aussi à ${villeAffichee}</p>
-                        <div class="card-avatars">
-                            <div class="avatar">LM</div>
-                            <div class="avatar">AC</div>
-                            <div class="avatar">TR</div>
-                            <span class="avatar-more">+${matchCount - 3}</span>
-                        </div>
-                        <button class="btn-secondary" onclick="ouvrirModalProfils()">Voir les profils</button>
                     </div>
                 </div>
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
@@ -3551,7 +3634,7 @@ function ouvrirModalProfils() {
 async function creerAlerte() {
     const email = document.getElementById('alertEmail').value.trim();
     const messageDiv = document.getElementById('alertMessage');
-    const btn = document.querySelector('.card-form .btn-primary');
+    const btn = document.querySelector('.nr-section-form .btn-alert');
     await envoyerAlerte(email, 'alertEmail', messageDiv, btn);
 }
 
