@@ -872,56 +872,193 @@
         .no-results-mode .results-header {
             display: none;
         }
-        /* Carte compacte alerte */
-        .nr-compact {
+        /* Version simple (sans rythme) : alerte seule, fond blanc */
+        .nr-simple {
             grid-column: 1 / -1;
             background: white;
             border: 1px solid #E8EAF0;
             border-radius: 16px;
-            padding: 28px 32px;
-            display: flex;
-            align-items: center;
-            gap: 24px;
+            padding: 40px 32px;
+            text-align: center;
         }
-        .nr-compact-icon {
-            width: 48px;
-            height: 48px;
+        .nr-simple-icon {
+            width: 56px;
+            height: 56px;
             background: #FDF0EB;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            margin: 0 auto 20px;
         }
-        .nr-compact-content {
-            flex: 1;
-            min-width: 0;
-        }
-        .nr-compact-content h2 {
-            font-size: 18px;
+        .nr-simple h2 {
+            font-size: 20px;
             font-weight: 700;
             color: #1E293B;
-            margin: 0 0 4px;
-            line-height: 1.3;
+            margin: 0 0 8px;
         }
-        .nr-compact-content p {
+        .nr-simple-sub {
             font-size: 14px;
             color: #64748B;
-            margin: 0 0 14px;
+            margin-bottom: 24px;
+        }
+        .nr-simple .nr-alert-form {
+            justify-content: center;
+        }
+        /* Bloc unique navy (avec rythme) */
+        .nr-navy {
+            grid-column: 1 / -1;
+            display: none;
+            background: #1E293B;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(30, 41, 59, 0.2);
+        }
+        .nr-navy.visible {
+            display: block;
+        }
+        /* Avatars */
+        .nr-avatars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .nr-avatars .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #E8622A;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2.5px solid white;
+            margin-left: -10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .nr-avatars .avatar:first-child {
+            margin-left: 0;
+        }
+        .nr-avatars .avatar-more {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 14px;
+            font-weight: 500;
+        }
+        /* Texte profils */
+        .nr-navy-text {
+            font-size: 18px;
+            color: white;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+        .nr-navy-text strong {
+            font-weight: 700;
+            color: #E8622A;
+        }
+        .nr-navy-sub {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 24px;
+        }
+        /* Boutons */
+        .nr-navy-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        .nr-navy-buttons .btn-profils {
+            padding: 0 32px;
+            height: 48px;
+            background: white;
+            color: #1E293B;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+            min-width: 180px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nr-navy-buttons .btn-profils:hover {
+            background: #F4F5F7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
+        }
+        .nr-navy-buttons .btn-logement {
+            padding: 0 32px;
+            height: 48px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+            min-width: 180px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nr-navy-buttons .btn-logement:hover {
+            background: #D4571F;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.4);
+        }
+        /* Séparateur */
+        .nr-navy-divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 28px 0;
+        }
+        /* Section alerte dans navy */
+        .nr-navy-alert-intro {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .nr-navy-alert-intro svg {
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .nr-navy-alert-intro span {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
         }
         .nr-alert-form {
             display: flex;
             gap: 10px;
-            max-width: 380px;
+            max-width: 400px;
+            margin: 0 auto;
         }
         .nr-alert-form input {
             flex: 1;
             padding: 10px 14px;
-            border: 1.5px solid #E8EAF0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             font-size: 14px;
             font-family: 'DM Sans', sans-serif;
+            color: white;
             transition: border-color 0.2s;
+        }
+        .nr-alert-form input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
         .nr-alert-form input:focus {
             outline: none;
@@ -929,6 +1066,7 @@
         }
         .nr-alert-form .btn-alert {
             padding: 10px 20px;
+            height: 40px;
             background: #E8622A;
             color: white;
             border: none;
@@ -944,125 +1082,35 @@
             background: #D4571F;
             box-shadow: 0 4px 14px rgba(232, 98, 42, 0.3);
         }
+        /* Version simple : override input pour fond blanc */
+        .nr-simple .nr-alert-form input {
+            background: white;
+            border-color: #E8EAF0;
+            color: #1E293B;
+        }
+        .nr-simple .nr-alert-form input::placeholder {
+            color: #94A3B8;
+        }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
-        }
-        /* Carte navy : profils compatibles */
-        .nr-card-navy {
-            grid-column: 1 / -1;
-            display: none;
-            background: #1E293B;
-            border-radius: 16px;
-            padding: 36px 36px 32px;
             text-align: center;
-            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
         }
-        .nr-card-navy.visible {
-            display: block;
-        }
-        .nr-avatars {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .nr-avatars .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #E8622A;
-            color: white;
-            font-size: 13px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2.5px solid white;
-            margin-left: -10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        .nr-avatars .avatar:first-child {
-            margin-left: 0;
-        }
-        .nr-avatars .avatar-more {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-left: 12px;
-            font-weight: 600;
-        }
-        .nr-navy-text {
-            font-size: 17px;
-            color: white;
-            font-weight: 500;
-            line-height: 1.5;
-            margin-bottom: 6px;
-        }
-        .nr-navy-text strong {
-            font-weight: 700;
-            color: #E8622A;
-        }
-        .nr-navy-sub {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 28px;
-        }
-        .nr-navy-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        .nr-navy-buttons .btn-profils {
-            padding: 12px 28px;
-            background: white;
-            color: #1E293B;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
-            text-decoration: none;
-            min-width: 160px;
-        }
-        .nr-navy-buttons .btn-profils:hover {
-            background: #F4F5F7;
-            box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
-        }
-        .nr-navy-buttons .btn-logement {
-            padding: 12px 28px;
-            background: #E8622A;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.2s;
-            text-decoration: none;
-            min-width: 160px;
-        }
-        .nr-navy-buttons .btn-logement:hover {
-            background: #D4571F;
-            box-shadow: 0 4px 14px rgba(232, 98, 42, 0.4);
+        .nr-simple #alertMessage {
+            color: #64748B;
         }
         @media (max-width: 768px) {
-            .nr-compact {
-                flex-direction: column;
-                text-align: center;
-                padding: 24px 20px;
-                gap: 16px;
+            .nr-simple {
+                padding: 28px 20px;
+            }
+            .nr-navy {
+                padding: 28px 20px;
+                border-radius: 16px;
             }
             .nr-alert-form {
                 flex-direction: column;
                 max-width: none;
-                width: 100%;
-            }
-            .nr-card-navy {
-                padding: 28px 20px 24px;
-                margin-top: 16px;
             }
             .nr-navy-buttons {
                 flex-direction: column;
@@ -1071,6 +1119,11 @@
             .nr-navy-buttons .btn-logement {
                 width: 100%;
                 min-width: auto;
+            }
+            .nr-avatars .avatar {
+                width: 44px;
+                height: 44px;
+                font-size: 13px;
             }
         }
 
@@ -1796,8 +1849,8 @@
                 flex: 1;
             }
 
-            .nr-compact-content h2 {
-                font-size: 17px;
+            .nr-simple h2 {
+                font-size: 18px;
             }
 
             .main-content {
@@ -2761,28 +2814,10 @@ function mettreAJourCompteursFiltres() {
             const matchCount = 12; // TODO: remplacer par requête Supabase
             const rythmeInput = document.getElementById('monRythmeRecherche');
             const hasRythme = rythmeInput && rythmeInput.value;
-            grid.innerHTML = `
-                <!-- Alerte compacte -->
-                <div class="nr-compact">
-                    <div class="nr-compact-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                    </div>
-                    <div class="nr-compact-content">
-                        <h2>Aucun logement disponible pour l'instant</h2>
-                        <p>Crée une alerte pour être notifié en premier</p>
-                        <div class="nr-alert-form">
-                            <input type="email" id="alertEmail" placeholder="ton@email.com">
-                            <button class="btn-alert" onclick="creerAlerte()">M'alerter</button>
-                        </div>
-                        <p id="alertMessage"></p>
-                    </div>
-                </div>
-
-                <!-- Carte navy : profils compatibles (visible si rythme) -->
-                <div class="nr-card-navy ${hasRythme ? 'visible' : ''}">
+            if (hasRythme) {
+                // BLOC UNIQUE NAVY — profils + alerte intégrée
+                grid.innerHTML = `
+                <div class="nr-navy visible">
                     <div class="nr-avatars">
                         <div class="avatar">LM</div>
                         <div class="avatar">AC</div>
@@ -2795,7 +2830,40 @@ function mettreAJourCompteursFiltres() {
                         <button class="btn-profils" onclick="ouvrirModalProfils()">Voir les profils</button>
                         <a href="creer-annonce.html" class="btn-logement">Trouver un logement</a>
                     </div>
-                </div>
+                    <hr class="nr-navy-divider">
+                    <div class="nr-navy-alert-intro">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <span>Pas de logement disponible ? Crée une alerte</span>
+                    </div>
+                    <div class="nr-alert-form">
+                        <input type="email" id="alertEmail" placeholder="ton@email.com">
+                        <button class="btn-alert" onclick="creerAlerte()">M'alerter</button>
+                    </div>
+                    <p id="alertMessage"></p>
+                </div>`;
+            } else {
+                // VERSION SIMPLE — alerte seule, fond blanc
+                grid.innerHTML = `
+                <div class="nr-simple">
+                    <div class="nr-simple-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <h2>Aucun logement disponible pour l'instant</h2>
+                    <p class="nr-simple-sub">Crée une alerte pour être notifié en premier</p>
+                    <div class="nr-alert-form">
+                        <input type="email" id="alertEmail" placeholder="ton@email.com">
+                        <button class="btn-alert" onclick="creerAlerte()">M'alerter</button>
+                    </div>
+                    <p id="alertMessage"></p>
+                </div>`;
+            }
+            grid.innerHTML += `
                 ${genererBlocDemande(villeSelectionneeRecherche, 'no-results')}
             `;
             return;
