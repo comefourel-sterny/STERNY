@@ -1049,6 +1049,10 @@
             overflow: hidden;
             position: relative;
         }
+        .modal-profils.conversation-mode {
+            max-width: 420px;
+            height: 450px;
+        }
         .modal-profils-header {
             display: flex;
             justify-content: space-between;
@@ -4281,6 +4285,7 @@ let currentProfil = null;
 function resetModalToList() {
     document.querySelector('.profil-detail').style.display = 'none';
     document.querySelector('.profil-conversation').style.display = 'none';
+    document.querySelector('.modal-profils').classList.remove('conversation-mode');
     document.querySelector('.profil-detail-topbar').style.display = '';
     document.querySelector('.profil-detail-header').style.display = '';
     document.querySelector('.profil-detail-info').style.display = '';
@@ -4355,6 +4360,7 @@ document.addEventListener('click', function(e) {
         document.querySelector('.profil-detail-info').style.display = 'none';
         document.querySelector('.btn-envoyer-message').style.display = 'none';
         document.querySelector('.profil-conversation').style.display = 'flex';
+        document.querySelector('.modal-profils').classList.add('conversation-mode');
         if (currentProfil) {
             document.getElementById('convAvatar').textContent = currentProfil.initials;
             document.getElementById('convName').textContent = currentProfil.name;
@@ -4365,6 +4371,7 @@ document.addEventListener('click', function(e) {
 // Retour au profil depuis la conversation
 function retourProfil() {
     document.querySelector('.profil-conversation').style.display = 'none';
+    document.querySelector('.modal-profils').classList.remove('conversation-mode');
     document.querySelector('.profil-detail-topbar').style.display = '';
     document.querySelector('.profil-detail-header').style.display = '';
     document.querySelector('.profil-detail-info').style.display = '';
