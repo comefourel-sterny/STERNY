@@ -1372,6 +1372,17 @@
             font-weight: 700;
             color: #1E293B;
         }
+        .overlay-chat-user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .overlay-chat-status {
+            font-size: 11px;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         .messages-overlay-close {
             width: 32px;
             height: 32px;
@@ -4253,7 +4264,10 @@ if (typeof supabaseClient !== 'undefined') {
                     </button>
                     <div class="overlay-chat-contact">
                         <div class="overlay-chat-avatar" id="convAvatar">?</div>
-                        <div class="overlay-chat-name" id="convName">...</div>
+                        <div class="overlay-chat-user-info">
+                            <span class="overlay-chat-name" id="convName">...</span>
+                            <span class="overlay-chat-status" id="convStatus">ÉTUDIANT</span>
+                        </div>
                     </div>
                     <button class="messages-overlay-close" onclick="fermerConversation()">&times;</button>
                 </div>
@@ -4369,6 +4383,7 @@ document.addEventListener('click', function(e) {
         if (currentProfil) {
             document.getElementById('convAvatar').textContent = currentProfil.initials;
             document.getElementById('convName').textContent = currentProfil.name;
+            document.getElementById('convStatus').textContent = currentProfil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT';
         }
     }
 });
