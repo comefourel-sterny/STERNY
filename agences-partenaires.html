@@ -34,27 +34,72 @@
         .hero-agences {
             background: #1E293B;
             color: white;
-            padding: 80px 20px 60px;
+            padding: 90px 20px 70px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Decorative circles */
+        .hero-agences::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(232, 98, 42, 0.08);
+            top: -120px;
+            right: -80px;
+        }
+        .hero-agences::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(232, 98, 42, 0.06);
+            bottom: -60px;
+            left: -40px;
+        }
+        .hero-agences .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(232, 98, 42, 0.15);
+            border: 1px solid rgba(232, 98, 42, 0.3);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #E8622A;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
         }
         .hero-agences h1 {
-            font-size: 36px;
+            font-size: 42px;
             font-weight: 800;
-            margin: 0 0 14px;
+            margin: 0 0 16px;
             line-height: 1.2;
+            position: relative;
+            z-index: 1;
         }
-        .hero-agences p {
+        .hero-agences h1 span {
+            color: #E8622A;
+        }
+        .hero-agences .hero-sub {
             font-size: 17px;
             color: rgba(255, 255, 255, 0.7);
             max-width: 520px;
             margin: 0 auto;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
         /* ===== SECTION AGENCES ===== */
         .section-agences {
             background: #F4F5F7;
-            padding: 60px 20px;
+            padding: 64px 20px;
         }
         .section-agences-inner {
             max-width: 1100px;
@@ -62,7 +107,7 @@
         }
         .section-title {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 44px;
         }
         .section-title h2 {
             font-size: 28px;
@@ -83,29 +128,28 @@
         .agence-card {
             background: white;
             border: 1px solid #E8EAF0;
+            border-left: 4px solid #E8622A;
             border-radius: 16px;
-            padding: 28px;
+            padding: 32px 28px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+            transition: all 0.2s ease;
         }
         .agence-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 36px rgba(232, 98, 42, 0.14);
+            box-shadow: 0 12px 32px rgba(232, 98, 42, 0.15);
+            border-left-color: #D4571F;
         }
         .agence-logo {
-            width: 60px;
-            height: 60px;
-            background: #F4F5F7;
-            border-radius: 14px;
+            width: 56px;
+            height: 56px;
+            background: rgba(232, 98, 42, 0.1);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 800;
-            color: #1E293B;
         }
         .agence-card h3 {
             font-size: 20px;
@@ -125,15 +169,16 @@
             margin: 0 0 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             flex: 1;
         }
         .agence-features li {
             font-size: 14px;
             color: #1E293B;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .agence-features li svg {
             flex-shrink: 0;
@@ -152,7 +197,7 @@
             cursor: pointer;
             text-align: center;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             box-sizing: border-box;
         }
         .btn-agence:hover {
@@ -164,7 +209,7 @@
         /* ===== SECTION AVANTAGES ===== */
         .section-avantages {
             background: white;
-            padding: 60px 20px;
+            padding: 64px 20px;
         }
         .section-avantages-inner {
             max-width: 1100px;
@@ -174,23 +219,23 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 32px;
-            margin-top: 40px;
+            margin-top: 44px;
         }
         .avantage-item {
             text-align: center;
         }
         .avantage-icon {
-            width: 56px;
-            height: 56px;
-            background: #FDF0EB;
+            width: 64px;
+            height: 64px;
+            background: rgba(232, 98, 42, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
+            margin: 0 auto 18px;
         }
         .avantage-item h3 {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
             color: #1E293B;
             margin: 0 0 8px;
@@ -204,42 +249,83 @@
 
         /* ===== SECTION CTA AGENCES ===== */
         .section-cta-agences {
-            padding: 0 20px 60px;
-            background: #F4F5F7;
+            padding: 0 20px 64px;
+            background: white;
         }
         .cta-agences-card {
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
-            background: rgba(232, 98, 42, 0.05);
+            background: #1E293B;
             border-radius: 20px;
-            padding: 48px;
+            padding: 52px 48px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .cta-agences-icon {
-            font-size: 32px;
-            margin-bottom: 16px;
+        .cta-agences-card::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(232, 98, 42, 0.1);
+            top: -80px;
+            right: -60px;
+        }
+        .cta-agences-card::after {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(232, 98, 42, 0.07);
+            bottom: -50px;
+            left: -30px;
         }
         .cta-agences-card h2 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
-            color: #1E293B;
-            margin: 0 0 10px;
+            color: white;
+            margin: 0 0 12px;
+            position: relative;
+            z-index: 1;
         }
-        .cta-agences-card p {
-            font-size: 15px;
-            color: #64748B;
+        .cta-agences-card .cta-sub {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
             line-height: 1.6;
-            margin: 0 0 24px;
-            max-width: 480px;
+            margin: 0 0 28px;
+            max-width: 500px;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-stats span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .cta-stats svg {
+            flex-shrink: 0;
         }
         .btn-partenaire {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 14px 32px;
-            background: #1E293B;
+            padding: 14px 36px;
+            background: #E8622A;
             color: white;
             border: none;
             border-radius: 12px;
@@ -248,23 +334,25 @@
             font-family: 'DM Sans', sans-serif;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
         }
         .btn-partenaire:hover {
-            background: #2d3a4e;
+            background: #D4571F;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.25);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.4);
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .hero-agences {
-                padding: 60px 20px 40px;
+                padding: 70px 20px 50px;
             }
             .hero-agences h1 {
-                font-size: 26px;
+                font-size: 28px;
             }
-            .hero-agences p {
+            .hero-agences .hero-sub {
                 font-size: 15px;
             }
             .agences-grid {
@@ -273,14 +361,19 @@
             }
             .avantages-grid {
                 grid-template-columns: 1fr;
-                gap: 24px;
+                gap: 28px;
             }
             .section-agences,
             .section-avantages {
-                padding: 40px 20px;
+                padding: 44px 20px;
             }
             .cta-agences-card {
-                padding: 32px 20px;
+                padding: 36px 24px;
+            }
+            .cta-stats {
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
             }
             .section-title h2 {
                 font-size: 22px;
@@ -305,8 +398,12 @@
 
     <!-- ===== HERO ===== -->
     <section class="hero-agences">
-        <h1>Trouve ton logement avec nos partenaires</h1>
-        <p>Des agences sp&eacute;cialis&eacute;es pour t'aider &agrave; trouver un logement adapt&eacute; &agrave; ton rythme d'alternance</p>
+        <div class="hero-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Logement alternants
+        </div>
+        <h1>Trouve ton logement<br>avec nos <span>partenaires</span></h1>
+        <p class="hero-sub">Des agences sp&eacute;cialis&eacute;es pour t'aider &agrave; trouver un logement adapt&eacute; &agrave; ton rythme d'alternance</p>
     </section>
 
     <!-- ===== SECTION AGENCES ===== -->
@@ -320,7 +417,9 @@
 
                 <!-- Agence 1 -->
                 <div class="agence-card">
-                    <div class="agence-logo">NS</div>
+                    <div class="agence-logo">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 12v.01"></path><path d="M9 15v.01"></path><path d="M9 18v.01"></path></svg>
+                    </div>
                     <h3>Nexity Stud&eacute;a</h3>
                     <p class="agence-desc">R&eacute;sidences &eacute;tudiantes dans toute la France. Logements meubl&eacute;s et &eacute;quip&eacute;s, pr&ecirc;ts &agrave; vivre.</p>
                     <ul class="agence-features">
@@ -342,7 +441,9 @@
 
                 <!-- Agence 2 -->
                 <div class="agence-card">
-                    <div class="agence-logo">St</div>
+                    <div class="agence-logo">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </div>
                     <h3>Studapart</h3>
                     <p class="agence-desc">Logements v&eacute;rifi&eacute;s pour &eacute;tudiants et jeunes actifs. Garantie locative incluse.</p>
                     <ul class="agence-features">
@@ -364,7 +465,9 @@
 
                 <!-- Agence 3 -->
                 <div class="agence-card">
-                    <div class="agence-logo">IJ</div>
+                    <div class="agence-logo">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
                     <h3>Immojeune</h3>
                     <p class="agence-desc">Sp&eacute;cialiste du logement pour jeunes actifs et alternants. Solutions sans garant.</p>
                     <ul class="agence-features">
@@ -397,7 +500,7 @@
             <div class="avantages-grid">
                 <div class="avantage-item">
                     <div class="avantage-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
@@ -407,7 +510,7 @@
                 </div>
                 <div class="avantage-item">
                     <div class="avantage-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                             <line x1="16" y1="2" x2="16" y2="6"></line>
                             <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -419,7 +522,7 @@
                 </div>
                 <div class="avantage-item">
                     <div class="avantage-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
                     </div>
@@ -433,9 +536,22 @@
     <!-- ===== SECTION CTA AGENCES ===== -->
     <section class="section-cta-agences">
         <div class="cta-agences-card">
-            <div class="cta-agences-icon">&#129309;</div>
-            <h2>Tu es une agence immobili&egrave;re ?</h2>
-            <p>Rejoins le r&eacute;seau STERNY et acc&egrave;de &agrave; des milliers d'alternants en recherche de logement.</p>
+            <h2>Vous &ecirc;tes une agence immobili&egrave;re ?</h2>
+            <p class="cta-sub">Rejoignez le r&eacute;seau STERNY et acc&eacute;dez &agrave; des milliers d'alternants en recherche de logement.</p>
+            <div class="cta-stats">
+                <span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    5 000+ alternants inscrits
+                </span>
+                <span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Visibilit&eacute; gratuite
+                </span>
+                <span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Z&eacute;ro commission
+                </span>
+            </div>
             <a href="contact.html" class="btn-partenaire">Devenir partenaire</a>
         </div>
     </section>
