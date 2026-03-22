@@ -905,15 +905,16 @@
         .nr-simple .nr-alert-form {
             justify-content: center;
         }
-        /* Bloc unique navy (avec rythme) */
+        /* Bloc unique blanc (avec rythme) */
         .nr-navy {
             grid-column: 1 / -1;
             display: none;
-            background: #1E293B;
+            background: white;
+            border: 1px solid #E8EAF0;
             border-radius: 20px;
             padding: 40px;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(30, 41, 59, 0.2);
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.08);
         }
         .nr-navy.visible {
             display: block;
@@ -938,21 +939,21 @@
             justify-content: center;
             border: 2.5px solid white;
             margin-left: -10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(232, 98, 42, 0.25);
         }
         .nr-avatars .avatar:first-child {
             margin-left: 0;
         }
         .nr-avatars .avatar-more {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.6);
+            color: #64748B;
             margin-left: 14px;
             font-weight: 500;
         }
         /* Texte profils */
         .nr-navy-text {
             font-size: 18px;
-            color: white;
+            color: #1E293B;
             font-weight: 500;
             line-height: 1.5;
             margin-bottom: 6px;
@@ -963,7 +964,7 @@
         }
         .nr-navy-sub {
             font-size: 15px;
-            color: rgba(255, 255, 255, 0.7);
+            color: #64748B;
             margin-bottom: 24px;
         }
         /* Boutons */
@@ -975,8 +976,8 @@
         .nr-navy-buttons .btn-profils {
             padding: 0 32px;
             height: 48px;
-            background: white;
-            color: #1E293B;
+            background: #1E293B;
+            color: white;
             border: none;
             border-radius: 12px;
             font-size: 14px;
@@ -991,9 +992,9 @@
             justify-content: center;
         }
         .nr-navy-buttons .btn-profils:hover {
-            background: #F4F5F7;
+            background: #2d3a4e;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.25);
         }
         .nr-navy-buttons .btn-logement {
             padding: 0 32px;
@@ -1021,10 +1022,10 @@
         /* Séparateur */
         .nr-navy-divider {
             border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid #E8EAF0;
             margin: 28px 0;
         }
-        /* Section alerte dans navy */
+        /* Section alerte dans bloc */
         .nr-navy-alert-intro {
             display: flex;
             align-items: center;
@@ -1034,11 +1035,11 @@
         }
         .nr-navy-alert-intro svg {
             flex-shrink: 0;
-            opacity: 0.6;
+            opacity: 0.5;
         }
         .nr-navy-alert-intro span {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            color: #64748B;
         }
         .nr-alert-form {
             display: flex;
@@ -1049,16 +1050,16 @@
         .nr-alert-form input {
             flex: 1;
             padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border: 1.5px solid #E8EAF0;
             border-radius: 10px;
             font-size: 14px;
             font-family: 'DM Sans', sans-serif;
-            color: white;
+            color: #1E293B;
             transition: border-color 0.2s;
         }
         .nr-alert-form input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: #94A3B8;
         }
         .nr-alert-form input:focus {
             outline: none;
@@ -1082,22 +1083,10 @@
             background: #D4571F;
             box-shadow: 0 4px 14px rgba(232, 98, 42, 0.3);
         }
-        /* Version simple : override input pour fond blanc */
-        .nr-simple .nr-alert-form input {
-            background: white;
-            border-color: #E8EAF0;
-            color: #1E293B;
-        }
-        .nr-simple .nr-alert-form input::placeholder {
-            color: #94A3B8;
-        }
         #alertMessage, #alertMessageBottom {
             font-size: 13px;
             margin-top: 8px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .nr-simple #alertMessage {
             color: #64748B;
         }
         @media (max-width: 768px) {
@@ -2832,7 +2821,7 @@ function mettreAJourCompteursFiltres() {
                     </div>
                     <hr class="nr-navy-divider">
                     <div class="nr-navy-alert-intro">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
