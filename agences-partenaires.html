@@ -234,76 +234,25 @@
         }
 
         /* ===== SECTION CTA AGENCES ===== */
-        .section-cta-agences {
-            padding: 0 20px 64px;
-            background: white;
-        }
-        .cta-agences-card {
-            max-width: 860px;
-            margin: 0 auto;
-            background: #1E293B;
-            border-radius: 20px;
-            padding: 52px 48px;
+        .cta-line {
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 40px 20px;
+            border-top: 1px solid #E8EAF0;
         }
-        .cta-agences-card h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-            margin: 0 0 12px;
-        }
-        .cta-agences-card .cta-sub {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.85);
-            font-weight: 500;
-            margin: 0 0 24px;
-        }
-        .cta-agences-card .cta-icon {
-            font-size: 36px;
-            margin-bottom: 16px;
-        }
-        .cta-avantages {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            text-align: left;
-        }
-        .cta-avantages li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .cta-line span {
             font-size: 15px;
-            color: rgba(255, 255, 255, 0.8);
+            color: #64748B;
         }
-        .cta-avantages li svg {
-            flex-shrink: 0;
-        }
-        .btn-partenaire {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 14px 36px;
-            background: #E8622A;
-            color: white;
-            border: none;
-            border-radius: 12px;
+        .cta-line a {
             font-size: 15px;
+            color: #E8622A;
             font-weight: 600;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s ease;
+            margin-left: 8px;
+            transition: color 0.2s;
         }
-        .btn-partenaire:hover {
-            background: #D4571F;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.4);
+        .cta-line a:hover {
+            color: #D4571F;
         }
 
         /* ===== FOOTER ===== */
@@ -399,9 +348,6 @@
             .section-agences,
             .section-avantages {
                 padding: 44px 20px;
-            }
-            .cta-agences-card {
-                padding: 36px 24px;
             }
             .section-title h2 {
                 font-size: 22px;
@@ -569,29 +515,11 @@
         </div>
     </section>
 
-    <!-- ===== SECTION CTA AGENCES ===== -->
-    <section class="section-cta-agences">
-        <div class="cta-agences-card">
-            <div class="cta-icon">&#129309;</div>
-            <h2>Vous &ecirc;tes une agence immobili&egrave;re ?</h2>
-            <p class="cta-sub">Rejoignez le r&eacute;seau STERNY</p>
-            <ul class="cta-avantages">
-                <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Acc&egrave;s &agrave; des &eacute;tudiants en recherche active
-                </li>
-                <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Visibilit&eacute; sur notre plateforme
-                </li>
-                <li>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Partenariat sans frais
-                </li>
-            </ul>
-            <a href="contact.html" class="btn-partenaire">Devenir partenaire</a>
-        </div>
-    </section>
+    <!-- ===== CTA AGENCES ===== -->
+    <div class="cta-line">
+        <span>Vous &ecirc;tes une agence ?</span>
+        <a href="contact.html">Contactez-nous &rarr;</a>
+    </div>
 
     <!-- ===== FOOTER ===== -->
     <footer class="site-footer" role="contentinfo">
