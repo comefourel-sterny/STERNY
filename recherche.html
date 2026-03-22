@@ -623,8 +623,8 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -867,24 +867,10 @@
             font-weight: 500;
         }
 
-        .dispo-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-top: auto;
-            width: fit-content;
-        }
-        .dispo-badge.available {
-            background: rgba(16,185,129,0.1);
-            color: #059669;
-        }
-        .dispo-badge.soon {
-            background: rgba(245,158,11,0.1);
-            color: #D97706;
+        /* Éléments masqués — cartes simplifiées */
+        .dispo-badge,
+        .favorite-btn {
+            display: none !important;
         }
 
         /* === NO RESULTS MODE === */
@@ -1715,11 +1701,6 @@
 
         /* BLOC DEMANDE — incitation à devenir hôte */
         /* RESPONSIVE */
-        @media (max-width: 1200px) {
-            .results-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
         @media (max-width: 900px) {
             .results-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -2839,9 +2820,6 @@ function mettreAJourCompteursFiltres() {
     // Créer les tags à partir des équipements
     const tags = [];
     if (logement.surface) tags.push(`${logement.surface} m²`);
-    if (logement.equipements && logement.equipements.length > 0) {
-        tags.push(...logement.equipements.slice(0, 2));
-    }
 
     const distanceBadge = (proximiteActive && logement.distance !== undefined)
         ? `<div class="distance-badge">${logement.distance.toFixed(1)} km</div>`
