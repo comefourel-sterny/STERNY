@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-32.png?v=2" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="PP-Sterny-V1-dark-32.png?v=2" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="favicon.ico?v=2" sizes="any" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="favicon-dark.ico?v=2" sizes="any" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Agences partenaires &mdash; STERNY</title>
+    <meta name="description" content="Trouvez votre logement en alternance grâce à nos agences partenaires : résidences étudiantes, logements vérifiés et baux flexibles adaptés à votre rythme.">
+    <link rel="canonical" href="https://sterny.co/agences-partenaires.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sterny.co/agences-partenaires.html">
+    <meta property="og:title" content="Agences partenaires — STERNY">
+    <meta property="og:description" content="Des agences spécialisées pour t'aider à trouver un logement adapté à ton rythme d'alternance.">
+    <meta property="og:image" content="https://sterny.co/og-image.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Agences partenaires — STERNY">
+    <meta name="twitter:description" content="Des agences spécialisées pour t'aider à trouver un logement adapté à ton rythme d'alternance.">
+    <meta name="twitter:image" content="https://sterny.co/og-image.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html { background: #1E293B; }
+        body { background: #F4F5F7; margin: 0; }
+
+        /* ===== HERO ===== */
+        .hero-agences {
+            background: #1E293B;
+            color: white;
+            padding: 80px 20px 60px;
+            text-align: center;
+        }
+        .hero-agences h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0 0 14px;
+            line-height: 1.2;
+        }
+        .hero-agences p {
+            font-size: 17px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ===== SECTION AGENCES ===== */
+        .section-agences {
+            background: #F4F5F7;
+            padding: 60px 20px;
+        }
+        .section-agences-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section-title h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+        .section-title p {
+            font-size: 15px;
+            color: #64748B;
+            margin: 0;
+        }
+        .agences-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .agence-card {
+            background: white;
+            border: 1px solid #E8EAF0;
+            border-radius: 16px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 6px 28px rgba(232, 98, 42, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .agence-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(232, 98, 42, 0.14);
+        }
+        .agence-logo {
+            width: 60px;
+            height: 60px;
+            background: #F4F5F7;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #1E293B;
+        }
+        .agence-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+        .agence-card .agence-desc {
+            font-size: 14px;
+            color: #64748B;
+            line-height: 1.6;
+            margin: 0 0 20px;
+        }
+        .agence-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+        .agence-features li {
+            font-size: 14px;
+            color: #1E293B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .agence-features li svg {
+            flex-shrink: 0;
+        }
+        .btn-agence {
+            display: block;
+            width: 100%;
+            padding: 14px 28px;
+            background: #E8622A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        .btn-agence:hover {
+            background: #D4571F;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 42, 0.35);
+        }
+
+        /* ===== SECTION AVANTAGES ===== */
+        .section-avantages {
+            background: white;
+            padding: 60px 20px;
+        }
+        .section-avantages-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .avantages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 40px;
+        }
+        .avantage-item {
+            text-align: center;
+        }
+        .avantage-icon {
+            width: 56px;
+            height: 56px;
+            background: #FDF0EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .avantage-item h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 8px;
+        }
+        .avantage-item p {
+            font-size: 14px;
+            color: #64748B;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* ===== SECTION CTA AGENCES ===== */
+        .section-cta-agences {
+            padding: 0 20px 60px;
+            background: #F4F5F7;
+        }
+        .cta-agences-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(232, 98, 42, 0.05);
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+        }
+        .cta-agences-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+        .cta-agences-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0 0 10px;
+        }
+        .cta-agences-card p {
+            font-size: 15px;
+            color: #64748B;
+            line-height: 1.6;
+            margin: 0 0 24px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-partenaire {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 32px;
+            background: #1E293B;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-partenaire:hover {
+            background: #2d3a4e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.25);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-agences {
+                padding: 60px 20px 40px;
+            }
+            .hero-agences h1 {
+                font-size: 26px;
+            }
+            .hero-agences p {
+                font-size: 15px;
+            }
+            .agences-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .avantages-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .section-agences,
+            .section-avantages {
+                padding: 40px 20px;
+            }
+            .cta-agences-card {
+                padding: 32px 20px;
+            }
+            .section-title h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="container">
+            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+            <div class="menu-overlay" onclick="toggleMenu()"></div>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="recherche.html">Rechercher</a></li>
+                <li><a href="connexion.html">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero-agences">
+        <h1>Trouve ton logement avec nos partenaires</h1>
+        <p>Des agences sp&eacute;cialis&eacute;es pour t'aider &agrave; trouver un logement adapt&eacute; &agrave; ton rythme d'alternance</p>
+    </section>
+
+    <!-- ===== SECTION AGENCES ===== -->
+    <section class="section-agences">
+        <div class="section-agences-inner">
+            <div class="section-title">
+                <h2>Nos agences partenaires</h2>
+                <p>Logements v&eacute;rifi&eacute;s, adapt&eacute;s aux alternants</p>
+            </div>
+            <div class="agences-grid">
+
+                <!-- Agence 1 -->
+                <div class="agence-card">
+                    <div class="agence-logo">NS</div>
+                    <h3>Nexity Stud&eacute;a</h3>
+                    <p class="agence-desc">R&eacute;sidences &eacute;tudiantes dans toute la France. Logements meubl&eacute;s et &eacute;quip&eacute;s, pr&ecirc;ts &agrave; vivre.</p>
+                    <ul class="agence-features">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Meubl&eacute; et &eacute;quip&eacute;
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Bail flexible
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Charges incluses
+                        </li>
+                    </ul>
+                    <a href="#" class="btn-agence">Voir les offres</a>
+                </div>
+
+                <!-- Agence 2 -->
+                <div class="agence-card">
+                    <div class="agence-logo">St</div>
+                    <h3>Studapart</h3>
+                    <p class="agence-desc">Logements v&eacute;rifi&eacute;s pour &eacute;tudiants et jeunes actifs. Garantie locative incluse.</p>
+                    <ul class="agence-features">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Meubl&eacute; et v&eacute;rifi&eacute;
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Annonces v&eacute;rifi&eacute;es
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Garantie locative
+                        </li>
+                    </ul>
+                    <a href="#" class="btn-agence">Voir les offres</a>
+                </div>
+
+                <!-- Agence 3 -->
+                <div class="agence-card">
+                    <div class="agence-logo">IJ</div>
+                    <h3>Immojeune</h3>
+                    <p class="agence-desc">Sp&eacute;cialiste du logement pour jeunes actifs et alternants. Solutions sans garant.</p>
+                    <ul class="agence-features">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Meubl&eacute;
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Courte dur&eacute;e possible
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Sans garant
+                        </li>
+                    </ul>
+                    <a href="#" class="btn-agence">Voir les offres</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION AVANTAGES ===== -->
+    <section class="section-avantages">
+        <div class="section-avantages-inner">
+            <div class="section-title">
+                <h2>Pourquoi passer par nos partenaires ?</h2>
+            </div>
+            <div class="avantages-grid">
+                <div class="avantage-item">
+                    <div class="avantage-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <h3>Logements v&eacute;rifi&eacute;s</h3>
+                    <p>Tous les logements sont visit&eacute;s et valid&eacute;s par nos partenaires avant d'&ecirc;tre propos&eacute;s.</p>
+                </div>
+                <div class="avantage-item">
+                    <div class="avantage-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Baux flexibles</h3>
+                    <p>Adapt&eacute;s aux rythmes d'alternance : courte dur&eacute;e, renouvellement mensuel, d&eacute;part anticip&eacute;.</p>
+                </div>
+                <div class="avantage-item">
+                    <div class="avantage-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <h3>Garanties incluses</h3>
+                    <p>Assurance et garanties locatives pour louer sereinement, m&ecirc;me sans garant.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION CTA AGENCES ===== -->
+    <section class="section-cta-agences">
+        <div class="cta-agences-card">
+            <div class="cta-agences-icon">&#129309;</div>
+            <h2>Tu es une agence immobili&egrave;re ?</h2>
+            <p>Rejoins le r&eacute;seau STERNY et acc&egrave;de &agrave; des milliers d'alternants en recherche de logement.</p>
+            <a href="contact.html" class="btn-partenaire">Devenir partenaire</a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer role="contentinfo">
+        <div class="container">
+            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
+            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
+                <a href="cgv.html">CGV</a> &middot;
+                <a href="cgu.html">CGU</a> &middot;
+                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
+                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
+                <a href="faq.html">FAQ</a> &middot;
+                <a href="contact.html">Contact</a> &middot;
+                <a href="a-propos.html">&Agrave; propos</a>
+            </p>
+        </div>
+    </footer>
+
+<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+</body>
+</html>
