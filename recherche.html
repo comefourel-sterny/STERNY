@@ -905,6 +905,35 @@
         .nr-simple .nr-alert-form {
             justify-content: center;
         }
+        /* Header "Aucun logement" dans bloc blanc */
+        .nr-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 0;
+        }
+        .nr-header-icon {
+            width: 48px;
+            height: 48px;
+            background: #FDF0EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .nr-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+        }
+        .nr-header-divider {
+            border: none;
+            border-top: 1px solid #E8EAF0;
+            margin: 24px 0;
+        }
         /* Bloc unique blanc (avec rythme) */
         .nr-navy {
             grid-column: 1 / -1;
@@ -2807,6 +2836,16 @@ function mettreAJourCompteursFiltres() {
                 // BLOC UNIQUE NAVY — profils + alerte intégrée
                 grid.innerHTML = `
                 <div class="nr-navy visible">
+                    <div class="nr-header">
+                        <div class="nr-header-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </div>
+                        <h2>Aucun logement disponible pour l'instant</h2>
+                    </div>
+                    <hr class="nr-header-divider">
                     <div class="nr-avatars">
                         <div class="avatar">LM</div>
                         <div class="avatar">AC</div>
