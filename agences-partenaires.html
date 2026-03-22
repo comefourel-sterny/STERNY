@@ -26,19 +26,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <style>
         html { background: #1E293B; }
         body { background: #F4F5F7; margin: 0; }
 
-        /* ===== NAV OVERRIDE (transparent sur hero navy) ===== */
-        .nav-dark {
+        /* ===== NAV OVERRIDE (navy sur hero) ===== */
+        .index-nav {
             background: #1E293B;
             border-bottom: 2px solid transparent;
             box-shadow: none;
         }
-        .nav-dark a { color: rgba(255,255,255,0.8); }
-        .nav-dark a:hover { color: #E8622A; background: rgba(232,98,42,0.1); }
-        .nav-dark .hamburger span { background: white; }
+        .index-nav a { color: rgba(255,255,255,0.8); }
+        .index-nav a:hover { color: #E8622A; background: rgba(232,98,42,0.1); }
+        .index-nav .nav-highlight { color: #E8622A; }
+        .index-nav .hamburger span { background: white; }
+        .index-nav .nav-cta-inscription {
+            background: #E8622A;
+            color: white !important;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .index-nav .nav-cta-inscription:hover {
+            background: #D4571F;
+            transform: translateY(-1px);
+        }
 
         /* ===== HERO ===== */
         .hero-agences {
@@ -441,18 +456,20 @@
 </head>
 <body>
 
-    <nav role="navigation" aria-label="Navigation principale" class="nav-dark" id="mainNav">
-        <div class="container">
-            <a href="index.html" class="logo"><img id="navLogo" src="Logo-Sterny-V1-white.svg" alt="STERNY"></a>
-            <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
-            <div class="menu-overlay" onclick="toggleMenu()"></div>
-            <ul>
-                <li><a href="index.html">Accueil</a></li>
-                <li><a href="recherche.html">Rechercher</a></li>
-                <li><a href="connexion.html">Connexion</a></li>
-            </ul>
-        </div>
-    </nav>
+    <nav role="navigation" aria-label="Navigation principale" class="index-nav" id="mainNav">
+    <div class="container">
+        <a href="index.html" class="logo"><img id="navLogo" src="Logo-Sterny-V1-white.svg" alt="STERNY"></a>
+        <div id="notif-bell-container"></div>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <ul>
+            <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
+            <li><a href="#" id="commentCaMarcheLink">Comment &ccedil;a marche</a></li>
+            <li><a href="#" id="devenirHoteLink">Devenir h&ocirc;te</a></li>
+            <li id="navInscriptionLi"><a href="choix-inscription.html" class="nav-cta-inscription">S'inscrire</a></li>
+        </ul>
+    </div>
+</nav>
 
     <!-- ===== HERO ===== -->
     <section class="hero-agences">
@@ -636,14 +653,43 @@
 
 <script>
 function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}
+
+// Fallback liens nav (non-connect&eacute;)
+(function setDefaultNavLinks() {
+    var monEspace = document.getElementById('monEspaceLink');
+    var ccm = document.getElementById('commentCaMarcheLink');
+    var hote = document.getElementById('devenirHoteLink');
+    if (monEspace) monEspace.href = 'connexion.html';
+    if (ccm) ccm.href = 'comment-ca-marche.html';
+    if (hote) hote.href = 'choix-inscription.html';
+})();
+
+// Liens nav selon utilisateur connecté
+async function gererNavLinks() {
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+        document.getElementById('navInscriptionLi').style.display = 'none';
+        const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+        var monEspace = document.getElementById('monEspaceLink');
+        var ccm = document.getElementById('commentCaMarcheLink');
+        var hote = document.getElementById('devenirHoteLink');
+        if (monEspace) monEspace.href = 'dashboard-locataire.html';
+        if (ccm) ccm.href = (userData?.type_user === 'hote') ? 'comment-ca-marche-proprietaire.html' : 'comment-ca-marche-recherche.html';
+        if (hote) { hote.href = (userData?.type_user === 'proprietaire') ? 'dashboard-proprietaire.html' : 'dashboard-locataire.html'; }
+    } catch (e) { console.log('Nav links: mode offline'); }
+}
+gererNavLinks();
+
+// Nav style transition on scroll + logo swap
 window.addEventListener('scroll', function() {
     var nav = document.getElementById('mainNav');
     var logo = document.getElementById('navLogo');
     if (window.scrollY > 60) {
-        nav.classList.remove('nav-dark');
+        nav.classList.remove('index-nav');
         if (logo) logo.src = 'Logo-Sterny-V1.svg';
     } else {
-        nav.classList.add('nav-dark');
+        nav.classList.add('index-nav');
         if (logo) logo.src = 'Logo-Sterny-V1-white.svg';
     }
 });
