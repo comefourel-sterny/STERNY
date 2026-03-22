@@ -623,8 +623,8 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -1622,6 +1622,11 @@
 
         /* BLOC DEMANDE — incitation à devenir hôte */
         /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .results-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
         @media (max-width: 900px) {
             .results-grid {
                 grid-template-columns: repeat(2, 1fr);
