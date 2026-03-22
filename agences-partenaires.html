@@ -30,6 +30,16 @@
         html { background: #1E293B; }
         body { background: #F4F5F7; margin: 0; }
 
+        /* ===== NAV OVERRIDE (transparent sur hero navy) ===== */
+        .nav-dark {
+            background: transparent;
+            border-bottom: 2px solid transparent;
+            box-shadow: none;
+        }
+        .nav-dark a { color: rgba(255,255,255,0.8); }
+        .nav-dark a:hover { color: #E8622A; background: rgba(232,98,42,0.1); }
+        .nav-dark .hamburger span { background: white; }
+
         /* ===== HERO ===== */
         .hero-agences {
             background: #1E293B;
@@ -460,9 +470,9 @@
 </head>
 <body>
 
-    <nav role="navigation" aria-label="Navigation principale">
+    <nav role="navigation" aria-label="Navigation principale" class="nav-dark" id="mainNav">
         <div class="container">
-            <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <a href="index.html" class="logo"><img id="navLogo" src="Logo-Sterny-V1-white.svg" alt="STERNY"></a>
             <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
             <div class="menu-overlay" onclick="toggleMenu()"></div>
             <ul>
@@ -657,6 +667,19 @@
         </div>
     </footer>
 
-<script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
+<script>
+function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}
+window.addEventListener('scroll', function() {
+    var nav = document.getElementById('mainNav');
+    var logo = document.getElementById('navLogo');
+    if (window.scrollY > 60) {
+        nav.classList.remove('nav-dark');
+        if (logo) logo.src = 'Logo-Sterny-V1.svg';
+    } else {
+        nav.classList.add('nav-dark');
+        if (logo) logo.src = 'Logo-Sterny-V1-white.svg';
+    }
+});
+</script>
 </body>
 </html>
