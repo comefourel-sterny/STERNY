@@ -66,6 +66,18 @@
         .index-nav .nav-highlight { color: #E8622A !important; }
         .index-nav #notif-bell svg { stroke: white !important; }
         .index-nav .hamburger span { background: white; }
+        .index-nav .nav-cta-inscription {
+            background: #E8622A;
+            color: white !important;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .index-nav .nav-cta-inscription:hover {
+            background: #D4571F;
+            transform: translateY(-1px);
+        }
 
         html { background: #E8622A; scrollbar-gutter: stable; }
         body {
@@ -2003,6 +2015,7 @@
             <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
             <li><a href="#">Comment ça marche</a></li>
             <li><a href="#">Devenir hôte</a></li>
+            <li id="navInscriptionLi"><a href="choix-inscription.html" class="nav-cta-inscription">S'inscrire</a></li>
         </ul>
     </div>
 </nav>
@@ -3640,6 +3653,12 @@ let selectedDatesRecherche = [];
 document.addEventListener('DOMContentLoaded', async function() {
     // 1. Charger l'utilisateur d'abord
     await chargerUtilisateur();
+
+    // Masquer "S'inscrire" si connecté
+    if (currentUser) {
+        const inscLi = document.getElementById('navInscriptionLi');
+        if (inscLi) inscLi.style.display = 'none';
+    }
 
     // 2. Parser les paramètres URL AVANT de charger les annonces
     const urlParams = new URLSearchParams(window.location.search);
