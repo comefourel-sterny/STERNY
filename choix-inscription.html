@@ -35,7 +35,7 @@
             min-height: 546px;
             width: 100%;
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 36px 36px;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
             border: 1.5px solid #E8EAF0;
@@ -218,20 +218,59 @@
         .back-link a:hover {
             text-decoration: underline;
         }
+
+        /* ===== NAV CTA S'INSCRIRE ===== */
+        .nav-cta-inscription {
+            background: #E8622A;
+            color: white !important;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-cta-inscription:hover {
+            background: #D4571F;
+            transform: translateY(-1px);
+        }
+
+        /* ===== FOOTER ===== */
+        .site-footer { background: #1E293B; color: white; padding: 48px 20px 32px; }
+        .footer-inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 32px; }
+        .footer-brand p { font-size: 14px; color: rgba(255,255,255,0.6); max-width: 280px; line-height: 1.5; margin-top: 12px; }
+        .footer-links { display: flex; gap: 48px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 48px; }
+        .footer-col h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #E8622A; margin-bottom: 14px; }
+        .footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+        .footer-col a:hover { color: #E8622A; }
+        .footer-bottom { max-width: 960px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: rgba(255,255,255,0.4); }
+        .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+        .footer-bottom a:hover { color: #E8622A; }
+        .footer-legal-links { display: flex; gap: 20px; }
+        @media (max-width: 900px) {
+            .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+            .footer-brand p { max-width: 100%; }
+            .footer-links { gap: 32px; }
+            .footer-bottom { flex-direction: column; gap: 10px; }
+        }
+        @media (max-width: 768px) {
+            .footer-links { flex-direction: column; gap: 24px; border-left: none; padding-left: 0; }
+            .nav-cta-inscription { padding: 8px 16px; font-size: 14px; }
+        }
     </style>
     <script src="analytics.js" defer></script>
 </head>
 <body>
     <!-- NAVIGATION -->
-    <nav role="navigation" aria-label="Navigation principale">
+    <nav role="navigation" aria-label="Navigation principale" id="mainNav">
         <div class="container">
             <a href="index.html" class="logo"><img src="Logo-Sterny-V1.svg" alt="STERNY"></a>
+            <div id="notif-bell-container"></div>
             <button class="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
-        <div class="menu-overlay" onclick="toggleMenu()"></div>
-        <ul>
-                <li><a href="index.html">Accueil</a></li>
-                <li><a href="connexion.html">Connexion</a></li>
-                <li><a href="comment-ca-marche.html">Comment ça marche</a></li>
+            <div class="menu-overlay" onclick="toggleMenu()"></div>
+            <ul>
+                <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
+                <li><a href="#" id="commentCaMarcheLink">Comment ça marche</a></li>
+                <li><a href="#" id="devenirHoteLink">Devenir hôte</a></li>
+                <li id="navInscriptionLi"><a href="choix-inscription.html" class="nav-cta-inscription">S'inscrire</a></li>
             </ul>
         </div>
     </nav>
@@ -301,18 +340,62 @@
     </script>
 <script src="cookie-banner.js"></script>
 <script>function toggleMenu(){var u=document.querySelector("nav ul");var h=document.querySelector(".hamburger");var o=document.querySelector(".menu-overlay");u.classList.toggle("open");h.classList.toggle("active");o.classList.toggle("active");}</script>
-    <footer role="contentinfo">
-        <div class="container">
-            <p>STERNY &copy; 2026 &mdash; Le logement pens&eacute; pour les alternants.</p>
-            <p style="margin-top: 8px; font-size: 13px; opacity: 0.7;">
-                <a href="cgv.html">CGV</a> &middot;
-                <a href="cgu.html">CGU</a> &middot;
-                <a href="mentions-legales.html">Mentions l&eacute;gales</a> &middot;
-                <a href="politique-confidentialite.html">Confidentialit&eacute;</a> &middot;
-                <a href="faq.html">FAQ</a> &middot;
-                <a href="contact.html">Contact</a> &middot;
-                <a href="a-propos.html">&Agrave; propos</a>
-            </p>
+<script>
+    (function setDefaultNavLinks() {
+        var monEspace = document.getElementById('monEspaceLink');
+        var ccm = document.getElementById('commentCaMarcheLink');
+        var hote = document.getElementById('devenirHoteLink');
+        if (monEspace) monEspace.href = 'connexion.html';
+        if (ccm) ccm.href = 'comment-ca-marche.html';
+        if (hote) hote.href = 'choix-inscription.html';
+    })();
+    async function gererNavLinks() {
+        try {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) return;
+            document.getElementById('navInscriptionLi').style.display = 'none';
+            const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
+            var monEspace = document.getElementById('monEspaceLink');
+            var ccm = document.getElementById('commentCaMarcheLink');
+            var hote = document.getElementById('devenirHoteLink');
+            if (monEspace) monEspace.href = 'dashboard-locataire.html';
+            if (ccm) ccm.href = (userData?.type_user === 'hote') ? 'comment-ca-marche-proprietaire.html' : 'comment-ca-marche-recherche.html';
+            if (hote) hote.href = (userData?.type_user === 'proprietaire') ? 'dashboard-proprietaire.html' : 'dashboard-locataire.html';
+        } catch (e) { console.log('Nav links: mode offline (fallback)'); }
+    }
+    gererNavLinks();
+</script>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="Logo-Sterny-V1-white.svg" alt="STERNY" style="height: 40px;">
+                <p>Le logement pensé pour les alternants. Flexible, vérifié, 100% en ligne.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Plateforme</h4>
+                    <a href="recherche.html">Rechercher</a>
+                    <a href="comment-ca-marche.html">Comment ça marche</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Entreprise</h4>
+                    <a href="a-propos.html">À propos</a>
+                    <a href="agences-partenaires.html">Partenariat</a>
+                    <a href="choix-inscription.html">Devenir hôte</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>STERNY © 2026</span>
+            <div class="footer-legal-links">
+                <a href="cgv.html">CGV</a>
+                <a href="cgu.html">CGU</a>
+                <a href="mentions-legales.html">Mentions légales</a>
+                <a href="politique-confidentialite.html">Confidentialité</a>
+            </div>
         </div>
     </footer>
 </body>
