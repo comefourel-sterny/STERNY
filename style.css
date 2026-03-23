@@ -58,23 +58,37 @@ nav .container {
     height: 85px;
 }
 
-nav .logo {
+nav .logo,
+nav a.logo {
     text-decoration: none;
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    padding: 0;
+    padding: 0 !important;
     background: none !important;
+    border-radius: 0 !important;
 }
 
-nav .logo:hover,
-nav .logo:focus,
-nav .logo:focus-visible {
+nav a.logo:hover,
+nav a.logo:focus,
+nav a.logo:focus-visible,
+nav a.logo:active {
+    padding: 0 !important;
     background: none !important;
     outline: none !important;
     border: none !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
     color: inherit !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.logo img,
+.logo img:hover,
+.logo img:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 nav .logo img {
