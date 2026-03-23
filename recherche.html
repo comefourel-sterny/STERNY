@@ -44,8 +44,14 @@
         nav .logo {
             padding: 0 !important;
         }
-        nav .logo:hover {
+        nav .logo:hover,
+        nav .logo:focus,
+        nav .logo:focus-visible {
             background: none !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: inherit !important;
         }
         nav .nav-highlight {
             color: #E8622A !important;

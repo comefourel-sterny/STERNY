@@ -67,8 +67,14 @@ nav .logo {
     background: none !important;
 }
 
-nav .logo:hover {
+nav .logo:hover,
+nav .logo:focus,
+nav .logo:focus-visible {
     background: none !important;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit !important;
 }
 
 nav .logo img {
