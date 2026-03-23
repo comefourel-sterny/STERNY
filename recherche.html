@@ -2521,7 +2521,8 @@ async function chargerAnnonces() {
         
         logements = data || [];
         logementsAffiches = [...logements];
-        afficherLogements(logementsAffiches);
+        // Appliquer les filtres (ville depuis URL, etc.) avant d'afficher
+        await filtrerLogements();
         mettreAJourCompteursFiltres();
 
         // Analyser les équipements "Autre" pour générer les filtres dynamiques
@@ -3635,7 +3636,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     // 1. Charger l'utilisateur d'abord
     await chargerUtilisateur();
 
-    // 2. Puis charger les annonces (qui charge aussi les favoris)
+    // 2. Parser les paramètres URL AVANT de charger les annonces
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('ville')) {
+        const villeParam = urlParams.get('ville');
+        const villeLabel = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(k =>
+            VILLES_DISPONIBLES_RECHERCHE[k] === villeParam
+        );
+        if (villeLabel) {
+            document.getElementById('villeInput').value = villeLabel;
+            villeSelectionneeRecherche = villeParam;
+        }
+    }
+    if (urlParams.has('ville2')) {
+        villeSecondaireRecherche = urlParams.get('ville2');
+    }
+
+    // 3. Puis charger les annonces (qui applique filtrerLogements)
     await chargerAnnonces();
 
     // Custom dropdown for Mon rythme
@@ -3671,24 +3688,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // Récupérer les paramètres de l'URL si on vient de la page d'accueil
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (urlParams.has('ville')) {
-        const villeParam = urlParams.get('ville');
-        const villeLabel = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(k =>
-            VILLES_DISPONIBLES_RECHERCHE[k] === villeParam
-        );
-        if (villeLabel) {
-            document.getElementById('villeInput').value = villeLabel;
-            villeSelectionneeRecherche = villeParam;
-        }
-    }
-
-    // Ville secondaire (depuis le dashboard)
-    if (urlParams.has('ville2')) {
-        villeSecondaireRecherche = urlParams.get('ville2');
-    }
+    // Récupérer les paramètres de l'URL (ville/ville2 déjà parsés plus haut)
     if (urlParams.has('type')) {
         const typeVal = urlParams.get('type');
         const rythmeEl = document.getElementById('rythme');
@@ -3736,8 +3736,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Si au moins un paramètre est présent, lancer la recherche automatiquement
-    if (urlParams.has('ville') || urlParams.has('type') || urlParams.has('pattern')) {
+    // Si type ou pattern présent, re-filtrer (ville déjà appliquée au chargement)
+    if (urlParams.has('type') || urlParams.has('pattern')) {
         filtrerLogements();
     }
 
