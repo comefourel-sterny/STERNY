@@ -278,9 +278,8 @@
             position: absolute;
             top: calc(100% + 8px);
             left: 0;
-            right: 0;
             width: 100%;
-            min-width: unset;
+            min-width: 280px;
             background: white;
             border-radius: 14px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
@@ -304,7 +303,12 @@
         }
         .custom-option.selected {
             color: #E8622A;
+        }
+        .custom-option.selected > div:first-child {
             font-weight: 600;
+        }
+        .custom-option.selected > div:last-child {
+            font-weight: 400;
         }
         .alt-option:hover > div:first-child { color: #E8622A !important; }
         .alt-option.selected > div:first-child { color: #E8622A !important; }
