@@ -733,7 +733,7 @@
         }
         .logement-image {
             width: 100%;
-            height: 180px;
+            height: 200px;
             background: #E8EAF0;
             display: flex;
             align-items: center;
@@ -749,9 +749,27 @@
         }
         .logement-badge,
         .favorite-btn,
-        .dispo-badge,
         .logement-features {
             display: none !important;
+        }
+        .dispo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: auto;
+            width: fit-content;
+        }
+        .dispo-badge.available {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+        .dispo-badge.soon {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
         }
         .match-badge {
             position: absolute;
@@ -2791,6 +2809,23 @@ function mettreAJourCompteursFiltres() {
 
     const surfaceText = logement.surface ? ` · ${logement.surface} m²` : '';
 
+    // Badge disponibilité
+    let dispoBadge = '';
+    if (logement.disponibilites_pattern && logement.disponibilites_pattern.length > 0) {
+        const premiereDispo = new Date(logement.disponibilites_pattern[0]);
+        const maintenant = new Date();
+        const diffJours = Math.ceil((premiereDispo - maintenant) / (1000 * 60 * 60 * 24));
+        if (diffJours <= 0) {
+            dispoBadge = '<span class="dispo-badge available">Disponible maintenant</span>';
+        } else if (diffJours <= 14) {
+            dispoBadge = `<span class="dispo-badge soon">Dispo dans ${Math.ceil(diffJours / 7)} sem.</span>`;
+        } else {
+            dispoBadge = `<span class="dispo-badge soon">Dispo dans ${Math.ceil(diffJours / 7)} sem.</span>`;
+        }
+    } else {
+        dispoBadge = '<span class="dispo-badge available">Disponible maintenant</span>';
+    }
+
     const card = `
         <a href="logement.html?id=${logement.id}${mesDisponibilites.length > 0 ? '&dates=' + mesDisponibilites.join(',') : ''}" class="logement-card">
             <div class="logement-image" style="${imageStyle}">
@@ -2804,6 +2839,7 @@ function mettreAJourCompteursFiltres() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     ${villeFormatee}${surfaceText}
                 </div>
+                ${dispoBadge}
             </div>
         </a>
     `;
