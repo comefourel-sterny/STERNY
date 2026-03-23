@@ -2683,6 +2683,68 @@ function mettreAJourCompteursFiltres() {
     if (countCustom) countCustom.textContent = `(${custom})`;
     }
 
+        // Extraire le quartier depuis l'adresse (jamais l'adresse complète)
+        function getQuartier(adresse, ville) {
+            if (!adresse) return 'Centre-ville';
+            const addr = adresse.toLowerCase();
+
+            const quartiers = {
+                'rennes': {
+                    'république': 'République', 'sainte-anne': 'Sainte-Anne', 'sainte anne': 'Sainte-Anne',
+                    'villejean': 'Villejean', 'thabor': 'Thabor', 'beaulieu': 'Beaulieu',
+                    'gare': 'Gare', 'colombier': 'Colombier', 'mail': 'Centre', 'liberté': 'Centre',
+                    'poterie': 'Poterie', 'cleunay': 'Cleunay', 'bréquigny': 'Bréquigny',
+                    'maurepas': 'Maurepas', 'patton': 'Patton', 'kennedy': 'Kennedy',
+                    'alma': 'Alma', 'longs champs': 'Longs Champs', 'longchamps': 'Longs Champs'
+                },
+                'nantes': {
+                    'commerce': 'Centre', 'graslin': 'Graslin', 'île de nantes': 'Île de Nantes',
+                    'prairie': 'Île de Nantes', 'erdre': 'Erdre', 'chantenay': 'Chantenay',
+                    'talensac': 'Talensac', 'procé': 'Procé', 'zola': 'Zola',
+                    'bouffay': 'Bouffay', 'doulon': 'Doulon', 'malakoff': 'Malakoff'
+                },
+                'paris': {
+                    'marais': 'Le Marais', 'bastille': 'Bastille', 'montmartre': 'Montmartre',
+                    'belleville': 'Belleville', 'république': 'République', 'nation': 'Nation',
+                    'oberkampf': 'Oberkampf', 'batignolles': 'Batignolles', 'pigalle': 'Pigalle',
+                    'châtelet': 'Châtelet', 'saint-germain': 'Saint-Germain', 'latin': 'Quartier Latin'
+                },
+                'lyon': {
+                    'presqu\'île': 'Presqu\'île', 'bellecour': 'Centre', 'part-dieu': 'Part-Dieu',
+                    'confluence': 'Confluence', 'guillotière': 'Guillotière', 'croix-rousse': 'Croix-Rousse',
+                    'vieux lyon': 'Vieux Lyon', 'gerland': 'Gerland', 'monplaisir': 'Monplaisir'
+                },
+                'bordeaux': {
+                    'saint-pierre': 'Saint-Pierre', 'chartrons': 'Chartrons', 'bastide': 'Bastide',
+                    'victoire': 'Victoire', 'saint-michel': 'Saint-Michel', 'mériadeck': 'Mériadeck',
+                    'nansouty': 'Nansouty', 'gambetta': 'Gambetta'
+                },
+                'toulouse': {
+                    'capitole': 'Capitole', 'saint-cyprien': 'Saint-Cyprien', 'minimes': 'Minimes',
+                    'compans': 'Compans', 'rangueil': 'Rangueil', 'jean-jaurès': 'Jean-Jaurès',
+                    'carmes': 'Carmes', 'esquirol': 'Esquirol'
+                },
+                'lille': {
+                    'vieux-lille': 'Vieux-Lille', 'wazemmes': 'Wazemmes', 'euralille': 'Euralille',
+                    'moulins': 'Moulins', 'fives': 'Fives', 'république': 'République',
+                    'gambetta': 'Gambetta', 'solférino': 'Solférino'
+                },
+                'montpellier': {
+                    'écusson': 'Écusson', 'antigone': 'Antigone', 'port marianne': 'Port Marianne',
+                    'boutonnet': 'Boutonnet', 'beaux-arts': 'Beaux-Arts', 'gare': 'Gare'
+                }
+            };
+
+            const villeKey = ville ? ville.toLowerCase() : '';
+            const map = quartiers[villeKey];
+            if (map) {
+                for (const [key, name] of Object.entries(map)) {
+                    if (addr.includes(key)) return name;
+                }
+            }
+            return 'Centre-ville';
+        }
+
         // Afficher les logements
         function afficherLogements(liste) {
             const grid = document.getElementById('resultsGrid');
@@ -2806,14 +2868,8 @@ function mettreAJourCompteursFiltres() {
         </svg>
     </button>`;
 
-    // Quartier (première partie de l'adresse) ou ville par défaut
-    let villeFormatee = logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1);
-    if (logement.adresse) {
-        const parts = logement.adresse.split(',');
-        if (parts.length > 1) {
-            villeFormatee = parts[0].trim();
-        }
-    }
+    // Quartier sécurisé (jamais l'adresse complète)
+    const villeFormatee = getQuartier(logement.adresse, logement.ville);
 
     const surfaceText = logement.surface ? ` · ${logement.surface} m²` : '';
 
