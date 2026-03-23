@@ -179,6 +179,7 @@
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
+            overflow: visible;
         }
 
         .search-field {
@@ -2014,7 +2015,7 @@
 
             <!-- BARRE DE RECHERCHE -->
             <div class="search-bar">
-                <div class="search-field" style="position: relative; overflow: visible;">
+                <div class="search-field" style="position: relative; overflow: visible; z-index: 10;">
                     <label>Ville</label>
                     <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off">
                     <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
