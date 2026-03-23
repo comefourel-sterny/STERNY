@@ -173,6 +173,36 @@
             letter-spacing: 0.8px;
         }
 
+        .ville-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #E8EAF0;
+        }
+        .ville-suggestions::-webkit-scrollbar { width: 5px; }
+        .ville-suggestions::-webkit-scrollbar-track { background: transparent; }
+        .ville-suggestions::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+        .ville-suggestion-item {
+            padding: 13px 18px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1E293B;
+            transition: all 0.15s;
+        }
+        .ville-suggestion-item:hover {
+            background: #FDF0EB;
+            color: #E8622A;
+        }
+
         .search-field select,
         .search-field input {
             padding: 0;
@@ -1071,7 +1101,7 @@
 
             <!-- BARRE DE RECHERCHE -->
             <div class="search-bar">
-                <div class="search-field" style="position: relative; overflow: visible;">
+                <div class="search-field" style="position: relative; overflow: visible; z-index: 10;">
                     <label>Ville</label>
                     <input type="text" id="villeInput" placeholder="Ex: Rennes, Nantes..." autocomplete="off">
                     <div id="villeSuggestions" class="ville-suggestions" style="display: none;"></div>
