@@ -15,17 +15,17 @@
     <style>
         body {
             background: #F4F5F7;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            margin: 0;
+            padding: 0;
         }
 
         .error-page {
-            flex: 1;
+            min-height: calc(100vh - 72px);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .error-card {
