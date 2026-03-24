@@ -388,7 +388,7 @@
                 <li><a href="#" id="monEspaceLink" class="nav-highlight">Mon espace</a></li>
                 <li><a href="#" id="commentCaMarcheLink">Comment ça marche</a></li>
                 <li><a href="#" id="devenirHoteLink">Devenir hôte</a></li>
-                <li id="navInscriptionLi"><a href="choix-inscription.html" class="nav-cta-inscription">S'inscrire</a></li>
+                <li id="navConnexionLi"><a href="connexion.html">Connexion</a></li>
             </ul>
         </div>
     </nav>
@@ -677,7 +677,7 @@
         try {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) return;
-            document.getElementById('navInscriptionLi').style.display = 'none';
+            document.getElementById('navConnexionLi').style.display = 'none';
             const { data: userData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single();
             var monEspace = document.getElementById('monEspaceLink');
             var ccm = document.getElementById('commentCaMarcheLink');
