@@ -40,7 +40,6 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
 
         .error-code {
@@ -63,21 +62,20 @@
             font-size: 15px;
             color: #64748B;
             line-height: 1.6;
-            margin: 0 0 28px 0;
+            margin: 0;
         }
 
         .error-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            margin-top: auto;
         }
 
         .btn-primary {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 14px 28px;
+            width: 100%;
+            padding: 14px;
             background: #E8622A;
             color: white;
             border: none;
@@ -169,9 +167,11 @@
 
     <section class="error-page">
         <div class="error-card">
-            <h1 class="error-code">404</h1>
-            <h2 class="error-title">Page introuvable</h2>
-            <p class="error-text">Cette page n'existe pas ou a été déplacée.</p>
+            <div class="error-content">
+                <h1 class="error-code">404</h1>
+                <h2 class="error-title">Page introuvable</h2>
+                <p class="error-text">Cette page n'existe pas ou a été déplacée.</p>
+            </div>
 
             <div class="error-actions">
                 <a href="recherche.html" class="btn-primary">
@@ -182,7 +182,7 @@
                     Rechercher un logement
                 </a>
             </div>
-            <div style="text-align:center;margin-top:16px;">
+            <div style="text-align:center;margin-top:12px;">
                 <a href="index.html" class="link-secondary">Accueil</a>
             </div>
         </div>
