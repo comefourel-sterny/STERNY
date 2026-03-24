@@ -33,18 +33,25 @@
             border-radius: 16px;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
             border: 1px solid #E8EAF0;
-            padding: 48px 40px;
-            max-width: 480px;
+            padding: 40px 36px;
+            max-width: 440px;
             width: 100%;
             text-align: center;
         }
 
-        .error-illustration {
-            margin-bottom: 24px;
+        .error-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(232, 98, 42, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
         }
 
         .error-code {
-            font-size: 72px;
+            font-size: 64px;
             font-weight: 800;
             color: #E8622A;
             margin: 0 0 8px 0;
@@ -52,7 +59,7 @@
         }
 
         .error-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: #1E293B;
             margin: 0 0 12px 0;
@@ -133,7 +140,7 @@
         }
 
         /* ===== FOOTER ===== */
-        .site-footer { background: #1E293B; color: white; padding: 48px 20px 32px; }
+        .site-footer { background: #1E293B; color: white; padding: 48px 20px 32px; flex-shrink: 0; }
         .footer-inner { max-width: 960px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 32px; }
         .footer-brand p { font-size: 14px; color: rgba(255,255,255,0.6); max-width: 280px; line-height: 1.5; margin-top: 12px; }
         .footer-links { display: flex; gap: 48px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 48px; }
@@ -182,15 +189,12 @@
 
     <section class="error-page">
         <div class="error-card">
-            <div class="error-illustration">
-                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Maison -->
-                    <path d="M60 20L20 55V100H45V70H75V100H100V55L60 20Z" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M15 55L60 15L105 55" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <!-- Point d'interrogation orange -->
-                    <circle cx="60" cy="58" r="18" stroke="#E8622A" stroke-width="2.5"/>
-                    <path d="M54 52C54 48 57 46 60 46C63 46 66 48 66 52C66 56 62 56 60 60V64" stroke="#E8622A" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="60" cy="70" r="2" fill="#E8622A"/>
+            <div class="error-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                    <path d="M11 8v2"></path>
+                    <circle cx="11" cy="14" r="0.5" fill="#E8622A"></circle>
                 </svg>
             </div>
 
