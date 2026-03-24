@@ -25,7 +25,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         .error-card {
@@ -33,29 +33,19 @@
             border-radius: 16px;
             box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
             border: 1px solid #E8EAF0;
-            padding: 40px 36px;
-            max-width: 440px;
+            padding: 48px 40px;
+            max-width: 420px;
             width: 100%;
             text-align: center;
         }
 
-        .error-icon {
-            width: 64px;
-            height: 64px;
-            background: rgba(232, 98, 42, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-        }
-
         .error-code {
-            font-size: 64px;
+            font-size: 120px;
             font-weight: 800;
             color: #E8622A;
-            margin: 0 0 8px 0;
+            margin: 0 0 16px 0;
             line-height: 1;
+            letter-spacing: -4px;
         }
 
         .error-title {
@@ -164,8 +154,7 @@
         }
         @media (max-width: 500px) {
             .error-card { padding: 36px 24px; }
-            .error-code { font-size: 56px; }
-            .error-title { font-size: 20px; }
+            .error-code { font-size: 80px; letter-spacing: -3px; }
         }
     </style>
     <script src="analytics.js" defer></script>
@@ -189,21 +178,9 @@
 
     <section class="error-page">
         <div class="error-card">
-            <div class="error-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="M21 21l-4.35-4.35"></path>
-                    <path d="M11 8v2"></path>
-                    <circle cx="11" cy="14" r="0.5" fill="#E8622A"></circle>
-                </svg>
-            </div>
-
             <h1 class="error-code">404</h1>
             <h2 class="error-title">Page introuvable</h2>
-            <p class="error-text">
-                La page que tu cherches n'existe pas ou a été déplacée.<br>
-                Pas de panique, on va t'aider à retrouver ton chemin !
-            </p>
+            <p class="error-text">Cette page n'existe pas ou a été déplacée.</p>
 
             <div class="error-actions">
                 <a href="index.html" class="btn-primary">
