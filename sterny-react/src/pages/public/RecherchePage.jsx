@@ -271,6 +271,7 @@ export default function RecherchePage() {
   const [showVilleSuggestions, setShowVilleSuggestions] = useState(false)
   const [villeSuggestions, setVilleSuggestions] = useState([])
   const [villeSuggestionMsg, setVilleSuggestionMsg] = useState('')
+  const [showNoMatch, setShowNoMatch] = useState(false)
 
   // Alternance dropdown
   const [typeAlternance, setTypeAlternance] = useState('')
@@ -729,8 +730,8 @@ export default function RecherchePage() {
     const query = raw.trim().toLowerCase()
     if (query.length === 0) {
       setShowVilleSuggestions(false)
+      setShowNoMatch(false)
       setVilleSuggestions([])
-      setVilleSuggestionMsg('')
       return
     }
 
@@ -743,14 +744,16 @@ export default function RecherchePage() {
         label: v,
         value: VILLES_DISPONIBLES_RECHERCHE[v]
       })))
-      setVilleSuggestionMsg('')
       setShowVilleSuggestions(true)
-    } else if (query.length >= 2) {
-      setVilleSuggestions([])
-      setVilleSuggestionMsg('STERNY arrive bientôt dans ta ville !')
-      setShowVilleSuggestions(true)
+      setShowNoMatch(false)
     } else {
+      setVilleSuggestions([])
       setShowVilleSuggestions(false)
+      if (query.length >= 2) {
+        setShowNoMatch(true)
+      } else {
+        setShowNoMatch(false)
+      }
     }
   }, [])
 
@@ -758,11 +761,13 @@ export default function RecherchePage() {
     setVilleInput(label)
     setVilleSelectionnee(value)
     setShowVilleSuggestions(false)
+    setShowNoMatch(false)
   }, [])
 
   const handleVilleBlur = useCallback(() => {
     setTimeout(() => {
       setShowVilleSuggestions(false)
+      setShowNoMatch(false)
       const val = villeInput.trim()
       if (val && !villeSelectionnee) {
         const exactMatch = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(v =>
@@ -771,8 +776,6 @@ export default function RecherchePage() {
         if (exactMatch) {
           setVilleInput(exactMatch)
           setVilleSelectionnee(VILLES_DISPONIBLES_RECHERCHE[exactMatch])
-        } else {
-          setVilleInput('')
         }
       }
     }, 200)
@@ -1280,8 +1283,8 @@ export default function RecherchePage() {
                 placeholder="Ex: Rennes, Nantes..."
                 autoComplete="off"
               />
-              {showVilleSuggestions && (
-                <div className="ville-suggestions" ref={villeSuggestionsRef}>
+              {showVilleSuggestions && villeSuggestions.length > 0 && (
+                <div className="ville-suggestions" ref={villeSuggestionsRef} style={{ display: 'block' }}>
                   {villeSuggestions.map((s) => (
                     <div
                       key={s.value}
@@ -1291,11 +1294,13 @@ export default function RecherchePage() {
                       {s.label}
                     </div>
                   ))}
-                  {villeSuggestionMsg && (
-                    <div style={{ padding: '12px 16px', color: '#E8622A', fontWeight: 600, fontSize: '14px', cursor: 'default' }}>
-                      {villeSuggestionMsg}
-                    </div>
-                  )}
+                </div>
+              )}
+              {showNoMatch && (
+                <div className="ville-suggestions" style={{ display: 'block' }}>
+                  <div style={{ padding: '12px 16px', color: '#E8622A', fontWeight: 600, fontSize: '14px', cursor: 'default' }}>
+                    STERNY arrive bient&ocirc;t dans ta ville !
+                  </div>
                 </div>
               )}
             </div>
