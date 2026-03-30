@@ -1986,6 +1986,7 @@ export default function RecherchePage() {
                       onChange={handleEndDateInput}
                       autoFocus
                     />
+                    {dateError && <span className="cal-date-error">{dateError}</span>}
                   </>
                 ) : (
                   <>
