@@ -1,8 +1,8 @@
 # Tests Parcours Utilisateurs STERNY
 
 ## 🟢 PARCOURS 1 : Visiteur
-- [ ] index.html — Page d'accueil s'affiche correctement
-- [ ] Clic sur "Rechercher" → recherche.html fonctionne
+- [ok] index.html — Page d'accueil s'affiche correctement
+- [] Clic sur "Rechercher" → recherche.html fonctionne
 - [ ] recherche.html — Filtres fonctionnent
 - [ ] Clic sur un logement → logement.html s'affiche
 - [ ] logement.html — Toutes les infos visibles
