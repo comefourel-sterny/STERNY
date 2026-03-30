@@ -535,7 +535,7 @@ export default function HomePage() {
                     style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px' }}
                     onClick={(e) => { e.stopPropagation(); selectAlternance(opt) }}
                   >
-                    <div style={{ fontWeight: 600, fontSize: 15, color: '#1E293B', lineHeight: 1.2 }}>{opt.label}</div>
+                    <div style={{ fontWeight: 500, fontSize: 15, color: '#1E293B', lineHeight: 1.2 }}>{opt.label}</div>
                     <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{opt.desc}</div>
                   </div>
                 ))}

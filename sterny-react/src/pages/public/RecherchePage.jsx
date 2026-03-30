@@ -416,27 +416,12 @@ export default function RecherchePage() {
       const day = parseInt(raw.slice(0, 2))
       const month = parseInt(raw.slice(2, 4))
       const year = parseInt(raw.slice(4, 8))
-      if (month < 1 || month > 12) {
-        setDateError('Mois invalide (01-12)')
-        setCalendarEndDate('')
-        return
-      }
       const daysInMonth = new Date(year, month, 0).getDate()
-      if (day < 1 || day > daysInMonth) {
-        setDateError(`Jour invalide (01-${daysInMonth} pour ce mois)`)
-        setCalendarEndDate('')
-        return
-      }
-      if (year < 2025 || year > 2035) {
-        setDateError('Année invalide (2025-2035)')
-        setCalendarEndDate('')
-        return
-      }
-      const dateObj = new Date(year, month - 1, day)
+      const dateObj = new Date(year, month - 1, Math.min(day, daysInMonth))
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      if (dateObj < today) {
-        setDateError('La date est déjà passée')
+      if (month < 1 || month > 12 || day < 1 || day > daysInMonth || year < 2025 || year > 2035 || dateObj < today) {
+        setDateError('Date invalide')
         setCalendarEndDate('')
         return
       }
@@ -1327,7 +1312,7 @@ export default function RecherchePage() {
                     style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px' }}
                     onClick={(e) => { e.stopPropagation(); handleAlternanceSelect(opt.value) }}
                   >
-                    <div style={{ fontWeight: 600, fontSize: '15px', color: '#1E293B', lineHeight: 1.2 }}>{opt.label}</div>
+                    <div style={{ fontWeight: 500, fontSize: '15px', color: '#1E293B', lineHeight: 1.2 }}>{opt.label}</div>
                     <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px' }}>{opt.desc}</div>
                   </div>
                 ))}
@@ -1986,7 +1971,7 @@ export default function RecherchePage() {
                       onChange={handleEndDateInput}
                       autoFocus
                     />
-                    {dateError && <span className="cal-date-error">{dateError}</span>}
+                    {dateError && dateError !== 'date' && <span className="cal-date-error">{dateError}</span>}
                   </>
                 ) : (
                   <>
@@ -2005,7 +1990,7 @@ export default function RecherchePage() {
               <div className="cal-actions">
                 <button className="cal-btn-apply" onClick={() => {
                   if (!calendarEndDate) {
-                    setDateError('err')
+                    setDateError('date')
                     setEditingEndDate(true)
                     setTimeout(() => setDateError(''), 3000)
                     return
