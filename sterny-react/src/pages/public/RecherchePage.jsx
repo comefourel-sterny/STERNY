@@ -1380,7 +1380,7 @@ export default function RecherchePage() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '48px' }}>
                 <span style={{ color: mesDisponibilites.length > 0 ? '#1E293B' : '#94A3B8', fontSize: 15 }}>
                   {mesDisponibilites.length > 0
-                    ? `${Math.ceil(mesDisponibilites.length / 7)} sem. sélectionnées`
+                    ? `${Math.ceil(mesDisponibilites.length / 7)} sem.`
                     : rythmePattern ? 'Sélectionner' : 'Choisis un rythme'}
                 </span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>

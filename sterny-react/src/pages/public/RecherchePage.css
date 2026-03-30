@@ -1108,9 +1108,9 @@
 .profil-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
-    min-height: 72px;
+    gap: 10px;
+    padding: 12px 14px;
+    min-height: 56px;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
     cursor: pointer;
@@ -1141,8 +1141,8 @@
     gap: 2px;
 }
 .profil-name {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 500;
     color: #1E293B;
 }
 .profil-rythme {
