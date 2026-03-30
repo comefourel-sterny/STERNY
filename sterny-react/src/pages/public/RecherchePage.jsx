@@ -323,6 +323,9 @@ export default function RecherchePage() {
   const proximityTimeoutRef = useRef(null)
   const mbxSessionRef = useRef(crypto.randomUUID())
 
+  // Search error
+  const [searchError, setSearchError] = useState('')
+
   // Notification modal
   const [notification, setNotification] = useState({ show: false, title: '', message: '', type: 'warning', redirectUrl: null })
 
@@ -412,6 +415,18 @@ export default function RecherchePage() {
       formatted += raw[i]
     }
     setEndDateInput(formatted)
+    // Validation au fur et à mesure
+    if (raw.length >= 2) {
+      const day = parseInt(raw.slice(0, 2))
+      if (day < 1 || day > 31) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+    }
+    if (raw.length >= 4) {
+      const month = parseInt(raw.slice(2, 4))
+      if (month < 1 || month > 12) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+      const day = parseInt(raw.slice(0, 2))
+      const daysInMonth = new Date(2026, month, 0).getDate()
+      if (day > daysInMonth) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+    }
     if (raw.length === 8) {
       const day = parseInt(raw.slice(0, 2))
       const month = parseInt(raw.slice(2, 4))
@@ -420,7 +435,7 @@ export default function RecherchePage() {
       const dateObj = new Date(year, month - 1, Math.min(day, daysInMonth))
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      if (month < 1 || month > 12 || day < 1 || day > daysInMonth || year < 2025 || year > 2035 || dateObj < today) {
+      if (day > daysInMonth || year < 2025 || year > 2035 || dateObj < today) {
         setDateError('Date invalide')
         setCalendarEndDate('')
         return
@@ -1369,12 +1384,26 @@ export default function RecherchePage() {
             </div>
 
             {/* Search button */}
-            <button className="search-btn" onClick={() => filtrerLogements()}>
+            <button className="search-btn" onClick={() => {
+              if (!villeSelectionnee && !typeAlternance) {
+                setSearchError('Complète ta recherche avant de continuer')
+                if (villeInputRef.current) {
+                  villeInputRef.current.style.borderColor = '#ff6b6b'
+                  villeInputRef.current.style.animation = 'shake 0.4s ease'
+                  setTimeout(() => { villeInputRef.current.style.borderColor = ''; villeInputRef.current.style.animation = '' }, 2000)
+                }
+                setTimeout(() => setSearchError(''), 3000)
+                return
+              }
+              filtrerLogements()
+            }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               Rechercher
             </button>
           </div>
-
+          {searchError && (
+            <div className="search-error-msg">{searchError}</div>
+          )}
         </div>
       </section>
 
