@@ -773,8 +773,6 @@ export default function RecherchePage() {
           setVilleSelectionnee(VILLES_DISPONIBLES_RECHERCHE[exactMatch])
         } else {
           setVilleInput('')
-          setSearchError('Cette ville n\'est pas encore disponible')
-          setTimeout(() => setSearchError(''), 3000)
         }
       }
     }, 200)
