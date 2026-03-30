@@ -1989,7 +1989,7 @@ export default function RecherchePage() {
               <div className="cal-info-line">
                 {editingEndDate ? (
                   <>
-                    <span className="cal-end-label">Fin d&apos;alternance</span>
+                    <span className={`cal-end-label${dateError ? ' cal-label-error' : ''}`}>Fin d&apos;alternance</span>
                     <input
                       type="text"
                       className="cal-date-text"
@@ -1999,7 +1999,6 @@ export default function RecherchePage() {
                       maxLength={10}
                       autoFocus
                     />
-                    {dateError && <span className="cal-date-error">{dateError}</span>}
                   </>
                 ) : (
                   <>
@@ -2016,9 +2015,10 @@ export default function RecherchePage() {
                 )}
               </div>
               <div className="cal-actions">
+                {dateError && <span className="cal-apply-error">{dateError}</span>}
                 <button className="cal-btn-apply" onClick={() => {
                   if (!calendarEndDate) {
-                    setDateError('Renseigne ta date de fin d\'alternance')
+                    setDateError('Renseigne ta date de fin')
                     setEditingEndDate(true)
                     setTimeout(() => setDateError(''), 3000)
                     return
