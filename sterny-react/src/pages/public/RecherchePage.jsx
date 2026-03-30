@@ -1321,7 +1321,7 @@ export default function RecherchePage() {
               }}
             >
               <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.8px', color: '#1E293B', marginBottom: '4px' }}>
-                TYPE D&apos;ALTERNANCE
+                {showRythmeField ? 'ALTERNANCE' : "TYPE D'ALTERNANCE"}
               </label>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '15px', color: typeAlternance ? '#1E293B' : '#94A3B8', userSelect: 'none', height: '48px' }}>
                 <span>{RYTHME_LABELS[typeAlternance] || "Type d'alternance"}</span>
@@ -1384,8 +1384,8 @@ export default function RecherchePage() {
 
             {/* Mes dates */}
             <div className="search-field" style={{ cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); if (rythmePattern) setShowCalendar(true) }}>
-              <label>MES DATES</label>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.8px', color: '#1E293B', marginBottom: '4px' }}>MES DATES</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '48px' }}>
                 <span style={{ color: mesDisponibilites.length > 0 ? '#1E293B' : '#94A3B8', fontSize: 15 }}>
                   {mesDisponibilites.length > 0
                     ? `${Math.ceil(mesDisponibilites.length / 7)} sem. sélectionnées`
@@ -1986,7 +1986,7 @@ export default function RecherchePage() {
 
             {/* Footer */}
             <div className="cal-footer">
-              <div className="cal-info-line">
+              <div className={`cal-info-line${dateError ? ' cal-label-error' : ''}`}>
                 {editingEndDate ? (
                   <>
                     <span className={`cal-end-label${dateError ? ' cal-label-error' : ''}`}>Fin d&apos;alternance</span>
@@ -2015,10 +2015,9 @@ export default function RecherchePage() {
                 )}
               </div>
               <div className="cal-actions">
-                {dateError && <span className="cal-apply-error">{dateError}</span>}
                 <button className="cal-btn-apply" onClick={() => {
                   if (!calendarEndDate) {
-                    setDateError('Renseigne ta date de fin')
+                    setDateError('err')
                     setEditingEndDate(true)
                     setTimeout(() => setDateError(''), 3000)
                     return

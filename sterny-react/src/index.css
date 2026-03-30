@@ -272,7 +272,11 @@ select option:disabled {
     font-weight: 500;
     margin-top: 8px;
     text-align: center;
+    position: absolute;
+    left: 0;
+    right: 0;
     animation: fadeIn 0.3s ease;
+    pointer-events: none;
 }
 
 /* Checkmark validation dans les champs input */
