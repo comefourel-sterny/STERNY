@@ -401,29 +401,17 @@ export default function RecherchePage() {
     setMesDisponibilites(newDates.map(d => formatDateLocal(d)))
   }, [selectedRhythm, selectedOffWeeks, genererPatternCalendrier, formatDateLocal])
 
-  // Format raw digits to display with __/__/____
-  const formatDateDisplay = useCallback((raw) => {
-    if (!raw) return ''
-    const template = '__/__/____'
-    let result = ''
-    let digitIdx = 0
-    for (let i = 0; i < template.length; i++) {
-      if (template[i] === '/') {
-        result += '/'
-      } else if (digitIdx < raw.length) {
-        result += raw[digitIdx++]
-      } else {
-        result += '_'
-      }
-    }
-    return result
-  }, [])
-
   const handleEndDateInput = useCallback((e) => {
     setDateError('')
-    // Extract only digits from what was typed
+    // Extract only digits
     const raw = e.target.value.replace(/\D/g, '').slice(0, 8)
-    setEndDateInput(raw)
+    // Format: add / after day and month
+    let formatted = ''
+    for (let i = 0; i < raw.length; i++) {
+      if (i === 2 || i === 4) formatted += '/'
+      formatted += raw[i]
+    }
+    setEndDateInput(formatted)
     if (raw.length === 8) {
       const day = parseInt(raw.slice(0, 2))
       const month = parseInt(raw.slice(2, 4))
@@ -457,7 +445,7 @@ export default function RecherchePage() {
     } else {
       setCalendarEndDate('')
     }
-  }, [endDateInput])
+  }, [])
 
   // Calendar stats
   const calendarStats = useMemo(() => {
@@ -1994,9 +1982,8 @@ export default function RecherchePage() {
                       type="text"
                       className="cal-date-text"
                       placeholder="JJ/MM/AAAA"
-                      value={formatDateDisplay(endDateInput)}
+                      value={endDateInput}
                       onChange={handleEndDateInput}
-                      maxLength={10}
                       autoFocus
                     />
                   </>
