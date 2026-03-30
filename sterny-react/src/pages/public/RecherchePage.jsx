@@ -296,6 +296,7 @@ export default function RecherchePage() {
   const [endDateInput, setEndDateInput] = useState('')
   const [editingEndDate, setEditingEndDate] = useState(true)
   const [dateError, setDateError] = useState('')
+  const [calMsg, setCalMsg] = useState('')
   const calendarRef = useRef(null)
 
   // Drawer filters
@@ -397,6 +398,10 @@ export default function RecherchePage() {
     if (!selectedRhythm) return
     const dayOfWeek = clickedDate.getDay()
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+    if (dayOfWeek !== 1) {
+      setCalMsg('STERNY fonctionne à la semaine — ton planning démarre au lundi')
+      setTimeout(() => setCalMsg(''), 3000)
+    }
     const monday = new Date(clickedDate)
     monday.setDate(clickedDate.getDate() + mondayOffset)
     monday.setHours(0, 0, 0, 0)
@@ -1950,6 +1955,7 @@ export default function RecherchePage() {
                 <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
               </button>
             </div>
+            {calMsg && <div className="cal-msg">{calMsg}</div>}
 
             {/* 3 mois */}
             <div className="cal-months">
@@ -2007,7 +2013,7 @@ export default function RecherchePage() {
                       onChange={handleEndDateInput}
                       autoFocus
                     />
-                    {dateError && dateError !== 'date' && <span className="cal-date-error">{dateError}</span>}
+                    {dateError && <span className="cal-date-error">{dateError}</span>}
                   </>
                 ) : (
                   <>
@@ -2026,7 +2032,7 @@ export default function RecherchePage() {
               <div className="cal-actions">
                 <button className="cal-btn-apply" onClick={() => {
                   if (!calendarEndDate) {
-                    setDateError('date')
+                    setDateError(endDateInput ? 'Date incomplète' : 'Renseigne ta date de fin')
                     setEditingEndDate(true)
                     setTimeout(() => setDateError(''), 3000)
                     return
