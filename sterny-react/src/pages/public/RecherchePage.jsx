@@ -2016,7 +2016,15 @@ export default function RecherchePage() {
                 )}
               </div>
               <div className="cal-actions">
-                <button className="cal-btn-apply" onClick={() => { filtrerLogements(); setShowCalendar(false) }}>
+                <button className="cal-btn-apply" onClick={() => {
+                  if (!calendarEndDate) {
+                    setDateError('Renseigne ta date de fin d\'alternance')
+                    setEditingEndDate(true)
+                    setTimeout(() => setDateError(''), 3000)
+                    return
+                  }
+                  filtrerLogements(); setShowCalendar(false)
+                }}>
                   Appliquer
                 </button>
               </div>

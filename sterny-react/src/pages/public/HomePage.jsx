@@ -413,6 +413,7 @@ export default function HomePage() {
     }
     if (missing.length > 0) {
       setSearchError('Complète ta recherche avant de continuer')
+      setTimeout(() => setSearchError(''), 3000)
       return
     }
 
