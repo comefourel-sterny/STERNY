@@ -1,0 +1,132 @@
+.cgv-page {
+    min-height: calc(100vh - 85px);
+    background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+    padding: 48px 20px 64px;
+}
+
+.cgv-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 8px 40px rgba(30, 41, 59, 0.10);
+}
+
+.cgv-card h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px 0;
+}
+
+.cgv-date {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 36px;
+}
+
+.cgv-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-top: 32px;
+    margin-bottom: 12px;
+}
+
+.cgv-card p {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.cgv-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0 12px 0;
+}
+
+.cgv-card ul li {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.cgv-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #E8622A;
+}
+
+.btn-back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B !important;
+    text-decoration: none !important;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-back-top svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-back-top:hover {
+    color: #1E293B !important;
+}
+
+.cgv-footer {
+    max-width: 800px;
+    margin: 32px auto 0;
+    text-align: center;
+    font-size: 13px;
+    color: #9CA3AF;
+}
+
+.cgv-footer a {
+    color: #6B7280;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.cgv-footer a:hover {
+    color: #E8622A;
+}
+
+.cgv-footer .separator {
+    color: #D1D5DB;
+}
+
+@media (max-width: 768px) {
+    .cgv-card {
+        padding: 28px 20px;
+    }
+
+    .cgv-card h1 {
+        font-size: 22px;
+    }
+
+    .cgv-page {
+        padding: 24px 12px 40px;
+    }
+}

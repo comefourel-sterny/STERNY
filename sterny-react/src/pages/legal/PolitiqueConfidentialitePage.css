@@ -1,0 +1,130 @@
+.legal-container {
+    max-width: 800px;
+    margin: 48px auto 80px auto;
+    background: white;
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+}
+
+.legal-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 8px;
+}
+
+.legal-date {
+    font-size: 13px;
+    color: #94A3B8;
+    margin-bottom: 32px;
+}
+
+.legal-container h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-top: 32px;
+    margin-bottom: 10px;
+}
+
+.legal-container p {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.legal-container ul {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    padding-left: 24px;
+}
+
+.legal-container ul li {
+    margin-bottom: 4px;
+}
+
+.legal-container a {
+    color: #E8622A;
+    text-decoration: none;
+}
+
+.legal-container a:hover {
+    text-decoration: underline;
+}
+
+/* Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px 0;
+    font-size: 13px;
+}
+
+.data-table th {
+    background: #F8F9FC;
+    color: #1E293B;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 14px;
+    border: 1px solid #E2E8F0;
+}
+
+.data-table td {
+    color: #374151;
+    padding: 10px 14px;
+    border: 1px solid #E2E8F0;
+    line-height: 1.6;
+}
+
+.data-table tr:nth-child(even) {
+    background: #FAFBFC;
+}
+
+.btn-back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B !important;
+    text-decoration: none !important;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-back-top svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-back-top:hover {
+    color: #1E293B !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-container {
+        margin: 24px 16px 60px 16px;
+        padding: 28px 20px;
+    }
+
+    .legal-container h1 {
+        font-size: 22px;
+    }
+
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

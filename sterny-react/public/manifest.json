@@ -1,0 +1,31 @@
+{
+    "name": "STERNY — Le logement pour les alternants",
+    "short_name": "STERNY",
+    "description": "Plateforme de logement pensée pour les étudiants en alternance",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#F4F5F7",
+    "theme_color": "#E8622A",
+    "orientation": "portrait-primary",
+    "lang": "fr",
+    "icons": [
+        {
+            "src": "PP-Sterny-V1.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "PP-Sterny-V1.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["lifestyle", "education"],
+    "scope": "/"
+}

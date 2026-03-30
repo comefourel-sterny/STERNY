@@ -1,0 +1,28 @@
+/* EmailMatchConfirmationPage.css */
+/* This is an email-style page, uses inline table layouts */
+
+.email-match-page {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #F4F5F7;
+    min-height: 100vh;
+}
+
+.email-match-page table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.email-match-page td {
+    padding: 0;
+}
+
+.email-preheader {
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    font-size: 1px;
+    line-height: 1px;
+    color: #F4F5F7;
+}

@@ -1,0 +1,144 @@
+.legal-page {
+    min-height: calc(100vh - 85px);
+    background: #F4F5F7;
+    padding: 48px 20px 64px;
+}
+
+.legal-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    border: 1.5px solid #E8EAF0;
+}
+
+.legal-card h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px 0;
+}
+
+.legal-card .legal-date {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 36px;
+}
+
+.legal-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-top: 32px;
+    margin-bottom: 12px;
+}
+
+.legal-card p {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.legal-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0 12px 0;
+}
+
+.legal-card ul li {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.8;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.legal-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #E8622A;
+}
+
+.legal-card strong {
+    color: #1E293B;
+}
+
+.highlight-box {
+    background: rgba(232, 98, 42, 0.06);
+    border-left: 3px solid #E8622A;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.7;
+}
+
+.btn-back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B !important;
+    text-decoration: none !important;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-back-top svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.btn-back-top:hover {
+    color: #1E293B !important;
+}
+
+.legal-footer {
+    max-width: 800px;
+    margin: 32px auto 0;
+    text-align: center;
+    font-size: 13px;
+    color: #9CA3AF;
+}
+
+.legal-footer a {
+    color: #6B7280;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.2s;
+}
+
+.legal-footer a:hover {
+    color: #E8622A;
+}
+
+.legal-footer .separator {
+    color: #D1D5DB;
+}
+
+@media (max-width: 768px) {
+    .legal-card {
+        padding: 28px 20px;
+    }
+
+    .legal-card h1 {
+        font-size: 22px;
+    }
+}

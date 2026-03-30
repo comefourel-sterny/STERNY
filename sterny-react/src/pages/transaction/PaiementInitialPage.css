@@ -1,0 +1,137 @@
+/* ========== PAGE ========== */
+.paiement-page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 40px;
+}
+.paiement-page-header { text-align: center; margin-bottom: 32px; }
+.paiement-page-header h1 { font-size: 36px; font-weight: 700; letter-spacing: -1px; color: #1E293B; margin-bottom: 8px; }
+.paiement-page-header p { font-size: 16px; color: #64748B; font-weight: 500; }
+
+/* ========== CARDS ========== */
+.paiement-page-container .card {
+    background: white; border-radius: 20px;
+    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08); margin-bottom: 24px;
+}
+
+/* ========== PROGRESS ========== */
+.paiement-page-container .progress-card { padding: 24px; }
+.paiement-page-container .progress-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+.paiement-page-container .progress-step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.paiement-page-container .step-number {
+    width: 40px; height: 40px; border-radius: 50%; background: #E5E7EB; color: #9CA3AF;
+    display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;
+    margin: 0 auto 8px; transition: all 0.3s; position: relative;
+}
+.paiement-page-container .progress-step.active .step-number { background: #E8622A; color: white; transform: scale(1.1); }
+.paiement-page-container .progress-step.completed .step-number { background: #E8622A; color: white; }
+.paiement-page-container .progress-step.completed .step-number::after {
+    content: ''; position: absolute; top: -3px; right: -3px; width: 16px; height: 16px;
+    background: #22C55E; border-radius: 50%; border: 2px solid white;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: center; background-size: 9px;
+}
+.paiement-page-container .step-label { font-size: 13px; font-weight: 600; color: #9CA3AF; transition: color 0.3s; }
+.paiement-page-container .progress-step.active .step-label { color: #1E293B; }
+.paiement-page-container .progress-step.completed .step-label { color: #E8622A; }
+.paiement-page-container .progress-bar-track { height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
+.paiement-page-container .progress-bar-fill { height: 100%; background: #1E293B; border-radius: 3px; transition: width 0.4s ease; }
+
+/* ========== SECTION LABELS ========== */
+.paiement-page-container .section-label { font-size: 11.5px; font-weight: 700; color: #E8622A; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; }
+
+/* ========== PAYMENT CARD ========== */
+.paiement-payment-card { padding: 0; overflow: hidden; }
+.paiement-payment-section { padding: 24px 28px; }
+.paiement-payment-section + .paiement-payment-section { border-top: 1px solid #F1F5F9; }
+
+.paiement-summary-items { margin-bottom: 16px; }
+.paiement-summary-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #F1F5F9; }
+.paiement-summary-item:last-child { border-bottom: none; }
+.paiement-summary-label { font-size: 14px; color: #6B7280; }
+.paiement-summary-value { font-size: 14px; font-weight: 700; color: #1E293B; }
+.paiement-summary-total { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 0; border-top: 2px solid #E2E8F0; margin-top: 4px; }
+.paiement-summary-total-label { font-size: 14px; font-weight: 600; color: #1E293B; }
+.paiement-summary-total-value { font-size: 20px; font-weight: 800; color: #1E293B; letter-spacing: -0.5px; }
+
+/* ========== LEGAL ========== */
+.paiement-legal-checkbox { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.paiement-legal-checkbox input[type="checkbox"] { width: 18px; height: 18px; margin-top: 1px; flex-shrink: 0; accent-color: #1E293B; cursor: pointer; }
+.paiement-legal-checkbox label { font-size: 13px; color: #475569; line-height: 1.5; cursor: pointer; }
+.paiement-legal-checkbox label a { color: #E8622A; text-decoration: underline; }
+.paiement-legal-mentions { font-size: 11px; color: #9CA3AF; line-height: 1.7; }
+.paiement-legal-mentions p { margin-bottom: 3px; }
+
+/* ========== SECURITY ========== */
+.paiement-security-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.paiement-security-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.paiement-security-badge {
+    padding: 6px 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;
+    font-size: 11px; font-weight: 600; color: #64748B; display: flex; align-items: center; gap: 5px;
+}
+.paiement-security-badge svg { width: 13px; height: 13px; stroke: #64748B; fill: none; stroke-width: 2; }
+.paiement-stripe-mention { display: flex; align-items: center; gap: 6px; }
+.paiement-stripe-mention span { font-size: 11px; color: #9CA3AF; font-weight: 500; }
+.paiement-stripe-mention svg { height: 18px; }
+
+/* ========== IMPAYE ALERT ========== */
+.paiement-alert-impaye {
+    background: #FEF2F2; border: 2px solid #FECACA; border-radius: 16px;
+    padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; margin-bottom: 24px;
+}
+.paiement-alert-impaye-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #EF4444, #F87171);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.paiement-alert-impaye-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.paiement-alert-impaye-title { font-weight: 700; color: #991B1B; font-size: 14px; margin-bottom: 2px; }
+.paiement-alert-impaye-text { color: #B91C1C; font-size: 13px; line-height: 1.5; }
+
+/* ========== ACTIONS ========== */
+.paiement-page-container .actions-card {
+    background: white; border-radius: 20px; padding: 20px 28px;
+    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08); display: flex; gap: 16px; align-items: center;
+}
+.paiement-page-container .actions-card .btn-back,
+.paiement-page-container .actions-card .btn-primary { flex: 1; justify-content: center; text-align: center; }
+.paiement-page-container .btn-back {
+    background: white; color: #6B7280; padding: 12px 20px; border-radius: 12px; font-size: 14px;
+    font-weight: 600; border: 1.5px solid #E5E7EB; cursor: pointer; transition: all 0.25s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-family: inherit;
+}
+.paiement-page-container .btn-back:hover { border-color: #1E293B; color: #1E293B; }
+.paiement-page-container .btn-primary {
+    background: #E8622A; color: white; padding: 12px 24px; border-radius: 12px; font-size: 14px;
+    font-weight: 700; border: none; cursor: pointer; transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(30, 41, 59, 0.25); font-family: inherit;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+.paiement-page-container .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232, 98, 42, 0.25); }
+.paiement-page-container .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ========== LOADING OVERLAY ========== */
+.paiement-loading-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.9); z-index: 9999;
+    justify-content: center; align-items: center; flex-direction: column; gap: 16px;
+}
+.paiement-loading-overlay.active { display: flex; }
+.paiement-loading-spinner { width: 40px; height: 40px; border: 4px solid #E5E7EB; border-top: 4px solid #1E293B; border-radius: 50%; animation: paiementSpin 0.8s linear infinite; }
+@keyframes paiementSpin { 100% { transform: rotate(360deg); } }
+.paiement-loading-overlay-text { font-size: 15px; font-weight: 600; color: #1E293B; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .paiement-page-container { padding: 24px 16px 60px; }
+    .paiement-page-header h1 { font-size: 28px; }
+    .paiement-page-container .card { border-radius: 16px; }
+    .paiement-page-container .progress-card { padding: 20px; }
+    .paiement-page-container .progress-steps { gap: 8px; }
+    .paiement-page-container .step-number { width: 34px; height: 34px; font-size: 12px; }
+    .paiement-page-container .step-label { font-size: 10px; }
+    .paiement-summary-total-value { font-size: 18px; }
+    .paiement-page-container .actions-card { flex-direction: column-reverse; padding: 20px; }
+    .paiement-page-container .btn-back,
+    .paiement-page-container .btn-primary { width: 100%; text-align: center; justify-content: center; }
+}

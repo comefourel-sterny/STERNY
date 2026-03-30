@@ -1,0 +1,321 @@
+.page-inscription {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F4F5F7;
+    padding: 40px 20px;
+}
+
+.inscription-card {
+    max-width: 460px;
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 36px 36px;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border: 1.5px solid #E8EAF0;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.inscription-card:hover {
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+}
+
+.step-indicator {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #9CA3AF;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+}
+
+.step-indicator span {
+    color: #E8622A;
+}
+
+.inscription-header {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.inscription-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 6px 0;
+}
+
+.inscription-header p {
+    color: #6B7280;
+    font-size: 15px;
+    margin: 0;
+}
+
+.form-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.form-section.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    margin-bottom: 8px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s;
+    box-sizing: border-box;
+    background: #F4F5F7;
+    color: #1E293B;
+}
+
+.form-group select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+    background: white;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #CBD5E1;
+}
+
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
+    -webkit-text-fill-color: #1E293B;
+    border-color: #E8EAF0;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 85px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 600;
+    padding: 4px 8px;
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: #E8622A;
+}
+
+.error-box {
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    text-align: center;
+    background: rgba(232, 98, 42, 0.08);
+    color: #E8622A;
+}
+
+.error-box.show {
+    display: block;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #E8622A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.submit-btn:hover {
+    background: #d4571f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-row {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-back {
+    flex: 1;
+    padding: 14px;
+    background: white;
+    color: #1E293B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.btn-back:hover {
+    border-color: #1E293B;
+    background: #F4F5F7;
+}
+
+.btn-submit {
+    flex: 1;
+    padding: 14px;
+    background: #E8622A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.btn-submit:hover {
+    background: #d4571f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1.5px solid #E8EAF0;
+    color: #6B7280;
+    font-size: 14px;
+}
+
+.back-link a {
+    color: #E8622A;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+.ville-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1.5px solid #E8EAF0;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1050;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.ville-suggestion-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    transition: background 0.2s;
+}
+
+.ville-suggestion-item:hover {
+    background: #FFF4ED;
+    color: #E8622A;
+}
+
+.confirmation-email-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 10px;
+}

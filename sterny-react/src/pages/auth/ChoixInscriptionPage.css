@@ -1,0 +1,175 @@
+.page-inscription {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F4F5F7;
+    padding: 40px 20px;
+}
+
+.inscription-container {
+    max-width: 460px;
+    min-height: 546px;
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 36px 36px;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border: 1.5px solid #E8EAF0;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.inscription-container:hover {
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+}
+
+.inscription-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.inscription-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 6px 0;
+}
+
+.inscription-header p {
+    color: #6B7280;
+    font-size: 15px;
+    margin: 0;
+}
+
+.profile-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.profile-card {
+    position: relative;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+}
+
+.profile-card:hover {
+    border-color: #E8622A;
+    background: #FFF4ED;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 98, 42, 0.12);
+}
+
+.profile-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-card.selected {
+    border-color: #E8622A;
+    background: linear-gradient(135deg, #FFF4ED 0%, #FFEDD5 100%);
+    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.2);
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.profile-card.selected .card-icon {
+    background: rgba(232, 98, 42, 0.12);
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.profile-card.selected .card-title {
+    color: #1E293B;
+    font-weight: 700;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.5;
+}
+
+.card-check {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.profile-card.selected .card-check {
+    background: #E8622A;
+    border-color: #E8622A;
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-continuer {
+    width: 100%;
+    padding: 16px;
+    background: #E8622A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: auto;
+    font-family: inherit;
+}
+
+.btn-continuer:hover:not(:disabled) {
+    background: #d4571f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+}
+
+.btn-continuer:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-continuer:disabled {
+    background: #E8EAF0;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}

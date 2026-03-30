@@ -1,0 +1,30 @@
+# STERNY - robots.txt
+User-agent: *
+Allow: /
+
+# Pages privées (authentification requise)
+Disallow: /dashboard-locataire.html
+Disallow: /dashboard-proprietaire.html
+Disallow: /dashboard-admin.html
+Disallow: /dashboard-hote.html
+Disallow: /conversation.html
+Disallow: /messages.html
+Disallow: /profil.html
+Disallow: /modifier-profil.html
+Disallow: /modifier-profil-proprietaire.html
+Disallow: /modifier-annonce.html
+Disallow: /creer-annonce.html
+Disallow: /completer-profil.html
+Disallow: /contrat-location.html
+Disallow: /match-actif.html
+Disallow: /match-confirmation.html
+Disallow: /paiement-initial.html
+Disallow: /paiement-success.html
+Disallow: /dossier-locataire.html
+Disallow: /etat-des-lieux-entree.html
+Disallow: /renouvellement.html
+Disallow: /avis.html
+Disallow: /reset-password.html
+
+# Sitemap
+Sitemap: https://sterny.co/sitemap.xml

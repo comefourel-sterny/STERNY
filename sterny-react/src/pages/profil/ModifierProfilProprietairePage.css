@@ -1,0 +1,541 @@
+.page-inscription-proprio {
+    min-height: calc(100vh - 85px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F4F5F7;
+    padding: 40px 20px;
+}
+
+.inscription-container-proprio {
+    position: relative;
+    max-width: 480px;
+    width: 100%;
+    height: 560px;
+    background: white;
+    border-radius: 16px;
+    padding: 32px 36px;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border: 1.5px solid #E8EAF0;
+    display: flex;
+    flex-direction: column;
+}
+
+.inscription-header-proprio {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.inscription-header-proprio h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 4px 0;
+}
+
+.inscription-header-proprio p {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin: 0;
+}
+
+/* Photo de profil */
+.photo-upload-proprio {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.photo-circle-proprio {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    border-radius: 50%;
+    background: #F4F5F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+    border: 1.5px solid #E2E5EA;
+    font-size: 20px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.photo-circle-proprio:hover {
+    border-color: #E8622A;
+}
+
+.photo-circle-proprio .placeholder svg {
+    width: 24px;
+    height: 24px;
+    color: #9CA3AF;
+}
+
+.photo-circle-proprio img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-info-proprio {
+    flex: 1;
+}
+
+.photo-info-proprio .photo-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 2px;
+}
+
+.photo-info-proprio .photo-hint {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+/* MODAL RECADRAGE */
+.crop-overlay-proprio {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crop-modal-proprio {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: calc(100% - 40px);
+    text-align: center;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.crop-modal-proprio h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 6px;
+}
+
+.crop-modal-proprio .crop-hint {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 20px;
+}
+
+.crop-area-proprio {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #E8EAF0;
+    cursor: grab;
+    touch-action: none;
+    background: #F3F4F6;
+}
+
+.crop-area-proprio:active { cursor: grabbing; }
+
+.crop-area-proprio img {
+    position: absolute;
+    max-width: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.crop-zoom-proprio {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+.crop-zoom-proprio label {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.crop-zoom-proprio input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: #E8EAF0;
+    border-radius: 4px;
+    outline: none;
+}
+
+.crop-zoom-proprio input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E8622A;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+}
+
+.crop-zoom-proprio input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E8622A;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+}
+
+.crop-actions-proprio {
+    display: flex;
+    gap: 10px;
+}
+
+.crop-actions-proprio button {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.crop-cancel-proprio {
+    background: white;
+    color: #475569;
+    border: 1.5px solid #E2E5EA;
+}
+
+.crop-cancel-proprio:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+.crop-confirm-proprio {
+    background: #1E293B;
+    color: white;
+    border: none;
+}
+
+.crop-confirm-proprio:hover {
+    background: #E8622A;
+}
+
+/* Champs */
+.form-group-proprio {
+    margin-bottom: 14px;
+}
+
+.form-group-proprio label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.form-group-proprio .required {
+    color: #E8622A;
+}
+
+.form-group-proprio input,
+.form-group-proprio select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+    background: white;
+    box-sizing: border-box;
+    color: #1E293B;
+}
+
+.form-group-proprio input:focus,
+.form-group-proprio select:focus {
+    outline: none;
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+}
+
+.form-group-proprio input::placeholder {
+    color: #9CA3AF;
+}
+
+.form-group-proprio input:disabled {
+    background: #F3F4F6;
+    cursor: not-allowed;
+    color: #9CA3AF;
+}
+
+.form-row-proprio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Boutons */
+.buttons-row-proprio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+.btn-back-proprio {
+    height: 40px;
+    padding: 0 16px;
+    background: white;
+    color: #475569;
+    border: 1.5px solid #E2E5EA;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.btn-back-proprio:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+.btn-next-proprio {
+    height: 40px;
+    padding: 0 16px;
+    background: #1E293B;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.btn-next-proprio:hover {
+    background: #E8622A;
+}
+
+.btn-next-proprio:disabled {
+    background: #E8EAF0;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.btn-next-proprio.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.back-link-proprio {
+    text-align: center;
+    margin-top: 14px;
+    color: #6B7280;
+    font-size: 13px;
+}
+
+.back-link-proprio a {
+    color: #E8622A;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link-proprio a:hover {
+    text-decoration: underline;
+}
+
+/* Erreur */
+.error-message-proprio {
+    background: #FEE2E2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 12px;
+    animation: slideUpErrorProprio 0.25s ease;
+}
+
+/* Succ\u00e8s */
+.success-message-proprio {
+    background: #D1FAE5;
+    border: 1px solid #A7F3D0;
+    color: #065F46;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 12px;
+    animation: slideUpErrorProprio 0.25s ease;
+}
+
+@keyframes slideUpErrorProprio {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section pr\u00e9f\u00e9rences email */
+.email-prefs-section-proprio {
+    max-width: 460px;
+    margin: 30px auto 20px;
+    padding: 20px 24px;
+    background: white;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+}
+.email-prefs-title-proprio {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 4px;
+}
+.email-prefs-subtitle-proprio {
+    font-size: 13px;
+    color: #6B7280;
+    margin-bottom: 16px;
+}
+.pref-row-proprio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+.pref-row-proprio:last-child { border-bottom: none; }
+.pref-label-proprio { font-size: 13px; font-weight: 600; color: #1E293B; }
+.pref-desc-proprio { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+.toggle-switch-proprio { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch-proprio input { opacity: 0; width: 0; height: 0; }
+.toggle-slider-proprio {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background: #CBD5E1; border-radius: 24px; transition: 0.3s;
+}
+.toggle-slider-proprio::before {
+    content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background: white; border-radius: 50%; transition: 0.3s;
+}
+.toggle-switch-proprio input:checked + .toggle-slider-proprio { background: #E8622A; }
+.toggle-switch-proprio input:checked + .toggle-slider-proprio::before { transform: translateX(20px); }
+.prefs-saved-proprio {
+    font-size: 12px; color: #059669; font-weight: 600; text-align: center;
+    margin-top: 10px; opacity: 0; transition: opacity 0.3s;
+}
+.prefs-saved-proprio.show { opacity: 1; }
+
+/* Section changement mot de passe */
+.password-section-proprio {
+    max-width: 460px;
+    margin: 30px auto 20px;
+    padding: 20px 24px;
+    background: white;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+}
+.password-section-title-proprio {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 6px;
+}
+.password-section-text-proprio {
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+.password-form-group-proprio {
+    margin-bottom: 12px;
+}
+.password-form-group-proprio label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 4px;
+}
+.password-form-group-proprio input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.password-form-group-proprio input:focus {
+    outline: none;
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+}
+.btn-change-password-proprio {
+    padding: 10px 20px;
+    background: #E8622A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.btn-change-password-proprio:hover {
+    background: #d4571f;
+}
+.btn-change-password-proprio:disabled {
+    background: #CBD5E1;
+    cursor: not-allowed;
+}
+.password-message-proprio {
+    font-size: 13px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+.password-message-proprio.success {
+    background: #F0FDF4;
+    color: #166534;
+    border: 1px solid #BBF7D0;
+}
+.password-message-proprio.error {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+@media (max-width: 500px) {
+    .inscription-container-proprio { padding: 24px 20px; }
+    .form-row-proprio { grid-template-columns: 1fr; }
+    .crop-area-proprio { width: 220px; height: 220px; }
+}

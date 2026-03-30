@@ -1,0 +1,458 @@
+/* ===================== PAGE CONTAINER ===================== */
+.edl-page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+/* ===================== PAGE HEADER ===================== */
+.edl-page-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.edl-page-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #1E293B;
+    margin-bottom: 10px;
+}
+.edl-page-header p {
+    font-size: 16px;
+    color: #64748B;
+    line-height: 1.6;
+}
+
+/* ===================== CARDS (shared) ===================== */
+.edl-page-container .progress-card,
+.edl-page-container .section-card,
+.edl-page-container .actions-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.18);
+    margin-bottom: 24px;
+    padding: 32px;
+}
+
+/* ===================== PROGRESS ===================== */
+.edl-page-container .progress-card { padding: 32px 40px; }
+.edl-page-container .progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+.edl-page-container .progress-line {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #E5E7EB;
+    z-index: 0;
+    border-radius: 2px;
+}
+.edl-page-container .progress-line-fill {
+    height: 100%;
+    background: #E8622A;
+    width: 100%;
+    border-radius: 2px;
+    transition: width 0.5s;
+}
+.edl-page-container .progress-step {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    flex: 1;
+}
+.edl-page-container .progress-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    color: #9CA3AF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 auto 8px;
+    transition: all 0.3s;
+}
+.edl-page-container .progress-step.active .progress-circle {
+    background: #E8622A;
+    color: white;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.35);
+}
+.edl-page-container .progress-step.completed .progress-circle {
+    background: #E8622A;
+    color: white;
+    box-shadow: 0 4px 12px rgba(232, 98, 42, 0.35);
+}
+.edl-page-container .progress-label {
+    font-size: 13px;
+    color: #64748B;
+    font-weight: 600;
+}
+.edl-page-container .progress-step.active .progress-label { color: #1E293B; }
+.edl-page-container .progress-step.completed .progress-label { color: #E8622A; }
+
+/* ===================== ALERT INFO ===================== */
+.edl-alert-info {
+    background: #FFF7ED;
+    border: 2px solid #FDBA74;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 15px;
+    align-items: start;
+}
+.edl-alert-icon { font-size: 24px; flex-shrink: 0; }
+.edl-alert-content { flex: 1; }
+.edl-alert-title { font-weight: 700; color: #9A3412; margin-bottom: 5px; font-size: 15px; }
+.edl-alert-text { color: #9A3412; font-size: 14px; line-height: 1.6; }
+
+/* ===================== SECTION CARD ===================== */
+.edl-page-container .section-card { overflow: hidden; }
+.edl-page-container .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+.edl-page-container .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.edl-page-container .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.edl-page-container .section-icon.sejour { background: #EDE9FE; }
+.edl-page-container .section-icon.cuisine { background: #FEF3C7; }
+.edl-page-container .section-icon.chambre { background: #DBEAFE; }
+.edl-page-container .section-icon.sdb { background: #D1FAE5; }
+.edl-page-container .section-icon.compteurs { background: #FEE2E2; }
+.edl-page-container .section-icon.photos { background: #FCE7F3; }
+.edl-page-container .section-icon.observations { background: #E0E7FF; }
+.edl-page-container .section-icon.signatures { background: #F3E8FF; }
+
+.edl-page-container .section-toggle {
+    font-size: 20px;
+    color: #9CA3AF;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #F1F5F9;
+}
+.edl-page-container .section-toggle:hover { background: #E2E8F0; }
+.edl-page-container .section-card.collapsed .section-toggle { transform: rotate(180deg); }
+.edl-page-container .section-content { margin-top: 24px; transition: max-height 0.3s; }
+.edl-page-container .section-card.collapsed .section-content { display: none; }
+
+/* ===================== CHECKLIST ===================== */
+.edl-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+.edl-checklist-item {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 16px;
+    transition: border-color 0.2s;
+}
+.edl-checklist-item:hover { border-color: #CBD5E1; }
+.edl-checklist-item-label { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 12px; }
+.edl-state-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+.edl-state-btn {
+    padding: 7px 12px;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    color: #64748B;
+    font-family: 'DM Sans', sans-serif;
+}
+.edl-state-btn:hover { border-color: #94A3B8; color: #334155; }
+.edl-state-btn.active.state-neuf { background: #DCFCE7; color: #166534; border-color: #22C55E; }
+.edl-state-btn.active.state-bon { background: #DBEAFE; color: #1E40AF; border-color: #3B82F6; }
+.edl-state-btn.active.state-correct { background: #FFF7ED; color: #9A3412; border-color: #F97316; }
+.edl-state-btn.active.state-degrade { background: #FEF2F2; color: #991B1B; border-color: #EF4444; }
+
+/* ===================== COMPTEURS ===================== */
+.edl-compteurs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+.edl-compteur-item {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 20px;
+}
+.edl-compteur-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.edl-compteur-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1E293B;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    transition: border-color 0.2s;
+}
+.edl-compteur-input:focus { outline: none; border-color: #E8622A; box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1); }
+
+/* ===================== PHOTOS ===================== */
+.edl-photos-upload-zone {
+    border: 2px dashed #E5E7EB;
+    border-radius: 14px;
+    padding: 36px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #FAFBFC;
+}
+.edl-photos-upload-zone:hover { border-color: #E8622A; background: #FFF7ED; }
+.edl-photos-upload-zone input[type="file"] { display: none; }
+.edl-upload-icon { font-size: 44px; margin-bottom: 12px; }
+.edl-upload-text { font-size: 16px; color: #334155; font-weight: 600; margin-bottom: 4px; }
+.edl-upload-subtext { font-size: 14px; color: #94A3B8; }
+.edl-photos-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+.edl-photo-preview {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #F1F5F9;
+}
+.edl-photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.edl-photo-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+.edl-photo-remove:hover { background: #DC2626; transform: scale(1.1); }
+
+/* ===================== OBSERVATIONS ===================== */
+.edl-observations-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #F8FAFC;
+    font-family: 'DM Sans', sans-serif;
+    color: #1E293B;
+    transition: border-color 0.2s;
+}
+.edl-observations-textarea:focus { outline: none; border-color: #E8622A; background: white; box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1); }
+
+/* ===================== SIGNATURES ===================== */
+.edl-signatures-title { text-align: center; font-size: 20px; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
+.edl-signatures-subtitle { text-align: center; color: #64748B; margin-bottom: 24px; font-size: 14px; }
+.edl-signatures-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 0; }
+.edl-signature-box {
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.edl-signature-box.signed { background: #F0FDF4; border-color: #86EFAC; }
+.edl-signature-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6B7280;
+    margin-bottom: 0;
+}
+.edl-signature-box.signed .edl-signature-title { color: #065F46; }
+.edl-signature-status-icon { margin: 8px 0; }
+.edl-signature-date { font-size: 12px; color: #9CA3AF; font-weight: 500; margin-top: 0; }
+.edl-signature-box.signed .edl-signature-date { color: #059669; font-weight: 600; }
+
+/* ===== BLOC SIGNATURE EDL ===== */
+.edl-sig-form-wrapper {
+    background: #F8FAFC;
+    border-top: 3px solid #1E293B;
+    border-radius: 0 0 12px 12px;
+    padding: 0 18px 14px;
+    margin-top: 20px;
+    position: relative;
+}
+.edl-sig-section-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #E8622A;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding-top: 14px;
+    margin-bottom: 12px;
+}
+.edl-sig-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #F0FDF4;
+    border: 1px solid #D1FAE5;
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 10px;
+}
+.edl-sig-identity-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #059669, #10B981);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.edl-sig-identity-avatar svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.edl-sig-identity-info { flex: 1; }
+.edl-sig-identity-label { font-size: 10px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 1px; }
+.edl-sig-identity-name { font-size: 13.5px; font-weight: 700; color: #065F46; line-height: 1.2; }
+.edl-sig-identity-email { font-size: 11px; color: #059669; margin-top: 0; }
+.edl-sig-consents { display: flex; flex-direction: column; gap: 0; margin-bottom: 10px; }
+.edl-sig-check { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #F1F5F9; cursor: pointer; }
+.edl-sig-check:last-child { border-bottom: none; }
+.edl-sig-check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; accent-color: #1E293B; margin-top: 1px; }
+.edl-sig-check-label { font-size: 12px; color: #374151; line-height: 1.4; }
+.edl-sig-confirm { margin-bottom: 10px; }
+.edl-sig-confirm-label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.edl-sig-confirm-label svg { width: 14px; height: 14px; stroke: #6B7280; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.edl-sig-input {
+    width: 100%; padding: 9px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; color: #1E293B; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; background: white; text-transform: capitalize;
+}
+.edl-sig-input:focus { outline: none; border-color: #94A3B8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12); }
+.edl-sig-input.valid { border-color: #22C55E; background: #F0FDF4; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.08); }
+.edl-sig-input.invalid { border-color: #EF4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.06); }
+.edl-sig-hint { font-size: 11px; margin-top: 3px; min-height: 12px; font-weight: 500; }
+.edl-sig-hint.error { color: #DC2626; }
+.edl-sig-hint.success { color: #059669; }
+.edl-btn-signer {
+    width: 100%; padding: 14px; background: #E8622A; color: white; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.3s; box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3);
+}
+.edl-btn-signer:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30, 41, 59, 0.4); }
+.edl-btn-signer:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.edl-sig-legal { background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 6px; padding: 7px 10px; margin-top: 8px; }
+.edl-sig-legal p { font-size: 10px; color: #9CA3AF; line-height: 1.4; margin-bottom: 2px; }
+.edl-sig-legal p:last-child { margin-bottom: 0; }
+.edl-sig-legal strong { color: #64748B; font-size: 10.5px; }
+.edl-sig-done { text-align: center; padding: 28px 16px; }
+.edl-sig-done svg { margin-bottom: 10px; }
+.edl-sig-done-title { font-size: 15px; font-weight: 700; color: #065F46; margin-bottom: 4px; }
+.edl-sig-done-msg { font-size: 13px; color: #6B7280; }
+
+/* ===================== ACTIONS ===================== */
+.edl-page-container .actions-card { display: flex; gap: 16px; align-items: center; }
+.edl-page-container .actions-card .btn-back,
+.edl-page-container .actions-card .btn-primary { flex: 1; justify-content: center; text-align: center; }
+.edl-page-container .btn-back {
+    background: white; color: #64748B; padding: 14px 28px; border-radius: 12px; font-size: 15px;
+    font-weight: 600; border: 2px solid #E2E8F0; cursor: pointer; transition: all 0.2s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-family: 'DM Sans', sans-serif;
+}
+.edl-page-container .btn-back:hover { border-color: #E8622A; color: #E8622A; }
+.edl-page-container .btn-primary {
+    background: #E8622A; color: white; padding: 14px 36px; border-radius: 12px; font-size: 15px;
+    font-weight: 700; border: none; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3); font-family: 'DM Sans', sans-serif;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+.edl-page-container .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 98, 42, 0.35); }
+.edl-page-container .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* ===================== MESSAGE BAR ===================== */
+.edl-message-bar {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    padding: 14px 28px; border-radius: 12px; font-size: 14px; font-weight: 600;
+    z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: edlSlideDown 0.3s ease;
+}
+.edl-message-bar.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+.edl-message-bar.error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+@keyframes edlSlideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+    .edl-page-container { padding: 24px 16px 60px; }
+    .edl-page-header h1 { font-size: 26px; }
+    .edl-page-container .progress-card { padding: 24px 20px; }
+    .edl-page-container .progress-label { font-size: 11px; }
+    .edl-page-container .progress-circle { width: 34px; height: 34px; font-size: 12px; }
+    .edl-page-container .section-card,
+    .edl-page-container .actions-card { padding: 24px 20px; }
+    .edl-checklist-grid { grid-template-columns: 1fr; }
+    .edl-compteurs-grid { grid-template-columns: 1fr; }
+    .edl-signatures-grid { grid-template-columns: 1fr; }
+    .edl-page-container .actions-card { flex-direction: column-reverse; }
+    .edl-page-container .btn-back,
+    .edl-page-container .btn-primary { width: 100%; text-align: center; justify-content: center; }
+}
+@media (max-width: 480px) {
+    .edl-page-header h1 { font-size: 22px; }
+    .edl-page-container .section-title { font-size: 17px; }
+    .edl-state-btn { padding: 6px 10px; font-size: 12px; }
+    .edl-photos-upload-zone { padding: 24px 16px; }
+    .edl-sig-identity { flex-direction: column; text-align: center; gap: 10px; }
+    .edl-sig-identity-info { text-align: center; }
+}

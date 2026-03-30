@@ -1,0 +1,253 @@
+/* ===== HERO ===== */
+.hero-agences {
+    background: #1E293B;
+    color: white;
+    padding: 90px 20px 70px;
+    text-align: center;
+}
+
+.hero-agences .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(232, 98, 42, 0.15);
+    border: 1px solid rgba(232, 98, 42, 0.3);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #E8622A;
+    margin-bottom: 24px;
+}
+
+.hero-agences h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin: 0 0 16px;
+    line-height: 1.2;
+}
+
+.hero-agences h1 span {
+    color: #E8622A;
+}
+
+.hero-agences .hero-sub {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ===== SECTION AGENCES ===== */
+.section-agences {
+    background: #F4F5F7;
+    padding: 64px 20px;
+}
+
+.section-agences-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.agences-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.agence-card {
+    background: white;
+    border: 1px solid #E8EAF0;
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    transition: all 0.2s ease;
+}
+
+.agence-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(232, 98, 42, 0.2);
+}
+
+.agence-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.agence-card .agence-desc {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+
+.agence-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.agence-features li {
+    font-size: 14px;
+    color: #1E293B;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.agence-features li svg {
+    flex-shrink: 0;
+}
+
+.btn-agence {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: #E8622A;
+    border: 1.5px solid #E8622A;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.btn-agence:hover {
+    background: #E8622A;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+}
+
+/* ===== SECTION AVANTAGES ===== */
+.section-avantages {
+    background: white;
+    padding: 64px 20px;
+}
+
+.section-avantages-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.section-avantages .section-title {
+    text-align: center;
+    margin-bottom: 44px;
+}
+
+.section-avantages .section-title h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.section-avantages .section-title p {
+    font-size: 15px;
+    color: #64748B;
+    margin: 0;
+}
+
+.avantages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 44px;
+}
+
+.avantage-item {
+    text-align: center;
+}
+
+.avantage-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(232, 98, 42, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+}
+
+.avantage-item h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.avantage-item p {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ===== SECTION CTA AGENCES ===== */
+.cta-line {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid #E8EAF0;
+}
+
+.cta-line span {
+    font-size: 15px;
+    color: #64748B;
+}
+
+.cta-line a {
+    font-size: 15px;
+    color: #E8622A;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 8px;
+    transition: color 0.2s;
+}
+
+.cta-line a:hover {
+    color: #D4571F;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hero-agences {
+        padding: 70px 20px 50px;
+    }
+    .hero-agences h1 {
+        font-size: 28px;
+    }
+    .hero-agences .hero-sub {
+        font-size: 15px;
+    }
+    .agences-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .avantages-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+    .section-agences,
+    .section-avantages {
+        padding: 44px 20px;
+    }
+    .section-avantages .section-title h2 {
+        font-size: 22px;
+    }
+}
