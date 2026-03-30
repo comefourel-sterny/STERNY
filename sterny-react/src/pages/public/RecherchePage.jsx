@@ -2002,18 +2002,9 @@ export default function RecherchePage() {
                       placeholder="JJ/MM/AAAA"
                       value={endDateInput}
                       onChange={handleEndDateInput}
-                      size={endDateInput.length || 10}
                       autoFocus
                     />
                     {dateError && dateError !== 'date' && <span className="cal-date-error">{dateError}</span>}
-                    {calendarStats && (
-                      <>
-                        <span className="cal-sep">&middot;</span>
-                        <strong>{calendarStats.nbSemaines}</strong><span>sem.</span>
-                        <span className="cal-sep">&middot;</span>
-                        <span className="cal-accent">{calendarStats.joursRestants}j restants</span>
-                      </>
-                    )}
                   </>
                 ) : (
                   <>
