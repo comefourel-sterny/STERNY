@@ -579,9 +579,13 @@ export default function RecherchePage() {
       resultats = resultats.filter(l => l.type_alternance === typeAlternance)
     }
 
-    // Rythme pattern (hero bar)
+    // Rythme pattern (hero bar) — match inversé : utilisateur cherche A-B → logement a B-A
     if (rythmePattern) {
-      resultats = resultats.filter(l => l.rythme_pattern === rythmePattern)
+      const parts = rythmePattern.split('-')
+      const inversePattern = parts.length === 2 ? `${parts[1]}-${parts[0]}` : rythmePattern
+      resultats = resultats.filter(l =>
+        l.rythme_pattern === rythmePattern || l.rythme_pattern === inversePattern
+      )
     }
 
     // Type logement checkboxes
