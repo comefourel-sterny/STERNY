@@ -422,16 +422,17 @@ export default function RecherchePage() {
     }
     setEndDateInput(formatted)
     // Validation au fur et à mesure
+    const showErr = () => { setDateError('Date invalide'); setTimeout(() => setDateError(''), 3000) }
     if (raw.length >= 2) {
       const day = parseInt(raw.slice(0, 2))
-      if (day < 1 || day > 31) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+      if (day < 1 || day > 31) { showErr(); setCalendarEndDate(''); return }
     }
     if (raw.length >= 4) {
       const month = parseInt(raw.slice(2, 4))
-      if (month < 1 || month > 12) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+      if (month < 1 || month > 12) { showErr(); setCalendarEndDate(''); return }
       const day = parseInt(raw.slice(0, 2))
       const daysInMonth = new Date(2026, month, 0).getDate()
-      if (day > daysInMonth) { setDateError('Date invalide'); setCalendarEndDate(''); return }
+      if (day > daysInMonth) { showErr(); setCalendarEndDate(''); return }
     }
     if (raw.length === 8) {
       const day = parseInt(raw.slice(0, 2))
@@ -442,7 +443,7 @@ export default function RecherchePage() {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       if (day > daysInMonth || year < 2025 || year > 2035 || dateObj < today) {
-        setDateError('Date invalide')
+        showErr()
         setCalendarEndDate('')
         return
       }
@@ -1954,8 +1955,8 @@ export default function RecherchePage() {
               <button type="button" className="cal-nav-btn" onClick={() => setMonthOffset(prev => prev + 3)}>
                 <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
               </button>
+              {calMsg && <div className="cal-msg">{calMsg}</div>}
             </div>
-            {calMsg && <div className="cal-msg">{calMsg}</div>}
 
             {/* 3 mois */}
             <div className="cal-months">
