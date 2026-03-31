@@ -1959,7 +1959,6 @@ export default function RecherchePage() {
               <button type="button" className="cal-nav-btn" onClick={() => setMonthOffset(prev => prev + 3)}>
                 <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
               </button>
-              {calMsg && <div className="cal-msg">{calMsg}</div>}
             </div>
 
             {/* 3 mois */}
@@ -2003,6 +2002,7 @@ export default function RecherchePage() {
                 )
               })}
             </div>
+            {calMsg && <div className="cal-msg">{calMsg}</div>}
 
             {/* Footer */}
             <div className="cal-footer">
