@@ -303,10 +303,10 @@ export default function RecherchePage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [budgetMax, setBudgetMax] = useState('')
   const [surfaceMin, setSurfaceMin] = useState('')
-  const [typesLogement, setTypesLogement] = useState({ studio: false, t1: false, coloc: false })
+  const [typesLogement, setTypesLogement] = useState({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
   const [rythmesFilter, setRythmesFilter] = useState({ symmetric: false, asymmetric: false, custom: false })
   const [equipementsFilter, setEquipementsFilter] = useState({
-    WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false
+    WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false, 'Accessible PMR': false
   })
   const [dynamicEquipements, setDynamicEquipements] = useState([])
   const [dynamicEquipChecked, setDynamicEquipChecked] = useState({})
@@ -589,7 +589,7 @@ export default function RecherchePage() {
     }
 
     // Type logement checkboxes
-    const selectedTypes = Object.entries(typesLogement).filter(([, v]) => v).map(([k]) => k === 'coloc' ? 'colocation' : k)
+    const selectedTypes = Object.entries(typesLogement).filter(([, v]) => v).map(([k]) => k)
     if (selectedTypes.length > 0) {
       resultats = resultats.filter(l => selectedTypes.includes(l.type_logement))
     }
@@ -672,7 +672,9 @@ export default function RecherchePage() {
     setFilterCounts({
       studio: logements.filter(l => l.type_logement === 'studio').length,
       t1: logements.filter(l => l.type_logement === 't1').length,
-      coloc: logements.filter(l => l.type_logement === 'colocation').length,
+      t2: logements.filter(l => l.type_logement === 't2').length,
+      t3: logements.filter(l => l.type_logement === 't3').length,
+      't4+': logements.filter(l => l.type_logement === 't4+').length,
       symmetric: logements.filter(l => l.type_alternance === 'symmetric').length,
       asymmetric: logements.filter(l => l.type_alternance === 'asymmetric').length,
       custom: logements.filter(l => l.type_alternance === 'custom').length,
@@ -847,9 +849,9 @@ export default function RecherchePage() {
   }, [])
 
   const reinitialiserFiltres = useCallback(() => {
-    setTypesLogement({ studio: false, t1: false, coloc: false })
+    setTypesLogement({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
     setRythmesFilter({ symmetric: false, asymmetric: false, custom: false })
-    setEquipementsFilter({ WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false })
+    setEquipementsFilter({ WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false, 'Accessible PMR': false })
     setDynamicEquipChecked({})
     setBudgetMax('')
     setSurfaceMin('')
@@ -1681,24 +1683,24 @@ export default function RecherchePage() {
             <h4>Budget &amp; Surface</h4>
             <div style={{ display: 'flex', gap: '10px' }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Budget max</label>
+                <label style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Budget max (&euro;/sem.)</label>
                 <input
                   type="number"
                   value={budgetMax}
                   onChange={(e) => setBudgetMax(e.target.value)}
-                  placeholder="\u20AC / sem."
+                  placeholder="Ex: 300"
                   min="0"
                   step="10"
                   style={{ width: '100%', padding: '10px 14px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, color: '#1E293B', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Surface min</label>
+                <label style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Surface min (m&sup2;)</label>
                 <input
                   type="number"
                   value={surfaceMin}
                   onChange={(e) => setSurfaceMin(e.target.value)}
-                  placeholder="m\u00B2"
+                  placeholder="Ex: 15"
                   min="0"
                   step="1"
                   style={{ width: '100%', padding: '10px 14px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, color: '#1E293B', outline: 'none', boxSizing: 'border-box' }}
@@ -1713,7 +1715,9 @@ export default function RecherchePage() {
             {[
               { key: 'studio', label: 'Studio', countKey: 'studio' },
               { key: 't1', label: 'T1', countKey: 't1' },
-              { key: 'coloc', label: 'Colocation', countKey: 'coloc' },
+              { key: 't2', label: 'T2', countKey: 't2' },
+              { key: 't3', label: 'T3', countKey: 't3' },
+              { key: 't4+', label: 'T4+', countKey: 't4+' },
             ].map(item => (
               <div className="checkbox-item" key={item.key}>
                 <input
@@ -1724,27 +1728,6 @@ export default function RecherchePage() {
                 />
                 <label htmlFor={`type-${item.key}`}>{item.label}</label>
                 <span className="filter-count">({filterCounts[item.countKey]})</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Type d'alternance */}
-          <div className="filter-group">
-            <h4>Type d&apos;alternance</h4>
-            {[
-              { key: 'symmetric', label: 'Symétrique' },
-              { key: 'asymmetric', label: 'Asymétrique' },
-              { key: 'custom', label: 'Personnalisé' },
-            ].map(item => (
-              <div className="checkbox-item" key={item.key}>
-                <input
-                  type="checkbox"
-                  id={`rythme-${item.key}`}
-                  checked={rythmesFilter[item.key]}
-                  onChange={() => setRythmesFilter(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
-                />
-                <label htmlFor={`rythme-${item.key}`}>{item.label}</label>
-                <span className="filter-count">({filterCounts[item.key]})</span>
               </div>
             ))}
           </div>
