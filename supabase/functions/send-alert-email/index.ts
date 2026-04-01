@@ -39,41 +39,32 @@ serve(async (req) => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    @media only screen and (max-width: 520px) {
-      .email-card { width: 100% !important; border-radius: 0 !important; }
-      .email-body { padding: 28px 20px 24px !important; }
-      .email-header { padding: 24px 20px 12px !important; }
-      .email-footer { padding: 16px 20px !important; }
-      .email-btn { padding: 12px 32px !important; }
-    }
-  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #1E293B; font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1E293B; padding: 40px 16px;">
+<body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF;">
     <tr>
-      <td align="center" style="padding-bottom: 24px;">
-        <img src="https://rkffpmuhyvwwgfbdqmqr.supabase.co/storage/v1/object/public/public-assets/Logo-Sterny-V1.png" alt="STERNY" style="height: 36px; width: auto;" />
+      <td style="padding: 40px 24px 0; text-align: center;">
+        <img src="https://rkffpmuhyvwwgfbdqmqr.supabase.co/storage/v1/object/public/public-assets/Logo-Sterny-V1.png" alt="STERNY" style="height: 40px; width: auto;" />
       </td>
     </tr>
     <tr>
-      <td align="center">
-        <table class="email-card" width="480" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; max-width: 480px; width: 100%;">
+      <td style="padding: 32px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; margin: 0 auto;">
           <tr>
-            <td class="email-body" style="padding: 36px 32px 28px;">
+            <td>
               <h2 style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #1E293B; text-align: center;">Ton alerte est activée !</h2>
-              <p style="font-size: 14px; line-height: 1.6; color: #64748B; margin: 0 0 20px; text-align: center;">
+              <p style="font-size: 14px; line-height: 1.6; color: #64748B; margin: 0 0 24px; text-align: center;">
                 On te préviendra dès qu'un logement correspondant à tes critères sera disponible.
               </p>
               ${criteresHtml ? `
-              <div style="background: #F8FAFC; border-radius: 10px; padding: 14px 16px; margin: 0 0 20px; border-left: 3px solid #E8622A;">
+              <div style="background: #F8FAFC; border-radius: 8px; padding: 14px 16px; margin: 0 0 24px; border-left: 3px solid #E8622A;">
                 ${criteresHtml}
               </div>
               ` : ""}
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td align="center" style="padding: 4px 0 24px;">
-                    <a class="email-btn" href="https://sterny.co/recherche" style="display: inline-block; background: #E8622A; color: #FFFFFF; text-decoration: none; padding: 13px 40px; border-radius: 10px; font-size: 14px; font-weight: 600;">
+                  <td align="center" style="padding: 0 0 28px;">
+                    <a href="https://sterny.co/recherche" style="display: inline-block; background: #E8622A; color: #FFFFFF; text-decoration: none; padding: 13px 40px; border-radius: 10px; font-size: 14px; font-weight: 600;">
                       Voir les annonces
                     </a>
                   </td>
@@ -84,10 +75,13 @@ serve(async (req) => {
               </p>
             </td>
           </tr>
-          <tr>
-            <td class="email-footer" style="padding: 16px 32px; border-top: 1px solid #F1F5F9;">
-              <p style="margin: 0; font-size: 11px; color: #94A3B8; text-align: center;">
-                STERNY — Le logement pensé pour les alternants
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px 24px; border-top: 1px solid #F1F5F9;">
+        <p style="margin: 0; font-size: 11px; color: #94A3B8; text-align: center;">
+          STERNY — Le logement pensé pour les alternants
               </p>
             </td>
           </tr>
