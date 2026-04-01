@@ -197,21 +197,23 @@
     box-shadow: none;
 }
 
-.back-link {
+.connexion-card .back-link {
+    display: block;
     text-align: center;
     margin-top: 16px;
     padding-top: 14px;
-    border-top: 1.5px solid #E8EAF0;
+    border-top: none;
     color: #6B7280;
     font-size: 14px;
+    width: 100%;
 }
 
-.back-link a {
+.connexion-card .back-link a {
     color: #E8622A;
     text-decoration: none;
     font-weight: 700;
 }
 
-.back-link a:hover {
+.connexion-card .back-link a:hover {
     text-decoration: underline;
 }

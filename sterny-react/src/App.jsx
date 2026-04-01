@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Agentation } from 'agentation'
+import PasswordGate from './components/PasswordGate'
 
 // Layouts
 import Layout from './components/layout/Layout'
@@ -76,7 +77,7 @@ import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
   return (
-    <>
+    <PasswordGate>
       <Routes>
         {/* Public layout */}
         <Route element={<Layout />}>
@@ -153,6 +154,6 @@ export default function App() {
       </Routes>
 
       <Agentation endpoint="http://localhost:4747" />
-    </>
+    </PasswordGate>
   )
 }

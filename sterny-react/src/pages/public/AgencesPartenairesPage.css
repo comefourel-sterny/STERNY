@@ -112,12 +112,12 @@
 .btn-agence {
     display: block;
     width: 100%;
-    padding: 14px;
+    padding: 10px;
     background: transparent;
     color: #E8622A;
     border: 1.5px solid #E8622A;
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;

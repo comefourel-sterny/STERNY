@@ -128,14 +128,14 @@ const SIGLES_ECOLES = {
 }
 
 const PROFILS_DATA = {
-  1: { initials: 'LM', name: 'Léa M.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Nantes' },
-  2: { initials: 'AC', name: 'Antoine C.', genre: 'M', age: 24, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Saint-Malo' },
-  3: { initials: 'TR', name: 'Thomas R.', genre: 'M', age: 21, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-  4: { initials: 'SM', name: 'Sophie M.', genre: 'F', age: 23, type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Brest', villeEntreprise: 'Rennes' },
-  5: { initials: 'JD', name: 'Julie D.', genre: 'F', age: 20, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Vannes' },
-  6: { initials: 'MB', name: 'Maxime B.', genre: 'M', age: 25, type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Rennes' },
-  7: { initials: 'CL', name: 'Camille L.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Nantes', villeEntreprise: 'Rennes' },
-  8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', age: 23, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', villeEcole: 'Rennes', villeEntreprise: 'Lorient' }
+  1: { initials: 'LM', name: 'Léa M.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'ENSAB', entreprise: 'Capgemini, Nantes' },
+  2: { initials: 'AC', name: 'Antoine C.', genre: 'M', age: 24, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'INSA Rennes', entreprise: 'Orange, Saint-Malo' },
+  3: { initials: 'TR', name: 'Thomas R.', genre: 'M', age: 21, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'ESIR', entreprise: 'OVHcloud, Rennes' },
+  4: { initials: 'SM', name: 'Sophie M.', genre: 'F', age: 23, type: 'Asymétrique', rythme: '3 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'ENIB', entreprise: 'Thales, Rennes' },
+  5: { initials: 'JD', name: 'Julie D.', genre: 'F', age: 20, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'Rennes School of Business', entreprise: 'Deloitte, Vannes' },
+  6: { initials: 'MB', name: 'Maxime B.', genre: 'M', age: 25, type: 'Personnalisé', rythme: '3j / 2j', villeRecherche: 'Rennes', ecole: 'Epitech Rennes', entreprise: 'Sopra Steria, Rennes' },
+  7: { initials: 'CL', name: 'Camille L.', genre: 'F', age: 22, type: 'Asymétrique', rythme: '2 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'ENSAI', entreprise: 'Crédit Mutuel, Rennes' },
+  8: { initials: 'NP', name: 'Nicolas P.', genre: 'M', age: 23, type: 'Symétrique', rythme: '1 sem. / 1 sem.', villeRecherche: 'Rennes', ecole: 'INSA Rennes', entreprise: 'Naval Group, Lorient' }
 }
 
 const QUARTIERS = {
@@ -306,10 +306,12 @@ export default function RecherchePage() {
   const [typesLogement, setTypesLogement] = useState({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
   const [rythmesFilter, setRythmesFilter] = useState({ symmetric: false, asymmetric: false, custom: false })
   const [equipementsFilter, setEquipementsFilter] = useState({
-    WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false, 'Accessible PMR': false
+    'Accessible PMR': false, WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false
   })
   const [dynamicEquipements, setDynamicEquipements] = useState([])
   const [dynamicEquipChecked, setDynamicEquipChecked] = useState({})
+  const [equipSearchQuery, setEquipSearchQuery] = useState('')
+  const [equipSearchResults, setEquipSearchResults] = useState([])
 
   // Sort
   const [sortValue, setSortValue] = useState('')
@@ -336,6 +338,8 @@ export default function RecherchePage() {
   const [alertMessage, setAlertMessage] = useState('')
   const [alertEmailBottom, setAlertEmailBottom] = useState('')
   const [alertMessageBottom, setAlertMessageBottom] = useState('')
+  const [alertPlaceholder, setAlertPlaceholder] = useState('')
+  const [alertPlaceholderTop, setAlertPlaceholderTop] = useState('')
 
   // Modal profils
   const [modalProfilsOpen, setModalProfilsOpen] = useState(false)
@@ -667,6 +671,13 @@ export default function RecherchePage() {
     }
   }, [logements, filtrerLogements])
 
+  // Auto-focus calendar modal on open
+  useEffect(() => {
+    if (showCalendar && calendarRef.current) {
+      calendarRef.current.focus()
+    }
+  }, [showCalendar])
+
   // Update filter counts
   useEffect(() => {
     setFilterCounts({
@@ -851,7 +862,9 @@ export default function RecherchePage() {
   const reinitialiserFiltres = useCallback(() => {
     setTypesLogement({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
     setRythmesFilter({ symmetric: false, asymmetric: false, custom: false })
-    setEquipementsFilter({ WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false, 'Accessible PMR': false })
+    setEquipementsFilter({ 'Accessible PMR': false, WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false })
+    setEquipSearchQuery('')
+    setEquipSearchResults([])
     setDynamicEquipChecked({})
     setBudgetMax('')
     setSurfaceMin('')
@@ -1465,69 +1478,127 @@ export default function RecherchePage() {
           {logementsAffiches.length === 0 ? (
             // No results
             hasRythme ? (
-              <div className="nr-navy">
-                <div className="nr-header">
-                  <div className="nr-header-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <>
+                {/* Bloc aucun résultat */}
+                <div className="nr-enriched">
+                  <div className="nr-full-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="11" cy="11" r="8" />
                       <path d="m21 21-4.35-4.35" />
                     </svg>
                   </div>
-                  <h2>Aucun logement disponible pour l&apos;instant</h2>
+                  <h2 className="nr-full-title">Aucun logement disponible pour l&apos;instant</h2>
+                  <p className="nr-full-sub">Pas de panique, de nouvelles annonces arrivent régulièrement</p>
                 </div>
-                <hr className="nr-header-divider" />
-                <div className="nr-avatars">
-                  <div className="avatar">LM</div>
-                  <div className="avatar">AC</div>
-                  <div className="avatar">TR</div>
-                  <span className="avatar-more">+9</span>
+                {/* Bloc CTA 2 colonnes */}
+                <div className="bottom-cta">
+                  {/* Gauche : profils compatibles */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-avatars">
+                        <div className="avatar">LM</div>
+                        <div className="avatar">AC</div>
+                        <div className="avatar">TR</div>
+                        <span className="avatar-more">+9</span>
+                      </div>
+                      <p className="bottom-cta-text"><strong>12 étudiants</strong> à {villeAffichee} sont compatibles avec toi</p>
+                    </div>
+                    <div className="bottom-cta-buttons">
+                      <button className="bottom-cta-btn" onClick={() => setModalProfilsOpen(true)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                        Voir les profils
+                      </button>
+                      <Link to="/agences-partenaires" className="bottom-cta-btn bottom-cta-btn-orange" onClick={() => window.scrollTo(0, 0)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                        Agences partenaires
+                      </Link>
+                    </div>
+                  </div>
+                  {/* Droite : alerte email */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                      </div>
+                      <p className="bottom-cta-text">Sois notifié dès qu&apos;une annonce ou personne compatible apparaît</p>
+                    </div>
+                    <div className="bottom-cta-form">
+                      <input
+                        type="email"
+                        value={alertEmail}
+                        onChange={(e) => setAlertEmail(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmail(''); setAlertPlaceholderTop({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholderTop(''), 3000) }; envoyerAlerte(alertEmail.trim(), cb) } }}
+                        placeholder={alertPlaceholderTop ? alertPlaceholderTop.text : 'ton@email.com'}
+                        className={alertPlaceholderTop ? (alertPlaceholderTop.error ? 'has-msg-error' : 'has-msg-success') : ''}
+                      />
+                      <button onClick={() => { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmail(''); setAlertPlaceholderTop({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholderTop(''), 3000) }; envoyerAlerte(alertEmail.trim(), cb) }}>M&apos;alerter</button>
+                    </div>
+                  </div>
                 </div>
-                <p className="nr-navy-text"><strong>12 étudiants</strong> cherchent aussi à {villeAffichee}</p>
-                <p className="nr-navy-sub">avec un rythme compatible au tien</p>
-                <div className="nr-navy-buttons">
-                  <button className="btn-profils" onClick={() => setModalProfilsOpen(true)}>Voir les profils</button>
-                  <Link to="/agences-partenaires" className="btn-logement">Trouver un logement</Link>
-                </div>
-                <hr className="nr-navy-divider" />
-                <div className="nr-navy-alert-intro">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                  <span>Reçois un email dès qu&apos;un logement correspond à ta recherche</span>
-                </div>
-                <div className="nr-alert-form">
-                  <input
-                    type="email"
-                    value={alertEmail}
-                    onChange={(e) => setAlertEmail(e.target.value)}
-                    placeholder="ton@email.com"
-                  />
-                  <button className="btn-alert" onClick={() => envoyerAlerte(alertEmail.trim(), setAlertMessage)}>M&apos;alerter</button>
-                </div>
-                {alertMessage && <p className="alert-message" dangerouslySetInnerHTML={{ __html: alertMessage }} />}
-              </div>
+              </>
             ) : (
-              <div className="nr-simple">
-                <div className="nr-simple-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
+              <>
+                <div className="nr-enriched">
+                  <div className="nr-full-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.35-4.35" />
+                    </svg>
+                  </div>
+                  <h2 className="nr-full-title">Aucun logement disponible pour l&apos;instant</h2>
+                  <p className="nr-full-sub">Pas de panique, de nouvelles annonces arrivent régulièrement</p>
                 </div>
-                <h2>Aucun logement disponible pour l&apos;instant</h2>
-                <p className="nr-simple-sub">Crée une alerte pour être notifié en premier</p>
-                <div className="nr-alert-form">
-                  <input
-                    type="email"
-                    value={alertEmail}
-                    onChange={(e) => setAlertEmail(e.target.value)}
-                    placeholder="ton@email.com"
-                  />
-                  <button className="btn-alert" onClick={() => envoyerAlerte(alertEmail.trim(), setAlertMessage)}>M&apos;alerter</button>
+                <div className="bottom-cta">
+                  {/* Gauche : profils compatibles */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-avatars">
+                        <div className="avatar">LM</div>
+                        <div className="avatar">AC</div>
+                        <div className="avatar">TR</div>
+                        <span className="avatar-more">+9</span>
+                      </div>
+                      <p className="bottom-cta-text"><strong>12 étudiants</strong> à {villeAffichee} sont compatibles avec toi</p>
+                    </div>
+                    <div className="bottom-cta-buttons">
+                      <button className="bottom-cta-btn" onClick={() => setModalProfilsOpen(true)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                        Voir les profils
+                      </button>
+                      <Link to="/agences-partenaires" className="bottom-cta-btn bottom-cta-btn-orange" onClick={() => window.scrollTo(0, 0)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                        Agences partenaires
+                      </Link>
+                    </div>
+                  </div>
+                  {/* Droite : alerte email */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                      </div>
+                      <p className="bottom-cta-text">Sois notifié dès qu&apos;un logement ou une personne correspond</p>
+                    </div>
+                    <div className="bottom-cta-form">
+                      <input
+                        type="email"
+                        value={alertEmail}
+                        onChange={(e) => setAlertEmail(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmail(''); setAlertPlaceholderTop({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholderTop(''), 3000) }; envoyerAlerte(alertEmail.trim(), cb) } }}
+                        placeholder={alertPlaceholderTop ? alertPlaceholderTop.text : 'ton@email.com'}
+                        className={alertPlaceholderTop ? (alertPlaceholderTop.error ? 'has-msg-error' : 'has-msg-success') : ''}
+                      />
+                      <button onClick={() => { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmail(''); setAlertPlaceholderTop({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholderTop(''), 3000) }; envoyerAlerte(alertEmail.trim(), cb) }}>M&apos;alerter</button>
+                    </div>
+                  </div>
                 </div>
-                {alertMessage && <p className="alert-message" dangerouslySetInnerHTML={{ __html: alertMessage }} />}
-              </div>
+              </>
             )
           ) : (
             <>
@@ -1563,10 +1634,10 @@ export default function RecherchePage() {
                   <Link
                     key={logement.id}
                     to={`/logement?id=${logement.id}${mesDisponibilites.length > 0 ? '&dates=' + mesDisponibilites.join(',') : ''}`}
-                    className="logement-card"
+                    className="rch-card"
                   >
                     <div
-                      className="logement-image"
+                      className="rch-card-img"
                       style={hasPhoto
                         ? { backgroundImage: `url('${logement.photos[0]}')`, backgroundSize: 'cover', backgroundPosition: 'center' }
                         : { background: '#1E293B', display: 'flex', alignItems: 'center', justifyContent: 'center' }
@@ -1576,41 +1647,117 @@ export default function RecherchePage() {
                       {matchBadge}
                       {distanceBadge}
                     </div>
-                    <div className="logement-content">
-                      <div className="logement-price">{logement.prix}&euro;<span> / semaine</span></div>
-                      <div className="logement-title">{logement.titre}</div>
-                      <div className="logement-location">
+                    <div className="rch-card-body">
+                      <div className="rch-card-price">{logement.prix}&euro;<span> / semaine</span></div>
+                      <div className="rch-card-title">{logement.titre}</div>
+                      <div className="rch-card-loc">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                         {villeFormatee}{surfaceText}
                       </div>
-                      <span className={`dispo-badge ${dispo.className}`}>{dispo.text}</span>
+                      <span className={`rch-card-badge ${dispo.className}`}>{dispo.text}</span>
                     </div>
                   </Link>
                 )
               })}
 
-              {/* Alert bar at bottom */}
-              <div className="alert-bar">
-                <div className="alert-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                  </svg>
+              {/* Bloc bottom — social proof + alerte */}
+              {hasRythme ? (
+                <div className="bottom-cta">
+                  {/* Gauche : profils compatibles */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-avatars">
+                        <div className="avatar">LM</div>
+                        <div className="avatar">AC</div>
+                        <div className="avatar">TR</div>
+                        <span className="avatar-more">+9</span>
+                      </div>
+                      <p className="bottom-cta-text"><strong>12 étudiants</strong> à {villeAffichee} sont compatibles avec toi</p>
+                    </div>
+                    <div className="bottom-cta-buttons">
+                      <button className="bottom-cta-btn" onClick={() => setModalProfilsOpen(true)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                        Voir les profils
+                      </button>
+                      <Link to="/agences-partenaires" className="bottom-cta-btn bottom-cta-btn-orange" onClick={() => window.scrollTo(0, 0)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                        Agences partenaires
+                      </Link>
+                    </div>
+                  </div>
+                  {/* Droite : alerte email */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                      </div>
+                      <p className="bottom-cta-text">Sois notifié dès qu&apos;une annonce ou personne compatible apparaît</p>
+                    </div>
+                    <div className="bottom-cta-form">
+                      <input
+                        type="email"
+                        value={alertEmailBottom}
+                        onChange={(e) => setAlertEmailBottom(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmailBottom(''); setAlertPlaceholder({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholder(''), 3000) }; envoyerAlerte(alertEmailBottom.trim(), cb) } }}
+                        placeholder={alertPlaceholder ? alertPlaceholder.text : 'ton@email.com'}
+                        className={alertPlaceholder ? (alertPlaceholder.error ? 'has-msg-error' : 'has-msg-success') : ''}
+                      />
+                      <button onClick={() => { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmailBottom(''); setAlertPlaceholder({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholder(''), 3000) }; envoyerAlerte(alertEmailBottom.trim(), cb) }}>M&apos;alerter</button>
+                    </div>
+                  </div>
                 </div>
-                <span className="alert-text">Sois notifié dès qu&apos;un logement ou une personne correspond</span>
-                <div className="alert-form">
-                  <input
-                    type="email"
-                    value={alertEmailBottom}
-                    onChange={(e) => setAlertEmailBottom(e.target.value)}
-                    placeholder="ton@email.com"
-                  />
-                  <button onClick={() => envoyerAlerte(alertEmailBottom.trim(), setAlertMessageBottom)}>Me prévenir</button>
+              ) : (
+                <div className="bottom-cta">
+                  {/* Gauche : profils compatibles */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-avatars">
+                        <div className="avatar">LM</div>
+                        <div className="avatar">AC</div>
+                        <div className="avatar">TR</div>
+                        <span className="avatar-more">+9</span>
+                      </div>
+                      <p className="bottom-cta-text"><strong>12 étudiants</strong> à {villeAffichee} sont compatibles avec toi</p>
+                    </div>
+                    <div className="bottom-cta-buttons">
+                      <button className="bottom-cta-btn" onClick={() => setModalProfilsOpen(true)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                        Voir les profils
+                      </button>
+                      <Link to="/agences-partenaires" className="bottom-cta-btn bottom-cta-btn-orange" onClick={() => window.scrollTo(0, 0)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                        Agences partenaires
+                      </Link>
+                    </div>
+                  </div>
+                  {/* Droite : alerte email */}
+                  <div className="bottom-cta-side">
+                    <div className="bottom-cta-row-icon">
+                      <div className="bottom-cta-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                      </div>
+                      <p className="bottom-cta-text">Sois notifié dès qu&apos;un logement ou une personne correspond</p>
+                    </div>
+                    <div className="bottom-cta-form">
+                      <input
+                        type="email"
+                        value={alertEmailBottom}
+                        onChange={(e) => setAlertEmailBottom(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmailBottom(''); setAlertPlaceholder({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholder(''), 3000) }; envoyerAlerte(alertEmailBottom.trim(), cb) } }}
+                        placeholder={alertPlaceholder ? alertPlaceholder.text : 'ton@email.com'}
+                        className={alertPlaceholder ? (alertPlaceholder.error ? 'has-msg-error' : 'has-msg-success') : ''}
+                      />
+                      <button onClick={() => { const cb = (msg) => { const txt = msg.replace(/<[^>]*>/g, ''); const isErr = msg.includes('EF4444'); setAlertEmailBottom(''); setAlertPlaceholder({ text: txt, error: isErr }); setTimeout(() => setAlertPlaceholder(''), 3000) }; envoyerAlerte(alertEmailBottom.trim(), cb) }}>M&apos;alerter</button>
+                    </div>
+                  </div>
                 </div>
-                {alertMessageBottom && (
-                  <p style={{ position: 'absolute', bottom: '-20px', right: '24px', fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: alertMessageBottom }} />
-                )}
-              </div>
+              )}
             </>
           )}
         </div>
@@ -1736,14 +1883,14 @@ export default function RecherchePage() {
           <div className="filter-group">
             <h4>Équipements</h4>
             {Object.keys(equipementsFilter).map(equip => (
-              <div className="checkbox-item" key={equip}>
+              <div className={`checkbox-item${equip === 'Accessible PMR' ? ' checkbox-pmr' : ''}`} key={equip}>
                 <input
                   type="checkbox"
                   id={`equip-${equip}`}
                   checked={equipementsFilter[equip]}
                   onChange={() => setEquipementsFilter(prev => ({ ...prev, [equip]: !prev[equip] }))}
                 />
-                <label htmlFor={`equip-${equip}`}>{equip}</label>
+                <label htmlFor={`equip-${equip}`}>{equip === 'Accessible PMR' ? '♿ Accessible PMR' : equip}</label>
               </div>
             ))}
             {/* Dynamic equipments */}
@@ -1763,6 +1910,38 @@ export default function RecherchePage() {
                 ))}
               </div>
             )}
+            {/* Recherche équipement */}
+            <div className="equip-search">
+              <input
+                type="text"
+                value={equipSearchQuery}
+                onChange={(e) => {
+                  const q = e.target.value
+                  setEquipSearchQuery(q)
+                  if (q.trim().length < 2) { setEquipSearchResults([]); return }
+                  const matches = logements.reduce((acc, l) => {
+                    if (!l.equipements) return acc
+                    l.equipements.forEach(eq => {
+                      if (eq.toLowerCase().includes(q.toLowerCase()) && !acc.includes(eq)) acc.push(eq)
+                    })
+                    return acc
+                  }, [])
+                  setEquipSearchResults(matches.slice(0, 5))
+                }}
+                placeholder="Rechercher un équipement..."
+              />
+              {equipSearchResults.length > 0 && (
+                <div className="equip-search-results">
+                  {equipSearchResults.map(eq => (
+                    <button key={eq} className="equip-search-item" onClick={() => {
+                      setEquipementsFilter(prev => ({ ...prev, [eq]: true }))
+                      setEquipSearchQuery('')
+                      setEquipSearchResults([])
+                    }}>{eq}</button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="drawer-footer">
@@ -1799,7 +1978,7 @@ export default function RecherchePage() {
           {modalView === 'list' && (
             <>
               <div className="modal-profils-header">
-                <h3>Profils compatibles à Rennes</h3>
+                <h3>{Object.keys(PROFILS_DATA).length} profils compatibles</h3>
                 <button className="modal-close" onClick={closeModal}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
@@ -1807,13 +1986,13 @@ export default function RecherchePage() {
               <p className="modal-profils-subtitle">Leur rythme matche avec le tien</p>
               <div className="modal-profils-list">
                 {Object.entries(PROFILS_DATA).map(([id, profil]) => (
-                  <div className="profil-card" key={id}>
-                    <div className="profil-avatar-modal">{profil.initials}</div>
-                    <div className="profil-info">
-                      <span className="profil-name">{profil.name}</span>
-                      <span className="profil-rythme">{profil.rythme}</span>
+                  <div className="mp-card" key={id} onClick={() => openProfilDetail(id)}>
+                    <div className="mp-avatar">{profil.initials}</div>
+                    <div className="mp-info">
+                      <span className="mp-name">{profil.name}</span>
+                      <span className="mp-rythme-chip">{profil.rythme}</span>
                     </div>
-                    <button className="profil-voir" onClick={() => openProfilDetail(id)}>Voir</button>
+                    <span className="mp-voir">Voir</span>
                   </div>
                 ))}
               </div>
@@ -1836,59 +2015,63 @@ export default function RecherchePage() {
                 <h3 className="profil-detail-name">{currentProfil.name}</h3>
                 <span className="profil-detail-status">{currentProfil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT'}</span>
               </div>
-              <div className="profil-detail-info">
-                <div className="profil-info-item">
-                  <span className="profil-info-label">Type</span>
-                  <span className="profil-info-value">{currentProfil.type}</span>
-                </div>
-                <div className="profil-info-item">
-                  <span className="profil-info-label">Âge</span>
-                  <span className="profil-info-value">{currentProfil.age} ans</span>
-                </div>
-                <div className="profil-info-item">
-                  <span className="profil-info-label">Rythme</span>
-                  <span className="profil-info-value">{currentProfil.rythme}</span>
-                </div>
-                <div className="profil-info-item">
-                  <span className="profil-info-label">Ville recherchée</span>
-                  <span className="profil-info-value">{currentProfil.villeRecherche}</span>
-                </div>
-                <div className="profil-info-item">
-                  <span className="profil-info-label">École</span>
-                  <span className="profil-info-value">{currentProfil.villeEcole}</span>
-                </div>
-                <div className="profil-info-item">
-                  <span className="profil-info-label">Entreprise</span>
-                  <span className="profil-info-value">{currentProfil.villeEntreprise}</span>
+              <div className="profil-detail-content">
+                <div className="profil-detail-info">
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">Âge</span>
+                    <span className="profil-info-value">{currentProfil.age} ans</span>
+                  </div>
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">École</span>
+                    <span className="profil-info-value">{currentProfil.ecole}</span>
+                  </div>
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">Entreprise</span>
+                    <span className="profil-info-value">{currentProfil.entreprise}</span>
+                  </div>
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">Ville recherchée</span>
+                    <span className="profil-info-value">{currentProfil.villeRecherche}</span>
+                  </div>
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">Type</span>
+                    <span className="profil-info-value">{currentProfil.type}</span>
+                  </div>
+                  <div className="profil-info-item">
+                    <span className="profil-info-label">Rythme</span>
+                    <span className="profil-info-value">{currentProfil.rythme}</span>
+                  </div>
                 </div>
               </div>
-              <button className="btn-envoyer-message" onClick={openConversation}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                Envoyer un message
-              </button>
+              <div className="profil-detail-footer">
+                <button className="btn-envoyer-message" onClick={openConversation}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                  Envoyer un message
+                </button>
+              </div>
             </div>
           )}
 
           {/* CONVERSATION VIEW */}
           {modalView === 'conversation' && currentProfil && (
-            <div className="profil-conversation" style={{ display: 'flex' }}>
-              <div className="overlay-chat-header">
-                <button className="overlay-chat-back" onClick={() => setModalView('detail')}>
+            <div className="rch-conversation" style={{ display: 'flex' }}>
+              <div className="rch-chat-header">
+                <button className="rch-chat-back" onClick={() => setModalView('detail')}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
-                <div className="overlay-chat-contact">
-                  <div className="overlay-chat-avatar">{currentProfil.initials}</div>
-                  <div className="overlay-chat-user-info">
-                    <span className="overlay-chat-name">{currentProfil.name}</span>
-                    <span className="overlay-chat-status">{currentProfil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT'}</span>
+                <div className="rch-chat-contact">
+                  <div className="rch-chat-avatar">{currentProfil.initials}</div>
+                  <div className="rch-chat-user-info">
+                    <span className="rch-chat-name">{currentProfil.name}</span>
+                    <span className="rch-chat-status">{currentProfil.genre === 'F' ? 'ÉTUDIANTE' : 'ÉTUDIANT'}</span>
                   </div>
                 </div>
-                <button className="messages-overlay-close" onClick={closeModal}>&times;</button>
+                <button className="rch-chat-close" onClick={closeModal}>&times;</button>
               </div>
-              <div className="overlay-chat-body">
-                <div className="overlay-chat-messages" ref={chatMessagesRef}>
+              <div className="rch-chat-body">
+                <div className="rch-chat-messages" ref={chatMessagesRef}>
                   {chatMessages.length === 0 ? (
-                    <div className="overlay-chat-empty">Envoie ton premier message !</div>
+                    <div className="rch-chat-empty">Envoie ton premier message !</div>
                   ) : (
                     chatMessages.map((msg, i) => (
                       <div key={i} className="chat-msg sent">
@@ -1897,9 +2080,9 @@ export default function RecherchePage() {
                     ))
                   )}
                 </div>
-                <div className="overlay-chat-input">
+                <div className="rch-chat-input">
                   <textarea
-                    className="overlay-chat-textarea"
+                    className="rch-chat-textarea"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -1911,7 +2094,7 @@ export default function RecherchePage() {
                     placeholder="Ecris ton message..."
                     rows="1"
                   />
-                  <button className="overlay-chat-send" onClick={envoyerMessageProfil} disabled={!chatInput.trim()}>
+                  <button className="rch-chat-send" onClick={envoyerMessageProfil} disabled={!chatInput.trim()}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
                   </button>
                 </div>
@@ -1924,7 +2107,18 @@ export default function RecherchePage() {
       {showCalendar && (
         <>
           <div className="cal-overlay" onClick={() => setShowCalendar(false)} />
-          <div className="cal-modal" ref={calendarRef}>
+          <div className="cal-modal" ref={calendarRef} tabIndex={-1} onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              if (!calendarEndDate) {
+                setDateError(endDateInput ? 'Date incomplète' : 'Renseigne ta date de fin')
+                setEditingEndDate(true)
+                setTimeout(() => setDateError(''), 3000)
+                return
+              }
+              filtrerLogements(); setShowCalendar(false)
+            }
+          }}>
             {/* Header */}
             <div className="cal-header">
               <h3 className="cal-title"><span className="cal-title-dot" />Mes disponibilités</h3>
@@ -1985,8 +2179,7 @@ export default function RecherchePage() {
                 )
               })}
             </div>
-            {calMsg && <div className="cal-msg">{calMsg}</div>}
-
+            <div className={`cal-msg-float${calMsg ? ' visible' : ''}`}>{calMsg || '\u00A0'}</div>
             {/* Footer */}
             <div className="cal-footer">
               <div className={`cal-info-line${dateError ? ' cal-label-error' : ''}`}>
