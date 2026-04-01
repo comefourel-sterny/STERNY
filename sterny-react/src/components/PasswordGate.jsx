@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
+import { supabaseClient } from '../config/supabase'
 
-// SHA-256 hash of the password — the actual password never appears in the code
 const PASSWORD_HASH = 'c1906591530e943691eed9fc5d1b4709047a228dba671b68a4bc090364362e01'
 
 async function sha256(text) {
@@ -12,124 +12,153 @@ async function sha256(text) {
 
 export default function PasswordGate({ children }) {
   const [unlocked, setUnlocked] = useState(() => {
-    try {
-      return sessionStorage.getItem('sterny_access') === PASSWORD_HASH
-    } catch { return false }
+    try { return sessionStorage.getItem('sterny_access') === PASSWORD_HASH } catch { return false }
   })
-  const [input, setInput] = useState('')
+  const [view, setView] = useState('landing') // 'landing' or 'login'
+  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [shake, setShake] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [emailMsg, setEmailMsg] = useState('')
 
-  const handleSubmit = useCallback(async (e) => {
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault()
     if (loading) return
     setLoading(true)
-    const hash = await sha256(input)
+    const hash = await sha256(password)
     if (hash === PASSWORD_HASH) {
       sessionStorage.setItem('sterny_access', PASSWORD_HASH)
       setUnlocked(true)
     } else {
       setError('Mot de passe incorrect')
       setShake(true)
-      setInput('')
+      setPassword('')
       setTimeout(() => { setShake(false); setError('') }, 2000)
     }
     setLoading(false)
-  }, [input, loading])
+  }, [password, loading])
+
+  const handleEmail = useCallback(async (e) => {
+    e.preventDefault()
+    if (!email.trim()) { setEmailMsg('error:Merci de renseigner ton email'); setTimeout(() => setEmailMsg(''), 3000); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailMsg('error:Email invalide'); setTimeout(() => setEmailMsg(''), 3000); return }
+    try {
+      await supabaseClient.from('alertes').insert({ email: email.trim(), ville: null, rythme: null })
+      setEmailMsg('success:Merci ! Tu seras prévenu au lancement.')
+      setEmail('')
+    } catch {
+      setEmailMsg('error:Une erreur est survenue')
+    }
+    setTimeout(() => setEmailMsg(''), 5000)
+  }, [email])
 
   if (unlocked) return children
 
-  return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#1E293B',
-      padding: '20px',
-      fontFamily: "'DM Sans', -apple-system, sans-serif"
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        background: 'white',
-        borderRadius: '20px',
-        padding: '40px 36px',
-        maxWidth: '380px',
-        width: '100%',
-        textAlign: 'center',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        animation: shake ? 'shakeGate 0.4s ease' : 'none'
+  const font = "'DM Sans', -apple-system, sans-serif"
+
+  // === VUE LOGIN ===
+  if (view === 'login') return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1E293B', padding: '20px', fontFamily: font }}>
+      <form onSubmit={handleLogin} style={{
+        background: 'white', borderRadius: '20px', padding: '40px 36px', maxWidth: '380px', width: '100%',
+        textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', animation: shake ? 'shakeGate 0.4s ease' : 'none'
       }}>
-        <div style={{
-          width: '56px',
-          height: '56px',
-          background: '#FDF0EB',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px'
-        }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-        </div>
-        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1E293B', margin: '0 0 6px' }}>
-          STERNY
-        </h2>
-        <p style={{ fontSize: '14px', color: '#64748B', margin: '0 0 24px', lineHeight: 1.5 }}>
-          Site en cours de développement.<br />Accès restreint.
-        </p>
+        <img src="/Logo-Sterny-V1.svg" alt="STERNY" style={{ height: '32px', marginBottom: '24px' }} />
+        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', margin: '0 0 6px' }}>Connexion</h2>
+        <p style={{ fontSize: '13px', color: '#94A3B8', margin: '0 0 24px' }}>Accès réservé à l&apos;équipe</p>
         <input
-          type="password"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Mot de passe"
-          autoFocus
-          autoComplete="off"
+          type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+          placeholder="Mot de passe" autoFocus autoComplete="off"
           style={{
-            width: '100%',
-            padding: '12px 16px',
-            border: `1.5px solid ${error ? '#EF4444' : '#E8EAF0'}`,
-            borderRadius: '12px',
-            fontSize: '15px',
-            fontFamily: 'inherit',
-            color: '#1E293B',
-            outline: 'none',
-            boxSizing: 'border-box',
-            marginBottom: '12px',
-            transition: 'border-color 0.2s'
+            width: '100%', padding: '12px 16px', border: `1.5px solid ${error ? '#EF4444' : '#E8EAF0'}`,
+            borderRadius: '12px', fontSize: '15px', fontFamily: 'inherit', color: '#1E293B',
+            outline: 'none', boxSizing: 'border-box', marginBottom: '12px', transition: 'border-color 0.2s'
           }}
           onFocus={(e) => { if (!error) e.target.style.borderColor = '#E8622A' }}
           onBlur={(e) => { if (!error) e.target.style.borderColor = '#E8EAF0' }}
         />
         <button type="submit" disabled={loading} style={{
-          width: '100%',
-          padding: '12px',
-          background: loading ? '#94A3B8' : '#E8622A',
-          color: 'white',
-          border: 'none',
-          borderRadius: '12px',
-          fontSize: '15px',
-          fontWeight: 600,
-          cursor: loading ? 'wait' : 'pointer',
-          fontFamily: 'inherit',
-          transition: 'background 0.2s'
-        }}>
-          {loading ? 'Vérification...' : 'Accéder'}
-        </button>
+          width: '100%', padding: '12px', background: loading ? '#94A3B8' : '#E8622A', color: 'white',
+          border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 600,
+          cursor: loading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.2s'
+        }}>{loading ? 'Vérification...' : 'Accéder'}</button>
         {error && <p style={{ fontSize: '13px', color: '#EF4444', margin: '12px 0 0' }}>{error}</p>}
+        <button type="button" onClick={() => setView('landing')} style={{
+          background: 'none', border: 'none', color: '#94A3B8', fontSize: '13px', marginTop: '20px',
+          cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.2s'
+        }}>
+          &larr; Retour
+        </button>
       </form>
-      <style>{`
-        @keyframes shakeGate {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(-8px); }
-          40% { transform: translateX(6px); }
-          60% { transform: translateX(-4px); }
-          80% { transform: translateX(2px); }
-        }
-      `}</style>
+      <style>{`@keyframes shakeGate { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(2px)} }`}</style>
+    </div>
+  )
+
+  // === VUE LANDING ===
+  const msgType = emailMsg.startsWith('error:') ? 'error' : emailMsg.startsWith('success:') ? 'success' : ''
+  const msgText = emailMsg.replace(/^(error:|success:)/, '')
+
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      background: '#1E293B', padding: '40px 20px', fontFamily: font, position: 'relative'
+    }}>
+      {/* Logo en grand */}
+      <img src="/Logo-Sterny-V1-white.svg" alt="STERNY" style={{ height: '180px', marginBottom: '40px' }} />
+
+      {/* Lancement */}
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+        <span style={{
+          display: 'inline-block', padding: '6px 18px', background: 'rgba(232, 98, 42, 0.15)',
+          border: '1px solid rgba(232, 98, 42, 0.3)', borderRadius: '50px',
+          fontSize: '14px', fontWeight: 600, color: '#E8622A', letterSpacing: '0.3px', marginBottom: '14px'
+        }}>Lancement prochainement</span>
+        <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.5 }}>
+          La plateforme de mise en relation entre étudiants en alternance pour trouver leur logement à leur rythme.
+        </p>
+      </div>
+
+      {/* Formulaire email inline */}
+      <form onSubmit={handleEmail} style={{ display: 'flex', gap: '8px', maxWidth: '400px', width: '100%' }}>
+        <input
+          type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          placeholder="ton@email.com"
+          style={{
+            flex: 1, padding: '13px 18px', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px',
+            fontSize: '14px', fontFamily: 'inherit', color: 'white', outline: 'none', background: 'rgba(255,255,255,0.08)',
+            boxSizing: 'border-box', transition: 'border-color 0.2s', minWidth: 0
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#E8622A'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
+        />
+        <button type="submit" style={{
+          padding: '13px 24px', background: '#E8622A', color: 'white', border: 'none',
+          borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+          fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'background 0.2s'
+        }}>Me prévenir</button>
+      </form>
+      {msgText && (
+        <p style={{
+          fontSize: '13px', margin: '10px 0 0',
+          color: msgType === 'error' ? '#EF4444' : '#10B981',
+          fontWeight: 500
+        }}>{msgText}</p>
+      )}
+
+      {/* Lien connexion tout en bas */}
+      <button onClick={() => setView('login')} style={{
+        background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: '12px',
+        position: 'absolute', bottom: '24px', cursor: 'pointer', fontFamily: font, transition: 'color 0.2s',
+        display: 'flex', alignItems: 'center'
+      }}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.25)'}
+      >
+        Connexion
+      </button>
+
+      <style>{`input::placeholder { color: rgba(255,255,255,0.3) !important; }`}</style>
     </div>
   )
 }
