@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { Agentation } from 'agentation'
 import { supabaseClient } from '../config/supabase'
 
 const PASSWORD_HASH = 'c1906591530e943691eed9fc5d1b4709047a228dba671b68a4bc090364362e01'
@@ -41,14 +42,27 @@ export default function PasswordGate({ children }) {
 
   const handleEmail = useCallback(async (e) => {
     e.preventDefault()
-    if (!email.trim()) { setEmailMsg('error:Merci de renseigner ton email'); setTimeout(() => setEmailMsg(''), 3000); return }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailMsg('error:Email invalide'); setTimeout(() => setEmailMsg(''), 3000); return }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailMsg('error:Merci de vérifier ton adresse email'); setTimeout(() => setEmailMsg(''), 3000); return }
     try {
-      await supabaseClient.from('alertes').insert({ email: email.trim(), ville: null, rythme: null })
-      setEmailMsg('success:Merci ! Tu seras prévenu au lancement.')
+      const { error } = await supabaseClient.from('alertes').insert({ email: email.trim(), ville: null, rythme: null })
+      if (error) {
+        if (error.message && error.message.includes('duplicate')) {
+          setEmailMsg('success:Tu es déjà inscrit ! On te préviendra au lancement.')
+        } else {
+          throw error
+        }
+      } else {
+        setEmailMsg('success:Merci ! Tu seras prévenu au lancement.')
+        try {
+          await supabaseClient.functions.invoke('send-alert-email', { body: { email: email.trim(), ville: null, rythme: null } })
+        } catch (emailErr) {
+          console.warn('Email de bienvenue non envoyé:', emailErr)
+        }
+      }
       setEmail('')
-    } catch {
-      setEmailMsg('error:Une erreur est survenue')
+    } catch (err) {
+      console.error('Erreur alerte landing:', err)
+      setEmailMsg('error:Une erreur est survenue, réessaie plus tard')
     }
     setTimeout(() => setEmailMsg(''), 5000)
   }, [email])
@@ -120,7 +134,7 @@ export default function PasswordGate({ children }) {
       </div>
 
       {/* Formulaire email inline */}
-      <form onSubmit={handleEmail} style={{ display: 'flex', gap: '8px', maxWidth: '400px', width: '100%' }}>
+      <form onSubmit={handleEmail} noValidate style={{ display: 'flex', gap: '8px', maxWidth: '400px', width: '100%' }}>
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="ton@email.com"
@@ -140,9 +154,8 @@ export default function PasswordGate({ children }) {
       </form>
       {msgText && (
         <p style={{
-          fontSize: '13px', margin: '10px 0 0',
-          color: msgType === 'error' ? '#EF4444' : '#10B981',
-          fontWeight: 500
+          fontSize: '13px', margin: '8px 0 0', fontWeight: 500, textAlign: 'center', maxWidth: '400px', width: '100%',
+          color: msgType === 'error' ? '#EF4444' : 'rgba(16, 185, 129, 0.8)'
         }}>{msgText}</p>
       )}
 
@@ -159,6 +172,7 @@ export default function PasswordGate({ children }) {
       </button>
 
       <style>{`input::placeholder { color: rgba(255,255,255,0.3) !important; }`}</style>
+      <Agentation endpoint="http://localhost:4747" />
     </div>
   )
 }
