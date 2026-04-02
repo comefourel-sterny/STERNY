@@ -19,13 +19,13 @@ export default function GoogleAuthHandler() {
         // Vérifier si le profil existe dans la table users
         const { data: profile } = await supabaseClient
           .from('users')
-          .select('id, nom, prenom, type_user')
+          .select('id, nom, prenom, type_user, profil_complet')
           .eq('id', user.id)
           .maybeSingle()
 
         if (profile) {
-          // Profil existe — vérifier si le nom est renseigné
-          if (!profile.nom || !profile.prenom) {
+          // Profil existe — vérifier si complet
+          if (!profile.profil_complet) {
             navigate('/completer-profil')
           }
           return
@@ -75,10 +75,8 @@ export default function GoogleAuthHandler() {
         sessionStorage.removeItem('referrer_id')
         sessionStorage.removeItem('signup_type')
 
-        // Si le nom est incomplet, rediriger vers complétion
-        if (!prenom || !nom) {
-          navigate('/completer-profil')
-        }
+        // Toujours rediriger vers complétion pour collecter rythme/ville/école
+        navigate('/completer-profil')
       } catch (err) {
         console.warn('GoogleAuthHandler:', err.message)
       }

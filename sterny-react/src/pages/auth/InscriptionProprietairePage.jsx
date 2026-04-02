@@ -168,16 +168,15 @@ export default function InscriptionProprietairePage() {
 
   return (
     <section className="ip-page">
-      <div className="ip-card">
-        <div className="ip-header">
-          <h2>Créer un compte</h2>
-          <p className={message.text ? `ip-msg ${message.type}` : ''}>
-            {message.text || (showReferral ? <><span className="ip-referrer">{referrerName}</span> vous recommande STERNY</> : 'Inscription propriétaire')}
-          </p>
-        </div>
+      <div className="ip-card" style={{ maxHeight: '536px' }}>
+        <h2 className="ip-title ip-stagger">INSCRIPTION</h2>
+        {message.text && <p className={`ip-msg ${message.type}`}>{message.text}</p>}
+        {showReferral && !message.text && (
+          <p className="ip-referral"><span className="ip-referrer">{referrerName}</span> vous recommande STERNY</p>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="ip-form-row">
+          <div className="ip-form-row ip-stagger" style={{ animationDelay: '0.08s' }}>
             <div className="ip-group">
               <label>Prénom</label>
               <input
@@ -198,7 +197,7 @@ export default function InscriptionProprietairePage() {
             </div>
           </div>
 
-          <div className="ip-group">
+          <div className="ip-group ip-stagger" style={{ animationDelay: '0.16s' }}>
             <label>Email</label>
             <input
               type="email"
@@ -208,7 +207,7 @@ export default function InscriptionProprietairePage() {
             />
           </div>
 
-          <div className="ip-group">
+          <div className="ip-group ip-stagger" style={{ animationDelay: '0.24s' }}>
             <label>Mot de passe</label>
             <div className="ip-password">
               <input
@@ -248,16 +247,20 @@ export default function InscriptionProprietairePage() {
             </div>
           )}
 
-          <button type="submit" className={`ip-submit${shakeBtn ? ' shake' : ''}`} disabled={loading}>
-            {loading ? 'Création en cours...' : 'Créer mon compte'}
+          <button type="submit" className={`ip-submit ip-stagger${shakeBtn ? ' ip-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading}>
+            {loading ? (
+              <svg className="ip-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
+              </svg>
+            ) : 'Créer mon compte'}
           </button>
         </form>
 
-        <div className="ip-separator">
+        <div className="ip-separator ip-stagger" style={{ animationDelay: '0.4s' }}>
           <span>ou</span>
         </div>
 
-        <button type="button" className="ip-google" onClick={handleGoogleSignup}>
+        <button type="button" className="ip-google ip-stagger" style={{ animationDelay: '0.48s' }} onClick={handleGoogleSignup}>
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
             <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
@@ -267,7 +270,7 @@ export default function InscriptionProprietairePage() {
           S'inscrire avec Google
         </button>
 
-        <p className="ip-back">
+        <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
           <Link to="/inscription">Retour</Link> · Déjà inscrit ? <Link to="/connexion">Se connecter</Link>
         </p>
       </div>

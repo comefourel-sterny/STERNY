@@ -382,17 +382,15 @@ export default function InscriptionRecherchePage() {
 
   return (
     <section className="page-inscription-recherche">
-      <div className="ir-card" style={{ minHeight: '548px' }}>
-        <div className="inscription-header">
-          <h1>{stepTitles[currentStep]}</h1>
-        </div>
+      <div className="ir-card" style={{ minHeight: '536px' }}>
+        <h2 className="ir-title ir-stagger">INSCRIPTION</h2>
+        {errorMsg && <p className="ir-error">{errorMsg}</p>}
 
-        <div className="step-indicator">
-          Étape <span>{currentStep}</span> sur {totalSteps}
-        </div>
-
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
+        <div className="ir-step-row ir-stagger" style={{ animationDelay: '0.08s' }}>
+          <span className="ir-step-label">Étape {currentStep}/{totalSteps}</span>
+          <div className="ir-progress">
+            <div className="ir-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
+          </div>
         </div>
 
         {/* Step 1: Intent */}
@@ -428,11 +426,11 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
 
-          <div className="buttons-row single">
-            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
-          </div>
-          <div className="back-link">
-            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <Link to="/inscription">Retour</Link>}
+          <div className="ir-bottom">
+            <button className={`ir-btn${shakeBtn ? ' ir-shake' : ''}`} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
+            <p className="ir-back">
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <Link to="/inscription">Retour</Link>}
+            </p>
           </div>
         </div>
 
@@ -458,26 +456,21 @@ export default function InscriptionRecherchePage() {
               <input type="tel" value={telephone} onChange={(e) => setTelephone(formatPhone(e.target.value))} placeholder="06 12 34 56 78" />
             </div>
           </div>
-          <div className="buttons-row single">
-            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} onClick={() => handleNext(2)}>Continuer</button>
-          </div>
-
-          <div className="separator">
-            <span>ou</span>
-          </div>
-
-          <button type="button" className="google-btn" onClick={handleGoogleSignup}>
-            <svg width="18" height="18" viewBox="0 0 18 18">
-              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-              <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-            </svg>
-            S'inscrire avec Google
-          </button>
-
-          <div className="back-link">
-            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a>}
+          <div className="ir-bottom">
+            <button className={`ir-btn${shakeBtn ? ' ir-shake' : ''}`} onClick={() => handleNext(2)}>Continuer</button>
+            <div className="ir-separator"><span>ou</span></div>
+            <button type="button" className="ir-google" onClick={handleGoogleSignup}>
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+              S'inscrire avec Google
+            </button>
+            <p className="ir-back">
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a>}
+            </p>
           </div>
         </div>
 
@@ -563,17 +556,17 @@ export default function InscriptionRecherchePage() {
               </div>
             )}
           </div>
-          <div className="buttons-row single">
-            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} onClick={() => handleNext(3)}>Continuer</button>
-          </div>
-          <div className="back-link">
-            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
+          <div className="ir-bottom">
+            <button className={`ir-btn${shakeBtn ? ' ir-shake' : ''}`} onClick={() => handleNext(3)}>Continuer</button>
+            <p className="ir-back">
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
+            </p>
           </div>
         </div>
 
         {/* Step 4: Password */}
         <div className={`step${currentStep === 4 ? ' active' : ''}`}>
-          <div className="step-content">
+          <div className="step-content ir-step-spacious">
             <div className="form-group">
               <label>Mot de passe</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6 caractères minimum" />
@@ -583,13 +576,13 @@ export default function InscriptionRecherchePage() {
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape ton mot de passe" />
             </div>
           </div>
-          <div className="buttons-row single">
-            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} disabled={creating} onClick={createAccount}>
+          <div className="ir-bottom">
+            <button className={`ir-btn${shakeBtn ? ' ir-shake' : ''}`} disabled={creating} onClick={createAccount}>
               {creating ? 'Création en cours...' : 'Créer mon compte'}
             </button>
-          </div>
-          <div className="back-link">
-            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(4) }}>Retour</a>}
+            <p className="ir-back">
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(4) }}>Retour</a>}
+            </p>
           </div>
         </div>
       </div>

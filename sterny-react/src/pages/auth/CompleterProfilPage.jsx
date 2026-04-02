@@ -140,6 +140,36 @@ function isVilleLancement(city) {
   })
 }
 
+function CpSelect({ value, onChange, options, placeholder }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  const selected = options.find(o => o.value === value)
+
+  const handleBlur = (e) => {
+    if (ref.current && !ref.current.contains(e.relatedTarget)) setOpen(false)
+  }
+
+  return (
+    <div className="cp-select" ref={ref} tabIndex={-1} onBlur={handleBlur}>
+      <div className={`cp-select-trigger${!selected ? ' cp-placeholder' : ''}`} onClick={() => setOpen(!open)}>
+        <span>{selected ? selected.label : placeholder}</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <path d="M1 1l5 5 5-5" stroke="#6B7280" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      {open && (
+        <div className="cp-select-dropdown">
+          {options.map(o => (
+            <div key={o.value} className={`cp-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); setOpen(false) }}>
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CompleterProfilPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -637,7 +667,7 @@ export default function CompleterProfilPage() {
     }
   }
 
-  if (!user) return null
+  // if (!user) return null // TODO: réactiver
 
   return (
     <>
@@ -661,77 +691,58 @@ export default function CompleterProfilPage() {
       </div>
 
       {/* Page */}
-      <section className="page-inscription">
-        <div className="inscription-container">
+      <section className="cp-page">
+        <div className="cp-card" style={{ minHeight: '548px' }}>
           {!showConfirmation && (
             <>
-              <div className="inscription-header">
+              <div className="cp-header">
                 <h1>{stepTitles[currentStep] || ''}</h1>
+                {error && <p className="cp-error">{error}</p>}
               </div>
-              <div className="step-indicator">Etape {currentStep} sur {totalSteps}</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
+              <div className="cp-step-indicator">Etape {currentStep} sur {totalSteps}</div>
+              <div className="cp-progress">
+                <div className="cp-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
               </div>
-              {error && <div className="error-message show" role="alert">{error}</div>}
             </>
           )}
 
           {/* Step 1 */}
           {currentStep === 1 && !showConfirmation && (
-            <div className="step active">
-              <div className="step-content">
-                <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
-                <div className="photo-upload">
-                  <div className="photo-circle" onClick={() => photoInputRef.current?.click()}>
-                    {photoPreviewUrl ? (
-                      <img src={photoPreviewUrl} alt="Photo de profil" />
-                    ) : (
-                      <div className="placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <div className="photo-info">
-                    <div className="photo-title">Ajoute ta photo</div>
-                    <div className="photo-hint">Clique sur le cercle — JPG, PNG (max 5 MB)</div>
-                  </div>
+            <div className="cp-step">
+              <div className="cp-row">
+                <div className="cp-group">
+                  <label>Prénom</label>
+                  <input type="text" value={prenom} onChange={e => setPrenom(capitalizeWords(e.target.value))} placeholder="Prénom" />
                 </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Prenom <span className="required">*</span></label>
-                    <input type="text" value={prenom} onChange={e => setPrenom(capitalizeWords(e.target.value))} placeholder="Prenom" />
-                  </div>
-                  <div className="form-group">
-                    <label>Nom <span className="required">*</span></label>
-                    <input type="text" value={nom} onChange={e => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Date de naissance <span className="required">*</span></label>
-                    <input type="text" value={dateNaissance} onChange={handleDateInput} onKeyDown={handleDateKeyDown} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" />
-                  </div>
-                  <div className="form-group">
-                    <label>Sexe <span className="required">*</span></label>
-                    <select value={sexe} onChange={e => setSexe(e.target.value)} className={!sexe ? 'placeholder' : ''}>
-                      <option value="" disabled>Selectionner</option>
-                      <option value="homme">Homme</option>
-                      <option value="femme">Femme</option>
-                      <option value="autre">Autre</option>
-                      <option value="non-precise">Non precise</option>
-                    </select>
-                  </div>
+                <div className="cp-group">
+                  <label>Nom</label>
+                  <input type="text" value={nom} onChange={e => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
                 </div>
               </div>
-              <div className="buttons-row single">
-                <button className={`btn-next${loading ? ' loading' : ''}`} onClick={() => nextStep(1)} disabled={loading}>
-                  {userType === 'proprietaire' ? 'Enregistrer' : 'Continuer'}
-                </button>
+              <div className="cp-row">
+                <div className="cp-group">
+                  <label>Date de naissance</label>
+                  <input type="text" value={dateNaissance} onChange={handleDateInput} onKeyDown={handleDateKeyDown} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" />
+                </div>
+                <div className="cp-group">
+                  <label>Sexe</label>
+                  <CpSelect
+                    value={sexe}
+                    onChange={setSexe}
+                    placeholder="Sélectionner"
+                    options={[
+                      { value: 'homme', label: 'Homme' },
+                      { value: 'femme', label: 'Femme' },
+                      { value: 'autre', label: 'Autre' },
+                      { value: 'non-precise', label: 'Non précisé' }
+                    ]}
+                  />
+                </div>
               </div>
-              <div className="back-link">
+              <button className={`cp-submit${loading ? ' loading' : ''}`} onClick={() => nextStep(1)} disabled={loading}>
+                {userType === 'proprietaire' ? 'Enregistrer' : 'Continuer'}
+              </button>
+              <div className="cp-back">
                 <Link to="/dashboard/locataire">Retour</Link>
               </div>
             </div>
@@ -739,86 +750,79 @@ export default function CompleterProfilPage() {
 
           {/* Step 2 */}
           {currentStep === 2 && !showConfirmation && (
-            <div className="step active">
-              <div className="step-content">
-                <div className="form-group">
-                  <label>Ecole / Universite <span className="required">*</span></label>
-                  <div className="school-search-wrapper">
-                    <span className="school-search-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-                    </span>
-                    <input
-                      type="text"
-                      value={ecole}
-                      onChange={e => handleEcoleInput(e.target.value)}
-                      onFocus={() => { if (!ecole.trim()) { setSchoolSuggestions(ECOLES_POPULAIRES); setShowSchoolSuggestions(true) } }}
-                      onBlur={() => setTimeout(() => setShowSchoolSuggestions(false), 200)}
-                      placeholder="Recherche ton ecole, universite, CFA..."
-                      autoComplete="off"
-                    />
-                    {showSchoolSuggestions && schoolSuggestions.length > 0 && (
-                      <div className="school-suggestions show">
-                        {schoolSuggestions.map((s, i) => (
-                          <div key={i} className="school-suggestion-item" onMouseDown={() => { setEcole(s.name + (s.city ? ' — ' + s.city : '')); setShowSchoolSuggestions(false) }}>
-                            <strong>{s.name}</strong>
-                            {s.city && <small>{s.city}</small>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Annee d'etudes <span className="required">*</span></label>
-                  <div className="annee-search-wrapper">
-                    <input
-                      type="text"
-                      value={anneeEtudes}
-                      onChange={e => { setAnneeEtudes(e.target.value); setAnneeSuggestions(filterAnnees(e.target.value)); setShowAnneeSuggestions(true) }}
-                      onFocus={() => { setAnneeSuggestions(filterAnnees(anneeEtudes)); setShowAnneeSuggestions(true) }}
-                      onBlur={() => setTimeout(() => setShowAnneeSuggestions(false), 200)}
-                      placeholder="ex: L3, M1, Bac+5..."
-                      autoComplete="off"
-                    />
-                    {showAnneeSuggestions && anneeSuggestions.length > 0 && (
-                      <div className="annee-suggestions show">
-                        {anneeSuggestions.map((a, i) => (
-                          <div key={i} className="annee-suggestion-item" onMouseDown={() => { setAnneeEtudes(a.value); setShowAnneeSuggestions(false) }}>
-                            {a.label}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Filiere / Domaine <span className="required">*</span></label>
-                  <div className="filiere-search-wrapper">
-                    <input
-                      type="text"
-                      value={filiere}
-                      onChange={e => { setFiliere(e.target.value); setFiliereSuggestions(filterFilieres(e.target.value)); setShowFiliereSuggestions(true) }}
-                      onFocus={() => { setFiliereSuggestions(filterFilieres(filiere)); setShowFiliereSuggestions(true) }}
-                      onBlur={() => setTimeout(() => setShowFiliereSuggestions(false), 200)}
-                      placeholder="ex: Informatique, Commerce, Architecture..."
-                      autoComplete="off"
-                    />
-                    {showFiliereSuggestions && filiereSuggestions.length > 0 && (
-                      <div className="filiere-suggestions show">
-                        {filiereSuggestions.map((f, i) => (
-                          <div key={i} className="filiere-suggestion-item" onMouseDown={() => { setFiliere(f.value); setShowFiliereSuggestions(false) }}>
-                            {f.value}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+            <div className="cp-step">
+              <div className="cp-group">
+                <label>École / Université</label>
+                <div className="cp-autocomplete">
+                  <input
+                    type="text"
+                    value={ecole}
+                    onChange={e => handleEcoleInput(e.target.value)}
+                    onFocus={() => { if (!ecole.trim()) { setSchoolSuggestions(ECOLES_POPULAIRES); setShowSchoolSuggestions(true) } }}
+                    onBlur={() => setTimeout(() => setShowSchoolSuggestions(false), 200)}
+                    placeholder="Recherche ton école, université, CFA..."
+                    autoComplete="off"
+                  />
+                  {showSchoolSuggestions && schoolSuggestions.length > 0 && (
+                    <div className="cp-suggestions">
+                      {schoolSuggestions.map((s, i) => (
+                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setEcole(s.name + (s.city ? ' — ' + s.city : '')); setShowSchoolSuggestions(false) }}>
+                          <strong>{s.name}</strong>
+                          {s.city && <small>{s.city}</small>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="buttons-row single">
-                <button className="btn-next" onClick={() => nextStep(2)}>Continuer</button>
+              <div className="cp-group">
+                <label>Année d'études</label>
+                <div className="cp-autocomplete">
+                  <input
+                    type="text"
+                    value={anneeEtudes}
+                    onChange={e => { setAnneeEtudes(e.target.value); setAnneeSuggestions(filterAnnees(e.target.value)); setShowAnneeSuggestions(true) }}
+                    onFocus={() => { setAnneeSuggestions(filterAnnees(anneeEtudes)); setShowAnneeSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowAnneeSuggestions(false), 200)}
+                    placeholder="ex: L3, M1, Bac+5..."
+                    autoComplete="off"
+                  />
+                  {showAnneeSuggestions && anneeSuggestions.length > 0 && (
+                    <div className="cp-suggestions">
+                      {anneeSuggestions.map((a, i) => (
+                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setAnneeEtudes(a.value); setShowAnneeSuggestions(false) }}>
+                          {a.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="back-link">
+              <div className="cp-group">
+                <label>Filière / Domaine</label>
+                <div className="cp-autocomplete">
+                  <input
+                    type="text"
+                    value={filiere}
+                    onChange={e => { setFiliere(e.target.value); setFiliereSuggestions(filterFilieres(e.target.value)); setShowFiliereSuggestions(true) }}
+                    onFocus={() => { setFiliereSuggestions(filterFilieres(filiere)); setShowFiliereSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowFiliereSuggestions(false), 200)}
+                    placeholder="ex: Informatique, Commerce..."
+                    autoComplete="off"
+                  />
+                  {showFiliereSuggestions && filiereSuggestions.length > 0 && (
+                    <div className="cp-suggestions">
+                      {filiereSuggestions.map((f, i) => (
+                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setFiliere(f.value); setShowFiliereSuggestions(false) }}>
+                          {f.value}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button className="cp-submit" onClick={() => nextStep(2)}>Continuer</button>
+              <div className="cp-back">
                 <a href="#" onClick={e => { e.preventDefault(); prevStep(2) }}>Retour</a>
               </div>
             </div>
@@ -826,20 +830,30 @@ export default function CompleterProfilPage() {
 
           {/* Step 3 */}
           {currentStep === 3 && !showConfirmation && (
-            <div className="step active">
-              <div className="step-content">
-                <div className="form-group">
-                  <label>A propos de toi</label>
-                  <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Parle de toi, tes centres d'interets, ce que tu aimes faire..." maxLength="300" rows="5" />
-                  <p className="hint">Optionnel — Max 300 caracteres</p>
+            <div className="cp-step">
+              <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
+              <div className="cp-photo-section">
+                <div className="cp-avatar" onClick={() => photoInputRef.current?.click()}>
+                  {photoPreviewUrl ? (
+                    <img src={photoPreviewUrl} alt="" />
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  )}
                 </div>
+                <span className="cp-photo-label">{photoPreviewUrl ? 'Modifier la photo' : 'Ajouter une photo'}</span>
               </div>
-              <div className="buttons-row single">
-                <button className={`btn-next${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
-                  {loading ? 'Enregistrement...' : 'Enregistrer'}
-                </button>
+              <div className="cp-group">
+                <label>À propos de toi</label>
+                <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Parle de toi, tes centres d'intérêts, ce que tu aimes faire..." maxLength="300" rows="4" />
+                <p className="cp-hint">Optionnel — Max 300 caractères</p>
               </div>
-              <div className="back-link">
+              <button className={`cp-submit${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
+                {loading ? 'Enregistrement...' : 'Enregistrer'}
+              </button>
+              <div className="cp-back">
                 <a href="#" onClick={e => { e.preventDefault(); prevStep(3) }}>Retour</a>
               </div>
             </div>
@@ -847,12 +861,12 @@ export default function CompleterProfilPage() {
 
           {/* Confirmation */}
           {showConfirmation && (
-            <div className="confirmation-screen active">
-              <div className="confirmation-icon">
+            <div className="cp-confirmation">
+              <div className="cp-confirm-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /></svg>
               </div>
-              <div className="confirmation-title">Profil complete !</div>
-              <div className="confirmation-text">Redirection vers ton espace...</div>
+              <div className="cp-confirm-title">Profil complété !</div>
+              <div className="cp-confirm-text">Redirection vers ton espace...</div>
             </div>
           )}
         </div>

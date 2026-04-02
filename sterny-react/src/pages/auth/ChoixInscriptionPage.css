@@ -1,3 +1,4 @@
+/* ═══ PAGE ═══ */
 .ci-page {
     min-height: calc(100vh - 70px);
     display: flex;
@@ -7,114 +8,119 @@
     padding: 40px 20px;
 }
 
+/* ═══ CARD — identical to ConnexionPage ═══ */
 .ci-card {
     max-width: 460px;
     width: 100%;
     background: white;
-    border-radius: 20px;
-    padding: 36px 36px;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 6px 28px rgba(232,98,42,0.10);
     border: 1.5px solid #E8EAF0;
     display: flex;
     flex-direction: column;
-    min-height: 548px;
+    animation: ciFadeIn 0.4s ease;
 }
 
-.ci-header {
+@keyframes ciFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ TITLE — matches ConnexionPage ═══ */
+.ci-title {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #E8622A;
+    text-transform: uppercase;
     text-align: center;
-    margin-bottom: 24px;
+    margin: 0 0 32px 0;
 }
 
-.ci-header h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1E293B;
-    margin: 0 0 6px 0;
-}
-
-.ci-header p {
-    color: #6B7280;
-    font-size: 15px;
-    margin: 0;
-}
-
-.ci-card .profile-options {
+/* ═══ PROFILE OPTIONS ═══ */
+.ci-options {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 32px;
 }
 
-.ci-bottom {
-    margin-top: auto;
-}
-
-.ci-card .profile-card {
+.ci-profile {
     position: relative;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
-    padding: 11px 16px;
+    padding: 14px 16px;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
     background: white;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     text-decoration: none;
 }
 
-.ci-card .profile-card:hover {
+.ci-profile:hover {
     border-color: #E8622A;
-    background: rgba(232,98,42,0.04);
+    background: rgba(232,98,42,0.03);
+    transform: translateY(-2px);
 }
 
-.ci-card .profile-card input[type="radio"] {
+.ci-profile input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-.ci-card .profile-card.selected {
+.ci-profile.selected {
     border-color: #E8622A;
     background: rgba(232,98,42,0.06);
+    box-shadow: 0 4px 12px rgba(232,98,42,0.08);
 }
 
-.ci-card .card-icon {
-    width: 36px;
-    height: 36px;
+/* Icon */
+.ci-icon {
+    width: 40px;
+    height: 40px;
     border-radius: 12px;
     background: #F4F5F7;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
+    color: #94A3B8;
 }
 
-.ci-card .profile-card.selected .card-icon {
+.ci-profile.selected .ci-icon {
     background: rgba(232,98,42,0.1);
+    color: #E8622A;
 }
 
-.ci-card .card-content {
+/* Content */
+.ci-content {
     flex: 1;
 }
 
-.ci-card .card-title {
+.ci-card-title {
     font-size: 15px;
     font-weight: 600;
     color: #1E293B;
+    margin-bottom: 2px;
 }
 
-.ci-card .profile-card.selected .card-title {
+.ci-profile.selected .ci-card-title {
     font-weight: 700;
 }
 
-.ci-card .card-description {
+.ci-card-desc {
     font-size: 13px;
-    color: #64748B;
-    line-height: 1.5;
+    color: #94A3B8;
+    line-height: 1.4;
 }
 
-.ci-card .card-check {
+/* Check circle */
+.ci-check {
     width: 22px;
     height: 22px;
     border: 1.5px solid #E8EAF0;
@@ -122,21 +128,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 13px;
     color: transparent;
     transition: all 0.2s;
     flex-shrink: 0;
 }
 
-.ci-card .profile-card.selected .card-check {
+.ci-profile.selected .ci-check {
     background: #E8622A;
     border-color: #E8622A;
     color: white;
 }
 
+/* ═══ BOTTOM — button + link ═══ */
+.ci-bottom {
+    margin-top: auto;
+}
+
 .ci-btn {
     width: 100%;
-    height: 46px;
+    height: 48px;
     background: #E8622A;
     color: white;
     border: none;
@@ -144,7 +155,7 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     font-family: 'DM Sans', sans-serif;
     display: flex;
     align-items: center;
@@ -152,9 +163,9 @@
 }
 
 .ci-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(232,98,42,0.3);
-    background-color: #D4561F;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
+    background-color: #D4571F;
 }
 
 .ci-btn:disabled {
@@ -163,20 +174,48 @@
     cursor: not-allowed;
 }
 
+/* Back link — with separator like ConnexionPage */
 .ci-back {
     display: block;
     text-align: center;
-    margin: 8px 0 0 0;
-    color: #64748B;
+    margin: 12px 0 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #E8EAF0;
+    color: #94A3B8;
     font-size: 14px;
+    font-weight: 400;
 }
 
 .ci-back a {
-    color: #94A3B8;
+    color: #E8622A;
     text-decoration: none;
     font-weight: 700;
+    transition: opacity 0.2s;
 }
 
 .ci-back a:hover {
-    text-decoration: underline;
+    opacity: 0.8;
+}
+
+/* ═══ STAGGER ANIMATION ═══ */
+.ci-stagger {
+    animation: ciStaggerIn 0.4s ease both;
+}
+
+@keyframes ciStaggerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 480px) {
+    .ci-card {
+        padding: 28px 24px;
+        border-radius: 14px;
+    }
+
+    .ci-title {
+        font-size: 16px;
+        letter-spacing: 2px;
+    }
 }
