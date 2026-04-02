@@ -45,6 +45,52 @@ function formatPhone(val) {
   return groups ? groups.join(' ') : ''
 }
 
+function CustomSelect({ value, onChange, options, placeholder }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  const selected = options.find(o => o.value === value)
+
+  const handleSelect = (val) => {
+    onChange(val)
+    setOpen(false)
+  }
+
+  const handleBlur = (e) => {
+    if (ref.current && !ref.current.contains(e.relatedTarget)) {
+      setOpen(false)
+    }
+  }
+
+  return (
+    <div className="ir-select" ref={ref} tabIndex={-1} onBlur={handleBlur}>
+      <div className={`ir-select-trigger${!selected ? ' placeholder' : ''}`} onClick={() => setOpen(!open)}>
+        <span>{selected ? selected.label : placeholder}</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <path d="M1 1l5 5 5-5" stroke="#64748B" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      {open && (
+        <div className="ir-select-dropdown">
+          {options.map(o => (
+            <div
+              key={o.value}
+              className={`ir-select-option${o.value === value ? ' selected' : ''}`}
+              onMouseDown={() => handleSelect(o.value)}
+            >
+              {o.label.includes('(') ? (
+                <><span className="ir-option-main">{o.label.split('(')[0].trim()}</span> <span className="ir-option-hint">({o.label.split('(')[1]}</span></>
+              ) : (
+                <span className="ir-option-main">{o.label}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function VilleAutocomplete({ value, onChange, onSelect, placeholder, suggestions, setSuggestions }) {
   const handleInput = (val) => {
     const capitalized = capitalizeWords(val)
@@ -81,7 +127,7 @@ function VilleAutocomplete({ value, onChange, onSelect, placeholder, suggestions
   }
 
   return (
-    <div className="ville-wrapper">
+    <div className="ir-ville-wrapper">
       <input
         type="text"
         value={value}
@@ -91,18 +137,16 @@ function VilleAutocomplete({ value, onChange, onSelect, placeholder, suggestions
         autoComplete="off"
       />
       {suggestions.length > 0 && (
-        <div className="ville-suggestions show">
+        <div className="ir-ville-dropdown">
           {suggestions[0] === '__unavailable__' ? (
-            <div style={{ padding: '14px 16px', textAlign: 'center', cursor: 'default' }}>
-              <span style={{ fontSize: '13px', color: '#E8622A', fontWeight: 600 }}>
-                STERNY arrive bientôt dans ta ville !
-              </span>
+            <div className="ir-ville-unavailable">
+              STERNY arrive bientôt dans ta ville !
             </div>
           ) : (
             suggestions.map((v) => (
               <div
                 key={v}
-                className="ville-suggestion"
+                className="ir-ville-item"
                 onMouseDown={() => {
                   onChange(v)
                   onSelect(v)
@@ -155,6 +199,18 @@ export default function InscriptionRecherchePage() {
 
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [shakeBtn, setShakeBtn] = useState(false)
+
+  const handleGoogleSignup = async () => {
+    sessionStorage.setItem('signup_type', 'locataire')
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/dashboard/locataire'
+      }
+    })
+    if (error) showError(error.message)
+  }
 
   const stepTitles = {
     1: 'Que recherches-tu ?',
@@ -165,40 +221,42 @@ export default function InscriptionRecherchePage() {
 
   const showError = useCallback((msg) => {
     setErrorMsg(msg)
+    setShakeBtn(true)
+    setTimeout(() => setShakeBtn(false), 500)
     if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current)
     errorTimeoutRef.current = setTimeout(() => setErrorMsg(''), 3000)
   }, [])
 
-  const validateStep = (step) => {
+  const validateStep = (/* step */) => {
+    return null // TODO: réactiver la validation
+    /* eslint-disable no-unreachable */
     if (step === 1) {
-      if (!intent) return "Merci d'indiquer ce que tu recherches pour continuer"
+      if (!intent) return 'Merci de remplir toutes les informations'
     }
     if (step === 2) {
-      if (!nom.trim()) return 'Merci de renseigner ton nom'
-      if (!prenom.trim()) return 'Merci de renseigner ton prénom'
-      if (!email.trim()) return 'Une adresse email est nécessaire pour créer ton compte'
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "L'adresse email saisie ne semble pas valide"
-      if (!telephone.trim()) return 'Merci de renseigner ton numéro de téléphone'
+      if (!nom.trim() || !prenom.trim() || !email.trim() || !telephone.trim())
+        return 'Merci de remplir toutes les informations'
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Adresse email incomplète'
     }
     if (step === 3) {
-      if (!typeAlternance) return "Merci de sélectionner ton type d'alternance"
+      if (!typeAlternance) return 'Merci de remplir toutes les informations'
       if ((typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && !monRythme)
-        return 'Merci de préciser ton rythme'
+        return 'Rythme non renseigné'
       if (typeAlternance === 'custom' && !rythmeCustom.trim())
-        return "Merci de décrire ton rythme d'alternance"
+        return 'Rythme non renseigné'
       if (intent === 'les-deux') {
-        if (!villeEcoleSelectionnee) return 'Merci de sélectionner la ville où tu proposes ton logement'
-        if (!villeEntrepriseSelectionnee) return 'Merci de sélectionner la ville où tu cherches un logement'
+        if (!villeEcoleSelectionnee || !villeEntrepriseSelectionnee) return 'Ville non renseignée'
       } else {
-        if (!villeSelectionnee) return 'Merci de sélectionner une ville dans la liste'
+        if (!villeSelectionnee) return 'Ville non renseignée'
       }
     }
     if (step === 4) {
-      if (!password) return 'Merci de choisir un mot de passe'
-      if (password.length < 6) return 'Le mot de passe doit contenir au moins 6 caractères'
+      if (!password) return 'Merci de remplir toutes les informations'
+      if (password.length < 6) return '6 caractères minimum'
       if (password !== confirmPassword) return 'Les mots de passe ne correspondent pas'
     }
     return null
+    /* eslint-enable no-unreachable */
   }
 
   const handleNext = async (step) => {
@@ -303,8 +361,8 @@ export default function InscriptionRecherchePage() {
 
   if (showConfirmation) {
     return (
-      <section className="page-inscription">
-        <div className="inscription-container">
+      <section className="page-inscription-recherche">
+        <div className="ir-card">
           <div className="confirmation-screen active">
             <div className="confirmation-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -323,8 +381,8 @@ export default function InscriptionRecherchePage() {
   }
 
   return (
-    <section className="page-inscription">
-      <div className="inscription-container">
+    <section className="page-inscription-recherche">
+      <div className="ir-card" style={{ minHeight: '548px' }}>
         <div className="inscription-header">
           <h1>{stepTitles[currentStep]}</h1>
         </div>
@@ -336,10 +394,6 @@ export default function InscriptionRecherchePage() {
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
         </div>
-
-        {errorMsg && (
-          <div className="error-message show" dangerouslySetInnerHTML={{ __html: errorMsg }} />
-        )}
 
         {/* Step 1: Intent */}
         <div className={`step${currentStep === 1 ? ' active' : ''}`}>
@@ -375,10 +429,10 @@ export default function InscriptionRecherchePage() {
           </div>
 
           <div className="buttons-row single">
-            <button className="btn-next" disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
+            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
           </div>
           <div className="back-link">
-            <Link to="/inscription">Retour</Link>
+            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <Link to="/inscription">Retour</Link>}
           </div>
         </div>
 
@@ -405,10 +459,25 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="buttons-row single">
-            <button className="btn-next" onClick={() => handleNext(2)}>Continuer</button>
+            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} onClick={() => handleNext(2)}>Continuer</button>
           </div>
+
+          <div className="separator">
+            <span>ou</span>
+          </div>
+
+          <button type="button" className="google-btn" onClick={handleGoogleSignup}>
+            <svg width="18" height="18" viewBox="0 0 18 18">
+              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+              <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+            </svg>
+            S'inscrire avec Google
+          </button>
+
           <div className="back-link">
-            <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a>
+            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a>}
           </div>
         </div>
 
@@ -417,31 +486,27 @@ export default function InscriptionRecherchePage() {
           <div className="step-content">
             <div className="form-group">
               <label>Type d'alternance</label>
-              <select
+              <CustomSelect
                 value={typeAlternance}
-                onChange={(e) => { setTypeAlternance(e.target.value); setMonRythme('') }}
-                className={!typeAlternance ? 'placeholder' : ''}
-              >
-                <option value="" disabled>Sélectionner</option>
-                <option value="symmetric">Symétrique (même durée)</option>
-                <option value="asymmetric">Asymétrique (durées différentes)</option>
-                <option value="custom">Personnalisé</option>
-              </select>
+                onChange={(val) => { setTypeAlternance(val); setMonRythme('') }}
+                placeholder="Sélectionner"
+                options={[
+                  { value: 'symmetric', label: 'Symétrique (même durée)' },
+                  { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
+                  { value: 'custom', label: 'Personnalisé' }
+                ]}
+              />
             </div>
 
             {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
               <div className="form-group">
                 <label>Mon rythme</label>
-                <select
+                <CustomSelect
                   value={monRythme}
-                  onChange={(e) => setMonRythme(e.target.value)}
-                  className={!monRythme ? 'placeholder' : ''}
-                >
-                  <option value="" disabled>Sélectionner</option>
-                  {getRythmeOptions().map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
+                  onChange={setMonRythme}
+                  placeholder="Sélectionner"
+                  options={getRythmeOptions()}
+                />
               </div>
             )}
 
@@ -499,10 +564,10 @@ export default function InscriptionRecherchePage() {
             )}
           </div>
           <div className="buttons-row single">
-            <button className="btn-next" onClick={() => handleNext(3)}>Continuer</button>
+            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} onClick={() => handleNext(3)}>Continuer</button>
           </div>
           <div className="back-link">
-            <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>
+            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
           </div>
         </div>
 
@@ -519,12 +584,12 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="buttons-row single">
-            <button className="btn-next" disabled={creating} onClick={createAccount}>
+            <button className={`btn-next${shakeBtn ? ' shake' : ''}`} disabled={creating} onClick={createAccount}>
               {creating ? 'Création en cours...' : 'Créer mon compte'}
             </button>
           </div>
           <div className="back-link">
-            <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(4) }}>Retour</a>
+            {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(4) }}>Retour</a>}
           </div>
         </div>
       </div>

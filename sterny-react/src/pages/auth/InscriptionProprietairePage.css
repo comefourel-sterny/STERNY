@@ -1,4 +1,4 @@
-.page-inscription {
+.ip-page {
     min-height: calc(100vh - 70px);
     display: flex;
     align-items: center;
@@ -7,92 +7,85 @@
     padding: 40px 20px;
 }
 
-.inscription-container {
+.ip-card {
     max-width: 460px;
-    min-height: 546px;
     width: 100%;
     background: white;
-    border-radius: 16px;
-    padding: 36px 36px;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border-radius: 20px;
+    padding: 28px 36px;
+    box-shadow: 0 6px 28px rgba(232,98,42,0.12);
     border: 1.5px solid #E8EAF0;
-    transition: all 0.3s;
     display: flex;
     flex-direction: column;
 }
 
-.inscription-container:hover {
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
-}
-
-.inscription-container form {
+.ip-card form {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.inscription-header {
+.ip-header {
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
-.inscription-header h2 {
+.ip-header h2 {
     font-size: 24px;
     font-weight: 700;
     color: #1E293B;
+    margin: 0 0 6px 0;
+}
+
+.ip-header p {
+    color: #6B7280;
+    font-size: 15px;
     margin: 0;
 }
 
-.referral-inline {
-    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 10px;
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    display: none;
+.ip-header .ip-msg.error {
+    color: #EF4444;
+    font-weight: 600;
+    font-size: 15px;
 }
 
-.referral-inline.show {
-    display: block;
+.ip-header .ip-msg.success {
+    color: #10B981;
+    font-weight: 600;
+    font-size: 15px;
 }
 
-.referral-inline .referrer-name {
+.ip-header .ip-referrer {
     font-weight: 700;
 }
 
-.form-row {
+/* Form */
+.ip-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
-.form-group {
-    margin-bottom: 8px;
+.ip-group {
+    margin-bottom: 10px;
 }
 
-.form-row .form-group {
+.ip-form-row .ip-group {
     margin-bottom: 0;
 }
 
-.form-group label {
+.ip-group label {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #1E293B;
     margin-bottom: 4px;
 }
 
-.form-group .required {
-    color: #ef4444;
-}
-
-.form-group input {
+.ip-group input {
     width: 100%;
-    padding: 11px 16px;
+    padding: 9px 16px;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
     font-size: 15px;
@@ -104,34 +97,39 @@
     color: #1E293B;
 }
 
-.form-group input:focus {
+.ip-group input:focus {
     border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+    box-shadow: 0 0 0 3px rgba(232,98,42,0.08);
     background: white;
 }
 
-.form-group input:hover {
+.ip-group input:hover {
     border-color: #CBD5E1;
 }
 
-.form-group input:-webkit-autofill,
-.form-group input:-webkit-autofill:hover,
-.form-group input:-webkit-autofill:focus {
+.ip-group input::placeholder {
+    color: #9CA3AF;
+}
+
+.ip-group input:-webkit-autofill,
+.ip-group input:-webkit-autofill:hover,
+.ip-group input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
     -webkit-text-fill-color: #1E293B;
     border-color: #E8EAF0;
     transition: background-color 5000s ease-in-out 0s;
 }
 
-.password-wrapper {
+/* Password */
+.ip-password {
     position: relative;
 }
 
-.password-wrapper input {
+.ip-password input {
     padding-right: 85px;
 }
 
-.toggle-password {
+.ip-toggle {
     position: absolute;
     right: 14px;
     top: 50%;
@@ -147,108 +145,14 @@
     font-family: inherit;
 }
 
-.toggle-password:hover {
+.ip-toggle:hover {
     color: #E8622A;
 }
 
-.parrainage-group {
-    margin-bottom: 0;
-}
-
-.parrainage-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1E293B;
-    margin-bottom: 4px;
-}
-
-.parrainage-group .optional-tag {
-    font-size: 10px;
-    font-weight: 500;
-    color: #9CA3AF;
-    background: #F3F4F6;
-    padding: 2px 7px;
-    border-radius: 6px;
-}
-
-.parrainage-group input {
+/* Submit */
+.ip-submit {
     width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid rgba(232, 98, 42, 0.4);
-    border-radius: 10px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    transition: all 0.3s;
-    box-sizing: border-box;
-    background: #FFF7ED;
-    color: #1E293B;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.parrainage-group input:focus {
-    border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.1);
-    background: #FFF7ED;
-}
-
-.parrainage-group input::placeholder {
-    text-transform: none;
-    letter-spacing: normal;
-    color: #D4856A;
-}
-
-.parrainage-status {
-    font-size: 11px;
-    margin-top: 4px;
-    font-weight: 600;
-    display: none;
-}
-
-.parrainage-status.valid {
-    color: #059669;
-    display: block;
-}
-
-.parrainage-status.invalid {
-    color: #EF4444;
-    display: block;
-}
-
-.parrainage-status.checking {
-    color: #6B7280;
-    display: block;
-}
-
-.error-box {
-    padding: 8px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    display: none;
-    text-align: center;
-}
-
-.error-box.error {
-    display: block;
-    background: rgba(232, 98, 42, 0.08);
-    color: #E8622A;
-}
-
-.error-box.success {
-    display: block;
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.submit-btn {
-    width: 100%;
-    padding: 14px;
+    padding: 11px;
     background: #E8622A;
     color: white;
     border: none;
@@ -261,47 +165,166 @@
     margin-top: auto;
 }
 
-.submit-btn:hover {
+.ip-submit:hover {
     background: #d4571f;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
 }
 
-.submit-btn:active {
+.ip-submit:active {
     transform: translateY(0);
 }
 
-.submit-btn:disabled {
+.ip-submit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
-.back-link {
+.ip-submit.shake {
+    animation: ipShake 0.4s ease;
+}
+
+@keyframes ipShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+}
+
+/* Separator */
+.ip-separator {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 6px 0;
+}
+
+.ip-separator::before,
+.ip-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E8EAF0;
+}
+
+.ip-separator span {
+    font-size: 13px;
+    color: #94A3B8;
+    font-weight: 500;
+}
+
+/* Google */
+.ip-google {
+    width: 100%;
+    padding: 11px;
+    background: white;
+    color: #1E293B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.ip-google:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+/* Parrainage — sous le header, même hauteur toggle/champ */
+.ip-parr-toggle {
     text-align: center;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1.5px solid #E8EAF0;
+    font-size: 13px;
+    color: #9CA3AF;
+    cursor: pointer;
+    margin: 0 0 10px 0;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.ip-parr-toggle:hover {
+    color: #E8622A;
+}
+
+.ip-parrainage {
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ip-parrainage input {
+    flex: 1;
+    padding: 0 8px;
+    height: 18px;
+    border: none;
+    border-bottom: 1.5px solid #E8EAF0;
+    border-radius: 0;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    background: transparent;
+    color: #1E293B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: border-color 0.2s;
+}
+
+.ip-parrainage input:focus {
+    border-color: #E8622A;
+}
+
+.ip-parrainage input::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+    color: #C4C4C4;
+}
+
+.ip-parr-status {
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ip-parr-status.valid {
+    color: #10B981;
+}
+
+.ip-parr-status.invalid {
+    color: #EF4444;
+}
+
+.ip-parr-status.checking {
+    color: #94A3B8;
+}
+
+/* Back link */
+.ip-back {
+    text-align: center;
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
     color: #6B7280;
     font-size: 14px;
 }
 
-.back-link a {
-    color: #E8622A;
-    text-decoration: none;
-    font-weight: 700;
-}
-
-.back-link a:first-child {
+.ip-back a {
     color: #9CA3AF;
-    font-weight: 600;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: color 0.3s;
 }
 
-.back-link a:first-child:hover {
+.ip-back a:hover {
     color: #6B7280;
-}
-
-.back-link a:hover {
-    text-decoration: underline;
 }

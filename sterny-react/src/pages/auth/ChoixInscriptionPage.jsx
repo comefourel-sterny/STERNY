@@ -16,9 +16,9 @@ export default function ChoixInscriptionPage() {
   }
 
   return (
-    <section className="page-inscription">
-      <div className="inscription-container">
-        <div className="inscription-header">
+    <section className="ci-page">
+      <div className="ci-card">
+        <div className="ci-header">
           <h1>Créer un compte</h1>
           <p>Pour commencer, indique-nous ton profil</p>
         </div>
@@ -73,16 +73,18 @@ export default function ChoixInscriptionPage() {
           </label>
         </div>
 
-        <button
-          className="btn-continuer"
-          disabled={!selected}
-          onClick={handleContinue}
-        >
-          Continuer
-        </button>
+        <div className="ci-bottom">
+          <button
+            className="ci-btn"
+            disabled={!selected}
+            onClick={handleContinue}
+          >
+            Continuer
+          </button>
 
-        <div className="back-link">
-          Déjà un compte ? <Link to="/connexion">Se connecter</Link>
+          <p className="ci-back">
+            Déjà un compte ? <Link to="/connexion">Se connecter</Link>
+          </p>
         </div>
       </div>
     </section>

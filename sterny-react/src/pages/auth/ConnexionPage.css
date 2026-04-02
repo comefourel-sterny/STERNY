@@ -3,86 +3,135 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #F4F5F7;
+    background: #1E293B;
     padding: 40px 20px;
 }
 
 .connexion-card {
     max-width: 460px;
-    min-height: 546px;
     width: 100%;
     background: white;
     border-radius: 16px;
-    padding: 36px 36px;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
-    border: 1.5px solid #E8EAF0;
-    transition: all 0.3s;
+    padding: 28px 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: none;
+    border-top: 3px solid #E8622A;
     display: flex;
     flex-direction: column;
 }
 
 .connexion-card form {
-    flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.connexion-card .submit-btn {
-    margin-top: auto;
-}
-
-.connexion-card:hover {
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
-}
 
 .connexion-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .connexion-header h2 {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 800;
     color: #1E293B;
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
 }
 
 .connexion-header p {
-    color: #6B7280;
+    color: #64748B;
     font-size: 15px;
     margin: 0;
 }
 
+.connexion-header .cx-msg.error {
+    color: #EF4444;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.connexion-header .cx-msg.success {
+    color: #10B981;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.google-btn {
+    width: 100%;
+    height: 46px;
+    background: white;
+    color: #1E293B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.google-btn:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 10px 0;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E8EAF0;
+}
+
+.separator span {
+    font-size: 13px;
+    color: #94A3B8;
+    font-weight: 500;
+}
+
 .connexion-card .form-group {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .connexion-card .form-group label {
     display: block;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
     color: #1E293B;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
 }
 
 .connexion-card .form-group input {
     width: 100%;
-    padding: 11px 16px;
+    height: 42px;
+    padding: 0 16px;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
     font-size: 15px;
-    font-family: inherit;
+    font-family: 'DM Sans', sans-serif;
     outline: none;
     transition: all 0.3s;
     box-sizing: border-box;
-    background: #F4F5F7;
+    background: white;
     color: #1E293B;
 }
 
 .connexion-card .form-group input:focus {
     border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
-    background: white;
+    outline: none;
 }
 
 .connexion-card .form-group input:hover {
@@ -92,7 +141,7 @@
 .connexion-card .form-group input:-webkit-autofill,
 .connexion-card .form-group input:-webkit-autofill:hover,
 .connexion-card .form-group input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
+    -webkit-box-shadow: 0 0 0 1000px white inset;
     -webkit-text-fill-color: #1E293B;
     border-color: #E8EAF0;
     transition: background-color 5000s ease-in-out 0s;
@@ -115,11 +164,11 @@
     border: none;
     cursor: pointer;
     font-size: 13px;
-    color: #6B7280;
+    color: #64748B;
     font-weight: 600;
     padding: 4px 8px;
-    transition: color 0.3s;
-    font-family: inherit;
+    transition: color 0.2s;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .toggle-password:hover {
@@ -128,47 +177,29 @@
 
 .forgot-password {
     text-align: right;
-    margin-top: 4px;
-    margin-bottom: 18px;
+    margin-top: -2px;
+    margin-bottom: 14px;
 }
 
 .forgot-password a {
-    color: #9CA3AF;
+    color: #94A3B8;
     font-size: 13px;
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: color 0.2s;
 }
 
 .forgot-password a:hover {
     color: #E8622A;
 }
 
-.error-box {
-    padding: 8px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    display: none;
-    text-align: center;
-}
-
-.error-box.error {
-    display: block;
-    background: rgba(232, 98, 42, 0.08);
-    color: #E8622A;
-}
-
-.error-box.success {
-    display: block;
-    background: #D1FAE5;
-    color: #065F46;
-}
 
 .submit-btn {
     width: 100%;
-    padding: 14px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #E8622A;
     color: white;
     border: none;
@@ -176,18 +207,24 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
+    transition: opacity 0.2s;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .submit-btn:hover {
-    background: #d4571f;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+    opacity: 0.9;
 }
 
-.submit-btn:active {
-    transform: translateY(0);
+.submit-btn.shake {
+    animation: shakeBtn 0.4s ease;
+}
+
+@keyframes shakeBtn {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
 }
 
 .submit-btn:disabled {
@@ -200,10 +237,10 @@
 .connexion-card .back-link {
     display: block;
     text-align: center;
-    margin-top: 16px;
-    padding-top: 14px;
+    margin: 8px 0 0 0;
+    padding-top: 0;
     border-top: none;
-    color: #6B7280;
+    color: #64748B;
     font-size: 14px;
     width: 100%;
 }

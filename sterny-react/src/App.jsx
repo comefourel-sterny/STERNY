@@ -2,8 +2,9 @@ import { Routes, Route } from 'react-router-dom'
 import { Agentation } from 'agentation'
 import PasswordGate from './components/PasswordGate'
 
-// Layouts
+// Layouts & handlers
 import Layout from './components/layout/Layout'
+import GoogleAuthHandler from './components/GoogleAuthHandler'
 import DashboardLayout from './components/layout/DashboardLayout'
 
 // Public pages
@@ -78,6 +79,7 @@ import NotFoundPage from './pages/NotFoundPage'
 export default function App() {
   return (
     <PasswordGate>
+      <GoogleAuthHandler />
       <Routes>
         {/* Public layout */}
         <Route element={<Layout />}>
