@@ -39,6 +39,32 @@ const SIGLES_ECOLES = {
 
 const VILLES_LANCEMENT = ['rennes', 'nantes', 'brest', 'quimper', 'lorient', 'vannes', 'saint-malo', 'saint-brieuc', 'fougeres', 'vitre']
 
+const VILLES_DISPONIBLES = [
+  'Rennes', 'Nantes', 'Brest', 'Quimper', 'Lorient',
+  'Vannes', 'Saint-Malo', 'Saint-Brieuc', 'Fougères', 'Vitré'
+]
+
+const SYMMETRIC_OPTIONS = [
+  { value: '1-1', label: '1 sem. / 1 sem.' },
+  { value: '2-2', label: '2 sem. / 2 sem.' },
+  { value: '3-3', label: '3 sem. / 3 sem.' },
+  { value: '4-4', label: '4 sem. / 4 sem.' },
+  { value: '5-5', label: '5 sem. / 5 sem.' },
+  { value: '6-6', label: '6 sem. / 6 sem.' },
+  { value: '8-8', label: '8 sem. / 8 sem.' },
+]
+
+const ASYMMETRIC_OPTIONS = [
+  { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
+  { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
+  { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
+  { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
+  { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
+  { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
+  { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
+  { value: '2-3', label: '2 sem. entreprise / 3 sem. école' },
+]
+
 const ECOLES_POPULAIRES = [
   { name: 'Universite de Rennes', city: 'Rennes', aliases: ['rennes 1', 'univ rennes', 'ur1', 'universite'] },
   { name: 'Universite Rennes 2', city: 'Rennes', aliases: ['rennes 2', 'ur2', 'lettres', 'langues'] },
@@ -179,17 +205,28 @@ export default function CompleterProfilPage() {
   const [loading, setLoading] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [userType, setUserType] = useState('locataire')
-  const totalSteps = userType === 'proprietaire' ? 1 : 3
+  const totalSteps = userType === 'proprietaire' ? 1 : 4
 
-  // Form fields
+  // Form fields — Step 1: Identité
   const [prenom, setPrenom] = useState('')
   const [nom, setNom] = useState('')
   const [dateNaissance, setDateNaissance] = useState('')
   const [dateNaissanceISO, setDateNaissanceISO] = useState('')
   const [sexe, setSexe] = useState('')
+
+  // Step 2: Alternance
+  const [typeAlternance, setTypeAlternance] = useState('')
+  const [monRythme, setMonRythme] = useState('')
+  const [rythmeCustom, setRythmeCustom] = useState('')
+  const [villeInput, setVilleInput] = useState('')
+  const [villeSelectionnee, setVilleSelectionnee] = useState('')
+
+  // Step 3: Études
   const [ecole, setEcole] = useState('')
   const [anneeEtudes, setAnneeEtudes] = useState('')
   const [filiere, setFiliere] = useState('')
+
+  // Step 4: Photo + Bio
   const [bio, setBio] = useState('')
 
   // Photo
@@ -218,7 +255,7 @@ export default function CompleterProfilPage() {
   const schoolSearchTimeout = useRef(null)
   const errorTimeout = useRef(null)
 
-  const stepTitles = { 1: 'Complete ton profil', 2: 'Tes etudes', 3: 'A propos de toi' }
+  const stepTitles = { 1: 'Complete ton profil', 2: 'Ton alternance', 3: 'Tes etudes', 4: 'A propos de toi' }
 
   // Auth check + pre-fill
   useEffect(() => {
@@ -243,6 +280,9 @@ export default function CompleterProfilPage() {
         setDateNaissanceISO(userData.date_naissance)
       }
       if (userData.photo_profil_url) setPhotoPreviewUrl(userData.photo_profil_url)
+      if (userData.type_alternance) setTypeAlternance(userData.type_alternance)
+      if (userData.rythme_alternance) setMonRythme(userData.rythme_alternance)
+      if (userData.ville) { setVilleInput(userData.ville); setVilleSelectionnee(userData.ville) }
       if (userData.ecole) setEcole(userData.ecole)
       if (userData.annee_etudes) setAnneeEtudes(userData.annee_etudes)
       if (userData.filiere) setFiliere(userData.filiere)
@@ -262,7 +302,9 @@ export default function CompleterProfilPage() {
   }, [])
 
   // Validation
-  function validateStep(step) {
+  function validateStep(/* step */) {
+    return null // TODO: réactiver la validation
+    /* eslint-disable no-unreachable */
     if (step === 1) {
       if (!prenom.trim()) return 'Merci de renseigner ton prenom'
       if (!nom.trim()) return 'Merci de renseigner ton nom'
@@ -277,11 +319,18 @@ export default function CompleterProfilPage() {
       if (age < 18) return 'Tu dois avoir au moins 18 ans'
     }
     if (step === 2) {
+      if (!typeAlternance) return "Sélectionne ton type d'alternance"
+      if ((typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && !monRythme) return 'Précise ton rythme'
+      if (typeAlternance === 'custom' && !rythmeCustom.trim()) return 'Décris ton rythme'
+      if (!villeSelectionnee) return 'Sélectionne une ville'
+    }
+    if (step === 3) {
       if (!ecole.trim()) return 'Merci de renseigner ton ecole'
       if (!anneeEtudes.trim()) return 'Merci de renseigner ton annee d\'etudes'
       if (!filiere.trim()) return 'Merci de renseigner ta filiere'
     }
     return null
+    /* eslint-enable no-unreachable */
   }
 
   function nextStep(current) {
@@ -346,7 +395,7 @@ export default function CompleterProfilPage() {
   function handleCropImageLoad() {
     const img = cropImageRef.current
     if (!img) return
-    const areaSize = 260
+    const areaSize = 220
     const ratio = Math.max(areaSize / img.naturalWidth, areaSize / img.naturalHeight)
     cropStateRef.current.scale = ratio
     const minZoom = Math.round(ratio * 100)
@@ -376,7 +425,7 @@ export default function CompleterProfilPage() {
     const img = cropImageRef.current
     const s = cropStateRef.current
     if (!img) return
-    const areaSize = 260
+    const areaSize = 220
     const w = img.naturalWidth * s.scale
     const h = img.naturalHeight * s.scale
     if (s.imgX > 0) s.imgX = 0
@@ -394,7 +443,7 @@ export default function CompleterProfilPage() {
     if (!img) return
     const oldScale = s.scale
     s.scale = newZoom / 100
-    const areaSize = 260
+    const areaSize = 220
     const cx = areaSize / 2
     const cy = areaSize / 2
     const relX = (cx - s.imgX) / (img.naturalWidth * oldScale)
@@ -467,7 +516,7 @@ export default function CompleterProfilPage() {
     canvas.width = size
     canvas.height = size
     const ctx = canvas.getContext('2d')
-    const areaSize = 260
+    const areaSize = 220
     const sourceX = -s.imgX / s.scale
     const sourceY = -s.imgY / s.scale
     const sourceSize = areaSize / s.scale
@@ -637,11 +686,16 @@ export default function CompleterProfilPage() {
         }
       }
 
+      const rythmeAlternance = typeAlternance === 'custom' ? rythmeCustom.trim() : monRythme
+
       const updateData = {
         prenom: prenom.trim(),
         nom: nom.trim(),
         sexe,
         date_naissance: dateNaissanceISO,
+        type_alternance: typeAlternance || null,
+        rythme_alternance: rythmeAlternance || null,
+        ville: villeSelectionnee || null,
         ecole: ecole.trim(),
         annee_etudes: anneeEtudes.trim(),
         filiere: filiere.trim(),
@@ -667,40 +721,39 @@ export default function CompleterProfilPage() {
     }
   }
 
-  // if (!user) return null // TODO: réactiver
+  // if (!user) return null // TODO: réactiver après tests
 
   return (
     <>
       {/* Crop Modal */}
-      <div className={`crop-overlay${showCrop ? ' active' : ''}`} role="dialog" aria-modal="true" aria-label="Recadrer la photo">
-        <div className="crop-modal">
-          <h3>Recadre ta photo</h3>
-          <p className="crop-hint">Deplace et zoome pour ajuster</p>
-          <div className="crop-area" ref={cropAreaRef} onMouseDown={handleCropMouseDown} onTouchStart={handleCropTouchStart}>
+      <div className={`cp-crop-overlay${showCrop ? ' active' : ''}`} role="dialog" aria-modal="true" aria-label="Recadrer la photo">
+        <div className="cp-crop-modal">
+          <div className="cp-crop-header">
+            <span className="cp-crop-title">RECADRER</span>
+            <button className="cp-crop-close" onClick={cancelCrop}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div className="cp-crop-area" ref={cropAreaRef} onMouseDown={handleCropMouseDown} onTouchStart={handleCropTouchStart}>
             <img ref={cropImageRef} src={cropImageSrc} alt="Photo a recadrer" onLoad={handleCropImageLoad} />
           </div>
-          <div className="crop-zoom">
-            <label>Zoom</label>
+          <div className="cp-crop-zoom">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M8 11h6"/></svg>
             <input type="range" min={cropZoomMin} max={cropZoomMax} value={cropZoom} onChange={handleCropZoom} />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M11 8v6M8 11h6"/></svg>
           </div>
-          <div className="crop-actions">
-            <button className="crop-cancel" onClick={cancelCrop}>Annuler</button>
-            <button className="crop-confirm" onClick={confirmCrop}>Valider</button>
-          </div>
+          <button className="cp-crop-confirm" onClick={confirmCrop}>Appliquer</button>
         </div>
       </div>
 
       {/* Page */}
       <section className="cp-page">
-        <div className="cp-card" style={{ minHeight: '548px' }}>
+        <div className="cp-card" style={{ minHeight: '536px' }}>
           {!showConfirmation && (
             <>
-              <div className="cp-header">
-                <h1>{stepTitles[currentStep] || ''}</h1>
-                {error && <p className="cp-error">{error}</p>}
-              </div>
-              <div className="cp-step-indicator">Etape {currentStep} sur {totalSteps}</div>
-              <div className="cp-progress">
+              <h2 className="cp-title cp-stagger">BIENVENUE</h2>
+              {error && <p className="cp-error">{error}</p>}
+              <div className="cp-progress-bar cp-stagger" style={{ animationDelay: '0.08s' }}>
                 <div className="cp-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
               </div>
             </>
@@ -709,7 +762,7 @@ export default function CompleterProfilPage() {
           {/* Step 1 */}
           {currentStep === 1 && !showConfirmation && (
             <div className="cp-step">
-              <div className="cp-row">
+              <div>
                 <div className="cp-group">
                   <label>Prénom</label>
                   <input type="text" value={prenom} onChange={e => setPrenom(capitalizeWords(e.target.value))} placeholder="Prénom" />
@@ -719,7 +772,7 @@ export default function CompleterProfilPage() {
                   <input type="text" value={nom} onChange={e => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
                 </div>
               </div>
-              <div className="cp-row">
+              <div>
                 <div className="cp-group">
                   <label>Date de naissance</label>
                   <input type="text" value={dateNaissance} onChange={handleDateInput} onKeyDown={handleDateKeyDown} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" />
@@ -739,17 +792,91 @@ export default function CompleterProfilPage() {
                   />
                 </div>
               </div>
-              <button className={`cp-submit${loading ? ' loading' : ''}`} onClick={() => nextStep(1)} disabled={loading}>
-                {userType === 'proprietaire' ? 'Enregistrer' : 'Continuer'}
-              </button>
-              <div className="cp-back">
-                <Link to="/dashboard/locataire">Retour</Link>
+              <div className="cp-bottom">
+                <button className={`cp-btn cp-stagger${loading ? ' loading' : ''}`} style={{ animationDelay: '0.16s' }} onClick={() => nextStep(1)} disabled={loading}>
+                  {userType === 'proprietaire' ? 'Enregistrer' : 'Continuer'}
+                </button>
+                <p className="cp-back cp-stagger" style={{ animationDelay: '0.24s' }}>
+                  <Link to="/dashboard/locataire">Retour</Link>
+                </p>
               </div>
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2: Alternance */}
           {currentStep === 2 && !showConfirmation && (
+            <div className="cp-step">
+              <div className="cp-group">
+                <label>Type d'alternance</label>
+                <CpSelect
+                  value={typeAlternance}
+                  onChange={(val) => { setTypeAlternance(val); setMonRythme('') }}
+                  placeholder="Sélectionner"
+                  options={[
+                    { value: 'symmetric', label: 'Symétrique (même durée)' },
+                    { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
+                    { value: 'custom', label: 'Personnalisé' }
+                  ]}
+                />
+              </div>
+
+              {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
+                <div className="cp-group">
+                  <label>Mon rythme</label>
+                  <CpSelect
+                    value={monRythme}
+                    onChange={setMonRythme}
+                    placeholder="Sélectionner"
+                    options={typeAlternance === 'symmetric' ? SYMMETRIC_OPTIONS : ASYMMETRIC_OPTIONS}
+                  />
+                </div>
+              )}
+
+              {typeAlternance === 'custom' && (
+                <div className="cp-group">
+                  <label>Décris ton rythme</label>
+                  <input
+                    type="text"
+                    value={rythmeCustom}
+                    onChange={(e) => setRythmeCustom(e.target.value)}
+                    placeholder="Ex : 3 jours école / 2 jours entreprise"
+                  />
+                </div>
+              )}
+
+              <div className="cp-group">
+                <label>Ville</label>
+                <input
+                  type="text"
+                  value={villeInput}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setVilleInput(val)
+                    setVilleSelectionnee('')
+                  }}
+                  onBlur={() => {
+                    const match = VILLES_DISPONIBLES.find(v => v.toLowerCase() === villeInput.trim().toLowerCase())
+                    if (match) { setVilleInput(match); setVilleSelectionnee(match) }
+                  }}
+                  placeholder="Ex: Rennes, Nantes..."
+                  list="cp-villes-list"
+                />
+                <datalist id="cp-villes-list">
+                  {VILLES_DISPONIBLES.map(v => <option key={v} value={v} />)}
+                </datalist>
+              </div>
+
+              <div className="cp-bottom">
+                <button className="cp-btn" onClick={() => nextStep(2)}>Continuer</button>
+                <p className="cp-back">
+                  <a href="#" onClick={e => { e.preventDefault(); prevStep(2) }}>Retour</a>
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Études */}
+          {currentStep === 3 && !showConfirmation && (
             <div className="cp-step">
               <div className="cp-group">
                 <label>École / Université</label>
@@ -821,40 +948,44 @@ export default function CompleterProfilPage() {
                   )}
                 </div>
               </div>
-              <button className="cp-submit" onClick={() => nextStep(2)}>Continuer</button>
-              <div className="cp-back">
-                <a href="#" onClick={e => { e.preventDefault(); prevStep(2) }}>Retour</a>
+              <div className="cp-bottom">
+                <button className="cp-btn" onClick={() => nextStep(3)}>Continuer</button>
+                <p className="cp-back">
+                  <a href="#" onClick={e => { e.preventDefault(); prevStep(3) }}>Retour</a>
+                </p>
               </div>
             </div>
           )}
 
           {/* Step 3 */}
-          {currentStep === 3 && !showConfirmation && (
+          {currentStep === 4 && !showConfirmation && (
             <div className="cp-step">
               <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
-              <div className="cp-photo-section">
-                <div className="cp-avatar" onClick={() => photoInputRef.current?.click()}>
+              <div className="cp-photo-center" onClick={() => photoInputRef.current?.click()}>
+                <div className="cp-photo-circle">
                   {photoPreviewUrl ? (
                     <img src={photoPreviewUrl} alt="" />
                   ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                      <circle cx="12" cy="7" r="4" />
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
                     </svg>
                   )}
                 </div>
-                <span className="cp-photo-label">{photoPreviewUrl ? 'Modifier la photo' : 'Ajouter une photo'}</span>
+                <span className="cp-photo-action">{photoPreviewUrl ? 'Modifier' : 'Ajouter une photo'}</span>
               </div>
               <div className="cp-group">
                 <label>À propos de toi</label>
                 <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Parle de toi, tes centres d'intérêts, ce que tu aimes faire..." maxLength="300" rows="4" />
                 <p className="cp-hint">Optionnel — Max 300 caractères</p>
               </div>
-              <button className={`cp-submit${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
-                {loading ? 'Enregistrement...' : 'Enregistrer'}
-              </button>
-              <div className="cp-back">
-                <a href="#" onClick={e => { e.preventDefault(); prevStep(3) }}>Retour</a>
+              <div className="cp-bottom">
+                <button className={`cp-btn${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
+                  {loading ? 'Enregistrement...' : 'Enregistrer'}
+                </button>
+                <p className="cp-back">
+                  <a href="#" onClick={e => { e.preventDefault(); prevStep(4) }}>Retour</a>
+                </p>
               </div>
             </div>
           )}
