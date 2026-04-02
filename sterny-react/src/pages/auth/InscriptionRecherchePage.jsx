@@ -386,11 +386,8 @@ export default function InscriptionRecherchePage() {
         <h2 className="ir-title ir-stagger">INSCRIPTION</h2>
         {errorMsg && <p className="ir-error">{errorMsg}</p>}
 
-        <div className="ir-step-row ir-stagger" style={{ animationDelay: '0.08s' }}>
-          <span className="ir-step-label">Étape {currentStep}/{totalSteps}</span>
-          <div className="ir-progress">
-            <div className="ir-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
-          </div>
+        <div className="ir-progress-bar ir-stagger" style={{ animationDelay: '0.08s' }}>
+          <div className="ir-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
         </div>
 
         {/* Step 1: Intent */}

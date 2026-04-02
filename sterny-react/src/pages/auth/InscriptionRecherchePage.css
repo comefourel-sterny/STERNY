@@ -47,28 +47,13 @@ section.page-inscription-recherche {
     margin: -8px 0 12px 0;
 }
 
-/* ═══ STEP INDICATOR + PROGRESS ═══ */
-.ir-step-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.ir-step-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #94A3B8;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
-}
-
-.ir-progress {
-    flex: 1;
+/* ═══ PROGRESS BAR ═══ */
+.ir-progress-bar {
     height: 2px;
     background: #E8EAF0;
     border-radius: 4px;
     overflow: hidden;
+    margin-bottom: 14px;
 }
 
 .ir-progress-fill {
