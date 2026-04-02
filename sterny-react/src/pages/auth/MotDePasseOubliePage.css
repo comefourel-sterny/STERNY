@@ -1,4 +1,5 @@
-.page-connexion {
+/* ═══ PAGE ═══ */
+.mdp-page {
     min-height: calc(100vh - 70px);
     display: flex;
     align-items: center;
@@ -7,122 +8,119 @@
     padding: 40px 20px;
 }
 
-.connexion-card {
+/* ═══ CARD — identical to ConnexionPage ═══ */
+.mdp-card {
     max-width: 460px;
     width: 100%;
     background: white;
-    border-radius: 20px;
-    padding: 36px 36px;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.12);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 6px 28px rgba(232,98,42,0.10);
     border: 1.5px solid #E8EAF0;
-    transition: all 0.3s;
     display: flex;
     flex-direction: column;
+    animation: mdpFadeIn 0.4s ease;
 }
 
-.connexion-card form {
+@keyframes mdpFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mdp-card form {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.connexion-card .submit-btn {
-    margin-top: auto;
-}
-
-.connexion-card:hover {
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
-}
-
-.connexion-header {
+/* ═══ TITLE — matches ConnexionPage ═══ */
+.mdp-title {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #E8622A;
+    text-transform: uppercase;
     text-align: center;
-    margin-bottom: 24px;
+    margin: 0 0 12px 0;
 }
 
-.connexion-header h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1E293B;
-    margin: 0 0 6px 0;
-}
-
-.connexion-header p {
-    color: #6B7280;
+.mdp-subtitle {
+    text-align: center;
     font-size: 15px;
-    margin: 0;
+    color: #94A3B8;
+    margin: 0 0 32px 0;
+    font-weight: 400;
 }
 
-.form-group {
+.mdp-subtitle.mdp-msg.error {
+    color: #EF4444;
+    font-weight: 600;
+}
+
+.mdp-subtitle.mdp-msg.success {
+    color: #10B981;
+    font-weight: 600;
+}
+
+/* ═══ FORM FIELD ═══ */
+.mdp-field {
     margin-bottom: 14px;
 }
 
-.form-group label {
+.mdp-field label {
     display: block;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     color: #1E293B;
     margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.form-group input {
+.mdp-field input {
     width: 100%;
-    padding: 11px 16px;
+    height: 42px;
+    padding: 0 16px;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
     font-size: 15px;
-    font-family: inherit;
+    font-family: 'DM Sans', sans-serif;
     outline: none;
-    transition: all 0.3s;
+    transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
-    background: #F4F5F7;
+    background: white;
     color: #1E293B;
 }
 
-.form-group input:focus {
-    border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
-    background: white;
+.mdp-field input::placeholder {
+    color: #94A3B8;
 }
 
-.form-group input:hover {
+.mdp-field input:focus {
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232,98,42,0.12);
+}
+
+.mdp-field input:hover:not(:focus):not(:disabled) {
     border-color: #CBD5E1;
 }
 
-.form-group input:-webkit-autofill,
-.form-group input:-webkit-autofill:hover,
-.form-group input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
-    -webkit-text-fill-color: #1E293B;
-    border-color: #E8EAF0;
-    transition: background-color 5000s ease-in-out 0s;
+.mdp-field input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.error-box {
-    padding: 8px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    font-weight: 600;
-    display: none;
-    text-align: center;
-    line-height: 1.4;
+/* ═══ BOTTOM ═══ */
+.mdp-bottom {
+    margin-top: auto;
 }
 
-.error-box.error {
-    display: block;
-    background: rgba(232, 98, 42, 0.08);
-    color: #E8622A;
-}
-
-.error-box.success {
-    display: block;
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.submit-btn {
+.mdp-btn {
     width: 100%;
-    padding: 14px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #E8622A;
     color: white;
     border: none;
@@ -130,44 +128,89 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.submit-btn:hover {
-    background: #d4571f;
+.mdp-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
+    background-color: #D4571F;
 }
 
-.submit-btn:active {
+.mdp-btn:active:not(:disabled) {
     transform: translateY(0);
 }
 
-.submit-btn:disabled {
+.mdp-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
-.back-link {
+.mdp-btn.mdp-shake {
+    animation: mdpShake 0.4s ease;
+}
+
+@keyframes mdpShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+}
+
+.mdp-spinner {
+    animation: mdpSpin 0.8s linear infinite;
+}
+
+@keyframes mdpSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* ═══ BACK LINK ═══ */
+.mdp-back {
+    display: block;
     text-align: center;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1.5px solid #E8EAF0;
-    color: #6B7280;
+    margin: 12px 0 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #E8EAF0;
+    color: #94A3B8;
     font-size: 14px;
+    font-weight: 400;
 }
 
-.back-link a {
-    color: #9CA3AF;
+.mdp-back a {
+    color: #94A3B8;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 13px;
-    transition: color 0.3s;
+    font-weight: 700;
+    transition: opacity 0.2s;
 }
 
-.back-link a:hover {
-    color: #6B7280;
+.mdp-back a:hover {
+    opacity: 0.8;
+}
+
+/* ═══ STAGGER ═══ */
+.mdp-stagger {
+    animation: mdpStaggerIn 0.4s ease both;
+}
+
+@keyframes mdpStaggerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 480px) {
+    .mdp-card {
+        padding: 28px 24px;
+        border-radius: 14px;
+    }
+
+    .mdp-title {
+        font-size: 16px;
+        letter-spacing: 2px;
+    }
 }

@@ -8,9 +8,21 @@ export default function MotDePasseOubliePage() {
   const [loading, setLoading] = useState(false)
   const [emailDisabled, setEmailDisabled] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [shakeBtn, setShakeBtn] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const showError = (text) => {
+      setMessage({ type: 'error', text })
+      setShakeBtn(true)
+      setTimeout(() => setShakeBtn(false), 500)
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000)
+    }
+
+    if (!email.trim()) { showError('Entre ton adresse email'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Adresse email invalide'); return }
+
     setLoading(true)
 
     try {
@@ -24,53 +36,52 @@ export default function MotDePasseOubliePage() {
 
       setMessage({
         type: 'success',
-        text: 'Si un compte existe avec cet email, tu recevras un lien de réinitialisation dans quelques instants. Pense à vérifier tes spams.'
+        text: 'Lien envoyé ! Vérifie ta boîte mail.'
       })
       setEmailDisabled(true)
     } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Une erreur est survenue. Réessaie dans quelques instants.'
-      })
+      setMessage({ type: 'error', text: 'Une erreur est survenue. Réessaie.' })
+      setShakeBtn(true)
+      setTimeout(() => setShakeBtn(false), 500)
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000)
       setLoading(false)
     }
   }
 
   return (
-    <div className="page-connexion">
-      <div className="connexion-card">
-        <div className="connexion-header">
-          <h2>Mot de passe oublié ?</h2>
-          <p>Entre ton email, on t'envoie un lien de réinitialisation.</p>
-        </div>
-
-        {message.text && (
-          <div className={`error-box ${message.type}`}>
-            {message.text}
-          </div>
-        )}
+    <div className="mdp-page">
+      <div className="mdp-card">
+        <h2 className="mdp-title mdp-stagger">MOT DE PASSE</h2>
+        <p className={`mdp-subtitle mdp-stagger${message.text ? ` mdp-msg ${message.type}` : ''}`} style={{ animationDelay: '0.08s' }}>
+          {message.text || 'Entre ton email, on t\'envoie un lien.'}
+        </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Adresse email</label>
+          <div className="mdp-field mdp-stagger" style={{ animationDelay: '0.16s' }}>
+            <label>Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ton.email@exemple.com"
-              required
               disabled={emailDisabled}
             />
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading || emailDisabled}>
-            {loading ? 'Envoi en cours...' : 'Envoyer le lien'}
-          </button>
-        </form>
+          <div className="mdp-bottom">
+            <button type="submit" className={`mdp-btn mdp-stagger${shakeBtn ? ' mdp-shake' : ''}`} style={{ animationDelay: '0.24s' }} disabled={loading || emailDisabled}>
+              {loading ? (
+                <svg className="mdp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
+                </svg>
+              ) : 'Envoyer le lien'}
+            </button>
 
-        <div className="back-link">
-          <Link to="/connexion">&larr; Retour</Link>
-        </div>
+            <p className="mdp-back mdp-stagger" style={{ animationDelay: '0.32s' }}>
+              <Link to="/connexion">Retour</Link>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   )

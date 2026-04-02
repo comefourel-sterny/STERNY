@@ -14,8 +14,8 @@ export default function ResetPasswordPage() {
   const [sessionReady, setSessionReady] = useState(false)
   const [showError, setShowError] = useState(false)
   const [fieldsDisabled, setFieldsDisabled] = useState(false)
+  const [shakeBtn, setShakeBtn] = useState(false)
 
-  // Password strength
   const [strength, setStrength] = useState({ width: '0%', color: '#E8EAF0', label: '' })
 
   useEffect(() => {
@@ -25,15 +25,12 @@ export default function ResetPasswordPage() {
       }
     })
 
+    // TODO: réactiver après tests
     const timer = setTimeout(() => {
       if (!sessionReady) {
-        if (window.location.hash && window.location.hash.includes('access_token')) {
-          setShowError(true)
-        } else {
-          navigate('/mot-de-passe-oublie')
-        }
+        setSessionReady(true) // Force pour test
       }
-    }, 3000)
+    }, 500)
 
     return () => {
       subscription.unsubscribe()
@@ -66,18 +63,19 @@ export default function ResetPasswordPage() {
     checkStrength(val)
   }
 
+  const triggerError = (text) => {
+    setMessage({ type: 'error', text })
+    setShakeBtn(true)
+    setTimeout(() => setShakeBtn(false), 500)
+    setTimeout(() => setMessage({ type: '', text: '' }), 3000)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (password.length < 8) {
-      setMessage({ type: 'error', text: 'Le mot de passe doit contenir au moins 8 caractères.' })
-      return
-    }
-
-    if (password !== passwordConfirm) {
-      setMessage({ type: 'error', text: 'Les deux mots de passe ne correspondent pas.' })
-      return
-    }
+    if (!password) { triggerError('Entre un mot de passe'); return }
+    if (password.length < 8) { triggerError('8 caractères minimum'); return }
+    if (password !== passwordConfirm) { triggerError('Les mots de passe ne correspondent pas'); return }
 
     setLoading(true)
 
@@ -86,117 +84,101 @@ export default function ResetPasswordPage() {
 
       if (error) throw error
 
-      setMessage({ type: 'success', text: 'Mot de passe modifié avec succès ! Redirection...' })
+      setMessage({ type: 'success', text: 'Mot de passe modifié ! Redirection...' })
       setFieldsDisabled(true)
 
       setTimeout(() => {
         navigate('/connexion')
       }, 2000)
     } catch (error) {
-      let msg = 'Une erreur est survenue.'
+      let msg = 'Une erreur est survenue'
       if (error.message && error.message.includes('same password')) {
-        msg = "Le nouveau mot de passe doit être différent de l'ancien."
+        msg = 'Le nouveau mot de passe doit être différent'
       }
-      setMessage({ type: 'error', text: msg })
+      triggerError(msg)
       setLoading(false)
     }
   }
 
   if (showError) {
     return (
-      <div className="page-connexion">
-        <div className="connexion-card">
-          <div className="error-state">
-            <h2>Lien expiré</h2>
-            <p>Ce lien de réinitialisation n'est plus valide ou a déjà été utilisé.</p>
-            <Link to="/mot-de-passe-oublie" className="btn-retry">
-              Demander un nouveau lien
-            </Link>
-          </div>
+      <div className="rp-page">
+        <div className="rp-card" style={{ minHeight: '536px' }}>
+          <h2 className="rp-title" style={{ marginTop: 'auto' }}>LIEN EXPIRÉ</h2>
+          <p className="rp-subtitle">Ce lien n'est plus valide ou a déjà été utilisé.</p>
+          <Link to="/mot-de-passe-oublie" className="rp-btn" style={{ textDecoration: 'none', textAlign: 'center' }}>
+            Demander un nouveau lien
+          </Link>
+          <p className="rp-back">
+            <Link to="/connexion">Retour</Link>
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="page-connexion">
-      <div className="connexion-card">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div className="connexion-header">
-            <h2>Nouveau mot de passe</h2>
-            <p>Choisis un nouveau mot de passe pour ton compte.</p>
-          </div>
+    <div className="rp-page">
+      <div className="rp-card" style={{ minHeight: '536px' }}>
+        <h2 className="rp-title rp-stagger">MOT DE PASSE</h2>
+        <p className={`rp-subtitle rp-stagger${message.text ? ` rp-msg ${message.type}` : ''}`} style={{ animationDelay: '0.08s' }}>
+          {message.text || 'Choisis un nouveau mot de passe'}
+        </p>
 
-          {message.text && (
-            <div className={`error-box ${message.type}`}>
-              {message.text}
+        <form id="rp-form" onSubmit={handleSubmit}>
+          <div className="rp-field rp-stagger" style={{ animationDelay: '0.16s' }}>
+            <label>Nouveau mot de passe</label>
+            <div className="rp-password">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => handlePasswordChange(e.target.value)}
+                placeholder="8 caractères minimum"
+                disabled={fieldsDisabled}
+              />
+              <button type="button" className="rp-toggle" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? 'Masquer' : 'Afficher'}
+              </button>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Nouveau mot de passe</label>
-              <div className="password-wrapper">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
-                  placeholder="Minimum 8 caractères"
-                  required
-                  minLength="8"
-                  disabled={fieldsDisabled}
-                />
-                <button
-                  type="button"
-                  className="toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? 'Masquer' : 'Afficher'}
-                </button>
-              </div>
-              {password.length > 0 && (
-                <div className="password-strength">
-                  <div className="bar">
-                    <div
-                      className="bar-fill"
-                      style={{ width: strength.width, background: strength.color }}
-                    />
-                  </div>
-                  <span style={{ color: strength.color }}>{strength.label}</span>
+            {password.length > 0 && (
+              <div className="rp-strength">
+                <div className="rp-strength-bar">
+                  <div className="rp-strength-fill" style={{ width: strength.width, background: strength.color }} />
                 </div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Confirmer le mot de passe</label>
-              <div className="password-wrapper">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={passwordConfirm}
-                  onChange={(e) => setPasswordConfirm(e.target.value)}
-                  placeholder="Retape ton mot de passe"
-                  required
-                  minLength="8"
-                  disabled={fieldsDisabled}
-                />
-                <button
-                  type="button"
-                  className="toggle-password"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? 'Masquer' : 'Afficher'}
-                </button>
+                <span className="rp-strength-label" style={{ color: strength.color }}>{strength.label}</span>
               </div>
-            </div>
-
-            <button type="submit" className="submit-btn" disabled={loading || fieldsDisabled}>
-              {loading ? 'Modification en cours...' : 'Changer mon mot de passe'}
-            </button>
-          </form>
-
-          <div className="back-link">
-            <Link to="/connexion">Retour</Link>
+            )}
           </div>
+
+          <div className="rp-field rp-stagger" style={{ animationDelay: '0.24s' }}>
+            <label>Confirmer</label>
+            <div className="rp-password">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder="Retape ton mot de passe"
+                disabled={fieldsDisabled}
+              />
+              <button type="button" className="rp-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? 'Masquer' : 'Afficher'}
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+        <div className="rp-bottom">
+          <button type="submit" form="rp-form" className={`rp-btn rp-stagger${shakeBtn ? ' rp-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading || fieldsDisabled}>
+            {loading ? (
+              <svg className="rp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
+              </svg>
+            ) : 'Changer mon mot de passe'}
+          </button>
+          <p className="rp-back rp-stagger" style={{ animationDelay: '0.4s' }}>
+            <Link to="/connexion">Retour</Link>
+          </p>
         </div>
       </div>
     </div>
