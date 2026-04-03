@@ -25,12 +25,15 @@ export default function ResetPasswordPage() {
       }
     })
 
-    // TODO: réactiver après tests
     const timer = setTimeout(() => {
       if (!sessionReady) {
-        setSessionReady(true) // Force pour test
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+          setShowError(true)
+        } else {
+          navigate('/mot-de-passe-oublie')
+        }
       }
-    }, 500)
+    }, 3000)
 
     return () => {
       subscription.unsubscribe()

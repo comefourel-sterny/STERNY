@@ -227,9 +227,7 @@ export default function InscriptionRecherchePage() {
     errorTimeoutRef.current = setTimeout(() => setErrorMsg(''), 3000)
   }, [])
 
-  const validateStep = (/* step */) => {
-    return null // TODO: réactiver la validation
-    /* eslint-disable no-unreachable */
+  const validateStep = (step) => {
     if (step === 1) {
       if (!intent) return 'Merci de remplir toutes les informations'
     }
@@ -256,7 +254,6 @@ export default function InscriptionRecherchePage() {
       if (password !== confirmPassword) return 'Les mots de passe ne correspondent pas'
     }
     return null
-    /* eslint-enable no-unreachable */
   }
 
   const handleNext = async (step) => {

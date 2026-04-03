@@ -302,9 +302,7 @@ export default function CompleterProfilPage() {
   }, [])
 
   // Validation
-  function validateStep(/* step */) {
-    return null // TODO: réactiver la validation
-    /* eslint-disable no-unreachable */
+  function validateStep(step) {
     if (step === 1) {
       if (!prenom.trim()) return 'Merci de renseigner ton prenom'
       if (!nom.trim()) return 'Merci de renseigner ton nom'
@@ -330,7 +328,6 @@ export default function CompleterProfilPage() {
       if (!filiere.trim()) return 'Merci de renseigner ta filiere'
     }
     return null
-    /* eslint-enable no-unreachable */
   }
 
   function nextStep(current) {
@@ -721,7 +718,7 @@ export default function CompleterProfilPage() {
     }
   }
 
-  // if (!user) return null // TODO: réactiver après tests
+  if (!user) return null
 
   return (
     <>

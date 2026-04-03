@@ -6,6 +6,36 @@ import { validateAddress } from '../../utils/addressVerification'
 import Cropper from 'cropperjs'
 import './CreerAnnoncePage.css'
 
+function CaSelect({ value, onChange, options, placeholder, className }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  const selected = options.find(o => o.value === value)
+
+  const handleBlur = (e) => {
+    if (ref.current && !ref.current.contains(e.relatedTarget)) setOpen(false)
+  }
+
+  return (
+    <div className={`ca-select ${className || ''}`} ref={ref} tabIndex={-1} onBlur={handleBlur}>
+      <div className={`ca-select-trigger${!selected ? ' ca-placeholder' : ''}`} onClick={() => setOpen(!open)}>
+        <span>{selected ? selected.label : placeholder}</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <path d="M1 1l5 5 5-5" stroke="#94A3B8" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      {open && (
+        <div className="ca-select-dropdown">
+          {options.map(o => (
+            <div key={o.value} className={`ca-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); setOpen(false) }}>
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ==========================================
 // CONSTANTS
 // ==========================================
@@ -281,7 +311,7 @@ export default function CreerAnnoncePage() {
   const [userType, setUserType] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showUserTypeScreen, setShowUserTypeScreen] = useState(false)
-  const [showMainForm, setShowMainForm] = useState(false)
+  const [showMainForm, setShowMainForm] = useState(true) // TODO: remettre false
   const [selectedUserType, setSelectedUserType] = useState(null)
 
   // --- Step 1: Basic info ---
@@ -1581,15 +1611,7 @@ export default function CreerAnnoncePage() {
   // ==========================================
 
   // User type selection screen
-  if (!user) {
-    return (
-      <div className="create-container">
-        <div className="page-header">
-          <h1>Chargement...</h1>
-        </div>
-      </div>
-    )
-  }
+  // if (!user) { return null } // TODO: réactiver
 
   if (showUserTypeScreen) {
     return (
@@ -1649,13 +1671,7 @@ export default function CreerAnnoncePage() {
       <div className="create-container">
         {/* HEADER */}
         <div className="page-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center', marginBottom: '8px' }}>
-            <h1 style={{ margin: 0 }}>Créer une annonce</h1>
-            <span style={{ display: 'inline-block', background: '#F3F4F6', color: '#6B7280', padding: '4px 12px', borderRadius: '20px', fontSize: '13px', fontWeight: 600 }}>
-              {userType === 'proprietaire' ? 'Propriétaire' : 'Locataire'}
-            </span>
-          </div>
-          <p>Trouve ton alternant idéal en quelques étapes simples</p>
+          <h1>Créer une annonce</h1>
         </div>
 
         {/* PROGRESS BAR */}
@@ -1689,20 +1705,24 @@ export default function CreerAnnoncePage() {
           <div className="form-grid">
             <div className="form-group">
               <label>Type de logement <span className="required">*</span></label>
-              <select value={type} onChange={e => setType(e.target.value)}>
-                <option value="" disabled>Sélectionne le type</option>
-                <option value="Studio">Studio</option>
-                <option value="T1">T1</option>
-                <option value="T2">T2</option>
-                <option value="T3">T3</option>
-                <option value="T4+">T4+</option>
-              </select>
+              <CaSelect
+                value={type}
+                onChange={setType}
+                placeholder="Sélectionne le type"
+                options={[
+                  { value: 'Studio', label: 'Studio' },
+                  { value: 'T1', label: 'T1' },
+                  { value: 'T2', label: 'T2' },
+                  { value: 'T3', label: 'T3' },
+                  { value: 'T4+', label: 'T4+' }
+                ]}
+              />
             </div>
             <div className="form-group">
               <label>Surface <span className="required">*</span></label>
               <div style={{ position: 'relative', width: '100%' }}>
                 <input type="number" value={surface} onChange={e => setSurface(e.target.value)} min="10" max="200" placeholder="45" style={{ width: '100%', paddingRight: '50px' }} />
-                <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: 600, fontSize: '16px', pointerEvents: 'none' }}>m²</span>
+                <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontWeight: 400, fontSize: '14px', pointerEvents: 'none' }}>m²</span>
               </div>
             </div>
           </div>
@@ -1727,7 +1747,7 @@ export default function CreerAnnoncePage() {
             </div>
           </div>
           <div className="form-grid full-width">
-            <div style={{ fontSize: '13px', color: '#1E293B', fontWeight: 500, fontStyle: 'italic', marginTop: '-12px' }}>
+            <div style={{ fontSize: '12px', color: '#1E293B', fontWeight: 400, fontStyle: 'italic', marginTop: '-24px' }}>
               L'adresse complète sera visible uniquement après réservation confirmée
             </div>
           </div>
@@ -1756,7 +1776,7 @@ export default function CreerAnnoncePage() {
             <div className="form-group">
               <label>Description <span className="required">*</span></label>
               <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Décris ton logement : ambiance, points forts..." minLength="20" />
-              <div style={{ fontSize: '13px', color: '#1E293B', fontWeight: 500, fontStyle: 'italic', marginTop: '8px' }}>
+              <div style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 400, fontStyle: 'italic', marginTop: '-2px' }}>
                 Les informations de proximité seront calculées automatiquement
               </div>
             </div>
@@ -1775,10 +1795,12 @@ export default function CreerAnnoncePage() {
           <div className="form-grid">
             <div className="form-group">
               <label>DPE</label>
-              <select value={dpe} onChange={e => setDpe(e.target.value)}>
-                <option value="" disabled>Sélectionne la classe</option>
-                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
+              <CaSelect
+                value={dpe}
+                onChange={setDpe}
+                placeholder="Sélectionne la classe"
+                options={['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => ({ value: l, label: l }))}
+              />
             </div>
           </div>
           <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '32px 0 16px', color: '#1E293B' }}>Équipements disponibles</h3>
@@ -1949,10 +1971,12 @@ export default function CreerAnnoncePage() {
 
           <div className="form-group" style={{ marginBottom: '24px' }}>
             <label>Durée prédéfinie</label>
-            <select value={bailDuree} onChange={e => { setBailDuree(e.target.value); dimancheChoixFaitRef.current = false; setTimeout(handleBailEndDateCalc, 0) }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
-              <option value="" disabled>Choisis la durée de ton bail</option>
-              {[3, 6, 9, 10, 12, 24].map(d => <option key={d} value={d}>{d} mois{d === 9 ? ' (année scolaire)' : d === 12 ? ' (1 an)' : d === 24 ? ' (2 ans)' : ''}</option>)}
-            </select>
+            <CaSelect
+              value={bailDuree}
+              onChange={(val) => { setBailDuree(val); dimancheChoixFaitRef.current = false; setTimeout(handleBailEndDateCalc, 0) }}
+              placeholder="Choisis la durée de ton bail"
+              options={[3, 6, 9, 10, 12, 24].map(d => ({ value: String(d), label: `${d} mois${d === 9 ? ' (année scolaire)' : d === 12 ? ' (1 an)' : d === 24 ? ' (2 ans)' : ''}` }))}
+            />
           </div>
 
           <div style={{ borderTop: '1.5px solid #E8EAF0', margin: '32px 0' }} />
@@ -1962,20 +1986,26 @@ export default function CreerAnnoncePage() {
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1F2937', marginBottom: '24px' }}>Quel est ton rythme d'alternance ?</h3>
             <div className="form-group" style={{ marginBottom: '20px' }}>
               <label>Type d'alternance</label>
-              <select value={rhythmType} onChange={e => { setRhythmType(e.target.value); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
-                <option value="" disabled>Choisis ton type</option>
-                <option value="symmetric">Symétrique (même durée)</option>
-                <option value="asymmetric">Asymétrique (durées différentes)</option>
-                <option value="custom">Personnalisé (sélection manuelle)</option>
-              </select>
+              <CaSelect
+                value={rhythmType}
+                onChange={(val) => { setRhythmType(val); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }}
+                placeholder="Choisis ton type"
+                options={[
+                  { value: 'symmetric', label: 'Symétrique (même durée)' },
+                  { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
+                  { value: 'custom', label: 'Personnalisé (sélection manuelle)' }
+                ]}
+              />
             </div>
             {(rhythmType === 'symmetric' || rhythmType === 'asymmetric') && (
               <div className="form-group" style={{ marginBottom: '20px' }}>
                 <label>Rythme</label>
-                <select value={rhythmPattern} onChange={e => { setRhythmPattern(e.target.value); if (e.target.value) enterCycleSelectionMode() }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
-                  <option value="" disabled>Choisis la durée</option>
-                  {getRhythmOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
+                <CaSelect
+                  value={rhythmPattern}
+                  onChange={(val) => { setRhythmPattern(val); if (val) enterCycleSelectionMode() }}
+                  placeholder="Choisis la durée"
+                  options={getRhythmOptions()}
+                />
               </div>
             )}
           </div>

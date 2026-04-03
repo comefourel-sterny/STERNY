@@ -81,6 +81,11 @@ export default function App() {
     <PasswordGate>
       <GoogleAuthHandler />
       <Routes>
+        {/* Temp: test */}
+        <Route element={<Layout />}>
+          <Route path="/annonce/creer" element={<CreerAnnoncePage />} />
+        </Route>
+
         {/* Public layout */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
