@@ -13,18 +13,6 @@ export default function CommentCaMarcheProprietairePage() {
         </div>
       </section>
 
-      {/* VIDÉO */}
-      <section className="ccmp-video-section">
-        <div className="ccmp-container">
-          <div className="ccmp-video ccmp-stagger" style={{ animationDelay: '0.24s' }}>
-            <div className="ccmp-play">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M9.5 7.5v9l7-4.5z" /></svg>
-            </div>
-            <span className="ccmp-video-label">Découvrir STERNY en 1 min</span>
-          </div>
-        </div>
-      </section>
-
       {/* ÉTAPES */}
       <section className="ccmp-steps-section">
         <div className="ccmp-container">
