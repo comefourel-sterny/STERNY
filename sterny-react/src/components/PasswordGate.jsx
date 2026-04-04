@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { Agentation } from 'agentation'
 import { supabaseClient } from '../config/supabase'
 
-const PASSWORD_HASH = 'c1906591530e943691eed9fc5d1b4709047a228dba671b68a4bc090364362e01'
+const PASSWORD_HASH = '2bdfc58e249f3f1a115f9182ff5a88bd6d4420a6ce1bd99ec06a71248b844b90'
 
 async function sha256(text) {
   const encoder = new TextEncoder()
