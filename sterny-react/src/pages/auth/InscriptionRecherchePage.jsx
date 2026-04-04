@@ -381,7 +381,6 @@ export default function InscriptionRecherchePage() {
     <section className="page-inscription-recherche">
       <div className="ir-card" style={{ minHeight: '536px' }}>
         <h2 className="ir-title ir-stagger">INSCRIPTION</h2>
-        {errorMsg && <p className="ir-error">{errorMsg}</p>}
 
         <div className="ir-progress-bar ir-stagger" style={{ animationDelay: '0.08s' }}>
           <div className="ir-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
@@ -423,7 +422,7 @@ export default function InscriptionRecherchePage() {
           <div className="ir-bottom">
             <button className={`ir-btn${shakeBtn ? ' ir-shake' : ''}`} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
             <p className="ir-back">
-              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <Link to="/inscription">Retour</Link>}
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : (<><Link to="/inscription">Retour</Link> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>)}
             </p>
           </div>
         </div>
@@ -463,7 +462,9 @@ export default function InscriptionRecherchePage() {
               S'inscrire avec Google
             </button>
             <p className="ir-back">
-              {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a>}
+              {errorMsg ? <span className="ir-error">{errorMsg}</span> : (
+                <><a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>
+              )}
             </p>
           </div>
         </div>

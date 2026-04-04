@@ -77,11 +77,11 @@
     gap: 14px;
 }
 
-.form-group {
+.page-inscription .form-group {
     margin-bottom: 8px;
 }
 
-.form-group label {
+.page-inscription .form-group label {
     display: block;
     font-size: 11px;
     font-weight: 700;
@@ -91,8 +91,8 @@
     text-transform: uppercase;
 }
 
-.form-group input,
-.form-group select {
+.page-inscription .form-group input,
+.page-inscription .form-group select {
     width: 100%;
     padding: 11px 16px;
     border: 1.5px solid #E8EAF0;
@@ -106,7 +106,7 @@
     color: #1E293B;
 }
 
-.form-group select {
+.page-inscription .form-group select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -117,21 +117,21 @@
     cursor: pointer;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.page-inscription .form-group input:focus,
+.page-inscription .form-group select:focus {
     border-color: #E8622A;
     box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
     background: white;
 }
 
-.form-group input:hover,
-.form-group select:hover {
+.page-inscription .form-group input:hover,
+.page-inscription .form-group select:hover {
     border-color: #CBD5E1;
 }
 
-.form-group input:-webkit-autofill,
-.form-group input:-webkit-autofill:hover,
-.form-group input:-webkit-autofill:focus {
+.page-inscription .form-group input:-webkit-autofill,
+.page-inscription .form-group input:-webkit-autofill:hover,
+.page-inscription .form-group input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 1000px #F4F5F7 inset;
     -webkit-text-fill-color: #1E293B;
     border-color: #E8EAF0;

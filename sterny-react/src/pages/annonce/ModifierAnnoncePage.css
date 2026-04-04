@@ -200,13 +200,13 @@
     grid-template-columns: 1fr;
 }
 
-.form-group {
+.create-container .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.form-group label {
+.create-container .form-group label {
     font-size: 14px;
     font-weight: 600;
     color: #374151;
@@ -219,9 +219,9 @@
     margin-left: 2px;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.create-container .form-group input,
+.create-container .form-group select,
+.create-container .create-container .form-group textarea {
     padding: 14px 16px;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
@@ -231,7 +231,7 @@
     background: white;
 }
 
-.form-group select {
+.create-container .form-group select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -255,15 +255,15 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.create-container .form-group input:focus,
+.create-container .form-group select:focus,
+.create-container .form-group textarea:focus {
     outline: none;
     border-color: #1E293B;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.form-group textarea {
+.create-container .form-group textarea {
     resize: vertical;
     min-height: 120px;
 }
