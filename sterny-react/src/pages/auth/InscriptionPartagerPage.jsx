@@ -218,7 +218,7 @@ export default function InscriptionPartagerPage() {
   return (
     <section className="page-inscription">
       <div className="inscription-card">
-        <div className="step-indicator">
+        <div className="step-indicator ip-stagger">
           Étape <span>{currentStep}</span> sur {totalSteps}
         </div>
 
@@ -228,12 +228,12 @@ export default function InscriptionPartagerPage() {
 
         {/* Step 1: Personal info */}
         <div className={`form-section${currentStep === 1 ? ' active' : ''}`}>
-          <div className="inscription-header">
+          <div className="inscription-header ip-stagger" style={{ animationDelay: '0.08s' }}>
             <h2>Crée ton compte</h2>
             <p>Tes informations personnelles</p>
           </div>
 
-          <div className="form-row">
+          <div className="form-row ip-stagger" style={{ animationDelay: '0.16s' }}>
             <div className="form-group">
               <label>Nom</label>
               <input type="text" value={nom} onChange={(e) => setNom(capitalizeWords(e.target.value))} placeholder="Ton nom" />
@@ -244,27 +244,27 @@ export default function InscriptionPartagerPage() {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group ip-stagger" style={{ animationDelay: '0.24s' }}>
             <label>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton.email@exemple.com" />
           </div>
 
-          <div className="form-group">
+          <div className="form-group ip-stagger" style={{ animationDelay: '0.32s' }}>
             <label>Téléphone</label>
             <input type="tel" value={telephone} onChange={(e) => setTelephone(formatPhone(e.target.value))} placeholder="06 12 34 56 78" />
           </div>
 
-          <button className="submit-btn" style={{ marginTop: '20px' }} onClick={nextStep}>Continuer</button>
+          <button className="submit-btn ip-stagger" style={{ marginTop: '20px', animationDelay: '0.4s' }} onClick={nextStep}>Continuer</button>
         </div>
 
         {/* Step 2: Alternance */}
         <div className={`form-section${currentStep === 2 ? ' active' : ''}`}>
-          <div className="inscription-header">
+          <div className="inscription-header ip-stagger" style={{ animationDelay: '0.08s' }}>
             <h2>Ton alternance</h2>
             <p>Parle-nous de ta situation</p>
           </div>
 
-          <div className="form-group" style={{ position: 'relative' }}>
+          <div className="form-group ip-stagger" style={{ position: 'relative', animationDelay: '0.16s' }}>
             <label>Ville de ton logement</label>
             <div style={{ position: 'relative' }}>
               <input
@@ -291,7 +291,7 @@ export default function InscriptionPartagerPage() {
             )}
           </div>
 
-          <div className="form-group">
+          <div className="form-group ip-stagger" style={{ animationDelay: '0.24s' }}>
             <label>Type d'alternance</label>
             <select value={rythme} onChange={(e) => { setRythme(e.target.value); setRythmeDetail('') }}>
               <option value="" disabled>Type d'alternance</option>
@@ -313,22 +313,22 @@ export default function InscriptionPartagerPage() {
             </div>
           )}
 
-          <div className="btn-row" style={{ marginTop: '24px' }}>
+          <div className="btn-row ip-stagger" style={{ marginTop: '24px', animationDelay: '0.32s' }}>
             <button className="btn-submit" onClick={nextStep} style={{ width: '100%' }}>Continuer</button>
           </div>
-          <div className="back-link" style={{ textAlign: 'center', marginTop: '8px' }}>
+          <div className="back-link ip-stagger" style={{ textAlign: 'center', marginTop: '8px', animationDelay: '0.4s' }}>
             <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>
           </div>
         </div>
 
         {/* Step 3: Password */}
         <div className={`form-section${currentStep === 3 ? ' active' : ''}`}>
-          <div className="inscription-header">
+          <div className="inscription-header ip-stagger" style={{ animationDelay: '0.08s' }}>
             <h2>Sécurise ton compte</h2>
             <p>Choisis un mot de passe</p>
           </div>
 
-          <div className="form-group">
+          <div className="form-group ip-stagger" style={{ animationDelay: '0.16s' }}>
             <label>Mot de passe</label>
             <div className="password-wrapper">
               <input
@@ -343,7 +343,7 @@ export default function InscriptionPartagerPage() {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group ip-stagger" style={{ animationDelay: '0.24s' }}>
             <label>Confirmer le mot de passe</label>
             <div className="password-wrapper">
               <input
@@ -358,17 +358,17 @@ export default function InscriptionPartagerPage() {
             </div>
           </div>
 
-          <div className="btn-row" style={{ marginTop: '24px' }}>
+          <div className="btn-row ip-stagger" style={{ marginTop: '24px', animationDelay: '0.32s' }}>
             <button className="btn-submit" disabled={loading} onClick={createAccount} style={{ width: '100%' }}>
               {loading ? 'Création en cours...' : 'Créer mon compte'}
             </button>
           </div>
-          <div className="back-link" style={{ textAlign: 'center', marginTop: '8px' }}>
+          <div className="back-link ip-stagger" style={{ textAlign: 'center', marginTop: '8px', animationDelay: '0.4s' }}>
             <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>
           </div>
         </div>
 
-        <div className="back-link">
+        <div className="back-link ip-stagger" style={{ animationDelay: '0.48s' }}>
           Déjà un compte ? <Link to="/connexion">Se connecter</Link>
         </div>
       </div>
