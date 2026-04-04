@@ -390,7 +390,7 @@ export default function InscriptionRecherchePage() {
         <div className={`step${currentStep === 1 ? ' active' : ''}`}>
           <div className="step-content">
             <div className="intent-options">
-              <label className={`intent-card ir-stagger${intent === 'recherche' ? ' selected' : ''}`} style={{ animationDelay: '0.12s' }}>
+              <label className={`intent-card ir-stagger${intent === 'recherche' ? ' selected' : ''}`} style={{ animationDelay: '0.16s' }}>
                 <input type="radio" name="intent" value="recherche" checked={intent === 'recherche'} onChange={() => setIntent('recherche')} />
                 <div className="intent-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
@@ -399,7 +399,7 @@ export default function InscriptionRecherchePage() {
                 <div className="intent-check">{'\u2713'}</div>
               </label>
 
-              <label className={`intent-card ir-stagger${intent === 'partage' ? ' selected' : ''}`} style={{ animationDelay: '0.2s' }}>
+              <label className={`intent-card ir-stagger${intent === 'partage' ? ' selected' : ''}`} style={{ animationDelay: '0.24s' }}>
                 <input type="radio" name="intent" value="partage" checked={intent === 'partage'} onChange={() => setIntent('partage')} />
                 <div className="intent-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z" /></svg>
@@ -408,7 +408,7 @@ export default function InscriptionRecherchePage() {
                 <div className="intent-check">{'\u2713'}</div>
               </label>
 
-              <label className={`intent-card ir-stagger${intent === 'les-deux' ? ' selected' : ''}`} style={{ animationDelay: '0.28s' }}>
+              <label className={`intent-card ir-stagger${intent === 'les-deux' ? ' selected' : ''}`} style={{ animationDelay: '0.32s' }}>
                 <input type="radio" name="intent" value="les-deux" checked={intent === 'les-deux'} onChange={() => setIntent('les-deux')} />
                 <div className="intent-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#6B7280"><path d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z" /></svg>
@@ -420,8 +420,8 @@ export default function InscriptionRecherchePage() {
           </div>
 
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.36s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
-            <p className="ir-back ir-stagger" style={{ animationDelay: '0.44s' }}>
+            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.40s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
+            <p className="ir-back ir-stagger" style={{ animationDelay: '0.48s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : (<><Link to="/inscription">Retour</Link> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>)}
             </p>
           </div>
@@ -430,7 +430,7 @@ export default function InscriptionRecherchePage() {
         {/* Step 2: Personal info */}
         <div className={`step${currentStep === 2 ? ' active' : ''}`}>
           <div className="step-content">
-            <div className="form-row ir-stagger" style={{ animationDelay: '0.12s' }}>
+            <div className="form-row ir-stagger" style={{ animationDelay: '0.16s' }}>
               <div className="form-group">
                 <label>Nom</label>
                 <input type="text" value={nom} onChange={(e) => setNom(capitalizeWords(e.target.value))} placeholder="Dupont" />
@@ -440,19 +440,19 @@ export default function InscriptionRecherchePage() {
                 <input type="text" value={prenom} onChange={(e) => setPrenom(capitalizeWords(e.target.value))} placeholder="Marie" />
               </div>
             </div>
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.2s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.24s' }}>
               <label>Email</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="marie@email.com" />
             </div>
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.28s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.32s' }}>
               <label>Téléphone</label>
               <input type="tel" value={telephone} onChange={(e) => setTelephone(formatPhone(e.target.value))} placeholder="06 12 34 56 78" />
             </div>
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.36s' }} onClick={() => handleNext(2)}>Continuer</button>
-            <div className="ir-separator ir-stagger" style={{ animationDelay: '0.44s' }}><span>ou</span></div>
-            <button type="button" className="ir-google ir-stagger" style={{ animationDelay: '0.52s' }} onClick={handleGoogleSignup}>
+            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.40s' }} onClick={() => handleNext(2)}>Continuer</button>
+            <div className="ir-separator ir-stagger" style={{ animationDelay: '0.48s' }}><span>ou</span></div>
+            <button type="button" className="ir-google ir-stagger" style={{ animationDelay: '0.56s' }} onClick={handleGoogleSignup}>
               <svg width="18" height="18" viewBox="0 0 18 18">
                 <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
                 <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
@@ -461,7 +461,7 @@ export default function InscriptionRecherchePage() {
               </svg>
               S'inscrire avec Google
             </button>
-            <p className="ir-back ir-stagger" style={{ animationDelay: '0.6s' }}>
+            <p className="ir-back ir-stagger" style={{ animationDelay: '0.64s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : (
                 <><a href="#" onClick={(e) => { e.preventDefault(); handlePrev(2) }}>Retour</a> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>
               )}
@@ -472,7 +472,7 @@ export default function InscriptionRecherchePage() {
         {/* Step 3: Alternance + City */}
         <div className={`step${currentStep === 3 ? ' active' : ''}`}>
           <div className="step-content">
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.12s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.16s' }}>
               <label>Type d'alternance</label>
               <CustomSelect
                 value={typeAlternance}
@@ -552,8 +552,8 @@ export default function InscriptionRecherchePage() {
             )}
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.2s' }} onClick={() => handleNext(3)}>Continuer</button>
-            <p className="ir-back ir-stagger" style={{ animationDelay: '0.28s' }}>
+            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.24s' }} onClick={() => handleNext(3)}>Continuer</button>
+            <p className="ir-back ir-stagger" style={{ animationDelay: '0.32s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
             </p>
           </div>
@@ -562,20 +562,20 @@ export default function InscriptionRecherchePage() {
         {/* Step 4: Password */}
         <div className={`step${currentStep === 4 ? ' active' : ''}`}>
           <div className="step-content ir-step-spacious">
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.12s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.16s' }}>
               <label>Mot de passe</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6 caractères minimum" />
             </div>
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.2s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.24s' }}>
               <label>Confirmer</label>
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape ton mot de passe" />
             </div>
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.28s' }} disabled={creating} onClick={createAccount}>
+            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={creating} onClick={createAccount}>
               {creating ? 'Création en cours...' : 'Créer mon compte'}
             </button>
-            <p className="ir-back ir-stagger" style={{ animationDelay: '0.36s' }}>
+            <p className="ir-back ir-stagger" style={{ animationDelay: '0.40s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(4) }}>Retour</a>}
             </p>
           </div>
