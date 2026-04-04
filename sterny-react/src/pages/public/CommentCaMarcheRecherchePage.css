@@ -1,69 +1,109 @@
-/* HERO */
-.ccm-recherche .hero {
-    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+/* ═══ HERO ═══ */
+.ccmr-hero {
+    background: #1E293B;
     color: white;
-    padding: 60px 20px;
+    padding: 80px 20px 60px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.ccm-recherche .hero .container {
-    max-width: 700px;
+.ccmr-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(232, 98, 42, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.ccmr-hero-inner {
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.ccmr-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(232, 98, 42, 0.15);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #E8622A;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.ccmr-hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 0 0 14px;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+.ccmr-hero p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ═══ CONTAINER ═══ */
+.ccmr-container {
+    max-width: 720px;
     margin: 0 auto;
 }
 
-.ccm-recherche .hero h1 {
-    font-size: 36px;
-    font-weight: 800;
-    margin: 0 0 12px 0;
-    line-height: 1.2;
+/* ═══ SECTION TITLE ═══ */
+.ccmr-section-title {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #E8622A;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 36px;
 }
 
-.ccm-recherche .hero p {
-    font-size: 16px;
-    opacity: 0.8;
-    margin: 0;
-}
-
-/* STEPS */
-.ccm-recherche .steps-section {
+/* ═══ STEPS ═══ */
+.ccmr-steps-section {
     padding: 60px 20px;
     background: #F4F5F7;
 }
 
-.ccm-recherche .steps-container {
-    max-width: 700px;
-    margin: 0 auto;
+.ccmr-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
-.ccm-recherche .steps-title {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 40px;
-}
-
-.ccm-recherche .step-item {
+.ccmr-step {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 20px;
-    padding: 24px;
+    gap: 18px;
+    padding: 22px 24px;
     background: white;
     border-radius: 14px;
     border: 1.5px solid #E8EAF0;
-    transition: all 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
-.ccm-recherche .step-item:hover {
+.ccmr-step:hover {
     border-color: #E8622A;
-    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.1);
+    transform: translateY(-4px);
 }
 
-.ccm-recherche .step-number {
+.ccmr-step-num {
     width: 40px;
     height: 40px;
+    min-width: 40px;
     background: #1E293B;
     color: white;
     border-radius: 10px;
@@ -71,146 +111,138 @@
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    font-weight: 700;
-    flex-shrink: 0;
+    font-weight: 800;
+    transition: background 0.2s;
 }
 
-.ccm-recherche .step-item:hover .step-number {
+.ccmr-step:hover .ccmr-step-num {
     background: #E8622A;
 }
 
-.ccm-recherche .step-content h3 {
-    font-size: 16px;
+.ccmr-step-body h3 {
+    font-size: 15px;
     font-weight: 700;
     color: #1E293B;
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
 
-.ccm-recherche .step-content p {
-    font-size: 14px;
-    color: #6B7280;
+.ccmr-step-body p {
+    font-size: 13px;
+    color: #64748B;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-/* AVANTAGES */
-.ccm-recherche .avantages-section {
+/* ═══ AVANTAGES ═══ */
+.ccmr-avantages-section {
     padding: 60px 20px;
     background: white;
 }
 
-.ccm-recherche .avantages-container {
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.ccm-recherche .avantages-title {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 40px;
-}
-
-.ccm-recherche .avantages-grid {
+.ccmr-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
 
-.ccm-recherche .avantage-card {
-    padding: 20px;
+.ccmr-avantage {
+    padding: 22px;
     background: #F4F5F7;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1.5px solid #E8EAF0;
-    transition: all 0.2s;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
-.ccm-recherche .avantage-card:hover {
-    border-color: #1E293B;
+.ccmr-avantage:hover {
+    border-color: #E8622A;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.08);
 }
 
-.ccm-recherche .avantage-icon {
-    width: 36px;
-    height: 36px;
+.ccmr-avantage-icon {
+    width: 38px;
+    height: 38px;
     background: #1E293B;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    transition: background 0.2s;
 }
 
-.ccm-recherche .avantage-card h4 {
+.ccmr-avantage:hover .ccmr-avantage-icon {
+    background: #E8622A;
+}
+
+.ccmr-avantage h4 {
     font-size: 15px;
     font-weight: 700;
     color: #1E293B;
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
 
-.ccm-recherche .avantage-card p {
+.ccmr-avantage p {
     font-size: 13px;
-    color: #6B7280;
+    color: #64748B;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-/* CTA */
-.ccm-recherche .cta-section {
-    padding: 50px 20px;
+/* ═══ CTA ═══ */
+.ccmr-cta-section {
+    padding: 60px 20px;
     background: #F4F5F7;
-    text-align: center;
 }
 
-.ccm-recherche .cta-card {
-    max-width: 500px;
-    margin: 0 auto;
+.ccmr-cta {
+    text-align: center;
     background: white;
-    padding: 36px;
+    padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 8px 40px rgba(30, 41, 59, 0.15);
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.10);
     border: 1.5px solid #E8EAF0;
 }
 
-.ccm-recherche .cta-card h2 {
+.ccmr-cta h2 {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 800;
     color: #1E293B;
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
 }
 
-.ccm-recherche .cta-card p {
+.ccmr-cta p {
     font-size: 14px;
-    color: #6B7280;
-    margin: 0 0 24px 0;
+    color: #64748B;
+    margin: 0 0 28px;
 }
 
-.ccm-recherche .cta-buttons {
+.ccmr-cta-btns {
     display: flex;
     gap: 12px;
     justify-content: center;
 }
 
-.ccm-recherche .cta-btn {
+.ccmr-btn-primary {
     padding: 14px 28px;
-    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    background: #E8622A;
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 15px;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.3s;
-    font-family: inherit;
+    font-family: 'DM Sans', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.ccm-recherche .cta-btn:hover {
-    background: #E8622A;
+.ccmr-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.4);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+    background-color: #D4571F;
 }
 
-.ccm-recherche .cta-btn-secondary {
+.ccmr-btn-secondary {
     padding: 14px 28px;
     background: white;
     color: #1E293B;
@@ -219,35 +251,44 @@
     font-size: 15px;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.3s;
-    font-family: inherit;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s, background 0.2s;
 }
 
-.ccm-recherche .cta-btn-secondary:hover {
-    border-color: #1E293B;
-    background: #F4F5F7;
+.ccmr-btn-secondary:hover {
+    border-color: #E8622A;
+    background: rgba(232, 98, 42, 0.03);
 }
 
-/* BACK LINK */
-.ccm-recherche .back-section {
-    padding: 20px;
-    text-align: center;
-    background: #F4F5F7;
+/* ═══ STAGGER ═══ */
+.ccmr-stagger {
+    animation: ccmrStaggerIn 0.4s ease both;
 }
 
-.ccm-recherche .back-section a {
-    color: #E8622A;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
+@keyframes ccmrStaggerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.ccm-recherche .back-section a:hover {
-    text-decoration: underline;
-}
-
+/* ═══ RESPONSIVE ═══ */
 @media (max-width: 640px) {
-    .ccm-recherche .hero h1 { font-size: 28px; }
-    .ccm-recherche .avantages-grid { grid-template-columns: 1fr; }
-    .ccm-recherche .cta-buttons { flex-direction: column; }
+    .ccmr-hero {
+        padding: 60px 20px 48px;
+    }
+
+    .ccmr-hero h1 {
+        font-size: 26px;
+    }
+
+    .ccmr-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ccmr-cta-btns {
+        flex-direction: column;
+    }
+
+    .ccmr-cta {
+        padding: 28px 24px;
+    }
 }

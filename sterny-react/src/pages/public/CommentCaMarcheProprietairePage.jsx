@@ -34,8 +34,8 @@ export default function CommentCaMarcheProprietairePage() {
             <div className="ccmp-step ccmp-stagger" style={{ animationDelay: '0.08s' }}>
               <div className="ccmp-step-num">1</div>
               <div className="ccmp-step-body">
-                <h3>Créez votre annonce</h3>
-                <p>Renseignez votre logement, ajoutez des photos et indiquez les semaines où il est disponible.</p>
+                <h3>Créez ou vérifiez votre annonce</h3>
+                <p>Renseignez votre logement ou vérifiez l'annonce créée par votre alternant, ajoutez des photos et indiquez les disponibilités.</p>
               </div>
             </div>
 
@@ -59,7 +59,7 @@ export default function CommentCaMarcheProprietairePage() {
               <div className="ccmp-step-num">4</div>
               <div className="ccmp-step-body">
                 <h3>Recevez vos loyers automatiquement</h3>
-                <p>Les paiements sont prélevés chaque semaine et versés sur votre compte. Zéro relance, zéro impayé.</p>
+                <p>Les paiements sont prélevés chaque mois et versés directement sur votre compte. Zéro relance, zéro impayé.</p>
               </div>
             </div>
           </div>
@@ -122,17 +122,13 @@ export default function CommentCaMarcheProprietairePage() {
             <h2>Prêt à rejoindre STERNY ?</h2>
             <p>Créez votre compte propriétaire en quelques minutes</p>
             <div className="ccmp-cta-btns">
-              <Link to="/inscription/proprietaire" className="ccmp-btn-primary">S'inscrire comme propriétaire</Link>
+              <Link to="/inscription/proprietaire" className="ccmp-btn-primary">S'inscrire</Link>
               <Link to="/connexion" className="ccmp-btn-secondary">Se connecter</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* BACK */}
-      <div className="ccmp-back">
-        <Link to="/comment-ca-marche">Retour</Link>
-      </div>
     </div>
   )
 }
