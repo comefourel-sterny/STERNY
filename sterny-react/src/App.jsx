@@ -73,6 +73,9 @@ import MentionsLegalesPage from './pages/legal/MentionsLegalesPage'
 import PolitiqueConfidentialitePage from './pages/legal/PolitiqueConfidentialitePage'
 import PolitiqueRemboursementPage from './pages/legal/PolitiqueRemboursementPage'
 
+// Invitation page (no layout)
+import InvitationPage from './pages/invitation/InvitationPage'
+
 // Other
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -81,6 +84,9 @@ export default function App() {
     <PasswordGate>
       <GoogleAuthHandler />
       <Routes>
+        {/* Invitation — no layout */}
+        <Route path="/invitation/:token" element={<InvitationPage />} />
+
         {/* Temp: test */}
         <Route element={<Layout />}>
           <Route path="/annonce/creer" element={<CreerAnnoncePage />} />

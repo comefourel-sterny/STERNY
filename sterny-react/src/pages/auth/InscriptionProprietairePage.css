@@ -218,6 +218,18 @@
 .ip-parr-status.invalid { color: #EF4444; }
 .ip-parr-status.checking { color: #94A3B8; }
 
+.ip-parr-validated {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #10B981;
+    animation: ipStaggerIn 0.3s ease;
+}
+
 /* ═══ SUBMIT — matches ConnexionPage ═══ */
 .ip-submit {
     width: 100%;

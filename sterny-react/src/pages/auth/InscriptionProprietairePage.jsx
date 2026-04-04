@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './InscriptionProprietairePage.css'
@@ -22,73 +22,27 @@ export default function InscriptionProprietairePage() {
   const [referrerName, setReferrerName] = useState('')
   const [showReferral, setShowReferral] = useState(false)
   const [parrainId, setParrainId] = useState(null)
-  const [codeParrainage, setCodeParrainage] = useState('')
-  const [parrainageStatus, setParrainageStatus] = useState('')
-  const [showParrainage, setShowParrainage] = useState(false)
-  const debounceRef = useRef(null)
 
   useEffect(() => {
-    const parrain = searchParams.get('parrain')
-    const codeFromUrl = searchParams.get('code')
-    const referralCodeFromSession = sessionStorage.getItem('referral_code')
-
-    if (parrain) {
-      const formatted = parrain
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ')
-      setReferrerName(formatted)
-      setShowReferral(true)
-    }
-
-    const code = codeFromUrl || referralCodeFromSession
-    if (code) {
-      setCodeParrainage(code.toUpperCase())
-      setShowParrainage(true)
+    const token = searchParams.get('r')
+    if (token) {
       supabaseClient
         .from('users')
         .select('id, prenom, nom')
-        .eq('code_parrainage', code.toUpperCase())
+        .eq('invitation_token', token)
         .single()
         .then(({ data }) => {
-          if (data) setParrainId(data.id)
+          if (data) {
+            setParrainId(data.id)
+            setReferrerName(`${data.prenom} ${data.nom}`)
+            setShowReferral(true)
+          }
         })
     }
 
     const sessionParrainId = sessionStorage.getItem('referrer_id')
     if (sessionParrainId) setParrainId(sessionParrainId)
   }, [searchParams])
-
-  // Vérifier le code parrainage en temps réel
-  useEffect(() => {
-    if (!codeParrainage || codeParrainage.length < 4) {
-      setParrainageStatus('')
-      if (!codeParrainage) setParrainId(null)
-      return
-    }
-    setParrainageStatus('checking')
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const { data } = await supabaseClient
-          .from('users')
-          .select('id, prenom, nom')
-          .eq('code_parrainage', codeParrainage)
-          .single()
-        if (data) {
-          setParrainageStatus(`Parrainé par ${data.prenom} ${data.nom}`)
-          setParrainId(data.id)
-        } else {
-          setParrainageStatus('invalid')
-          setParrainId(null)
-        }
-      } catch {
-        setParrainageStatus('invalid')
-        setParrainId(null)
-      }
-    }, 500)
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [codeParrainage])
 
   const showError = (text) => {
     setMessage({ type: 'error', text })
@@ -101,8 +55,9 @@ export default function InscriptionProprietairePage() {
     if (parrainId) {
       sessionStorage.setItem('referrer_id', parrainId)
     }
-    if (codeParrainage) {
-      sessionStorage.setItem('referral_code', codeParrainage)
+    const token = searchParams.get('r')
+    if (token) {
+      sessionStorage.setItem('referral_token', token)
     }
     sessionStorage.setItem('signup_type', 'proprietaire')
     const { error } = await supabaseClient.auth.signInWithOAuth({
@@ -225,27 +180,6 @@ export default function InscriptionProprietairePage() {
               </button>
             </div>
           </div>
-
-          {!showParrainage ? (
-            <p className="ip-parr-toggle" onClick={() => setShowParrainage(true)}>
-              Tu as un code parrainage ?
-            </p>
-          ) : (
-            <div className="ip-parrainage">
-              <input
-                type="text"
-                value={codeParrainage}
-                onChange={(e) => setCodeParrainage(e.target.value.toUpperCase())}
-                placeholder="Code parrainage"
-                autoFocus
-              />
-              {parrainageStatus === 'checking' && <span className="ip-parr-status checking">...</span>}
-              {parrainageStatus === 'invalid' && <span className="ip-parr-status invalid">Code non reconnu</span>}
-              {parrainageStatus && parrainageStatus !== 'checking' && parrainageStatus !== 'invalid' && (
-                <span className="ip-parr-status valid">{parrainageStatus}</span>
-              )}
-            </div>
-          )}
 
           <button type="submit" className={`ip-submit ip-stagger${shakeBtn ? ' ip-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading}>
             {loading ? (

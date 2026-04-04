@@ -59,11 +59,11 @@ export default function DashboardHotePage() {
       if (uData) {
         setUserData(uData)
 
-        if (uData.code_parrainage) {
-          setReferralCode(uData.code_parrainage)
+        if (uData.invitation_token) {
+          setReferralCode(uData.invitation_token)
         } else {
-          const code = await genererCodeParrainage(uData.prenom, authUser.id)
-          setReferralCode(code)
+          const token = await genererInvitationToken(authUser.id)
+          setReferralCode(token)
         }
 
         await chargerMiseEnRelation(authUser.id, uData)
@@ -77,20 +77,18 @@ export default function DashboardHotePage() {
     }
   }
 
-  async function genererCodeParrainage(prenom, userId) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-    const prenomPart = (prenom || 'USER').substring(0, 5).toUpperCase().padEnd(5, 'X')
-    let code = ''
-    for (let i = 0; i < 4; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length))
+  async function genererInvitationToken(userId) {
+    const chars = 'abcdefghjkmnpqrstuvwxyz23456789'
+    let token = ''
+    for (let i = 0; i < 8; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-    const fullCode = `${prenomPart}-${code}`
     try {
-      await supabaseClient.from('users').update({ code_parrainage: fullCode }).eq('id', userId)
+      await supabaseClient.from('users').update({ invitation_token: token }).eq('id', userId)
     } catch (error) {
-      console.error('Erreur sauvegarde code:', error)
+      console.error('Erreur sauvegarde token:', error)
     }
-    return fullCode
+    return token
   }
 
   async function chargerMiseEnRelation(userId, uData) {
@@ -123,6 +121,16 @@ export default function DashboardHotePage() {
     if (!email || !email.includes('@')) return
     try {
       await supabaseClient.from('users').update({ email_proprietaire: email }).eq('id', currentUserId)
+
+      await supabaseClient.functions.invoke('send-proprietaire-invitation', {
+        body: {
+          proprietaire_email: email,
+          alternant_prenom: userData?.prenom || '',
+          alternant_nom: userData?.nom || '',
+          invitation_token: referralCode
+        }
+      })
+
       setRelationStatus('pending')
       setPendingEmail(email)
     } catch (error) {
@@ -131,7 +139,8 @@ export default function DashboardHotePage() {
   }
 
   function copierCode() {
-    navigator.clipboard.writeText(referralCode).then(() => {
+    const invitationUrl = `${window.location.origin}/invitation/${referralCode}`
+    navigator.clipboard.writeText(invitationUrl).then(() => {
       const btn = document.querySelector('.btn-copy')
       if (btn) {
         const old = btn.innerHTML
@@ -295,7 +304,7 @@ export default function DashboardHotePage() {
       {/* HEADER */}
       <div className="page-header">
         <h1>Bonjour {userData?.prenom || '...'}</h1>
-        <p>Gerez votre annonce et partagez votre code de parrainage</p>
+        <p>Gérez votre annonce et invitez votre propriétaire</p>
       </div>
 
       {/* SECTION : MON PROFIL */}
@@ -382,17 +391,17 @@ export default function DashboardHotePage() {
             )}
           </div>
 
-          {/* Colonne droite : Code de parrainage */}
+          {/* Colonne droite : Lien d'invitation */}
           <div className="proprio-col">
-            <div className="proprio-label">Code de parrainage</div>
+            <div className="proprio-label">Lien d'invitation</div>
             <div className="code-row">
-              <div className="code-value">{referralCode}</div>
+              <div className="code-value" style={{ fontSize: '12px' }}>{`${window.location.origin}/invitation/${referralCode}`}</div>
               <button className="btn-copy" onClick={copierCode}>
                 <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                 Copier
               </button>
             </div>
-            <div className="code-helper">Ton proprietaire devra entrer ce code lors de son inscription sur STERNY.</div>
+            <div className="code-helper">Partage ce lien avec ton propriétaire pour l'inviter sur STERNY.</div>
           </div>
         </div>
       </div>

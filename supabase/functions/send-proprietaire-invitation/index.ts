@@ -13,7 +13,11 @@ serve(async (req) => {
   }
 
   try {
-    const { email_proprietaire, prenom_user, nom_user, ville } = await req.json();
+    const { proprietaire_email, alternant_prenom, alternant_nom, invitation_token,
+            // Legacy params
+            email_proprietaire: legacyEmail, prenom_user, nom_user, ville } = await req.json();
+
+    const email_proprietaire = proprietaire_email || legacyEmail;
 
     if (!email_proprietaire) {
       return new Response(JSON.stringify({ error: "Email proprietaire requis" }), {
@@ -22,10 +26,13 @@ serve(async (req) => {
       });
     }
 
-    const prenomCapitalized = prenom_user ? prenom_user.charAt(0).toUpperCase() + prenom_user.slice(1) : "";
-    const nomCapitalized = nom_user ? nom_user.charAt(0).toUpperCase() + nom_user.slice(1) : "";
+    const prenom = alternant_prenom || prenom_user || "";
+    const nomVal = alternant_nom || nom_user || "";
+    const prenomCapitalized = prenom ? prenom.charAt(0).toUpperCase() + prenom.slice(1) : "";
+    const nomCapitalized = nomVal ? nomVal.charAt(0).toUpperCase() + nomVal.slice(1) : "";
     const fullName = `${prenomCapitalized} ${nomCapitalized}`.trim() || "Un locataire";
     const villeText = ville ? ville.charAt(0).toUpperCase() + ville.slice(1) : "";
+    const invitationUrl = invitation_token ? `https://sterny.co/invitation/${invitation_token}` : "https://sterny.co/inscription/proprietaire";
 
     const htmlEmail = `<!DOCTYPE html>
 <html>
@@ -70,7 +77,7 @@ serve(async (req) => {
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="https://sterny.co/comment-ca-marche-proprietaire.html" style="display: inline-block; background: #FF6B35; color: #FFFFFF; text-decoration: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 600;">En savoir plus</a>
+                    <a href="${invitationUrl}" style="display: inline-block; background: #E8622A; color: #FFFFFF; text-decoration: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 600;">Rejoindre STERNY</a>
                   </td>
                 </tr>
               </table>

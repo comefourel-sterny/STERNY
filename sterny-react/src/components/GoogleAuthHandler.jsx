@@ -40,12 +40,23 @@ export default function GoogleAuthHandler() {
         const nom = nameParts.slice(1).join(' ') || ''
 
         // Récupérer le parrainage depuis sessionStorage
+        const referralToken = sessionStorage.getItem('referral_token')
         const referralCode = sessionStorage.getItem('referral_code')
         const referrerId = sessionStorage.getItem('referrer_id')
 
         let parrainId = referrerId || null
 
-        // Si on a un code mais pas d'ID, vérifier le code
+        // Token d'invitation (nouveau système)
+        if (!parrainId && referralToken) {
+          const { data: parrain } = await supabaseClient
+            .from('users')
+            .select('id')
+            .eq('invitation_token', referralToken)
+            .maybeSingle()
+          if (parrain) parrainId = parrain.id
+        }
+
+        // Fallback ancien système (code_parrainage)
         if (!parrainId && referralCode) {
           const { data: parrain } = await supabaseClient
             .from('users')
@@ -71,6 +82,7 @@ export default function GoogleAuthHandler() {
           }])
 
         // Nettoyer la session
+        sessionStorage.removeItem('referral_token')
         sessionStorage.removeItem('referral_code')
         sessionStorage.removeItem('referrer_id')
         sessionStorage.removeItem('signup_type')

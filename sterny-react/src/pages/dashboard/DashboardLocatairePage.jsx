@@ -128,8 +128,8 @@ export default function DashboardLocatairePage() {
         const lesDeux = uData.statut_ville_ecole === 'hote' && uData.statut_ville_entreprise === 'recherche'
         setIsLesDeux(lesDeux)
 
-        if (uData.code_parrainage) {
-          setReferralCode(uData.code_parrainage)
+        if (uData.invitation_token) {
+          setReferralCode(uData.invitation_token)
         }
 
         // Load all data
@@ -327,28 +327,26 @@ export default function DashboardLocatairePage() {
 
   async function loadParrainage() {
     if (!userData) return
-    if (userData.code_parrainage) {
-      setReferralCode(userData.code_parrainage)
+    if (userData.invitation_token) {
+      setReferralCode(userData.invitation_token)
     } else {
-      const code = await genererCodeParrainage(userData.prenom, currentUserId)
-      setReferralCode(code)
+      const token = await genererInvitationToken(currentUserId)
+      setReferralCode(token)
     }
   }
 
-  async function genererCodeParrainage(prenom, userId) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-    const prenomPart = (prenom || 'USER').substring(0, 5).toUpperCase().padEnd(5, 'X')
-    let code = ''
-    for (let i = 0; i < 4; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length))
+  async function genererInvitationToken(userId) {
+    const chars = 'abcdefghjkmnpqrstuvwxyz23456789'
+    let token = ''
+    for (let i = 0; i < 8; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-    const fullCode = `${prenomPart}-${code}`
     try {
-      await supabaseClient.from('users').update({ code_parrainage: fullCode }).eq('id', userId)
+      await supabaseClient.from('users').update({ invitation_token: token }).eq('id', userId)
     } catch (error) {
-      console.error('Erreur sauvegarde code:', error)
+      console.error('Erreur sauvegarde token:', error)
     }
-    return fullCode
+    return token
   }
 
   async function loadAnnonce(userId) {

@@ -1,0 +1,321 @@
+/* ═══ PAGE — split layout ═══ */
+.inv-page {
+    min-height: 100vh;
+    display: flex;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+}
+
+/* ═══ LEFT — contenu ═══ */
+.inv-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 56px;
+    max-width: 560px;
+    min-height: 100vh;
+}
+
+.inv-left-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.inv-left-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 16px;
+}
+
+/* ═══ LOGO ═══ */
+.inv-logo {
+    height: 120px;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1.5px solid #E8EAF0;
+    align-self: stretch;
+    object-fit: contain;
+    object-position: left;
+}
+
+/* ═══ INVITER ═══ */
+.inv-inviter {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748B;
+    margin: 0 0 12px;
+}
+
+.inv-inviter strong {
+    color: #E8622A;
+    font-weight: 700;
+}
+
+/* ═══ HEADING ═══ */
+.inv-heading {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1E293B;
+    margin: 0 0 32px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+/* ═══ BENEFITS ═══ */
+.inv-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 8px;
+}
+
+.inv-benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+}
+
+.inv-benefit:not(:last-child) {
+    border-bottom: 1px solid #F0F1F3;
+}
+
+.inv-benefit-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    background: rgba(232, 98, 42, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inv-benefit-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.inv-benefit-text strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1E293B;
+}
+
+.inv-benefit-text span {
+    font-size: 13px;
+    font-weight: 400;
+    color: #64748B;
+    line-height: 1.5;
+}
+
+/* ═══ CTA ═══ */
+.inv-cta {
+    width: 100%;
+    height: 52px;
+    background: #E8622A;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.inv-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+    background-color: #D4571F;
+}
+
+.inv-cta:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(232, 98, 42, 0.2);
+}
+
+/* ═══ REASSURANCE ═══ */
+.inv-reassurance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #94A3B8;
+    width: 100%;
+}
+
+/* ═══ RIGHT — vidéo pleine hauteur ═══ */
+.inv-right {
+    flex: 1;
+    position: relative;
+    background: #1E293B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.inv-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(232, 98, 42, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.inv-video {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.inv-play {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.inv-play svg {
+    margin-left: 2px;
+}
+
+.inv-video:hover .inv-play {
+    background: #E8622A;
+    transform: scale(1.08);
+}
+
+.inv-video-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+}
+
+.inv-video:hover .inv-video-label {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* ═══ STATES ═══ */
+.inv-title {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #E8622A;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+}
+
+.inv-desc {
+    font-size: 15px;
+    color: #64748B;
+    margin: 0 0 32px;
+    line-height: 1.6;
+}
+
+.inv-loading {
+    padding: 60px 0;
+    color: #94A3B8;
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+}
+
+/* ═══ STAGGER ═══ */
+.inv-stagger {
+    animation: invStaggerIn 0.4s ease both;
+}
+
+@keyframes invStaggerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ RESPONSIVE — empilé sur mobile ═══ */
+@media (max-width: 900px) {
+    .inv-page {
+        flex-direction: column;
+        background: #F4F5F7;
+    }
+
+    .inv-left {
+        max-width: 100%;
+        min-height: auto;
+        padding: 32px 24px 24px;
+        background: white;
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+    }
+
+    .inv-left-top {
+        align-items: center;
+        text-align: center;
+    }
+
+    .inv-logo {
+        align-self: stretch;
+        object-position: center;
+        height: 44px;
+        margin-bottom: 28px;
+        padding-bottom: 24px;
+    }
+
+    .inv-heading {
+        font-size: 24px;
+    }
+
+    .inv-benefits {
+        text-align: left;
+    }
+
+    .inv-left-bottom {
+        align-items: center;
+    }
+
+    .inv-reassurance {
+        justify-content: center;
+    }
+
+    .inv-right {
+        min-height: 240px;
+        border-radius: 16px;
+        margin: 24px 16px 32px;
+    }
+
+    .inv-play {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .inv-left {
+        padding: 24px 20px 20px;
+    }
+
+    .inv-heading {
+        font-size: 21px;
+    }
+
+    .inv-right {
+        min-height: 200px;
+        margin: 16px 16px 24px;
+    }
+}
