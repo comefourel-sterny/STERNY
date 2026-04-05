@@ -464,7 +464,7 @@ export default function HomePage() {
       {/* ===== 1. HERO ===== */}
       <section className="hero">
         <div className="hero-content">
-          <div className="hero-badge">
+          <div className="hero-badge hp-stagger" style={{ animationDelay: '0.05s' }}>
             <img
               src="/PP-Sterny-White.png"
               alt="Sterny"
@@ -472,11 +472,11 @@ export default function HomePage() {
             />
             LA plateforme des alternants en France
           </div>
-          <h1>Le logement pens&eacute;<br />pour ton <span>alternance</span></h1>
-          <p className="hero-subtitle">Flexible, meubl&eacute;, adapt&eacute; &agrave; ton rythme.</p>
+          <h1 className="hp-stagger" style={{ animationDelay: '0.15s' }}>Le logement pens&eacute;<br />pour ton <span>alternance</span></h1>
+          <p className="hero-subtitle hp-stagger" style={{ animationDelay: '0.25s' }}>Flexible, meubl&eacute;, adapt&eacute; &agrave; ton rythme.</p>
 
           {/* BARRE DE RECHERCHE */}
-          <div className="search-bar">
+          <div className="search-bar hp-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville field */}
             <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
               <label>Ville</label>
@@ -653,7 +653,7 @@ export default function HomePage() {
                 <line x1="2" y1="13.5" x2="13" y2="13.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="reassurance-text">Aucun frais d'agence<small>0 commission, 0 surprise</small></div>
+            <div className="reassurance-text">Sans frais d'agence<small>Crée ton annonce gratuitement</small></div>
           </div>
           <div className="reassurance-item">
             <div className="reassurance-icon navy">
