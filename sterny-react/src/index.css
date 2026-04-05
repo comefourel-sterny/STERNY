@@ -145,6 +145,15 @@ nav .nav-cta-inscription:hover {
     color: white;
 }
 
+nav .nav-deconnexion {
+    color: #94A3B8 !important;
+    font-size: 13px;
+}
+
+nav .nav-deconnexion:hover {
+    color: #E8622A !important;
+}
+
 /* NAV TRANSPARENT (fond bleu sur la home, se fond avec le hero) */
 nav.nav-transparent {
     background: #1E293B;

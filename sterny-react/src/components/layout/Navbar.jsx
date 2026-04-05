@@ -8,7 +8,7 @@ export default function Navbar({ variant = 'default' }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userRole, setUserRole] = useState(null)
   const [scrolled, setScrolled] = useState(false)
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -87,6 +87,11 @@ export default function Navbar({ variant = 'default' }) {
                 <Link to="/comment-ca-marche" onClick={closeMenu}>
                   Comment ça marche
                 </Link>
+              </li>
+              <li>
+                <a href="#" className="nav-deconnexion" onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
+                  Déconnexion
+                </a>
               </li>
             </>
           ) : (
