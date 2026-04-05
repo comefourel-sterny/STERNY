@@ -102,6 +102,19 @@ export default function DashboardLocatairePage() {
 
   const chatMessagesRef = useRef(null)
   const chatInputRef = useRef(null)
+  const plusMenuRef = useRef(null)
+
+  // Fermer le menu + au clic extérieur
+  useEffect(() => {
+    if (!showPlusMenu) return
+    const handleClick = (e) => {
+      if (plusMenuRef.current && !plusMenuRef.current.contains(e.target)) {
+        setShowPlusMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [showPlusMenu])
 
   // Load profile on mount
   useEffect(() => {
@@ -748,7 +761,7 @@ export default function DashboardLocatairePage() {
               </div>
             )}
             {!userData.ville_recherche_secondaire && (
-              <div className="plus-menu-wrapper">
+              <div className="plus-menu-wrapper" ref={plusMenuRef}>
                 <button className="btn-plus-ville" onClick={() => setShowPlusMenu(!showPlusMenu)} title="Ajouter une ville">+</button>
                 {showPlusMenu && (
                   <div className="plus-menu show">
@@ -979,7 +992,10 @@ export default function DashboardLocatairePage() {
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
                 </div>
                 <div className="empty-text">Tu n'as pas encore candidate a un logement</div>
-                <Link to="/recherche" className="btn btn-orange">Parcourir les annonces</Link>
+                <Link to="/recherche" className="btn btn-orange">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                  Parcourir les annonces
+                </Link>
               </div>
             ) : (
               candidatures.map(c => {
