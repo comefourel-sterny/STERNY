@@ -14,7 +14,8 @@
     width: 100%;
     background: white;
     border-radius: 16px;
-    padding: 28px 36px;
+    padding: 36px;
+    min-height: 536px;
     box-shadow: 0 6px 28px rgba(232,98,42,0.10);
     border: 1.5px solid #E8EAF0;
     display: flex;
@@ -371,6 +372,7 @@
     .ip-card {
         padding: 28px 24px;
         border-radius: 14px;
+        min-height: auto;
     }
 
     .ip-title {
