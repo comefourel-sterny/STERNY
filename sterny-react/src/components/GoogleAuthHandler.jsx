@@ -27,6 +27,12 @@ export default function GoogleAuthHandler() {
           // Profil existe — vérifier si complet
           if (!profile.profil_complet) {
             navigate('/completer-profil')
+          } else {
+            // Profil complet — rediriger vers le bon dashboard
+            const dashboard = profile.type_user === 'proprietaire'
+              ? '/dashboard/proprietaire'
+              : '/dashboard/locataire'
+            navigate(dashboard)
           }
           return
         }

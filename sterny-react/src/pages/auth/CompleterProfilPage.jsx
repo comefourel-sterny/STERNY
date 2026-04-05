@@ -198,7 +198,7 @@ function CpSelect({ value, onChange, options, placeholder }) {
 
 export default function CompleterProfilPage() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const [currentStep, setCurrentStep] = useState(1)
   const [error, setError] = useState('')
@@ -251,19 +251,21 @@ export default function CompleterProfilPage() {
   const [showAnneeSuggestions, setShowAnneeSuggestions] = useState(false)
   const [filiereSuggestions, setFiliereSuggestions] = useState([])
   const [showFiliereSuggestions, setShowFiliereSuggestions] = useState(false)
+  const [villeSuggestions, setVilleSuggestions] = useState([])
 
   const schoolSearchTimeout = useRef(null)
   const errorTimeout = useRef(null)
 
   const stepTitles = { 1: 'Complete ton profil', 2: 'Ton alternance', 3: 'Tes etudes', 4: 'A propos de toi' }
 
-  // Auth check + pre-fill
+  // Auth check + pre-fill (skip redirects in dev preview)
+  const isDev = import.meta.env.DEV
   useEffect(() => {
     if (!user) return
     async function loadData() {
       const { data: userData } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
       if (!userData) return
-      if (userData.type_user === 'proprietaire') {
+      if (!isDev && userData.type_user === 'proprietaire') {
         navigate('/profil/modifier')
         return
       }
@@ -287,12 +289,12 @@ export default function CompleterProfilPage() {
       if (userData.annee_etudes) setAnneeEtudes(userData.annee_etudes)
       if (userData.filiere) setFiliere(userData.filiere)
       if (userData.bio) setBio(userData.bio)
-      if (userData.profil_complet) {
+      if (!isDev && userData.profil_complet) {
         navigate('/dashboard/locataire')
       }
     }
     loadData()
-  }, [user, navigate])
+  }, [user, navigate, isDev])
 
   // Error display
   const showError = useCallback((msg) => {
@@ -301,8 +303,9 @@ export default function CompleterProfilPage() {
     errorTimeout.current = setTimeout(() => setError(''), 3000)
   }, [])
 
-  // Validation
+  // Validation (disabled in dev for design work)
   function validateStep(step) {
+    if (isDev) return null
     if (step === 1) {
       if (!prenom.trim()) return 'Merci de renseigner ton prenom'
       if (!nom.trim()) return 'Merci de renseigner ton nom'
@@ -718,7 +721,17 @@ export default function CompleterProfilPage() {
     }
   }
 
-  if (!user) return null
+  if (authLoading) return (
+    <section className="cp-page">
+      <div className="cp-card" style={{ minHeight: '536px', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="cp-confirm-bar" style={{ width: '80px' }}>
+          <div className="cp-confirm-bar-fill" style={{ animation: 'cpBarFill 1.5s ease infinite' }} />
+        </div>
+      </div>
+    </section>
+  )
+
+  if (!user && !isDev) return null
 
   return (
     <>
@@ -748,8 +761,8 @@ export default function CompleterProfilPage() {
         <div className="cp-card" style={{ minHeight: '536px' }}>
           {!showConfirmation && (
             <>
-              <h2 className="cp-title cp-stagger">BIENVENUE</h2>
-              {error && <p className="cp-error">{error}</p>}
+              <h2 className="cp-title cp-stagger">{stepTitles[currentStep]}</h2>
+              {/* subtitle removed */}
               <div className="cp-progress-bar cp-stagger" style={{ animationDelay: '0.08s' }}>
                 <div className="cp-progress-fill" style={{ width: `${(currentStep / totalSteps) * 100}%` }} />
               </div>
@@ -759,7 +772,7 @@ export default function CompleterProfilPage() {
           {/* Step 1 */}
           {currentStep === 1 && !showConfirmation && (
             <div className="cp-step">
-              <div>
+              <div className="cp-row cp-stagger" style={{ animationDelay: '0.12s' }}>
                 <div className="cp-group">
                   <label>Prénom</label>
                   <input type="text" value={prenom} onChange={e => setPrenom(capitalizeWords(e.target.value))} placeholder="Prénom" />
@@ -769,7 +782,7 @@ export default function CompleterProfilPage() {
                   <input type="text" value={nom} onChange={e => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
                 </div>
               </div>
-              <div>
+              <div className="cp-row cp-stagger" style={{ animationDelay: '0.20s' }}>
                 <div className="cp-group">
                   <label>Date de naissance</label>
                   <input type="text" value={dateNaissance} onChange={handleDateInput} onKeyDown={handleDateKeyDown} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" />
@@ -790,12 +803,16 @@ export default function CompleterProfilPage() {
                 </div>
               </div>
               <div className="cp-bottom">
-                <button className={`cp-btn cp-stagger${loading ? ' loading' : ''}`} style={{ animationDelay: '0.16s' }} onClick={() => nextStep(1)} disabled={loading}>
+                <button className={`cp-btn cp-stagger${loading ? ' loading' : ''}`} style={{ animationDelay: '0.28s' }} onClick={() => nextStep(1)} disabled={loading}>
                   {userType === 'proprietaire' ? 'Enregistrer' : 'Continuer'}
                 </button>
-                <p className="cp-back cp-stagger" style={{ animationDelay: '0.24s' }}>
-                  <Link to="/dashboard/locataire">Retour</Link>
-                </p>
+                {error ? (
+                  <p className="cp-error cp-error-bottom">{error}</p>
+                ) : (
+                  <p className="cp-back cp-stagger" style={{ animationDelay: '0.36s' }}>
+                    <Link to="/dashboard/locataire">Retour</Link>
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -803,7 +820,7 @@ export default function CompleterProfilPage() {
           {/* Step 2: Alternance */}
           {currentStep === 2 && !showConfirmation && (
             <div className="cp-step">
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.12s' }}>
                 <label>Type d'alternance</label>
                 <CpSelect
                   value={typeAlternance}
@@ -818,7 +835,7 @@ export default function CompleterProfilPage() {
               </div>
 
               {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
-                <div className="cp-group">
+                <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
                   <label>Mon rythme</label>
                   <CpSelect
                     value={monRythme}
@@ -830,7 +847,7 @@ export default function CompleterProfilPage() {
               )}
 
               {typeAlternance === 'custom' && (
-                <div className="cp-group">
+                <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
                   <label>Décris ton rythme</label>
                   <input
                     type="text"
@@ -841,33 +858,62 @@ export default function CompleterProfilPage() {
                 </div>
               )}
 
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s' }}>
                 <label>Ville</label>
-                <input
-                  type="text"
-                  value={villeInput}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    setVilleInput(val)
-                    setVilleSelectionnee('')
-                  }}
-                  onBlur={() => {
-                    const match = VILLES_DISPONIBLES.find(v => v.toLowerCase() === villeInput.trim().toLowerCase())
-                    if (match) { setVilleInput(match); setVilleSelectionnee(match) }
-                  }}
-                  placeholder="Ex: Rennes, Nantes..."
-                  list="cp-villes-list"
-                />
-                <datalist id="cp-villes-list">
-                  {VILLES_DISPONIBLES.map(v => <option key={v} value={v} />)}
-                </datalist>
+                <div className="cp-autocomplete">
+                  <input
+                    type="text"
+                    value={villeInput}
+                    onChange={(e) => {
+                      const val = capitalizeWords(e.target.value)
+                      setVilleInput(val)
+                      setVilleSelectionnee('')
+                      const query = val.trim().toLowerCase()
+                      if (!query) { setVilleSuggestions([]); return }
+                      const matches = VILLES_DISPONIBLES.filter(v => v.toLowerCase().startsWith(query))
+                      if (matches.length > 0) {
+                        setVilleSuggestions(matches)
+                      } else if (query.length >= 2) {
+                        setVilleSuggestions(['__unavailable__'])
+                      } else {
+                        setVilleSuggestions([])
+                      }
+                    }}
+                    onBlur={() => setTimeout(() => setVilleSuggestions([]), 200)}
+                    placeholder="Ex: Rennes, Nantes..."
+                    autoComplete="off"
+                  />
+                  {villeSuggestions.length > 0 && (
+                    <div className="cp-suggestions">
+                      {villeSuggestions[0] === '__unavailable__' ? (
+                        <div className="cp-suggestion-item" style={{ color: '#E8622A', cursor: 'default', fontWeight: 600 }}>
+                          STERNY arrive bientôt dans ta ville !
+                        </div>
+                      ) : (
+                        villeSuggestions.map(v => (
+                          <div key={v} className="cp-suggestion-item" onMouseDown={() => {
+                            setVilleInput(v)
+                            setVilleSelectionnee(v)
+                            setVilleSuggestions([])
+                          }}>
+                            {v}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="cp-bottom">
                 <button className="cp-btn" onClick={() => nextStep(2)}>Continuer</button>
-                <p className="cp-back">
-                  <a href="#" onClick={e => { e.preventDefault(); prevStep(2) }}>Retour</a>
-                </p>
+                {error ? (
+                  <p className="cp-error cp-error-bottom">{error}</p>
+                ) : (
+                  <p className="cp-back">
+                    <a href="#" onClick={e => { e.preventDefault(); prevStep(2) }}>Retour</a>
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -875,7 +921,7 @@ export default function CompleterProfilPage() {
           {/* Step 3: Études */}
           {currentStep === 3 && !showConfirmation && (
             <div className="cp-step">
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.12s' }}>
                 <label>École / Université</label>
                 <div className="cp-autocomplete">
                   <input
@@ -899,7 +945,7 @@ export default function CompleterProfilPage() {
                   )}
                 </div>
               </div>
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
                 <label>Année d'études</label>
                 <div className="cp-autocomplete">
                   <input
@@ -922,7 +968,7 @@ export default function CompleterProfilPage() {
                   )}
                 </div>
               </div>
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s' }}>
                 <label>Filière / Domaine</label>
                 <div className="cp-autocomplete">
                   <input
@@ -947,18 +993,22 @@ export default function CompleterProfilPage() {
               </div>
               <div className="cp-bottom">
                 <button className="cp-btn" onClick={() => nextStep(3)}>Continuer</button>
-                <p className="cp-back">
-                  <a href="#" onClick={e => { e.preventDefault(); prevStep(3) }}>Retour</a>
-                </p>
+                {error ? (
+                  <p className="cp-error cp-error-bottom">{error}</p>
+                ) : (
+                  <p className="cp-back">
+                    <a href="#" onClick={e => { e.preventDefault(); prevStep(3) }}>Retour</a>
+                  </p>
+                )}
               </div>
             </div>
           )}
 
-          {/* Step 3 */}
+          {/* Step 4 */}
           {currentStep === 4 && !showConfirmation && (
             <div className="cp-step">
               <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
-              <div className="cp-photo-center" onClick={() => photoInputRef.current?.click()}>
+              <div className="cp-photo-center cp-stagger" style={{ animationDelay: '0.12s' }} onClick={() => photoInputRef.current?.click()}>
                 <div className="cp-photo-circle">
                   {photoPreviewUrl ? (
                     <img src={photoPreviewUrl} alt="" />
@@ -971,7 +1021,7 @@ export default function CompleterProfilPage() {
                 </div>
                 <span className="cp-photo-action">{photoPreviewUrl ? 'Modifier' : 'Ajouter une photo'}</span>
               </div>
-              <div className="cp-group">
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
                 <label>À propos de toi</label>
                 <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Parle de toi, tes centres d'intérêts, ce que tu aimes faire..." maxLength="300" rows="4" />
                 <p className="cp-hint">Optionnel — Max 300 caractères</p>
@@ -980,21 +1030,28 @@ export default function CompleterProfilPage() {
                 <button className={`cp-btn${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
                   {loading ? 'Enregistrement...' : 'Enregistrer'}
                 </button>
-                <p className="cp-back">
-                  <a href="#" onClick={e => { e.preventDefault(); prevStep(4) }}>Retour</a>
-                </p>
+                {error ? (
+                  <p className="cp-error cp-error-bottom">{error}</p>
+                ) : (
+                  <p className="cp-back">
+                    <a href="#" onClick={e => { e.preventDefault(); prevStep(4) }}>Retour</a>
+                  </p>
+                )}
               </div>
             </div>
           )}
 
           {/* Confirmation */}
           {showConfirmation && (
-            <div className="cp-confirmation">
+            <div className="cp-confirmation cp-stagger">
               <div className="cp-confirm-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /></svg>
               </div>
-              <div className="cp-confirm-title">Profil complété !</div>
-              <div className="cp-confirm-text">Redirection vers ton espace...</div>
+              <div className="cp-confirm-title cp-stagger" style={{ animationDelay: '0.12s' }}>Profil complété !</div>
+              <div className="cp-confirm-text cp-stagger" style={{ animationDelay: '0.20s' }}>Redirection vers ton espace...</div>
+              <div className="cp-confirm-bar cp-stagger" style={{ animationDelay: '0.28s' }}>
+                <div className="cp-confirm-bar-fill" />
+              </div>
             </div>
           )}
         </div>

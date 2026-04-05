@@ -38,12 +38,28 @@
     margin: 0 0 16px 0;
 }
 
+.cp-subtitle {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94A3B8;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: -8px 0 16px 0;
+}
+
 .cp-error {
     text-align: center;
     font-size: 14px;
     font-weight: 600;
     color: #EF4444;
     margin: -8px 0 12px 0;
+}
+
+.cp-error-bottom {
+    margin: 12px 0 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #E8EAF0;
 }
 
 /* ═══ PROGRESS BAR ═══ */
@@ -75,11 +91,24 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-bottom: 10px;
+    position: relative;
 }
+
+.cp-step > .cp-row:nth-child(1) { z-index: 5; }
+.cp-step > .cp-row:nth-child(2) { z-index: 4; }
+.cp-step > .cp-row:nth-child(3) { z-index: 3; }
 
 .cp-group {
     margin-bottom: 10px;
+    position: relative;
 }
+
+/* Chaque groupe empile au-dessus du suivant pour que les dropdowns ne soient pas masqués */
+.cp-step > .cp-group:nth-child(1) { z-index: 5; }
+.cp-step > .cp-group:nth-child(2) { z-index: 4; }
+.cp-step > .cp-group:nth-child(3) { z-index: 3; }
+.cp-step > .cp-group:nth-child(4) { z-index: 2; }
+.cp-step > .cp-group:nth-child(5) { z-index: 1; }
 
 .cp-row .cp-group {
     margin-bottom: 0;
@@ -155,6 +184,7 @@
 /* ═══ CUSTOM SELECT ═══ */
 .cp-select {
     position: relative;
+    z-index: 30;
 }
 
 .cp-select-trigger {
@@ -191,7 +221,7 @@
     background: white;
     border: 1.5px solid #E8EAF0;
     border-radius: 12px;
-    z-index: 20;
+    z-index: 50;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     overflow: hidden;
 }
@@ -217,6 +247,7 @@
 /* ═══ AUTOCOMPLETE ═══ */
 .cp-autocomplete {
     position: relative;
+    z-index: 10;
 }
 
 .cp-suggestions {
@@ -229,8 +260,9 @@
     border-radius: 12px;
     max-height: 180px;
     overflow-y: auto;
-    z-index: 20;
+    z-index: 50;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    overscroll-behavior: contain;
 }
 
 .cp-suggestion-item {
@@ -451,6 +483,8 @@
 /* ═══ BOTTOM — identical to other auth pages ═══ */
 .cp-bottom {
     margin-top: auto;
+    position: relative;
+    z-index: 0;
 }
 
 .cp-btn {
@@ -523,12 +557,13 @@
 .cp-confirm-icon {
     width: 64px;
     height: 64px;
-    background: #10B981;
+    background: #E8622A;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(232,98,42,0.25);
 }
 
 .cp-confirm-icon svg {
@@ -547,6 +582,27 @@
 .cp-confirm-text {
     font-size: 15px;
     color: #94A3B8;
+    margin-bottom: 24px;
+}
+
+.cp-confirm-bar {
+    width: 120px;
+    height: 3px;
+    background: #E8EAF0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cp-confirm-bar-fill {
+    height: 100%;
+    background: #E8622A;
+    border-radius: 4px;
+    animation: cpBarFill 2s ease forwards;
+}
+
+@keyframes cpBarFill {
+    from { width: 0; }
+    to { width: 100%; }
 }
 
 /* ═══ CROP MODAL — scopé, épuré ═══ */
