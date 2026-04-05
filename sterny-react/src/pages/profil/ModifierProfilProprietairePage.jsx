@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
+import Footer from '../../components/layout/Footer'
 import './ModifierProfilProprietairePage.css'
 
 function capitalizeWords(str) {
@@ -48,6 +49,8 @@ export default function ModifierProfilProprietairePage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMsg, setPasswordMsg] = useState(null)
   const [passwordLoading, setPasswordLoading] = useState(false)
+  const [showEmails, setShowEmails] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -85,8 +88,8 @@ export default function ModifierProfilProprietairePage() {
 
   // Crop functions
   const openCropper = (file) => {
-    if (!file.type.match('image.*')) { showError('Le fichier doit \u00eatre une image (JPG, PNG, WEBP)'); return }
-    if (file.size > 5 * 1024 * 1024) { showError('La photo ne doit pas d\u00e9passer 5 MB'); return }
+    if (!file.type.match('image.*')) { showError('Le fichier doit être une image (JPG, PNG, WEBP)'); return }
+    if (file.size > 5 * 1024 * 1024) { showError('La photo ne doit pas dépasser 5 MB'); return }
     const reader = new FileReader()
     reader.onload = (e) => {
       setCropImgSrc(e.target.result)
@@ -98,7 +101,7 @@ export default function ModifierProfilProprietairePage() {
   const onCropImageLoad = useCallback(() => {
     const img = cropImageRef.current
     if (!img) return
-    const areaSize = 260
+    const areaSize = 220
     const ratio = Math.max(areaSize / img.naturalWidth, areaSize / img.naturalHeight)
     cropState.current.scale = ratio
     const minZoom = Math.round(ratio * 100)
@@ -117,7 +120,7 @@ export default function ModifierProfilProprietairePage() {
   const clampPosition = () => {
     const img = cropImageRef.current
     if (!img) return
-    const areaSize = 260
+    const areaSize = 220
     const s = cropState.current
     const w = img.naturalWidth * s.scale
     const h = img.naturalHeight * s.scale
@@ -137,7 +140,7 @@ export default function ModifierProfilProprietairePage() {
     const s = cropState.current
     const oldScale = s.scale
     s.scale = val / 100
-    const areaSize = 260
+    const areaSize = 220
     const cX = areaSize / 2, cY = areaSize / 2
     const relX = (cX - s.imgX) / (img.naturalWidth * oldScale)
     const relY = (cY - s.imgY) / (img.naturalHeight * oldScale)
@@ -188,7 +191,7 @@ export default function ModifierProfilProprietairePage() {
     canvas.width = size
     canvas.height = size
     const ctx = canvas.getContext('2d')
-    const areaSize = 260
+    const areaSize = 220
     const s = cropState.current
     const sourceX = -s.imgX / s.scale
     const sourceY = -s.imgY / s.scale
@@ -212,9 +215,9 @@ export default function ModifierProfilProprietairePage() {
   // Save profile
   const enregistrerProfil = async () => {
     if (!isAdmin) {
-      if (!prenom.trim()) { showError('Merci de renseigner votre pr\u00e9nom'); return }
+      if (!prenom.trim()) { showError('Merci de renseigner votre prénom'); return }
       if (!nom.trim()) { showError('Merci de renseigner votre nom'); return }
-      if (!telephone.trim()) { showError('Merci de renseigner votre t\u00e9l\u00e9phone'); return }
+      if (!telephone.trim()) { showError('Merci de renseigner votre téléphone'); return }
     }
     setLoading(true)
     try {
@@ -232,7 +235,7 @@ export default function ModifierProfilProprietairePage() {
       if (photoUrl) updateData.photo_profil_url = photoUrl
       const { error } = await supabaseClient.from('users').update(updateData).eq('id', user.id)
       if (error) throw error
-      setSuccessMsg('Profil mis \u00e0 jour avec succ\u00e8s !')
+      setSuccessMsg('Profil mis à jour avec succès !')
       setTimeout(() => navigate('/dashboard/proprietaire'), 1500)
     } catch (err) {
       console.error('Erreur:', err)
@@ -259,13 +262,13 @@ export default function ModifierProfilProprietairePage() {
   const changerMotDePasse = async () => {
     setPasswordMsg(null)
     if (!newPassword || !confirmPassword) { setPasswordMsg({ type: 'error', text: 'Remplis les deux champs.' }); return }
-    if (newPassword.length < 6) { setPasswordMsg({ type: 'error', text: 'Le mot de passe doit contenir au moins 6 caract\u00e8res.' }); return }
+    if (newPassword.length < 6) { setPasswordMsg({ type: 'error', text: 'Le mot de passe doit contenir au moins 6 caractères.' }); return }
     if (newPassword !== confirmPassword) { setPasswordMsg({ type: 'error', text: 'Les mots de passe ne correspondent pas.' }); return }
     setPasswordLoading(true)
     try {
       const { error } = await supabaseClient.auth.updateUser({ password: newPassword })
       if (error) throw error
-      setPasswordMsg({ type: 'success', text: 'Mot de passe modifi\u00e9 avec succ\u00e8s !' })
+      setPasswordMsg({ type: 'success', text: 'Mot de passe modifié avec succès !' })
       setNewPassword('')
       setConfirmPassword('')
     } catch (err) {
@@ -276,12 +279,12 @@ export default function ModifierProfilProprietairePage() {
 
   return (
     <>
-      {/* MODAL RECADRAGE PHOTO */}
+      {/* MODAL RECADRAGE */}
       {showCrop && (
         <div className="crop-overlay-proprio">
           <div className="crop-modal-proprio">
-            <h3>Recadre ta photo</h3>
-            <p className="crop-hint">D\u00e9place et zoome pour ajuster</p>
+            <h3>RECADRER</h3>
+            <p className="crop-hint">Déplace et zoome pour ajuster</p>
             <div
               className="crop-area-proprio"
               ref={cropAreaRef}
@@ -291,18 +294,19 @@ export default function ModifierProfilProprietairePage() {
               <img
                 ref={cropImageRef}
                 src={cropImgSrc}
-                alt="Photo \u00e0 recadrer"
+                alt="Photo à recadrer"
                 onLoad={onCropImageLoad}
                 loading="lazy"
               />
             </div>
             <div className="crop-zoom-proprio">
-              <label>Zoom</label>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M8 11h6"/></svg>
               <input type="range" min={cropMinZoom} max={cropMinZoom * 3} value={cropZoom} onChange={handleCropZoom} />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M11 8v6M8 11h6"/></svg>
             </div>
             <div className="crop-actions-proprio">
               <button className="crop-cancel-proprio" onClick={cancelCrop}>Annuler</button>
-              <button className="crop-confirm-proprio" onClick={confirmCrop}>Valider</button>
+              <button className="crop-confirm-proprio" onClick={confirmCrop}>Appliquer</button>
             </div>
           </div>
         </div>
@@ -310,114 +314,122 @@ export default function ModifierProfilProprietairePage() {
 
       {/* PAGE */}
       <section className="page-inscription-proprio">
-        <div className="inscription-container-proprio">
-          <div className="inscription-header-proprio">
-            <h1>Modifier mon profil</h1>
-            <p>Mettez \u00e0 jour vos informations</p>
-          </div>
+        <div className="mpp-wrapper">
+          <div className="inscription-container-proprio">
+            <div className="inscription-header-proprio">
+              <h1>Mon profil</h1>
+            </div>
 
-          {errorMsg && <div className="error-message-proprio">{errorMsg}</div>}
-          {successMsg && <div className="success-message-proprio">{successMsg}</div>}
+            {errorMsg && <div className="error-message-proprio">{errorMsg}</div>}
+            {successMsg && <div className="success-message-proprio">{successMsg}</div>}
 
-          {/* Photo */}
-          <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={(e) => { if (e.target.files[0]) openCropper(e.target.files[0]) }} />
+            {/* Photo */}
+            <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={(e) => { if (e.target.files[0]) openCropper(e.target.files[0]) }} />
 
-          <div className="photo-upload-proprio">
-            <div className="photo-circle-proprio" onClick={() => photoInputRef.current?.click()}>
-              {showPlaceholder ? (
-                <div className="placeholder">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
+            <div className="mpp-photo-center mpp-stagger" style={{ animationDelay: '0.08s' }} onClick={() => photoInputRef.current?.click()}>
+              <div className="mpp-photo-circle">
+                {!showPlaceholder && photoPreviewUrl ? (
+                  <img src={photoPreviewUrl} alt="Photo de profil" />
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
                   </svg>
+                )}
+              </div>
+              <span className="mpp-photo-action">{photoPreviewUrl && !showPlaceholder ? 'Modifier la photo' : 'Ajouter une photo'}</span>
+            </div>
+
+            {/* Champs */}
+            <div className="form-row-proprio mpp-stagger" style={{ animationDelay: '0.16s' }}>
+              <div className="form-group-proprio">
+                <label>Prénom <span className="required">*</span></label>
+                <input type="text" value={prenom} onChange={(e) => setPrenom(capitalizeWords(e.target.value))} placeholder="Prénom" />
+              </div>
+              <div className="form-group-proprio">
+                <label>Nom <span className="required">*</span></label>
+                <input type="text" value={nom} onChange={(e) => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
+              </div>
+            </div>
+
+            <div className="form-row-proprio mpp-stagger" style={{ animationDelay: '0.24s' }}>
+              <div className="form-group-proprio">
+                <label>Téléphone <span className="required">*</span></label>
+                <input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} placeholder="06 12 34 56 78" />
+              </div>
+              <div className="form-group-proprio">
+                <label>Email</label>
+                <input type="email" value={emailValue} disabled />
+              </div>
+            </div>
+
+            {/* Boutons */}
+            <div className="buttons-row-proprio mpp-stagger" style={{ animationDelay: '0.32s' }}>
+              <Link to="/dashboard/proprietaire" className="btn-back-proprio">Annuler</Link>
+              <button className={`btn-next-proprio${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
+                {loading ? 'Enregistrement...' : 'Enregistrer'}
+              </button>
+            </div>
+
+          </div>
+
+          {/* Liens discrets sous la card */}
+          <div className="mpp-links mpp-stagger" style={{ animationDelay: '0.40s' }}>
+            <button className={`mpp-link${showEmails ? ' active' : ''}`} onClick={() => { setShowEmails(!showEmails); setShowPassword(false) }}>Notifications email</button>
+            <span className="mpp-link-dot" />
+            <button className={`mpp-link${showPassword ? ' active' : ''}`} onClick={() => { setShowPassword(!showPassword); setShowEmails(false) }}>Modifier le mot de passe</button>
+          </div>
+
+          {/* PRÉFÉRENCES EMAIL */}
+          {showEmails && (
+            <div className="mpp-card-secondary">
+              {[
+                { label: 'Messages', desc: 'Notification quand tu reçois un message', value: prefMessages, setter: setPrefMessages },
+                { label: 'Candidatures', desc: 'Nouvelles candidatures sur tes annonces', value: prefCandidatures, setter: setPrefCandidatures },
+                { label: 'Paiements', desc: 'Reçus et rappels de paiement', value: prefPaiements, setter: setPrefPaiements },
+                { label: 'Baux', desc: 'Fin de bail, renouvellement', value: prefBaux, setter: setPrefBaux },
+                { label: 'Actualités STERNY', desc: 'Nouveautés et offres de la plateforme', value: prefMarketing, setter: setPrefMarketing },
+              ].map(({ label, desc, value, setter }) => (
+                <div className="pref-row-proprio" key={label}>
+                  <div>
+                    <div className="pref-label-proprio">{label}</div>
+                    <div className="pref-desc-proprio">{desc}</div>
+                  </div>
+                  <label className="toggle-switch-proprio">
+                    <input type="checkbox" checked={value} onChange={(e) => { setter(e.target.checked); sauvegarderPrefsEmail() }} />
+                    <span className="toggle-slider-proprio" />
+                  </label>
                 </div>
-              ) : (
-                <img src={photoPreviewUrl} alt="Photo de profil" />
-              )}
+              ))}
+              <div className={`prefs-saved-proprio${prefsSaved ? ' show' : ''}`}>Préférences sauvegardées</div>
             </div>
-            <div className="photo-info-proprio">
-              <div className="photo-title">Votre photo de profil</div>
-              <div className="photo-hint">Cliquez sur le cercle -- JPG, PNG (max 5 MB)</div>
-            </div>
-          </div>
+          )}
 
-          {/* Champs */}
-          <div className="form-row-proprio">
-            <div className="form-group-proprio">
-              <label>Pr\u00e9nom <span className="required">*</span></label>
-              <input type="text" value={prenom} onChange={(e) => setPrenom(capitalizeWords(e.target.value))} placeholder="Pr\u00e9nom" />
+          {/* MOT DE PASSE */}
+          {showPassword && (
+            <div className="mpp-card-secondary">
+              <div className="password-section-text-proprio">
+                Nouveau mot de passe (min. 6 caractères).
+              </div>
+              <div className="form-row-proprio">
+                <div className="form-group-proprio">
+                  <label htmlFor="newPasswordProprio">Nouveau</label>
+                  <input type="password" id="newPasswordProprio" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 6 caractères" autoComplete="new-password" />
+                </div>
+                <div className="form-group-proprio">
+                  <label htmlFor="confirmPasswordProprio">Confirmer</label>
+                  <input type="password" id="confirmPasswordProprio" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" />
+                </div>
+              </div>
+              <button className="btn-change-password-proprio" onClick={changerMotDePasse} disabled={passwordLoading}>
+                {passwordLoading ? 'Modification...' : 'Modifier le mot de passe'}
+              </button>
+              {passwordMsg && <div className={`password-message-proprio ${passwordMsg.type}`}>{passwordMsg.text}</div>}
             </div>
-            <div className="form-group-proprio">
-              <label>Nom <span className="required">*</span></label>
-              <input type="text" value={nom} onChange={(e) => setNom(capitalizeWords(e.target.value))} placeholder="Nom" />
-            </div>
-          </div>
-
-          <div className="form-row-proprio">
-            <div className="form-group-proprio">
-              <label>T\u00e9l\u00e9phone <span className="required">*</span></label>
-              <input type="tel" value={telephone} onChange={(e) => setTelephone(e.target.value)} placeholder="06 12 34 56 78" />
-            </div>
-            <div className="form-group-proprio">
-              <label>Email</label>
-              <input type="email" value={emailValue} disabled />
-            </div>
-          </div>
-
-          {/* Boutons */}
-          <div className="buttons-row-proprio">
-            <Link to="/dashboard/proprietaire" className="btn-back-proprio">Annuler</Link>
-            <button className={`btn-next-proprio${loading ? ' loading' : ''}`} onClick={enregistrerProfil} disabled={loading}>
-              {loading ? 'Enregistrement...' : 'Enregistrer'}
-            </button>
-          </div>
+          )}
         </div>
       </section>
-
-      {/* PR\u00c9F\u00c9RENCES EMAIL */}
-      <div className="email-prefs-section-proprio">
-        <div className="email-prefs-title-proprio">Pr\u00e9f\u00e9rences email</div>
-        <div className="email-prefs-subtitle-proprio">Choisis les emails que tu souhaites recevoir.</div>
-        {[
-          { label: 'Messages', desc: 'Notification quand tu re\u00e7ois un message', value: prefMessages, setter: setPrefMessages },
-          { label: 'Candidatures', desc: 'Nouvelles candidatures sur tes annonces', value: prefCandidatures, setter: setPrefCandidatures },
-          { label: 'Paiements', desc: 'Re\u00e7us et rappels de paiement', value: prefPaiements, setter: setPrefPaiements },
-          { label: 'Baux', desc: 'Fin de bail, renouvellement', value: prefBaux, setter: setPrefBaux },
-          { label: 'Actualit\u00e9s STERNY', desc: 'Nouveaut\u00e9s et offres de la plateforme', value: prefMarketing, setter: setPrefMarketing },
-        ].map(({ label, desc, value, setter }) => (
-          <div className="pref-row-proprio" key={label}>
-            <div>
-              <div className="pref-label-proprio">{label}</div>
-              <div className="pref-desc-proprio">{desc}</div>
-            </div>
-            <label className="toggle-switch-proprio">
-              <input type="checkbox" checked={value} onChange={(e) => { setter(e.target.checked); sauvegarderPrefsEmail() }} />
-              <span className="toggle-slider-proprio" />
-            </label>
-          </div>
-        ))}
-        <div className={`prefs-saved-proprio${prefsSaved ? ' show' : ''}`}>Pr\u00e9f\u00e9rences sauvegard\u00e9es</div>
-      </div>
-
-      {/* CHANGEMENT MOT DE PASSE */}
-      <div className="password-section-proprio">
-        <div className="password-section-title-proprio">Changer mon mot de passe</div>
-        <div className="password-section-text-proprio">
-          Renseigne ton nouveau mot de passe (min. 6 caract\u00e8res).
-        </div>
-        <div className="password-form-group-proprio">
-          <label htmlFor="newPasswordProprio">Nouveau mot de passe</label>
-          <input type="password" id="newPasswordProprio" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 6 caract\u00e8res" autoComplete="new-password" />
-        </div>
-        <div className="password-form-group-proprio">
-          <label htmlFor="confirmPasswordProprio">Confirmer le nouveau mot de passe</label>
-          <input type="password" id="confirmPasswordProprio" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" />
-        </div>
-        <button className="btn-change-password-proprio" onClick={changerMotDePasse} disabled={passwordLoading}>
-          {passwordLoading ? 'Modification...' : 'Modifier le mot de passe'}
-        </button>
-        {passwordMsg && <div className={`password-message-proprio ${passwordMsg.type}`}>{passwordMsg.text}</div>}
-      </div>
+      <Footer />
     </>
   )
 }

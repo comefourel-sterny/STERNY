@@ -21,7 +21,7 @@ export default function DashboardLayout() {
     )
   }
 
-  if (!user) {
+  if (!user && !import.meta.env.DEV) {
     return <Navigate to="/connexion" replace />
   }
 
