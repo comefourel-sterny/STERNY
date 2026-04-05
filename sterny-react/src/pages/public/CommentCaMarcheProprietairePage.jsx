@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth.jsx'
 import './CommentCaMarcheProprietairePage.css'
 
 export default function CommentCaMarcheProprietairePage() {
+  const { user } = useAuth()
   return (
     <div className="ccmp">
       {/* HERO */}
@@ -23,7 +25,7 @@ export default function CommentCaMarcheProprietairePage() {
               <div className="ccmp-step-num">1</div>
               <div className="ccmp-step-body">
                 <h3>Créez ou vérifiez votre annonce</h3>
-                <p>Renseignez votre logement ou vérifiez l'annonce créée par votre alternant, ajoutez des photos et indiquez les disponibilités.</p>
+                <p>Renseignez votre logement ou vérifiez l'annonce créée par votre locataire alternant.</p>
               </div>
             </div>
 
@@ -31,7 +33,7 @@ export default function CommentCaMarcheProprietairePage() {
               <div className="ccmp-step-num">2</div>
               <div className="ccmp-step-body">
                 <h3>On vous trouve des locataires</h3>
-                <p>STERNY met en relation votre logement avec des étudiants en alternance dont le rythme correspond à vos disponibilités.</p>
+                <p>STERNY met en relation votre logement avec des étudiants en alternance dont le rythme est compatible avec vos disponibilités.</p>
               </div>
             </div>
 
@@ -103,8 +105,8 @@ export default function CommentCaMarcheProprietairePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="ccmp-cta-section">
+      {/* CTA — masqué si connecté */}
+      {!user && <section className="ccmp-cta-section">
         <div className="ccmp-container">
           <div className="ccmp-cta ccmp-stagger">
             <h2>Prêt à rejoindre STERNY ?</h2>
@@ -115,7 +117,7 @@ export default function CommentCaMarcheProprietairePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
     </div>
   )

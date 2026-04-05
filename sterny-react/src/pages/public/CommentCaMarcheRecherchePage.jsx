@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth.jsx'
 import './CommentCaMarcheRecherchePage.css'
 
 export default function CommentCaMarcheRecherchePage() {
+  const { user } = useAuth()
   return (
     <div className="ccmr">
       {/* HERO */}
@@ -103,8 +105,8 @@ export default function CommentCaMarcheRecherchePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="ccmr-cta-section">
+      {/* CTA — masqué si connecté */}
+      {!user && <section className="ccmr-cta-section">
         <div className="ccmr-container">
           <div className="ccmr-cta ccmr-stagger">
             <h2>Prêt à trouver ton logement ?</h2>
@@ -115,7 +117,7 @@ export default function CommentCaMarcheRecherchePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
     </div>
   )
 }

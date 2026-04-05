@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth.jsx'
 import './CommentCaMarcheAlternerPage.css'
 
 export default function CommentCaMarcheAlternerPage() {
+  const { user } = useAuth()
   return (
     <div className="ccma">
       {/* HERO */}
@@ -103,8 +105,8 @@ export default function CommentCaMarcheAlternerPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="ccma-cta-section">
+      {/* CTA — masqué si connecté */}
+      {!user && <section className="ccma-cta-section">
         <div className="ccma-container">
           <div className="ccma-cta ccma-stagger">
             <h2>Prêt à diviser ton loyer ?</h2>
@@ -115,7 +117,7 @@ export default function CommentCaMarcheAlternerPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
     </div>
   )
 }
