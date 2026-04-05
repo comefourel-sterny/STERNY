@@ -92,7 +92,7 @@ export default function Navbar({ variant = 'default' }) {
               </li>
               {isDashboard && (
                 <li>
-                  <a href="#" onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
+                  <a href="#" style={{ color: '#94A3B8' }} onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
                     Déconnexion
                   </a>
                 </li>
