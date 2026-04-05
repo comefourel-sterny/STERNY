@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import NotificationBell from './NotificationBell'
@@ -10,6 +10,8 @@ export default function Navbar({ variant = 'default' }) {
   const [scrolled, setScrolled] = useState(false)
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isDashboard = location.pathname.startsWith('/dashboard')
 
   useEffect(() => {
     if (variant !== 'dark') return
@@ -88,11 +90,13 @@ export default function Navbar({ variant = 'default' }) {
                   Comment ça marche
                 </Link>
               </li>
-              <li>
-                <a href="#" className="nav-deconnexion" onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
-                  Déconnexion
-                </a>
-              </li>
+              {isDashboard && (
+                <li>
+                  <a href="#" onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
+                    Déconnexion
+                  </a>
+                </li>
+              )}
             </>
           ) : (
             <>
