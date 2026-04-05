@@ -838,7 +838,7 @@ export default function DashboardLocatairePage() {
         <div className="section" style={{ minHeight: 'auto' }}>
           <div className="section-header">
             <div className="section-title">
-              <div className="section-icon" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
+              <div className="section-icon" style={{ background: '#1E293B' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
               </div>
               Mes locations actives
@@ -965,8 +965,8 @@ export default function DashboardLocatairePage() {
           <div className="section section-with-empty">
             <div className="section-header">
               <div className="section-title">
-                <div className="section-icon" style={{ background: '#EEF2FF' }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
+                <div className="section-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
                 </div>
                 Mes candidatures
                 {candidatures.length > 0 && <span className="favoris-count">{candidatures.length}</span>}
@@ -1123,8 +1123,8 @@ export default function DashboardLocatairePage() {
           <div className="section section-with-empty">
             <div className="section-header">
               <div className="section-title">
-                <div className="section-icon" style={{ background: '#EEF2FF' }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
+                <div className="section-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
                 </div>
                 Candidatures recues
                 {candidaturesRecues.length > 0 && <span className="favoris-count">{candidaturesRecues.length}</span>}

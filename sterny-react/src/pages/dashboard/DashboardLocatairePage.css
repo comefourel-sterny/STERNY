@@ -12,11 +12,12 @@
 }
 
 .page-header h1 {
-    font-size: 36px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #E8622A;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
 .page-header p {
@@ -32,9 +33,15 @@
     border-radius: 16px;
     padding: 28px 32px;
     margin-bottom: 14px;
-    border: 1px solid #E8EAF0;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.16);
+    border: 1.5px solid #E8EAF0;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.10);
     overflow: visible;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(232, 98, 42, 0.14);
 }
 
 .section-header {
@@ -52,10 +59,10 @@
 }
 
 .section-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: #EEF2F7;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(232, 98, 42, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,7 +72,7 @@
 .section-icon svg {
     width: 15px;
     height: 15px;
-    stroke: #475569;
+    stroke: #E8622A;
     fill: none;
     stroke-width: 2;
     stroke-linecap: round;
@@ -73,7 +80,7 @@
 }
 
 .section-icon.orange {
-    background: #FFF1E8;
+    background: rgba(232, 98, 42, 0.08);
 }
 
 .section-icon.orange svg {
@@ -1523,18 +1530,21 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: box-shadow 0.2s;
+    border: 1.5px solid #E8EAF0;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
 .location-card:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+    border-color: #E8622A;
 }
 
 .location-card .loc-icon {
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #10B981, #059669);
+    background: #1E293B;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1596,7 +1606,7 @@
 }
 
 .btn-renew {
-    background: linear-gradient(135deg, #10B981, #059669);
+    background: #1E293B;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -1610,8 +1620,9 @@
 }
 
 .btn-renew:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+    background: #E8622A;
 }
 
 .btn-voir-logement {
@@ -1630,8 +1641,9 @@
 }
 
 .btn-voir-logement:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 98, 42, 0.3);
+    background: #D4571F;
 }
 
 .renewal-badge {
@@ -1744,8 +1756,8 @@
     background: white;
     border-radius: 12px;
     overflow: hidden;
-    transition: all 0.2s;
-    border: 1px solid #E8EAF0;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border: 1.5px solid #E8EAF0;
     text-decoration: none;
     color: inherit;
     display: block;
@@ -1757,7 +1769,8 @@
 
 .favori-card:hover {
     border-color: #E8622A;
-    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(232, 98, 42, 0.12);
 }
 
 .favori-card-image {
@@ -2768,4 +2781,25 @@
     .chat-msg {
         max-width: 85%;
     }
+}
+
+/* ═══ STAGGER ANIMATION ═══ */
+.dashboard-container > .section,
+.dashboard-container > .alerte-bandeau,
+.dashboard-container > .page-header {
+    animation: dlStaggerIn 0.4s ease both;
+}
+
+.dashboard-container > *:nth-child(1) { animation-delay: 0s; }
+.dashboard-container > *:nth-child(2) { animation-delay: 0.08s; }
+.dashboard-container > *:nth-child(3) { animation-delay: 0.16s; }
+.dashboard-container > *:nth-child(4) { animation-delay: 0.24s; }
+.dashboard-container > *:nth-child(5) { animation-delay: 0.32s; }
+.dashboard-container > *:nth-child(6) { animation-delay: 0.40s; }
+.dashboard-container > *:nth-child(7) { animation-delay: 0.48s; }
+.dashboard-container > *:nth-child(8) { animation-delay: 0.56s; }
+
+@keyframes dlStaggerIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
