@@ -10,7 +10,7 @@ export default function CommentCaMarcheAlternerPage() {
       <section className="ccma-hero">
         <div className="ccma-hero-inner">
           <span className="ccma-badge ccma-stagger">Partage de logement</span>
-          <h1 className="ccma-stagger" style={{ animationDelay: '0.08s' }}>Divise ton loyer grâce à l'alternance</h1>
+          <h1 className="ccma-stagger" style={{ animationDelay: '0.08s' }}>Partage ton logement avec un autre alternant</h1>
           <p className="ccma-stagger" style={{ animationDelay: '0.16s' }}>Tu as un logement ? Trouve un binôme avec un rythme complémentaire et partagez les frais</p>
         </div>
       </section>
