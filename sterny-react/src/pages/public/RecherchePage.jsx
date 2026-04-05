@@ -1271,7 +1271,7 @@ export default function RecherchePage() {
       {/* HERO */}
       <section className="recherche-hero">
         <div className="hero-content">
-          <div className="hero-badge">
+          <div className="hero-badge rch-stagger" style={{ animationDelay: '0.05s' }}>
             <img
               src="/PP-Sterny-White.png"
               alt="Sterny"
@@ -1286,11 +1286,11 @@ export default function RecherchePage() {
             />
             La plateforme des alternants en France
           </div>
-          <h1>Trouve ton <span>logement</span></h1>
-          <p className="hero-subtitle">Flexible, meublé, adapté à ton rythme d&apos;alternance.</p>
+          <h1 className="rch-stagger" style={{ animationDelay: '0.15s' }}>Trouve ton <span>logement</span></h1>
+          <p className="hero-subtitle rch-stagger" style={{ animationDelay: '0.25s' }}>Flexible, meublé, adapté à ton rythme d&apos;alternance.</p>
 
           {/* SEARCH BAR */}
-          <div className="search-bar">
+          <div className="search-bar rch-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville */}
             <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
               <label>VILLE</label>

@@ -1335,7 +1335,7 @@ export default function LogementPage() {
       <div className="logement-content">
         {/* INFO PRINCIPALE */}
         <div className="main-info">
-          <div className="logement-header">
+          <div className="logement-header lgt-stagger" style={{ animationDelay: '0.1s' }}>
             <div className="header-title-row">
               <h1>{logement.titre}</h1>
             </div>
@@ -1350,7 +1350,7 @@ export default function LogementPage() {
 
           {/* LOCALISATION + CARTE */}
           {logement.adresse && (
-            <div className="localisation-section">
+            <div className="localisation-section lgt-stagger" style={{ animationDelay: '0.2s' }}>
               <h2 className="section-title">Localisation</h2>
 
               {/* School search */}
@@ -1368,7 +1368,7 @@ export default function LogementPage() {
                 {showSuggestions && (
                   <div className="school-suggestions visible">
                     {schoolSuggestions.length === 0 ? (
-                      <div className="school-suggestion-item" style={{ color: 'var(--gray-500)', cursor: 'default' }}>Aucun établissement trouvé</div>
+                      <div className="school-suggestion-item" style={{ color: '#94A3B8', cursor: 'default' }}>Aucun établissement trouvé</div>
                     ) : (
                       schoolSuggestions.map((item, i) => (
                         <div key={i} className="school-suggestion-item" onClick={() => selectSchool(item)}>
@@ -1414,7 +1414,7 @@ export default function LogementPage() {
           )}
 
           {/* DESCRIPTION */}
-          <div>
+          <div className="lgt-stagger" style={{ animationDelay: '0.3s' }}>
             <h2 className="section-title">Description</h2>
             <p className="description-text">
               {logement.description || 'Aucune description disponible.'}
@@ -1423,7 +1423,7 @@ export default function LogementPage() {
 
           {/* EQUIPEMENTS */}
           {logement.equipements && logement.equipements.length > 0 && (
-            <div>
+            <div className="lgt-stagger" style={{ animationDelay: '0.4s' }}>
               <h2 className="section-title">Équipements</h2>
               <div className="equipements-grid">
                 {logement.equipements.map((equip, i) => (
@@ -1438,10 +1438,10 @@ export default function LogementPage() {
 
           {/* REGLES DU LOGEMENT */}
           {logement.regles && logement.regles.length > 0 && logement.regles[0].trim() && (
-            <div>
+            <div className="lgt-stagger" style={{ animationDelay: '0.5s' }}>
               <h2 className="section-title">Règles du logement</h2>
               <div className="regles-list">
-                <div style={{ fontSize: '15px', color: 'var(--gray-700)', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+                <div style={{ fontSize: '15px', color: '#475569', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
                   {logement.regles[0]}
                 </div>
               </div>
@@ -1450,7 +1450,7 @@ export default function LogementPage() {
         </div>
 
         {/* SIDEBAR RESERVATION */}
-        <aside className="booking-sidebar">
+        <aside className="booking-sidebar lgt-stagger" style={{ animationDelay: '0.2s' }}>
           {/* CARD PRINCIPALE : Prix + Dates + CTA */}
           <div className="booking-card">
             <div className="price-row">
@@ -1550,7 +1550,7 @@ export default function LogementPage() {
                 <svg width="24" height="24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
               </div>
               <h2 style={{ marginBottom: '6px', fontSize: '20px' }}>Postuler à ce logement</h2>
-              <p style={{ color: '#6B7280', fontSize: '14px', margin: 0, lineHeight: 1.5 }}>Présente-toi au propriétaire en quelques lignes</p>
+              <p style={{ color: '#94A3B8', fontSize: '14px', margin: 0, lineHeight: 1.5 }}>Présente-toi au propriétaire en quelques lignes</p>
             </div>
 
             <form onSubmit={envoyerCandidature} aria-label="Formulaire de candidature">
@@ -1563,10 +1563,10 @@ export default function LogementPage() {
                   required
                   minLength={50}
                   rows={5}
-                  style={{ width: '100%', border: '1.5px solid #E8EAF0', borderRadius: '12px', padding: '14px 16px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", color: '#1E293B', resize: 'vertical', transition: 'border-color 0.2s', background: '#FAFAFA', lineHeight: 1.6, boxSizing: 'border-box' }}
+                  style={{ width: '100%', border: '1.5px solid #E8EAF0', borderRadius: '12px', padding: '14px 16px', fontSize: '14px', fontFamily: "'DM Sans', sans-serif", color: '#1E293B', resize: 'vertical', transition: 'border-color 0.2s', background: '#F4F5F7', lineHeight: 1.6, boxSizing: 'border-box' }}
                 />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-                  <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Minimum 50 caractères</span>
+                  <span style={{ fontSize: '12px', color: '#94A3B8' }}>Minimum 50 caractères</span>
                   <span style={{ fontSize: '12px', color: messageCandidature.length >= 50 ? '#16A34A' : '#9CA3AF' }}>
                     {messageCandidature.length} / 50
                   </span>
@@ -1577,7 +1577,7 @@ export default function LogementPage() {
                 {candidatureSubmitting ? 'Envoi en cours...' : 'Envoyer ma candidature'}
               </button>
 
-              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9CA3AF', margin: '14px 0 0', lineHeight: 1.5 }}>
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#94A3B8', margin: '14px 0 0', lineHeight: 1.5 }}>
                 Ton dossier complet sera partagé automatiquement
               </p>
             </form>
@@ -1626,7 +1626,7 @@ export default function LogementPage() {
           aria-label="Signaler cette annonce"
           onClick={(e) => { if (e.target === e.currentTarget) setShowModalSignalement(false); }}
         >
-          <div style={{ background: '#fff', borderRadius: '20px', padding: '32px', maxWidth: '420px', width: '100%', boxShadow: '0 16px 48px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', padding: '32px', maxWidth: '420px', width: '100%', boxShadow: '0 6px 28px rgba(232,98,42,0.10)', border: '1.5px solid #E8EAF0' }}>
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1E293B', margin: '0 0 16px', textAlign: 'center' }}>Signaler cette annonce</h3>
 
             {signalMsg.text && (
