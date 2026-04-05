@@ -653,7 +653,7 @@ export default function HomePage() {
                 <line x1="2" y1="13.5" x2="13" y2="13.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="reassurance-text">Sans frais d'agence<small>0 commission, 0 surprise</small></div>
+            <div className="reassurance-text">Aucun frais d'agence<small>0 commission, 0 surprise</small></div>
           </div>
           <div className="reassurance-item">
             <div className="reassurance-icon navy">

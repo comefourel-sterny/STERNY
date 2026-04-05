@@ -33,7 +33,7 @@ export default function CommentCaMarcheProprietairePage() {
               <div className="ccmp-step-num">2</div>
               <div className="ccmp-step-body">
                 <h3>On vous trouve des locataires</h3>
-                <p>STERNY met en relation votre logement avec des étudiants en alternance dont le rythme est compatible avec vos disponibilités.</p>
+                <p>STERNY met en relation votre logement avec des étudiants en alternance qui ont un rythme compatible.</p>
               </div>
             </div>
 
