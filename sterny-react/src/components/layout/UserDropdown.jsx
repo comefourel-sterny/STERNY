@@ -54,13 +54,9 @@ export default function UserDropdown() {
   // Close on route change
   useEffect(() => { setIsOpen(false) }, [location.pathname])
 
-  // Lock body scroll when open
+  // Lock body scroll when panel open (logged-in only uses bubble now, but keep for safety)
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
 
@@ -156,31 +152,38 @@ export default function UserDropdown() {
     )
   }
 
-  // Logged in: full side panel
+  // Logged in: avatar link + menu button + side panel
+  const dashboardPath = userRole === 'proprietaire'
+    ? '/dashboard/proprietaire'
+    : userRole === 'hote'
+      ? '/dashboard/hote'
+      : userRole === 'admin'
+        ? '/dashboard/admin'
+        : '/dashboard/locataire'
+
   return (
     <>
-      <button
-        className="ud-avatar"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Menu utilisateur"
-      >
+      <Link to={dashboardPath} className="ud-avatar" aria-label="Mon espace">
         {initials}
-      </button>
+      </Link>
 
-      <div
-        className={`ud-overlay${isOpen ? ' open' : ''}`}
-        onClick={close}
-      />
+      <div className="ud-bubble-wrap">
+        <button
+          className="ud-menu-btn"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Menu"
+        >
+          <IconMenu />
+        </button>
 
-      <div className={`ud-panel${isOpen ? ' open' : ''}`} ref={panelRef}>
-        <div className="ud-header">
-          <div className="ud-header-avatar">{initials}</div>
-          <div className="ud-header-name">{userName}</div>
-          <div className="ud-header-role">{roleLabel}</div>
-        </div>
-        <div className="ud-menu">
-          {renderItems(menuItems)}
-        </div>
+        {isOpen && (
+          <>
+            <div className="ud-bubble-overlay" onClick={close} />
+            <div className="ud-bubble ud-bubble-logged">
+              {renderItems(menuItems)}
+            </div>
+          </>
+        )}
       </div>
     </>
   )

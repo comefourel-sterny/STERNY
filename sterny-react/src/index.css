@@ -540,7 +540,7 @@ footer a:hover {
     height: 36px;
     border-radius: 50%;
     background: #1E293B;
-    color: white;
+    color: white !important;
     font-size: 13px;
     font-weight: 700;
     font-family: 'DM Sans', sans-serif;
@@ -552,6 +552,8 @@ footer a:hover {
     flex-shrink: 0;
     transition: box-shadow 0.2s, transform 0.15s;
     letter-spacing: 0.5px;
+    text-decoration: none;
+    padding: 0 !important;
 }
 .ud-avatar:hover {
     box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
@@ -705,6 +707,10 @@ nav.nav-transparent .ud-avatar:hover {
 
 .ud-bubble .ud-separator {
     margin: 4px 12px;
+}
+
+.ud-bubble-logged {
+    min-width: 280px;
 }
 
 /* Menu */
