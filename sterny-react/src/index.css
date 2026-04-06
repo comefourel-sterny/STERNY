@@ -98,6 +98,13 @@ nav .logo img {
     object-fit: contain;
 }
 
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
 nav a {
     color: #475569;
     text-decoration: none;
@@ -111,6 +118,64 @@ nav a {
 nav a:hover {
     color: #E8622A;
     background: rgba(232, 98, 42, 0.06);
+}
+
+nav .nav-highlight {
+    color: #E8622A;
+    font-weight: 600;
+}
+
+nav .nav-highlight:hover {
+    color: #e55a2b;
+}
+
+nav .nav-cta-inscription {
+    background: #E8622A;
+    border: 2px solid #E8622A;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    padding: 8px 18px;
+    transition: all 0.2s;
+}
+
+nav .nav-cta-inscription:hover {
+    background: #D4571F;
+    border-color: #D4571F;
+    color: white;
+}
+
+/* Overlay invisible sur desktop */
+.menu-overlay {
+    display: none;
+}
+
+/* HAMBURGER (mobile only, pages publiques) */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1002;
+}
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background: #1E293B;
+    margin: 5px 0;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
 }
 
 /* NAV TRANSPARENT (fond bleu sur la home, se fond avec le hero) */
@@ -127,6 +192,26 @@ nav.nav-transparent a {
 nav.nav-transparent a:hover {
     color: white;
     background: rgba(255,255,255,0.1);
+}
+
+nav.nav-transparent .nav-highlight {
+    color: #E8622A;
+}
+
+nav.nav-transparent .nav-cta-inscription {
+    background: #E8622A;
+    border-color: #E8622A;
+    color: white;
+}
+
+nav.nav-transparent .nav-cta-inscription:hover {
+    background: #D4571F;
+    border-color: #D4571F;
+    color: white;
+}
+
+nav.nav-transparent .hamburger span {
+    background: white;
 }
 
 /* NAV SCROLLED (retour au blanc) */
@@ -616,9 +701,61 @@ nav.nav-transparent .hm-trigger.active {
         padding: 0 20px;
         height: 72px;
     }
+
     nav .logo img {
         height: 40px;
     }
+
+    .hamburger {
+        display: block;
+    }
+
+    nav ul {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 260px;
+        height: 100vh;
+        background: white;
+        flex-direction: column;
+        padding: 80px 32px 32px;
+        gap: 0;
+        box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+        transition: right 0.3s ease;
+        z-index: 1001;
+    }
+
+    nav ul.open {
+        right: 0;
+    }
+
+    nav ul li {
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    nav ul li a {
+        display: block;
+        padding: 14px 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+
+    /* Overlay behind menu */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 1000;
+    }
+    .menu-overlay.active {
+        display: block;
+    }
+
     section {
         padding: 60px 20px;
     }
