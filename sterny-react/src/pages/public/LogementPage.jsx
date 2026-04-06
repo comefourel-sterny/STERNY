@@ -346,6 +346,21 @@ export default function LogementPage() {
     }
   }, [logementId, navigate]);
 
+  // Hide nav border + shadow on this page
+  useEffect(() => {
+    const nav = document.querySelector('nav')
+    if (nav) {
+      nav.style.borderBottom = 'none'
+      nav.style.boxShadow = 'none'
+    }
+    return () => {
+      if (nav) {
+        nav.style.borderBottom = ''
+        nav.style.boxShadow = ''
+      }
+    }
+  }, []);
+
   // Load annonce
   useEffect(() => {
     if (!logementId) return;
@@ -1281,7 +1296,14 @@ export default function LogementPage() {
       <section className="photo-gallery">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <a href="#" className="back-link" style={{ marginBottom: 0 }} onClick={(e) => { e.preventDefault(); window.history.back(); }}>Retour</a>
+            <a
+              onClick={(e) => { e.preventDefault(); window.history.back(); }}
+              style={{ color: '#475569', fontSize: '13px', cursor: 'pointer', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+              onMouseOver={(e) => e.currentTarget.style.color = '#E8622A'}
+              onMouseOut={(e) => e.currentTarget.style.color = '#475569'}
+            >
+              Retour
+            </a>
             <a
               onClick={partagerAnnonce}
               style={{ color: shareHover ? '#E8622A' : '#475569', fontSize: '13px', cursor: 'pointer', textDecoration: 'none', fontWeight: 500, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
