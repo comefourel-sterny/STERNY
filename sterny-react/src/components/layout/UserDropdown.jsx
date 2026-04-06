@@ -3,6 +3,19 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 
+const svgProps = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
+
+const IconSearch = () => <svg {...svgProps}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+const IconClipboard = () => <svg {...svgProps}><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+const IconCalendar = () => <svg {...svgProps}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+const IconMessage = () => <svg {...svgProps}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+const IconHome = () => <svg {...svgProps}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+const IconHeart = () => <svg {...svgProps}><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 21l7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg>
+const IconEuro = () => <svg {...svgProps}><path d="M4 10h12M4 14h12M19.5 6.5A7.5 7.5 0 0 0 5 10.5v3a7.5 7.5 0 0 0 14.5 4"/></svg>
+const IconUser = () => <svg {...svgProps}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+const IconSettings = () => <svg {...svgProps}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+const IconLogout = () => <svg {...svgProps}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+
 export default function UserDropdown() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
@@ -10,9 +23,8 @@ export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const [userRole, setUserRole] = useState(null)
   const [initials, setInitials] = useState('')
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
-  const avatarRef = useRef(null)
-  const dropdownRef = useRef(null)
+  const [userName, setUserName] = useState('')
+  const panelRef = useRef(null)
 
   // Fetch user role + initials
   useEffect(() => {
@@ -25,9 +37,12 @@ export default function UserDropdown() {
       .then(({ data }) => {
         if (data) {
           setUserRole(data.type_user)
-          const p = (data.prenom || '').charAt(0).toUpperCase()
-          const n = (data.nom || '').charAt(0).toUpperCase()
+          const prenom = data.prenom || ''
+          const nom = data.nom || ''
+          const p = prenom.charAt(0).toUpperCase()
+          const n = nom.charAt(0).toUpperCase()
           setInitials(p + n || '?')
+          setUserName(`${prenom} ${nom}`.trim())
         }
       })
   }, [user])
@@ -35,31 +50,15 @@ export default function UserDropdown() {
   // Close on route change
   useEffect(() => { setIsOpen(false) }, [location.pathname])
 
-  // Close on click outside
+  // Lock body scroll when open
   useEffect(() => {
-    if (!isOpen) return
-    const handleClick = (e) => {
-      if (
-        avatarRef.current && !avatarRef.current.contains(e.target) &&
-        dropdownRef.current && !dropdownRef.current.contains(e.target)
-      ) {
-        setIsOpen(false)
-      }
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
     }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
+    return () => { document.body.style.overflow = '' }
   }, [isOpen])
-
-  const toggleDropdown = () => {
-    if (!isOpen && avatarRef.current) {
-      const rect = avatarRef.current.getBoundingClientRect()
-      setDropdownPos({
-        top: rect.bottom + 8,
-        right: window.innerWidth - rect.right
-      })
-    }
-    setIsOpen(!isOpen)
-  }
 
   const close = () => setIsOpen(false)
 
@@ -70,87 +69,83 @@ export default function UserDropdown() {
     navigate('/')
   }
 
-  const isActive = (path) => location.pathname === path
-
   if (!user) return null
 
   const locataireItems = [
-    { label: 'Mes recherches sauvegardees', to: '/recherche' },
-    { label: 'Mes candidatures', to: '/dashboard/locataire' },
-    { label: "Mon rythme d'alternance", to: '/dashboard/locataire' },
-    { label: 'Messages', to: '/messages' },
+    { icon: <IconSearch />, label: 'Mes recherches sauvegardees', to: '/recherche' },
+    { icon: <IconClipboard />, label: 'Mes demandes de coloc', to: '/dashboard/locataire' },
+    { icon: <IconCalendar />, label: "Mon rythme d'alternance", to: '/dashboard/locataire' },
+    { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
-    { label: 'Mon profil', to: '/profil' },
-    { label: 'Parametres du compte', to: '/parametres' },
+    { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
+    { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     'separator',
-    { label: 'Deconnexion', action: handleSignOut }
+    { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
   const proprietaireItems = [
-    { label: 'Mes annonces', to: '/dashboard/proprietaire' },
-    { label: 'Mes matchs en cours', to: '/dashboard/proprietaire' },
-    { label: 'Messages', to: '/messages' },
-    { label: 'Mes revenus', to: '/dashboard/proprietaire' },
+    { icon: <IconHome />, label: 'Mon logement partage', to: '/dashboard/proprietaire' },
+    { icon: <IconHeart />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
+    { icon: <IconMessage />, label: 'Messages', to: '/messages' },
+    { icon: <IconEuro />, label: 'Mes revenus', to: '/dashboard/proprietaire' },
     'separator',
-    { label: 'Mon profil', to: '/profil' },
-    { label: 'Parametres du compte', to: '/parametres' },
+    { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
+    { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     'separator',
-    { label: 'Deconnexion', action: handleSignOut }
+    { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
   const menuItems = userRole === 'proprietaire' ? proprietaireItems : locataireItems
+  const roleLabel = userRole === 'proprietaire' ? 'Proprietaire' : 'Locataire'
 
   return (
     <>
       <button
-        ref={avatarRef}
         className="ud-avatar"
-        onClick={toggleDropdown}
+        onClick={() => setIsOpen(!isOpen)}
         aria-label="Menu utilisateur"
       >
         {initials}
       </button>
 
-      {isOpen && (
-        <div
-          ref={dropdownRef}
-          className="ud-dropdown"
-          style={{
-            position: 'fixed',
-            top: dropdownPos.top,
-            right: dropdownPos.right,
-            zIndex: 9999
-          }}
-        >
+      {/* Overlay */}
+      <div
+        className={`ud-overlay${isOpen ? ' open' : ''}`}
+        onClick={close}
+      />
+
+      {/* Side panel */}
+      <div className={`ud-panel${isOpen ? ' open' : ''}`} ref={panelRef}>
+        {/* User header */}
+        <div className="ud-header">
+          <div className="ud-header-avatar">{initials}</div>
+          <div className="ud-header-name">{userName}</div>
+          <div className="ud-header-role">{roleLabel}</div>
+        </div>
+
+        {/* Menu items */}
+        <div className="ud-menu">
           {menuItems.map((item, i) => {
             if (item === 'separator') {
               return <div key={`sep-${i}`} className="ud-separator" />
             }
             if (item.action) {
               return (
-                <a
-                  key={i}
-                  href="#"
-                  className="ud-item ud-item-logout"
-                  onClick={item.action}
-                >
+                <a key={i} href="#" className="ud-item ud-item-logout" onClick={item.action}>
+                  {item.icon && <span className="ud-item-icon">{item.icon}</span>}
                   {item.label}
                 </a>
               )
             }
             return (
-              <Link
-                key={i}
-                to={item.to}
-                className={`ud-item${isActive(item.to) ? ' ud-item-active' : ''}`}
-                onClick={close}
-              >
+              <Link key={i} to={item.to} className="ud-item" onClick={close}>
+                {item.icon && <span className="ud-item-icon">{item.icon}</span>}
                 {item.label}
               </Link>
             )
           })}
         </div>
-      )}
+      </div>
     </>
   )
 }
