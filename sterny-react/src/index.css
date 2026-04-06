@@ -75,6 +75,10 @@ nav .container {
 .nav-center {
     display: flex;
     justify-content: center;
+    pointer-events: none;
+}
+.nav-center > * {
+    pointer-events: auto;
 }
 
 .nav-right {
