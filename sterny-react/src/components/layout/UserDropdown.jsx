@@ -19,6 +19,7 @@ const IconLogin = () => <svg {...svgProps}><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2
 const IconUserPlus = () => <svg {...svgProps}><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
 const IconHelp = () => <svg {...svgProps}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
 const IconMenu = () => <svg {...svgProps}><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+const IconGrid = () => <svg {...svgProps}><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
 
 export default function UserDropdown() {
   const { user, signOut } = useAuth()
@@ -77,26 +78,25 @@ export default function UserDropdown() {
   ]
 
   const locataireItems = [
-    { icon: <IconSearch />, label: 'Mes recherches sauvegardees', to: '/recherche' },
-    { icon: <IconClipboard />, label: 'Mes demandes de coloc', to: '/dashboard/locataire' },
-    { icon: <IconCalendar />, label: "Mon rythme d'alternance", to: '/dashboard/locataire' },
+    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/locataire' },
+    { icon: <IconSearch />, label: 'Rechercher un logement', to: '/recherche' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     'separator',
+    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/comment-ca-marche' },
     { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
   const proprietaireItems = [
-    { icon: <IconHome />, label: 'Mon logement partage', to: '/dashboard/proprietaire' },
-    { icon: <IconHeart />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
+    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/proprietaire' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
-    { icon: <IconEuro />, label: 'Mes revenus', to: '/dashboard/proprietaire' },
     'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     'separator',
+    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/comment-ca-marche' },
     { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
