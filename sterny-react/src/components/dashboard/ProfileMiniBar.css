@@ -1,0 +1,97 @@
+.mini-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid #E8EAF0;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-top: 14px;
+}
+
+.mini-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mini-bar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1E293B;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.mini-bar-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mini-bar-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.mini-bar-edit {
+    font-size: 12px;
+    color: #E8622A;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mini-bar-edit:hover {
+    text-decoration: underline;
+}
+
+.mini-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-bar-btn {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid #E8EAF0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.mini-bar-btn:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+.mini-bar-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #E8622A;
+}
+
+@media (max-width: 768px) {
+    .mini-bar {
+        padding: 14px 16px;
+    }
+}

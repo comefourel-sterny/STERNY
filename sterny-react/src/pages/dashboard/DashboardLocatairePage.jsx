@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
+import { formatTimeAgo, getInitials } from '../../utils/formatters'
 import './DashboardLocatairePage.css'
 
 const VILLES_DISPONIBLES = [
@@ -11,17 +12,6 @@ const VILLES_DISPONIBLES = [
 ]
 
 const MOIS_NOMS = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
-
-function formatTimeAgo(dateStr) {
-  const now = new Date()
-  const date = new Date(dateStr)
-  const diff = Math.floor((now - date) / 1000)
-  if (diff < 60) return "a l'instant"
-  if (diff < 3600) return Math.floor(diff / 60) + ' min'
-  if (diff < 86400) return Math.floor(diff / 3600) + ' h'
-  if (diff < 604800) return Math.floor(diff / 86400) + ' j'
-  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-}
 
 function formaterRythme(rythme) {
   if (!rythme) return 'Non renseigne'

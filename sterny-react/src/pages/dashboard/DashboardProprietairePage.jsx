@@ -2,18 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
+import { formatTimeAgo, getInitials } from '../../utils/formatters'
+import AgendaCard from '../../components/dashboard/AgendaCard'
+import ProfileMiniBar from '../../components/dashboard/ProfileMiniBar'
 import './DashboardProprietairePage.css'
-
-function formatTimeAgo(dateStr) {
-  const now = new Date()
-  const date = new Date(dateStr)
-  const diff = Math.floor((now - date) / 1000)
-  if (diff < 60) return "a l'instant"
-  if (diff < 3600) return Math.floor(diff / 60) + ' min'
-  if (diff < 86400) return Math.floor(diff / 3600) + ' h'
-  if (diff < 604800) return Math.floor(diff / 86400) + ' j'
-  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-}
 
 function escapeHtml(text) {
   const div = document.createElement('div')
@@ -482,9 +474,7 @@ export default function DashboardProprietairePage() {
   }
 
   // Avatar helper
-  function getInitials(prenom, nom) {
-    return ((prenom?.[0] || '') + (nom?.[0] || '')).toUpperCase()
-  }
+
 
   const firstVille = annonces.find(a => a.ville)?.ville
 
@@ -507,40 +497,13 @@ export default function DashboardProprietairePage() {
         )}
       </div>
 
-      {/* SECTION : MON PROFIL */}
-      <div className="section">
-        <div className="profil-header">
-          <div className="profil-avatar">
-            {userData?.photo_profil_url
-              ? <img src={userData.photo_profil_url} alt="Photo de profil" />
-              : getInitials(userData?.prenom, userData?.nom) || '\u2014'
-            }
-          </div>
-          <div className="profil-header-info">
-            <div className="profil-header-name">{(userData?.prenom || '') + ' ' + (userData?.nom || '') || '\u2014'}</div>
-            <div className="profil-header-email">{userData?.email || '\u2014'}</div>
-            <Link to="/profil/modifier-proprietaire" className="btn-edit-profil">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-              Modifier
-            </Link>
-          </div>
-          <button className="btn-messages-profil" onClick={ouvrirOverlayMessages} title="Messages">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-            <div className={`btn-messages-dot${hasUnread ? ' active' : ''}`} />
-          </button>
-        </div>
-
-        <div className="profil-grid">
-          <div className="profil-item">
-            <span className="profil-label">Telephone</span>
-            <span className="profil-value">{userData?.telephone || 'Non renseigne'}</span>
-          </div>
-          <div className="profil-item">
-            <span className="profil-label">Statut</span>
-            <span className="profil-value">Proprietaire</span>
-          </div>
-        </div>
-      </div>
+      {/* AGENDA — actions urgentes */}
+      <AgendaCard items={[
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'profils a approuver', count: approbations.filter(a => !a.approbation_proprietaire).length, urgency: 'urgent' },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: allConversations.filter(c => c.nonLu).length, urgency: 'info', onClick: ouvrirOverlayMessages },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>, label: 'demandes de renouvellement', count: renouvellements.length, urgency: 'warning' },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>, label: 'impayes', count: paiements.length, urgency: 'urgent' },
+      ]} />
 
       {/* SECTION : MON ANNONCE */}
       <div className="section section-with-empty">
@@ -775,12 +738,8 @@ export default function DashboardProprietairePage() {
         </div>
       )}
 
-      {/* Zone actions compte */}
-      <div className="delete-account-zone">
-        <a className="delete-account-link" onClick={() => { setShowPasswordModal(true); setPwdNew(''); setPwdConfirm(''); setPwdMsg({ text: '', type: '' }) }}>Changer mon mot de passe</a>
-        <a className="delete-account-link" onClick={exporterDonnees}>Exporter mes donnees</a>
-        <a className="delete-account-link" onClick={() => { setShowDeleteModal(true); setDeleteConfirm('') }}>Supprimer mon compte</a>
-      </div>
+      {/* Mini bar profil */}
+      <ProfileMiniBar userData={userData} hasUnread={hasUnread} onMessagesClick={ouvrirOverlayMessages} />
 
       {/* OVERLAY MESSAGES */}
       {showMessagesOverlay && (

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
+import { formatTimeAgo, getInitials } from '../../utils/formatters'
 import './DashboardHotePage.css'
 
 export default function DashboardHotePage() {
@@ -295,9 +296,7 @@ export default function DashboardHotePage() {
     setSendingChat(false)
   }
 
-  function getInitials(name) {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
-  }
+
 
   return (
     <div className="dashboard-hote-container">

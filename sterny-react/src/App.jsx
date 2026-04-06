@@ -41,6 +41,9 @@ import DashboardAdminPage from './pages/dashboard/DashboardAdminPage'
 import CreerAnnoncePage from './pages/annonce/CreerAnnoncePage'
 import ModifierAnnoncePage from './pages/annonce/ModifierAnnoncePage'
 
+// Parametres
+import ParametresPage from './pages/parametres/ParametresPage'
+
 // Profil pages
 import ProfilPage from './pages/profil/ProfilPage'
 import ModifierProfilPage from './pages/profil/ModifierProfilPage'
@@ -138,6 +141,9 @@ export default function App() {
           {/* Annonce */}
           <Route path="/annonce/creer" element={<CreerAnnoncePage />} />
           <Route path="/annonce/modifier" element={<ModifierAnnoncePage />} />
+
+          {/* Parametres */}
+          <Route path="/parametres" element={<ParametresPage />} />
 
           {/* Profil */}
           <Route path="/profil" element={<ProfilPage />} />
