@@ -4,7 +4,6 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { formatTimeAgo, getInitials } from '../../utils/formatters'
 import AgendaCard from '../../components/dashboard/AgendaCard'
-import ProfileMiniBar from '../../components/dashboard/ProfileMiniBar'
 import './DashboardProprietairePage.css'
 
 function escapeHtml(text) {
@@ -730,8 +729,6 @@ export default function DashboardProprietairePage() {
         </div>
       )}
 
-      {/* Mini bar profil */}
-      <ProfileMiniBar userData={userData} hasUnread={hasUnread} onMessagesClick={ouvrirOverlayMessages} />
 
       {/* OVERLAY MESSAGES */}
       {showMessagesOverlay && (

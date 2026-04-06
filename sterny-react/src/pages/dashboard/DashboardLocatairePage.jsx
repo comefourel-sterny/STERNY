@@ -4,7 +4,6 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { formatTimeAgo, getInitials } from '../../utils/formatters'
 import AgendaCard from '../../components/dashboard/AgendaCard'
-import ProfileMiniBar from '../../components/dashboard/ProfileMiniBar'
 import './DashboardLocatairePage.css'
 
 const VILLES_DISPONIBLES = [
@@ -1116,8 +1115,6 @@ export default function DashboardLocatairePage() {
         </>
       )}
 
-      {/* Mini bar profil */}
-      <ProfileMiniBar userData={userData} hasUnread={hasUnreadMessages} onMessagesClick={ouvrirOverlayMessages} />
 
       {/* MODAL VILLE */}
       {showVilleModal && (
