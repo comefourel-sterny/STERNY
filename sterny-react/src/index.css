@@ -390,14 +390,19 @@ footer a:hover {
 /* ═══ HAMBURGER MENU ═══ */
 .hm-trigger {
     position: relative;
-    margin-left: auto;
+    margin-left: 40px;
+    flex-shrink: 0;
+    order: 1;
     background: none;
     border: 1.5px solid #E2E8F0;
     border-radius: 10px;
     cursor: pointer;
-    padding: 9px 10px;
+    width: 40px;
+    height: 40px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 4px;
     transition: border-color 0.2s, background 0.2s;
 }
@@ -708,6 +713,12 @@ nav.nav-transparent .hm-trigger.active {
 
     .hamburger {
         display: block;
+    }
+
+    .hm-trigger {
+        order: 0;
+        margin-left: auto;
+        margin-right: 4px;
     }
 
     nav ul {

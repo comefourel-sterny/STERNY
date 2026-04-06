@@ -35,8 +35,13 @@ export default function Navbar({ variant = 'default' }) {
     }
   }, [user])
 
-  const toggleMenu = () => setMenuOpen(!menuOpen)
-  const closeMenu = () => setMenuOpen(false)
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen)
+  }
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+  }
 
   const getDashboardPath = () => {
     switch (userRole) {
@@ -60,63 +65,64 @@ export default function Navbar({ variant = 'default' }) {
             alt="STERNY"
           />
         </Link>
-
-        {isDashboard ? (
-          <HamburgerMenu />
-        ) : (
-          <>
-            <button
-              className={`hamburger${menuOpen ? ' active' : ''}`}
-              onClick={toggleMenu}
-              aria-label="Menu"
-            >
-              <span></span><span></span><span></span>
-            </button>
-            <div
-              className={`menu-overlay${menuOpen ? ' active' : ''}`}
-              onClick={closeMenu}
-            ></div>
-            <ul className={menuOpen ? 'open' : ''}>
-              {user ? (
-                <>
-                  <li>
-                    <Link to={getDashboardPath()} className="nav-highlight" onClick={closeMenu}>
-                      Mon espace
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/comment-ca-marche" onClick={closeMenu}>
-                      Comment ca marche
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link to="/connexion" className="nav-highlight" onClick={closeMenu}>
-                      Mon espace
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/comment-ca-marche" onClick={closeMenu}>
-                      Comment ca marche
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/inscription/partager" onClick={closeMenu}>
-                      Devenir hote
-                    </Link>
-                  </li>
-                  <li id="navInscriptionLi">
-                    <Link to="/inscription" className="nav-cta-inscription" onClick={closeMenu}>
-                      S'inscrire
-                    </Link>
-                  </li>
-                </>
+        <HamburgerMenu />
+        <button
+          className={`hamburger${menuOpen ? ' active' : ''}`}
+          onClick={toggleMenu}
+          aria-label="Menu"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <div
+          className={`menu-overlay${menuOpen ? ' active' : ''}`}
+          onClick={closeMenu}
+        ></div>
+        <ul className={menuOpen ? 'open' : ''}>
+          {user ? (
+            <>
+              <li>
+                <Link to={getDashboardPath()} className="nav-highlight" onClick={closeMenu}>
+                  Mon espace
+                </Link>
+              </li>
+              <li>
+                <Link to="/comment-ca-marche" onClick={closeMenu}>
+                  Comment ca marche
+                </Link>
+              </li>
+              {isDashboard && (
+                <li>
+                  <a href="#" style={{ color: '#94A3B8' }} onClick={(e) => { e.preventDefault(); closeMenu(); signOut(); navigate('/') }}>
+                    Deconnexion
+                  </a>
+                </li>
               )}
-            </ul>
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              <li>
+                <Link to="/connexion" className="nav-highlight" onClick={closeMenu}>
+                  Mon espace
+                </Link>
+              </li>
+              <li>
+                <Link to="/comment-ca-marche" onClick={closeMenu}>
+                  Comment ca marche
+                </Link>
+              </li>
+              <li>
+                <Link to="/inscription/partager" onClick={closeMenu}>
+                  Devenir hote
+                </Link>
+              </li>
+              <li id="navInscriptionLi">
+                <Link to="/inscription" className="nav-cta-inscription" onClick={closeMenu}>
+                  S'inscrire
+                </Link>
+              </li>
+            </>
+          )}
+        </ul>
       </div>
     </nav>
   )
