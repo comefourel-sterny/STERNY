@@ -536,12 +536,12 @@ footer a:hover {
 
 /* ═══ USER DROPDOWN ═══ */
 .ud-avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: #1E293B;
     color: white !important;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     font-family: 'DM Sans', sans-serif;
     border: none;
@@ -552,8 +552,9 @@ footer a:hover {
     flex-shrink: 0;
     transition: box-shadow 0.2s, transform 0.15s;
     letter-spacing: 0.5px;
-    text-decoration: none;
+    text-decoration: none !important;
     padding: 0 !important;
+    line-height: 1;
 }
 .ud-avatar:hover {
     box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
