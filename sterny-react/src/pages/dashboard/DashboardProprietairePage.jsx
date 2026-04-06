@@ -605,7 +605,7 @@ export default function DashboardProprietairePage() {
               <div className="section-icon" style={{ background: '#DBEAFE' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" /></svg>
               </div>
-              Profils a approuver
+              Profils en attente
             </div>
           </div>
           {approbations.map((c, index) => {
