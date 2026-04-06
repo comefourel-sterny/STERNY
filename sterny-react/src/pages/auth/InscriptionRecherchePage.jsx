@@ -199,7 +199,7 @@ export default function InscriptionRecherchePage() {
 
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [creating, setCreating] = useState(false)
-  const [shakeBtn, setShakeBtn] = useState(false)
+  const btnRefs = useRef({})
 
   const handleGoogleSignup = async () => {
     sessionStorage.setItem('signup_type', 'locataire')
@@ -219,13 +219,22 @@ export default function InscriptionRecherchePage() {
     4: 'Mot de passe'
   }
 
+  const shakeButton = useCallback((step) => {
+    const btn = btnRefs.current[step]
+    if (!btn) return
+    btn.style.transition = 'translate 0.06s ease'
+    btn.style.translate = '-1.5px 0'
+    setTimeout(() => { btn.style.translate = '1.5px 0' }, 60)
+    setTimeout(() => { btn.style.translate = '-0.5px 0' }, 120)
+    setTimeout(() => { btn.style.translate = '0' }, 180)
+  }, [])
+
   const showError = useCallback((msg) => {
     setErrorMsg(msg)
-    setShakeBtn(true)
-    setTimeout(() => setShakeBtn(false), 500)
+    shakeButton(currentStep)
     if (errorTimeoutRef.current) clearTimeout(errorTimeoutRef.current)
     errorTimeoutRef.current = setTimeout(() => setErrorMsg(''), 3000)
-  }, [])
+  }, [currentStep, shakeButton])
 
   const validateStep = (step) => {
     if (step === 1) {
@@ -420,7 +429,7 @@ export default function InscriptionRecherchePage() {
           </div>
 
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.40s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
+            <button ref={el => btnRefs.current[1] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.48s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : (<><Link to="/inscription">Retour</Link> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>)}
             </p>
@@ -450,7 +459,7 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.40s' }} onClick={() => handleNext(2)}>Continuer</button>
+            <button ref={el => btnRefs.current[2] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} onClick={() => handleNext(2)}>Continuer</button>
             <div className="ir-separator ir-stagger" style={{ animationDelay: '0.48s' }}><span>ou</span></div>
             <button type="button" className="ir-google ir-stagger" style={{ animationDelay: '0.56s' }} onClick={handleGoogleSignup}>
               <svg width="18" height="18" viewBox="0 0 18 18">
@@ -552,7 +561,7 @@ export default function InscriptionRecherchePage() {
             )}
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.24s' }} onClick={() => handleNext(3)}>Continuer</button>
+            <button ref={el => btnRefs.current[3] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.24s' }} onClick={() => handleNext(3)}>Continuer</button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.32s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
             </p>
@@ -572,7 +581,7 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="ir-bottom">
-            <button className={`ir-btn ir-stagger${shakeBtn ? ' ir-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={creating} onClick={createAccount}>
+            <button ref={el => btnRefs.current[4] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.32s' }} disabled={creating} onClick={createAccount}>
               {creating ? 'Création en cours...' : 'Créer mon compte'}
             </button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.40s' }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './InscriptionProprietairePage.css'
@@ -18,7 +18,7 @@ export default function InscriptionProprietairePage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
-  const [shakeBtn, setShakeBtn] = useState(false)
+  const btnRef = useRef(null)
   const [referrerName, setReferrerName] = useState('')
   const [showReferral, setShowReferral] = useState(false)
   const [parrainId, setParrainId] = useState(null)
@@ -44,10 +44,19 @@ export default function InscriptionProprietairePage() {
     if (sessionParrainId) setParrainId(sessionParrainId)
   }, [searchParams])
 
+  const shakeButton = () => {
+    const btn = btnRef.current
+    if (!btn) return
+    btn.style.transition = 'translate 0.06s ease'
+    btn.style.translate = '-1.5px 0'
+    setTimeout(() => { btn.style.translate = '1.5px 0' }, 60)
+    setTimeout(() => { btn.style.translate = '-0.5px 0' }, 120)
+    setTimeout(() => { btn.style.translate = '0' }, 180)
+  }
+
   const showError = (text) => {
     setMessage({ type: 'error', text })
-    setShakeBtn(true)
-    setTimeout(() => setShakeBtn(false), 500)
+    shakeButton()
     setTimeout(() => setMessage({ type: '', text: '' }), 3000)
   }
 
@@ -125,7 +134,7 @@ export default function InscriptionProprietairePage() {
     <section className="ip-page">
       <div className="ip-card" style={{ maxHeight: '536px' }}>
         <h2 className="ip-title ip-stagger">INSCRIPTION</h2>
-        {message.text && <p className={`ip-msg ${message.type}`}>{message.text}</p>}
+        {message.type === 'success' && <p className={`ip-msg ${message.type}`}>{message.text}</p>}
         {showReferral && !message.text && (
           <p className="ip-referral"><span className="ip-referrer">{referrerName}</span> vous recommande STERNY</p>
         )}
@@ -181,7 +190,7 @@ export default function InscriptionProprietairePage() {
             </div>
           </div>
 
-          <button type="submit" className={`ip-submit ip-stagger${shakeBtn ? ' ip-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading}>
+          <button ref={btnRef} type="submit" className="ip-submit ip-stagger" style={{ animationDelay: '0.32s' }} disabled={loading}>
             {loading ? (
               <svg className="ip-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
@@ -205,7 +214,11 @@ export default function InscriptionProprietairePage() {
         </button>
 
         <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
-          <Link to="/inscription">Retour</Link> · Déjà inscrit ? <Link to="/connexion">Se connecter</Link>
+          {message.type === 'error' ? (
+            <span className="ip-error">{message.text}</span>
+          ) : (
+            <><Link to="/inscription">Retour</Link> · Déjà inscrit ? <Link to="/connexion">Se connecter</Link></>
+          )}
         </p>
       </div>
     </section>

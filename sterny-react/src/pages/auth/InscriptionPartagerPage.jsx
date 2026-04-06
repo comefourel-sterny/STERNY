@@ -222,10 +222,6 @@ export default function InscriptionPartagerPage() {
           Étape <span>{currentStep}</span> sur {totalSteps}
         </div>
 
-        {errorMsg && (
-          <div className="error-box show" dangerouslySetInnerHTML={{ __html: errorMsg }} />
-        )}
-
         {/* Step 1: Personal info */}
         <div className={`form-section${currentStep === 1 ? ' active' : ''}`}>
           <div className="inscription-header ip-stagger" style={{ animationDelay: '0.08s' }}>
@@ -317,7 +313,7 @@ export default function InscriptionPartagerPage() {
             <button className="btn-submit" onClick={nextStep} style={{ width: '100%' }}>Continuer</button>
           </div>
           <div className="back-link ip-stagger" style={{ textAlign: 'center', marginTop: '8px', animationDelay: '0.4s' }}>
-            <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>
+            {errorMsg ? <span style={{ color: '#EF4444', fontWeight: 600, fontSize: '13px' }}>{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>}
           </div>
         </div>
 
@@ -364,12 +360,12 @@ export default function InscriptionPartagerPage() {
             </button>
           </div>
           <div className="back-link ip-stagger" style={{ textAlign: 'center', marginTop: '8px', animationDelay: '0.4s' }}>
-            <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>
+            {errorMsg ? <span style={{ color: '#EF4444', fontWeight: 600, fontSize: '13px' }}>{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); prevStep() }} style={{ color: '#9CA3AF', textDecoration: 'none', fontWeight: 600, fontSize: '13px' }}>Retour</a>}
           </div>
         </div>
 
         <div className="back-link ip-stagger" style={{ animationDelay: '0.48s' }}>
-          Déjà un compte ? <Link to="/connexion">Se connecter</Link>
+          {errorMsg ? <span style={{ color: '#EF4444', fontWeight: 600 }}>{errorMsg}</span> : <>Déjà un compte ? <Link to="/connexion">Se connecter</Link></>}
         </div>
       </div>
     </section>

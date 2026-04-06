@@ -268,17 +268,6 @@
     box-shadow: none;
 }
 
-.ip-submit.ip-shake {
-    animation: ipShake 0.4s ease;
-}
-
-@keyframes ipShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(5px); }
-    60% { transform: translateX(-3px); }
-    80% { transform: translateX(2px); }
-}
 
 .ip-spinner {
     animation: ipSpin 0.8s linear infinite;
@@ -355,6 +344,11 @@
 
 .ip-back a:hover {
     opacity: 0.8;
+}
+
+.ip-error {
+    color: #EF4444;
+    font-weight: 600;
 }
 
 /* ═══ STAGGER ANIMATION ═══ */

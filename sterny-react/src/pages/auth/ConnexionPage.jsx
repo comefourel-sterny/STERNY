@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './ConnexionPage.css'
@@ -10,7 +10,17 @@ export default function ConnexionPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
-  const [shakeBtn, setShakeBtn] = useState(false)
+  const btnRef = useRef(null)
+
+  const shakeButton = () => {
+    const btn = btnRef.current
+    if (!btn) return
+    btn.style.transition = 'translate 0.06s ease'
+    btn.style.translate = '-1.5px 0'
+    setTimeout(() => { btn.style.translate = '1.5px 0' }, 60)
+    setTimeout(() => { btn.style.translate = '-0.5px 0' }, 120)
+    setTimeout(() => { btn.style.translate = '0' }, 180)
+  }
 
   const handleGoogleLogin = async () => {
     const { error } = await supabaseClient.auth.signInWithOAuth({
@@ -28,8 +38,7 @@ export default function ConnexionPage() {
     e.preventDefault()
     const showError = (text) => {
       setMessage({ type: 'error', text })
-      setShakeBtn(true)
-      setTimeout(() => setShakeBtn(false), 500)
+      shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
     }
     if (!email.trim()) { showError('Entre ton adresse email'); return }
@@ -69,8 +78,7 @@ export default function ConnexionPage() {
         ? 'Email ou mot de passe incorrect'
         : error.message
       setMessage({ type: 'error', text: msg })
-      setShakeBtn(true)
-      setTimeout(() => setShakeBtn(false), 500)
+      shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
       setLoading(false)
     }
@@ -80,7 +88,7 @@ export default function ConnexionPage() {
     <div className="cx-page">
       <div className="cx-card">
         <h2 className="cx-title">CONNEXION</h2>
-        {message.text && <p className={`cx-msg ${message.type}`}>{message.text}</p>}
+        {message.type === 'success' && <p className={`cx-msg ${message.type}`}>{message.text}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="cx-field cx-stagger" style={{ animationDelay: '0.08s' }}>
@@ -116,7 +124,7 @@ export default function ConnexionPage() {
             <Link to="/mot-de-passe-oublie">Mot de passe oublié ?</Link>
           </div>
 
-          <button type="submit" className={`cx-submit cx-stagger${shakeBtn ? ' cx-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading}>
+          <button ref={btnRef} type="submit" className="cx-submit cx-stagger" style={{ animationDelay: '0.32s' }} disabled={loading}>
             {loading ? (
               <svg className="cx-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
@@ -140,7 +148,11 @@ export default function ConnexionPage() {
         </button>
 
         <p className="cx-back cx-stagger" style={{ animationDelay: '0.56s' }}>
-          Pas encore de compte ? <Link to="/inscription">Inscris-toi</Link>
+          {message.type === 'error' ? (
+            <span style={{ color: '#EF4444', fontWeight: 600 }}>{message.text}</span>
+          ) : (
+            <>Pas encore de compte ? <Link to="/inscription">Inscris-toi</Link></>
+          )}
         </p>
       </div>
     </div>

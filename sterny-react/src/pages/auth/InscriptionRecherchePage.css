@@ -452,17 +452,6 @@ section.page-inscription-recherche {
     cursor: not-allowed;
 }
 
-.ir-btn.ir-shake {
-    animation: irShake 0.4s ease;
-}
-
-@keyframes irShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(5px); }
-    60% { transform: translateX(-3px); }
-    80% { transform: translateX(2px); }
-}
 
 /* Separator */
 .ir-separator {

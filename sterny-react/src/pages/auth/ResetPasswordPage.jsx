@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './ResetPasswordPage.css'
@@ -14,7 +14,17 @@ export default function ResetPasswordPage() {
   const [sessionReady, setSessionReady] = useState(false)
   const [showError, setShowError] = useState(false)
   const [fieldsDisabled, setFieldsDisabled] = useState(false)
-  const [shakeBtn, setShakeBtn] = useState(false)
+  const btnRef = useRef(null)
+
+  const shakeButton = () => {
+    const btn = btnRef.current
+    if (!btn) return
+    btn.style.transition = 'translate 0.06s ease'
+    btn.style.translate = '-1.5px 0'
+    setTimeout(() => { btn.style.translate = '1.5px 0' }, 60)
+    setTimeout(() => { btn.style.translate = '-0.5px 0' }, 120)
+    setTimeout(() => { btn.style.translate = '0' }, 180)
+  }
 
   const [strength, setStrength] = useState({ width: '0%', color: '#E8EAF0', label: '' })
 
@@ -68,8 +78,7 @@ export default function ResetPasswordPage() {
 
   const triggerError = (text) => {
     setMessage({ type: 'error', text })
-    setShakeBtn(true)
-    setTimeout(() => setShakeBtn(false), 500)
+    shakeButton()
     setTimeout(() => setMessage({ type: '', text: '' }), 3000)
   }
 
@@ -172,7 +181,7 @@ export default function ResetPasswordPage() {
         </form>
 
         <div className="rp-bottom">
-          <button type="submit" form="rp-form" className={`rp-btn rp-stagger${shakeBtn ? ' rp-shake' : ''}`} style={{ animationDelay: '0.32s' }} disabled={loading || fieldsDisabled}>
+          <button ref={btnRef} type="submit" form="rp-form" className="rp-btn rp-stagger" style={{ animationDelay: '0.32s' }} disabled={loading || fieldsDisabled}>
             {loading ? (
               <svg className="rp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />

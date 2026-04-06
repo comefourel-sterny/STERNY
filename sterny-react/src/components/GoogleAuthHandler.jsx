@@ -24,15 +24,18 @@ export default function GoogleAuthHandler() {
           .maybeSingle()
 
         if (profile) {
-          // Profil existe — vérifier si complet
-          if (!profile.profil_complet) {
-            navigate('/completer-profil')
-          } else {
-            // Profil complet — rediriger vers le bon dashboard
+          if (profile.profil_complet) {
+            // Profil complet — dashboard
             const dashboard = profile.type_user === 'proprietaire'
               ? '/dashboard/proprietaire'
               : '/dashboard/locataire'
             navigate(dashboard)
+          } else if (profile.type_user === 'proprietaire') {
+            // Propriétaire incomplet — modifier profil directement
+            navigate('/dashboard/proprietaire')
+          } else {
+            // Locataire incomplet — compléter profil
+            navigate('/completer-profil')
           }
           return
         }
@@ -93,8 +96,12 @@ export default function GoogleAuthHandler() {
         sessionStorage.removeItem('referrer_id')
         sessionStorage.removeItem('signup_type')
 
-        // Toujours rediriger vers complétion pour collecter rythme/ville/école
-        navigate('/completer-profil')
+        // Propriétaire → dashboard, locataire → complétion pour rythme/ville/école
+        if (typeUser === 'proprietaire') {
+          navigate('/dashboard/proprietaire')
+        } else {
+          navigate('/completer-profil')
+        }
       } catch (err) {
         console.warn('GoogleAuthHandler:', err.message)
       }

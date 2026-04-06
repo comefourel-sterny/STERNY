@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './MotDePasseOubliePage.css'
@@ -8,15 +8,24 @@ export default function MotDePasseOubliePage() {
   const [loading, setLoading] = useState(false)
   const [emailDisabled, setEmailDisabled] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
-  const [shakeBtn, setShakeBtn] = useState(false)
+  const btnRef = useRef(null)
+
+  const shakeButton = () => {
+    const btn = btnRef.current
+    if (!btn) return
+    btn.style.transition = 'translate 0.06s ease'
+    btn.style.translate = '-1.5px 0'
+    setTimeout(() => { btn.style.translate = '1.5px 0' }, 60)
+    setTimeout(() => { btn.style.translate = '-0.5px 0' }, 120)
+    setTimeout(() => { btn.style.translate = '0' }, 180)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     const showError = (text) => {
       setMessage({ type: 'error', text })
-      setShakeBtn(true)
-      setTimeout(() => setShakeBtn(false), 500)
+      shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
     }
 
@@ -41,8 +50,7 @@ export default function MotDePasseOubliePage() {
       setEmailDisabled(true)
     } catch (error) {
       setMessage({ type: 'error', text: 'Une erreur est survenue. Réessaie.' })
-      setShakeBtn(true)
-      setTimeout(() => setShakeBtn(false), 500)
+      shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
       setLoading(false)
     }
@@ -52,8 +60,8 @@ export default function MotDePasseOubliePage() {
     <div className="mdp-page">
       <div className="mdp-card">
         <h2 className="mdp-title mdp-stagger">MOT DE PASSE</h2>
-        <p className={`mdp-subtitle mdp-stagger${message.text ? ` mdp-msg ${message.type}` : ''}`} style={{ animationDelay: '0.08s' }}>
-          {message.text || 'Entre ton email, on t\'envoie un lien.'}
+        <p className={`mdp-subtitle mdp-stagger${message.type === 'success' ? ` mdp-msg ${message.type}` : ''}`} style={{ animationDelay: '0.08s' }}>
+          {message.type === 'success' ? message.text : 'Entre ton email, on t\'envoie un lien.'}
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -69,7 +77,7 @@ export default function MotDePasseOubliePage() {
           </div>
 
           <div className="mdp-bottom">
-            <button type="submit" className={`mdp-btn mdp-stagger${shakeBtn ? ' mdp-shake' : ''}`} style={{ animationDelay: '0.24s' }} disabled={loading || emailDisabled}>
+            <button ref={btnRef} type="submit" className="mdp-btn mdp-stagger" style={{ animationDelay: '0.24s' }} disabled={loading || emailDisabled}>
               {loading ? (
                 <svg className="mdp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
@@ -78,7 +86,11 @@ export default function MotDePasseOubliePage() {
             </button>
 
             <p className="mdp-back mdp-stagger" style={{ animationDelay: '0.32s' }}>
-              <Link to="/connexion">Retour</Link>
+              {message.type === 'error' ? (
+                <span style={{ color: '#EF4444', fontWeight: 600 }}>{message.text}</span>
+              ) : (
+                <Link to="/connexion">Retour</Link>
+              )}
             </p>
           </div>
         </form>
