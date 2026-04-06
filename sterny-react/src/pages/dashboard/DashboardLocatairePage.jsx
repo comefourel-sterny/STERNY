@@ -3,6 +3,8 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { formatTimeAgo, getInitials } from '../../utils/formatters'
+import AgendaCard from '../../components/dashboard/AgendaCard'
+import ProfileMiniBar from '../../components/dashboard/ProfileMiniBar'
 import './DashboardLocatairePage.css'
 
 const VILLES_DISPONIBLES = [
@@ -781,60 +783,13 @@ export default function DashboardLocatairePage() {
         )}
       </div>
 
-      {/* SECTION PROFIL */}
-      <div className="section">
-        <div className="profil-header">
-          <div className="profil-avatar">
-            {avatarContent}
-          </div>
-          <div className="profil-header-info">
-            <div className="profil-header-name">{(userData?.prenom || '') + ' ' + (userData?.nom || '')}</div>
-            {userData?.identite_verifiee === 'verifiee' && (
-              <span className="badge-verifie">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /></svg>
-                Identite verifiee
-              </span>
-            )}
-            {userData?.identite_verifiee === 'documents_fournis' && (
-              <span className="badge-documents">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
-                Documents fournis
-              </span>
-            )}
-            <div className="profil-header-email">{userData?.email || '—'}</div>
-            {!profilComplet && (
-              <Link to="/profil/modifier" className="btn-completer-dossier" style={{ marginTop: 4 }}>
-                Completer mon dossier
-              </Link>
-            )}
-            {profilComplet && (
-              <Link to="/profil/modifier" className="btn-edit-profil" style={{ marginTop: 4 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                Modifier
-              </Link>
-            )}
-          </div>
-          <button className="btn-messages-profil" onClick={ouvrirOverlayMessages} title="Messages">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-            <div className={`btn-messages-dot ${hasUnreadMessages ? 'active' : ''}`} />
-          </button>
-        </div>
-
-        <div className="profil-grid">
-          <div className="profil-item">
-            <span className="profil-label">Telephone</span>
-            <span className="profil-value">{userData?.telephone || 'Non renseigne'}</span>
-          </div>
-          <div className="profil-item">
-            <span className="profil-label">{villeLabelAffiche}</span>
-            <span className="profil-value">{villeAffichee || 'Non renseignee'}</span>
-          </div>
-          <div className="profil-item">
-            <span className="profil-label">Rythme d'alternance</span>
-            <span className="profil-value">{rythmeAffiche}</span>
-          </div>
-        </div>
-      </div>
+      {/* AGENDA — actions urgentes */}
+      <AgendaCard items={[
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: allConversations.filter(c => c.nonLu).length, urgency: 'info', onClick: ouvrirOverlayMessages },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>, label: 'candidatures en cours', count: candidatures.filter(c => c.statut === 'en_attente').length, urgency: 'warning' },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>, label: 'logements en favoris', count: favoris.length, urgency: 'info' },
+        ...(!profilComplet ? [{ icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'Profil a completer', count: 0, alwaysShow: true, urgency: 'urgent', onClick: () => navigate('/profil/modifier') }] : []),
+      ]} />
 
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (
@@ -1169,59 +1124,8 @@ export default function DashboardLocatairePage() {
         </>
       )}
 
-      {/* ACCOUNT ACTIONS */}
-      <div className="account-actions-bar">
-        <button className="account-action-link" onClick={() => { setShowPasswordModal(true); setPwdNew(''); setPwdConfirm(''); setPwdMsg({ text: '', type: '' }) }}>
-          Changer mon mot de passe
-        </button>
-        <span style={{ color: '#CBD5E1' }}>&middot;</span>
-        <button className="account-action-link" onClick={exporterDonnees}>Exporter mes donnees</button>
-        <span style={{ color: '#CBD5E1' }}>&middot;</span>
-        <button className="account-action-link" onClick={() => { setShowDeleteModal(true); setDeleteConfirm('') }}>Supprimer mon compte</button>
-      </div>
-
-      {/* MODAL MOT DE PASSE */}
-      {showPasswordModal && (
-        <div className="modal-pwd-overlay active" onClick={e => { if (e.target === e.currentTarget) setShowPasswordModal(false) }}>
-          <div className="modal-pwd-card">
-            <h3>Changer mon mot de passe</h3>
-            {pwdMsg.text && <div className={`modal-pwd-msg ${pwdMsg.type}`}>{pwdMsg.text}</div>}
-            <div className="modal-pwd-group">
-              <label htmlFor="pwdNew">Nouveau mot de passe</label>
-              <input type="password" id="pwdNew" placeholder="Minimum 8 caracteres" minLength="8" value={pwdNew} onChange={e => setPwdNew(e.target.value)} />
-            </div>
-            <div className="modal-pwd-group">
-              <label htmlFor="pwdConfirm">Confirmer le nouveau mot de passe</label>
-              <input type="password" id="pwdConfirm" placeholder="Retape ton mot de passe" value={pwdConfirm} onChange={e => setPwdConfirm(e.target.value)} />
-            </div>
-            <div className="modal-pwd-buttons">
-              <button className="modal-pwd-btn-cancel" onClick={() => setShowPasswordModal(false)}>Annuler</button>
-              <button className="modal-pwd-btn-save" onClick={changerMotDePasse}>Enregistrer</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL SUPPRESSION */}
-      {showDeleteModal && (
-        <div className="modal-delete-overlay active" onClick={e => { if (e.target === e.currentTarget) setShowDeleteModal(false) }}>
-          <div className="modal-delete-card">
-            <div className="modal-delete-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-            </div>
-            <h3>Supprimer ton compte ?</h3>
-            <p>Cette action est <strong>irreversible</strong>. Toutes tes donnees seront definitivement supprimees.</p>
-            <p style={{ fontSize: 13, color: '#64748B', marginBottom: 12 }}>Tape <strong style={{ color: '#EF4444' }}>SUPPRIMER</strong> pour confirmer :</p>
-            <input type="text" className="modal-delete-confirm-input" placeholder="SUPPRIMER" value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)} />
-            <div className="modal-delete-buttons">
-              <button className="modal-delete-btn-cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
-              <button className="modal-delete-btn-delete" disabled={deleteConfirm.trim() !== 'SUPPRIMER'} onClick={supprimerCompte}>Supprimer</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Mini bar profil */}
+      <ProfileMiniBar userData={userData} hasUnread={hasUnreadMessages} onMessagesClick={ouvrirOverlayMessages} />
 
       {/* MODAL VILLE */}
       {showVilleModal && (

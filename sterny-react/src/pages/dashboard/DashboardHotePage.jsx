@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { formatTimeAgo, getInitials } from '../../utils/formatters'
+import AgendaCard from '../../components/dashboard/AgendaCard'
+import ProfileMiniBar from '../../components/dashboard/ProfileMiniBar'
 import './DashboardHotePage.css'
 
 export default function DashboardHotePage() {
@@ -306,47 +308,12 @@ export default function DashboardHotePage() {
         <p>Gérez votre annonce et invitez votre propriétaire</p>
       </div>
 
-      {/* SECTION : MON PROFIL */}
-      <div className="section">
-        <div className="profil-header">
-          <div className="profil-avatar">
-            {userData?.photo_profil_url
-              ? <img src={userData.photo_profil_url} alt="Photo" />
-              : ((userData?.prenom?.[0] || '') + (userData?.nom?.[0] || '')).toUpperCase() || '\u2014'
-            }
-          </div>
-          <div className="profil-header-info">
-            <div className="profil-header-name">{[userData?.prenom, userData?.nom].filter(Boolean).join(' ') || '\u2014'}</div>
-            <div className="profil-header-email">{userData?.email || '\u2014'}</div>
-          </div>
-          <button className="btn-messages-profil" onClick={ouvrirOverlayMessages} title="Messages">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-            <div className={`btn-messages-dot${hasUnread ? ' active' : ''}`} />
-          </button>
-        </div>
-
-        <div className="profil-grid">
-          <div className="profil-item">
-            <span className="profil-label">Telephone</span>
-            <span className="profil-value">{userData?.telephone || '\u2014'}</span>
-          </div>
-          <div className="profil-item">
-            <span className="profil-label">Statut</span>
-            <span className="profil-value">Alternant hote</span>
-          </div>
-        </div>
-
-        <div className="profil-actions">
-          <Link to="/profil/modifier" className="btn btn-primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-            Modifier mon profil
-          </Link>
-          <Link to="/dossier-locataire" className="btn btn-secondary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
-            Completer mon dossier
-          </Link>
-        </div>
-      </div>
+      {/* AGENDA — actions urgentes */}
+      <AgendaCard items={[
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: conversations.filter(c => c.unread).length, urgency: 'info', onClick: ouvrirOverlayMessages },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>, label: 'candidatures recues', count: candidatures.length, urgency: 'warning' },
+        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>, label: relationStatus === 'connected' ? 'Proprietaire connecte' : 'Proprietaire en attente', count: 0, alwaysShow: true, urgency: relationStatus === 'connected' ? 'success' : 'warning' },
+      ]} />
 
       {/* SECTION : MON PROPRIETAIRE */}
       <div className="section">
@@ -496,6 +463,9 @@ export default function DashboardHotePage() {
           })
         )}
       </div>
+
+      {/* Mini bar profil */}
+      <ProfileMiniBar userData={userData} hasUnread={hasUnread} onMessagesClick={ouvrirOverlayMessages} />
 
       {/* OVERLAY MESSAGES */}
       {showMessagesOverlay && (
