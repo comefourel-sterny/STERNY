@@ -482,7 +482,7 @@ export default function DashboardProprietairePage() {
       {/* HEADER */}
       <div className="page-header">
         <h1>Bonjour {userData?.prenom || '...'}</h1>
-        <p>Approuvez les profils des locataires temporaires proposes par votre alternant</p>
+        <p>Gerez votre logement et vos locataires</p>
         {annonces.length > 0 && firstVille && (
           <div className="ville-header-row">
             <div className="ville-header-badge">
