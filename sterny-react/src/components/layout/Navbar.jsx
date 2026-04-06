@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
-import HamburgerMenu from './HamburgerMenu'
+import UserDropdown from './UserDropdown'
 
 export default function Navbar({ variant = 'default' }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -65,7 +65,7 @@ export default function Navbar({ variant = 'default' }) {
             alt="STERNY"
           />
         </Link>
-        <HamburgerMenu />
+        {user && <UserDropdown />}
         <button
           className={`hamburger${menuOpen ? ' active' : ''}`}
           onClick={toggleMenu}
