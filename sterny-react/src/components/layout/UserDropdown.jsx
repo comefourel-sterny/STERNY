@@ -78,7 +78,6 @@ export default function UserDropdown() {
   ]
 
   const locataireItems = [
-    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/locataire' },
     { icon: <IconSearch />, label: 'Rechercher un logement', to: '/recherche' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
@@ -90,7 +89,6 @@ export default function UserDropdown() {
   ]
 
   const proprietaireItems = [
-    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/proprietaire' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
