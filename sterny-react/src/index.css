@@ -194,6 +194,23 @@ nav.nav-transparent a:hover {
     background: rgba(255,255,255,0.1);
 }
 
+/* Reset panel items inside transparent nav */
+nav.nav-transparent .ud-panel a,
+nav.nav-transparent .ud-panel .ud-item {
+    color: #1E293B;
+}
+nav.nav-transparent .ud-panel a:hover,
+nav.nav-transparent .ud-panel .ud-item:hover {
+    color: #1E293B;
+    background: #F4F5F7;
+}
+nav.nav-transparent .ud-panel .ud-item-logout {
+    color: #E8622A;
+}
+nav.nav-transparent .ud-panel .ud-item-logout:hover {
+    color: #D4571F;
+}
+
 nav.nav-transparent .nav-highlight {
     color: #E8622A;
 }
