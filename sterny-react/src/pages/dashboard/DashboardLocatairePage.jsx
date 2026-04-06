@@ -783,14 +783,6 @@ export default function DashboardLocatairePage() {
         )}
       </div>
 
-      {/* AGENDA — actions urgentes */}
-      <AgendaCard items={[
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: allConversations.filter(c => c.nonLu).length, urgency: 'info', onClick: ouvrirOverlayMessages },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>, label: 'candidatures en cours', count: candidatures.filter(c => c.statut === 'en_attente').length, urgency: 'warning' },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>, label: 'logements en favoris', count: favoris.length, urgency: 'info' },
-        ...(!profilComplet ? [{ icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'Profil a completer', count: 0, alwaysShow: true, urgency: 'urgent', onClick: () => navigate('/profil/modifier') }] : []),
-      ]} />
-
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (
         <div className="section" style={{ minHeight: 'auto' }}>

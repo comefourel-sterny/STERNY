@@ -308,13 +308,6 @@ export default function DashboardHotePage() {
         <p>Gérez votre annonce et invitez votre propriétaire</p>
       </div>
 
-      {/* AGENDA — actions urgentes */}
-      <AgendaCard items={[
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: conversations.filter(c => c.unread).length, urgency: 'info', onClick: ouvrirOverlayMessages },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>, label: 'candidatures recues', count: candidatures.length, urgency: 'warning' },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>, label: relationStatus === 'connected' ? 'Proprietaire connecte' : 'Proprietaire en attente', count: 0, alwaysShow: true, urgency: relationStatus === 'connected' ? 'success' : 'warning' },
-      ]} />
-
       {/* SECTION : MON PROPRIETAIRE */}
       <div className="section">
         <div className="section-header">

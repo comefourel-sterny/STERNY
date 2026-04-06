@@ -497,14 +497,6 @@ export default function DashboardProprietairePage() {
         )}
       </div>
 
-      {/* AGENDA — actions urgentes */}
-      <AgendaCard items={[
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, label: 'profils a approuver', count: approbations.filter(a => !a.approbation_proprietaire).length, urgency: 'urgent' },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: 'messages non lus', count: allConversations.filter(c => c.nonLu).length, urgency: 'info', onClick: ouvrirOverlayMessages },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>, label: 'demandes de renouvellement', count: renouvellements.length, urgency: 'warning' },
-        { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>, label: 'impayes', count: paiements.length, urgency: 'urgent' },
-      ]} />
-
       {/* SECTION : MON ANNONCE */}
       <div className="section section-with-empty">
         <div className="section-header">
