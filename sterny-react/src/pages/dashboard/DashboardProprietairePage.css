@@ -59,7 +59,7 @@
 }
 
 .dashboard-proprio-container .section-header {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .dashboard-proprio-container .section-title {
@@ -785,6 +785,7 @@
 .locataire-bloc {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
   margin-top: 16px;
   padding-top: 16px;
@@ -846,6 +847,7 @@
 .candidature-bloc {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
   padding: 16px 0;
   background: transparent;
