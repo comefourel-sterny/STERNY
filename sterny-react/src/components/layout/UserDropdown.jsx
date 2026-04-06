@@ -15,6 +15,10 @@ const IconEuro = () => <svg {...svgProps}><path d="M4 10h12M4 14h12M19.5 6.5A7.5
 const IconUser = () => <svg {...svgProps}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
 const IconSettings = () => <svg {...svgProps}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 const IconLogout = () => <svg {...svgProps}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+const IconLogin = () => <svg {...svgProps}><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+const IconUserPlus = () => <svg {...svgProps}><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+const IconHelp = () => <svg {...svgProps}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+const IconMenu = () => <svg {...svgProps}><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 
 export default function UserDropdown() {
   const { user, signOut } = useAuth()
@@ -69,7 +73,12 @@ export default function UserDropdown() {
     navigate('/')
   }
 
-  if (!user) return null
+  const visitorItems = [
+    { icon: <IconLogin />, label: 'Se connecter ou s\'inscrire', to: '/connexion' },
+    'separator',
+    { icon: <IconHome />, label: 'Proposer un logement', to: '/inscription/partager', description: 'Trouvez un alternant pour votre logement' },
+    { icon: <IconHelp />, label: 'Comment \u00e7a marche', to: '/comment-ca-marche' },
+  ]
 
   const locataireItems = [
     { icon: <IconSearch />, label: 'Mes recherches sauvegardees', to: '/recherche' },
@@ -95,9 +104,59 @@ export default function UserDropdown() {
     { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
-  const menuItems = userRole === 'proprietaire' ? proprietaireItems : locataireItems
+  const menuItems = user
+    ? (userRole === 'proprietaire' ? proprietaireItems : locataireItems)
+    : visitorItems
   const roleLabel = userRole === 'proprietaire' ? 'Proprietaire' : 'Locataire'
 
+  const renderItems = (items) => items.map((item, i) => {
+    if (item === 'separator') {
+      return <div key={`sep-${i}`} className="ud-separator" />
+    }
+    if (item.action) {
+      return (
+        <a key={i} href="#" className="ud-item ud-item-logout" onClick={item.action}>
+          {item.icon && <span className="ud-item-icon">{item.icon}</span>}
+          {item.label}
+        </a>
+      )
+    }
+    return (
+      <Link key={i} to={item.to} className="ud-item" onClick={close}>
+        {item.icon && <span className="ud-item-icon">{item.icon}</span>}
+        <div>
+          <div>{item.label}</div>
+          {item.description && <div className="ud-item-desc">{item.description}</div>}
+        </div>
+      </Link>
+    )
+  })
+
+  // Visitor: compact dropdown bubble
+  if (!user) {
+    return (
+      <div className="ud-bubble-wrap" ref={panelRef}>
+        <button
+          className="ud-menu-btn"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Menu"
+        >
+          <IconMenu />
+        </button>
+
+        {isOpen && (
+          <>
+            <div className="ud-bubble-overlay" onClick={close} />
+            <div className="ud-bubble">
+              {renderItems(menuItems)}
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  // Logged in: full side panel
   return (
     <>
       <button
@@ -108,42 +167,19 @@ export default function UserDropdown() {
         {initials}
       </button>
 
-      {/* Overlay */}
       <div
         className={`ud-overlay${isOpen ? ' open' : ''}`}
         onClick={close}
       />
 
-      {/* Side panel */}
       <div className={`ud-panel${isOpen ? ' open' : ''}`} ref={panelRef}>
-        {/* User header */}
         <div className="ud-header">
           <div className="ud-header-avatar">{initials}</div>
           <div className="ud-header-name">{userName}</div>
           <div className="ud-header-role">{roleLabel}</div>
         </div>
-
-        {/* Menu items */}
         <div className="ud-menu">
-          {menuItems.map((item, i) => {
-            if (item === 'separator') {
-              return <div key={`sep-${i}`} className="ud-separator" />
-            }
-            if (item.action) {
-              return (
-                <a key={i} href="#" className="ud-item ud-item-logout" onClick={item.action}>
-                  {item.icon && <span className="ud-item-icon">{item.icon}</span>}
-                  {item.label}
-                </a>
-              )
-            }
-            return (
-              <Link key={i} to={item.to} className="ud-item" onClick={close}>
-                {item.icon && <span className="ud-item-icon">{item.icon}</span>}
-                {item.label}
-              </Link>
-            )
-          })}
+          {renderItems(menuItems)}
         </div>
       </div>
     </>
