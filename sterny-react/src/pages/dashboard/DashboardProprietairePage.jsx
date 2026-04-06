@@ -505,7 +505,6 @@ export default function DashboardProprietairePage() {
             </div>
             <span>{annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}</span>
           </div>
-          <div className="section-description">Votre logement propose sur STERNY</div>
         </div>
 
         {annonces.length === 0 ? (
@@ -608,7 +607,6 @@ export default function DashboardProprietairePage() {
               </div>
               Profils a approuver
             </div>
-            <div className="section-description">Votre alternant a accepte ces locataires temporaires &mdash; donnez votre accord</div>
           </div>
           {approbations.map((c, index) => {
             const initials = getInitials(c.users.prenom, c.users.nom)
@@ -657,7 +655,6 @@ export default function DashboardProprietairePage() {
               </div>
               Demandes de renouvellement
             </div>
-            <div className="section-description">Locataires souhaitant renouveler leur bail</div>
           </div>
           {renouvellements.map(demande => {
             const locataire = demande.users || {}
@@ -693,7 +690,6 @@ export default function DashboardProprietairePage() {
               </div>
               Suivi des paiements
             </div>
-            <div className="section-description">Loyers impayes et relances automatiques</div>
           </div>
           {paiements.map(p => {
             const contrat = p.contrats
