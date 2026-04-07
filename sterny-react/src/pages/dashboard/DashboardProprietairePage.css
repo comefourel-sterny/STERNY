@@ -23,9 +23,9 @@
 
 .dp-prenom {
   text-decoration: underline;
-  text-decoration-color: #E8622A !important;
+  text-decoration-color: #F0783E;
   text-underline-offset: 4px;
-  text-decoration-thickness: 1.5px;
+  text-decoration-thickness: 2px;
 }
 
 .dashboard-proprio-container .page-header p {
