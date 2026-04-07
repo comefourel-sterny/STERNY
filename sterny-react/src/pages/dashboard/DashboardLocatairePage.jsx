@@ -68,6 +68,7 @@ export default function DashboardLocatairePage() {
   const [hasUnread, setHasUnread] = useState(false)
   const [showAlerteModal, setShowAlerteModal] = useState(false)
   const [alerteEditMode, setAlerteEditMode] = useState(false)
+  const [editingAlerteId, setEditingAlerteId] = useState(null)
   const [alerteCalMonth, setAlerteCalMonth] = useState(new Date().getMonth())
   const [alerteCalYear, setAlerteCalYear] = useState(new Date().getFullYear())
   const [alerteSelectedDate, setAlerteSelectedDate] = useState(null)
@@ -338,15 +339,16 @@ export default function DashboardLocatairePage() {
   }
 
   // === ALERTE ===
-  function ouvrirModalAlerte(editMode = false) {
+  function ouvrirModalAlerte(editMode = false, alerte = null) {
     setAlerteEditMode(editMode)
+    setEditingAlerteId(alerte?.id || null)
     setAlerteError('')
     setAlerteSuccess('')
-    if (editMode && alertes.length > 0 && alertes[0].date_debut_alternance) {
-      const existDate = new Date(alertes[0].date_debut_alternance)
+    if (editMode && alerte?.date_debut_alternance) {
+      const existDate = new Date(alerte.date_debut_alternance)
       setAlerteCalMonth(existDate.getMonth())
       setAlerteCalYear(existDate.getFullYear())
-      setAlerteSelectedDate(alertes[0].date_debut_alternance)
+      setAlerteSelectedDate(alerte.date_debut_alternance)
     } else {
       setAlerteSelectedDate(null)
       setAlerteCalMonth(new Date().getMonth())
@@ -371,12 +373,12 @@ export default function DashboardLocatairePage() {
         rythme = parts[0] + '-' + parts[1]
       }
 
-      if (alerteEditMode && alertes.length > 0) {
+      if (alerteEditMode && editingAlerteId) {
         await supabaseClient.from('alertes').update({
           ville: villeSlug,
           rythme,
           date_debut_alternance: alerteSelectedDate
-        }).eq('id', alertes[0].id)
+        }).eq('id', editingAlerteId)
         setAlerteSuccess('Alerte modifiee avec succes')
       } else {
         await supabaseClient.from('alertes').insert({
@@ -395,11 +397,11 @@ export default function DashboardLocatairePage() {
     }
   }
 
-  async function desactiverAlerte() {
-    if (alertes.length === 0) return
+  async function desactiverAlerte(alerteId) {
+    if (!alerteId) return
     try {
-      await supabaseClient.from('alertes').delete().eq('id', alertes[0].id)
-      setAlertes([])
+      await supabaseClient.from('alertes').delete().eq('id', alerteId)
+      setAlertes(prev => prev.filter(a => a.id !== alerteId))
     } catch (error) {
       console.error('Erreur:', error)
     }
@@ -714,22 +716,37 @@ export default function DashboardLocatairePage() {
       {currentMode === 'recherche' && !hasBailActif && (
         <>
           {/* BANDEAU ALERTE */}
-          <div className={`alerte-bandeau ${alertes.length > 0 ? 'active' : ''}`}>
-            <div className="alerte-bandeau-left">
-              <div className="alerte-bandeau-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+          {alertes.length === 0 ? (
+            <div className="alerte-bandeau">
+              <div className="alerte-bandeau-left">
+                <div className="alerte-bandeau-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                </div>
+                <span>Active une alerte pour etre notifie des qu'un logement correspond</span>
               </div>
-              <span>{alertes.length > 0
-                ? 'Alerte active — tu seras notifie des qu\'un logement correspond'
-                : 'Active une alerte pour etre notifie des qu\'un logement correspond'
-              }</span>
-            </div>
-            {alertes.length > 0 ? (
-              <button className="alerte-bandeau-btn-desactiver" onClick={() => ouvrirModalAlerte(true)}>Modifier</button>
-            ) : (
               <button className="alerte-bandeau-btn" onClick={() => ouvrirModalAlerte(false)}>Creer une alerte</button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div>
+              {alertes.map(alerte => (
+                <div key={alerte.id} className="alerte-bandeau active" style={{ marginBottom: '8px' }}>
+                  <div className="alerte-bandeau-left">
+                    <div className="alerte-bandeau-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                    </div>
+                    <span>{alerte.ville || 'Alerte active'}{alerte.rythme ? ` \u2022 ${alerte.rythme}` : ''}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button className="alerte-bandeau-btn-desactiver" onClick={() => ouvrirModalAlerte(true, alerte)}>Modifier</button>
+                    <button className="alerte-bandeau-btn-desactiver" onClick={() => desactiverAlerte(alerte.id)} style={{ color: '#9CA3AF' }}>Supprimer</button>
+                  </div>
+                </div>
+              ))}
+              {alertes.length < 2 && (
+                <button className="alerte-bandeau-btn" onClick={() => ouvrirModalAlerte(false)} style={{ marginTop: '4px', fontSize: '12px', padding: '6px 14px' }}>+ Ajouter une alerte</button>
+              )}
+            </div>
+          )}
 
           {/* FAVORIS */}
           <div className="section section-with-empty section-favoris">
