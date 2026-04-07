@@ -672,6 +672,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-bottom: 16px;
   box-shadow: 0 1px 3px rgba(30, 41, 59, 0.04);
+  min-height: 180px;
 }
 
 .annonce-card:last-child { margin-bottom: 0; }
@@ -683,11 +684,10 @@
 .annonce-thumb {
   width: 200px;
   min-width: 200px;
-  aspect-ratio: 1/1;
   background: #1E293B;
   flex-shrink: 0;
   overflow: hidden;
-  align-self: stretch;
+  border-right: 1px solid #E8EAF0;
 }
 
 .annonce-thumb img {
