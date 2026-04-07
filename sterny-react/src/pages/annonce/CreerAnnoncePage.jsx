@@ -405,11 +405,6 @@ export default function CreerAnnoncePage() {
   // ==========================================
 
   useEffect(() => {
-    // Pre-load AI model
-    loadCocoModel()
-  }, [])
-
-  useEffect(() => {
     if (!user) return
     checkUserType()
   }, [user])
