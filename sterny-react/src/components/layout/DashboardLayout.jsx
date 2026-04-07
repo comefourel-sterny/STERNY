@@ -1,6 +1,6 @@
 import { Outlet, Navigate } from 'react-router-dom'
 import Navbar from './Navbar'
-import FooterMinimal from './FooterMinimal'
+import Footer from './Footer'
 import { useAuth } from '../../hooks/useAuth.jsx'
 
 export default function DashboardLayout() {
@@ -29,7 +29,7 @@ export default function DashboardLayout() {
     <>
       <Navbar />
       <Outlet />
-      <FooterMinimal />
+      <Footer />
     </>
   )
 }
