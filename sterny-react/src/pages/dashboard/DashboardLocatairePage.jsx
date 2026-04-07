@@ -635,7 +635,13 @@ export default function DashboardLocatairePage() {
                         <div className="plus-menu-desc">Ajouter une ville de recherche</div>
                       </div>
                     </button>
-                    <button className="plus-menu-item" onClick={() => { setShowPlusMenu(false); navigate('/annonce/creer'); }}>
+                    <button className="plus-menu-item" onClick={async () => {
+                      setShowPlusMenu(false)
+                      if (userData?.type_user === 'locataire') {
+                        await supabaseClient.from('users').update({ type_user: 'les_deux' }).eq('id', userData.id)
+                      }
+                      navigate('/annonce/creer')
+                    }}>
                       <div className="plus-menu-icon host">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
                       </div>

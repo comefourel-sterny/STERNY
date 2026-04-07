@@ -23,7 +23,7 @@ export default function DashboardHotePage() {
   const [connectedProprio, setConnectedProprio] = useState(null)
 
   // Data state
-  const [annonce, setAnnonce] = useState(null)
+  const [annonces, setAnnonces] = useState([])
   const [candidatures, setCandidatures] = useState([])
   const [hasUnread, setHasUnread] = useState(false)
 
@@ -63,7 +63,7 @@ export default function DashboardHotePage() {
         await chargerMiseEnRelation(authUser.id, uData)
       }
 
-      await chargerAnnonce(authUser.id)
+      await chargerAnnonces(authUser.id)
       await chargerCandidatures(authUser.id)
       await chargerMessagesNonLus(authUser.id)
     } catch (error) {
@@ -144,17 +144,14 @@ export default function DashboardHotePage() {
     })
   }
 
-  async function chargerAnnonce(userId) {
+  async function chargerAnnonces(userId) {
     try {
       const { data } = await supabaseClient
         .from('annonces')
         .select('*')
         .eq('user_id', userId)
-        .eq('type', 'swap')
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
-      if (data) setAnnonce(data)
+      if (data) setAnnonces(data)
     } catch (error) {
       // No annonce
     }
@@ -258,12 +255,12 @@ export default function DashboardHotePage() {
             <div className="section-icon orange">
               <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
             </div>
-            Mon annonce
+            {annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}
           </div>
           <div className="section-description">Ton logement propose a l'alternance</div>
         </div>
 
-        {!annonce ? (
+        {annonces.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
               <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
@@ -275,26 +272,39 @@ export default function DashboardHotePage() {
             </Link>
           </div>
         ) : (
-          <div className="annonce-card">
-            <div className="annonce-thumb">
-              {annonce.photos && annonce.photos.length > 0
-                ? <img loading="lazy" src={annonce.photos[0]} alt={annonce.titre} />
-                : <div className="annonce-thumb-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg></div>
+          <div>
+            {annonces.map(annonce => (
+              <div key={annonce.id} className="annonce-card" style={{ marginBottom: '12px' }}>
+                <div className="annonce-thumb">
+                  {annonce.photos && annonce.photos.length > 0
+                    ? <img loading="lazy" src={annonce.photos[0]} alt={annonce.titre} />
+                    : <div className="annonce-thumb-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg></div>
+                  }
+                </div>
+                <div className="annonce-body">
+                  <div className="annonce-title">{annonce.titre || 'Mon logement'}</div>
+                  <div className="annonce-meta">
+                    {annonce.ville && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>{annonce.ville}</span>}
+                    {annonce.surface && <span className="annonce-tag"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>{annonce.surface} m2</span>}
+                    {annonce.nb_chambres && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>{annonce.nb_chambres} ch.</span>}
+                    {annonce.prix_semaine && <span className="annonce-tag"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>{annonce.prix_semaine}EUR/sem</span>}
+                  </div>
+                  <div className="annonce-actions">
+                    <Link to={`/annonce/modifier?id=${annonce.id}`} className="btn btn-primary">Modifier</Link>
+                    <Link to={`/logement?id=${annonce.id}`} className="btn btn-secondary">Voir</Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button className="btn btn-orange" style={{ marginTop: '8px' }} onClick={async () => {
+              if (userData?.type_user === 'hote') {
+                await supabaseClient.from('users').update({ type_user: 'les_deux' }).eq('id', userData.id)
               }
-            </div>
-            <div className="annonce-body">
-              <div className="annonce-title">{annonce.titre || 'Mon logement'}</div>
-              <div className="annonce-meta">
-                {annonce.ville && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>{annonce.ville}</span>}
-                {annonce.surface && <span className="annonce-tag"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>{annonce.surface} m2</span>}
-                {annonce.nb_chambres && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>{annonce.nb_chambres} ch.</span>}
-                {annonce.prix_semaine && <span className="annonce-tag"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>{annonce.prix_semaine}EUR/sem</span>}
-              </div>
-              <div className="annonce-actions">
-                <Link to={`/annonce/modifier?id=${annonce.id}`} className="btn btn-primary">Modifier</Link>
-                <Link to={`/logement?id=${annonce.id}`} className="btn btn-secondary">Voir</Link>
-              </div>
-            </div>
+              navigate('/annonce/creer')
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+              Ajouter une annonce
+            </button>
           </div>
         )}
       </div>
