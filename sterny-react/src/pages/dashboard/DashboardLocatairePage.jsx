@@ -246,14 +246,11 @@ export default function DashboardLocatairePage() {
       })
 
       const usersMap = {}
-      for (const id of autreIds) {
-        const { data: uData } = await supabaseClient
-          .from('users')
-          .select('id, prenom, nom, type_user')
-          .eq('id', id)
-          .single()
-        if (uData) usersMap[uData.id] = uData
-      }
+      const { data: usersData } = await supabaseClient
+        .from('users')
+        .select('id, prenom, nom, type_user')
+        .in('id', [...autreIds])
+      if (usersData) usersData.forEach(u => { usersMap[u.id] = u })
 
       const conversations = {}
       messages.forEach(msg => {
@@ -446,12 +443,13 @@ export default function DashboardLocatairePage() {
 
   async function envoyerMessage() {
     if (!chatInput.trim() || !chatContact) return
+    const messageText = chatInput.trim()
     setSendingChat(true)
     try {
       await supabaseClient.from('messages').insert([{
         expediteur_id: currentUserId,
         destinataire_id: chatContact.userId,
-        contenu: chatInput.trim(),
+        contenu: messageText,
         lu: false
       }])
       setChatInput('')
@@ -459,7 +457,7 @@ export default function DashboardLocatairePage() {
 
       setAllConversations(prev => prev.map(c =>
         c.userId === chatContact.userId
-          ? { ...c, dernierMessage: chatInput.trim(), date: new Date().toISOString(), estEnvoye: true }
+          ? { ...c, dernierMessage: messageText, date: new Date().toISOString(), estEnvoye: true }
           : c
       ))
     } catch (err) {
@@ -626,7 +624,7 @@ export default function DashboardLocatairePage() {
     if (!window.confirm('Retirer cette candidature ?')) return
     try {
       await supabaseClient.from('candidatures').delete().eq('id', candidatureId).eq('locataire_id', currentUserId)
-      loadMesCandidatures(currentUserId)
+      await loadMesCandidatures(currentUserId)
     } catch (e) {
       console.error('Erreur:', e)
     }
