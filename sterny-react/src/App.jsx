@@ -63,7 +63,6 @@ import RenouvellementPage from './pages/transaction/RenouvellementPage'
 
 // Communication pages
 import MessagesPage from './pages/communication/MessagesPage'
-import ConversationPage from './pages/communication/ConversationPage'
 
 // Alerte pages
 import CreerAlertePage from './pages/alerte/CreerAlertePage'
@@ -164,7 +163,6 @@ export default function App() {
 
           {/* Communication */}
           <Route path="/messages" element={<MessagesPage />} />
-          <Route path="/conversation" element={<ConversationPage />} />
 
           {/* Alerte */}
           <Route path="/alerte/creer" element={<CreerAlertePage />} />

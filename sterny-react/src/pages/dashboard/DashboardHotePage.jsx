@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
-import { formatTimeAgo, getInitials } from '../../utils/formatters'
+import { getInitials } from '../../utils/formatters'
 import AgendaCard from '../../components/dashboard/AgendaCard'
+import ChatComponent from '../../components/chat/ChatComponent'
 import './DashboardHotePage.css'
 
 export default function DashboardHotePage() {
@@ -28,15 +29,6 @@ export default function DashboardHotePage() {
 
   // Messages overlay
   const [showMessagesOverlay, setShowMessagesOverlay] = useState(false)
-  const [chatView, setChatView] = useState(false)
-  const [chatContact, setChatContact] = useState(null)
-  const [chatMessages, setChatMessages] = useState([])
-  const [chatInput, setChatInput] = useState('')
-  const [sendingChat, setSendingChat] = useState(false)
-  const [conversations, setConversations] = useState([])
-
-  const chatMessagesRef = useRef(null)
-  const chatIntervalRef = useRef(null)
 
   // Load profile on mount
   useEffect(() => {
@@ -193,111 +185,6 @@ export default function DashboardHotePage() {
       // pas grave
     }
   }
-
-  // === MESSAGES OVERLAY ===
-  async function ouvrirOverlayMessages() {
-    setShowMessagesOverlay(true)
-    setChatView(false)
-    await chargerListeConversations()
-  }
-
-  function fermerOverlayMessages() {
-    setShowMessagesOverlay(false)
-    setChatView(false)
-    setChatContact(null)
-    if (chatIntervalRef.current) { clearInterval(chatIntervalRef.current); chatIntervalRef.current = null }
-  }
-
-  async function chargerListeConversations() {
-    try {
-      const { data: msgs } = await supabaseClient
-        .from('messages')
-        .select('*, expediteur:users!expediteur_id(prenom, nom), destinataire:users!destinataire_id(prenom, nom)')
-        .or(`expediteur_id.eq.${currentUserId},destinataire_id.eq.${currentUserId}`)
-        .order('created_at', { ascending: false })
-
-      if (!msgs || msgs.length === 0) { setConversations([]); return }
-
-      const convos = {}
-      msgs.forEach(m => {
-        const partnerId = m.expediteur_id === currentUserId ? m.destinataire_id : m.expediteur_id
-        if (!convos[partnerId]) {
-          const partner = m.expediteur_id === currentUserId ? m.destinataire : m.expediteur
-          convos[partnerId] = {
-            partnerId,
-            partnerName: [partner?.prenom, partner?.nom].filter(Boolean).join(' ') || 'Utilisateur',
-            lastMessage: m,
-            unread: m.destinataire_id === currentUserId && !m.lu
-          }
-        }
-      })
-      setConversations(Object.values(convos))
-    } catch (e) {
-      setConversations([])
-    }
-  }
-
-  async function ouvrirChat(partnerId, partnerName) {
-    setChatContact({ partnerId, partnerName })
-    setChatView(true)
-    await chargerMessagesChat(partnerId)
-
-    await supabaseClient
-      .from('messages')
-      .update({ lu: true })
-      .eq('expediteur_id', partnerId)
-      .eq('destinataire_id', currentUserId)
-
-    setHasUnread(false)
-
-    if (chatIntervalRef.current) clearInterval(chatIntervalRef.current)
-    chatIntervalRef.current = setInterval(() => chargerMessagesChat(partnerId), 5000)
-  }
-
-  function retourListeMessages() {
-    if (chatIntervalRef.current) { clearInterval(chatIntervalRef.current); chatIntervalRef.current = null }
-    setChatView(false)
-    setChatContact(null)
-    chargerListeConversations()
-  }
-
-  async function chargerMessagesChat(partnerId) {
-    try {
-      const { data: msgs } = await supabaseClient
-        .from('messages')
-        .select('*')
-        .or(`and(expediteur_id.eq.${currentUserId},destinataire_id.eq.${partnerId}),and(expediteur_id.eq.${partnerId},destinataire_id.eq.${currentUserId})`)
-        .order('created_at', { ascending: true })
-      setChatMessages(msgs || [])
-    } catch (e) {
-      setChatMessages([])
-    }
-  }
-
-  useEffect(() => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
-    }
-  }, [chatMessages])
-
-  async function envoyerMessage() {
-    if (!chatInput.trim() || !chatContact || sendingChat) return
-    setSendingChat(true)
-    try {
-      await supabaseClient.from('messages').insert({
-        expediteur_id: currentUserId,
-        destinataire_id: chatContact.partnerId,
-        contenu: chatInput.trim()
-      })
-      setChatInput('')
-      await chargerMessagesChat(chatContact.partnerId)
-    } catch (e) {
-      console.error('Erreur envoi:', e)
-    }
-    setSendingChat(false)
-  }
-
-
 
   return (
     <div className="dashboard-hote-container">
@@ -458,109 +345,13 @@ export default function DashboardHotePage() {
 
 
       {/* OVERLAY MESSAGES */}
-      {showMessagesOverlay && (
-        <div className="messages-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.25)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }} onClick={(e) => { if (e.target === e.currentTarget) fermerOverlayMessages() }}>
-          <div className={`messages-overlay-box${chatView ? ' chat-mode' : ''}`}>
-            {!chatView ? (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-                <div className="messages-overlay-header">
-                  <div className="messages-overlay-title">
-                    <div className="section-icon">
-                      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                    </div>
-                    Mes messages
-                  </div>
-                  <button className="messages-overlay-close" onClick={fermerOverlayMessages}>&times;</button>
-                </div>
-                <div className="messages-overlay-list">
-                  {conversations.length === 0 ? (
-                    <div className="messages-overlay-empty">Aucun message pour le moment</div>
-                  ) : (
-                    conversations.map(c => {
-                      const initials = getInitials(c.partnerName)
-                      const time = new Date(c.lastMessage.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-                      const isMe = c.lastMessage.expediteur_id === currentUserId
-                      const preview = c.lastMessage.contenu || ''
-                      return (
-                        <div key={c.partnerId} className={`message-item${c.unread ? ' message-unread' : ''}`} onClick={() => ouvrirChat(c.partnerId, c.partnerName)} style={{ cursor: 'pointer' }}>
-                          <div className="message-avatar">{initials}</div>
-                          <div className="message-content">
-                            <div className="message-top-row">
-                              <span className="message-name">{c.partnerName}</span>
-                              <span className="message-time">{time}</span>
-                            </div>
-                            <div className="message-bottom-row">
-                              <span className="message-preview">
-                                {isMe && <span className="message-preview-prefix">Vous : </span>}
-                                {preview.substring(0, 60)}
-                              </span>
-                              {c.unread && <span className="message-unread-dot" />}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-                <div className="overlay-chat-header">
-                  <button className="overlay-chat-back" onClick={retourListeMessages}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
-                  </button>
-                  <div className="overlay-chat-contact">
-                    <div className="overlay-chat-avatar">{chatContact ? getInitials(chatContact.partnerName) : '?'}</div>
-                    <div className="overlay-chat-name">{chatContact?.partnerName || '...'}</div>
-                  </div>
-                  <button className="messages-overlay-close" onClick={fermerOverlayMessages}>&times;</button>
-                </div>
-                <div className="overlay-chat-messages" ref={chatMessagesRef}>
-                  {chatMessages.length === 0 ? (
-                    <div className="overlay-chat-empty">Envoyez votre premier message !</div>
-                  ) : (
-                    (() => {
-                      let lastDate = ''
-                      return chatMessages.map((m, i) => {
-                        const d = new Date(m.created_at)
-                        const dateStr = d.toLocaleDateString('fr-FR')
-                        const showDate = dateStr !== lastDate
-                        lastDate = dateStr
-                        const isSent = m.expediteur_id === currentUserId
-                        const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-                        return (
-                          <div key={m.id || i}>
-                            {showDate && <div className="chat-date-sep"><span>{dateStr}</span></div>}
-                            <div className={`chat-msg ${isSent ? 'sent' : 'received'}`}>
-                              <div>
-                                <div className="chat-bubble">{m.contenu}</div>
-                                <div className="chat-msg-time">{time}</div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })
-                    })()
-                  )}
-                </div>
-                <div className="overlay-chat-input">
-                  <textarea
-                    className="overlay-chat-textarea"
-                    placeholder="Votre message..."
-                    rows="1"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage() } }}
-                  />
-                  <button className="overlay-chat-send" onClick={envoyerMessage} disabled={sendingChat || !chatInput.trim()}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <ChatComponent
+        mode="overlay"
+        isOpen={showMessagesOverlay}
+        onClose={() => setShowMessagesOverlay(false)}
+        currentUserId={currentUserId}
+        currentUserType="hote"
+      />
     </div>
   )
 }

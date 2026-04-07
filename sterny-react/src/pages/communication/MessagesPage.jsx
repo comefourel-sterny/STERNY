@@ -1,41 +1,19 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import ChatComponent from '../../components/chat/ChatComponent'
 import { useAuth } from '../../hooks/useAuth'
-import { supabaseClient } from '../../config/supabase'
 import './MessagesPage.css'
 
 export default function MessagesPage() {
-  const { user, loading } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
-  useEffect(() => {
-    if (loading) return
+  if (!user) return null
 
-    if (!user) {
-      navigate('/connexion')
-      return
-    }
-
-    async function redirect() {
-      try {
-        const { data } = await supabaseClient
-          .from('users')
-          .select('type_user')
-          .eq('id', user.id)
-          .single()
-
-        if (data && data.type_user === 'proprietaire') {
-          navigate('/dashboard/proprietaire')
-        } else {
-          navigate('/dashboard/locataire')
-        }
-      } catch (e) {
-        navigate('/dashboard/locataire')
-      }
-    }
-
-    redirect()
-  }, [user, loading, navigate])
-
-  return null
+  return (
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 24px' }}>
+      <ChatComponent
+        mode="page"
+        currentUserId={user.id}
+        currentUserType={null}
+      />
+    </div>
+  )
 }

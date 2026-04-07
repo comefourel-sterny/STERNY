@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
-import { formatTimeAgo, getInitials } from '../../utils/formatters'
+import { getInitials } from '../../utils/formatters'
 import AgendaCard from '../../components/dashboard/AgendaCard'
+import ChatComponent from '../../components/chat/ChatComponent'
 import './DashboardProprietairePage.css'
 
 function escapeHtml(text) {
@@ -27,16 +28,8 @@ export default function DashboardProprietairePage() {
   const [renouvellements, setRenouvellements] = useState([])
   const [locationsActives, setLocationsActives] = useState([])
   const [paiements, setPaiements] = useState([])
-  const [allConversations, setAllConversations] = useState([])
-  const [hasUnread, setHasUnread] = useState(false)
-
   // UI state
   const [showMessagesOverlay, setShowMessagesOverlay] = useState(false)
-  const [chatView, setChatView] = useState(false)
-  const [chatContact, setChatContact] = useState(null)
-  const [chatMessages, setChatMessages] = useState([])
-  const [chatInput, setChatInput] = useState('')
-  const [sendingChat, setSendingChat] = useState(false)
 
   const [showLocataireOverlay, setShowLocataireOverlay] = useState(false)
   const [showCandidatureOverlay, setShowCandidatureOverlay] = useState(false)
@@ -62,9 +55,6 @@ export default function DashboardProprietairePage() {
   const [showDocuments, setShowDocuments] = useState(false)
   const [allContrats, setAllContrats] = useState([])
   const [allPaiements, setAllPaiements] = useState([])
-
-  const chatMessagesRef = useRef(null)
-  const chatInputRef = useRef(null)
 
   function showToast(type, message) {
     setToast({ visible: true, type, message })
@@ -103,7 +93,6 @@ export default function DashboardProprietairePage() {
           chargerLocationsActives(authUser.id),
           chargerApprobations(authUser.id, uData),
           chargerDemandesRenouvellement(authUser.id),
-          chargerMessages(authUser.id),
           chargerPaiements(authUser.id),
           chargerTousContrats(authUser.id),
           chargerTousPaiements(authUser.id),
@@ -199,44 +188,6 @@ export default function DashboardProprietairePage() {
       if (!error && demandes && demandes.length > 0) setRenouvellements(demandes)
     } catch (error) {
       console.error('Erreur renouvellements:', error)
-    }
-  }
-
-  async function chargerMessages(userId) {
-    try {
-      const { data: messages } = await supabaseClient
-        .from('messages')
-        .select('*, expediteur:users!messages_expediteur_id_fkey(id, prenom, nom, type_user), destinataire:users!messages_destinataire_id_fkey(id, prenom, nom, type_user)')
-        .or(`expediteur_id.eq.${userId},destinataire_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (messages && messages.length > 0) {
-        const conversations = {}
-        let unread = false
-        messages.forEach(msg => {
-          const autreId = msg.expediteur_id === userId ? msg.destinataire_id : msg.expediteur_id
-          if (!conversations[autreId]) {
-            const autre = msg.expediteur_id === userId ? msg.destinataire : msg.expediteur
-            const isUnread = msg.destinataire_id === userId && !msg.lu
-            if (isUnread) unread = true
-            conversations[autreId] = {
-              userId: autreId,
-              prenom: autre?.prenom || 'Utilisateur',
-              nom: autre?.nom || '',
-              typeUser: autre?.type_user || '',
-              dernierMessage: msg.contenu || msg.message || '',
-              date: msg.created_at,
-              nonLu: isUnread,
-              estEnvoye: msg.expediteur_id === userId
-            }
-          }
-        })
-        setAllConversations(Object.values(conversations))
-        setHasUnread(unread)
-      }
-    } catch (error) {
-      console.error('Erreur messages:', error)
     }
   }
 
@@ -354,85 +305,6 @@ export default function DashboardProprietairePage() {
     } catch (err) {
       console.error('Erreur marquer paye:', err)
     }
-  }
-
-  // === MESSAGES OVERLAY ===
-  function ouvrirOverlayMessages() {
-    setShowMessagesOverlay(true)
-    setChatView(false)
-  }
-
-  function fermerOverlayMessages() {
-    setShowMessagesOverlay(false)
-    setChatView(false)
-    setChatContact(null)
-  }
-
-  async function ouvrirConversationOverlay(userId, prenom, nom, typeUser) {
-    setChatContact({ userId, prenom, nom, typeUser })
-    setChatView(true)
-    setShowMessagesOverlay(true)
-
-    // Mark as read in local state
-    setAllConversations(prev => prev.map(c => c.userId === userId ? { ...c, nonLu: false } : c))
-
-    await chargerMessagesChat(userId)
-  }
-
-  async function chargerMessagesChat(contactId) {
-    try {
-      const { data: msgs, error } = await supabaseClient
-        .from('messages')
-        .select('*')
-        .or(`and(expediteur_id.eq.${currentUserId},destinataire_id.eq.${contactId}),and(expediteur_id.eq.${contactId},destinataire_id.eq.${currentUserId})`)
-        .order('created_at', { ascending: true })
-
-      if (error) return
-      setChatMessages(msgs || [])
-
-      // Mark as read
-      await supabaseClient
-        .from('messages')
-        .update({ lu: true })
-        .eq('destinataire_id', currentUserId)
-        .eq('expediteur_id', contactId)
-        .eq('lu', false)
-    } catch (err) {
-      console.error('Erreur:', err)
-    }
-  }
-
-  useEffect(() => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
-    }
-  }, [chatMessages])
-
-  async function envoyerMessage() {
-    if (!chatInput.trim() || !chatContact || sendingChat) return
-    setSendingChat(true)
-    try {
-      await supabaseClient.from('messages').insert([{
-        expediteur_id: currentUserId,
-        destinataire_id: chatContact.userId,
-        contenu: chatInput.trim(),
-        lu: false
-      }])
-      setChatInput('')
-      await chargerMessagesChat(chatContact.userId)
-      setAllConversations(prev => prev.map(c =>
-        c.userId === chatContact.userId ? { ...c, dernierMessage: chatInput.trim(), date: new Date().toISOString(), estEnvoye: true } : c
-      ))
-    } catch (err) {
-      console.error('Erreur envoi:', err)
-    } finally {
-      setSendingChat(false)
-    }
-  }
-
-  function retourListeMessages() {
-    setChatView(false)
-    setChatContact(null)
   }
 
   // === PASSWORD / DELETE ===
@@ -586,7 +458,7 @@ export default function DashboardProprietairePage() {
                         <div className="loc-name">{currentLocataireData.prenom} {currentLocataireData.nom}</div>
                       </div>
                     </span>
-                    <button className="btn btn-orange" onClick={(e) => { e.stopPropagation(); ouvrirConversationOverlay(currentLocataireData.id, currentLocataireData.prenom, currentLocataireData.nom, 'locataire') }}>
+                    <button className="btn btn-orange" onClick={(e) => { e.stopPropagation(); setShowMessagesOverlay(true) }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                       Contacter
                     </button>
@@ -610,7 +482,7 @@ export default function DashboardProprietairePage() {
                     </div>
                   </span>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button className="btn btn-orange" onClick={() => ouvrirConversationOverlay(loc.id, loc.prenom, loc.nom, 'locataire')} style={{ fontSize: '12px', padding: '6px 14px' }}>
+                    <button className="btn btn-orange" onClick={() => setShowMessagesOverlay(true)} style={{ fontSize: '12px', padding: '6px 14px' }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                       Contacter
                     </button>
@@ -878,114 +750,13 @@ export default function DashboardProprietairePage() {
       )}
 
       {/* OVERLAY MESSAGES */}
-      {showMessagesOverlay && (
-        <div className="messages-overlay" onClick={(e) => { if (e.target === e.currentTarget) fermerOverlayMessages() }}>
-          <div className={`messages-overlay-box${chatView ? ' chat-mode' : ''}`}>
-            {!chatView ? (
-              <div>
-                <div className="messages-overlay-header">
-                  <div className="messages-overlay-title">
-                    <div className="section-icon">
-                      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                    </div>
-                    Mes messages
-                  </div>
-                  <button className="messages-overlay-close" onClick={fermerOverlayMessages}>&times;</button>
-                </div>
-                <div className="messages-overlay-list">
-                  {allConversations.length === 0 ? (
-                    <div className="messages-overlay-empty">Aucun message pour le moment</div>
-                  ) : (
-                    allConversations.map(c => {
-                      const initials = ((c.prenom || 'U')[0] + (c.nom ? c.nom[0] : '')).toUpperCase()
-                      const timeAgo = formatTimeAgo(c.date)
-                      const preview = c.dernierMessage.length > 80 ? c.dernierMessage.substring(0, 80) + '...' : c.dernierMessage
-                      return (
-                        <div key={c.userId} className={`message-item${c.nonLu ? ' message-unread' : ''}`} onClick={() => ouvrirConversationOverlay(c.userId, c.prenom, c.nom, c.typeUser)} style={{ cursor: 'pointer' }}>
-                          <div className="message-avatar">{initials}</div>
-                          <div className="message-content">
-                            <div className="message-top-row">
-                              <div className="message-name">{c.prenom} {c.nom || ''}</div>
-                              <span className="message-time">{timeAgo}</span>
-                            </div>
-                            <div className="message-bottom-row">
-                              <div className="message-preview">
-                                {c.estEnvoye && <span className="message-preview-prefix">Vous : </span>}
-                                {preview || 'Nouvelle conversation'}
-                              </div>
-                              {c.nonLu && <div className="message-unread-dot" />}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-                <div className="overlay-chat-header">
-                  <button className="overlay-chat-back" onClick={retourListeMessages}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
-                  </button>
-                  <div className="overlay-chat-contact">
-                    <div className="overlay-chat-avatar">{chatContact ? ((chatContact.prenom || 'U')[0] + (chatContact.nom ? chatContact.nom[0] : '')).toUpperCase() : '?'}</div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <div className="overlay-chat-name">{chatContact ? `${chatContact.prenom} ${chatContact.nom || ''}`.trim() : '...'}</div>
-                      <div className="overlay-chat-role">
-                        {chatContact?.typeUser === 'locataire' ? 'Locataire' : chatContact?.typeUser === 'proprietaire' ? 'Proprietaire' : chatContact?.typeUser === 'hote' ? 'Hote' : ''}
-                      </div>
-                    </div>
-                  </div>
-                  <button className="messages-overlay-close" onClick={fermerOverlayMessages}>&times;</button>
-                </div>
-                <div className="overlay-chat-messages" ref={chatMessagesRef}>
-                  {chatMessages.length === 0 ? (
-                    <div className="overlay-chat-empty">Envoyez votre premier message !</div>
-                  ) : (
-                    (() => {
-                      let lastDate = ''
-                      return chatMessages.map((msg, i) => {
-                        const isSent = msg.expediteur_id === currentUserId
-                        const msgDate = new Date(msg.created_at)
-                        const dateStr = msgDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
-                        const showDateSep = dateStr !== lastDate
-                        lastDate = dateStr
-                        const time = msgDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-                        return (
-                          <div key={msg.id || i}>
-                            {showDateSep && <div className="chat-date-sep"><span>{dateStr}</span></div>}
-                            <div className={`chat-msg ${isSent ? 'sent' : 'received'}`}>
-                              <div>
-                                <div className="chat-bubble">{msg.contenu}</div>
-                                <div className="chat-msg-time">{time}</div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })
-                    })()
-                  )}
-                </div>
-                <div className="overlay-chat-input">
-                  <textarea
-                    className="overlay-chat-textarea"
-                    ref={chatInputRef}
-                    placeholder="Votre message..."
-                    rows="1"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyerMessage() } }}
-                  />
-                  <button className="overlay-chat-send" onClick={envoyerMessage} disabled={sendingChat || !chatInput.trim()}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <ChatComponent
+        mode="overlay"
+        isOpen={showMessagesOverlay}
+        onClose={() => setShowMessagesOverlay(false)}
+        currentUserId={currentUserId}
+        currentUserType="proprietaire"
+      />
 
       {/* PASSWORD MODAL */}
       {showPasswordModal && (
