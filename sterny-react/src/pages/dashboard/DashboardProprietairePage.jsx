@@ -57,6 +57,12 @@ export default function DashboardProprietairePage() {
 
   const [toast, setToast] = useState({ visible: false, type: '', message: '' })
 
+  // Calendar & Documents
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [showDocuments, setShowDocuments] = useState(false)
+  const [allContrats, setAllContrats] = useState([])
+  const [allPaiements, setAllPaiements] = useState([])
+
   const chatMessagesRef = useRef(null)
   const chatInputRef = useRef(null)
 
@@ -99,6 +105,8 @@ export default function DashboardProprietairePage() {
           chargerDemandesRenouvellement(authUser.id),
           chargerMessages(authUser.id),
           chargerPaiements(authUser.id),
+          chargerTousContrats(authUser.id),
+          chargerTousPaiements(authUser.id),
         ])
       }
     } catch (error) {
@@ -247,6 +255,28 @@ export default function DashboardProprietairePage() {
     } catch (error) {
       console.error('Erreur paiements:', error)
     }
+  }
+
+  async function chargerTousContrats(userId) {
+    try {
+      const { data } = await supabaseClient
+        .from('contrats')
+        .select('*, annonces(id, titre, ville), users!contrats_locataire_id_fkey(id, prenom, nom)')
+        .eq('proprietaire_id', userId)
+        .order('date_debut', { ascending: true })
+      if (data) setAllContrats(data)
+    } catch (e) { console.error('Erreur contrats:', e) }
+  }
+
+  async function chargerTousPaiements(userId) {
+    try {
+      const { data } = await supabaseClient
+        .from('paiements_loyer')
+        .select('*, contrats(id, annonces(titre, ville), users!contrats_locataire_id_fkey(prenom, nom))')
+        .order('mois', { ascending: false })
+      const mes = (data || []).filter(p => p.contrats && p.signale_par === userId)
+      setAllPaiements(mes)
+    } catch (e) { console.error('Erreur paiements historique:', e) }
   }
 
   // === ACTIONS ===
@@ -717,6 +747,131 @@ export default function DashboardProprietairePage() {
         </div>
       )}
 
+
+      {/* SECTION : CALENDRIER D'OCCUPATION */}
+      <div className="dp-card">
+        <div className="dp-card-title dp-card-toggle" onClick={() => setShowCalendar(!showCalendar)}>
+          <span className="dp-card-icon" style={{ background: '#EDE9FE' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          Calendrier d'occupation
+          <svg className={`dp-card-chevron${showCalendar ? ' open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        {showCalendar && (
+          <div className="dp-timeline">
+            {allContrats.length === 0 ? (
+              <div className="dp-timeline-empty">Aucun contrat pour le moment</div>
+            ) : (
+              allContrats.map(c => {
+                const loc = c.users || {}
+                const annonce = c.annonces || {}
+                const debut = new Date(c.date_debut)
+                const fin = new Date(c.date_fin)
+                const now = new Date()
+                const isActive = c.statut === 'signe' && fin >= now
+                const isPast = fin < now
+                const totalDays = Math.ceil((fin - debut) / (1000 * 60 * 60 * 24))
+                const elapsed = Math.min(Math.ceil((now - debut) / (1000 * 60 * 60 * 24)), totalDays)
+                const progress = isActive ? Math.round((elapsed / totalDays) * 100) : isPast ? 100 : 0
+
+                return (
+                  <div key={c.id} className={`dp-timeline-item${isActive ? ' active' : ''}${isPast ? ' past' : ''}`}>
+                    <div className="dp-timeline-header">
+                      <div className="dp-timeline-avatar">{getInitials(loc.prenom, loc.nom)}</div>
+                      <div className="dp-timeline-info">
+                        <div className="dp-timeline-name">{loc.prenom} {loc.nom}</div>
+                        <div className="dp-timeline-meta">{annonce.titre} &middot; {annonce.ville}</div>
+                      </div>
+                      <div className="dp-timeline-dates">
+                        <span>{debut.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                        <span className="dp-timeline-arrow">&rarr;</span>
+                        <span>{fin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+                    <div className="dp-timeline-bar">
+                      <div className="dp-timeline-progress" style={{ width: `${progress}%` }} />
+                    </div>
+                    <div className="dp-timeline-status">
+                      {isActive && <span className="dp-badge dp-badge-active">En cours</span>}
+                      {isPast && <span className="dp-badge dp-badge-past">Termine</span>}
+                      {!isActive && !isPast && <span className="dp-badge dp-badge-future">A venir</span>}
+                      <span className="dp-timeline-duration">{totalDays} jours</span>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* SECTION : DOCUMENTS */}
+      <div className="dp-card">
+        <div className="dp-card-title dp-card-toggle" onClick={() => setShowDocuments(!showDocuments)}>
+          <span className="dp-card-icon" style={{ background: '#FEF3C7' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          Documents
+          <svg className={`dp-card-chevron${showDocuments ? ' open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        {showDocuments && (
+          <div className="dp-docs">
+            {/* Contrats */}
+            <div className="dp-docs-group">
+              <div className="dp-docs-label">Contrats</div>
+              {allContrats.length === 0 ? (
+                <div className="dp-docs-empty">Aucun contrat</div>
+              ) : (
+                allContrats.map(c => {
+                  const loc = c.users || {}
+                  return (
+                    <Link key={c.id} to={`/contrat-location?contrat_id=${c.id}`} className="dp-doc-row">
+                      <div className="dp-doc-icon contrat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      </div>
+                      <div className="dp-doc-info">
+                        <div className="dp-doc-name">Contrat &mdash; {loc.prenom} {loc.nom}</div>
+                        <div className="dp-doc-meta">{new Date(c.date_debut).toLocaleDateString('fr-FR')} &rarr; {new Date(c.date_fin).toLocaleDateString('fr-FR')}</div>
+                      </div>
+                      <span className={`dp-badge ${c.statut === 'signe' ? 'dp-badge-active' : 'dp-badge-past'}`}>
+                        {c.statut === 'signe' ? 'Signe' : c.statut}
+                      </span>
+                    </Link>
+                  )
+                })
+              )}
+            </div>
+
+            {/* Historique paiements */}
+            <div className="dp-docs-group">
+              <div className="dp-docs-label">Historique des paiements</div>
+              {allPaiements.length === 0 ? (
+                <div className="dp-docs-empty">Aucun paiement enregistre</div>
+              ) : (
+                allPaiements.map(p => {
+                  const loc = p.contrats?.users || {}
+                  const moisLabel = new Date(p.mois).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+                  const montant = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(p.montant)
+                  return (
+                    <div key={p.id} className="dp-doc-row">
+                      <div className={`dp-doc-icon ${p.statut === 'paye' ? 'paye' : 'impaye'}`}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                      </div>
+                      <div className="dp-doc-info">
+                        <div className="dp-doc-name">{loc.prenom} {loc.nom} &mdash; {moisLabel}</div>
+                        <div className="dp-doc-meta">{montant}</div>
+                      </div>
+                      <span className={`dp-badge ${p.statut === 'paye' ? 'dp-badge-active' : 'dp-badge-past'}`}>
+                        {p.statut === 'paye' ? 'Paye' : p.statut === 'relance_envoyee' ? 'Relance' : 'Impaye'}
+                      </span>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* OVERLAY MESSAGES */}
       {showMessagesOverlay && (
