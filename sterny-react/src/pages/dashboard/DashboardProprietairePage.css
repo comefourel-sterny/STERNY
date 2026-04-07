@@ -12,11 +12,12 @@
 }
 
 .dashboard-proprio-container .page-header h1 {
-  font-size: 36px;
-  font-weight: 800;
-  color: #1E293B;
+  font-size: 36px !important;
+  font-weight: 800 !important;
+  color: #1E293B !important;
   margin-bottom: 4px;
   letter-spacing: -1px;
+  text-transform: none !important;
 }
 
 .dashboard-proprio-container .page-header p {
