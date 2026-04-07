@@ -681,8 +681,8 @@
 }
 
 .annonce-thumb {
-  width: 200px;
-  aspect-ratio: 4/3;
+  width: 280px;
+  min-height: 180px;
   background: #1E293B;
   display: flex;
   align-items: center;
