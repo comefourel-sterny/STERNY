@@ -497,14 +497,10 @@ export default function DashboardProprietairePage() {
       </div>
 
       {/* SECTION : MON ANNONCE */}
-      <div className="section section-with-empty">
-        <div className="section-header">
-          <div className="section-title">
-            <div className="section-icon orange">
-              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-            </div>
-            <span>{annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}</span>
-          </div>
+      <div className="dp-card">
+        <div className="dp-card-title">
+          <span className="dp-card-dot" style={{ background: '#E8622A' }} />
+          {annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}
         </div>
 
         {annonces.length === 0 ? (
@@ -599,14 +595,10 @@ export default function DashboardProprietairePage() {
 
       {/* SECTION : PROFILS A APPROUVER */}
       {approbations.length > 0 && (
-        <div className="section section-with-empty">
-          <div className="section-header">
-            <div className="section-title">
-              <div className="section-icon" style={{ background: '#DBEAFE' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" /></svg>
-              </div>
-              Profils en attente
-            </div>
+        <div className="dp-card">
+          <div className="dp-card-title">
+            <span className="dp-card-dot" style={{ background: '#3B82F6' }} />
+            Profils en attente
           </div>
           {approbations.map((c, index) => {
             const initials = getInitials(c.users.prenom, c.users.nom)
@@ -647,14 +639,10 @@ export default function DashboardProprietairePage() {
 
       {/* SECTION : DEMANDES DE RENOUVELLEMENT */}
       {renouvellements.length > 0 && (
-        <div className="section section-with-empty">
-          <div className="section-header">
-            <div className="section-title">
-              <div className="section-icon" style={{ background: '#D1FAE5' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" /></svg>
-              </div>
-              Demandes de renouvellement
-            </div>
+        <div className="dp-card">
+          <div className="dp-card-title">
+            <span className="dp-card-dot" style={{ background: '#10B981' }} />
+            Demandes de renouvellement
           </div>
           {renouvellements.map(demande => {
             const locataire = demande.users || {}
@@ -682,14 +670,10 @@ export default function DashboardProprietairePage() {
 
       {/* SECTION : SUIVI DES PAIEMENTS */}
       {paiements.length > 0 && (
-        <div className="section section-with-empty">
-          <div className="section-header">
-            <div className="section-title">
-              <div className="section-icon" style={{ background: '#FEE2E2' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-              </div>
-              Suivi des paiements
-            </div>
+        <div className="dp-card">
+          <div className="dp-card-title">
+            <span className="dp-card-dot" style={{ background: '#EF4444' }} />
+            Suivi des paiements
           </div>
           {paiements.map(p => {
             const contrat = p.contrats
