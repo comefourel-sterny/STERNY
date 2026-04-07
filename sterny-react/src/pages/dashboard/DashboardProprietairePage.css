@@ -667,22 +667,22 @@
   align-items: stretch;
   background: white;
   border: 1px solid #E8EAF0;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s ease;
-  margin-bottom: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(30, 41, 59, 0.04);
 }
 
 .annonce-card:last-child { margin-bottom: 0; }
 .annonce-card:hover {
-  border-color: rgba(232, 98, 42, 0.3);
-  box-shadow: 0 4px 16px rgba(232, 98, 42, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30, 41, 59, 0.10), 0 0 0 1px rgba(232, 98, 42, 0.15);
+  transform: translateY(-4px);
 }
 
 .annonce-thumb {
-  width: 280px;
-  min-height: 180px;
+  width: 300px;
+  min-height: 200px;
   background: #1E293B;
   display: flex;
   align-items: center;
@@ -692,18 +692,31 @@
   position: relative;
 }
 
+.annonce-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(30, 41, 59, 0.3));
+  pointer-events: none;
+}
+
 .annonce-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.3s ease;
+}
+
+.annonce-card:hover .annonce-thumb img {
+  transform: scale(1.03);
 }
 
 .annonce-thumb-icon svg {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   stroke: #E8622A;
-  opacity: 0.4;
+  opacity: 0.3;
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
@@ -712,38 +725,47 @@
 
 .annonce-body {
   flex: 1;
-  padding: 18px 20px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .annonce-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #1E293B;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
 }
 
 .annonce-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: -2px;
+  gap: 6px;
 }
 
 .annonce-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 10px;
-  background: rgba(232, 98, 42, 0.06);
+  padding: 5px 11px;
+  background: rgba(30, 41, 59, 0.04);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
-  color: #1E293B;
+  color: #475569;
+  letter-spacing: -0.1px;
+}
+
+.annonce-tag:last-child {
+  background: rgba(232, 98, 42, 0.08);
+  color: #E8622A;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: -0.3px;
 }
 
 .annonce-tag svg {
@@ -760,45 +782,57 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 2px;
-  padding-top: 8px;
+  margin-top: 4px;
+  padding-top: 12px;
   border-top: 1px solid #F1F5F9;
 }
 
 .btn-annonce-modifier {
   font-size: 13px;
   font-weight: 600;
-  color: #1E293B;
+  color: white;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 6px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #E8622A;
+  transition: all 0.2s;
+  letter-spacing: -0.1px;
+}
+
+.btn-annonce-modifier svg {
+  stroke: white;
+}
+
+.btn-annonce-modifier:hover {
+  background: #d4571f;
+  color: white;
+}
+
+.btn-annonce-voir {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  text-decoration: none;
+  padding: 7px 14px;
   border: 1px solid #E2E5EA;
   border-radius: 8px;
   background: white;
   transition: all 0.2s;
 }
 
-.btn-annonce-modifier:hover {
-  border-color: #E8622A;
-  color: #E8622A;
+.btn-annonce-voir:hover {
+  border-color: #1E293B;
+  color: #1E293B;
 }
-
-.btn-annonce-voir {
-  font-size: 13px;
-  font-weight: 500;
-  color: #9CA3AF;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.btn-annonce-voir:hover { color: #E8622A; }
 
 .btn-annonce-delete {
-  padding: 4px 10px;
-  border: 1.5px solid #E8EAF0;
-  border-radius: 6px;
+  padding: 7px 12px;
+  border: 1px solid #E8EAF0;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   color: #9CA3AF;
@@ -806,11 +840,13 @@
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s;
+  margin-left: auto;
 }
 
 .btn-annonce-delete:hover {
   border-color: #EF4444;
   color: #EF4444;
+  background: rgba(239, 68, 68, 0.04);
 }
 
 /* LOCATAIRE BLOC */
@@ -2368,7 +2404,7 @@
   .profil-grid { grid-template-columns: 1fr; }
 
   .annonce-card { flex-direction: column; }
-  .annonce-thumb { width: 100%; min-height: 160px; }
+  .annonce-thumb { width: 100%; min-height: 180px; }
 
   .modal-actions { flex-direction: column; }
   .modal-subtitle { padding-left: 0; }

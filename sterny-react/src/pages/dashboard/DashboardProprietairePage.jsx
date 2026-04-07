@@ -562,8 +562,8 @@ export default function DashboardProprietairePage() {
                     <div className="annonce-meta">
                       {a.ville && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>{a.ville}</span>}
                       {a.type_logement && <span className="annonce-tag"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>{a.type_logement}</span>}
-                      {a.surface && <span className="annonce-tag"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>{a.surface} m2</span>}
-                      {a.prix && <span className="annonce-tag">{a.prix}EUR/sem</span>}
+                      {a.surface && <span className="annonce-tag"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" /></svg>{a.surface} m²</span>}
+                      {a.prix && <span className="annonce-tag">{a.prix}€/sem</span>}
                     </div>
                     <div className="annonce-actions">
                       <Link to={`/annonce/modifier?id=${a.id}`} className="btn-annonce-modifier">
