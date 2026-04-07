@@ -665,7 +665,7 @@
 .annonce-thumb {
   width: 150px;
   min-height: 140px;
-  background: #EEF2F7;
+  background: #1E293B;
   border-radius: 0;
   display: flex;
   align-items: center;
@@ -683,8 +683,8 @@
 .annonce-thumb-icon svg {
   width: 36px;
   height: 36px;
-  stroke: white;
-  opacity: 0.3;
+  stroke: #E8622A;
+  opacity: 0.4;
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
@@ -717,18 +717,18 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  background: #F4F5F7;
+  background: rgba(232, 98, 42, 0.06);
   border: none;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1E293B;
 }
 
 .annonce-tag svg {
-  width: 13px;
-  height: 13px;
-  stroke: #9CA3AF;
+  width: 12px;
+  height: 12px;
+  stroke: #E8622A;
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
@@ -796,11 +796,18 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #F1F5F9;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #F1F5F9;
   transition: all 0.2s;
   cursor: pointer;
+}
+
+.locataire-bloc:hover {
+  border-color: rgba(232, 98, 42, 0.2);
+  background: rgba(232, 98, 42, 0.03);
 }
 
 .locataire-bloc .loc-avatar {
@@ -858,13 +865,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 16px 0;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #F1F5F9;
-  border-radius: 0;
-  margin-bottom: 0;
+  padding: 12px;
+  background: #F8FAFC;
+  border: 1px solid #F1F5F9;
+  border-radius: 12px;
+  margin-bottom: 8px;
   cursor: pointer;
+  transition: all 0.2s;
   transition: all 0.15s;
 }
 
@@ -874,9 +881,8 @@
 }
 
 .candidature-bloc:hover {
-  background: #FAFBFC;
-  margin: 0 -12px;
-  padding: 16px 12px;
+  border-color: rgba(232, 98, 42, 0.2);
+  background: rgba(232, 98, 42, 0.03);
   border-radius: 10px;
 }
 
@@ -1121,15 +1127,21 @@
 /* RENOUVELLEMENT CARDS */
 .renouv-card {
   background: #F8FAFC;
-  border-radius: 14px;
-  padding: 18px 20px;
-  margin-bottom: 12px;
+  border: 1px solid #F1F5F9;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 14px;
+  transition: all 0.2s;
 }
 
-.renouv-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.renouv-card:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.03);
+}
 
 .renouv-avatar {
   width: 48px;
@@ -1194,12 +1206,18 @@
 .paiement-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
-  padding: 16px 20px;
-  background: #fff;
-  border: 1px solid #FEE2E2;
+  padding: 12px;
+  background: #FFFBFA;
+  border: 1px solid rgba(239, 68, 68, 0.15);
   border-radius: 12px;
   margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.paiement-card:hover {
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .paiement-avatar {
