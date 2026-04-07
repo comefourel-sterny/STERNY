@@ -481,7 +481,7 @@ export default function DashboardProprietairePage() {
     <div className="dashboard-proprio-container">
       {/* HEADER */}
       <div className="page-header">
-        <h1>Bonjour {userData?.prenom || '...'}</h1>
+        <h1>Bonjour <span className="dp-prenom">{userData?.prenom || '...'}</span></h1>
         <p>Gerez votre logement et vos locataires</p>
         {annonces.length > 0 && firstVille && (
           <div className="ville-header-row">

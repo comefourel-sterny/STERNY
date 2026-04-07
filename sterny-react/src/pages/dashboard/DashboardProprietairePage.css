@@ -21,6 +21,13 @@
   text-transform: none;
 }
 
+.dp-prenom {
+  text-decoration: underline;
+  text-decoration-color: #E8622A;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 3px;
+}
+
 .dashboard-proprio-container .page-header p {
   font-size: 14px;
   color: #94A3B8;
