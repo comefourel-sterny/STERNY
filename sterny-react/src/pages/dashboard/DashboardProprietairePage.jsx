@@ -272,10 +272,10 @@ export default function DashboardProprietairePage() {
     try {
       const { data } = await supabaseClient
         .from('paiements_loyer')
-        .select('*, contrats(id, annonces(titre, ville), users!contrats_locataire_id_fkey(prenom, nom))')
+        .select('*, contrats!inner(id, proprietaire_id, annonces(titre, ville), users!contrats_locataire_id_fkey(prenom, nom))')
+        .eq('contrats.proprietaire_id', userId)
         .order('mois', { ascending: false })
-      const mes = (data || []).filter(p => p.contrats && p.signale_par === userId)
-      setAllPaiements(mes)
+      setAllPaiements(data || [])
     } catch (e) { console.error('Erreur paiements historique:', e) }
   }
 
