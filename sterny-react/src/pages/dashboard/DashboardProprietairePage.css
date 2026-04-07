@@ -58,21 +58,30 @@
 }
 
 .dp-card-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1E293B;
+  font-size: 15px;
+  font-weight: 300;
+  color: #E8622A;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 16px;
-  letter-spacing: -0.2px;
 }
 
-.dp-card-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.dp-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.dp-card-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Legacy .section support (messages overlay etc.) */

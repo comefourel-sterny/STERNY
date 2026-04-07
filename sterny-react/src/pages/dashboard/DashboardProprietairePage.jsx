@@ -499,7 +499,9 @@ export default function DashboardProprietairePage() {
       {/* SECTION : MON ANNONCE */}
       <div className="dp-card">
         <div className="dp-card-title">
-          <span className="dp-card-dot" style={{ background: '#E8622A' }} />
+          <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+          </span>
           {annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}
         </div>
 
@@ -597,7 +599,9 @@ export default function DashboardProprietairePage() {
       {approbations.length > 0 && (
         <div className="dp-card">
           <div className="dp-card-title">
-            <span className="dp-card-dot" style={{ background: '#3B82F6' }} />
+            <span className="dp-card-icon" style={{ background: '#DBEAFE' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" /></svg>
+            </span>
             Profils en attente
           </div>
           {approbations.map((c, index) => {
@@ -641,7 +645,9 @@ export default function DashboardProprietairePage() {
       {renouvellements.length > 0 && (
         <div className="dp-card">
           <div className="dp-card-title">
-            <span className="dp-card-dot" style={{ background: '#10B981' }} />
+            <span className="dp-card-icon" style={{ background: '#D1FAE5' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            </span>
             Demandes de renouvellement
           </div>
           {renouvellements.map(demande => {
@@ -672,7 +678,9 @@ export default function DashboardProprietairePage() {
       {paiements.length > 0 && (
         <div className="dp-card">
           <div className="dp-card-title">
-            <span className="dp-card-dot" style={{ background: '#EF4444' }} />
+            <span className="dp-card-icon" style={{ background: '#FEE2E2' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+            </span>
             Suivi des paiements
           </div>
           {paiements.map(p => {
