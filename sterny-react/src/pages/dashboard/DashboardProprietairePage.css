@@ -667,7 +667,7 @@
   align-items: stretch;
   background: white;
   border: 1px solid #E8EAF0;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-bottom: 16px;
@@ -681,26 +681,17 @@
 }
 
 .annonce-thumb {
-  width: 220px;
-  min-width: 220px;
+  width: 240px;
+  min-width: 240px;
   background: #1E293B;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
 }
 
-.annonce-thumb::after {
-  content: '';
+.annonce-thumb img {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 60%, rgba(30, 41, 59, 0.3));
-  pointer-events: none;
-}
-
-.annonce-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -710,6 +701,14 @@
 
 .annonce-card:hover .annonce-thumb img {
   transform: scale(1.03);
+}
+
+.annonce-thumb-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .annonce-thumb-icon svg {
@@ -725,15 +724,15 @@
 
 .annonce-body {
   flex: 1;
-  padding: 22px 24px;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .annonce-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #1E293B;
   letter-spacing: -0.3px;
@@ -750,14 +749,13 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 11px;
-  background: rgba(30, 41, 59, 0.04);
+  padding: 4px 10px;
+  background: #F4F5F7;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   color: #475569;
-  letter-spacing: -0.1px;
 }
 
 .annonce-tag:last-child {
@@ -781,9 +779,9 @@
 .annonce-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-top: 4px;
-  padding-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid #F1F5F9;
 }
 
@@ -800,7 +798,6 @@
   border-radius: 8px;
   background: #E8622A;
   transition: all 0.2s;
-  letter-spacing: -0.1px;
 }
 
 .btn-annonce-modifier svg {
@@ -826,7 +823,6 @@
 
 .btn-annonce-voir:hover {
   border-color: #1E293B;
-  color: #1E293B;
 }
 
 .btn-annonce-delete {
@@ -2404,7 +2400,7 @@
   .profil-grid { grid-template-columns: 1fr; }
 
   .annonce-card { flex-direction: column; }
-  .annonce-thumb { width: 100%; min-height: 180px; }
+  .annonce-thumb { width: 100%; min-width: 100%; height: 180px; }
 
   .modal-actions { flex-direction: column; }
   .modal-subtitle { padding-left: 0; }
