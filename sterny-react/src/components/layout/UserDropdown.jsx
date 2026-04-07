@@ -78,30 +78,50 @@ export default function UserDropdown() {
   ]
 
   const locataireItems = [
+    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/locataire' },
     { icon: <IconSearch />, label: 'Rechercher un logement', to: '/recherche' },
+    { icon: <IconClipboard />, label: 'Mes demandes de coloc', to: '/dashboard/locataire' },
+    { icon: <IconCalendar />, label: 'Mon rythme d\'alternance', to: '/dashboard/locataire' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
+    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
     'separator',
-    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/comment-ca-marche' },
     { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
   const proprietaireItems = [
+    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/proprietaire' },
+    { icon: <IconHome />, label: 'Mon logement partage', to: '/dashboard/proprietaire' },
+    { icon: <IconHeart />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
+    { icon: <IconEuro />, label: 'Mes revenus', to: '/dashboard/proprietaire' },
     { icon: <IconMessage />, label: 'Messages', to: '/messages' },
     'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
+    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
     'separator',
-    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/comment-ca-marche' },
+    { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
+  ]
+
+  const hoteItems = [
+    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/hote' },
+    { icon: <IconHome />, label: 'Mon annonce', to: '/dashboard/hote' },
+    { icon: <IconClipboard />, label: 'Mes candidatures', to: '/dashboard/hote' },
+    { icon: <IconMessage />, label: 'Messages', to: '/messages' },
+    'separator',
+    { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
+    { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
+    { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
+    'separator',
     { icon: <IconLogout />, label: 'Deconnexion', action: handleSignOut }
   ]
 
   const menuItems = user
-    ? (userRole === 'proprietaire' ? proprietaireItems : locataireItems)
+    ? (userRole === 'proprietaire' ? proprietaireItems : userRole === 'hote' ? hoteItems : locataireItems)
     : visitorItems
-  const roleLabel = userRole === 'proprietaire' ? 'Proprietaire' : 'Locataire'
+  const roleLabel = userRole === 'proprietaire' ? 'Proprietaire' : userRole === 'hote' ? 'Hote' : 'Locataire'
 
   const renderItems = (items) => items.map((item, i) => {
     if (item === 'separator') {
