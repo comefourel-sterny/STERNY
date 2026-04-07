@@ -6,12 +6,12 @@
     padding: 48px 24px 20px;
 }
 
-.page-header {
+.dashboard-container .page-header {
     text-align: center;
     margin-bottom: 48px;
 }
 
-.page-header h1 {
+.dashboard-container .page-header h1 {
     font-size: 18px;
     font-weight: 300;
     letter-spacing: 3px;
@@ -20,7 +20,7 @@
     margin-bottom: 8px;
 }
 
-.page-header p {
+.dashboard-container .page-header p {
     font-size: 16px;
     color: #64748B;
     max-width: 500px;
