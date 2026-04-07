@@ -139,7 +139,7 @@ export default function DashboardLocatairePage() {
         // Load all data
         await Promise.all([
           loadLocations(authUser.id),
-          loadAlertes(authUser.id, uData.email),
+          loadAlertes(authUser.id),
           loadFavoris(authUser.id),
           loadMesCandidatures(authUser.id),
           loadMessages(authUser.id),
@@ -182,17 +182,13 @@ export default function DashboardLocatairePage() {
   }
 
   // === ALERTES ===
-  async function loadAlertes(userId, userEmail) {
+  async function loadAlertes(userId) {
     try {
-      let data = null
-      if (userEmail) {
-        const res = await supabaseClient.from('alertes').select('*').eq('email', userEmail).order('created_at', { ascending: false })
-        data = res.data
-      }
-      if ((!data || data.length === 0) && userId) {
-        const res = await supabaseClient.from('alertes').select('*').eq('user_id', userId).order('created_at', { ascending: false })
-        if (res.data && res.data.length > 0) data = res.data
-      }
+      const { data } = await supabaseClient
+        .from('alertes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
       if (data && data.length > 0) {
         setAlertes(data)
       }
@@ -522,7 +518,7 @@ export default function DashboardLocatairePage() {
       }
       setTimeout(() => {
         setShowAlerteModal(false)
-        loadAlertes(currentUserId, userData?.email)
+        loadAlertes(currentUserId)
       }, 2000)
     } catch (error) {
       console.error('Erreur:', error)
