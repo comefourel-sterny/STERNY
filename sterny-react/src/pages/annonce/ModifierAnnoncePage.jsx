@@ -1536,7 +1536,7 @@ export default function ModifierAnnoncePage() {
           const { error: uploadError } = await supabaseClient.storage.from('annonces-photos').upload(fileName, photo.file, { contentType: 'image/jpeg', upsert: true })
           if (!uploadError) {
             const { data: urlData } = supabaseClient.storage.from('annonces-photos').getPublicUrl(fileName)
-            if (urlData?.publicUrl) photoUrls.push(urlData.publicUrl)
+            if (urlData?.publicUrl) photoUrls.push(urlData.publicUrl + '?v=' + Date.now())
           } else {
             console.error('Erreur upload photo ' + i + ':', JSON.stringify(uploadError))
           }
