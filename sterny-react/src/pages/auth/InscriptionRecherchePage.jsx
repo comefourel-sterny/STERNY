@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './InscriptionRecherchePage.css'
 
@@ -165,6 +165,8 @@ function VilleAutocomplete({ value, onChange, onSelect, placeholder, suggestions
 
 export default function InscriptionRecherchePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isLesDeux = location.state?.type === 'les_deux'
   const totalSteps = 4
   const [currentStep, setCurrentStep] = useState(1)
   const [errorMsg, setErrorMsg] = useState('')
@@ -317,7 +319,7 @@ export default function InscriptionRecherchePage() {
         prenom: prenom.trim(),
         email: email.trim(),
         telephone: telephone.trim(),
-        type_user: 'locataire',
+        type_user: isLesDeux ? 'les_deux' : 'locataire',
         type_alternance: typeAlternance,
         rythme_alternance: rythmeAlternance,
         a_logement: isHote

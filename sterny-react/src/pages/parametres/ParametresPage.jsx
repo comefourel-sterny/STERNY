@@ -39,7 +39,7 @@ export default function ParametresPage() {
 
   const initials = getInitials(userData.prenom, userData.nom)
   const editPath = userData.type_user === 'proprietaire' ? '/profil/modifier-proprietaire' : '/profil/modifier'
-  const roleLabel = userData.type_user === 'proprietaire' ? 'Proprietaire' : 'Locataire'
+  const roleLabel = userData.type_user === 'proprietaire' ? 'Proprietaire' : userData.type_user === 'hote' ? 'Hote' : userData.type_user === 'les_deux' ? 'Locataire & Hote' : 'Locataire'
 
   return (
     <div className="parametres-container">

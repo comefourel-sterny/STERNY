@@ -69,6 +69,8 @@ export default function ConnexionPage() {
           navigate('/dashboard/admin')
         } else if (userData.type_user === 'proprietaire') {
           navigate('/dashboard/proprietaire')
+        } else if (userData.type_user === 'hote') {
+          navigate('/dashboard/hote')
         } else {
           navigate('/dashboard/locataire')
         }
