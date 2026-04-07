@@ -27,6 +27,39 @@
     margin: 0 auto;
 }
 
+.btn-messages-header {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid #E8EAF0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748B;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-messages-header:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+    background: rgba(232, 98, 42, 0.04);
+}
+
+.btn-messages-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #E8622A;
+    border: 2px solid white;
+}
+
 /* SECTIONS */
 .section {
     background: white;
