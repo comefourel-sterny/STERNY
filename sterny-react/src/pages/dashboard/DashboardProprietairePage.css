@@ -682,7 +682,7 @@
 
 .annonce-thumb {
   width: 300px;
-  min-height: 200px;
+  aspect-ratio: 16/10;
   background: #1E293B;
   display: flex;
   align-items: center;
@@ -690,6 +690,7 @@
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
+  align-self: center;
 }
 
 .annonce-thumb::after {
