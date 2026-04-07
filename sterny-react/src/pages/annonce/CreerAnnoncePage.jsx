@@ -311,7 +311,7 @@ export default function CreerAnnoncePage() {
   const [userType, setUserType] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showUserTypeScreen, setShowUserTypeScreen] = useState(false)
-  const [showMainForm, setShowMainForm] = useState(true) // TODO: remettre false
+  const [showMainForm, setShowMainForm] = useState(false)
   const [selectedUserType, setSelectedUserType] = useState(null)
 
   // --- Step 1: Basic info ---
@@ -1429,25 +1429,27 @@ export default function CreerAnnoncePage() {
       // Upload photos
       if (uploadedPhotos.length > 0) {
         setPublishBtnText('Upload des photos...')
-        const photoUrls = []
-        for (let i = 0; i < uploadedPhotos.length; i++) {
-          const photo = uploadedPhotos[i]
-          const fileName = `${currentUser.id}/${annonceId}/photo_${i}.jpg`
-          try {
-            const { error: uploadError } = await supabaseClient.storage.from('annonces-photos').upload(fileName, photo.file, { contentType: 'image/jpeg', upsert: true })
-            if (!uploadError) {
-              const { data: urlData } = supabaseClient.storage.from('annonces-photos').getPublicUrl(fileName)
-              if (urlData?.publicUrl) photoUrls.push(urlData.publicUrl + '?v=' + Date.now())
-            }
-          } catch (e) { console.error('Exception upload photo:', e) }
-        }
+        const uploadResults = await Promise.all(
+          uploadedPhotos.map(async (photo, i) => {
+            const fileName = `${currentUser.id}/${annonceId}/photo_${i}.jpg`
+            try {
+              const { error: uploadError } = await supabaseClient.storage.from('annonces-photos').upload(fileName, photo.file, { contentType: 'image/jpeg', upsert: true })
+              if (!uploadError) {
+                const { data: urlData } = supabaseClient.storage.from('annonces-photos').getPublicUrl(fileName)
+                if (urlData?.publicUrl) return urlData.publicUrl + '?v=' + Date.now()
+              }
+            } catch (e) { console.error('Exception upload photo:', e) }
+            return null
+          })
+        )
+        const photoUrls = uploadResults.filter(Boolean)
         if (photoUrls.length > 0) {
           await supabaseClient.from('annonces').update({ photos: photoUrls }).eq('id', annonceId)
         }
       }
 
       showNotificationFn('Annonce publiée !', 'Ton annonce a été publiée avec succès !', 'success')
-      setTimeout(() => navigate('/dashboard/locataire'), 2500)
+      navigate('/dashboard/locataire')
     } catch (error) {
       console.error('Erreur:', error)
       showNotificationFn('Erreur', 'Erreur lors de la publication : ' + error.message, 'error')
