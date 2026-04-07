@@ -284,9 +284,9 @@ export default function DashboardProprietairePage() {
     if (!window.confirm('Supprimer cette annonce ? Cette action est irreversible.')) return
     try {
       await supabaseClient.from('candidatures').delete().eq('annonce_id', annonceId)
-      const { error } = await supabaseClient.from('annonces').delete().eq('id', annonceId).eq('proprietaire_id', userData.id)
+      const { error } = await supabaseClient.from('annonces').delete().eq('id', annonceId).eq('user_id', userData.id)
       if (error) throw error
-      window.location.reload()
+      setAnnonces(prev => prev.filter(a => a.id !== annonceId))
     } catch (e) {
       console.error('Erreur suppression annonce:', e)
       alert("Erreur lors de la suppression de l'annonce.")
@@ -302,7 +302,7 @@ export default function DashboardProprietairePage() {
         .eq('id', candidatureId)
       if (error) { alert("Erreur lors de l'approbation"); return }
       showToast('success', 'Profil approuve ! Le locataire pourra proceder au paiement.')
-      window.location.reload()
+      setApprobations(prev => prev.map(c => c.id === candidatureId ? { ...c, approbation_proprietaire: 'approuve' } : c))
     } catch (err) {
       alert("Erreur lors de l'approbation")
     }
@@ -317,7 +317,7 @@ export default function DashboardProprietairePage() {
         .eq('id', candidatureId)
       if (error) { alert('Erreur lors du rejet'); return }
       showToast('success', 'Profil rejete.')
-      window.location.reload()
+      setApprobations(prev => prev.map(c => c.id === candidatureId ? { ...c, approbation_proprietaire: 'rejete' } : c))
     } catch (err) {
       alert('Erreur lors du rejet')
     }
