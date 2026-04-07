@@ -600,9 +600,9 @@
 
 /* BOUTONS */
 .dashboard-proprio-container .btn {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 14px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -681,8 +681,8 @@
 }
 
 .annonce-thumb {
-  width: 220px;
-  min-height: 170px;
+  width: 200px;
+  aspect-ratio: 4/3;
   background: #1E293B;
   display: flex;
   align-items: center;
@@ -696,8 +696,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
-  inset: 0;
+  display: block;
 }
 
 .annonce-thumb-icon svg {
@@ -910,6 +909,10 @@
   border-radius: 10px;
 }
 
+.candidature-bloc:hover .cand-name {
+  color: #E8622A;
+}
+
 .candidature-bloc .cand-avatar {
   width: 40px;
   height: 40px;
@@ -960,42 +963,43 @@
 .btn-approuver {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 0;
   color: #059669;
-  background: white;
-  border: 1px solid #D1FAE5;
-  border-radius: 8px;
+  background: #D1FAE5;
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-approuver:hover {
-  background: #ECFDF5;
-  border-color: #059669;
+  background: #059669;
+  color: white;
+  transform: scale(1.1);
 }
 
 .btn-rejeter {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #9CA3AF;
-  background: white;
-  border: 1px solid #E2E5EA;
-  border-radius: 8px;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 0;
+  color: #94A3B8;
+  background: #F1F5F9;
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-rejeter:hover {
-  color: #DC2626;
-  border-color: #FECACA;
-  background: #FEF2F2;
+  background: #EF4444;
+  color: white;
+  transform: scale(1.1);
 }
 
 .status-badge {
