@@ -681,8 +681,8 @@
 }
 
 .annonce-thumb {
-  width: 180px;
-  min-height: 160px;
+  width: 220px;
+  min-height: 170px;
   background: #1E293B;
   display: flex;
   align-items: center;
@@ -730,7 +730,8 @@
 .annonce-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
+  margin-top: -2px;
 }
 
 .annonce-tag {
@@ -759,8 +760,10 @@
 .annonce-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px solid #F1F5F9;
 }
 
 .btn-annonce-modifier {

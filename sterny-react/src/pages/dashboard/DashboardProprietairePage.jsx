@@ -582,7 +582,7 @@ export default function DashboardProprietairePage() {
                     <span className="profile-link" onClick={(e) => e.stopPropagation()}>
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
-                        <div className="loc-label">Locataire</div>
+                        <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
                         <div className="loc-name">{currentLocataireData.prenom} {currentLocataireData.nom}</div>
                       </div>
                     </span>
@@ -605,7 +605,7 @@ export default function DashboardProprietairePage() {
                   <span className="profile-link">
                     <div className="loc-avatar">{getInitials(loc.prenom, loc.nom)}</div>
                     <div className="loc-info">
-                      <div className="loc-label">Locataire &middot; <span className={`la-countdown ${countdown.cls}`} style={{ fontSize: '10px', padding: '2px 8px' }}>{countdown.text}</span></div>
+                      <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Bail signe</span> &middot; <span className={`la-countdown ${countdown.cls}`} style={{ fontSize: '10px', padding: '2px 8px' }}>{countdown.text}</span></div>
                       <div className="loc-name">{loc.prenom} {loc.nom}</div>
                     </div>
                   </span>
@@ -748,7 +748,8 @@ export default function DashboardProprietairePage() {
       )}
 
 
-      {/* SECTION : CALENDRIER D'OCCUPATION */}
+      {/* SECTION : CALENDRIER D'OCCUPATION — uniquement si contrats existent */}
+      {allContrats.length > 0 && (
       <div className="dp-card">
         <div className="dp-card-title dp-card-toggle" onClick={() => setShowCalendar(!showCalendar)}>
           <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
@@ -804,8 +805,10 @@ export default function DashboardProprietairePage() {
           </div>
         )}
       </div>
+      )}
 
-      {/* SECTION : DOCUMENTS */}
+      {/* SECTION : DOCUMENTS — uniquement si contrats existent */}
+      {allContrats.length > 0 && (
       <div className="dp-card">
         <div className="dp-card-title dp-card-toggle" onClick={() => setShowDocuments(!showDocuments)}>
           <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
@@ -872,6 +875,7 @@ export default function DashboardProprietairePage() {
           </div>
         )}
       </div>
+      )}
 
       {/* OVERLAY MESSAGES */}
       {showMessagesOverlay && (
