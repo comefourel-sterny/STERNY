@@ -14,13 +14,13 @@
     animation: fadeIn 0.4s ease !important;
 }
 
-.page-header h1 {
-    font-size: 18px !important;
-    font-weight: 300 !important;
-    color: #E8622A !important;
-    margin-bottom: 0 !important;
-    letter-spacing: 3px !important;
-    text-transform: uppercase !important;
+.create-container .page-header h1 {
+    font-size: 18px;
+    font-weight: 300;
+    color: #E8622A;
+    margin-bottom: 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
 .page-header p {
