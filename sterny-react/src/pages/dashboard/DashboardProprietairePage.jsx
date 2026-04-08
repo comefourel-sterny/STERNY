@@ -30,6 +30,7 @@ export default function DashboardProprietairePage() {
   const [paiements, setPaiements] = useState([])
   // UI state
   const [showMessagesOverlay, setShowMessagesOverlay] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const [showLocataireOverlay, setShowLocataireOverlay] = useState(false)
   const [showCandidatureOverlay, setShowCandidatureOverlay] = useState(false)
@@ -96,6 +97,7 @@ export default function DashboardProprietairePage() {
           chargerPaiements(authUser.id),
           chargerTousContrats(authUser.id),
           chargerTousPaiements(authUser.id),
+          supabaseClient.from('messages').select('*', { count: 'exact', head: true }).eq('destinataire_id', authUser.id).eq('lu', false).then(({ count }) => setUnreadCount(count || 0)),
         ])
       }
     } catch (error) {
@@ -384,8 +386,21 @@ export default function DashboardProprietairePage() {
     <div className="dashboard-proprio-container">
       {/* HEADER */}
       <div className="page-header">
-        <h1>Bonjour <span className="dp-prenom">{userData?.prenom || '...'}</span></h1>
-        <p>Gerez votre logement et vos locataires</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1>Bonjour <span className="dp-prenom">{userData?.prenom || '...'}</span></h1>
+            <p>Gerez votre logement et vos locataires</p>
+          </div>
+          <button onClick={() => setShowMessagesOverlay(true)} style={{ position: 'relative', background: 'white', border: '1px solid #E8EAF0', borderRadius: '12px', padding: '10px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '500', color: '#1E293B', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+            Messages
+            {unreadCount > 0 && (
+              <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#E8622A', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #F4F5F7' }}>
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
         {annonces.length > 0 && firstVille && (
           <div className="ville-header-row">
             <div className="ville-header-badge">
