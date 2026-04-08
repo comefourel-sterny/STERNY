@@ -520,6 +520,17 @@ export default function DashboardLocatairePage() {
 
     setRelationStatus('sending')
     try {
+      await supabaseClient.from('users').update({ email_proprietaire: email }).eq('id', currentUserId)
+
+      await supabaseClient.functions.invoke('send-proprietaire-invitation', {
+        body: {
+          proprietaire_email: email,
+          alternant_prenom: userData?.prenom || '',
+          alternant_nom: userData?.nom || '',
+          invitation_token: userData?.invitation_token || referralCode
+        }
+      })
+
       await supabaseClient.from('mises_en_relation').insert({
         user_id: currentUserId,
         email_proprietaire: email,
@@ -528,6 +539,7 @@ export default function DashboardLocatairePage() {
         ville: userData?.ville_ecole || '',
         statut: 'en_attente'
       })
+
       setRelationStatus('success')
       setTimeout(() => {
         setRelationStatus('pending')
