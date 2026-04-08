@@ -123,7 +123,7 @@ export default function DashboardLocatairePage() {
 
       if (uData) {
         setUserData(uData)
-        const lesDeux = uData.statut_ville_ecole === 'hote' && uData.statut_ville_entreprise === 'recherche'
+        const lesDeux = uData.type_user === 'les_deux' || (uData.statut_ville_ecole === 'hote' && uData.statut_ville_entreprise === 'recherche')
         setIsLesDeux(lesDeux)
 
         if (uData.invitation_token) {
