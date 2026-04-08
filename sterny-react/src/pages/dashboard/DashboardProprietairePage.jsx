@@ -501,9 +501,6 @@ export default function DashboardProprietairePage() {
                 </div>
               )
             })}
-            <Link to="/annonce/creer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'white', border: '1.5px solid #E8EAF0', borderRadius: '12px', color: '#1E293B', fontSize: '14px', fontWeight: '500', textDecoration: 'none', marginTop: '16px' }}>
-              + Ajouter une annonce
-            </Link>
           </div>
         )}
       </div>

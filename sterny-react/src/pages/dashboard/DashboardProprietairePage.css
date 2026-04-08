@@ -664,12 +664,11 @@
 /* ANNONCE CARD */
 .annonce-card {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: stretch;
   background: white;
   border: 1px solid #E8EAF0;
   border-radius: 12px;
-  padding: 16px;
+  overflow: hidden;
   margin-bottom: 12px;
   transition: box-shadow 0.2s ease;
 }
@@ -682,11 +681,10 @@
 .annonce-thumb {
   width: 120px;
   min-width: 120px;
-  height: 90px;
-  border-radius: 12px;
   background: #F4F5F7;
   flex-shrink: 0;
   overflow: hidden;
+  border-right: 1px solid #E8EAF0;
 }
 
 .annonce-thumb img {
@@ -722,6 +720,7 @@
   flex-direction: column;
   gap: 8px;
   min-width: 0;
+  padding: 14px 16px;
 }
 
 .annonce-title {
@@ -791,7 +790,8 @@
   transition: background 0.15s;
 }
 
-.btn-annonce-modifier svg {
+.btn-annonce-modifier svg,
+.btn-annonce-modifier svg path {
   stroke: white;
 }
 
