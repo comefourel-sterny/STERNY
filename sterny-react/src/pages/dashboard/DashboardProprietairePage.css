@@ -675,23 +675,26 @@
 .dashboard-proprio-container .annonce-card:last-child { margin-bottom: 0; }
 
 .dashboard-proprio-container .annonce-thumb {
-  width: 110px;
-  min-width: 110px;
-  min-height: auto;
-  flex-shrink: 0;
-  border-radius: 0;
-  overflow: hidden;
-  background: #F4F5F7;
-  display: block;
+  width: 110px !important;
+  min-width: 110px !important;
+  aspect-ratio: 1/1;
+  min-height: unset !important;
+  max-height: 110px;
+  flex-shrink: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: #F4F5F7 !important;
+  display: block !important;
+  align-self: center;
 }
 
 .dashboard-proprio-container .annonce-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  border-radius: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  border-radius: 0 !important;
 }
 
 .dashboard-proprio-container .annonce-thumb-icon {
