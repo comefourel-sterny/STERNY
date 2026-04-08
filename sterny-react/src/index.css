@@ -561,16 +561,23 @@ footer a:hover {
 }
 
 .ud-avatar-messages {
-    background: white;
-    border: 1.5px solid #E8622A;
+    background: none;
+    border: 1.5px solid #E2E8F0;
 }
 
 .ud-avatar-messages svg {
-    stroke: #E8622A;
+    stroke: #64748B;
 }
 
 .ud-avatar-messages:hover {
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
+    border-color: #E8622A;
+    background: rgba(232, 98, 42, 0.04);
+    box-shadow: none;
+    transform: scale(1.04);
+}
+
+.ud-avatar-messages:hover svg {
+    stroke: #E8622A;
 }
 
 /* Menu button (logged out) */
