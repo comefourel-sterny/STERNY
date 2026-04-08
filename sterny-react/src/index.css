@@ -584,7 +584,7 @@ footer a:hover {
 .ud-notif-badge {
     position: absolute;
     top: -4px;
-    right: -4px;
+    right: -6px;
     width: 18px;
     height: 18px;
     border-radius: 50%;
