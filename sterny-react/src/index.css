@@ -561,16 +561,16 @@ footer a:hover {
 }
 
 .ud-avatar-messages {
-    background: #E8622A;
-    color: white !important;
+    background: white;
+    border: 2px solid #E8622A;
 }
 
 .ud-avatar-messages svg {
-    stroke: white;
+    stroke: #E8622A;
 }
 
 .ud-avatar-messages:hover {
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.25);
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
 }
 
 /* Menu button (logged out) */
