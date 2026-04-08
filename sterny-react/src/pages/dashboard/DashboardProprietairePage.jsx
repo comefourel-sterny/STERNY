@@ -254,6 +254,7 @@ export default function DashboardProprietairePage() {
       if (error) { alert("Erreur lors de l'approbation"); return }
       showToast('success', 'Profil approuve ! Le locataire pourra proceder au paiement.')
       setApprobations(prev => prev.map(c => c.id === candidatureId ? { ...c, approbation_proprietaire: 'approuve' } : c))
+      navigate(`/match-confirmation?match_id=${candidatureId}`)
     } catch (err) {
       alert("Erreur lors de l'approbation")
     }
