@@ -61,9 +61,11 @@ nav .container {
 .nav-grid {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     height: 85px;
     padding: 0 40px;
+    position: relative;
 }
 
 .nav-left {
@@ -73,7 +75,9 @@ nav .container {
 }
 
 .nav-center {
-    flex: 1;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
 }
