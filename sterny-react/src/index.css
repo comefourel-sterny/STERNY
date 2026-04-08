@@ -590,14 +590,17 @@ footer a:hover {
     border-radius: 50%;
     background: #E8622A;
     color: white;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid white;
-    line-height: 1;
-    padding: 0 2px;
+    line-height: 18px;
+    padding: 0;
+    text-align: center;
+    box-sizing: border-box;
+    font-family: 'DM Sans', sans-serif;
 }
 
 /* Menu button (logged out) */
