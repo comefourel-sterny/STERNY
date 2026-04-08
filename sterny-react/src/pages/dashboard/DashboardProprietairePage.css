@@ -685,6 +685,7 @@
   flex-shrink: 0;
   overflow: hidden;
   border-right: 1px solid #E8EAF0;
+  border-radius: 12px 0 0 12px;
 }
 
 .annonce-thumb img {
@@ -769,67 +770,32 @@
 .annonce-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
   margin-top: 2px;
 }
 
-.btn-annonce-modifier {
-  font-size: 13px;
-  font-weight: 500;
-  color: white;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 8px;
-  background: #E8622A;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-annonce-modifier svg,
-.btn-annonce-modifier svg path {
-  stroke: white;
-}
-
-.btn-annonce-modifier:hover {
-  background: #d4571f;
-  color: white;
-}
-
-.btn-annonce-voir {
-  font-size: 13px;
-  font-weight: 500;
-  color: #1E293B;
-  text-decoration: none;
-  padding: 6px 14px;
-  border: 1.5px solid #E8EAF0;
-  border-radius: 8px;
-  background: white;
-  transition: border-color 0.15s;
-}
-
-.btn-annonce-voir:hover {
-  border-color: #1E293B;
-}
-
-.btn-annonce-delete {
-  padding: 6px 8px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
+.btn-annonce-action {
+  font-size: 12px;
   font-weight: 500;
   color: #94A3B8;
+  text-decoration: none;
+  padding: 2px 6px;
+  border: none;
+  background: transparent;
   cursor: pointer;
   font-family: inherit;
   transition: color 0.15s;
+}
+
+.btn-annonce-action:hover {
+  color: #E8622A;
+}
+
+.btn-annonce-action-delete {
   margin-left: auto;
 }
 
-.btn-annonce-delete:hover {
+.btn-annonce-action-delete:hover {
   color: #EF4444;
 }
 
