@@ -186,6 +186,7 @@ export default function UserDropdown() {
       {isDashboard ? (
         <button className="ud-avatar ud-avatar-messages" onClick={() => navigate('/messages')} aria-label="Messages">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span className="ud-notif-badge">3</span>
         </button>
       ) : (
         <Link to={dashboardPath} className="ud-avatar" aria-label="Mon espace">
