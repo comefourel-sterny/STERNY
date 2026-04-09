@@ -554,7 +554,7 @@ export default function DashboardProprietairePage() {
             const dejaRejete = c.approbation_proprietaire === 'rejete'
 
             return (
-              <div key={c.id} className="candidature-bloc" onClick={() => { console.log('CANDIDATURE CLICK', index, c, c.users); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+              <div key={c.id} className="candidature-bloc" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                 <span className="profile-link" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                   <div className="cand-avatar">{avatarContent}</div>
                   <div className="cand-info">
@@ -924,7 +924,8 @@ export default function DashboardProprietairePage() {
           </div>
         </div>,
         document.body
-    )}
+      )
+    })()}
 
     {showApproveModal && createPortal(
       <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
