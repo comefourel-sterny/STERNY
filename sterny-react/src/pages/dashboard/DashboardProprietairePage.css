@@ -677,15 +677,13 @@
 .dashboard-proprio-container .annonce-thumb {
   width: 110px !important;
   min-width: 110px !important;
-  aspect-ratio: 1/1;
   min-height: unset !important;
-  max-height: 110px;
   flex-shrink: 0 !important;
   border-radius: 0 !important;
   overflow: hidden !important;
   background: #F4F5F7 !important;
   display: block !important;
-  align-self: center;
+  align-self: stretch;
 }
 
 .dashboard-proprio-container .annonce-thumb img {
@@ -896,7 +894,8 @@
   border-radius: 10px;
 }
 
-.candidature-bloc:hover .cand-name {
+.candidature-bloc:hover .cand-name,
+.candidature-bloc:hover .cand-subtitle {
   color: #E8622A;
 }
 
@@ -954,17 +953,24 @@
   width: 34px;
   height: 34px;
   font-size: 0;
-  color: #059669;
-  background: #D1FAE5;
-  border: none;
+  color: #94A3B8;
+  background: transparent;
+  border: 1.5px solid #E2E8F0;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.15s;
 }
 
+.candidature-bloc:hover .btn-approuver {
+  color: #059669;
+  border-color: #059669;
+  background: rgba(5, 150, 105, 0.06);
+}
+
 .btn-approuver:hover {
-  background: #059669;
-  color: white;
+  background: #059669 !important;
+  color: white !important;
+  border-color: #059669 !important;
   transform: scale(1.1);
 }
 
@@ -976,16 +982,23 @@
   height: 34px;
   font-size: 0;
   color: #94A3B8;
-  background: #F1F5F9;
-  border: none;
+  background: transparent;
+  border: 1.5px solid #E2E8F0;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.15s;
 }
 
+.candidature-bloc:hover .btn-rejeter {
+  color: #EF4444;
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.06);
+}
+
 .btn-rejeter:hover {
-  background: #EF4444;
-  color: white;
+  background: #EF4444 !important;
+  color: white !important;
+  border-color: #EF4444 !important;
   transform: scale(1.1);
 }
 
@@ -2224,9 +2237,9 @@
 
 /* BADGES */
 .dp-badge {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 2px 7px;
   border-radius: 20px;
 }
 
