@@ -647,15 +647,16 @@
 }
 
 .dashboard-proprio-container .btn-orange {
-  background: white;
-  color: #E8622A;
-  border: 1.5px solid #E8622A;
+  background: #F4F5F7;
+  color: #94A3B8;
+  border: 1.5px solid #E2E8F0;
 }
 
 .dashboard-proprio-container .btn-orange:hover {
-  background: #E8622A;
-  color: white;
-  box-shadow: 0 2px 8px rgba(232, 98, 42, 0.16);
+  background: white;
+  color: #E8622A;
+  border-color: #E8622A;
+  box-shadow: 0 2px 8px rgba(232, 98, 42, 0.12);
 }
 
 .btn-edit-profil {
