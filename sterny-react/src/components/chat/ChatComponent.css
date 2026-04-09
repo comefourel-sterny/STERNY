@@ -5,9 +5,9 @@
 .chat-comp-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
+  background: rgba(15,23,42,0.45);
+  backdrop-filter: blur(4px);
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,19 +17,20 @@
 .chat-comp-box {
   background: white;
   border-radius: 16px;
-  max-width: 640px;
+  max-width: 460px;
   width: 100%;
+  height: 536px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 16px 60px rgba(232, 98, 42, 0.12), 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #E8EAF0;
+  box-shadow: 0 6px 28px rgba(232,98,42,0.10);
+  border: 1.5px solid #E8EAF0;
   animation: chatCompIn 0.25s ease;
   overflow: hidden;
 }
 
 .chat-comp-box.chat-mode {
-  height: 80vh;
+  height: 536px;
 }
 
 @keyframes chatCompIn {

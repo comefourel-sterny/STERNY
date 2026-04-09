@@ -795,6 +795,7 @@ export default function DashboardProprietairePage() {
         onClose={() => setShowMessagesOverlay(false)}
         currentUserId={currentUserId}
         currentUserType="proprietaire"
+        initialContactId={currentLocataireData?.id}
       />
 
       {/* PASSWORD MODAL */}
