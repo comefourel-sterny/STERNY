@@ -554,7 +554,7 @@ export default function DashboardProprietairePage() {
 
             return (
               <div key={c.id} className="candidature-bloc" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
-                <span className="profile-link" onClick={(e) => e.stopPropagation()}>
+                <span className="profile-link" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                   <div className="cand-avatar">{avatarContent}</div>
                   <div className="cand-info">
                     <div className="cand-name">{c.users.prenom} {c.users.nom}</div>
