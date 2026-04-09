@@ -491,8 +491,8 @@ export default function DashboardProprietairePage() {
 
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
-                  <div className="locataire-bloc" onClick={() => { console.log('LOCATAIRE CLICK', currentLocataireData); setShowLocataireOverlay(true) }}>
-                    <span className="profile-link" onClick={() => { console.log('PROFILE-LINK CLICK'); setShowLocataireOverlay(true) }}>
+                  <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
+                    <span className="profile-link" onClick={() => setShowLocataireOverlay(true)}>
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
                         <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
@@ -554,8 +554,8 @@ export default function DashboardProprietairePage() {
             const dejaRejete = c.approbation_proprietaire === 'rejete'
 
             return (
-              <div key={c.id} className="candidature-bloc" onClick={() => { console.log('CANDIDATURE CLICK', index, c); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
-                <span className="profile-link" onClick={() => { console.log('CAND PROFILE-LINK CLICK', index); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+              <div key={c.id} className="candidature-bloc" onClick={() => { console.log('CANDIDATURE CLICK', index, c, c.users); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+                <span className="profile-link" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                   <div className="cand-avatar">{avatarContent}</div>
                   <div className="cand-info">
                     <div className="cand-name">{c.users.prenom} {c.users.nom}</div>
@@ -849,9 +849,8 @@ export default function DashboardProprietairePage() {
 
     {/* PORTALS — rendus directement dans document.body pour éviter les problèmes de stacking context */}
 
-    {showLocataireOverlay && currentLocataireData && console.log('PORTAL RENDERING', showLocataireOverlay) && false}
     {showLocataireOverlay && currentLocataireData && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
         <div className="cand-profil-card">
           <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -863,13 +862,19 @@ export default function DashboardProprietairePage() {
                 : getInitials(currentLocataireData.prenom, currentLocataireData.nom)}
             </div>
             <h3>{currentLocataireData.prenom} {currentLocataireData.nom}</h3>
-            <p className="cand-profil-sub">Locataire actuel</p>
+            <p className="cand-profil-sub">{currentLocataireData.type_user === 'hote' ? 'Hôte' : 'Locataire'} {currentLocataireData.ville && `· ${currentLocataireData.ville}`}</p>
           </div>
           <div className="cand-profil-details">
             {currentLocataireData.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{currentLocataireData.email}</span></div>}
             {currentLocataireData.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{currentLocataireData.telephone}</span></div>}
-            {currentLocataireData.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{currentLocataireData.ville}</span></div>}
-            {currentLocataireData.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
+            {currentLocataireData.sexe && <div className="cand-profil-row"><span className="cand-profil-label">Sexe</span><span>{currentLocataireData.sexe}</span></div>}
+            {currentLocataireData.date_naissance && <div className="cand-profil-row"><span className="cand-profil-label">Date de naissance</span><span>{new Date(currentLocataireData.date_naissance).toLocaleDateString('fr-FR')}</span></div>}
+            {currentLocataireData.ecole && <div className="cand-profil-row"><span className="cand-profil-label">Ecole</span><span>{currentLocataireData.ecole}</span></div>}
+            {currentLocataireData.filiere && <div className="cand-profil-row"><span className="cand-profil-label">Filiere</span><span>{currentLocataireData.filiere}</span></div>}
+            {currentLocataireData.annee_etudes && <div className="cand-profil-row"><span className="cand-profil-label">Annee</span><span>{currentLocataireData.annee_etudes}</span></div>}
+            {currentLocataireData.type_alternance && <div className="cand-profil-row"><span className="cand-profil-label">Alternance</span><span>{currentLocataireData.type_alternance}</span></div>}
+            {currentLocataireData.rythme_alternance && <div className="cand-profil-row"><span className="cand-profil-label">Rythme</span><span>{currentLocataireData.rythme_alternance}</span></div>}
+            {currentLocataireData.bio && <div className="cand-profil-row cand-profil-row-bio"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
           </div>
           <div className="cand-profil-actions">
             <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); setShowMessagesOverlay(true) }}>Contacter</button>
@@ -879,36 +884,46 @@ export default function DashboardProprietairePage() {
       document.body
     )}
 
-    {showCandidatureOverlay && selectedCandidatureIndex !== null && approbations[selectedCandidatureIndex] && approbations[selectedCandidatureIndex].users && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
-        <div className="cand-profil-card">
-          <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-          </button>
-          <div className="cand-profil-header">
-            <div className="cand-profil-avatar">
-              {approbations[selectedCandidatureIndex].users.photo_profil_url
-                ? <img src={approbations[selectedCandidatureIndex].users.photo_profil_url} alt={approbations[selectedCandidatureIndex].users.prenom} />
-                : getInitials(approbations[selectedCandidatureIndex].users.prenom, approbations[selectedCandidatureIndex].users.nom)}
+    {(() => {
+      if (!showCandidatureOverlay || selectedCandidatureIndex === null) return null
+      const cand = approbations[selectedCandidatureIndex]
+      if (!cand || !cand.users) return null
+      const u = cand.users
+      return createPortal(
+        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
+          <div className="cand-profil-card">
+            <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+            <div className="cand-profil-header">
+              <div className="cand-profil-avatar">
+                {u.photo_profil_url ? <img src={u.photo_profil_url} alt={u.prenom} /> : getInitials(u.prenom, u.nom)}
+              </div>
+              <h3>{u.prenom} {u.nom}</h3>
+              <p className="cand-profil-sub">{cand.annonces.titre} &middot; {cand.annonces.ville}</p>
             </div>
-            <h3>{approbations[selectedCandidatureIndex].users.prenom} {approbations[selectedCandidatureIndex].users.nom}</h3>
-            <p className="cand-profil-sub">{approbations[selectedCandidatureIndex].annonces.titre} &middot; {approbations[selectedCandidatureIndex].annonces.ville}</p>
-          </div>
-          <div className="cand-profil-details">
-            {approbations[selectedCandidatureIndex].users.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{approbations[selectedCandidatureIndex].users.email}</span></div>}
-            {approbations[selectedCandidatureIndex].users.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{approbations[selectedCandidatureIndex].users.telephone}</span></div>}
-            {approbations[selectedCandidatureIndex].users.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{approbations[selectedCandidatureIndex].users.ville}</span></div>}
-            {approbations[selectedCandidatureIndex].users.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{approbations[selectedCandidatureIndex].users.bio}</span></div>}
-          </div>
-          {approbations[selectedCandidatureIndex].approbation_proprietaire !== 'approuve' && approbations[selectedCandidatureIndex].approbation_proprietaire !== 'rejete' && (
-            <div className="cand-profil-actions">
-              <button className="cand-profil-btn-approve" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(approbations[selectedCandidatureIndex].id) }}>Approuver</button>
-              <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(approbations[selectedCandidatureIndex].id) }}>Rejeter</button>
+            <div className="cand-profil-details">
+              {u.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{u.email}</span></div>}
+              {u.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{u.telephone}</span></div>}
+              {u.sexe && <div className="cand-profil-row"><span className="cand-profil-label">Sexe</span><span>{u.sexe}</span></div>}
+              {u.date_naissance && <div className="cand-profil-row"><span className="cand-profil-label">Date de naissance</span><span>{new Date(u.date_naissance).toLocaleDateString('fr-FR')}</span></div>}
+              {u.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{u.ville}</span></div>}
+              {u.ecole && <div className="cand-profil-row"><span className="cand-profil-label">Ecole</span><span>{u.ecole}</span></div>}
+              {u.filiere && <div className="cand-profil-row"><span className="cand-profil-label">Filiere</span><span>{u.filiere}</span></div>}
+              {u.annee_etudes && <div className="cand-profil-row"><span className="cand-profil-label">Annee</span><span>{u.annee_etudes}</span></div>}
+              {u.type_alternance && <div className="cand-profil-row"><span className="cand-profil-label">Alternance</span><span>{u.type_alternance}</span></div>}
+              {u.rythme_alternance && <div className="cand-profil-row"><span className="cand-profil-label">Rythme</span><span>{u.rythme_alternance}</span></div>}
+              {u.bio && <div className="cand-profil-row cand-profil-row-bio"><span className="cand-profil-label">Bio</span><span>{u.bio}</span></div>}
             </div>
-          )}
-        </div>
-      </div>,
-      document.body
+            {cand.approbation_proprietaire !== 'approuve' && cand.approbation_proprietaire !== 'rejete' && (
+              <div className="cand-profil-actions">
+                <button className="cand-profil-btn-approve" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(cand.id) }}>Approuver</button>
+                <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(cand.id) }}>Rejeter</button>
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body
     )}
 
     {showApproveModal && createPortal(
