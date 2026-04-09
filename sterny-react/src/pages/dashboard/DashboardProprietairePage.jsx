@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
@@ -420,7 +421,7 @@ export default function DashboardProprietairePage() {
   const locataireAnnonceIndex = currentLocataireData?.ville ? annonces.findIndex(a => a.ville === currentLocataireData.ville) : -1
   const locataireBlocIndex = locataireAnnonceIndex >= 0 ? locataireAnnonceIndex : 0
 
-  return (
+  return (<>
     <div className="dashboard-proprio-container">
       {/* HEADER */}
       <div className="page-header">
@@ -840,125 +841,129 @@ export default function DashboardProprietairePage() {
         </div>
       )}
 
-      {/* OVERLAY PROFIL LOCATAIRE */}
-      {showLocataireOverlay && currentLocataireData && (
-        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
-          <div className="cand-profil-card">
-            <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-            </button>
-            <div className="cand-profil-header">
-              <div className="cand-profil-avatar">
-                {currentLocataireData.photo_profil_url
-                  ? <img src={currentLocataireData.photo_profil_url} alt={currentLocataireData.prenom} />
-                  : getInitials(currentLocataireData.prenom, currentLocataireData.nom)}
-              </div>
-              <h3>{currentLocataireData.prenom} {currentLocataireData.nom}</h3>
-              <p className="cand-profil-sub">Locataire actuel</p>
-            </div>
-            <div className="cand-profil-details">
-              {currentLocataireData.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{currentLocataireData.email}</span></div>}
-              {currentLocataireData.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{currentLocataireData.telephone}</span></div>}
-              {currentLocataireData.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{currentLocataireData.ville}</span></div>}
-              {currentLocataireData.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
-            </div>
-            <div className="cand-profil-actions">
-              <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); setShowMessagesOverlay(true) }}>Contacter</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* OVERLAY PROFIL CANDIDAT */}
-      {showCandidatureOverlay && selectedCandidatureIndex !== null && approbations[selectedCandidatureIndex] && approbations[selectedCandidatureIndex].users && (
-        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
-          <div className="cand-profil-card">
-            <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-            </button>
-            <div className="cand-profil-header">
-              <div className="cand-profil-avatar">
-                {approbations[selectedCandidatureIndex].users.photo_profil_url
-                  ? <img src={approbations[selectedCandidatureIndex].users.photo_profil_url} alt={approbations[selectedCandidatureIndex].users.prenom} />
-                  : getInitials(approbations[selectedCandidatureIndex].users.prenom, approbations[selectedCandidatureIndex].users.nom)}
-              </div>
-              <h3>{approbations[selectedCandidatureIndex].users.prenom} {approbations[selectedCandidatureIndex].users.nom}</h3>
-              <p className="cand-profil-sub">{approbations[selectedCandidatureIndex].annonces.titre} &middot; {approbations[selectedCandidatureIndex].annonces.ville}</p>
-            </div>
-            <div className="cand-profil-details">
-              {approbations[selectedCandidatureIndex].users.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{approbations[selectedCandidatureIndex].users.email}</span></div>}
-              {approbations[selectedCandidatureIndex].users.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{approbations[selectedCandidatureIndex].users.telephone}</span></div>}
-              {approbations[selectedCandidatureIndex].users.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{approbations[selectedCandidatureIndex].users.ville}</span></div>}
-              {approbations[selectedCandidatureIndex].users.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{approbations[selectedCandidatureIndex].users.bio}</span></div>}
-            </div>
-            {approbations[selectedCandidatureIndex].approbation_proprietaire !== 'approuve' && approbations[selectedCandidatureIndex].approbation_proprietaire !== 'rejete' && (
-              <div className="cand-profil-actions">
-                <button className="cand-profil-btn-approve" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(approbations[selectedCandidatureIndex].id) }}>Approuver</button>
-                <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(approbations[selectedCandidatureIndex].id) }}>Rejeter</button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* MODAL APPROUVER */}
-      {showApproveModal && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
-          <div className="modal-delete-card">
-            <div className="modal-delete-icon" style={{ background: '#ECFDF5' }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-            </div>
-            <h3>Approuver ce profil ?</h3>
-            <p>Le locataire sera notifie et pourra proceder au paiement pour valider sa reservation.</p>
-            <div className="modal-delete-buttons">
-              <button className="modal-delete-btn-cancel" onClick={() => { setShowApproveModal(false); setPendingActionId(null) }}>Annuler</button>
-              <button className="modal-delete-btn-delete" style={{ background: '#059669' }} onClick={confirmApprouver}>Approuver</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL REJETER */}
-      {showRejectModal && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowRejectModal(false) }}>
-          <div className="modal-delete-card">
-            <div className="modal-delete-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-            </div>
-            <h3>Rejeter ce profil ?</h3>
-            <p>Le locataire ne pourra plus candidater a cette annonce.</p>
-            <div className="modal-delete-buttons">
-              <button className="modal-delete-btn-cancel" onClick={() => { setShowRejectModal(false); setPendingActionId(null) }}>Annuler</button>
-              <button className="modal-delete-btn-delete" onClick={confirmRejeter}>Rejeter</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL SUPPRIMER ANNONCE */}
-      {showDeleteAnnonceModal && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteAnnonceModal(false) }}>
-          <div className="modal-delete-card">
-            <div className="modal-delete-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
-            </div>
-            <h3>Supprimer cette annonce ?</h3>
-            <p>Cette action est <strong>irreversible</strong>. L'annonce et toutes les candidatures associees seront supprimees.</p>
-            <div className="modal-delete-buttons">
-              <button className="modal-delete-btn-cancel" onClick={() => { setShowDeleteAnnonceModal(false); setPendingDeleteAnnonceId(null) }}>Annuler</button>
-              <button className="modal-delete-btn-delete" onClick={confirmDeleteAnnonce}>Supprimer</button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* TOAST */}
       <div className={`toast-notification ${toast.type}${toast.visible ? ' visible' : ''}`}>
         {toast.message}
       </div>
     </div>
+
+    {/* PORTALS — rendus directement dans document.body pour éviter les problèmes de stacking context */}
+
+    {showLocataireOverlay && currentLocataireData && createPortal(
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
+        <div className="cand-profil-card">
+          <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </button>
+          <div className="cand-profil-header">
+            <div className="cand-profil-avatar">
+              {currentLocataireData.photo_profil_url
+                ? <img src={currentLocataireData.photo_profil_url} alt={currentLocataireData.prenom} />
+                : getInitials(currentLocataireData.prenom, currentLocataireData.nom)}
+            </div>
+            <h3>{currentLocataireData.prenom} {currentLocataireData.nom}</h3>
+            <p className="cand-profil-sub">Locataire actuel</p>
+          </div>
+          <div className="cand-profil-details">
+            {currentLocataireData.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{currentLocataireData.email}</span></div>}
+            {currentLocataireData.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{currentLocataireData.telephone}</span></div>}
+            {currentLocataireData.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{currentLocataireData.ville}</span></div>}
+            {currentLocataireData.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
+          </div>
+          <div className="cand-profil-actions">
+            <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); setShowMessagesOverlay(true) }}>Contacter</button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+    {showCandidatureOverlay && selectedCandidatureIndex !== null && approbations[selectedCandidatureIndex] && approbations[selectedCandidatureIndex].users && createPortal(
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
+        <div className="cand-profil-card">
+          <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </button>
+          <div className="cand-profil-header">
+            <div className="cand-profil-avatar">
+              {approbations[selectedCandidatureIndex].users.photo_profil_url
+                ? <img src={approbations[selectedCandidatureIndex].users.photo_profil_url} alt={approbations[selectedCandidatureIndex].users.prenom} />
+                : getInitials(approbations[selectedCandidatureIndex].users.prenom, approbations[selectedCandidatureIndex].users.nom)}
+            </div>
+            <h3>{approbations[selectedCandidatureIndex].users.prenom} {approbations[selectedCandidatureIndex].users.nom}</h3>
+            <p className="cand-profil-sub">{approbations[selectedCandidatureIndex].annonces.titre} &middot; {approbations[selectedCandidatureIndex].annonces.ville}</p>
+          </div>
+          <div className="cand-profil-details">
+            {approbations[selectedCandidatureIndex].users.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{approbations[selectedCandidatureIndex].users.email}</span></div>}
+            {approbations[selectedCandidatureIndex].users.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{approbations[selectedCandidatureIndex].users.telephone}</span></div>}
+            {approbations[selectedCandidatureIndex].users.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{approbations[selectedCandidatureIndex].users.ville}</span></div>}
+            {approbations[selectedCandidatureIndex].users.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{approbations[selectedCandidatureIndex].users.bio}</span></div>}
+          </div>
+          {approbations[selectedCandidatureIndex].approbation_proprietaire !== 'approuve' && approbations[selectedCandidatureIndex].approbation_proprietaire !== 'rejete' && (
+            <div className="cand-profil-actions">
+              <button className="cand-profil-btn-approve" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(approbations[selectedCandidatureIndex].id) }}>Approuver</button>
+              <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(approbations[selectedCandidatureIndex].id) }}>Rejeter</button>
+            </div>
+          )}
+        </div>
+      </div>,
+      document.body
+    )}
+
+    {showApproveModal && createPortal(
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
+        <div className="modal-delete-card">
+          <div className="modal-delete-icon" style={{ background: '#ECFDF5' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+          </div>
+          <h3>Approuver ce profil ?</h3>
+          <p>Le locataire sera notifie et pourra proceder au paiement pour valider sa reservation.</p>
+          <div className="modal-delete-buttons">
+            <button className="modal-delete-btn-cancel" onClick={() => { setShowApproveModal(false); setPendingActionId(null) }}>Annuler</button>
+            <button className="modal-delete-btn-delete" style={{ background: '#059669' }} onClick={confirmApprouver}>Approuver</button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+    {showRejectModal && createPortal(
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowRejectModal(false) }}>
+        <div className="modal-delete-card">
+          <div className="modal-delete-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </div>
+          <h3>Rejeter ce profil ?</h3>
+          <p>Le locataire ne pourra plus candidater a cette annonce.</p>
+          <div className="modal-delete-buttons">
+            <button className="modal-delete-btn-cancel" onClick={() => { setShowRejectModal(false); setPendingActionId(null) }}>Annuler</button>
+            <button className="modal-delete-btn-delete" onClick={confirmRejeter}>Rejeter</button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+    {showDeleteAnnonceModal && createPortal(
+      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteAnnonceModal(false) }}>
+        <div className="modal-delete-card">
+          <div className="modal-delete-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </div>
+          <h3>Supprimer cette annonce ?</h3>
+          <p>Cette action est <strong>irreversible</strong>. L'annonce et toutes les candidatures associees seront supprimees.</p>
+          <div className="modal-delete-buttons">
+            <button className="modal-delete-btn-cancel" onClick={() => { setShowDeleteAnnonceModal(false); setPendingDeleteAnnonceId(null) }}>Annuler</button>
+            <button className="modal-delete-btn-delete" onClick={confirmDeleteAnnonce}>Supprimer</button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+  </>
   )
 }
