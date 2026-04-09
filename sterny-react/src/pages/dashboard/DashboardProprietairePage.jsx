@@ -491,7 +491,7 @@ export default function DashboardProprietairePage() {
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
                   <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
-                    <span className="profile-link" onClick={(e) => e.stopPropagation()}>
+                    <span className="profile-link" onClick={() => setShowLocataireOverlay(true)}>
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
                         <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
@@ -835,6 +835,35 @@ export default function DashboardProprietairePage() {
             <div className="modal-delete-buttons">
               <button className="modal-delete-btn-cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
               <button className="modal-delete-btn-delete" disabled={deleteConfirm !== 'SUPPRIMER'} onClick={supprimerCompte}>Supprimer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OVERLAY PROFIL LOCATAIRE */}
+      {showLocataireOverlay && currentLocataireData && (
+        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
+          <div className="cand-profil-card">
+            <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+            <div className="cand-profil-header">
+              <div className="cand-profil-avatar">
+                {currentLocataireData.photo_profil_url
+                  ? <img src={currentLocataireData.photo_profil_url} alt={currentLocataireData.prenom} />
+                  : getInitials(currentLocataireData.prenom, currentLocataireData.nom)}
+              </div>
+              <h3>{currentLocataireData.prenom} {currentLocataireData.nom}</h3>
+              <p className="cand-profil-sub">Locataire actuel</p>
+            </div>
+            <div className="cand-profil-details">
+              {currentLocataireData.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{currentLocataireData.email}</span></div>}
+              {currentLocataireData.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{currentLocataireData.telephone}</span></div>}
+              {currentLocataireData.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{currentLocataireData.ville}</span></div>}
+              {currentLocataireData.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
+            </div>
+            <div className="cand-profil-actions">
+              <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); setShowMessagesOverlay(true) }}>Contacter</button>
             </div>
           </div>
         </div>
