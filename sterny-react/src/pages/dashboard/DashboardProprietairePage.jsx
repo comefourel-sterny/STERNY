@@ -70,6 +70,8 @@ export default function DashboardProprietairePage() {
     setTimeout(() => setToast({ visible: false, type: '', message: '' }), 3500)
   }
 
+  useEffect(() => { console.log('STATE CHANGE: showLocataireOverlay =', showLocataireOverlay, 'showCandidatureOverlay =', showCandidatureOverlay) }, [showLocataireOverlay, showCandidatureOverlay])
+
   // Load profile on mount
   useEffect(() => {
     if (user) {
@@ -491,8 +493,8 @@ export default function DashboardProprietairePage() {
 
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
-                  <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
-                    <span className="profile-link" onClick={() => setShowLocataireOverlay(true)}>
+                  <div className="locataire-bloc" onClick={() => { console.log('CLICK LOC'); setShowLocataireOverlay(true) }}>
+                    <span className="profile-link" onClick={() => { console.log('CLICK LINK'); setShowLocataireOverlay(true) }}>
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
                         <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
@@ -850,8 +852,8 @@ export default function DashboardProprietairePage() {
     {/* PORTALS — rendus directement dans document.body pour éviter les problèmes de stacking context */}
 
     {showLocataireOverlay && currentLocataireData && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
-        <div className="cand-profil-card">
+      <div id="test-overlay-loc" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
+        <div style={{ background: 'white', borderRadius: '20px', padding: '32px', maxWidth: '420px', width: '90%', position: 'relative', boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}>
           <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
