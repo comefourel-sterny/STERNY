@@ -598,6 +598,14 @@
   color: #1E293B;
 }
 
+.dashboard-proprio-container .btn-icon-only {
+  padding: 7px !important;
+  gap: 0 !important;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+}
+
 /* BOUTONS */
 .dashboard-proprio-container .btn {
   padding: 7px 14px;
@@ -682,7 +690,7 @@
   border-radius: 0 !important;
   overflow: hidden !important;
   background: #F4F5F7 !important;
-  display: block !important;
+  display: flex !important;
   align-self: stretch;
 }
 
@@ -693,6 +701,8 @@
   object-position: center !important;
   display: block !important;
   border-radius: 0 !important;
+  min-height: 0 !important;
+  flex: 1 !important;
 }
 
 .dashboard-proprio-container .annonce-thumb-icon {
@@ -961,16 +971,10 @@
   transition: all 0.15s;
 }
 
-.candidature-bloc:hover .btn-approuver {
+.btn-approuver:hover {
   color: #059669;
   border-color: #059669;
-  background: rgba(5, 150, 105, 0.06);
-}
-
-.btn-approuver:hover {
-  background: #059669 !important;
-  color: white !important;
-  border-color: #059669 !important;
+  background: transparent;
   transform: scale(1.1);
 }
 
@@ -989,16 +993,10 @@
   transition: all 0.15s;
 }
 
-.candidature-bloc:hover .btn-rejeter {
+.btn-rejeter:hover {
   color: #EF4444;
   border-color: #EF4444;
-  background: rgba(239, 68, 68, 0.06);
-}
-
-.btn-rejeter:hover {
-  background: #EF4444 !important;
-  color: white !important;
-  border-color: #EF4444 !important;
+  background: transparent;
   transform: scale(1.1);
 }
 
