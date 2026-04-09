@@ -2088,15 +2088,26 @@
 .modal-delete-btn-delete:hover { background: #DC2626; }
 .modal-delete-btn-delete:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* CANDIDAT PROFIL OVERLAY */
+/* CANDIDAT PROFIL OVERLAY — style ConnexionPage */
 .cand-profil-card {
+  max-width: 460px;
+  width: 100%;
   background: white;
-  border-radius: 20px;
-  padding: 32px;
-  max-width: 420px;
-  width: 90%;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 6px 28px rgba(232,98,42,0.10);
+  border: 1.5px solid #E8EAF0;
   position: relative;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  min-height: 536px;
+  max-height: 85vh;
+  animation: cand-profil-fadein 0.4s ease;
+}
+
+@keyframes cand-profil-fadein {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .cand-profil-close {
@@ -2108,28 +2119,31 @@
   cursor: pointer;
   color: #94A3B8;
   transition: color 0.2s;
+  z-index: 2;
 }
 
 .cand-profil-close:hover { color: #1E293B; }
 
 .cand-profil-header {
   text-align: center;
-  margin-bottom: 24px;
+  padding: 36px 36px 0;
+  flex-shrink: 0;
 }
 
 .cand-profil-avatar {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: #1E293B;
   color: white;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 14px;
   overflow: hidden;
+  border: 3px solid #E8EAF0;
 }
 
 .cand-profil-avatar img {
@@ -2148,14 +2162,17 @@
 .cand-profil-sub {
   font-size: 13px;
   color: #94A3B8;
-  margin: 0;
+  margin: 0 0 20px;
 }
 
 .cand-profil-details {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 0;
+  padding: 0 36px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .cand-profil-row {
@@ -2164,42 +2181,59 @@
   align-items: baseline;
   font-size: 13px;
   color: #1E293B;
-  padding-bottom: 10px;
+  padding: 12px 0;
   border-bottom: 1px solid #F1F5F9;
+}
+
+.cand-profil-row:last-child { border-bottom: none; }
+
+.cand-profil-row-bio {
+  flex-direction: column;
+  gap: 6px;
 }
 
 .cand-profil-label {
   font-weight: 600;
   color: #64748B;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .cand-profil-actions {
   display: flex;
   gap: 10px;
+  padding: 20px 36px 36px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 0 0 16px 16px;
 }
 
 .cand-profil-btn-approve {
   flex: 1;
-  padding: 11px;
-  background: #059669;
+  padding: 12px;
+  background: #E8622A;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(232,98,42,0.16);
 }
 
-.cand-profil-btn-approve:hover { background: #047857; }
+.cand-profil-btn-approve:hover {
+  background: #D4561F;
+  box-shadow: 0 4px 16px rgba(232,98,42,0.25);
+  transform: translateY(-1px);
+}
 
 .cand-profil-btn-reject {
   flex: 1;
-  padding: 11px;
+  padding: 12px;
   background: white;
   color: #EF4444;
   border: 1.5px solid #EF4444;
@@ -2211,7 +2245,16 @@
   transition: all 0.2s;
 }
 
-.cand-profil-btn-reject:hover { background: #FEF2F2; }
+.cand-profil-btn-reject:hover { background: #FEF2F2; transform: translateY(-1px); }
+
+.cand-profil-btn-approve.green {
+  background: #059669;
+  box-shadow: 0 2px 8px rgba(5,150,105,0.16);
+}
+.cand-profil-btn-approve.green:hover {
+  background: #047857;
+  box-shadow: 0 4px 16px rgba(5,150,105,0.25);
+}
 
 /* TOAST */
 .toast-notification {
