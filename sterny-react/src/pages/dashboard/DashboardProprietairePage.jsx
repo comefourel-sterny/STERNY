@@ -490,8 +490,8 @@ export default function DashboardProprietairePage() {
 
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
-                  <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
-                    <span className="profile-link" onClick={() => setShowLocataireOverlay(true)}>
+                  <div className="locataire-bloc" onClick={() => { console.log('LOCATAIRE CLICK', currentLocataireData); setShowLocataireOverlay(true) }}>
+                    <span className="profile-link" onClick={() => { console.log('PROFILE-LINK CLICK'); setShowLocataireOverlay(true) }}>
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
                         <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
@@ -553,8 +553,8 @@ export default function DashboardProprietairePage() {
             const dejaRejete = c.approbation_proprietaire === 'rejete'
 
             return (
-              <div key={c.id} className="candidature-bloc" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
-                <span className="profile-link" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+              <div key={c.id} className="candidature-bloc" onClick={() => { console.log('CANDIDATURE CLICK', index, c); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+                <span className="profile-link" onClick={() => { console.log('CAND PROFILE-LINK CLICK', index); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                   <div className="cand-avatar">{avatarContent}</div>
                   <div className="cand-info">
                     <div className="cand-name">{c.users.prenom} {c.users.nom}</div>
