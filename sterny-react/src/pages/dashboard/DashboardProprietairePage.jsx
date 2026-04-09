@@ -42,6 +42,13 @@ export default function DashboardProprietairePage() {
   const [modalData, setModalData] = useState({})
   const [messageRefus, setMessageRefus] = useState('')
 
+  const [showApproveModal, setShowApproveModal] = useState(false)
+  const [showRejectModal, setShowRejectModal] = useState(false)
+  const [pendingActionId, setPendingActionId] = useState(null)
+
+  const [showDeleteAnnonceModal, setShowDeleteAnnonceModal] = useState(false)
+  const [pendingDeleteAnnonceId, setPendingDeleteAnnonceId] = useState(null)
+
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pwdNew, setPwdNew] = useState('')
@@ -233,48 +240,76 @@ export default function DashboardProprietairePage() {
   }
 
   // === ACTIONS ===
-  async function supprimerAnnonce(annonceId) {
-    if (!window.confirm('Supprimer cette annonce ? Cette action est irreversible.')) return
-    try {
-      await supabaseClient.from('candidatures').delete().eq('annonce_id', annonceId)
-      const { error } = await supabaseClient.from('annonces').delete().eq('id', annonceId).eq('user_id', userData.id)
-      if (error) throw error
-      setAnnonces(prev => prev.filter(a => a.id !== annonceId))
-    } catch (e) {
-      console.error('Erreur suppression annonce:', e)
-      alert("Erreur lors de la suppression de l'annonce.")
+  function handleDeleteAnnonce(annonceId) {
+    // Bloquer si bail en cours sur cette annonce
+    const bailEnCours = locationsActives.some(loc => loc.annonce_id === annonceId)
+    if (bailEnCours) {
+      showToast('error', 'Impossible de supprimer : un bail est en cours sur cette annonce.')
+      return
     }
+    setPendingDeleteAnnonceId(annonceId)
+    setShowDeleteAnnonceModal(true)
   }
 
-  async function approuverProfil(candidatureId) {
-    if (!window.confirm('Approuver ce locataire temporaire pour votre logement ?')) return
+  async function confirmDeleteAnnonce() {
+    if (!pendingDeleteAnnonceId) return
+    try {
+      await supabaseClient.from('candidatures').delete().eq('annonce_id', pendingDeleteAnnonceId)
+      const { error } = await supabaseClient.from('annonces').delete().eq('id', pendingDeleteAnnonceId).eq('user_id', userData.id)
+      if (error) throw error
+      setAnnonces(prev => prev.filter(a => a.id !== pendingDeleteAnnonceId))
+      showToast('success', 'Annonce supprimée.')
+    } catch (e) {
+      console.error('Erreur suppression annonce:', e)
+      showToast('error', "Erreur lors de la suppression de l'annonce.")
+    }
+    setShowDeleteAnnonceModal(false)
+    setPendingDeleteAnnonceId(null)
+  }
+
+  function handleApprouver(candidatureId) {
+    setPendingActionId(candidatureId)
+    setShowApproveModal(true)
+  }
+
+  async function confirmApprouver() {
+    if (!pendingActionId) return
     try {
       const { error } = await supabaseClient
         .from('candidatures')
         .update({ approbation_proprietaire: 'approuve', date_approbation_proprietaire: new Date().toISOString(), proprietaire_id: currentUserId })
-        .eq('id', candidatureId)
-      if (error) { alert("Erreur lors de l'approbation"); return }
+        .eq('id', pendingActionId)
+      if (error) { showToast('error', "Erreur lors de l'approbation"); setShowApproveModal(false); return }
       showToast('success', 'Profil approuve ! Le locataire pourra proceder au paiement.')
-      setApprobations(prev => prev.map(c => c.id === candidatureId ? { ...c, approbation_proprietaire: 'approuve' } : c))
-      navigate(`/match-confirmation?match_id=${candidatureId}`)
+      setApprobations(prev => prev.map(c => c.id === pendingActionId ? { ...c, approbation_proprietaire: 'approuve' } : c))
+      navigate(`/match-confirmation?match_id=${pendingActionId}`)
     } catch (err) {
-      alert("Erreur lors de l'approbation")
+      showToast('error', "Erreur lors de l'approbation")
     }
+    setShowApproveModal(false)
+    setPendingActionId(null)
   }
 
-  async function rejeterProfil(candidatureId) {
-    if (!window.confirm('Rejeter ce profil de locataire temporaire ?')) return
+  function handleRejeter(candidatureId) {
+    setPendingActionId(candidatureId)
+    setShowRejectModal(true)
+  }
+
+  async function confirmRejeter() {
+    if (!pendingActionId) return
     try {
       const { error } = await supabaseClient
         .from('candidatures')
         .update({ approbation_proprietaire: 'rejete', date_approbation_proprietaire: new Date().toISOString(), proprietaire_id: currentUserId })
-        .eq('id', candidatureId)
-      if (error) { alert('Erreur lors du rejet'); return }
+        .eq('id', pendingActionId)
+      if (error) { showToast('error', 'Erreur lors du rejet'); setShowRejectModal(false); return }
       showToast('success', 'Profil rejete.')
-      setApprobations(prev => prev.map(c => c.id === candidatureId ? { ...c, approbation_proprietaire: 'rejete' } : c))
+      setApprobations(prev => prev.map(c => c.id === pendingActionId ? { ...c, approbation_proprietaire: 'rejete' } : c))
     } catch (err) {
-      alert('Erreur lors du rejet')
+      showToast('error', 'Erreur lors du rejet')
     }
+    setShowRejectModal(false)
+    setPendingActionId(null)
   }
 
   async function signalerImpaye(contratId, loyer, prenom, nom) {
@@ -448,7 +483,7 @@ export default function DashboardProprietairePage() {
                     <div className="annonce-actions">
                       <Link to={`/annonce/modifier?id=${a.id}`} className="btn-annonce-action">Modifier</Link>
                       <Link to={`/logement?id=${a.id}`} className="btn-annonce-action">Voir</Link>
-                      <button className="btn-annonce-action btn-annonce-action-delete" onClick={() => supprimerAnnonce(a.id)}>Supprimer</button>
+                      <button className="btn-annonce-action btn-annonce-action-delete" onClick={() => handleDeleteAnnonce(a.id)}>Supprimer</button>
                     </div>
                   </div>
                 </div>
@@ -530,11 +565,11 @@ export default function DashboardProprietairePage() {
                 {dejaRejete && <span className="status-badge status-refusee">Rejete</span>}
                 {!dejaApprouve && !dejaRejete && (
                   <div className="cand-actions">
-                    <button className="btn-approuver" onClick={(e) => { e.stopPropagation(); approuverProfil(c.id) }}>
+                    <button className="btn-approuver" onClick={(e) => { e.stopPropagation(); handleApprouver(c.id) }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                       Approuver
                     </button>
-                    <button className="btn-rejeter" onClick={(e) => { e.stopPropagation(); rejeterProfil(c.id) }}>
+                    <button className="btn-rejeter" onClick={(e) => { e.stopPropagation(); handleRejeter(c.id) }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                       Rejeter
                     </button>
@@ -800,6 +835,60 @@ export default function DashboardProprietairePage() {
             <div className="modal-delete-buttons">
               <button className="modal-delete-btn-cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
               <button className="modal-delete-btn-delete" disabled={deleteConfirm !== 'SUPPRIMER'} onClick={supprimerCompte}>Supprimer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL APPROUVER */}
+      {showApproveModal && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
+          <div className="modal-delete-card">
+            <div className="modal-delete-icon" style={{ background: '#ECFDF5' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            </div>
+            <h3>Approuver ce profil ?</h3>
+            <p>Le locataire sera notifie et pourra proceder au paiement pour valider sa reservation.</p>
+            <div className="modal-delete-buttons">
+              <button className="modal-delete-btn-cancel" onClick={() => { setShowApproveModal(false); setPendingActionId(null) }}>Annuler</button>
+              <button className="modal-delete-btn-delete" style={{ background: '#059669' }} onClick={confirmApprouver}>Approuver</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL REJETER */}
+      {showRejectModal && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowRejectModal(false) }}>
+          <div className="modal-delete-card">
+            <div className="modal-delete-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </div>
+            <h3>Rejeter ce profil ?</h3>
+            <p>Le locataire ne pourra plus candidater a cette annonce.</p>
+            <div className="modal-delete-buttons">
+              <button className="modal-delete-btn-cancel" onClick={() => { setShowRejectModal(false); setPendingActionId(null) }}>Annuler</button>
+              <button className="modal-delete-btn-delete" onClick={confirmRejeter}>Rejeter</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL SUPPRIMER ANNONCE */}
+      {showDeleteAnnonceModal && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteAnnonceModal(false) }}>
+          <div className="modal-delete-card">
+            <div className="modal-delete-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+            </div>
+            <h3>Supprimer cette annonce ?</h3>
+            <p>Cette action est <strong>irreversible</strong>. L'annonce et toutes les candidatures associees seront supprimees.</p>
+            <div className="modal-delete-buttons">
+              <button className="modal-delete-btn-cancel" onClick={() => { setShowDeleteAnnonceModal(false); setPendingDeleteAnnonceId(null) }}>Annuler</button>
+              <button className="modal-delete-btn-delete" onClick={confirmDeleteAnnonce}>Supprimer</button>
             </div>
           </div>
         </div>
