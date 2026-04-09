@@ -840,6 +840,42 @@ export default function DashboardProprietairePage() {
         </div>
       )}
 
+      {/* OVERLAY PROFIL CANDIDAT */}
+      {showCandidatureOverlay && selectedCandidatureIndex !== null && approbations[selectedCandidatureIndex] && (() => {
+        const c = approbations[selectedCandidatureIndex]
+        const u = c.users
+        const initials = getInitials(u.prenom, u.nom)
+        return (
+          <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
+            <div className="cand-profil-card">
+              <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+              <div className="cand-profil-header">
+                <div className="cand-profil-avatar">
+                  {u.photo_profil_url ? <img src={u.photo_profil_url} alt={u.prenom} /> : initials}
+                </div>
+                <h3>{u.prenom} {u.nom}</h3>
+                <p className="cand-profil-sub">{c.annonces.titre} &middot; {c.annonces.ville}</p>
+              </div>
+              <div className="cand-profil-details">
+                {u.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{u.email}</span></div>}
+                {u.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{u.telephone}</span></div>}
+                {u.ville && <div className="cand-profil-row"><span className="cand-profil-label">Ville</span><span>{u.ville}</span></div>}
+                {u.profession && <div className="cand-profil-row"><span className="cand-profil-label">Profession</span><span>{u.profession}</span></div>}
+                {u.bio && <div className="cand-profil-row"><span className="cand-profil-label">Bio</span><span>{u.bio}</span></div>}
+              </div>
+              {c.approbation_proprietaire !== 'approuve' && c.approbation_proprietaire !== 'rejete' && (
+                <div className="cand-profil-actions">
+                  <button className="cand-profil-btn-approve" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(c.id) }}>Approuver</button>
+                  <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(c.id) }}>Rejeter</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* MODAL APPROUVER */}
       {showApproveModal && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
