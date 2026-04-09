@@ -492,7 +492,7 @@ export default function DashboardProprietairePage() {
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
                   <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
-                    <span className="profile-link" onClick={() => setShowLocataireOverlay(true)}>
+                    <span className="profile-link">
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
                         <div className="loc-label">Locataire <span className="dp-badge dp-badge-active">Hote</span></div>
@@ -850,7 +850,7 @@ export default function DashboardProprietairePage() {
     {/* PORTALS — rendus directement dans document.body pour éviter les problèmes de stacking context */}
 
     {showLocataireOverlay && currentLocataireData && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 99999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setShowLocataireOverlay(false) }}>
         <div className="cand-profil-card">
           <button className="cand-profil-close" onClick={() => setShowLocataireOverlay(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -890,7 +890,7 @@ export default function DashboardProprietairePage() {
       if (!cand || !cand.users) return null
       const u = cand.users
       return createPortal(
-        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setShowCandidatureOverlay(false) }}>
           <div className="cand-profil-card">
             <button className="cand-profil-close" onClick={() => setShowCandidatureOverlay(false)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -928,7 +928,7 @@ export default function DashboardProprietairePage() {
     })()}
 
     {showApproveModal && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setShowApproveModal(false) }}>
         <div className="modal-delete-card">
           <div className="modal-delete-icon" style={{ background: '#ECFDF5' }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -945,7 +945,7 @@ export default function DashboardProprietairePage() {
     )}
 
     {showRejectModal && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowRejectModal(false) }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setShowRejectModal(false) }}>
         <div className="modal-delete-card">
           <div className="modal-delete-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -962,7 +962,7 @@ export default function DashboardProprietairePage() {
     )}
 
     {showDeleteAnnonceModal && createPortal(
-      <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteAnnonceModal(false) }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(4px)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteAnnonceModal(false) }}>
         <div className="modal-delete-card">
           <div className="modal-delete-icon">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
