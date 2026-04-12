@@ -31,6 +31,7 @@ export default function DashboardProprietairePage() {
   const [paiements, setPaiements] = useState([])
   // UI state
   const [showMessagesOverlay, setShowMessagesOverlay] = useState(false)
+  const [chatContactId, setChatContactId] = useState(null)
   const [unreadCount, setUnreadCount] = useState(0)
 
   const [showLocataireOverlay, setShowLocataireOverlay] = useState(false)
@@ -69,6 +70,24 @@ export default function DashboardProprietairePage() {
     setToast({ visible: true, type, message })
     setTimeout(() => setToast({ visible: false, type: '', message: '' }), 3500)
   }
+
+  function openChatWith(contactId) {
+    setChatContactId(contactId)
+    setShowMessagesOverlay(true)
+  }
+
+  const [profilScrolledToBottom, setProfilScrolledToBottom] = useState(false)
+  function handleProfilScroll(e) {
+    const el = e.target
+    setProfilScrolledToBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 8)
+  }
+
+  // Block body scroll when any overlay is open
+  useEffect(() => {
+    const anyOpen = showLocataireOverlay || showCandidatureOverlay || showApproveModal || showRejectModal || showDeleteAnnonceModal || showMessagesOverlay
+    document.body.style.overflow = anyOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [showLocataireOverlay, showCandidatureOverlay, showApproveModal, showRejectModal, showDeleteAnnonceModal, showMessagesOverlay])
 
   // Load profile on mount
   useEffect(() => {
@@ -426,7 +445,6 @@ export default function DashboardProprietairePage() {
       {/* HEADER */}
       <div className="page-header">
         <h1>Bonjour <span className="dp-prenom">{userData?.prenom || '...'}</span></h1>
-        <p>Gerez votre logement et vos locataires</p>
         {annonces.length > 0 && allVilles.length > 0 && (
           <div className="ville-header-row">
             {allVilles.map(ville => (
@@ -491,7 +509,7 @@ export default function DashboardProprietairePage() {
 
                 {/* Locataire sous l'annonce correspondante */}
                 {index === locataireBlocIndex && currentLocataireData && (
-                  <div className="locataire-bloc" onClick={() => setShowLocataireOverlay(true)}>
+                  <div className="locataire-bloc" onClick={() => { setProfilScrolledToBottom(false); setShowLocataireOverlay(true) }}>
                     <span className="profile-link">
                       <div className="loc-avatar">{getInitials(currentLocataireData.prenom, currentLocataireData.nom)}</div>
                       <div className="loc-info">
@@ -499,7 +517,7 @@ export default function DashboardProprietairePage() {
                         <div className="loc-name">{currentLocataireData.prenom} {currentLocataireData.nom}</div>
                       </div>
                     </span>
-                    <button className="btn btn-orange btn-icon-only" onClick={(e) => { e.stopPropagation(); setShowMessagesOverlay(true) }} title="Contacter">
+                    <button className="btn btn-orange btn-icon-only" onClick={(e) => { e.stopPropagation(); openChatWith(currentLocataireData.id) }} title="Contacter">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                     </button>
                   </div>
@@ -522,7 +540,7 @@ export default function DashboardProprietairePage() {
                     </div>
                   </span>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button className="btn btn-orange btn-icon-only" onClick={() => setShowMessagesOverlay(true)} title="Contacter">
+                    <button className="btn btn-orange btn-icon-only" onClick={() => openChatWith(loc.id)} title="Contacter">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                     </button>
                     <button className="btn-impaye" onClick={() => signalerImpaye(contrat.id, contrat.loyer_mensuel || 0, loc.prenom, loc.nom)}>
@@ -554,8 +572,8 @@ export default function DashboardProprietairePage() {
             const dejaRejete = c.approbation_proprietaire === 'rejete'
 
             return (
-              <div key={c.id} className="candidature-bloc" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
-                <span className="profile-link" onClick={() => { setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+              <div key={c.id} className="candidature-bloc" onClick={() => { setProfilScrolledToBottom(false); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
+                <span className="profile-link" onClick={() => { setProfilScrolledToBottom(false); setSelectedCandidatureIndex(index); setShowCandidatureOverlay(true) }}>
                   <div className="cand-avatar">{avatarContent}</div>
                   <div className="cand-info">
                     <div className="cand-name">{c.users.prenom} {c.users.nom}</div>
@@ -564,18 +582,11 @@ export default function DashboardProprietairePage() {
                 </span>
                 {dejaApprouve && <span className="status-badge status-acceptee">Approuve</span>}
                 {dejaRejete && <span className="status-badge status-refusee">Rejete</span>}
-                {!dejaApprouve && !dejaRejete && (
-                  <div className="cand-actions">
-                    <button className="btn-approuver" onClick={(e) => { e.stopPropagation(); handleApprouver(c.id) }}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                      Approuver
-                    </button>
-                    <button className="btn-rejeter" onClick={(e) => { e.stopPropagation(); handleRejeter(c.id) }}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                      Rejeter
-                    </button>
-                  </div>
-                )}
+                <div className="cand-actions">
+                  <button className="btn btn-orange btn-icon-only" onClick={(e) => { e.stopPropagation(); openChatWith(c.users.id) }} title="Contacter">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -792,10 +803,10 @@ export default function DashboardProprietairePage() {
       <ChatComponent
         mode="overlay"
         isOpen={showMessagesOverlay}
-        onClose={() => setShowMessagesOverlay(false)}
+        onClose={() => { setShowMessagesOverlay(false); setChatContactId(null) }}
         currentUserId={currentUserId}
         currentUserType="proprietaire"
-        initialContactId={currentLocataireData?.id}
+        initialContactId={chatContactId}
       />
 
       {/* PASSWORD MODAL */}
@@ -865,7 +876,7 @@ export default function DashboardProprietairePage() {
             <h3>{currentLocataireData.prenom} {currentLocataireData.nom}</h3>
             <p className="cand-profil-sub">{currentLocataireData.type_user === 'hote' ? 'Hôte' : 'Locataire'} {currentLocataireData.ville && `· ${currentLocataireData.ville}`}</p>
           </div>
-          <div className="cand-profil-details">
+          <div className="cand-profil-details" onScroll={handleProfilScroll}>
             {currentLocataireData.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{currentLocataireData.email}</span></div>}
             {currentLocataireData.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{currentLocataireData.telephone}</span></div>}
             {currentLocataireData.sexe && <div className="cand-profil-row"><span className="cand-profil-label">Sexe</span><span>{currentLocataireData.sexe}</span></div>}
@@ -877,8 +888,8 @@ export default function DashboardProprietairePage() {
             {currentLocataireData.rythme_alternance && <div className="cand-profil-row"><span className="cand-profil-label">Rythme</span><span>{currentLocataireData.rythme_alternance}</span></div>}
             {currentLocataireData.bio && <div className="cand-profil-row cand-profil-row-bio"><span className="cand-profil-label">Bio</span><span>{currentLocataireData.bio}</span></div>}
           </div>
-          <div className="cand-profil-actions">
-            <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); setShowMessagesOverlay(true) }}>Contacter</button>
+          <div className={`cand-profil-actions${profilScrolledToBottom ? ' scrolled-bottom' : ''}`}>
+            <button className="cand-profil-btn-approve" onClick={() => { setShowLocataireOverlay(false); openChatWith(currentLocataireData.id) }}>Contacter</button>
           </div>
         </div>
       </div>,
@@ -903,7 +914,7 @@ export default function DashboardProprietairePage() {
               <h3>{u.prenom} {u.nom}</h3>
               <p className="cand-profil-sub">{cand.annonces.titre} &middot; {cand.annonces.ville}</p>
             </div>
-            <div className="cand-profil-details">
+            <div className="cand-profil-details" onScroll={handleProfilScroll}>
               {u.email && <div className="cand-profil-row"><span className="cand-profil-label">Email</span><span>{u.email}</span></div>}
               {u.telephone && <div className="cand-profil-row"><span className="cand-profil-label">Telephone</span><span>{u.telephone}</span></div>}
               {u.sexe && <div className="cand-profil-row"><span className="cand-profil-label">Sexe</span><span>{u.sexe}</span></div>}
@@ -917,7 +928,7 @@ export default function DashboardProprietairePage() {
               {u.bio && <div className="cand-profil-row cand-profil-row-bio"><span className="cand-profil-label">Bio</span><span>{u.bio}</span></div>}
             </div>
             {cand.approbation_proprietaire !== 'approuve' && cand.approbation_proprietaire !== 'rejete' && (
-              <div className="cand-profil-actions">
+              <div className={`cand-profil-actions${profilScrolledToBottom ? ' scrolled-bottom' : ''}`}>
                 <button className="cand-profil-btn-approve green" onClick={() => { setShowCandidatureOverlay(false); handleApprouver(cand.id) }}>Approuver</button>
                 <button className="cand-profil-btn-reject" onClick={() => { setShowCandidatureOverlay(false); handleRejeter(cand.id) }}>Rejeter</button>
               </div>

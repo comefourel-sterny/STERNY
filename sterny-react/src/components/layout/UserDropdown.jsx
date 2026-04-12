@@ -11,7 +11,7 @@ const IconCalendar = () => <svg {...svgProps}><rect x="3" y="4" width="18" heigh
 const IconMessage = () => <svg {...svgProps}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 const IconHome = () => <svg {...svgProps}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 const IconHeart = () => <svg {...svgProps}><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 21l7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg>
-const IconEuro = () => <svg {...svgProps}><path d="M4 10h12M4 14h12M19.5 6.5A7.5 7.5 0 0 0 5 10.5v3a7.5 7.5 0 0 0 14.5 4"/></svg>
+const IconEuro = () => <svg {...svgProps}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
 const IconUser = () => <svg {...svgProps}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
 const IconSettings = () => <svg {...svgProps}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 const IconLogout = () => <svg {...svgProps}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -29,6 +29,7 @@ export default function UserDropdown() {
   const [userRole, setUserRole] = useState(null)
   const [initials, setInitials] = useState('')
   const [userName, setUserName] = useState('')
+  const [unreadCount, setUnreadCount] = useState(0)
   const panelRef = useRef(null)
 
   // Fetch user role + initials
@@ -50,6 +51,12 @@ export default function UserDropdown() {
           setUserName(`${prenom} ${nom}`.trim())
         }
       })
+    supabaseClient
+      .from('messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('destinataire_id', user.id)
+      .eq('lu', false)
+      .then(({ count }) => setUnreadCount(count || 0))
   }, [user])
 
   // Close on route change
@@ -92,11 +99,9 @@ export default function UserDropdown() {
 
   const proprietaireItems = [
     { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/proprietaire' },
-    { icon: <IconHome />, label: 'Mon logement partage', to: '/dashboard/proprietaire' },
-    { icon: <IconHeart />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
+    { icon: <IconHome />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
     { icon: <IconEuro />, label: 'Mes revenus', to: '/dashboard/proprietaire' },
     'separator',
-    { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
     'separator',
@@ -183,7 +188,7 @@ export default function UserDropdown() {
       {isDashboard ? (
         <button className="ud-avatar ud-avatar-messages" onClick={() => navigate('/messages')} aria-label="Messages">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-          <span className="ud-notif-badge">3</span>
+          {unreadCount > 0 && <span className="ud-notif-badge">{unreadCount}</span>}
         </button>
       ) : (
         <Link to={dashboardPath} className="ud-avatar" aria-label="Mon espace">

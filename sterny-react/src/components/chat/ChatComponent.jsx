@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { supabaseClient } from '../../config/supabase'
 import { formatTimeAgo } from '../../utils/formatters'
 import './ChatComponent.css'
@@ -21,6 +21,11 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
       loadMessages(currentUserId)
     }
   }, [currentUserId])
+
+  // Reset when initialContactId changes
+  useEffect(() => {
+    initialContactLoadedRef.current = false
+  }, [initialContactId])
 
   // Handle initialContactId — open specific thread after conversations load
   useEffect(() => {
@@ -160,6 +165,13 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
 
   // === Shared JSX pieces ===
 
+  function getRoleBadge(typeUser) {
+    if (typeUser === 'locataire') return <span className="chat-comp-role-badge locataire">Locataire</span>
+    if (typeUser === 'proprietaire') return <span className="chat-comp-role-badge proprietaire">Proprietaire</span>
+    if (typeUser === 'hote') return <span className="chat-comp-role-badge hote">Hote</span>
+    return null
+  }
+
   function renderConversationList() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
@@ -168,7 +180,7 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
             <div className="chat-comp-title-icon">
               <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
             </div>
-            Mes messages
+            Messages
           </div>
           {mode === 'overlay' && (
             <button className="chat-comp-close" onClick={handleClose}>&times;</button>
@@ -182,17 +194,18 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
               const initials = ((c.prenom || 'U')[0] + (c.nom ? c.nom[0] : '')).toUpperCase()
               const timeAgo = formatTimeAgo(c.date)
               const preview = c.dernierMessage.length > 80 ? c.dernierMessage.substring(0, 80) + '...' : c.dernierMessage
+              const isActive = chatContact && chatContact.userId === c.userId
 
               return (
                 <div
                   key={c.userId}
-                  className={`chat-comp-item ${c.nonLu ? 'chat-comp-item-unread' : ''}`}
+                  className={`chat-comp-item${c.nonLu ? ' chat-comp-item-unread' : ''}${isActive ? ' chat-comp-item-active' : ''}`}
                   onClick={() => ouvrirConversation(c.userId, c.prenom, c.nom, c.typeUser)}
                 >
                   <div className="chat-comp-item-avatar">{initials}</div>
                   <div className="chat-comp-item-content">
                     <div className="chat-comp-item-top">
-                      <div className="chat-comp-item-name">{c.prenom} {c.nom || ''}</div>
+                      <div className="chat-comp-item-name">{c.prenom} {c.nom || ''} {c.typeUser && getRoleBadge(c.typeUser)}</div>
                       <span className="chat-comp-item-time">{timeAgo}</span>
                     </div>
                     <div className="chat-comp-item-bottom">
@@ -212,11 +225,20 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
     )
   }
 
+  function renderEmptyThread() {
+    return (
+      <div className="chat-comp-empty-thread">
+        <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+        <div>Selectionnez une conversation</div>
+      </div>
+    )
+  }
+
   function renderChatThread() {
     return (
       <div className="chat-comp-thread">
         <div className="chat-comp-thread-header">
-          <button className="chat-comp-back" onClick={retourListeMessages}>
+          <button className="chat-comp-back" onClick={initialContactId ? handleClose : retourListeMessages}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
           </button>
           <div className="chat-comp-contact">
@@ -225,9 +247,7 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
             </div>
             <div>
               <div className="chat-comp-contact-name">{chatContact ? (chatContact.prenom + ' ' + (chatContact.nom || '')).trim() : '...'}</div>
-              <div className="chat-comp-contact-role">
-                {chatContact?.typeUser === 'locataire' ? 'Locataire' : chatContact?.typeUser === 'proprietaire' ? 'Proprietaire' : chatContact?.typeUser === 'hote' ? 'Hote' : ''}
-              </div>
+              {chatContact && getRoleBadge(chatContact.typeUser)}
             </div>
           </div>
           {mode === 'overlay' && (
@@ -249,7 +269,7 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
                 if (showDateSep) lastDate = dateStr
 
                 return (
-                  <div key={msg.id || idx}>
+                  <React.Fragment key={msg.id || idx}>
                     {showDateSep && <div className="chat-comp-date-sep"><span>{dateStr}</span></div>}
                     <div className={`chat-comp-msg ${isSent ? 'sent' : 'received'}`}>
                       <div>
@@ -257,7 +277,7 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
                         <div className="chat-comp-msg-time">{time}</div>
                       </div>
                     </div>
-                  </div>
+                  </React.Fragment>
                 )
               })
             })()
@@ -293,11 +313,14 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
     )
   }
 
-  // === PAGE MODE ===
+  // === PAGE MODE — Two columns ===
   return (
-    <div className="chat-comp-page">
-      <div className={`chat-comp-page-inner ${chatView ? 'chat-mode' : ''}`}>
-        {!chatView ? renderConversationList() : renderChatThread()}
+    <div className={`chat-comp-page${chatView ? ' chat-active' : ''}`}>
+      <div className="chat-comp-sidebar">
+        {renderConversationList()}
+      </div>
+      <div className="chat-comp-main">
+        {chatView ? renderChatThread() : renderEmptyThread()}
       </div>
     </div>
   )

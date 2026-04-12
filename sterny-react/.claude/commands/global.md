@@ -41,6 +41,48 @@ CompleterProfilPage.jsx, and all profile/auth form pages:
 
 ---
 
+DESIGN REFERENCE — NAVBAR
+- Logo left, messages icon with orange badge, navy circle
+  avatar with white initials (36px), hamburger ☰ icon
+- No mode toggle visible on dashboard pages
+
+DESIGN REFERENCE — DASHBOARD STYLE
+- Greeting: "Bonjour [Prénom]" — large bold, prénom
+  underlined in #E8622A
+- Background: #F4F5F7
+- Cards: white, border-radius 20px,
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), padding: 24px
+
+DESIGN REFERENCE — SECTION TITLES
+- SVG icon left (24px, orange background pill #FFF1E8,
+  icon color #E8622A)
+- Text uppercase, 11px, font-weight 600,
+  letter-spacing 2px, color #E8622A
+- Display flex, align-items center, gap 10px
+
+DESIGN REFERENCE — ANNONCE CARD
+- Photo: square (aspect-ratio 1/1, align-self stretch),
+  border-radius 0, border-right 1px solid #E8EAF0,
+  object-fit cover
+- Tags: pills with border 1px solid #E8EAF0,
+  border-radius 999px, padding 4px 10px, font-size 12px
+- Prix tag: color #E8622A, font-weight 600
+- Actions: "Modifier" orange text, "Voir" gray text,
+  "Supprimer" light gray
+
+DESIGN REFERENCE — LOCATAIRE BLOC
+- Avatar navy circle with white initials
+- Role badge: "LOCATAIRE" gray small, "HÔTE" green pill
+- Message button: circle ghost, SVG chat icon
+
+DESIGN REFERENCE — USER DROPDOWN
+- White card, border-radius 16px
+- box-shadow: 0 8px 32px rgba(0,0,0,0.12)
+- Items: SVG icon gray + text navy, padding 12px 16px
+- "Déconnexion": color #E8622A, icon orange
+
+---
+
 Tu vas transformer $ARGUMENTS en appliquant tous les skills
 design dans l'ordre optimal. Travaille sur :
 /Users/arnaudfourel/Desktop/STERNY/sterny-react/src/pages/$ARGUMENTS

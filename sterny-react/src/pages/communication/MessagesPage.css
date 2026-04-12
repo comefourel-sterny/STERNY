@@ -1,1 +1,4 @@
-/* MessagesPage is a redirect-only page, no styles needed */
+.messages-page-container {
+  min-height: calc(100vh - 87px);
+  position: relative;
+}

@@ -3,11 +3,12 @@
 .dashboard-proprio-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 48px 24px 80px;
+  padding: 32px 24px 32px;
+  min-height: 100vh;
 }
 
 .dashboard-proprio-container .page-header {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
   animation: dpFadeIn 0.5s ease both;
 }
 
@@ -142,6 +143,7 @@
   border-radius: 12px;
   padding: 4px;
   margin-top: 12px;
+  margin-bottom: 16px;
   gap: 4px;
   align-items: center;
 }
@@ -691,15 +693,17 @@
 .dashboard-proprio-container .annonce-card:last-child { margin-bottom: 0; }
 
 .dashboard-proprio-container .annonce-thumb {
-  width: 110px !important;
-  min-width: 110px !important;
-  height: 110px !important;
   flex-shrink: 0 !important;
   border-radius: 0 !important;
   overflow: hidden !important;
   background: #F4F5F7 !important;
-  align-self: center;
+  align-self: stretch !important;
   position: relative !important;
+  aspect-ratio: 1 / 1 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  border-right: 1px solid #E8EAF0;
 }
 
 .dashboard-proprio-container .annonce-thumb img {
@@ -2224,6 +2228,12 @@
   background: linear-gradient(to top, white, rgba(255,255,255,0));
   pointer-events: none;
   border-bottom: 1px solid #F1F5F9;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.cand-profil-actions.scrolled-bottom::before {
+  opacity: 0;
 }
 
 .cand-profil-btn-approve {
