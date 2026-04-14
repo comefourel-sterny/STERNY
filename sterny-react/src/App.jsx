@@ -178,7 +178,7 @@ export default function App() {
         </Route>
       </Routes>
 
-      <Agentation endpoint="http://localhost:4747" />
+      {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
     </PasswordGate>
   )
 }
