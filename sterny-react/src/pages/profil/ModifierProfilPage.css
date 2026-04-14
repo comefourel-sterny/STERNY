@@ -32,8 +32,8 @@
 .page-inscription .form-group label { display: block; font-weight: 500; margin-bottom: 5px; color: #475569; font-size: 13px; }
 .page-inscription .form-group .required { color: #E8622A; }
 .page-inscription .form-group input, .page-inscription .form-group select {
-    width: 100%; padding: 11px 16px; border: 1.5px solid #E8EAF0; border-radius: 12px;
-    font-size: 15px; font-family: inherit; transition: all 0.2s; background: white;
+    width: 100%; height: 36px; padding: 0 14px; border: 1.5px solid #E8EAF0; border-radius: 10px;
+    font-size: 14px; font-family: inherit; transition: all 0.2s; background: white;
     box-sizing: border-box; color: #1E293B;
 }
 .page-inscription .form-group input:focus, .page-inscription .form-group select:focus { outline: none; border-color: #E8622A; box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06); }

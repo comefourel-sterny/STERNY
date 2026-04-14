@@ -6,18 +6,23 @@ import { validateAddress } from '../../utils/addressVerification'
 import Cropper from 'cropperjs'
 import './CreerAnnoncePage.css'
 
-function CaSelect({ value, onChange, options, placeholder, className }) {
+function CaSelect({ value, onChange, options, placeholder, className, onOpenChange }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
   const selected = options.find(o => o.value === value)
 
+  const updateOpen = (val) => {
+    setOpen(val)
+    if (onOpenChange) onOpenChange(val)
+  }
+
   const handleBlur = (e) => {
-    if (ref.current && !ref.current.contains(e.relatedTarget)) setOpen(false)
+    if (ref.current && !ref.current.contains(e.relatedTarget)) updateOpen(false)
   }
 
   return (
     <div className={`ca-select ${className || ''}`} ref={ref} tabIndex={-1} onBlur={handleBlur}>
-      <div className={`ca-select-trigger${!selected ? ' ca-placeholder' : ''}`} onClick={() => setOpen(!open)}>
+      <div className={`ca-select-trigger${!selected ? ' ca-placeholder' : ''}`} onClick={() => updateOpen(!open)}>
         <span>{selected ? selected.label : placeholder}</span>
         <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <path d="M1 1l5 5 5-5" stroke="#94A3B8" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
@@ -26,7 +31,7 @@ function CaSelect({ value, onChange, options, placeholder, className }) {
       {open && (
         <div className="ca-select-dropdown">
           {options.map(o => (
-            <div key={o.value} className={`ca-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); setOpen(false) }}>
+            <div key={o.value} className={`ca-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); updateOpen(false) }}>
               {o.label}
             </div>
           ))}
@@ -239,70 +244,179 @@ function findDatesInText(text) {
   return result
 }
 
-function findPricingInText(text) {
-  if (!text || text.length < 50) return null
-  const textLower = text.toLowerCase().replace(/\s+/g, ' ')
-  const result = {}
+// ==========================================
+// BAIL SECTION PARSER — Extraction intelligente par sections ALUR
+// ==========================================
 
-  const loyerPatterns = [
-    /(?:loyer\s+mensuel|loyer\s+de\s+base|montant\s+du\s+loyer|loyer\s+principal|loyer\s+hors\s+charges?)[^€\d]{0,80}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?)/gi,
-    /loyer[^€\d]{0,40}?(?:fix[ée]e?\s+[àa]\s+)?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?)/gi
+function splitBailIntoSections(text) {
+  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  const sectionMarkers = [
+    { id: 'bailleur', patterns: [/\bd[ée]signation\s+des\s+parties/i, /\b(?:le\s+)?bailleur\b/i, /\bpropri[ée]taire\b/i, /\brepr[ée]sent[ée]\s+par\b/i, /\bparties?\s*:\s*(?:le\s+)?bailleur/i] },
+    { id: 'locataire', patterns: [/\b(?:le\s+)?(?:locataire|preneur)\b/i, /\bd[ée]sign[ée]\s+ci-apr[eè]s\s+(?:le\s+)?locataire/i] },
+    { id: 'designation', patterns: [/\bconsistance\s+(?:et\s+)?destination/i, /\blogement\s+objet\b/i, /\ble\s+bien\s+lou[ée]\b/i, /\bdescription\s+du\s+logement\b/i, /\bconsistance\s+du\s+logement\b/i, /\bcaract[ée]ristiques?\s+du\s+logement\b/i, /\bcomposition\s+du\s+logement\b/i, /\bobjet\s+du\s+(?:pr[ée]sent\s+)?(?:contrat|bail)\b/i, /\bsurface\s+habitable\b/i] },
+    { id: 'loyer', patterns: [/\bconditions?\s+financi[eè]res?\b/i, /\bmontant\s+du\s+loyer\b/i, /\bloyer\s+et\s+charges?\b/i, /\bloyer\s+mensuel\b/i, /\bfixation\s+du\s+loyer\b/i] },
+    { id: 'duree', patterns: [/\bdur[ée]e\s+du\s+(?:contrat|bail)\b/i, /\bprise\s+d['']effet\b/i, /\bdate\s+de\s+d[ée]but\b/i, /\bentr[ée]e\s+en\s+jouissance\b/i] },
+    { id: 'dpe', patterns: [/\bdiagnostic\s+de\s+performance\b/i, /\bclasse\s+[ée]nerg[ée]tique\b/i, /\bDPE\b/, /\bperformance\s+[ée]nerg[ée]tique\b/i] },
+    { id: 'depot', patterns: [/\bd[ée]p[oô]t\s+de\s+garantie\b/i, /\bcaution\b/i, /\bgarantie\s+locative\b/i] },
   ]
-  for (const pattern of loyerPatterns) {
-    const match = pattern.exec(textLower)
-    if (match) {
-      const val = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'))
-      if (val >= 100 && val <= 5000) { result.loyer = val; break }
+
+  const found = []
+  const textLower = normalized.toLowerCase()
+
+  for (const marker of sectionMarkers) {
+    let earliestPos = -1
+    for (const pattern of marker.patterns) {
+      const match = textLower.match(pattern)
+      if (match) {
+        const pos = textLower.indexOf(match[0])
+        if (pos !== -1 && (earliestPos === -1 || pos < earliestPos)) earliestPos = pos
+      }
     }
+    if (earliestPos !== -1) found.push({ id: marker.id, pos: earliestPos })
   }
 
-  const chargesPatterns = [
-    /(?:charges?\s+locatives?|provisions?\s+(?:sur|pour)\s+charges?|charges?\s+forfaitaires?)[^€\d]{0,80}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?)/gi,
-  ]
-  for (const pattern of chargesPatterns) {
-    const match = pattern.exec(textLower)
-    if (match) {
-      const val = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'))
-      if (val >= 10 && val <= 1000) { result.charges = val; break }
-    }
+  found.sort((a, b) => a.pos - b.pos)
+
+  const sections = {}
+  for (let i = 0; i < found.length; i++) {
+    const start = found[i].pos
+    const end = i + 1 < found.length ? found[i + 1].pos : normalized.length
+    const content = normalized.substring(start, Math.min(end, start + 5000))
+    if (!sections[found[i].id]) sections[found[i].id] = content
+    else sections[found[i].id] += '\n' + content
   }
 
-  const cautionPatterns = [
-    /(?:d[ée]p[oô]t\s+de\s+garantie|caution|garantie\s+locative)[^€\d]{0,80}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?)/gi,
-  ]
-  for (const pattern of cautionPatterns) {
-    const match = pattern.exec(textLower)
-    if (match) {
-      const val = parseFloat(match[1].replace(/\s/g, '').replace(',', '.'))
-      if (val >= 50 && val <= 10000) { result.caution = val; break }
-    }
-  }
-
-  if (/charges?\s+forfaitaires?|forfait\s+(?:de\s+)?charges?|charges?\s+incluses?|tout\s+compris/i.test(text)) result.chargeMode = 'forfaitaire'
-  else if (/charges?\s+(?:au\s+)?r[ée]el/i.test(text)) result.chargeMode = 'separe'
-  else if (/provisions?\s+(?:sur|pour)\s+charges?/i.test(text)) result.chargeMode = 'plafond'
-
-  if (!result.loyer && !result.charges && !result.caution) return null
-  return result
+  sections._full = normalized
+  console.log('[Bail sections]', Object.keys(sections).filter(k => k !== '_full'))
+  if (sections.designation) console.log('[Section DESIGNATION]', sections.designation.substring(0, 500))
+  if (sections.loyer) console.log('[Section LOYER]', sections.loyer.substring(0, 500))
+  if (sections.dpe) console.log('[Section DPE]', sections.dpe.substring(0, 500))
+  if (sections.depot) console.log('[Section DEPOT]', sections.depot.substring(0, 500))
+  return sections
 }
 
-function findDPEInText(text) {
-  const normalized = text.toUpperCase()
-  const patterns = [
-    /CLASSE\s+[ÉE]NERG[ÉE]TIQUE\s*:?\s*([A-G])/,
-    /[ÉE]TIQUETTE\s+[ÉE]NERGIE\s*:?\s*([A-G])/,
-    /DPE\s*:?\s*([A-G])\b/,
-    /PERFORMANCE\s+[ÉE]NERG[ÉE]TIQUE\s*:?\s*([A-G])/,
-    /CLASSE\s+([A-G])\s+(?:DU\s+)?DPE/,
-    /NOTE\s+DPE\s*:?\s*([A-G])/,
+function extractFromSections(sections) {
+  const result = { propertyInfo: {}, pricing: null, dpe: null }
+
+  // === DÉSIGNATION DU BIEN (adresse, surface, type, étage, pièces) ===
+  const desig = sections.designation || sections._full
+  const desigLower = desig.toLowerCase()
+
+  // Adresse — chercher dans la section désignation uniquement
+  // Format 1: "localisation du logement : ADRESSE CODEPOSTAL VILLE"
+  // Format 2: "situé(e) ADRESSE"
+  // Format 3: "N° rue ... CODEPOSTAL"
+  const addrPatterns = [
+    /localisation\s+du\s+logement\s*:\s*\n?\s*(.+?)(?:\n|Entr[ée]e|etage|étage|\s{3,})/i,
+    /(?:situ[ée]e?\s+(?:au\s+|[àa]\s+)?|sis(?:e)?\s+(?:au\s+|[àa]\s+)?)(\d+[^,\n]{5,100})/gi,
+    /(\d+\s+(?:RUE|AVENUE|AV|BOULEVARD|BD|PLACE|ALL[ÉEE]+|IMPASSE|CHEMIN|PASSAGE|COURS|QUAI|ROUTE|rue|avenue|boulevard|place|all[ée]e|impasse|chemin|r[ée]sidence)[^,\n]{3,80})/gi,
   ]
-  for (const pattern of patterns) {
-    const match = normalized.match(pattern)
-    if (match && ['A','B','C','D','E','F','G'].includes(match[1])) {
-      return match[1]
+  for (const pattern of addrPatterns) {
+    const match = pattern.exec(desig)
+    if (match && match[1]) {
+      let addr = match[1].trim().replace(/\s+/g, ' ')
+      // Nettoyer le bruit en fin d'adresse
+      addr = addr.replace(/\s*(?:désigné|ci-après|d[ée]sign[ée]).*$/i, '').trim()
+      if (addr.length >= 8 && addr.length <= 120) {
+        // Séparer adresse et ville si code postal présent
+        const cpInAddr = addr.match(/\b(\d{5})\s+([A-ZÀ-Ý][a-zà-ÿA-ZÀ-Ý\s-]+)$/)
+        if (cpInAddr) {
+          result.propertyInfo.codePostal = cpInAddr[1]
+          result.propertyInfo.adresse = addr.replace(/\s*\d{5}\s+[A-ZÀ-Ý][a-zà-ÿA-ZÀ-Ý\s-]+$/, '').trim()
+        } else {
+          result.propertyInfo.adresse = addr
+          const cpContext = desig.substring(match.index, match.index + 300)
+          const cpMatch = cpContext.match(/\b(\d{5})\b/)
+          if (cpMatch) result.propertyInfo.codePostal = cpMatch[1]
+        }
+        break
+      }
     }
   }
-  return null
+
+  // Surface — priorité section désignation
+  const surfMatch = desigLower.match(/(?:surface\s+(?:habitable|totale)?\s*(?:de|:)?\s*|superficie\s*(?:de|:)?\s*)(\d[\d,.\s]*\d|\d+)\s*m[²2]/i)
+    || desigLower.match(/(\d[\d,.\s]*\d|\d+)\s*m[²2]\s*(?:habitable)?/i)
+  if (surfMatch) {
+    const val = parseFloat(surfMatch[1].replace(/\s/g, '').replace(',', '.'))
+    if (val >= 8 && val <= 300) result.propertyInfo.surface = String(Math.round(val))
+  }
+
+  // Type de logement — section désignation
+  if (/\bstudio\b/i.test(desig)) result.propertyInfo.type = 'Studio'
+  else if (/\b[TF]1\b/i.test(desig)) result.propertyInfo.type = 'T1'
+  else if (/\b[TF]2\b/i.test(desig)) result.propertyInfo.type = 'T2'
+  else if (/\b[TF]3\b/i.test(desig)) result.propertyInfo.type = 'T3'
+  else if (/\b[TF][4-9]\b/i.test(desig)) result.propertyInfo.type = 'T4+'
+
+  // Pièces — déduit du type ou explicite dans désignation
+  if (result.propertyInfo.type === 'Studio' || result.propertyInfo.type === 'T1') result.propertyInfo.pieces = '1'
+  else if (result.propertyInfo.type === 'T2') result.propertyInfo.pieces = '2'
+  else if (result.propertyInfo.type === 'T3') result.propertyInfo.pieces = '3'
+  else if (result.propertyInfo.type === 'T4+') result.propertyInfo.pieces = '4'
+  else {
+    const pm = desigLower.match(/(\d+)\s*pi[èeé]ces?\s*(?:principales?)?/i)
+    if (pm) { const n = parseInt(pm[1]); if (n >= 1 && n <= 20) result.propertyInfo.pieces = String(n) }
+  }
+
+  // Étage — section désignation
+  if (/rez[\s-]*de[\s-]*chauss[ée]e/i.test(desig)) result.propertyInfo.etage = '0'
+  else {
+    const em = desig.match(/(\d+)(?:er|[eè]me|ème)?\s*[ée]tage/i) || desig.match(/[ée]?tage\s*(?:n[°o]?\s*)?:?\s*(\d+)/i)
+    if (em && em[1]) { const n = parseInt(em[1]); if (n >= 0 && n <= 99) result.propertyInfo.etage = String(n) }
+  }
+
+  // === LOYER ET CHARGES (section loyer + depot) ===
+  const loyerSection = sections.loyer || ''
+  const depotSection = sections.depot || ''
+  const loyerLower = (loyerSection + ' ' + depotSection).toLowerCase().replace(/\s+/g, ' ')
+
+  if (loyerLower) {
+    const pricing = {}
+    // Cherche le montant entre parenthèses (450,18 EUR) ou directement 450€
+    const loyerMatch = loyerLower.match(/(?:montant\s+du\s+loyer|loyer\s+(?:mensuel|de\s+base|principal|hors\s+charges?))[\s\S]{0,300}?\(\s*(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)\s*\)/i)
+      || loyerLower.match(/(?:montant\s+du\s+loyer|loyer\s+(?:mensuel|de\s+base|principal))[\s\S]{0,300}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)/i)
+      || loyerLower.match(/loyer[\s\S]{0,150}?\(\s*(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)\s*\)/i)
+    if (loyerMatch) { const v = parseFloat(loyerMatch[loyerMatch.length > 2 ? 2 : 1].replace(/\s/g, '').replace(',', '.')); if (v >= 100 && v <= 5000) pricing.loyer = v }
+
+    const chargesMatch = loyerLower.match(/(?:charges?\s+(?:locatives?|forfaitaires?)|provisions?\s+(?:sur|pour)\s+charges?)[\s\S]{0,300}?\(\s*(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)\s*\)/i)
+      || loyerLower.match(/(?:charges?\s+(?:locatives?|forfaitaires?)|provisions?\s+(?:sur|pour)\s+charges?)[\s\S]{0,200}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)/i)
+    if (chargesMatch) { const v = parseFloat(chargesMatch[1].replace(/\s/g, '').replace(',', '.')); if (v >= 10 && v <= 1000) pricing.charges = v }
+
+    const cautionMatch = loyerLower.match(/(?:d[ée]p[oô]t\s+de\s+garantie|caution|garantie\s+locative)[\s\S]{0,300}?\(\s*(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)\s*\)/i)
+      || loyerLower.match(/(?:d[ée]p[oô]t\s+de\s+garantie|caution|garantie\s+locative)[\s\S]{0,200}?(\d[\d\s,.]*\d|\d+)\s*(?:€|euros?|EUR)/i)
+    if (cautionMatch) { const v = parseFloat(cautionMatch[1].replace(/\s/g, '').replace(',', '.')); if (v >= 50 && v <= 10000) pricing.caution = v }
+
+    if (/charges?\s+forfaitaires?|forfait\s+(?:de\s+)?charges?|charges?\s+incluses?|tout\s+compris/i.test(loyerLower)) pricing.chargeMode = 'forfaitaire'
+    else if (/charges?\s+(?:au\s+)?r[ée]el/i.test(loyerLower)) pricing.chargeMode = 'separe'
+    else if (/provisions?\s+(?:sur|pour)\s+charges?/i.test(loyerLower)) pricing.chargeMode = 'plafond'
+
+    if (pricing.loyer || pricing.charges || pricing.caution) result.pricing = pricing
+  }
+
+  // === DPE (section dpe ou texte complet) ===
+  const dpeText = sections.dpe || sections._full
+  const dpePatterns = [
+    /[Nn]iveau\s+de\s+performance[^A-Ga-g]{0,40}:\s*([A-Ga-g])\b/,
+    /[Cc]lasse\s+[ée]nerg[ée]tique\s*:?\s*([A-Ga-g])/,
+    /[ée]tiquette\s+[ée]nergie\s*:?\s*([A-Ga-g])/,
+    /DPE\s*:?\s*([A-Ga-g])\b/i,
+    /[Pp]erformance\s+[ée]nerg[ée]tique\s*:?\s*([A-Ga-g])/,
+    /[Cc]lasse\s+([A-Ga-g])\s+(?:du\s+)?DPE/i,
+    /:\s*([A-G])\b/,
+  ]
+  for (const pattern of dpePatterns) {
+    const match = dpeText.match(pattern)
+    if (match && ['A','B','C','D','E','F','G'].includes(match[1].toUpperCase())) { result.dpe = match[1].toUpperCase(); break }
+  }
+
+  // Nettoyage: retirer propertyInfo si vide
+  if (!result.propertyInfo.surface && !result.propertyInfo.type && !result.propertyInfo.adresse && !result.propertyInfo.etage) {
+    result.propertyInfo = null
+  }
+
+  console.log('[Bail extracted]', result)
+  return result
 }
 
 function verifierDocumentBail(texte) {
@@ -326,12 +440,11 @@ export default function CreerAnnoncePage() {
   const { user } = useAuth()
 
   // --- Core state ---
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(0)
   const [userType, setUserType] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [showUserTypeScreen, setShowUserTypeScreen] = useState(false)
   const [showMainForm, setShowMainForm] = useState(false)
-  const [showBailScreen, setShowBailScreen] = useState(false)
   const [selectedUserType, setSelectedUserType] = useState(null)
 
   // --- Step 1: Basic info ---
@@ -410,6 +523,10 @@ export default function CreerAnnoncePage() {
   const [chargesTypes, setChargesTypes] = useState({ eau: true, electricite: true, internet: true, chauffage: false })
   const [showPricingBanner, setShowPricingBanner] = useState(false)
   const [dpeAutoDetected, setDpeAutoDetected] = useState(null)
+  const [caTypeSelectOpen, setCaTypeSelectOpen] = useState(false)
+  const [caBailDureeOpen, setCaBailDureeOpen] = useState(false)
+  const [caRhythmTypeOpen, setCaRhythmTypeOpen] = useState(false)
+  const [caRhythmPatternOpen, setCaRhythmPatternOpen] = useState(false)
 
   // --- Modals & notifications ---
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -430,21 +547,41 @@ export default function CreerAnnoncePage() {
     checkUserType()
   }, [user])
 
+  // Auto-show calendar when rhythm + bail dates are all set
+  useEffect(() => {
+    console.log('[Calendar debug]', { rhythmPattern, rhythmType, bailStartDate, bailEndDate, rhythmStartDate, rhythmEndDate, showEditCalendar, currentStep })
+    if (currentStep !== 4) return
+    if (!rhythmPattern || rhythmType === 'custom' || showEditCalendar) return
+    // If rhythmStartDate/EndDate already computed, show calendar
+    if (rhythmStartDate && rhythmEndDate) {
+      enterCycleSelectionMode()
+      return
+    }
+    // If bail dates exist but rhythm dates not yet computed, compute them
+    if (bailStartDate && bailEndDate) {
+      const start = parseDate(bailStartDate)
+      const end = parseDate(bailEndDate)
+      if (start && end && end > start) {
+        processRhythmDates(start, end)
+      }
+    }
+  }, [rhythmPattern, rhythmStartDate, rhythmEndDate, bailStartDate, bailEndDate, currentStep])
+
   async function checkUserType() {
     try {
+      const { data: userData } = await supabaseClient.from('users').select('type_user, is_admin, type_alternance, rythme_alternance').eq('id', user.id).single()
+      setIsAdmin(userData?.is_admin === true)
+
       const typeParam = searchParams.get('type')
       if (typeParam === 'locataire' || typeParam === 'proprietaire') {
         setUserType(typeParam)
-        initMainForm(typeParam)
+        initMainForm(typeParam, userData)
         return
       }
 
-      const { data: userData } = await supabaseClient.from('users').select('type_user, is_admin').eq('id', user.id).single()
-      setIsAdmin(userData?.is_admin === true)
-
       if (userData && (userData.type_user === 'proprietaire' || userData.type_user === 'locataire')) {
         setUserType(userData.type_user)
-        initMainForm(userData.type_user)
+        initMainForm(userData.type_user, userData)
         return
       }
 
@@ -455,19 +592,19 @@ export default function CreerAnnoncePage() {
     }
   }
 
-  function initMainForm(type) {
+  function initMainForm(type, userData) {
     setShowUserTypeScreen(false)
+    setShowMainForm(true)
 
     if (type === 'locataire' || type === 'hote' || type === 'les_deux') {
-      setShowBailScreen(true)
-      setShowMainForm(false)
+      setCurrentStep(0)
     } else {
-      setShowMainForm(true)
+      setCurrentStep(1)
     }
 
-    // Pre-fill rhythm from URL params
-    const rythmeType = searchParams.get('rythme_type')
-    const rythmePattern = searchParams.get('rythme_pattern')
+    // Pre-fill rhythm from URL params first, then fallback to user profile
+    const rythmeType = searchParams.get('rythme_type') || userData?.type_alternance
+    const rythmePattern = searchParams.get('rythme_pattern') || userData?.rythme_alternance
     if (rythmeType) {
       setRhythmType(rythmeType)
       if (rythmePattern && rythmeType !== 'custom') {
@@ -881,6 +1018,7 @@ export default function CreerAnnoncePage() {
           setDpe(extractedDates.dpe)
           setDpeAutoDetected(extractedDates.dpe)
         }
+        if (extractedDates.propertyInfo) prefillPropertyInfo(extractedDates.propertyInfo)
       } else {
         setBailFileStatus('Document enregistré - remplis les dates manuellement')
         showNotificationFn('Bail enregistré', 'Remplis les dates manuellement.', 'success')
@@ -892,6 +1030,7 @@ export default function CreerAnnoncePage() {
           setDpe(extractedDates.dpe)
           setDpeAutoDetected(extractedDates.dpe)
         }
+        if (extractedDates && extractedDates.propertyInfo) prefillPropertyInfo(extractedDates.propertyInfo)
       }
     } catch (error) {
       console.error('Erreur analyse bail:', error)
@@ -907,21 +1046,37 @@ export default function CreerAnnoncePage() {
     try {
       const pdfjsModule = await import('pdfjs-dist/build/pdf.mjs')
       const pdfjsLib = pdfjsModule
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
+      const workerModule = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerModule.default
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
       let fullText = ''
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const textContent = await page.getTextContent()
-        fullText += textContent.items.map(item => item.str).join(' ') + '\n'
+      const maxPages = Math.min(pdf.numPages, 10)
+      console.log(`[Bail] PDF chargé: ${pdf.numPages} pages, extraction de ${maxPages} pages`)
+      for (let i = 1; i <= maxPages; i++) {
+        try {
+          const page = await pdf.getPage(i)
+          const textContent = await Promise.race([
+            page.getTextContent(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000))
+          ])
+          fullText += textContent.items.map(item => item.str).join(' ') + '\n'
+          console.log(`[Bail] Page ${i}/${maxPages} extraite (${textContent.items.length} items)`)
+        } catch (pageErr) {
+          console.warn(`[Bail] Page ${i} ignorée:`, pageErr.message)
+        }
       }
       const verification = verifierDocumentBail(fullText)
       if (!verification.isBail) return { notBail: true }
       const dates = findDatesInText(fullText)
-      const pricing = findPricingInText(fullText)
-      const dpeFound = findDPEInText(fullText)
-      if (dates) { dates.pricing = pricing; dates.dpe = dpeFound; return dates }
-      return (pricing || dpeFound) ? { pricing, dpe: dpeFound } : null
+      const sections = splitBailIntoSections(fullText)
+      const extracted = extractFromSections(sections)
+      if (dates) {
+        dates.pricing = extracted.pricing
+        dates.dpe = extracted.dpe
+        dates.propertyInfo = extracted.propertyInfo
+        return dates
+      }
+      return (extracted.pricing || extracted.dpe || extracted.propertyInfo) ? { pricing: extracted.pricing, dpe: extracted.dpe, propertyInfo: extracted.propertyInfo } : null
     } catch (e) {
       console.error('Erreur pdf.js:', e)
       return null
@@ -960,6 +1115,42 @@ export default function CreerAnnoncePage() {
       else if (modeChoisi === 'separe') setCautionSepare(String(pricing.caution))
     }
     setChargeMode(modeChoisi)
+  }
+
+  async function prefillPropertyInfo(info) {
+    if (!info) return
+    if (info.surface) setSurface(info.surface)
+    if (info.type) setType(info.type)
+    if (info.pieces) setPieces(info.pieces)
+    if (info.etage) setEtage(info.etage)
+    if (info.codePostal) {
+      detecterVille(info.codePostal)
+    }
+    if (info.adresse) {
+      // Résoudre l'adresse via l'API adresse.data.gouv.fr pour obtenir le nom complet
+      const cp = info.codePostal || ''
+      const rawAddr = info.adresse.replace(/\s+/g, ' ').trim()
+      try {
+        const query = encodeURIComponent(`${rawAddr}${cp ? ' ' + cp : ''}`)
+        const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${query}&limit=1`)
+        const data = await res.json()
+        if (data.features && data.features.length > 0) {
+          const resolved = data.features[0].properties
+          const cleanAddr = resolved.name || rawAddr
+          setAdresse(capitalizeAddress(cleanAddr))
+          if (resolved.postcode && !info.codePostal) detecterVille(resolved.postcode)
+          setAddressVerified(true)
+          setVerifiedCoordinates(data.features[0].geometry.coordinates)
+          setAdresseCheckmarkVisible(true)
+          console.log('[Bail] Adresse résolue:', rawAddr, '→', cleanAddr)
+        } else {
+          setAdresse(capitalizeAddress(rawAddr))
+        }
+      } catch (e) {
+        console.warn('[Bail] Résolution adresse échouée:', e)
+        setAdresse(capitalizeAddress(rawAddr))
+      }
+    }
   }
 
   // ==========================================
@@ -1210,14 +1401,20 @@ export default function CreerAnnoncePage() {
   // PRICE CALCULATION
   // ==========================================
 
+  // Commission: 15% par alternant, split 60% STERNY / 40% propriétaire
+  const STERNY_COMMISSION = 0.15
+  const STERNY_SPLIT = 0.60
+
   function calcPriceDisplay(mode, prixF, prixBP, chgMoy, prixBS) {
     if (mode === 'forfaitaire') {
       const total = parseFloat(prixF)
       if (!total || total <= 0) return null
       const base = total / 2
       const perWeek = base / 4.33
-      const commission = perWeek * 0.05
-      return { base, perWeek, commission, final: perWeek + commission }
+      const commission = perWeek * STERNY_COMMISSION
+      const commissionSterny = commission * STERNY_SPLIT
+      const commissionProprio = commission * (1 - STERNY_SPLIT)
+      return { base, perWeek, commission, commissionSterny, commissionProprio, final: perWeek + commission }
     }
     if (mode === 'plafond') {
       const base = parseFloat(prixBP)
@@ -1225,16 +1422,20 @@ export default function CreerAnnoncePage() {
       if (!base || base <= 0 || !charges || charges < 0) return null
       const divided = (base + charges) / 2
       const perWeek = divided / 4.33
-      const commission = perWeek * 0.05
-      return { base: divided, perWeek, commission, final: perWeek + commission }
+      const commission = perWeek * STERNY_COMMISSION
+      const commissionSterny = commission * STERNY_SPLIT
+      const commissionProprio = commission * (1 - STERNY_SPLIT)
+      return { base: divided, perWeek, commission, commissionSterny, commissionProprio, final: perWeek + commission }
     }
     if (mode === 'separe') {
       const base = parseFloat(prixBS)
       if (!base || base <= 0) return null
       const divided = base / 2
       const perWeek = divided / 4.33
-      const commission = perWeek * 0.05
-      return { base: divided, perWeek, commission, final: perWeek + commission }
+      const commission = perWeek * STERNY_COMMISSION
+      const commissionSterny = commission * STERNY_SPLIT
+      const commissionProprio = commission * (1 - STERNY_SPLIT)
+      return { base: divided, perWeek, commission, commissionSterny, commissionProprio, final: perWeek + commission }
     }
     return null
   }
@@ -1289,14 +1490,35 @@ export default function CreerAnnoncePage() {
     return true
   }
 
+  // Sync steps with browser history
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (e.state && typeof e.state.step === 'number') {
+        setCurrentStep(e.state.step)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  function pushStep(step) {
+    setCurrentStep(step)
+    window.history.pushState({ step }, '', window.location.href)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   function nextStep() {
+    if (currentStep === 0) {
+      pushStep(1)
+      return
+    }
     if (!validateStep(currentStep)) return
     const maxStep = 5
     if (currentStep < maxStep) {
       let next = currentStep + 1
       if (userType === 'proprietaire' && currentStep === 3) next = 5
-      setCurrentStep(next)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      pushStep(next)
       if (next === 5 && bailDatesAutoExtracted) {
         showNotificationFn('Bail analysé', 'Vérifie bien les montants avant de continuer.', 'success')
         setBailDatesAutoExtracted(false)
@@ -1305,22 +1527,31 @@ export default function CreerAnnoncePage() {
   }
 
   function prevStep() {
-    if (currentStep === 1) { navigate('/dashboard/proprietaire'); return }
+    if (currentStep === 0) {
+      navigate(-1)
+      return
+    }
+    if (currentStep === 1) {
+      if (userType === 'locataire' || userType === 'hote' || userType === 'les_deux') {
+        pushStep(0)
+      } else {
+        navigate('/dashboard/proprietaire')
+      }
+      return
+    }
     let prev = currentStep - 1
     if (userType === 'proprietaire' && currentStep === 5) prev = 3
-    setCurrentStep(prev)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    pushStep(prev)
   }
 
+  const hasBailStep = userType === 'locataire' || userType === 'hote' || userType === 'les_deux'
+  const allSteps = hasBailStep ? [0, 1, 2, 3, 4, 5] : [1, 2, 3, 4, 5]
+  const visibleSteps = allSteps.filter(s => !(userType === 'proprietaire' && s === 4))
+
   function getProgressWidth() {
-    const totalSteps = userType === 'proprietaire' ? 4 : 5
-    let stepPosition
-    if (userType === 'proprietaire') {
-      stepPosition = currentStep <= 3 ? currentStep - 1 : 3
-    } else {
-      stepPosition = currentStep - 1
-    }
-    return (stepPosition / (totalSteps - 1)) * 100
+    const idx = visibleSteps.indexOf(currentStep)
+    if (idx <= 0) return 0
+    return (idx / (visibleSteps.length - 1)) * 100
   }
 
   // ==========================================
@@ -1392,12 +1623,12 @@ export default function CreerAnnoncePage() {
         const prixTotal = parseFloat(prixForfaitaire)
         const cautionVal = parseFloat(caution)
         prixBase = prixTotal / 2
-        chargesInfo = { mode: 'forfaitaire', prix_total_hote: prixTotal, prix_par_alternant: prixBase + prixBase * 0.05, caution: cautionVal }
+        chargesInfo = { mode: 'forfaitaire', prix_total_hote: prixTotal, prix_par_alternant: prixBase + prixBase * STERNY_COMMISSION, caution: cautionVal }
       } else if (chargeMode === 'plafond') {
         const loyer = parseFloat(prixBasePlafond)
         const forfait = parseFloat(chargesMoyennes)
         prixBase = (loyer + forfait) / 2
-        chargesInfo = { mode: 'forfait_regularisation', loyer_base: loyer, forfait_charges: forfait, conso_normale_elec_kwh: parseFloat(consoElec) || null, conso_normale_eau_m3: parseFloat(consoEau) || null, prix_par_alternant: prixBase + prixBase * 0.05, caution: parseFloat(cautionPlafond) }
+        chargesInfo = { mode: 'forfait_regularisation', loyer_base: loyer, forfait_charges: forfait, conso_normale_elec_kwh: parseFloat(consoElec) || null, conso_normale_eau_m3: parseFloat(consoEau) || null, prix_par_alternant: prixBase + prixBase * STERNY_COMMISSION, caution: parseFloat(cautionPlafond) }
       } else if (chargeMode === 'separe') {
         const loyer = parseFloat(prixBaseSepare)
         prixBase = loyer / 2
@@ -1406,11 +1637,11 @@ export default function CreerAnnoncePage() {
         if (chargesTypes.electricite) ct.push('electricite')
         if (chargesTypes.internet) ct.push('internet')
         if (chargesTypes.chauffage) ct.push('chauffage')
-        chargesInfo = { mode: 'separe', loyer_base: loyer, charges_types: ct, prix_base_par_alternant: prixBase + prixBase * 0.05, caution: parseFloat(cautionSepare) }
+        chargesInfo = { mode: 'separe', loyer_base: loyer, charges_types: ct, prix_base_par_alternant: prixBase + prixBase * STERNY_COMMISSION, caution: parseFloat(cautionSepare) }
       }
 
       const prixParSemaine = prixBase / 4.33
-      const prixSemaineAvecCommission = prixParSemaine + prixParSemaine * 0.05
+      const prixSemaineAvecCommission = prixParSemaine + prixParSemaine * STERNY_COMMISSION
       const nbSemaines = getSelectedWeeksCount()
       let prixTotalSejour = null
       if (userType === 'locataire' && nbSemaines > 0) prixTotalSejour = Math.round(prixSemaineAvecCommission * nbSemaines)
@@ -1688,76 +1919,12 @@ export default function CreerAnnoncePage() {
     )
   }
 
-  if (showBailScreen) {
-    return (
-      <div className="create-container">
-        <div className="page-header">
-          <h1>Créer une annonce</h1>
-        </div>
-        <div className="form-section active" style={{ textAlign: 'center', alignItems: 'center' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>{'\uD83D\uDCC4'}</div>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1E293B', marginBottom: '8px' }}>Importe ton bail</h2>
-          <p style={{ fontSize: '14px', color: '#94A3B8', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
-            Sterny analyse ton contrat et remplit automatiquement les champs de ton annonce. Tu n'as plus qu'à vérifier !
-          </p>
-
-          {showBailUploadZone && (
-            <div style={{ border: '2px dashed #E8EAF0', borderRadius: '16px', padding: '32px 24px', textAlign: 'center', cursor: 'pointer', background: 'white', maxWidth: '400px', width: '100%', transition: 'border-color 0.2s' }} onClick={() => document.getElementById('bailFileInputScreen')?.click()} onMouseEnter={e => e.currentTarget.style.borderColor = '#E8622A'} onMouseLeave={e => e.currentTarget.style.borderColor = '#E8EAF0'}>
-              <div style={{ fontWeight: 600, color: '#1E293B', marginBottom: '4px' }}>Clique pour importer ton bail</div>
-              <div style={{ fontSize: '13px', color: '#94A3B8' }}>PDF ou image - Max 10 Mo</div>
-            </div>
-          )}
-          <input type="file" id="bailFileInputScreen" accept=".pdf,.jpg,.jpeg,.png" style={{ display: 'none' }} onChange={e => handleBailUpload(e.target.files[0])} />
-
-          {showBailLoader && (
-            <div style={{ marginTop: '16px', background: '#FFF8F5', border: '1px solid #FFEDD5', borderRadius: '12px', padding: '14px 18px', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
-              <div style={{ fontSize: '14px', color: '#E8622A', fontWeight: 500 }}>Analyse du document en cours...</div>
-            </div>
-          )}
-
-          {showBailFileResult && (
-            <div style={{ marginTop: '16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', padding: '14px 18px', maxWidth: '400px', width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: '#16A34A', fontSize: '18px' }}>{'\u2713'}</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 600, color: '#166534', fontSize: '14px' }}>{bailFileName}</div>
-                    <div style={{ fontSize: '12px', color: '#16A34A' }}>{bailFileStatus}</div>
-                  </div>
-                </div>
-                <button onClick={removeBailFile} style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: '18px', padding: '4px' }}>{'\u00d7'}</button>
-              </div>
-            </div>
-          )}
-
-          {showBailFileResult && (
-            <button
-              onClick={() => { setShowBailScreen(false); setShowMainForm(true) }}
-              className="btn btn-primary"
-              style={{ marginTop: '24px', padding: '0 32px' }}
-            >
-              Continuer avec mon bail {'\u2713'}
-            </button>
-          )}
-
-          <button
-            onClick={() => { setShowBailScreen(false); setShowMainForm(true) }}
-            style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: '13px', cursor: 'pointer', marginTop: '16px', textDecoration: 'underline', fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {"Je n'ai pas mon bail sous la main \u2192"}
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   if (!showMainForm) {
     return <div className="create-container"><div className="page-header"><h1>Chargement...</h1></div></div>
   }
 
-  const totalSteps = userType === 'proprietaire' ? 4 : 5
-  const progressGridCols = userType === 'proprietaire' ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)'
-  const stepNumber5Text = userType === 'proprietaire' ? '4' : '5'
+  const progressGridCols = `repeat(${visibleSteps.length}, 1fr)`
+  const stepNumber5Text = userType === 'proprietaire' ? '4' : String(visibleSteps.length)
 
   return (
     <>
@@ -1770,22 +1937,67 @@ export default function CreerAnnoncePage() {
         {/* PROGRESS BAR */}
         <div className="progress-container">
           <div className="progress-steps" style={{ gridTemplateColumns: progressGridCols }}>
-            {[1, 2, 3, 4, 5].filter(s => !(userType === 'proprietaire' && s === 4)).map(s => {
+            {visibleSteps.map((s, i) => {
               let cls = 'progress-step'
               if (s < currentStep) cls += ' completed'
               else if (s === currentStep) cls += ' active'
-              const label = s === 1 ? 'Informations' : s === 2 ? 'Détails' : s === 3 ? 'Photos' : s === 4 ? 'Disponibilités' : 'Prix'
-              const num = userType === 'proprietaire' && s === 5 ? '4' : String(s)
+              const labels = { 0: 'Bail', 1: 'Informations', 2: 'Détails', 3: 'Photos', 4: 'Disponibilités', 5: 'Prix' }
               return (
                 <div key={s} className={cls} data-step={s}>
-                  <div className="step-number">{num}</div>
-                  <div className="step-label">{label}</div>
+                  <div className="step-number">{i + 1}</div>
+                  <div className="step-label">{labels[s]}</div>
                 </div>
               )
             })}
           </div>
           <div className="progress-bar-track">
             <div className="progress-bar-fill" style={{ width: `${getProgressWidth()}%` }} />
+          </div>
+        </div>
+
+        {/* STEP 0: Bail (locataires only) */}
+        <div className={`form-section ${currentStep === 0 ? 'active' : ''} ${!hasBailStep ? 'hidden-for-user-type' : ''}`}>
+          <div className="section-header">
+            <div className="section-title">
+              <div className="section-icon-pill"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+              Importe ton bail
+            </div>
+            <div className="section-description">Sterny analyse ton contrat et remplit automatiquement les champs</div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+            {showBailUploadZone && (
+              <div className="ca-bail-upload" onClick={() => document.getElementById('bailFileInputScreen')?.click()}>
+                <div className="ca-bail-upload-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg></div>
+                <div className="ca-bail-upload-title">Clique pour importer ton bail</div>
+                <div className="ca-bail-upload-hint">PDF ou image – Max 10 Mo</div>
+              </div>
+            )}
+            <input type="file" id="bailFileInputScreen" accept=".pdf,.jpg,.jpeg,.png" style={{ display: 'none' }} onChange={e => handleBailUpload(e.target.files[0])} />
+
+            {showBailLoader && (
+              <div className="ca-bail-loader">Analyse du document en cours...</div>
+            )}
+
+            {showBailFileResult && (
+              <div className="ca-bail-result">
+                <div className="ca-bail-result-info">
+                  <div className="ca-bail-result-check"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+                  <div>
+                    <div className="ca-bail-result-name">{bailFileName}</div>
+                    <div className="ca-bail-result-status">{bailFileStatus}</div>
+                  </div>
+                </div>
+                <button className="ca-bail-result-remove" onClick={removeBailFile}>Retirer</button>
+              </div>
+            )}
+          </div>
+
+          <div className="form-navigation">
+            <div className="form-navigation-buttons">
+              <button className="btn btn-secondary" onClick={prevStep}>Retour</button>
+              <button className="btn btn-primary" onClick={nextStep}>Continuer</button>
+            </div>
           </div>
         </div>
 
@@ -1827,7 +2039,7 @@ export default function CreerAnnoncePage() {
               <label>Code postal <span className="required">*</span></label>
               <div style={{ position: 'relative', width: '100%' }}>
                 <input type="text" value={codePostal} onChange={e => { setCodePostal(e.target.value); const digits = e.target.value.replace(/[^0-9]/g, ''); if (digits.length === 5) detecterVille(digits) }} onFocus={handleCodePostalFocus} onBlur={handleCodePostalBlur} placeholder="Ex: 35000" maxLength="5" style={{ width: '100%', paddingRight: '45px' }} />
-                <span className={`input-checkmark ${codePostalCheckmarkVisible ? 'show' : ''}`}>{'\u2713'}</span>
+                <span className={`input-checkmark ${codePostalCheckmarkVisible ? 'show' : ''}`}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
               </div>
               <div className={villeMessage.className}>{villeMessage.text}</div>
             </div>
@@ -1835,7 +2047,7 @@ export default function CreerAnnoncePage() {
               <label>Adresse <span className="required">*</span></label>
               <div style={{ position: 'relative', width: '100%' }}>
                 <input type="text" value={adresse} onChange={e => { setAdresse(capitalizeAddress(e.target.value)); setAdresseCheckmarkVisible(false); setAddressValidationMsg({ text: '', severity: '', show: false }) }} onBlur={autoVerifyAddress} placeholder="Ex: 15 rue de la République" style={{ width: '100%', paddingRight: '45px' }} />
-                <span className={`input-checkmark ${adresseCheckmarkVisible ? 'show' : ''}`}>{'\u2713'}</span>
+                <span className={`input-checkmark ${adresseCheckmarkVisible ? 'show' : ''}`}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
               </div>
               {addressValidationMsg.show && (
                 <div className={`address-validation-message ${addressValidationMsg.severity} show`}>{addressValidationMsg.text}</div>
@@ -1930,7 +2142,7 @@ export default function CreerAnnoncePage() {
               ))}
             </div>
             {dpeAutoDetected && (
-              <p style={{ color: '#22C55E', fontSize: '12px', marginTop: '6px', fontWeight: 500 }}>{'\u2713'} DPE détecté automatiquement : classe {dpeAutoDetected}</p>
+              <p style={{ color: '#22C55E', fontSize: '12px', marginTop: '6px', fontWeight: 500 }}>DPE détecté automatiquement : classe {dpeAutoDetected}</p>
             )}
           </div>
           <h3 style={{ fontSize: '14px', fontWeight: 600, margin: '32px 0 16px', color: '#1E293B' }}>Équipements disponibles</h3>
@@ -1991,7 +2203,7 @@ export default function CreerAnnoncePage() {
             {uploadedPhotos.length === 0 ? (
               <div className="upload-zone-simple" onClick={() => photoInputRef.current?.click()}>
                 <div className="upload-icon-large">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" /><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" /><circle cx="13" cy="7" r="1" fill="#9CA3AF" /><rect x="8" y="2" width="14" height="14" rx="2" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" /><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" /><circle cx="13" cy="7" r="1" fill="#CBD5E1" /><rect x="8" y="2" width="14" height="14" rx="2" /></svg>
                 </div>
                 <div className="upload-text-large">Clique pour ajouter des photos</div>
                 <div className="upload-subtext-large">JPG, PNG ou WEBP - Max 5 MB par photo</div>
@@ -2024,14 +2236,14 @@ export default function CreerAnnoncePage() {
               <button className="btn-add-photos" onClick={() => photoInputRef.current?.click()}>+ Ajouter d'autres photos</button>
             )}
           </div>
-          <div className="photos-counter"><span className="photo-count-number">{uploadedPhotos.length}</span> / 10 photos - <strong>Minimum 5 photos requis</strong></div>
-          <div className="photos-tips">
-            <div style={{ fontWeight: 600, marginBottom: '8px' }}>Conseils pour de bonnes photos :</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px', color: '#6B7280' }}>
-              <span>- La première photo sera la photo principale</span>
-              <span>- Photographie toutes les pièces</span>
-              <span>- Privilégie la lumière naturelle</span>
-              <span>- Range un peu avant de photographier</span>
+          <div style={{ textAlign: 'center' }}><span className="photos-counter"><span className="photo-count-number">{uploadedPhotos.length}</span> / 10 photos · min. 5 requis</span></div>
+          <div style={{ background: '#FFF8F5', borderLeft: '3px solid #E8622A', borderRadius: '0 12px 12px 0', padding: '16px 20px', marginTop: '16px' }}>
+            <div style={{ fontWeight: 600, color: '#E8622A', fontSize: '14px', marginBottom: '6px' }}>Conseils pour de bonnes photos</div>
+            <div style={{ fontSize: '13px', color: '#1E293B', lineHeight: 1.6 }}>
+              – La première photo sera la photo principale<br/>
+              – Photographie toutes les pièces<br/>
+              – Privilégie la lumière naturelle<br/>
+              – Range un peu avant de photographier
             </div>
           </div>
           {errors[3] && <div className="error-message show" onClick={() => setErrors({})}><span>{errors[3]}</span></div>}
@@ -2053,42 +2265,27 @@ export default function CreerAnnoncePage() {
             <div className="section-description">Indique ton rythme d'alternance et les dates de ton bail</div>
           </div>
 
-          {/* Bail result banner (if uploaded on bail screen) */}
-          {showBailFileResult && (
-            <div style={{ marginBottom: '20px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', padding: '14px 18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: '#16A34A', fontSize: '18px' }}>{'\u2713'}</span>
-                  <div>
-                    <div style={{ fontWeight: 600, color: '#166534', fontSize: '14px' }}>{bailFileName}</div>
-                    <div style={{ fontSize: '12px', color: '#16A34A' }}>{bailFileStatus}</div>
-                  </div>
-                </div>
-                <button onClick={removeBailFile} style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', fontSize: '18px', padding: '4px' }}>{'\u00d7'}</button>
-              </div>
-            </div>
-          )}
-
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
             <div className="form-group">
               <label>Date de début du bail <span className="required">*</span></label>
-              <input type="text" value={bailStartDate} onChange={e => handleDateInput(e.target.value, setBailStartDate)} onBlur={handleBailEndDateCalc} placeholder="JJ/MM/AAAA" style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px' }} />
+              <input type="text" value={bailStartDate} onChange={e => handleDateInput(e.target.value, setBailStartDate)} onBlur={handleBailEndDateCalc} placeholder="JJ/MM/AAAA" style={{ width: '100%', height: '36px', padding: '0 14px', border: '1.5px solid #E8EAF0', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }} />
               <div className="input-hint">Premier jour de ton bail</div>
             </div>
             <div className="form-group">
               <label>Date de fin du bail <span className="required">*</span></label>
-              <input type="text" value={bailEndDate} onChange={e => { handleDateInput(e.target.value, setBailEndDate); dimancheChoixFaitRef.current = false }} onBlur={handleBailFromDates} placeholder="JJ/MM/AAAA" style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px' }} />
+              <input type="text" value={bailEndDate} onChange={e => { handleDateInput(e.target.value, setBailEndDate); dimancheChoixFaitRef.current = false }} onBlur={handleBailFromDates} placeholder="JJ/MM/AAAA" style={{ width: '100%', height: '36px', padding: '0 14px', border: '1.5px solid #E8EAF0', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box' }} />
               <div className="input-hint">Dernier jour de ton bail</div>
             </div>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '24px' }}>
+          <div className="form-group" style={{ marginBottom: '24px', position: 'relative', zIndex: caBailDureeOpen ? 500 : 1 }}>
             <label>Durée prédéfinie</label>
             <CaSelect
               value={bailDuree}
               onChange={(val) => { setBailDuree(val); dimancheChoixFaitRef.current = false; setTimeout(handleBailEndDateCalc, 0) }}
               placeholder="Choisis la durée de ton bail"
               options={[3, 6, 9, 10, 12, 24].map(d => ({ value: String(d), label: `${d} mois${d === 9 ? ' (année scolaire)' : d === 12 ? ' (1 an)' : d === 24 ? ' (2 ans)' : ''}` }))}
+              onOpenChange={setCaBailDureeOpen}
             />
           </div>
 
@@ -2097,30 +2294,47 @@ export default function CreerAnnoncePage() {
           {/* Rhythm selection */}
           <div style={{ marginBottom: '32px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1F2937', marginBottom: '24px' }}>Quel est ton rythme d'alternance ?</h3>
-            <div className="form-group" style={{ marginBottom: '20px' }}>
-              <label>Type d'alternance</label>
-              <CaSelect
-                value={rhythmType}
-                onChange={(val) => { setRhythmType(val); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }}
-                placeholder="Choisis ton type"
-                options={[
-                  { value: 'symmetric', label: 'Symétrique (même durée)' },
-                  { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
-                  { value: 'custom', label: 'Personnalisé (sélection manuelle)' }
-                ]}
-              />
-            </div>
-            {(rhythmType === 'symmetric' || rhythmType === 'asymmetric') && (
-              <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label>Rythme</label>
+            <div style={{ display: 'grid', gridTemplateColumns: (rhythmType === 'symmetric' || rhythmType === 'asymmetric') ? '1fr 1fr' : '1fr', gap: '16px', marginBottom: '20px' }}>
+              <div className="form-group" style={{ marginBottom: 0, position: 'relative', zIndex: caRhythmTypeOpen ? 400 : 200 }}>
+                <label>Type d'alternance</label>
                 <CaSelect
-                  value={rhythmPattern}
-                  onChange={(val) => { setRhythmPattern(val); if (val) enterCycleSelectionMode() }}
-                  placeholder="Choisis la durée"
-                  options={getRhythmOptions()}
+                  value={rhythmType}
+                  onChange={(val) => { setRhythmType(val); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }}
+                  placeholder="Choisis ton type"
+                  options={[
+                    { value: 'symmetric', label: 'Symétrique (même durée)' },
+                    { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
+                    { value: 'custom', label: 'Personnalisé (sélection manuelle)' }
+                  ]}
+                  onOpenChange={setCaRhythmTypeOpen}
                 />
               </div>
-            )}
+              {(rhythmType === 'symmetric' || rhythmType === 'asymmetric') && (
+                <div className="form-group" style={{ marginBottom: 0, position: 'relative', zIndex: caRhythmPatternOpen ? 300 : 100 }}>
+                  <label>Rythme</label>
+                  <CaSelect
+                    value={rhythmPattern}
+                    onChange={(val) => {
+                      setRhythmPattern(val)
+                      if (val) {
+                        if (!rhythmStartDate && bailStartDate && bailEndDate) {
+                          const start = parseDate(bailStartDate)
+                          const end = parseDate(bailEndDate)
+                          if (start && end) {
+                            processRhythmDates(start, end)
+                            return
+                          }
+                        }
+                        enterCycleSelectionMode()
+                      }
+                    }}
+                    placeholder="Choisis la durée"
+                    onOpenChange={setCaRhythmPatternOpen}
+                    options={getRhythmOptions()}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {rhythmType === 'custom' && (
@@ -2260,8 +2474,8 @@ export default function CreerAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer mensuel / 2 alternants</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
-                  <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line total"><span>Prix par semaine / alternant</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
               </div>
             )}
@@ -2300,8 +2514,8 @@ export default function CreerAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer + forfait charges / 2</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
-                  <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line total"><span>Prix par semaine / alternant</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
               </div>
             )}
@@ -2342,8 +2556,8 @@ export default function CreerAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer / 2</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
-                  <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line total"><span>Prix par semaine / alternant</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
                 <div className="price-note">+ Charges variables selon consommation réelle</div>
               </div>
@@ -2372,7 +2586,7 @@ export default function CreerAnnoncePage() {
               <button className="crop-close" onClick={closeCropModal}>{'\u00d7'}</button>
             </div>
             <div className="crop-container">
-              <img ref={cropImageRef} src="" alt="Crop" />
+              <img ref={cropImageRef} alt="Crop" />
             </div>
             <div className="crop-modal-footer">
               <button className="btn btn-secondary" onClick={closeCropModal}>Annuler</button>

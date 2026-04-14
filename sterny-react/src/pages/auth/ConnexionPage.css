@@ -70,11 +70,11 @@
 
 .cx-field input {
     width: 100%;
-    height: 46px;
-    padding: 0 16px;
+    height: 36px;
+    padding: 0 14px;
     border: 1.5px solid #E8EAF0;
-    border-radius: 12px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
     font-family: 'DM Sans', sans-serif;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;

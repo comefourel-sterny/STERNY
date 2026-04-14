@@ -1296,7 +1296,7 @@ export default function ModifierAnnoncePage() {
       if (!total || total <= 0) return null
       const base = total / 2
       const perWeek = base / 4.33
-      const commission = perWeek * 0.05
+      const commission = perWeek * 0.15
       return { base, perWeek, commission, final: perWeek + commission }
     }
     if (mode === 'plafond') {
@@ -1305,7 +1305,7 @@ export default function ModifierAnnoncePage() {
       if (!base || base <= 0 || !charges || charges < 0) return null
       const divided = (base + charges) / 2
       const perWeek = divided / 4.33
-      const commission = perWeek * 0.05
+      const commission = perWeek * 0.15
       return { base: divided, perWeek, commission, final: perWeek + commission }
     }
     if (mode === 'separe') {
@@ -1313,7 +1313,7 @@ export default function ModifierAnnoncePage() {
       if (!base || base <= 0) return null
       const divided = base / 2
       const perWeek = divided / 4.33
-      const commission = perWeek * 0.05
+      const commission = perWeek * 0.15
       return { base: divided, perWeek, commission, final: perWeek + commission }
     }
     return null
@@ -1466,12 +1466,12 @@ export default function ModifierAnnoncePage() {
         const prixTotal = parseFloat(prixForfaitaire)
         const cautionVal = parseFloat(caution)
         prixBase = prixTotal / 2
-        chargesInfo = { mode: 'forfaitaire', prix_total_hote: prixTotal, prix_par_alternant: prixBase + prixBase * 0.05, caution: cautionVal }
+        chargesInfo = { mode: 'forfaitaire', prix_total_hote: prixTotal, prix_par_alternant: prixBase + prixBase * 0.15, caution: cautionVal }
       } else if (chargeMode === 'plafond') {
         const loyer = parseFloat(prixBasePlafond)
         const forfait = parseFloat(chargesMoyennes)
         prixBase = (loyer + forfait) / 2
-        chargesInfo = { mode: 'forfait_regularisation', loyer_base: loyer, forfait_charges: forfait, conso_normale_elec_kwh: parseFloat(consoElec) || null, conso_normale_eau_m3: parseFloat(consoEau) || null, prix_par_alternant: prixBase + prixBase * 0.05, caution: parseFloat(cautionPlafond) }
+        chargesInfo = { mode: 'forfait_regularisation', loyer_base: loyer, forfait_charges: forfait, conso_normale_elec_kwh: parseFloat(consoElec) || null, conso_normale_eau_m3: parseFloat(consoEau) || null, prix_par_alternant: prixBase + prixBase * 0.15, caution: parseFloat(cautionPlafond) }
       } else if (chargeMode === 'separe') {
         const loyer = parseFloat(prixBaseSepare)
         prixBase = loyer / 2
@@ -1480,11 +1480,11 @@ export default function ModifierAnnoncePage() {
         if (chargesTypes.electricite) ct.push('electricite')
         if (chargesTypes.internet) ct.push('internet')
         if (chargesTypes.chauffage) ct.push('chauffage')
-        chargesInfo = { mode: 'separe', loyer_base: loyer, charges_types: ct, prix_base_par_alternant: prixBase + prixBase * 0.05, caution: parseFloat(cautionSepare) }
+        chargesInfo = { mode: 'separe', loyer_base: loyer, charges_types: ct, prix_base_par_alternant: prixBase + prixBase * 0.15, caution: parseFloat(cautionSepare) }
       }
 
       const prixParSemaine = prixBase / 4.33
-      const prixSemaineAvecCommission = prixParSemaine + prixParSemaine * 0.05
+      const prixSemaineAvecCommission = prixParSemaine + prixParSemaine * 0.15
       const nbSemaines = getSelectedWeeksCount()
       let prixTotalSejour = null
       if (userType === 'locataire' && nbSemaines > 0) prixTotalSejour = Math.round(prixSemaineAvecCommission * nbSemaines)
@@ -2189,7 +2189,7 @@ export default function ModifierAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer mensuel / 2 alternants</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
                   <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
               </div>
@@ -2229,7 +2229,7 @@ export default function ModifierAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer + forfait charges / 2</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
                   <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
               </div>
@@ -2271,7 +2271,7 @@ export default function ModifierAnnoncePage() {
                 <div className="price-breakdown">
                   <div className="price-line"><span>Loyer / 2</span><span>{priceCalc.base.toFixed(2)}{'\u20ac'}</span></div>
                   <div className="price-line"><span>Prix par semaine / alternant</span><span>{priceCalc.perWeek.toFixed(2)}{'\u20ac'}</span></div>
-                  <div className="price-line commission"><span>+ Commission STERNY (5%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
+                  <div className="price-line commission"><span>+ Commission STERNY (15%)</span><span>{priceCalc.commission.toFixed(2)}{'\u20ac'}/semaine</span></div>
                   <div className="price-line total"><span>Prix par semaine (avec commission)</span><span>{priceCalc.final.toFixed(2)}{'\u20ac'}</span></div>
                 </div>
                 <div className="price-note">+ Charges variables selon consommation réelle</div>

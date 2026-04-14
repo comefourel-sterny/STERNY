@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import './InscriptionRecherchePage.css'
@@ -45,33 +46,55 @@ function formatPhone(val) {
   return groups ? groups.join(' ') : ''
 }
 
-function CustomSelect({ value, onChange, options, placeholder }) {
+function CustomSelect({ value, onChange, options, placeholder, onOpenChange }) {
   const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+  const triggerRef = useRef(null)
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
 
   const selected = options.find(o => o.value === value)
 
+  const updateOpen = (val) => {
+    setOpen(val)
+    if (onOpenChange) onOpenChange(val)
+  }
+
   const handleSelect = (val) => {
     onChange(val)
-    setOpen(false)
+    updateOpen(false)
   }
 
-  const handleBlur = (e) => {
-    if (ref.current && !ref.current.contains(e.relatedTarget)) {
-      setOpen(false)
+  const updatePos = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
     }
+  }, [])
+
+  const handleToggle = () => {
+    if (!open) updatePos()
+    updateOpen(!open)
   }
+
+  useEffect(() => {
+    if (!open) return
+    const handleClickOutside = (e) => {
+      if (triggerRef.current && !triggerRef.current.contains(e.target)) updateOpen(false)
+    }
+    const t = setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 0)
+    window.addEventListener('scroll', updatePos, true)
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', handleClickOutside); window.removeEventListener('scroll', updatePos, true) }
+  }, [open])
 
   return (
-    <div className="ir-select" ref={ref} tabIndex={-1} onBlur={handleBlur}>
-      <div className={`ir-select-trigger${!selected ? ' placeholder' : ''}`} onClick={() => setOpen(!open)}>
+    <div className="ir-select" ref={triggerRef}>
+      <div className={`ir-select-trigger${!selected ? ' placeholder' : ''}`} onClick={handleToggle}>
         <span>{selected ? selected.label : placeholder}</span>
         <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <path d="M1 1l5 5 5-5" stroke="#64748B" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      {open && (
-        <div className="ir-select-dropdown">
+      {open && createPortal(
+        <div className="ir-select-dropdown" style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width, zIndex: 99999, background: 'white', borderRadius: '12px', border: '1px solid #E8EAF0', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', maxHeight: '180px', overflowY: 'auto', overscrollBehavior: 'contain' }}>
           {options.map(o => (
             <div
               key={o.value}
@@ -85,7 +108,8 @@ function CustomSelect({ value, onChange, options, placeholder }) {
               )}
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
@@ -127,7 +151,7 @@ function VilleAutocomplete({ value, onChange, onSelect, placeholder, suggestions
   }
 
   return (
-    <div className="ir-ville-wrapper">
+    <div className="ir-ville-wrapper" style={{ position: 'relative', zIndex: 1 }}>
       <input
         type="text"
         value={value}
@@ -183,7 +207,9 @@ export default function InscriptionRecherchePage() {
 
   // Step 3
   const [typeAlternance, setTypeAlternance] = useState('')
+  const [typeSelectOpen, setTypeSelectOpen] = useState(false)
   const [monRythme, setMonRythme] = useState('')
+  const [rythmeSelectOpen, setRythmeSelectOpen] = useState(false)
   const [rythmeCustom, setRythmeCustom] = useState('')
   const [villeInput, setVilleInput] = useState('')
   const [villeSelectionnee, setVilleSelectionnee] = useState('')
@@ -431,7 +457,7 @@ export default function InscriptionRecherchePage() {
           </div>
 
           <div className="ir-bottom">
-            <button ref={el => btnRefs.current[1] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
+            <button type="button" ref={el => btnRefs.current[1] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} disabled={!intent} onClick={() => handleNext(1)}>Continuer</button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.48s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : (<><Link to="/inscription">Retour</Link> · Déjà un compte ? <Link to="/connexion">Se connecter</Link></>)}
             </p>
@@ -461,7 +487,7 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="ir-bottom">
-            <button ref={el => btnRefs.current[2] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} onClick={() => handleNext(2)}>Continuer</button>
+            <button type="button" ref={el => btnRefs.current[2] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.40s' }} onClick={() => handleNext(2)}>Continuer</button>
             <div className="ir-separator ir-stagger" style={{ animationDelay: '0.48s' }}><span>ou</span></div>
             <button type="button" className="ir-google ir-stagger" style={{ animationDelay: '0.56s' }} onClick={handleGoogleSignup}>
               <svg width="18" height="18" viewBox="0 0 18 18">
@@ -483,7 +509,7 @@ export default function InscriptionRecherchePage() {
         {/* Step 3: Alternance + City */}
         <div className={`step${currentStep === 3 ? ' active' : ''}`}>
           <div className="step-content">
-            <div className="form-group ir-stagger" style={{ animationDelay: '0.16s' }}>
+            <div className="form-group ir-stagger" style={{ animationDelay: '0.16s', position: 'relative', zIndex: typeSelectOpen ? 400 : 200 }}>
               <label>Type d'alternance</label>
               <CustomSelect
                 value={typeAlternance}
@@ -494,17 +520,19 @@ export default function InscriptionRecherchePage() {
                   { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
                   { value: 'custom', label: 'Personnalisé' }
                 ]}
+                onOpenChange={setTypeSelectOpen}
               />
             </div>
 
             {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
-              <div className="form-group">
+              <div className="form-group" style={{ position: 'relative', zIndex: rythmeSelectOpen ? 300 : 100 }}>
                 <label>Mon rythme</label>
                 <CustomSelect
                   value={monRythme}
                   onChange={setMonRythme}
                   placeholder="Sélectionner"
                   options={getRythmeOptions()}
+                  onOpenChange={setRythmeSelectOpen}
                 />
               </div>
             )}
@@ -522,7 +550,7 @@ export default function InscriptionRecherchePage() {
             )}
 
             {intent !== 'les-deux' && (
-              <div className="form-group">
+              <div className="form-group" style={{ position: 'relative', zIndex: 1 }}>
                 <label>{intent === 'partage' ? 'Ville de ton logement' : 'Ville où tu cherches'}</label>
                 <VilleAutocomplete
                   value={villeInput}
@@ -536,7 +564,7 @@ export default function InscriptionRecherchePage() {
             )}
 
             {intent === 'les-deux' && (
-              <div className="form-row">
+              <div className="form-row" style={{ position: 'relative', zIndex: 1 }}>
                 <div className="form-group">
                   <label>Ville où tu proposes</label>
                   <VilleAutocomplete
@@ -562,8 +590,8 @@ export default function InscriptionRecherchePage() {
               </div>
             )}
           </div>
-          <div className="ir-bottom">
-            <button ref={el => btnRefs.current[3] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.24s' }} onClick={() => handleNext(3)}>Continuer</button>
+          <div className="ir-bottom" style={{ position: 'relative', zIndex: 1 }}>
+            <button type="button" ref={el => btnRefs.current[3] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.24s' }} onClick={() => handleNext(3)}>Continuer</button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.32s' }}>
               {errorMsg ? <span className="ir-error">{errorMsg}</span> : <a href="#" onClick={(e) => { e.preventDefault(); handlePrev(3) }}>Retour</a>}
             </p>
@@ -583,7 +611,7 @@ export default function InscriptionRecherchePage() {
             </div>
           </div>
           <div className="ir-bottom">
-            <button ref={el => btnRefs.current[4] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.32s' }} disabled={creating} onClick={createAccount}>
+            <button type="button" ref={el => btnRefs.current[4] = el} className="ir-btn ir-stagger" style={{ animationDelay: '0.32s' }} disabled={creating} onClick={createAccount}>
               {creating ? 'Création en cours...' : 'Créer mon compte'}
             </button>
             <p className="ir-back ir-stagger" style={{ animationDelay: '0.40s' }}>

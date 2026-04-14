@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
@@ -166,31 +167,56 @@ function isVilleLancement(city) {
   })
 }
 
-function CpSelect({ value, onChange, options, placeholder }) {
+function CpSelect({ value, onChange, options, placeholder, onOpenChange }) {
   const [open, setOpen] = useState(false)
-  const ref = useRef(null)
+  const triggerRef = useRef(null)
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
   const selected = options.find(o => o.value === value)
 
-  const handleBlur = (e) => {
-    if (ref.current && !ref.current.contains(e.relatedTarget)) setOpen(false)
+  const updateOpen = (val) => {
+    setOpen(val)
+    if (onOpenChange) onOpenChange(val)
   }
 
+  const updatePos = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
+    }
+  }, [])
+
+  const handleToggle = () => {
+    if (!open) updatePos()
+    updateOpen(!open)
+  }
+
+  useEffect(() => {
+    if (!open) return
+    const handleClickOutside = (e) => {
+      if (triggerRef.current && !triggerRef.current.contains(e.target)) updateOpen(false)
+    }
+    const t = setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 0)
+    window.addEventListener('scroll', updatePos, true)
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', handleClickOutside); window.removeEventListener('scroll', updatePos, true) }
+  }, [open])
+
   return (
-    <div className="cp-select" ref={ref} tabIndex={-1} onBlur={handleBlur}>
-      <div className={`cp-select-trigger${!selected ? ' cp-placeholder' : ''}`} onClick={() => setOpen(!open)}>
+    <div className="cp-select" ref={triggerRef}>
+      <div className={`cp-select-trigger${!selected ? ' cp-placeholder' : ''}`} onClick={handleToggle}>
         <span>{selected ? selected.label : placeholder}</span>
         <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <path d="M1 1l5 5 5-5" stroke="#6B7280" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      {open && (
-        <div className="cp-select-dropdown">
+      {open && createPortal(
+        <div className="cp-select-dropdown" style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width, zIndex: 99999, background: 'white', borderRadius: '12px', border: '1px solid #E8EAF0', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', maxHeight: '180px', overflowY: 'auto', overscrollBehavior: 'contain' }}>
           {options.map(o => (
-            <div key={o.value} className={`cp-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); setOpen(false) }}>
+            <div key={o.value} className={`cp-select-option${o.value === value ? ' selected' : ''}`} onMouseDown={() => { onChange(o.value); updateOpen(false) }}>
               {o.label}
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
@@ -215,6 +241,8 @@ export default function CompleterProfilPage() {
   const [sexe, setSexe] = useState('')
 
   // Step 2: Alternance
+  const [typeSelectOpen, setTypeSelectOpen] = useState(false)
+  const [rythmeSelectOpen, setRythmeSelectOpen] = useState(false)
   const [typeAlternance, setTypeAlternance] = useState('')
   const [monRythme, setMonRythme] = useState('')
   const [rythmeCustom, setRythmeCustom] = useState('')
@@ -745,7 +773,7 @@ export default function CompleterProfilPage() {
             </button>
           </div>
           <div className="cp-crop-area" ref={cropAreaRef} onMouseDown={handleCropMouseDown} onTouchStart={handleCropTouchStart}>
-            <img ref={cropImageRef} src={cropImageSrc} alt="Photo a recadrer" onLoad={handleCropImageLoad} />
+            {cropImageSrc && <img ref={cropImageRef} src={cropImageSrc} alt="Photo a recadrer" onLoad={handleCropImageLoad} />}
           </div>
           <div className="cp-crop-zoom">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M8 11h6"/></svg>
@@ -819,46 +847,8 @@ export default function CompleterProfilPage() {
 
           {/* Step 2: Alternance */}
           {currentStep === 2 && !showConfirmation && (
-            <div className="cp-step">
-              <div className="cp-group cp-stagger" style={{ animationDelay: '0.12s' }}>
-                <label>Type d'alternance</label>
-                <CpSelect
-                  value={typeAlternance}
-                  onChange={(val) => { setTypeAlternance(val); setMonRythme('') }}
-                  placeholder="Sélectionner"
-                  options={[
-                    { value: 'symmetric', label: 'Symétrique (même durée)' },
-                    { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
-                    { value: 'custom', label: 'Personnalisé' }
-                  ]}
-                />
-              </div>
-
-              {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
-                <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
-                  <label>Mon rythme</label>
-                  <CpSelect
-                    value={monRythme}
-                    onChange={setMonRythme}
-                    placeholder="Sélectionner"
-                    options={typeAlternance === 'symmetric' ? SYMMETRIC_OPTIONS : ASYMMETRIC_OPTIONS}
-                  />
-                </div>
-              )}
-
-              {typeAlternance === 'custom' && (
-                <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
-                  <label>Décris ton rythme</label>
-                  <input
-                    type="text"
-                    value={rythmeCustom}
-                    onChange={(e) => setRythmeCustom(e.target.value)}
-                    placeholder="Ex : 3 jours école / 2 jours entreprise"
-                  />
-                </div>
-              )}
-
-              <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s' }}>
+            <div className="cp-step" style={{ position: 'relative', overflow: 'visible' }}>
+              <div className="cp-group" style={{ position: 'relative', zIndex: 1, marginTop: 0 }}>
                 <label>Ville</label>
                 <div className="cp-autocomplete">
                   <input
@@ -904,6 +894,46 @@ export default function CompleterProfilPage() {
                   )}
                 </div>
               </div>
+
+              <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s', position: 'relative', zIndex: typeSelectOpen ? 400 : 200 }}>
+                <label>Type d'alternance</label>
+                <CpSelect
+                  value={typeAlternance}
+                  onChange={(val) => { setTypeAlternance(val); setMonRythme('') }}
+                  placeholder="Sélectionner"
+                  options={[
+                    { value: 'symmetric', label: 'Symétrique (même durée)' },
+                    { value: 'asymmetric', label: 'Asymétrique (durées différentes)' },
+                    { value: 'custom', label: 'Personnalisé' }
+                  ]}
+                  onOpenChange={setTypeSelectOpen}
+                />
+              </div>
+
+              {(typeAlternance === 'symmetric' || typeAlternance === 'asymmetric') && (
+                <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s', position: 'relative', zIndex: rythmeSelectOpen ? 300 : 100 }}>
+                  <label>Mon rythme</label>
+                  <CpSelect
+                    value={monRythme}
+                    onChange={setMonRythme}
+                    placeholder="Sélectionner"
+                    options={typeAlternance === 'symmetric' ? SYMMETRIC_OPTIONS : ASYMMETRIC_OPTIONS}
+                    onOpenChange={setRythmeSelectOpen}
+                  />
+                </div>
+              )}
+
+              {typeAlternance === 'custom' && (
+                <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s', position: 'relative', zIndex: 1 }}>
+                  <label>Décris ton rythme</label>
+                  <input
+                    type="text"
+                    value={rythmeCustom}
+                    onChange={(e) => setRythmeCustom(e.target.value)}
+                    placeholder="Ex : 3 jours école / 2 jours entreprise"
+                  />
+                </div>
+              )}
 
               <div className="cp-bottom">
                 <button className="cp-btn" onClick={() => nextStep(2)}>Continuer</button>

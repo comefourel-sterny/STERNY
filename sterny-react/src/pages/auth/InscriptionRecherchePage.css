@@ -282,10 +282,9 @@ section.page-inscription-recherche {
     background: white;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    border: 1.5px solid #E8EAF0;
-    z-index: 20;
-    overflow: hidden;
-    max-height: 200px;
+    border: 1px solid #E8EAF0;
+    z-index: 9999;
+    max-height: 180px;
     overflow-y: auto;
 }
 
@@ -307,10 +306,48 @@ section.page-inscription-recherche {
 }
 
 .ir-card .ir-option-main {
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .ir-card .ir-option-hint {
+    font-weight: 400;
+    color: #94A3B8;
+    font-size: 13px;
+}
+
+/* ═══ PORTAL DROPDOWN (non-scopé pour createPortal sur body) ═══ */
+.ir-select-dropdown {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid #E8EAF0;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.ir-select-option {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #1E293B;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ir-select-option:hover {
+    background: #FDF0EB;
+}
+
+.ir-select-option.selected {
+    color: #E8622A;
+    font-weight: 600;
+}
+
+.ir-option-main {
+    font-weight: 400;
+}
+
+.ir-option-hint {
     font-weight: 400;
     color: #94A3B8;
     font-size: 13px;
@@ -331,7 +368,7 @@ section.page-inscription-recherche {
     border-radius: 12px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 20;
+    z-index: 9999;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 

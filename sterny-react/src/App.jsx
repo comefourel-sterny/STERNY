@@ -1,6 +1,13 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Agentation } from 'agentation'
 import PasswordGate from './components/PasswordGate'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
 
 // Layouts & handlers
 import Layout from './components/layout/Layout'
@@ -84,6 +91,7 @@ import NotFoundPage from './pages/NotFoundPage'
 export default function App() {
   return (
     <PasswordGate>
+      <ScrollToTop />
       <GoogleAuthHandler />
       <Routes>
         {/* Invitation — no layout */}

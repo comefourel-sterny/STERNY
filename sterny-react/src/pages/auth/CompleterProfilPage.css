@@ -19,7 +19,7 @@
     border: 1.5px solid #E8EAF0;
     display: flex;
     flex-direction: column;
-    animation: cpFadeIn 0.4s ease;
+    overflow: visible;
 }
 
 @keyframes cpFadeIn {
@@ -91,24 +91,11 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-bottom: 10px;
-    position: relative;
 }
-
-.cp-step > .cp-row:nth-child(1) { z-index: 5; }
-.cp-step > .cp-row:nth-child(2) { z-index: 4; }
-.cp-step > .cp-row:nth-child(3) { z-index: 3; }
 
 .cp-group {
     margin-bottom: 10px;
-    position: relative;
 }
-
-/* Chaque groupe empile au-dessus du suivant pour que les dropdowns ne soient pas masqués */
-.cp-step > .cp-group:nth-child(1) { z-index: 5; }
-.cp-step > .cp-group:nth-child(2) { z-index: 4; }
-.cp-step > .cp-group:nth-child(3) { z-index: 3; }
-.cp-step > .cp-group:nth-child(4) { z-index: 2; }
-.cp-step > .cp-group:nth-child(5) { z-index: 1; }
 
 .cp-row .cp-group {
     margin-bottom: 0;
@@ -218,12 +205,13 @@
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1.5px solid #E8EAF0;
+    background: white !important;
+    border: 1px solid #E8EAF0;
     border-radius: 12px;
-    z-index: 50;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    overflow: hidden;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    overflow: visible;
+    padding-top: 8px;
 }
 
 .cp-select-option {
@@ -745,7 +733,7 @@
 
 /* ═══ STAGGER ═══ */
 .cp-stagger {
-    animation: cpStaggerIn 0.4s ease both;
+    animation: cpStaggerIn 0.4s ease;
 }
 
 @keyframes cpStaggerIn {
