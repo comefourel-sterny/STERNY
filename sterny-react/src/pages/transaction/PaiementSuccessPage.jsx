@@ -19,7 +19,7 @@ export default function PaiementSuccessPage() {
   const [date, setDate] = useState('\u2014')
   const [ref, setRef] = useState('\u2014')
   const [nextHint, setNextHint] = useState("Prochaine etape : etat des lieux d'entree")
-  const [dashboardUrl, setDashboardUrl] = useState('/dashboard/locataire')
+  const [dashboardUrl, setDashboardUrl] = useState('/dashboard')
 
   function afficherSucces(montantVal, refVal, type) {
     setState('success')
@@ -163,7 +163,7 @@ export default function PaiementSuccessPage() {
               <p className="success-subtitle" role="alert" aria-live="polite">
                 Le paiement n&apos;a pas pu etre verifie.<br />Contactez-nous a contact@sterny.co
               </p>
-              <Link to="/dashboard/locataire" className="btn-secondary-success">Retour</Link>
+              <Link to="/dashboard" className="btn-secondary-success">Retour</Link>
             </div>
           )}
         </div>

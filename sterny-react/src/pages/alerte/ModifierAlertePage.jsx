@@ -45,7 +45,7 @@ export default function ModifierAlertePage() {
 
     if (!alerteId) {
       showMessage('Aucune alerte specifiee', 'error')
-      setTimeout(() => navigate('/dashboard/locataire'), 2000)
+      setTimeout(() => navigate('/dashboard'), 2000)
       return
     }
 
@@ -62,7 +62,7 @@ export default function ModifierAlertePage() {
 
         if (!alerte) {
           showMessage('Alerte introuvable', 'error')
-          setTimeout(() => navigate('/dashboard/locataire'), 2000)
+          setTimeout(() => navigate('/dashboard'), 2000)
           return
         }
 
@@ -73,7 +73,7 @@ export default function ModifierAlertePage() {
       } catch (error) {
         console.error('Erreur chargement alerte:', error)
         showMessage("Erreur de chargement de l'alerte", 'error')
-        setTimeout(() => navigate('/dashboard/locataire'), 2000)
+        setTimeout(() => navigate('/dashboard'), 2000)
       } finally {
         setLoadingAlerte(false)
       }
@@ -122,7 +122,7 @@ export default function ModifierAlertePage() {
       showMessage('Alerte modifiee avec succes !', 'success')
 
       setTimeout(() => {
-        navigate('/dashboard/locataire')
+        navigate('/dashboard')
       }, 1500)
     } catch (error) {
       console.error('Erreur modification alerte:', error)
@@ -222,7 +222,7 @@ export default function ModifierAlertePage() {
             </div>
 
             <div className="form-actions">
-              <Link to="/dashboard/locataire" className="btn btn-secondary">
+              <Link to="/dashboard" className="btn btn-secondary">
                 Annuler
               </Link>
               <button

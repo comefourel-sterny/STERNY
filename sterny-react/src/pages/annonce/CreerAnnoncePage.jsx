@@ -547,7 +547,18 @@ export default function CreerAnnoncePage() {
     checkUserType()
   }, [user])
 
-  // Auto-show calendar when rhythm + bail dates are all set
+  // Auto-show calendar immediately when arriving on step 4
+  useEffect(() => {
+    if (currentStep !== 4) return
+    if (showEditCalendar) return
+    const now = new Date()
+    setStartMonthIndex(now.getMonth())
+    setStartYear(now.getFullYear())
+    setCalendarMode('editing')
+    setShowEditCalendar(true)
+  }, [currentStep])
+
+  // Auto-enter cycle selection when rhythm + bail dates are all set
   useEffect(() => {
     console.log('[Calendar debug]', { rhythmPattern, rhythmType, bailStartDate, bailEndDate, rhythmStartDate, rhythmEndDate, showEditCalendar, currentStep })
     if (currentStep !== 4) return
@@ -1708,7 +1719,7 @@ export default function CreerAnnoncePage() {
       }
 
       showNotificationFn('Annonce publiée !', 'Ton annonce a été publiée avec succès !', 'success')
-      navigate('/dashboard/locataire')
+      navigate('/dashboard')
     } catch (error) {
       console.error('Erreur:', error)
       showNotificationFn('Erreur', 'Erreur lors de la publication : ' + error.message, 'error')
@@ -2299,7 +2310,7 @@ export default function CreerAnnoncePage() {
                 <label>Type d'alternance</label>
                 <CaSelect
                   value={rhythmType}
-                  onChange={(val) => { setRhythmType(val); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }}
+                  onChange={(val) => { setRhythmType(val); setRhythmPattern(''); setCalendarMode('editing'); setSelectedDates([]) }}
                   placeholder="Choisis ton type"
                   options={[
                     { value: 'symmetric', label: 'Symétrique (même durée)' },
@@ -2343,12 +2354,17 @@ export default function CreerAnnoncePage() {
 
           {/* Calendar */}
           {showEditCalendar && (
-            <div style={{ borderTop: '1.5px solid #E8EAF0', paddingTop: '24px', marginTop: '24px' }}>
-              <div style={{ background: calendarMode === 'cycle_selection' ? '#FFF4ED' : '#F1F5F9', borderLeft: `4px solid ${calendarMode === 'cycle_selection' ? '#E8622A' : '#1E293B'}`, padding: '16px 20px', borderRadius: '12px', marginBottom: '20px' }}>
+            <div className="calendar-container">
+              <div className="calendar-hint">
+                <span className="calendar-hint-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </span>
                 {calendarMode === 'cycle_selection' ? (
-                  <><strong style={{ color: '#1E293B' }}>Où commence ton cycle ?</strong><br /><span style={{ color: '#C2410C', fontSize: '14px' }}>Clique sur la semaine où tu seras présent(e).</span></>
+                  <span>Clique sur la <strong>semaine où tu seras présent(e)</strong> pour démarrer ton cycle.</span>
                 ) : (
-                  <><strong style={{ color: '#1E293B' }}>Modifie ton calendrier</strong><br /><span style={{ color: '#6B7280', fontSize: '14px' }}>Clique sur un jour pour sélectionner ou retirer la semaine entière.</span><br /><a href="#" onClick={e => { e.preventDefault(); resetToCycleSelection() }} style={{ color: '#E8622A', fontSize: '13px', marginTop: '8px', display: 'inline-block' }}>Changer le début de cycle</a></>
+                  <span>Clique sur un jour pour <strong>sélectionner ou retirer</strong> la semaine entière.{' '}
+                    {rhythmPattern && <a href="#" onClick={e => { e.preventDefault(); resetToCycleSelection() }} className="calendar-hint-link">Changer le cycle</a>}
+                  </span>
                 )}
               </div>
               <div className="calendar-header">

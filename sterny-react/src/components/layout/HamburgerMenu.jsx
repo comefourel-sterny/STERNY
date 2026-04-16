@@ -84,9 +84,9 @@ export default function HamburgerMenu() {
   const getDashboardPath = () => {
     switch (userRole) {
       case 'proprietaire': return '/dashboard/proprietaire'
-      case 'hote': return '/dashboard/hote'
+      case 'hote': return '/dashboard'
       case 'admin': return '/dashboard/admin'
-      default: return '/dashboard/locataire'
+      default: return '/dashboard'
     }
   }
 

@@ -201,7 +201,7 @@ export default function InscriptionPartagerPage() {
 
       if (profileError) throw profileError
 
-      navigate('/dashboard/locataire')
+      navigate('/dashboard')
     } catch (error) {
       const msg = error.message
       let msgFr = msg

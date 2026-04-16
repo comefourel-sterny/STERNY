@@ -88,10 +88,12 @@
     line-height: 1.1;
     letter-spacing: -1.5px;
     margin-bottom: 18px;
+    font-style: normal;
 }
 
 .recherche-hero h1 span {
     color: #E8622A;
+    font-style: normal;
 }
 
 .hero-subtitle {
@@ -189,16 +191,16 @@
     color: rgba(0,0,0,0.35);
 }
 
-.search-btn {
-    height: 40px;
+.recherche-hero .search-btn {
+    height: 48px;
     box-sizing: border-box;
-    padding: 0 20px;
+    padding: 0 28px;
     margin: 6px;
     background: #E8622A;
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 14px;
+    border-radius: 12px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;

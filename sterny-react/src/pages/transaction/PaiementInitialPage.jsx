@@ -39,7 +39,7 @@ export default function PaiementInitialPage() {
   const [commissionImpaye, setCommissionImpaye] = useState('\u2014')
   const [moisImpaye, setMoisImpaye] = useState('\u2014')
   const [logementImpaye, setLogementImpaye] = useState('\u2014')
-  const [retourHref, setRetourHref] = useState('/dashboard/locataire')
+  const [retourHref, setRetourHref] = useState('/dashboard')
   const [btnPayerText, setBtnPayerText] = useState('Mettre en place le prelevement')
   const [btnPayerDisabled, setBtnPayerDisabled] = useState(true)
   const [loadingText, setLoadingText] = useState('Redirection vers la mise en place du prelevement...')
@@ -96,7 +96,7 @@ export default function PaiementInitialPage() {
       setShowAlertImpaye(true)
       setShowSummaryInitial(false)
       setShowSummaryImpaye(true)
-      setRetourHref('/dashboard/locataire')
+      setRetourHref('/dashboard')
       setBtnPayerText('Payer')
       setLoadingText('Redirection vers le paiement securise...')
       setTotalLabel('Total a payer TTC')
@@ -121,7 +121,7 @@ export default function PaiementInitialPage() {
         const { data: paiementCheck } = await supabaseClient.from('paiements_loyer').select('statut').eq('contrat_id', contratIdParam).eq('mois', moisParam).single()
         if (paiementCheck?.statut === 'paye') {
           alert('Ce loyer a deja ete regularise.')
-          navigate('/dashboard/locataire')
+          navigate('/dashboard')
           return
         }
         alert('Aucun impaye trouve pour ces parametres.')

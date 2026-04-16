@@ -26,7 +26,7 @@ export default function ConnexionPage() {
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard/locataire'
+        redirectTo: window.location.origin + '/dashboard'
       }
     })
     if (error) {
@@ -70,9 +70,9 @@ export default function ConnexionPage() {
         } else if (userData.type_user === 'proprietaire') {
           navigate('/dashboard/proprietaire')
         } else if (userData.type_user === 'hote') {
-          navigate('/dashboard/hote')
+          navigate('/dashboard')
         } else {
-          navigate('/dashboard/locataire')
+          navigate('/dashboard')
         }
       }, 1000)
     } catch (error) {

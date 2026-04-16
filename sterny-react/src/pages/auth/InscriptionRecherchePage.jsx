@@ -234,7 +234,7 @@ export default function InscriptionRecherchePage() {
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard/locataire'
+        redirectTo: window.location.origin + '/dashboard'
       }
     })
     if (error) showError(error.message)
@@ -377,7 +377,7 @@ export default function InscriptionRecherchePage() {
       setShowConfirmation(true)
 
       setTimeout(() => {
-        navigate('/dashboard/locataire')
+        navigate('/dashboard')
       }, 2500)
     } catch (err) {
       setCreating(false)

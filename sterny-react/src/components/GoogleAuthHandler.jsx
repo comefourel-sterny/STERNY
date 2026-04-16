@@ -29,8 +29,8 @@ export default function GoogleAuthHandler() {
             const dashboard = profile.type_user === 'proprietaire'
               ? '/dashboard/proprietaire'
               : profile.type_user === 'hote'
-                ? '/dashboard/hote'
-                : '/dashboard/locataire'
+                ? '/dashboard'
+                : '/dashboard'
             navigate(dashboard)
           } else if (profile.type_user === 'proprietaire') {
             // Propriétaire incomplet — modifier profil directement

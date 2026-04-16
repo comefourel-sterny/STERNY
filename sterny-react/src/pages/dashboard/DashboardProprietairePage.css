@@ -1124,14 +1124,14 @@
 }
 
 /* EMPTY STATE */
-.section-with-empty {
+.dashboard-proprio-container .section-with-empty {
   display: flex;
   flex-direction: column;
 }
 
-.section-with-empty .section-header { flex-shrink: 0; }
+.dashboard-proprio-container .section-with-empty .section-header { flex-shrink: 0; }
 
-.empty-state {
+.dashboard-proprio-container .empty-state {
   text-align: center;
   padding: 48px 24px;
 }

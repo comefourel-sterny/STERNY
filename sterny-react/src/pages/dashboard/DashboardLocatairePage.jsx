@@ -15,30 +15,6 @@ const VILLES_DISPONIBLES = [
 
 const MOIS_NOMS = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre']
 
-function formaterRythme(rythme) {
-  if (!rythme) return 'Non renseigne'
-  if (rythme === 'custom') return 'Rythme personnalise'
-  const clean = rythme.replace(/sem/gi, '').replace(/\//g, '-')
-  const parts = clean.split('-').map(s => s.trim())
-  if (parts.length !== 2) return rythme
-  return parts[0] + ' sem. / ' + parts[1] + ' sem.'
-}
-
-function formaterRythmeAvecVilles(rythme, mode, userData) {
-  if (!rythme || !userData) return formaterRythme(rythme)
-  if (rythme === 'custom') return userData.rythme_alternance || 'Rythme personnalise'
-  const clean = rythme.replace(/sem/gi, '').replace(/\//g, '-')
-  const parts = clean.split('-').map(s => s.trim())
-  if (parts.length !== 2) return rythme
-  const villeRecherche = userData.ville_entreprise || '?'
-  const villeHote = userData.ville_ecole || '?'
-  if (mode === 'recherche') {
-    return parts[0] + ' sem. a ' + villeRecherche + ' - ' + parts[1] + ' sem. a ' + villeHote
-  } else {
-    return parts[1] + ' sem. a ' + villeHote + ' - ' + parts[0] + ' sem. a ' + villeRecherche
-  }
-}
-
 export default function DashboardLocatairePage() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
@@ -47,6 +23,7 @@ export default function DashboardLocatairePage() {
   const [userData, setUserData] = useState(null)
   const [currentUserId, setCurrentUserId] = useState(null)
   const [isLesDeux, setIsLesDeux] = useState(false)
+  const [isHoteOnly, setIsHoteOnly] = useState(false)
   const [currentMode, setCurrentMode] = useState('recherche')
   const [hoteDataLoaded, setHoteDataLoaded] = useState(false)
 
@@ -57,7 +34,8 @@ export default function DashboardLocatairePage() {
   const [favoris, setFavoris] = useState([])
   const [candidatures, setCandidatures] = useState([])
   const [candidaturesRecues, setCandidaturesRecues] = useState([])
-  const [annonce, setAnnonce] = useState(null)
+  const [candidaturesEnvoyeesHote, setCandidaturesEnvoyeesHote] = useState([])
+  const [annonces, setAnnonces] = useState([])
   const [referralCode, setReferralCode] = useState('...')
   const [proprioData, setProprioData] = useState(null)
   const [proprioNom, setProprioNom] = useState(null)
@@ -124,13 +102,19 @@ export default function DashboardLocatairePage() {
       if (uData) {
         setUserData(uData)
         const lesDeux = uData.type_user === 'les_deux' || (uData.statut_ville_ecole === 'hote' && uData.statut_ville_entreprise === 'recherche')
+        const hoteOnly = uData.type_user === 'hote'
         setIsLesDeux(lesDeux)
+        setIsHoteOnly(hoteOnly)
+
+        if (hoteOnly) {
+          setCurrentMode('hote')
+        }
 
         if (uData.invitation_token) {
           setReferralCode(uData.invitation_token)
         }
 
-        // Load all data
+        // Load common data
         await Promise.all([
           loadLocations(authUser.id),
           loadAlertes(authUser.id),
@@ -138,6 +122,16 @@ export default function DashboardLocatairePage() {
           loadMesCandidatures(authUser.id),
           supabaseClient.from('messages').select('id', { count: 'exact', head: true }).eq('destinataire_id', authUser.id).eq('lu', false).then(({ count }) => setHasUnread(count > 0)),
         ])
+
+        // Auto-load hote data for hote-only users
+        if (hoteOnly) {
+          setHoteDataLoaded(true)
+          await verifierMiseEnRelation(uData)
+          await loadParrainage(uData)
+          await loadAnnonces(authUser.id)
+          await loadCandidaturesRecues(authUser.id)
+          await loadCandidaturesEnvoyeesHote(authUser.id)
+        }
       }
     } catch (error) {
       console.error('Erreur:', error)
@@ -226,14 +220,16 @@ export default function DashboardLocatairePage() {
       await verifierMiseEnRelation()
       await loadParrainage()
       if (currentUserId) {
-        await loadAnnonce(currentUserId)
+        await loadAnnonces(currentUserId)
         await loadCandidaturesRecues(currentUserId)
+        await loadCandidaturesEnvoyeesHote(currentUserId)
       }
     }
   }
 
-  async function verifierMiseEnRelation() {
+  async function verifierMiseEnRelation(uDataParam) {
     if (!currentUserId) return
+    const uData = uDataParam || userData
     try {
       const { data: demandes } = await supabaseClient
         .from('mises_en_relation')
@@ -262,16 +258,39 @@ export default function DashboardLocatairePage() {
           setRelationStatus('pending')
           setPendingEmail(demande.email_proprietaire)
         }
+        return
+      }
+
+      // Fallback: check email_proprietaire field (old hote users)
+      const emailProprio = uData?.email_proprietaire
+      if (emailProprio) {
+        setRelationStatus('pending')
+        setPendingEmail(emailProprio)
+        try {
+          const { data: proprio } = await supabaseClient
+            .from('users')
+            .select('id, prenom, nom')
+            .eq('parrain_id', currentUserId)
+            .eq('type_user', 'proprietaire')
+            .limit(1)
+            .single()
+          if (proprio) {
+            setRelationStatus('validated')
+            setProprioData(proprio)
+            setProprioNom(proprio.prenom + ' ' + proprio.nom)
+          }
+        } catch (e) { /* proprio pas encore inscrit */ }
       }
     } catch (error) {
       // pas de demande
     }
   }
 
-  async function loadParrainage() {
-    if (!userData) return
-    if (userData.invitation_token) {
-      setReferralCode(userData.invitation_token)
+  async function loadParrainage(uDataParam) {
+    const uData = uDataParam || userData
+    if (!uData) return
+    if (uData.invitation_token) {
+      setReferralCode(uData.invitation_token)
     } else {
       const token = await genererInvitationToken(currentUserId)
       setReferralCode(token)
@@ -292,15 +311,26 @@ export default function DashboardLocatairePage() {
     return token
   }
 
-  async function loadAnnonce(userId) {
+  async function loadAnnonces(userId) {
     try {
-      const villeHote = userData?.ville_ecole || null
-      let query = supabaseClient.from('annonces').select('*').eq('user_id', userId)
-      if (villeHote) query = query.eq('ville', villeHote)
-      query = query.order('created_at', { ascending: false }).limit(1)
-      const { data } = await query.single()
-      if (data) setAnnonce(data)
-    } catch (error) { /* no annonce */ }
+      const { data } = await supabaseClient
+        .from('annonces')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+      if (data) setAnnonces(data)
+    } catch (error) { /* no annonces */ }
+  }
+
+  async function loadCandidaturesEnvoyeesHote(userId) {
+    try {
+      const { data } = await supabaseClient
+        .from('candidatures')
+        .select('*, annonces(titre, ville, prix, user_id)')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+      if (data) setCandidaturesEnvoyeesHote(data)
+    } catch (error) { /* no candidatures */ }
   }
 
   async function loadCandidaturesRecues(userId) {
@@ -509,7 +539,8 @@ export default function DashboardLocatairePage() {
 
   // === COPIER CODE ===
   function copierCode() {
-    navigator.clipboard.writeText(referralCode)
+    const invitationUrl = `${window.location.origin}/invitation/${referralCode}`
+    navigator.clipboard.writeText(invitationUrl)
   }
 
   // === ENVOYER MISE EN RELATION ===
@@ -553,29 +584,6 @@ export default function DashboardLocatairePage() {
 
   // === COMPUTED ===
   const hasBailActif = contrats.length > 0
-  const profilComplet = userData && [userData.ecole, userData.filiere, userData.annee_etudes, userData.date_naissance, userData.sexe, userData.telephone].every(c => c && c.toString().trim() !== '')
-
-  const avatarContent = userData?.photo_profil_url
-    ? <img src={userData.photo_profil_url} alt="Photo de profil" />
-    : ((userData?.prenom?.[0] || '') + (userData?.nom?.[0] || '')).toUpperCase() || '—'
-
-  const villeAffichee = isLesDeux
-    ? (currentMode === 'recherche' ? userData?.ville_entreprise : userData?.ville_ecole)
-    : userData?.ville
-
-  const rythmeAffiche = isLesDeux
-    ? formaterRythmeAvecVilles(userData?.rythme_alternance, currentMode, userData)
-    : formaterRythme(userData?.rythme_alternance)
-
-  const villeLabelAffiche = isLesDeux
-    ? (currentMode === 'recherche' ? 'Je cherche a' : 'Je propose a')
-    : 'Ville'
-
-  const subtitle = hasBailActif
-    ? 'Ton logement est actif — gere ton bail et tes messages'
-    : (currentMode === 'recherche'
-      ? 'Gere ton profil, tes alertes et tes messages'
-      : 'Gere ton annonce et ton code de parrainage')
 
   // Ville suggestions
   const villeSuggestions = villeModalInput.trim()
@@ -589,8 +597,7 @@ export default function DashboardLocatairePage() {
     <div className="dashboard-container">
       {/* HEADER */}
       <div className="page-header">
-        <h1>Bonjour {userData?.prenom || '...'}</h1>
-        <p>{subtitle}</p>
+        <h1>Bonjour <span className="dp-prenom">{userData?.prenom || '...'}</span></h1>
 
         {/* Mode switch for "les deux" */}
         {isLesDeux && !hasBailActif && (
@@ -666,15 +673,12 @@ export default function DashboardLocatairePage() {
 
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (
-        <div className="section" style={{ minHeight: 'auto' }}>
-          <div className="section-header">
-            <div className="section-title">
-              <div className="section-icon" style={{ background: '#1E293B' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-              </div>
-              Mes locations actives
-            </div>
-            <div className="section-description">Tes baux en cours et possibilites de renouvellement</div>
+        <div className="dp-card">
+          <div className="dp-card-title">
+            <span className="dp-card-icon" style={{ background: '#1E293B' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+            </span>
+            Mes locations actives
           </div>
           {contrats.map(contrat => {
             const dateFin = new Date(contrat.date_fin)
@@ -753,16 +757,13 @@ export default function DashboardLocatairePage() {
           )}
 
           {/* FAVORIS */}
-          <div className="section section-with-empty section-favoris">
-            <div className="section-header">
-              <div className="section-title">
-                <div className="section-icon orange">
-                  <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-                </div>
-                Mes favoris
-                {favoris.length > 0 && <span className="favoris-count">{favoris.length}</span>}
-              </div>
-              <div className="section-description">Les logements que tu as sauvegardes</div>
+          <div className="dp-card">
+            <div className="dp-card-title">
+              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+              </span>
+              Mes favoris
+              {favoris.length > 0 && <span className="favoris-count">{favoris.length}</span>}
             </div>
             {favoris.length === 0 ? (
               <div className="empty-state">
@@ -808,16 +809,13 @@ export default function DashboardLocatairePage() {
           </div>
 
           {/* CANDIDATURES */}
-          <div className="section section-with-empty">
-            <div className="section-header">
-              <div className="section-title">
-                <div className="section-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
-                </div>
-                Mes candidatures
-                {candidatures.length > 0 && <span className="favoris-count">{candidatures.length}</span>}
-              </div>
-              <div className="section-description">Les logements ou tu as postule</div>
+          <div className="dp-card">
+            <div className="dp-card-title">
+              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
+              </span>
+              Mes candidatures
+              {candidatures.length > 0 && <span className="favoris-count">{candidatures.length}</span>}
             </div>
             {candidatures.length === 0 ? (
               <div className="empty-state">
@@ -866,17 +864,68 @@ export default function DashboardLocatairePage() {
       {/* SECTIONS HOTE */}
       {currentMode === 'hote' && !hasBailActif && (
         <>
+          {/* MES ANNONCES */}
+          <div className="dp-card">
+            <div className="dp-card-title">
+              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+              </span>
+              {annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}
+            </div>
+            {annonces.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">
+                  <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                </div>
+                <div className="empty-text">Tu n'as pas encore cree d'annonce</div>
+                <Link to="/annonce/creer?type=locataire" className="btn btn-orange">Creer mon annonce</Link>
+              </div>
+            ) : (
+              <div>
+                {annonces.map(ann => (
+                  <div className="annonce-card" key={ann.id} style={{ marginBottom: '8px' }}>
+                    <div className="annonce-thumb">
+                      {ann.photos && ann.photos.length > 0
+                        ? <img src={ann.photos[0]} alt={ann.titre} loading="lazy" />
+                        : <div className="annonce-thumb-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg></div>
+                      }
+                    </div>
+                    <div className="annonce-body">
+                      <div className="annonce-title">{ann.titre || 'Mon logement'}</div>
+                      <div className="annonce-meta">
+                        {ann.ville && <span className="annonce-tag">{ann.ville}</span>}
+                        {ann.type_logement && <span className="annonce-tag">{ann.type_logement}</span>}
+                        {ann.surface && <span className="annonce-tag">{ann.surface} m&sup2;</span>}
+                        {ann.prix && <span className="annonce-tag">{ann.prix}&euro;/sem.</span>}
+                      </div>
+                      <div className="annonce-actions">
+                        <Link to={`/annonce/modifier?id=${ann.id}`} className="btn-annonce-modifier">Modifier</Link>
+                        <Link to={`/logement?id=${ann.id}`} className="btn-annonce-voir">Voir l'annonce</Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button className="btn btn-orange" style={{ marginTop: '12px' }} onClick={async () => {
+                  if (userData?.type_user === 'hote') {
+                    await supabaseClient.from('users').update({ type_user: 'les_deux' }).eq('id', userData.id)
+                  }
+                  navigate('/annonce/creer')
+                }}>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                  Ajouter une annonce
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* MON PROPRIETAIRE */}
           {relationStatus !== 'validated' && (
-            <div className="section">
-              <div className="section-header">
-                <div className="section-title">
-                  <div className="section-icon orange">
-                    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                  </div>
-                  Mon proprietaire
-                </div>
-                <div className="section-description">Invite ton proprietaire a rejoindre STERNY pour officialiser l'echange</div>
+            <div className="dp-card">
+              <div className="dp-card-title">
+                <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                </span>
+                Mon proprietaire
               </div>
               <div className="proprio-row">
                 <div className="proprio-col">
@@ -910,75 +959,28 @@ export default function DashboardLocatairePage() {
                   )}
                 </div>
                 <div className="proprio-col">
-                  <div className="proprio-label">Code de parrainage</div>
+                  <div className="proprio-label">Lien d'invitation</div>
                   <div className="proprio-code-inline">
-                    <div className="proprio-code">{referralCode}</div>
+                    <div className="proprio-code" style={{ fontSize: '13px', letterSpacing: '0', fontFamily: 'inherit' }}>{`${window.location.origin}/invitation/${referralCode}`}</div>
                     <button className="proprio-copy-btn-inline" onClick={copierCode}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                       Copier
                     </button>
                   </div>
-                  <div className="proprio-help">Ton proprietaire devra entrer ce code lors de son inscription sur STERNY.</div>
+                  <div className="proprio-help">Partage ce lien avec ton proprietaire pour l'inviter sur STERNY.</div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* MON ANNONCE */}
-          <div className="section section-with-empty">
-            <div className="section-header">
-              <div className="section-title">
-                <div className="section-icon orange">
-                  <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-                </div>
-                Mon annonce
-              </div>
-              <div className="section-description">Ton logement propose a l'alternance</div>
-            </div>
-            {!annonce ? (
-              <div className="empty-state">
-                <div className="empty-icon">
-                  <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-                </div>
-                <div className="empty-text">Tu n'as pas encore cree d'annonce</div>
-                <Link to="/annonce/creer?type=locataire" className="btn btn-orange">Creer mon annonce</Link>
-              </div>
-            ) : (
-              <div className="annonce-card">
-                <div className="annonce-thumb">
-                  {annonce.photos && annonce.photos.length > 0
-                    ? <img src={annonce.photos[0]} alt={annonce.titre} />
-                    : <div className="annonce-thumb-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg></div>
-                  }
-                </div>
-                <div className="annonce-body">
-                  <div className="annonce-title">{annonce.titre || 'Mon logement'}</div>
-                  <div className="annonce-meta">
-                    {annonce.ville && <span className="annonce-tag">{annonce.ville}</span>}
-                    {annonce.type_logement && <span className="annonce-tag">{annonce.type_logement}</span>}
-                    {annonce.surface && <span className="annonce-tag">{annonce.surface} m&sup2;</span>}
-                    {annonce.prix && <span className="annonce-tag">{annonce.prix}&euro;/sem.</span>}
-                  </div>
-                  <div className="annonce-actions">
-                    <Link to={`/annonce/modifier?id=${annonce.id}`} className="btn-annonce-modifier">Modifier</Link>
-                    <Link to={`/logement?id=${annonce.id}`} className="btn-annonce-voir">Voir l'annonce</Link>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* CANDIDATURES RECUES */}
-          <div className="section section-with-empty">
-            <div className="section-header">
-              <div className="section-title">
-                <div className="section-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
-                </div>
-                Candidatures recues
-                {candidaturesRecues.length > 0 && <span className="favoris-count">{candidaturesRecues.length}</span>}
-              </div>
-              <div className="section-description">Les personnes interessees par ton logement</div>
+          <div className="dp-card">
+            <div className="dp-card-title">
+              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
+              </span>
+              Candidatures recues
+              {candidaturesRecues.length > 0 && <span className="favoris-count">{candidaturesRecues.length}</span>}
             </div>
             {candidaturesRecues.length === 0 ? (
               <div className="empty-state">
@@ -1009,6 +1011,39 @@ export default function DashboardLocatairePage() {
               })
             )}
           </div>
+
+          {/* CANDIDATURES ENVOYEES (hote) */}
+          {candidaturesEnvoyeesHote.length > 0 && (
+            <div className="dp-card">
+              <div className="dp-card-title">
+                <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                </span>
+                Mes candidatures envoyees
+                <span className="favoris-count">{candidaturesEnvoyeesHote.length}</span>
+              </div>
+              {candidaturesEnvoyeesHote.map(c => {
+                let statutLabel = 'En attente', statutClass = 'en-attente'
+                if (c.statut === 'acceptee') { statutLabel = 'Acceptee'; statutClass = 'acceptee' }
+                else if (c.statut === 'refusee') { statutLabel = 'Refusee'; statutClass = 'refusee' }
+                const initiales = (c.annonces?.titre || '??').substring(0, 2).toUpperCase()
+                const date = new Date(c.created_at).toLocaleDateString('fr-FR')
+                return (
+                  <div className="candidature-item" key={c.id}>
+                    <div className="candidature-avatar">{initiales}</div>
+                    <div className="candidature-info">
+                      <div className="candidature-titre">{c.annonces?.titre || 'Annonce'}</div>
+                      <div className="candidature-ville">{[c.annonces?.ville, c.annonces?.prix ? `${c.annonces.prix}€/mois` : null, date].filter(Boolean).join(' · ')}</div>
+                    </div>
+                    <div className={`candidature-statut ${statutClass}`}>{statutLabel}</div>
+                    {c.statut === 'acceptee' && (
+                      <Link to={`/match-actif?match_id=${c.id}`} className="btn btn-orange" style={{ marginLeft: '8px', fontSize: '12px', padding: '6px 12px' }}>Voir le match</Link>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </>
       )}
 
@@ -1148,7 +1183,7 @@ export default function DashboardLocatairePage() {
         isOpen={showMessagesOverlay}
         onClose={fermerOverlayMessages}
         currentUserId={currentUserId}
-        currentUserType="locataire"
+        currentUserType={currentMode === 'hote' ? 'hote' : 'locataire'}
       />
     </div>
   )

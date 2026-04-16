@@ -8,6 +8,7 @@ export default function Navbar({ variant = 'default' }) {
   const { user } = useAuth()
   const location = useLocation()
   const isHomepage = location.pathname === '/'
+  const showModeToggle = location.pathname === '/' || location.pathname === '/recherche'
 
   useEffect(() => {
     if (variant !== 'dark') return
@@ -35,7 +36,7 @@ export default function Navbar({ variant = 'default' }) {
 
         {/* Center: Mode toggle — homepage only, hidden on scroll */}
         <div className="nav-center">
-          {isHomepage && !scrolled && (
+          {showModeToggle && !scrolled && (
             <div className="mode-toggle">
               <button className="mode-pill mode-active">Alternance</button>
               <span className="mode-separator">|</span>

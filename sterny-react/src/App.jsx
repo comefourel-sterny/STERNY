@@ -39,9 +39,9 @@ import MotDePasseOubliePage from './pages/auth/MotDePasseOubliePage'
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 
 // Dashboard pages
+import { Navigate } from 'react-router-dom'
 import DashboardLocatairePage from './pages/dashboard/DashboardLocatairePage'
 import DashboardProprietairePage from './pages/dashboard/DashboardProprietairePage'
-import DashboardHotePage from './pages/dashboard/DashboardHotePage'
 import DashboardAdminPage from './pages/dashboard/DashboardAdminPage'
 
 // Annonce pages
@@ -140,9 +140,10 @@ export default function App() {
 
         {/* Dashboard layout (protected) */}
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard/locataire" element={<DashboardLocatairePage />} />
+          <Route path="/dashboard" element={<DashboardLocatairePage />} />
+          <Route path="/dashboard/locataire" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard/hote" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard/proprietaire" element={<DashboardProprietairePage />} />
-          <Route path="/dashboard/hote" element={<DashboardHotePage />} />
           <Route path="/dashboard/admin" element={<DashboardAdminPage />} />
 
           {/* Annonce */}

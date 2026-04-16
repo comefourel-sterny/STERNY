@@ -41,7 +41,7 @@ export default function RenouvellementPage() {
   const [messageLocataire, setMessageLocataire] = useState('')
   const [btnEnvoyerDisabled, setBtnEnvoyerDisabled] = useState(false)
   const [btnEnvoyerText, setBtnEnvoyerText] = useState('Envoyer ma demande de renouvellement')
-  const [retourHref, setRetourHref] = useState('/dashboard/locataire')
+  const [retourHref, setRetourHref] = useState('/dashboard')
 
   // Proprio view
   const [locAvatar, setLocAvatar] = useState('-')
@@ -86,7 +86,7 @@ export default function RenouvellementPage() {
 
         const dashboardUrl = user.user_metadata?.type_user === 'proprietaire'
           ? '/dashboard/proprietaire'
-          : '/dashboard/locataire'
+          : '/dashboard'
         setRetourHref(dashboardUrl)
 
         // Demo mode

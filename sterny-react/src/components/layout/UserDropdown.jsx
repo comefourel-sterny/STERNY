@@ -85,11 +85,6 @@ export default function UserDropdown() {
   ]
 
   const locataireItems = [
-    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/locataire' },
-    { icon: <IconSearch />, label: 'Rechercher un logement', to: '/recherche' },
-    { icon: <IconClipboard />, label: 'Mes demandes de coloc', to: '/dashboard/locataire' },
-    { icon: <IconCalendar />, label: 'Mon rythme d\'alternance', to: '/dashboard/locataire' },
-    'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
@@ -98,10 +93,6 @@ export default function UserDropdown() {
   ]
 
   const proprietaireItems = [
-    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/proprietaire' },
-    { icon: <IconHome />, label: 'Ma coloc en cours', to: '/dashboard/proprietaire' },
-    { icon: <IconEuro />, label: 'Mes revenus', to: '/dashboard/proprietaire' },
-    'separator',
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
     'separator',
@@ -109,10 +100,6 @@ export default function UserDropdown() {
   ]
 
   const hoteItems = [
-    { icon: <IconGrid />, label: 'Mon espace', to: '/dashboard/hote' },
-    { icon: <IconHome />, label: 'Mon annonce', to: '/dashboard/hote' },
-    { icon: <IconClipboard />, label: 'Mes candidatures', to: '/dashboard/hote' },
-    'separator',
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
@@ -176,10 +163,10 @@ export default function UserDropdown() {
   const dashboardPath = userRole === 'proprietaire'
     ? '/dashboard/proprietaire'
     : userRole === 'hote'
-      ? '/dashboard/hote'
+      ? '/dashboard'
       : userRole === 'admin'
         ? '/dashboard/admin'
-        : '/dashboard/locataire'
+        : '/dashboard'
 
   const isDashboard = location.pathname.startsWith('/dashboard')
 

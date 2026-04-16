@@ -85,7 +85,7 @@ export default function DossierLocatairePage() {
   const [locataireData, setLocataireData] = useState(null)
   const [isLocataire, setIsLocataire] = useState(true)
   const [headerSubtitle, setHeaderSubtitle] = useState('Completez votre dossier pour passer a la signature du contrat')
-  const [retourUrl, setRetourUrl] = useState('/dashboard/locataire')
+  const [retourUrl, setRetourUrl] = useState('/dashboard')
   const [toast, setToast] = useState(null)
   const [validating, setValidating] = useState(false)
 
@@ -129,7 +129,7 @@ export default function DossierLocatairePage() {
           .eq('id', matchId)
           .single()
 
-        if (!candidature) { alert('Match introuvable'); navigate('/dashboard/locataire'); return }
+        if (!candidature) { alert('Match introuvable'); navigate('/dashboard'); return }
 
         const locataire = candidature.users
         const isProprio = user.id === candidature.annonces?.user_id
@@ -141,7 +141,7 @@ export default function DossierLocatairePage() {
         if (!isLoc && !isProprio && !isAdm) { alert('Acces non autorise'); navigate('/'); return }
 
         setLocataireData(locataire)
-        setRetourUrl(matchId ? `/match-confirmation?match_id=${matchId}` : '/dashboard/locataire')
+        setRetourUrl(matchId ? `/match-confirmation?match_id=${matchId}` : '/dashboard')
 
         if (isLoc) {
           setIsLocataire(true)

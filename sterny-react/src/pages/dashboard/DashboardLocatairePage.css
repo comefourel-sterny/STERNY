@@ -3,28 +3,35 @@
 .dashboard-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 48px 24px 20px;
+    padding: 32px 24px 32px;
+    min-height: 100vh;
 }
 
 .dashboard-container .page-header {
+    margin-bottom: 0;
     text-align: center;
-    margin-bottom: 48px;
+    animation: dlFadeIn 0.5s ease both;
 }
 
 .dashboard-container .page-header h1 {
-    font-size: 18px;
-    font-weight: 300;
-    letter-spacing: 3px;
-    color: #E8622A;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #1E293B;
+    margin-bottom: 4px;
+    letter-spacing: -1px;
+    text-transform: none;
 }
 
 .dashboard-container .page-header p {
-    font-size: 16px;
-    color: #64748B;
-    max-width: 500px;
-    margin: 0 auto;
+    font-size: 14px;
+    color: #94A3B8;
+    font-weight: 400;
+}
+
+@keyframes dlFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .btn-messages-header {
@@ -60,71 +67,7 @@
     border: 2px solid white;
 }
 
-/* SECTIONS */
-.section {
-    background: white;
-    border-radius: 16px;
-    padding: 28px 32px;
-    margin-bottom: 14px;
-    border: 1.5px solid #E8EAF0;
-    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.10);
-    overflow: visible;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.section:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(232, 98, 42, 0.14);
-}
-
-.section-header {
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.section-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: rgba(232, 98, 42, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.section-icon svg {
-    width: 15px;
-    height: 15px;
-    stroke: #E8622A;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.section-icon.orange {
-    background: rgba(232, 98, 42, 0.08);
-}
-
-.section-icon.orange svg {
-    stroke: #E8622A;
-}
-
-.section-description {
-    font-size: 14px;
-    color: #94A3B8;
-    margin-left: 40px;
-}
+/* Sections use .dp-card from DashboardProprietairePage.css */
 
 /* BOUTON MESSAGERIE PROFIL */
 .btn-messages-profil {
@@ -322,15 +265,16 @@
     background: #F1F5F9;
     border-radius: 12px;
     padding: 4px;
-    margin-top: 20px;
+    margin-top: 12px;
+    margin-bottom: 16px;
     gap: 4px;
 }
 
 .mode-btn {
-    padding: 10px 28px;
+    padding: 12px 32px;
     border: none;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s;
@@ -353,17 +297,18 @@
 }
 
 .mode-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
 }
 
 /* VILLE HEADER ROW */
-.ville-header-row {
+.dashboard-container .ville-header-row {
     display: inline-flex;
     background: #F1F5F9;
     border-radius: 12px;
     padding: 4px;
     margin-top: 12px;
+    margin-bottom: 16px;
     gap: 4px;
     align-items: center;
 }
@@ -1063,11 +1008,14 @@
 .btn-orange {
     background: #E8622A;
     color: white;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
 }
 
 .btn-orange:hover {
     background: #D4561F;
-    box-shadow: 0 2px 8px rgba(232, 98, 42, 0.16);
 }
 
 .btn-danger {
@@ -1086,10 +1034,12 @@
     justify-content: space-between;
     background: white;
     border-radius: 16px;
-    padding: 20px 32px;
-    margin-bottom: 14px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
     border: 1px solid #E8EAF0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: dpSectionIn 0.4s ease both;
 }
 
 .alerte-bandeau-left {
@@ -1703,29 +1653,7 @@
 }
 
 /* EMPTY STATE */
-.section-with-empty {
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-}
-
-.section-with-empty .section-header {
-    flex-shrink: 0;
-}
-
-.section-with-empty .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 40px 24px;
-}
+/* Empty state styling handled by DashboardProprietairePage.css dp-card system */
 
 .empty-icon {
     width: 64px;
@@ -1755,9 +1683,6 @@
 }
 
 /* FAVORIS */
-.section-favoris .section-description {
-    color: #9CA3AF;
-}
 
 .favoris-count {
     font-size: 13px;
@@ -2715,12 +2640,7 @@
     }
 
     .dashboard-container .page-header h1 {
-        font-size: 28px;
-    }
-
-    .section {
-        padding: 24px;
-        border-radius: 16px;
+        font-size: 24px;
     }
 
     .profil-grid {
@@ -2817,22 +2737,3 @@
 }
 
 /* ═══ STAGGER ANIMATION ═══ */
-.dashboard-container > .section,
-.dashboard-container > .alerte-bandeau,
-.dashboard-container > .page-header {
-    animation: dlStaggerIn 0.4s ease both;
-}
-
-.dashboard-container > *:nth-child(1) { animation-delay: 0s; }
-.dashboard-container > *:nth-child(2) { animation-delay: 0.08s; }
-.dashboard-container > *:nth-child(3) { animation-delay: 0.16s; }
-.dashboard-container > *:nth-child(4) { animation-delay: 0.24s; }
-.dashboard-container > *:nth-child(5) { animation-delay: 0.32s; }
-.dashboard-container > *:nth-child(6) { animation-delay: 0.40s; }
-.dashboard-container > *:nth-child(7) { animation-delay: 0.48s; }
-.dashboard-container > *:nth-child(8) { animation-delay: 0.56s; }
-
-@keyframes dlStaggerIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}

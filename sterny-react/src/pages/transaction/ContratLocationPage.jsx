@@ -28,7 +28,7 @@ export default function ContratLocationPage() {
   const [dateDebut, setDateDebut] = useState('1 mars 2026')
   const [dateFin, setDateFin] = useState('31 ao\u00fbt 2026')
   const [dureeMois, setDureeMois] = useState('6 mois')
-  const [retourHref, setRetourHref] = useState('/dashboard/locataire')
+  const [retourHref, setRetourHref] = useState('/dashboard')
 
   // Signature state
   const [sigNomComplet, setSigNomComplet] = useState('\u2014')
@@ -529,7 +529,7 @@ export default function ContratLocationPage() {
             { num: 3, label: 'Paiement', status: '' },
           ])
           setProgressWidth('50%')
-          setRetourHref('/dashboard/locataire')
+          setRetourHref('/dashboard')
         } else {
           setRetourHref(matchId ? `/dossier-locataire?match_id=${matchId}` : '/dossier-locataire')
         }

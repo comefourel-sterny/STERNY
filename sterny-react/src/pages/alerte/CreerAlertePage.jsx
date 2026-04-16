@@ -78,7 +78,7 @@ export default function CreerAlertePage() {
       showMessage('Alerte creee avec succes !', 'success')
 
       setTimeout(() => {
-        navigate('/dashboard/locataire')
+        navigate('/dashboard')
       }, 1500)
     } catch (error) {
       console.error('Erreur creation alerte:', error)
@@ -178,7 +178,7 @@ export default function CreerAlertePage() {
             </div>
 
             <div className="form-actions">
-              <Link to="/dashboard/locataire" className="btn btn-secondary">
+              <Link to="/dashboard" className="btn btn-secondary">
                 Annuler
               </Link>
               <button

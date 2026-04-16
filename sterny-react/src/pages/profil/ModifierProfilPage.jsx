@@ -82,7 +82,7 @@ export default function ModifierProfilPage() {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [userType, setUserType] = useState('locataire')
-  const [dashboardUrl, setDashboardUrl] = useState('/dashboard/locataire')
+  const [dashboardUrl, setDashboardUrl] = useState('/dashboard')
 
   // Step 1
   const [prenom, setPrenom] = useState('')
@@ -165,8 +165,8 @@ export default function ModifierProfilPage() {
     async function loadData() {
       const { data: typeData } = await supabaseClient.from('users').select('type_user').eq('id', user.id).single()
       if (typeData?.type_user === 'proprietaire') { navigate('/profil/modifier-proprietaire'); return }
-      if (typeData?.type_user === 'hote') { setUserType('hote'); setDashboardUrl('/dashboard/locataire') }
-      else { setUserType('locataire'); setDashboardUrl('/dashboard/locataire') }
+      if (typeData?.type_user === 'hote') { setUserType('hote'); setDashboardUrl('/dashboard') }
+      else { setUserType('locataire'); setDashboardUrl('/dashboard') }
 
       const { data: userData } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
       if (!userData) return

@@ -103,7 +103,7 @@ export default function MatchActifPage() {
       }
       alert('Votre demande de resiliation a ete enregistree.')
       setShowResiliation(false)
-      navigate('/dashboard/locataire')
+      navigate('/dashboard')
     } catch (error) {
       console.error('Erreur:', error)
     }

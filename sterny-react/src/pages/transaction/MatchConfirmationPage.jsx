@@ -49,7 +49,7 @@ export default function MatchConfirmationPage() {
         if (error) throw error
         if (!candidature || candidature.statut !== 'acceptee') {
           alert("Ce match n'est pas valide ou n'a pas ete accepte")
-          navigate('/dashboard/locataire')
+          navigate('/dashboard')
           return
         }
 
