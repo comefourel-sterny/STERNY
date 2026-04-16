@@ -222,6 +222,42 @@ function CpSelect({ value, onChange, options, placeholder, onOpenChange }) {
   )
 }
 
+function CpSuggestionsPortal({ show, children, inputRef, onClose }) {
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
+  const dropdownRef = useRef(null)
+
+  const updatePos = useCallback(() => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect()
+      setPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
+    }
+  }, [inputRef])
+
+  useEffect(() => {
+    if (!show) return
+    updatePos()
+    const handleClickOutside = (e) => {
+      if (inputRef.current && inputRef.current.contains(e.target)) return
+      if (dropdownRef.current && dropdownRef.current.contains(e.target)) return
+      onClose()
+    }
+    const handleEsc = (e) => { if (e.key === 'Escape') onClose() }
+    const t = setTimeout(() => document.addEventListener('mousedown', handleClickOutside), 0)
+    window.addEventListener('scroll', updatePos, true)
+    document.addEventListener('keydown', handleEsc)
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', handleClickOutside); window.removeEventListener('scroll', updatePos, true); document.removeEventListener('keydown', handleEsc) }
+  }, [show, inputRef, onClose, updatePos])
+
+  if (!show) return null
+
+  return createPortal(
+    <div ref={dropdownRef} className="cp-suggestions" style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width, zIndex: 99999, background: 'white', borderRadius: '12px', border: '1.5px solid #E8EAF0', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', maxHeight: '180px', overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      {children}
+    </div>,
+    document.body
+  )
+}
+
 export default function CompleterProfilPage() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
@@ -280,6 +316,12 @@ export default function CompleterProfilPage() {
   const [filiereSuggestions, setFiliereSuggestions] = useState([])
   const [showFiliereSuggestions, setShowFiliereSuggestions] = useState(false)
   const [villeSuggestions, setVilleSuggestions] = useState([])
+
+  // Autocomplete input refs (for portal positioning)
+  const villeInputRef = useRef(null)
+  const ecoleInputRef = useRef(null)
+  const anneeInputRef = useRef(null)
+  const filiereInputRef = useRef(null)
 
   const schoolSearchTimeout = useRef(null)
   const errorTimeout = useRef(null)
@@ -852,6 +894,7 @@ export default function CompleterProfilPage() {
                 <label>Ville</label>
                 <div className="cp-autocomplete">
                   <input
+                    ref={villeInputRef}
                     type="text"
                     value={villeInput}
                     onChange={(e) => {
@@ -869,29 +912,26 @@ export default function CompleterProfilPage() {
                         setVilleSuggestions([])
                       }
                     }}
-                    onBlur={() => setTimeout(() => setVilleSuggestions([]), 200)}
                     placeholder="Ex: Rennes, Nantes..."
                     autoComplete="off"
                   />
-                  {villeSuggestions.length > 0 && (
-                    <div className="cp-suggestions">
-                      {villeSuggestions[0] === '__unavailable__' ? (
-                        <div className="cp-suggestion-item" style={{ color: '#E8622A', cursor: 'default', fontWeight: 600 }}>
-                          STERNY arrive bientôt dans ta ville !
+                  <CpSuggestionsPortal show={villeSuggestions.length > 0} inputRef={villeInputRef} onClose={() => setVilleSuggestions([])}>
+                    {villeSuggestions[0] === '__unavailable__' ? (
+                      <div className="cp-suggestion-item" style={{ color: '#E8622A', cursor: 'default', fontWeight: 600 }}>
+                        STERNY arrive bientôt dans ta ville !
+                      </div>
+                    ) : (
+                      villeSuggestions.map(v => (
+                        <div key={v} className="cp-suggestion-item" onMouseDown={() => {
+                          setVilleInput(v)
+                          setVilleSelectionnee(v)
+                          setVilleSuggestions([])
+                        }}>
+                          {v}
                         </div>
-                      ) : (
-                        villeSuggestions.map(v => (
-                          <div key={v} className="cp-suggestion-item" onMouseDown={() => {
-                            setVilleInput(v)
-                            setVilleSelectionnee(v)
-                            setVilleSuggestions([])
-                          }}>
-                            {v}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
+                      ))
+                    )}
+                  </CpSuggestionsPortal>
                 </div>
               </div>
 
@@ -955,70 +995,64 @@ export default function CompleterProfilPage() {
                 <label>École / Université</label>
                 <div className="cp-autocomplete">
                   <input
+                    ref={ecoleInputRef}
                     type="text"
                     value={ecole}
                     onChange={e => handleEcoleInput(e.target.value)}
                     onFocus={() => { if (!ecole.trim()) { setSchoolSuggestions(ECOLES_POPULAIRES); setShowSchoolSuggestions(true) } }}
-                    onBlur={() => setTimeout(() => setShowSchoolSuggestions(false), 200)}
                     placeholder="Recherche ton école, université, CFA..."
                     autoComplete="off"
                   />
-                  {showSchoolSuggestions && schoolSuggestions.length > 0 && (
-                    <div className="cp-suggestions">
-                      {schoolSuggestions.map((s, i) => (
-                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setEcole(s.name + (s.city ? ' — ' + s.city : '')); setShowSchoolSuggestions(false) }}>
-                          <strong>{s.name}</strong>
-                          {s.city && <small>{s.city}</small>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <CpSuggestionsPortal show={showSchoolSuggestions && schoolSuggestions.length > 0} inputRef={ecoleInputRef} onClose={() => setShowSchoolSuggestions(false)}>
+                    {schoolSuggestions.map((s, i) => (
+                      <div key={i} className="cp-suggestion-item" onMouseDown={() => { setEcole(s.name + (s.city ? ' — ' + s.city : '')); setShowSchoolSuggestions(false) }}>
+                        <strong>{s.name}</strong>
+                        {s.city && <small>{s.city}</small>}
+                      </div>
+                    ))}
+                  </CpSuggestionsPortal>
                 </div>
               </div>
               <div className="cp-group cp-stagger" style={{ animationDelay: '0.20s' }}>
                 <label>Année d'études</label>
                 <div className="cp-autocomplete">
                   <input
+                    ref={anneeInputRef}
                     type="text"
                     value={anneeEtudes}
                     onChange={e => { setAnneeEtudes(e.target.value); setAnneeSuggestions(filterAnnees(e.target.value)); setShowAnneeSuggestions(true) }}
                     onFocus={() => { setAnneeSuggestions(filterAnnees(anneeEtudes)); setShowAnneeSuggestions(true) }}
-                    onBlur={() => setTimeout(() => setShowAnneeSuggestions(false), 200)}
                     placeholder="ex: L3, M1, Bac+5..."
                     autoComplete="off"
                   />
-                  {showAnneeSuggestions && anneeSuggestions.length > 0 && (
-                    <div className="cp-suggestions">
-                      {anneeSuggestions.map((a, i) => (
-                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setAnneeEtudes(a.value); setShowAnneeSuggestions(false) }}>
-                          {a.label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <CpSuggestionsPortal show={showAnneeSuggestions && anneeSuggestions.length > 0} inputRef={anneeInputRef} onClose={() => setShowAnneeSuggestions(false)}>
+                    {anneeSuggestions.map((a, i) => (
+                      <div key={i} className="cp-suggestion-item" onMouseDown={() => { setAnneeEtudes(a.value); setShowAnneeSuggestions(false) }}>
+                        {a.label}
+                      </div>
+                    ))}
+                  </CpSuggestionsPortal>
                 </div>
               </div>
               <div className="cp-group cp-stagger" style={{ animationDelay: '0.28s' }}>
                 <label>Filière / Domaine</label>
                 <div className="cp-autocomplete">
                   <input
+                    ref={filiereInputRef}
                     type="text"
                     value={filiere}
                     onChange={e => { setFiliere(e.target.value); setFiliereSuggestions(filterFilieres(e.target.value)); setShowFiliereSuggestions(true) }}
                     onFocus={() => { setFiliereSuggestions(filterFilieres(filiere)); setShowFiliereSuggestions(true) }}
-                    onBlur={() => setTimeout(() => setShowFiliereSuggestions(false), 200)}
                     placeholder="ex: Informatique, Commerce..."
                     autoComplete="off"
                   />
-                  {showFiliereSuggestions && filiereSuggestions.length > 0 && (
-                    <div className="cp-suggestions">
-                      {filiereSuggestions.map((f, i) => (
-                        <div key={i} className="cp-suggestion-item" onMouseDown={() => { setFiliere(f.value); setShowFiliereSuggestions(false) }}>
-                          {f.value}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <CpSuggestionsPortal show={showFiliereSuggestions && filiereSuggestions.length > 0} inputRef={filiereInputRef} onClose={() => setShowFiliereSuggestions(false)}>
+                    {filiereSuggestions.map((f, i) => (
+                      <div key={i} className="cp-suggestion-item" onMouseDown={() => { setFiliere(f.value); setShowFiliereSuggestions(false) }}>
+                        {f.value}
+                      </div>
+                    ))}
+                  </CpSuggestionsPortal>
                 </div>
               </div>
               <div className="cp-bottom">
