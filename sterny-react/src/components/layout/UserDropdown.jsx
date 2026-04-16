@@ -29,15 +29,16 @@ export default function UserDropdown() {
   const [userRole, setUserRole] = useState(null)
   const [initials, setInitials] = useState('')
   const [userName, setUserName] = useState('')
+  const [photoUrl, setPhotoUrl] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
   const panelRef = useRef(null)
 
   // Fetch user role + initials
   useEffect(() => {
-    if (!user) { setUserRole(null); setInitials(''); return }
+    if (!user) { setUserRole(null); setInitials(''); setPhotoUrl(''); return }
     supabaseClient
       .from('users')
-      .select('type_user, prenom, nom')
+      .select('type_user, prenom, nom, photo_profil_url')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -49,6 +50,7 @@ export default function UserDropdown() {
           const n = nom.charAt(0).toUpperCase()
           setInitials(p + n || '?')
           setUserName(`${prenom} ${nom}`.trim())
+          setPhotoUrl(data.photo_profil_url || '')
         }
       })
     supabaseClient
@@ -178,8 +180,8 @@ export default function UserDropdown() {
           {unreadCount > 0 && <span className="ud-notif-badge">{unreadCount}</span>}
         </button>
       ) : (
-        <Link to={dashboardPath} className="ud-avatar" aria-label="Mon espace">
-          {initials}
+        <Link to={dashboardPath} className={`ud-avatar${photoUrl ? ' ud-avatar-photo' : ''}`} aria-label="Mon espace">
+          {photoUrl ? <img src={photoUrl} alt="" className="ud-avatar-img" /> : initials}
         </Link>
       )}
 

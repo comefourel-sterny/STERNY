@@ -565,6 +565,18 @@ footer a:hover {
     transform: scale(1.04);
 }
 
+.ud-avatar-photo {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.ud-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 .ud-avatar-messages {
     background: none;
     border: 1.5px solid #E2E8F0;
