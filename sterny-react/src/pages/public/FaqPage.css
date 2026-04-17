@@ -1,81 +1,148 @@
+/* ── FAQ Page ── STERNY Design System ── */
+
 .page-faq {
-    background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
+    background: #F4F5F7;
     padding: 0 20px;
+    min-height: 100vh;
 }
 
+/* ── Main Card ── */
 .faq-card {
     max-width: 800px;
     width: 100%;
     background: white;
     border-radius: 20px;
     padding: 48px;
-    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #E8EAF0;
     margin: 48px auto 80px;
 }
 
+/* ── Page Title (matches ConnexionPage) ── */
 .faq-card h1 {
-    font-size: 28px;
-    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
     color: #1E293B;
+    letter-spacing: -1px;
+    text-transform: none;
+    text-align: center;
     margin: 0 0 8px;
+    opacity: 0;
+    animation: faq-fadeUp 0.5s ease forwards;
 }
 
 .faq-card .subtitle {
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     color: #94A3B8;
-    margin-bottom: 32px;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 400;
+    opacity: 0;
+    animation: faq-fadeUp 0.5s ease 0.1s forwards;
 }
 
+/* ── Section Titles (STERNY pattern) ── */
 .faq-section-title {
-    font-size: 16px;
-    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
     color: #E8622A;
-    margin-top: 36px;
-    margin-bottom: 16px;
-    padding-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 44px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
     border-bottom: 2px solid rgba(232, 98, 42, 0.12);
+    opacity: 0;
+    animation: faq-fadeUp 0.5s ease 0.15s forwards;
 }
 
+.faq-section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #FFF1E8;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.faq-section-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ── FAQ Items ── */
 .faq-item {
-    margin-bottom: 16px;
-    border: 1px solid #E8EAF0;
-    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 14px;
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    opacity: 0;
+    animation: faq-fadeUp 0.4s ease forwards;
 }
 
 .faq-item:hover {
-    box-shadow: 0 2px 12px rgba(30, 41, 59, 0.06);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(30, 41, 59, 0.08);
 }
 
+.faq-item.open {
+    border-color: #E8622A;
+    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.08);
+}
+
+.faq-item.open:hover {
+    transform: translateY(0);
+}
+
+/* ── FAQ Question Button ── */
 .faq-question {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 18px 22px;
     cursor: pointer;
     background: #FAFBFC;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     font-weight: 600;
     color: #1E293B;
     user-select: none;
-    gap: 12px;
+    gap: 16px;
     border: none;
     width: 100%;
     text-align: left;
-    font-family: inherit;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .faq-question:hover {
     background: #F4F5F7;
 }
 
+.faq-item.open .faq-question {
+    background: white;
+    color: #E8622A;
+    font-weight: 700;
+}
+
 .faq-question svg {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
-    transition: transform 0.3s;
-    color: #94A3B8;
+    transition: transform 0.3s ease, color 0.2s ease;
+    color: #CBD5E1;
+}
+
+.faq-question:hover svg {
+    color: #E8622A;
 }
 
 .faq-item.open .faq-question svg {
@@ -83,90 +150,130 @@
     color: #E8622A;
 }
 
+/* ── FAQ Answer ── */
 .faq-answer {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.35s ease;
 }
 
 .faq-answer-inner {
-    padding: 0 20px 16px;
+    padding: 0 22px 20px;
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     color: #374151;
-    line-height: 1.8;
+    line-height: 1.9;
+    border-top: 1px solid #F0F1F4;
+    padding-top: 16px;
 }
 
 .faq-item.open .faq-answer {
     max-height: 500px;
 }
 
+/* ── Links inside answers ── */
 .faq-card a {
     color: #E8622A;
-}
-
-.page-faq .btn-back-top {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
     font-weight: 600;
-    color: #94A3B8;
     text-decoration: none;
-    margin-bottom: 24px;
-    transition: color 0.2s;
+    transition: opacity 0.2s ease;
 }
 
-.page-faq .btn-back-top:hover {
-    color: #E8622A;
+.faq-card a:hover {
+    opacity: 0.75;
 }
 
-.page-faq .btn-back-top svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-}
-
+/* ── Contact Box ── */
 .faq-contact-box {
-    margin-top: 40px;
-    padding: 24px;
-    background: #FFF7F3;
-    border-radius: 12px;
-    border: 1px solid rgba(232, 98, 42, 0.15);
+    margin-top: 48px;
+    padding: 32px;
+    background: linear-gradient(135deg, #1E293B 0%, #263348 100%);
+    border-radius: 16px;
     text-align: center;
+    opacity: 0;
+    animation: faq-fadeUp 0.5s ease 0.3s forwards;
 }
 
 .faq-contact-box p {
-    font-size: 14px;
-    color: #1E293B;
-    margin: 0 0 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 16px;
+    font-weight: 400;
 }
 
 .faq-contact-box a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 24px;
+    padding: 12px 28px;
     background: #E8622A;
-    color: white;
+    color: white !important;
     border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
-    transition: background 0.2s;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(232, 98, 42, 0.25);
 }
 
 .faq-contact-box a:hover {
-    background: #d4571f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.35);
+    opacity: 1;
 }
 
+/* ── Staggered animations ── */
+@keyframes faq-fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger FAQ items per section */
+.faq-section-title ~ .faq-item:nth-of-type(1) { animation-delay: 0.2s; }
+.faq-section-title ~ .faq-item:nth-of-type(2) { animation-delay: 0.25s; }
+.faq-section-title ~ .faq-item:nth-of-type(3) { animation-delay: 0.3s; }
+.faq-section-title ~ .faq-item:nth-of-type(4) { animation-delay: 0.35s; }
+.faq-section-title ~ .faq-item:nth-of-type(5) { animation-delay: 0.4s; }
+.faq-section-title ~ .faq-item:nth-of-type(6) { animation-delay: 0.45s; }
+.faq-section-title ~ .faq-item:nth-of-type(7) { animation-delay: 0.5s; }
+.faq-section-title ~ .faq-item:nth-of-type(8) { animation-delay: 0.55s; }
+.faq-section-title ~ .faq-item:nth-of-type(9) { animation-delay: 0.6s; }
+.faq-section-title ~ .faq-item:nth-of-type(10) { animation-delay: 0.65s; }
+.faq-section-title ~ .faq-item:nth-of-type(11) { animation-delay: 0.7s; }
+.faq-section-title ~ .faq-item:nth-of-type(12) { animation-delay: 0.75s; }
+
+/* ── Responsive ── */
 @media (max-width: 600px) {
     .faq-card {
-        padding: 24px 20px;
+        padding: 28px 20px;
         margin: 24px auto 40px;
+        border-radius: 16px;
     }
+
     .faq-card h1 {
-        font-size: 22px;
+        font-size: 26px;
+    }
+
+    .faq-question {
+        padding: 14px 16px;
+        font-size: 13px;
+    }
+
+    .faq-answer-inner {
+        padding: 0 16px 16px;
+        font-size: 12px;
+    }
+
+    .faq-contact-box {
+        padding: 24px 20px;
     }
 }

@@ -24,15 +24,16 @@ export default function FaqPage() {
   return (
     <div className="page-faq">
       <div className="faq-card">
-        <Link to="/" className="btn-back-top">
-          <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
-          Retour
-        </Link>
         <h1>Questions fr&eacute;quentes</h1>
         <p className="subtitle">Tout ce que vous devez savoir sur STERNY</p>
 
         {/* SECTION : GENERAL */}
-        <h2 className="faq-section-title">G&eacute;n&eacute;ral</h2>
+        <h2 className="faq-section-title">
+          <span className="faq-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          </span>
+          G&eacute;n&eacute;ral
+        </h2>
 
         <FaqItem question="Qu'est-ce que STERNY ?">
           STERNY est une plateforme de mise en relation entre <strong>&eacute;tudiants en alternance</strong> et <strong>propri&eacute;taires</strong>. Elle permet aux alternants de trouver un logement adapt&eacute; &agrave; leur rythme (1 semaine entreprise / 1 semaine &eacute;cole, etc.) et aux propri&eacute;taires de louer &agrave; des locataires v&eacute;rifi&eacute;s.
@@ -47,7 +48,12 @@ export default function FaqPage() {
         </FaqItem>
 
         {/* SECTION : LOCATAIRES */}
-        <h2 className="faq-section-title">Pour les &eacute;tudiants / locataires</h2>
+        <h2 className="faq-section-title">
+          <span className="faq-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          Pour les &eacute;tudiants / locataires
+        </h2>
 
         <FaqItem question="Comment m'inscrire en tant qu'étudiant ?">
           Cliquez sur <Link to="/inscription">&laquo; S&rsquo;inscrire &raquo;</Link>, choisissez votre profil (&eacute;tudiant qui cherche un logement ou qui souhaite partager le sien), puis compl&eacute;tez votre profil avec vos informations d&rsquo;alternance (ville entreprise, ville &eacute;cole, rythme).
@@ -66,7 +72,12 @@ export default function FaqPage() {
         </FaqItem>
 
         {/* SECTION : PROPRIETAIRES */}
-        <h2 className="faq-section-title">Pour les propri&eacute;taires</h2>
+        <h2 className="faq-section-title">
+          <span className="faq-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Pour les propri&eacute;taires
+        </h2>
 
         <FaqItem question="Comment publier une annonce ?">
           Apr&egrave;s inscription, acc&eacute;dez &agrave; votre <strong>espace propri&eacute;taire</strong> et cliquez sur &laquo; Cr&eacute;er une annonce &raquo;. Renseignez la description, les photos, le loyer, la caution, les &eacute;quipements et les disponibilit&eacute;s. Votre annonce sera visible imm&eacute;diatement.
@@ -81,7 +92,12 @@ export default function FaqPage() {
         </FaqItem>
 
         {/* SECTION : CONTRAT & PAIEMENT */}
-        <h2 className="faq-section-title">Contrat &amp; Paiement</h2>
+        <h2 className="faq-section-title">
+          <span className="faq-section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          Contrat &amp; Paiement
+        </h2>
 
         <FaqItem question="Comment se passe la signature du contrat ?">
           Apr&egrave;s l&rsquo;acceptation de la candidature, un <strong>contrat de location</strong> est g&eacute;n&eacute;r&eacute; automatiquement. Les deux parties le signent &eacute;lectroniquement sur la plateforme. Une fois sign&eacute;, le paiement du d&eacute;p&ocirc;t de garantie et du premier loyer est d&eacute;clench&eacute;.
