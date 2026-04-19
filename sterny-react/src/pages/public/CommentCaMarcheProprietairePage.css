@@ -2,28 +2,13 @@
 .ccmp-hero {
     background: #1E293B;
     color: white;
-    padding: 60px 20px 56px;
+    padding: 72px 20px 64px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.ccmp-hero::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(232, 98, 42, 0.12) 0%, transparent 70%);
-    pointer-events: none;
 }
 
 .ccmp-hero-inner {
     max-width: 640px;
     margin: 0 auto;
-    position: relative;
-    z-index: 1;
 }
 
 .ccmp-badge {
@@ -31,25 +16,29 @@
     padding: 6px 16px;
     background: rgba(232, 98, 42, 0.15);
     border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
     font-size: 11px;
     font-weight: 700;
     color: #E8622A;
     letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .ccmp-hero h1 {
-    font-size: 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 42px;
     font-weight: 800;
-    margin: 0 0 14px;
-    line-height: 1.15;
-    letter-spacing: -0.5px;
+    color: white;
+    margin: 0 0 16px;
+    line-height: 1.1;
+    letter-spacing: -1px;
 }
 
 .ccmp-hero p {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.65);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.6);
     margin: 0;
     line-height: 1.6;
 }
@@ -131,89 +120,100 @@
 
 /* ═══ SECTION TITLE ═══ */
 .ccmp-section-title {
-    font-size: 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
     font-weight: 300;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: #E8622A;
     text-transform: uppercase;
     text-align: center;
-    margin: 0 0 32px;
-}
-
-.ccmp-section-subtitle {
-    text-align: center;
-    color: #64748B;
-    font-size: 14px;
-    font-weight: 400;
-    margin: -24px 0 36px;
+    margin: 0 0 36px;
 }
 
 /* ═══ STEPS ═══ */
 .ccmp-steps-section {
-    padding: 60px 20px;
+    padding: 48px 24px 64px;
     background: #F4F5F7;
 }
 
 .ccmp-steps {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
 }
 
 .ccmp-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 18px;
-    padding: 22px 24px;
     background: white;
-    border-radius: 14px;
-    border: 1.5px solid #E8EAF0;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #E8EAF0;
+    box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: ccmpStepIn 0.5s ease both;
+}
+
+.ccmp-step:nth-child(1) { animation-delay: 0.1s; }
+.ccmp-step:nth-child(2) { animation-delay: 0.2s; }
+.ccmp-step:nth-child(3) { animation-delay: 0.3s; }
+.ccmp-step:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes ccmpStepIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .ccmp-step:hover {
-    border-color: #E8622A;
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.1);
-    transform: translateY(-4px);
+    transform: scale(1.03);
+    box-shadow: 0 8px 28px rgba(30, 41, 59, 0.12);
+}
+
+
+.ccmp-step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .ccmp-step-num {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    background: #1E293B;
-    color: white;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     border-radius: 10px;
+    background: #FFF1E8;
+    color: #E8622A;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    font-weight: 800;
-    transition: background 0.2s;
+    flex-shrink: 0;
 }
 
-.ccmp-step:hover .ccmp-step-num {
-    background: #E8622A;
-}
-
-.ccmp-step-body h3 {
+.ccmp-step-header h3 {
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
-    font-weight: 700;
-    color: #1E293B;
-    margin: 0 0 4px;
+    font-weight: 300;
+    color: #E8622A;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
 }
 
 .ccmp-step-body p {
-    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
     color: #64748B;
-    margin: 0;
     line-height: 1.6;
+    margin: 0;
 }
 
 /* ═══ AVANTAGES ═══ */
 .ccmp-avantages-section {
-    padding: 60px 20px;
-    background: white;
+    padding: 48px 24px 64px;
+    background: #F4F5F7;
 }
 
 .ccmp-grid {
@@ -223,44 +223,51 @@
 }
 
 .ccmp-avantage {
-    padding: 22px;
-    background: #F4F5F7;
-    border-radius: 14px;
-    border: 1.5px solid #E8EAF0;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    padding: 24px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #E8EAF0;
+    box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: ccmpStepIn 0.5s ease both;
 }
 
+.ccmp-avantage:nth-child(1) { animation-delay: 0.1s; }
+.ccmp-avantage:nth-child(2) { animation-delay: 0.2s; }
+.ccmp-avantage:nth-child(3) { animation-delay: 0.3s; }
+.ccmp-avantage:nth-child(4) { animation-delay: 0.4s; }
+
 .ccmp-avantage:hover {
-    border-color: #E8622A;
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.08);
+    transform: scale(1.03);
+    box-shadow: 0 8px 28px rgba(30, 41, 59, 0.12);
 }
 
 .ccmp-avantage-icon {
-    width: 38px;
-    height: 38px;
-    background: #1E293B;
+    width: 32px;
+    height: 32px;
+    background: #FFF1E8;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 14px;
-    transition: background 0.2s;
 }
 
-.ccmp-avantage:hover .ccmp-avantage-icon {
-    background: #E8622A;
+.ccmp-avantage-icon svg {
+    fill: #E8622A;
 }
 
 .ccmp-avantage h4 {
+    font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     font-weight: 700;
     color: #1E293B;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
 }
 
 .ccmp-avantage p {
-    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
     color: #64748B;
     margin: 0;
     line-height: 1.6;
@@ -381,11 +388,15 @@
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 640px) {
     .ccmp-hero {
-        padding: 60px 20px 48px;
+        padding: 48px 20px 44px;
     }
 
     .ccmp-hero h1 {
-        font-size: 26px;
+        font-size: 30px;
+    }
+
+    .ccmp-step {
+        padding: 20px;
     }
 
     .ccmp-grid {

@@ -21,35 +21,43 @@ export default function CommentCaMarcheProprietairePage() {
           <h2 className="ccmp-section-title ccmp-stagger">COMMENT ÇA MARCHE</h2>
 
           <div className="ccmp-steps">
-            <div className="ccmp-step ccmp-stagger" style={{ animationDelay: '0.08s' }}>
-              <div className="ccmp-step-num">1</div>
+            <div className="ccmp-step">
+              <div className="ccmp-step-header">
+                <span className="ccmp-step-num">1</span>
+                <h3>Cr&eacute;ez votre annonce</h3>
+              </div>
               <div className="ccmp-step-body">
-                <h3>Créez ou vérifiez votre annonce</h3>
-                <p>Renseignez votre logement ou vérifiez l'annonce créée par votre locataire alternant.</p>
+                <p>Renseignez votre logement ou v&eacute;rifiez l'annonce cr&eacute;&eacute;e par votre locataire alternant.</p>
               </div>
             </div>
 
-            <div className="ccmp-step ccmp-stagger" style={{ animationDelay: '0.16s' }}>
-              <div className="ccmp-step-num">2</div>
+            <div className="ccmp-step">
+              <div className="ccmp-step-header">
+                <span className="ccmp-step-num">2</span>
+                <h3>On trouve vos locataires</h3>
+              </div>
               <div className="ccmp-step-body">
-                <h3>On vous trouve des locataires</h3>
-                <p>STERNY vous connecte avec des étudiants en alternance qui ont un rythme compatible avec votre logement.</p>
+                <p>STERNY vous connecte avec des &eacute;tudiants en alternance qui ont un rythme compatible avec votre logement.</p>
               </div>
             </div>
 
-            <div className="ccmp-step ccmp-stagger" style={{ animationDelay: '0.24s' }}>
-              <div className="ccmp-step-num">3</div>
+            <div className="ccmp-step">
+              <div className="ccmp-step-header">
+                <span className="ccmp-step-num">3</span>
+                <h3>Validez et signez</h3>
+              </div>
               <div className="ccmp-step-body">
-                <h3>Validez et signez en ligne</h3>
                 <p>Consultez les profils des candidats, acceptez ceux qui vous conviennent et signez le contrat directement sur la plateforme.</p>
               </div>
             </div>
 
-            <div className="ccmp-step ccmp-stagger" style={{ animationDelay: '0.32s' }}>
-              <div className="ccmp-step-num">4</div>
+            <div className="ccmp-step">
+              <div className="ccmp-step-header">
+                <span className="ccmp-step-num">4</span>
+                <h3>Recevez vos loyers</h3>
+              </div>
               <div className="ccmp-step-body">
-                <h3>Recevez vos loyers automatiquement</h3>
-                <p>Les paiements sont prélevés chaque mois et versés directement sur votre compte. Zéro relance, zéro impayé.</p>
+                <p>Les paiements sont pr&eacute;lev&eacute;s chaque mois et vers&eacute;s directement sur votre compte. Z&eacute;ro relance, z&eacute;ro impay&eacute;.</p>
               </div>
             </div>
           </div>

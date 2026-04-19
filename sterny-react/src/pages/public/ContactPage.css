@@ -1,177 +1,283 @@
+/* ── Contact Page ── STERNY Design System ── */
+
 .page-contact {
-    background: linear-gradient(135deg, #F8F9FC, #F0F2F7);
-    padding: 0 20px;
+    background: #F4F5F7;
+    min-height: 100vh;
 }
 
-.contact-card {
+/* ── Hero ── */
+.contact-hero {
+    background: #1E293B;
+    color: white;
+    padding: 72px 20px 64px;
+    text-align: center;
+}
+
+.contact-hero-inner {
     max-width: 640px;
-    width: 100%;
-    background: white;
+    margin: 0 auto;
+}
+
+.contact-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(232, 98, 42, 0.15);
     border-radius: 20px;
-    padding: 48px;
-    box-shadow: 0 6px 30px rgba(30, 41, 59, 0.08);
-    margin: 48px auto 80px;
-}
-
-.contact-card h1 {
-    font-size: 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
     font-weight: 700;
-    color: #1E293B;
-    margin: 0 0 8px;
-}
-
-.contact-card .subtitle {
-    font-size: 13px;
-    color: #94A3B8;
-    margin-bottom: 32px;
-}
-
-.page-contact .btn-back-top {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #94A3B8;
-    text-decoration: none;
-    margin-bottom: 24px;
-    transition: color 0.2s;
-}
-
-.page-contact .btn-back-top:hover {
     color: #E8622A;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
 }
 
-.page-contact .btn-back-top svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
+.contact-hero h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 16px;
+    line-height: 1.1;
+    letter-spacing: -1px;
 }
 
+.contact-hero p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ── Content ── */
+.contact-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+}
+
+/* ── Channels (dp-card style) ── */
 .contact-channels {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
 }
 
-.channel-card {
+.contact-channel {
+    background: white;
+    border-radius: 16px;
     padding: 24px;
     border: 1px solid #E8EAF0;
-    border-radius: 14px;
-    text-align: center;
-    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.channel-card:hover {
-    border-color: #E8622A;
-    box-shadow: 0 4px 16px rgba(232, 98, 42, 0.1);
+.contact-channel:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 28px rgba(30, 41, 59, 0.12);
 }
 
-.channel-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+.contact-channel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.contact-channel-icon {
+    width: 32px;
+    height: 32px;
+    background: #FFF1E8;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 12px;
-    background: #FFF7F3;
+    flex-shrink: 0;
 }
 
-.channel-icon svg {
-    width: 20px;
-    height: 20px;
-    stroke: #E8622A;
-    fill: none;
-    stroke-width: 2;
+.contact-channel-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
-.channel-card h3 {
+.contact-channel-header h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: #E8622A;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.contact-channel p {
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
-    font-weight: 700;
-    color: #1E293B;
-    margin: 0 0 4px;
+    color: #64748B;
+    margin: 0 0 8px;
+    line-height: 1.6;
 }
 
-.channel-card p {
-    font-size: 12px;
-    color: #94A3B8;
-    margin: 0 0 10px;
-}
-
-.channel-card a {
-    font-size: 13px;
+.contact-channel a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
     color: #E8622A;
     font-weight: 600;
     text-decoration: none;
+    transition: opacity 0.2s;
 }
 
-.channel-card a:hover {
-    text-decoration: underline;
+.contact-channel a:hover {
+    opacity: 0.75;
 }
 
-/* FORMULAIRE */
+/* ── Form Card (dp-card style) ── */
+.contact-form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #E8EAF0;
+    box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+}
+
 .contact-form-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: #E8622A;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 24px;
 }
 
-.contact-card .form-group {
+/* ── Custom Select ── */
+.ct-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 36px;
+    padding: 0 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.ct-select-trigger:hover {
+    border-color: #CBD5E1;
+}
+
+.ct-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    max-height: 210px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid #E8EAF0;
+    z-index: 100;
+}
+
+.ct-dropdown.open {
+    display: block;
+}
+
+.ct-dropdown-option {
+    padding: 13px 18px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #1E293B;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ct-dropdown-option:hover {
+    background: #F4F5F7;
+    color: #E8622A;
+}
+
+.ct-dropdown-option.selected {
+    color: #E8622A;
+    font-weight: 600;
+}
+
+/* ── Form Fields ── */
+.ct-form-group {
     margin-bottom: 16px;
 }
 
-.contact-card .form-group label {
+.ct-form-group label {
     display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1E293B;
     margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.contact-card .form-group input,
-.contact-card .form-group select,
-.contact-card .form-group textarea {
+.ct-form-group input,
+.ct-form-group textarea {
     width: 100%;
-    padding: 12px 14px;
+    height: 36px;
+    padding: 0 14px;
     border: 1.5px solid #E8EAF0;
     border-radius: 10px;
     font-size: 14px;
     font-family: 'DM Sans', sans-serif;
     color: #1E293B;
-    background: #FAFBFC;
+    background: white;
+    outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
 }
 
-.contact-card .form-group input:focus,
-.contact-card .form-group select:focus,
-.contact-card .form-group textarea:focus {
-    outline: none;
-    border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+.ct-form-group input::placeholder,
+.ct-form-group textarea::placeholder {
+    color: #94A3B8;
 }
 
-.contact-card .form-group textarea {
-    min-height: 120px;
+.ct-form-group input:focus,
+.ct-form-group textarea:focus {
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.12);
+}
+
+.ct-form-group input:hover:not(:focus),
+.ct-form-group textarea:hover:not(:focus) {
+    border-color: #CBD5E1;
+}
+
+.ct-form-group textarea {
+    height: auto;
+    min-height: 100px;
+    padding: 12px 14px;
     resize: vertical;
 }
 
-.contact-card .form-row {
+.ct-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
-.contact-card .btn-submit {
+.ct-btn-submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     width: 100%;
     padding: 14px;
     background: #E8622A;
@@ -182,55 +288,72 @@
     font-weight: 700;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     margin-top: 8px;
 }
 
-.contact-card .btn-submit:hover {
-    background: #d4571f;
+.ct-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
 }
 
-.contact-card .btn-submit:disabled {
+.ct-btn-submit:disabled {
     background: #CBD5E1;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
-.form-success {
+/* ── Success ── */
+.ct-success {
     text-align: center;
     padding: 32px 0;
 }
 
-.form-success svg {
+.ct-success svg {
     width: 48px;
     height: 48px;
     color: #22c55e;
     margin-bottom: 12px;
 }
 
-.form-success h3 {
+.ct-success h3 {
+    font-family: 'DM Sans', sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: #1E293B;
     margin: 0 0 8px;
 }
 
-.form-success p {
+.ct-success p {
+    font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     color: #94A3B8;
 }
 
+/* ── Responsive ── */
 @media (max-width: 600px) {
-    .contact-card {
-        padding: 24px 20px;
-        margin: 24px auto 40px;
+    .contact-hero {
+        padding: 48px 20px 44px;
     }
-    .contact-card h1 {
-        font-size: 22px;
+
+    .contact-hero h1 {
+        font-size: 30px;
     }
+
+    .contact-content {
+        padding: 32px 16px 60px;
+    }
+
     .contact-channels {
         grid-template-columns: 1fr;
     }
-    .contact-card .form-row {
+
+    .contact-form-card {
+        padding: 20px;
+    }
+
+    .ct-form-row {
         grid-template-columns: 1fr;
     }
 }

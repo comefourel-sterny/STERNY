@@ -188,7 +188,13 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
         </div>
         <div className="chat-comp-list">
           {allConversations.length === 0 ? (
-            <div className="chat-comp-empty">Aucun message pour le moment</div>
+            <div className="chat-comp-empty">
+              <div className="chat-comp-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <div className="chat-comp-empty-title">Aucune conversation</div>
+              <div className="chat-comp-empty-desc">Vos &eacute;changes avec les propri&eacute;taires et locataires appara&icirc;tront ici</div>
+            </div>
           ) : (
             allConversations.map(c => {
               const initials = ((c.prenom || 'U')[0] + (c.nom ? c.nom[0] : '')).toUpperCase()
@@ -228,8 +234,11 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
   function renderEmptyThread() {
     return (
       <div className="chat-comp-empty-thread">
-        <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-        <div>Selectionnez une conversation</div>
+        <div className="chat-comp-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+        </div>
+        <div className="chat-comp-empty-title">S&eacute;lectionnez une conversation</div>
+        <div className="chat-comp-empty-desc">Choisissez un contact &agrave; gauche pour commencer &agrave; discuter</div>
       </div>
     )
   }
@@ -313,7 +322,20 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
     )
   }
 
-  // === PAGE MODE — Two columns ===
+  // === PAGE MODE — Two columns, or full empty state ===
+  if (allConversations.length === 0) {
+    return (
+      <div className="chat-comp-page-empty">
+        <div className="chat-comp-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+        </div>
+        <div className="chat-comp-empty-title">Aucune conversation</div>
+        <div className="chat-comp-empty-desc">Vos &eacute;changes avec les propri&eacute;taires et locataires appara&icirc;tront ici d&egrave;s que vous enverrez ou recevrez un message.</div>
+        <a href="/dashboard" className="chat-comp-empty-link">Mon espace</a>
+      </div>
+    )
+  }
+
   return (
     <div className={`chat-comp-page${chatView ? ' chat-active' : ''}`}>
       <div className="chat-comp-sidebar">

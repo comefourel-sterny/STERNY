@@ -156,7 +156,7 @@ nav .logo img {
 .mode-toggle {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 14px;
 }
 
 .mode-pill {
@@ -167,7 +167,7 @@ nav .logo img {
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.3px;
-    padding: 6px 4px;
+    padding: 6px 0;
     position: relative;
     transition: all 0.2s ease;
 }
@@ -298,6 +298,11 @@ nav .nav-cta-inscription:hover {
 }
 .hamburger.active span:nth-child(3) {
     transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Base dark nav — supprime la border orange immédiatement */
+nav.index-nav {
+    border-bottom: none;
 }
 
 /* NAV TRANSPARENT (fond bleu sur la home, se fond avec le hero) */

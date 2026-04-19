@@ -90,24 +90,37 @@
    EMPTY THREAD STATE (right column placeholder)
    ═══════════════════════════════════════════ */
 
+.chat-comp-page-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  font-family: 'DM Sans', sans-serif;
+  gap: 8px;
+  text-align: center;
+  padding: 40px 20px;
+  background: #F4F5F7;
+}
+
+.chat-comp-page-empty .chat-comp-empty-icon,
+.chat-comp-page-empty .chat-comp-empty-title,
+.chat-comp-page-empty .chat-comp-empty-desc,
+.chat-comp-page-empty .chat-comp-empty-btn {
+  position: relative;
+  z-index: 1;
+}
+
 .chat-comp-empty-thread {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #94A3B8;
-  font-size: 14px;
   font-family: 'DM Sans', sans-serif;
-  gap: 12px;
-}
-
-.chat-comp-empty-thread svg {
-  width: 48px;
-  height: 48px;
-  stroke: #CBD5E1;
-  fill: none;
-  stroke-width: 1.5;
+  gap: 8px;
+  padding: 40px;
+  text-align: center;
 }
 
 /* ═══════════════════════════════════════════
@@ -199,9 +212,54 @@
 .chat-comp-empty {
   text-align: center;
   padding: 48px 24px;
-  color: #94A3B8;
-  font-size: 14px;
   font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-comp-empty-icon {
+  width: 48px;
+  height: 48px;
+  background: #FFF1E8;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.chat-comp-empty-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.chat-comp-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.chat-comp-empty-desc {
+  font-size: 13px;
+  color: #94A3B8;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.chat-comp-empty-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #E8622A;
+  text-decoration: none;
+  margin-top: 12px;
+  transition: opacity 0.2s;
+}
+
+.chat-comp-empty-link:hover {
+  opacity: 0.75;
 }
 
 .chat-comp-item {

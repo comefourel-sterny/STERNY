@@ -8,14 +8,15 @@ export default function Navbar({ variant = 'default' }) {
   const { user } = useAuth()
   const location = useLocation()
   const isHomepage = location.pathname === '/'
-  const showModeToggle = location.pathname === '/' || location.pathname === '/recherche'
+  const showModeToggle = variant === 'dark'
 
   useEffect(() => {
     if (variant !== 'dark') return
     const onScroll = () => setScrolled(window.scrollY > 50)
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [variant])
+  }, [variant, location.pathname])
 
   const isDark = variant === 'dark'
   const navClass = isDark ? (scrolled ? 'index-nav nav-scrolled' : 'index-nav nav-transparent') : ''

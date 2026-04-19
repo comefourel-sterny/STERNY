@@ -21,35 +21,43 @@ export default function CommentCaMarcheRecherchePage() {
           <h2 className="ccmr-section-title ccmr-stagger">COMMENT ÇA MARCHE</h2>
 
           <div className="ccmr-steps">
-            <div className="ccmr-step ccmr-stagger" style={{ animationDelay: '0.08s' }}>
-              <div className="ccmr-step-num">1</div>
+            <div className="ccmr-step">
+              <div className="ccmr-step-header">
+                <span className="ccmr-step-num">1</span>
+                <h3>Inscris-toi</h3>
+              </div>
               <div className="ccmr-step-body">
-                <h3>Inscris-toi avec ton rythme</h3>
                 <p>Indique ta ville et ton rythme d'alternance. STERNY te montre uniquement les logements disponibles sur tes semaines.</p>
               </div>
             </div>
 
-            <div className="ccmr-step ccmr-stagger" style={{ animationDelay: '0.16s' }}>
-              <div className="ccmr-step-num">2</div>
-              <div className="ccmr-step-body">
+            <div className="ccmr-step">
+              <div className="ccmr-step-header">
+                <span className="ccmr-step-num">2</span>
                 <h3>Parcours les annonces</h3>
-                <p>Chaque logement affiche un score de compatibilité avec ton rythme. Tu vois immédiatement ce qui te correspond.</p>
+              </div>
+              <div className="ccmr-step-body">
+                <p>Chaque logement affiche un score de compatibilit&eacute; avec ton rythme. Tu vois imm&eacute;diatement ce qui te correspond.</p>
               </div>
             </div>
 
-            <div className="ccmr-step ccmr-stagger" style={{ animationDelay: '0.24s' }}>
-              <div className="ccmr-step-num">3</div>
+            <div className="ccmr-step">
+              <div className="ccmr-step-header">
+                <span className="ccmr-step-num">3</span>
+                <h3>R&eacute;serve et signe</h3>
+              </div>
               <div className="ccmr-step-body">
-                <h3>Réserve et signe en ligne</h3>
-                <p>Envoie ta demande, signe le contrat et fais l'état des lieux directement sur la plateforme. Zéro paperasse.</p>
+                <p>Envoie ta demande, signe le contrat et fais l'&eacute;tat des lieux directement sur la plateforme. Z&eacute;ro paperasse.</p>
               </div>
             </div>
 
-            <div className="ccmr-step ccmr-stagger" style={{ animationDelay: '0.32s' }}>
-              <div className="ccmr-step-num">4</div>
+            <div className="ccmr-step">
+              <div className="ccmr-step-header">
+                <span className="ccmr-step-num">4</span>
+                <h3>Emm&eacute;nage tranquille</h3>
+              </div>
               <div className="ccmr-step-body">
-                <h3>Emménage l'esprit tranquille</h3>
-                <p>Tu paies chaque mois, uniquement pour tes semaines d'occupation. Tout est sécurisé par STERNY.</p>
+                <p>Tu paies chaque mois, uniquement pour tes semaines d'occupation. Tout est s&eacute;curis&eacute; par STERNY.</p>
               </div>
             </div>
           </div>

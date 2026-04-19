@@ -1,0 +1,177 @@
+/* ── Stepper ── */
+
+.stepper {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* ── Track (dots + bar) ── */
+.stepper-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+/* Bar behind dots */
+.stepper-bar {
+    position: absolute;
+    top: 24px;
+    left: 48px;
+    right: 48px;
+    height: 3px;
+    background: #E8EAF0;
+    z-index: 0;
+    border-radius: 2px;
+}
+
+.stepper-bar-fill {
+    height: 100%;
+    background: #E8622A;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* ── Dot button ── */
+.stepper-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    padding: 0;
+    min-width: 100px;
+}
+
+.stepper-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    border: 2.5px solid #E8EAF0;
+    color: #94A3B8;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.stepper-dot.done .stepper-num {
+    background: #1E293B;
+    border-color: #1E293B;
+    color: white;
+}
+
+.stepper-dot.active .stepper-num {
+    background: #E8622A;
+    border-color: #E8622A;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(232, 98, 42, 0.12);
+}
+
+.stepper-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #94A3B8;
+    text-align: center;
+    line-height: 1.3;
+    transition: color 0.3s ease, font-weight 0.3s ease;
+    max-width: 130px;
+}
+
+.stepper-dot.active .stepper-label {
+    color: #1E293B;
+    font-weight: 700;
+}
+
+.stepper-dot.done .stepper-label {
+    color: #64748B;
+    font-weight: 500;
+}
+
+/* ── Content ── */
+.stepper-content {
+    background: white;
+    border-left: 4px solid #E8622A;
+    border-radius: 0 12px 12px 0;
+    padding: 32px 36px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    animation: stepperFadeIn 0.3s ease;
+}
+
+.stepper-content-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.stepper-content p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.7;
+    margin: 0;
+}
+
+@keyframes stepperFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .stepper {
+        max-width: 100%;
+    }
+
+    .stepper-label {
+        font-size: 10px;
+        max-width: 70px;
+    }
+
+    .stepper-dot {
+        min-width: 60px;
+    }
+
+    .stepper-num {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+
+    .stepper-dot.active .stepper-num {
+        transform: scale(1.05);
+    }
+
+    .stepper-bar {
+        top: 19px;
+        left: 30px;
+        right: 30px;
+    }
+
+    .stepper-content {
+        padding: 24px 20px;
+    }
+
+    .stepper-content-title {
+        font-size: 15px;
+    }
+}

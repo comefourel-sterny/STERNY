@@ -23,14 +23,19 @@ function FaqItem({ question, children }) {
 export default function FaqPage() {
   return (
     <div className="page-faq">
-      <div className="faq-card">
-        <h1>Questions fr&eacute;quentes</h1>
-        <p className="subtitle">Tout ce que vous devez savoir sur STERNY</p>
+      <div className="faq-hero">
+        <div className="faq-hero-inner">
+          <span className="faq-badge">CENTRE D'AIDE</span>
+          <h1>Besoin d'aide ?</h1>
+          <p>Retrouvez ici toutes les r&eacute;ponses &agrave; vos questions sur STERNY</p>
+        </div>
+      </div>
 
+      <div className="faq-content">
         {/* SECTION : GENERAL */}
         <h2 className="faq-section-title">
           <span className="faq-section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </span>
           G&eacute;n&eacute;ral
         </h2>

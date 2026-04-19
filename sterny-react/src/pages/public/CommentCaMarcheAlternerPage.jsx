@@ -21,35 +21,43 @@ export default function CommentCaMarcheAlternerPage() {
           <h2 className="ccma-section-title ccma-stagger">COMMENT ÇA MARCHE</h2>
 
           <div className="ccma-steps">
-            <div className="ccma-step ccma-stagger" style={{ animationDelay: '0.08s' }}>
-              <div className="ccma-step-num">1</div>
+            <div className="ccma-step">
+              <div className="ccma-step-header">
+                <span className="ccma-step-num">1</span>
+                <h3>Inscris-toi</h3>
+              </div>
               <div className="ccma-step-body">
-                <h3>Inscris-toi avec ton rythme</h3>
-                <p>Indique ta ville et ton rythme d'alternance. STERNY cherche un binôme dont les semaines sont complémentaires aux tiennes.</p>
+                <p>Indique ta ville et ton rythme d'alternance. STERNY cherche un bin&ocirc;me dont les semaines sont compl&eacute;mentaires aux tiennes.</p>
               </div>
             </div>
 
-            <div className="ccma-step ccma-stagger" style={{ animationDelay: '0.16s' }}>
-              <div className="ccma-step-num">2</div>
+            <div className="ccma-step">
+              <div className="ccma-step-header">
+                <span className="ccma-step-num">2</span>
+                <h3>D&eacute;couvre ton bin&ocirc;me</h3>
+              </div>
               <div className="ccma-step-body">
-                <h3>Découvre ton binôme</h3>
-                <p>On te propose un étudiant compatible : quand tu es en cours, il est en entreprise (et inversement). Vous ne vous croisez jamais.</p>
+                <p>On te propose un &eacute;tudiant compatible : quand tu es en cours, il est en entreprise (et inversement). Vous ne vous croisez jamais.</p>
               </div>
             </div>
 
-            <div className="ccma-step ccma-stagger" style={{ animationDelay: '0.24s' }}>
-              <div className="ccma-step-num">3</div>
+            <div className="ccma-step">
+              <div className="ccma-step-header">
+                <span className="ccma-step-num">3</span>
+                <h3>Signez ensemble</h3>
+              </div>
               <div className="ccma-step-body">
-                <h3>Signez ensemble en ligne</h3>
-                <p>Validez le binôme, signez le contrat sur la plateforme. Tout est encadré par STERNY.</p>
+                <p>Validez le bin&ocirc;me, signez le contrat sur la plateforme. Tout est encadr&eacute; par STERNY.</p>
               </div>
             </div>
 
-            <div className="ccma-step ccma-stagger" style={{ animationDelay: '0.32s' }}>
-              <div className="ccma-step-num">4</div>
-              <div className="ccma-step-body">
+            <div className="ccma-step">
+              <div className="ccma-step-header">
+                <span className="ccma-step-num">4</span>
                 <h3>Paie selon ton occupation</h3>
-                <p>Chacun paie chaque mois en fonction de ses semaines d'occupation. Ton loyer est divisé, sans compromis sur le confort.</p>
+              </div>
+              <div className="ccma-step-body">
+                <p>Chacun paie chaque mois en fonction de ses semaines d'occupation. Ton loyer est divis&eacute;, sans compromis sur le confort.</p>
               </div>
             </div>
           </div>
