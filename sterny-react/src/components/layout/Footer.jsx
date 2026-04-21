@@ -20,7 +20,7 @@ export default function Footer() {
             <h4>Entreprise</h4>
             <Link to="/a-propos">À propos</Link>
             <Link to="/agences-partenaires">Partenariat</Link>
-            <Link to="/inscription/partager">Devenir hôte</Link>
+            <Link to="/comment-ca-marche?role=hote">Devenir hôte</Link>
           </div>
         </div>
       </div>
