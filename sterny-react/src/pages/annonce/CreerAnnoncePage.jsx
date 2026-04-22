@@ -1685,6 +1685,8 @@ export default function CreerAnnoncePage() {
         equipements: equips, regles, charges_info: chargesInfo, bail_info: bailInfo,
         disponibilites_debut: selectedDates.length > 0 ? selectedDates[0] : null,
         disponibilites_pattern: selectedDates.length > 0 ? selectedDates : null,
+        type_alternance: rhythmType || null,
+        rythme_pattern: rhythmPattern || null,
         adresse_verifiee: addressVerified,
         latitude: verifiedCoordinates ? verifiedCoordinates[1] : null,
         longitude: verifiedCoordinates ? verifiedCoordinates[0] : null,
