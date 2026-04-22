@@ -638,18 +638,21 @@ export default function RecherchePage() {
       })
     }
 
-    // Match scoring with user disponibilites
+    // Match scoring with user disponibilites (exclude past dates)
     if (mesDisponibilites.length > 0) {
-      const userDatesSet = new Set(mesDisponibilites)
+      const todayStr = new Date().toISOString().slice(0, 10)
+      const futurUserDates = mesDisponibilites.filter(d => d >= todayStr)
+      const userDatesSet = new Set(futurUserDates)
       resultats = resultats.filter(logement => {
         if (!logement.disponibilites_pattern || logement.disponibilites_pattern.length === 0) return false
-        return logement.disponibilites_pattern.some(d => userDatesSet.has(d))
+        return logement.disponibilites_pattern.some(d => d >= todayStr && userDatesSet.has(d))
       })
       resultats = resultats.map(logement => {
-        const hostDatesSet = new Set(logement.disponibilites_pattern)
-        const hostMin = logement.disponibilites_pattern[0]
-        const hostMax = logement.disponibilites_pattern[logement.disponibilites_pattern.length - 1]
-        const userDansPerioDeHote = mesDisponibilites.filter(d => d >= hostMin && d <= hostMax)
+        const futureHostDates = logement.disponibilites_pattern.filter(d => d >= todayStr)
+        const hostDatesSet = new Set(futureHostDates)
+        const hostMin = futureHostDates[0] || logement.disponibilites_pattern[0]
+        const hostMax = futureHostDates[futureHostDates.length - 1] || logement.disponibilites_pattern[logement.disponibilites_pattern.length - 1]
+        const userDansPerioDeHote = futurUserDates.filter(d => d >= hostMin && d <= hostMax)
         const intersection = userDansPerioDeHote.filter(d => hostDatesSet.has(d)).length
         const total = userDansPerioDeHote.length || 1
         return { ...logement, matchScore: intersection / total }
