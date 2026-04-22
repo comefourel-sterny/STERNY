@@ -1591,17 +1591,22 @@ export default function CreerAnnoncePage() {
       const { data: { user: currentUser } } = await supabaseClient.auth.getUser()
       if (!currentUser) { navigate('/connexion'); return }
 
-      // Identity verification
-      const { data: identityCheck } = await supabaseClient.from('users').select('identite_verifiee').eq('id', currentUser.id).single()
-      if (!identityCheck || identityCheck.identite_verifiee !== 'verifiee') {
-        if (confirm('Pour publier, tu dois vérifier ton identité. Continuer ?')) {
-          try {
-            const { data: identityData, error: identityError } = await supabaseClient.functions.invoke('create-stripe-identity-session', { body: { user_id: currentUser.id, return_url: window.location.href } })
-            if (identityError) throw identityError
-            if (identityData?.url) { window.location.href = identityData.url; return }
-          } catch (e) { console.error('Erreur Stripe Identity:', e); alert('Impossible de lancer la vérification.') }
+      // DEV: skip Stripe Identity verification temporarily
+      // TODO: restore before production
+      const skipStripeIdentity = true
+      if (!skipStripeIdentity) {
+        // Identity verification
+        const { data: identityCheck } = await supabaseClient.from('users').select('identite_verifiee').eq('id', currentUser.id).single()
+        if (!identityCheck || identityCheck.identite_verifiee !== 'verifiee') {
+          if (confirm('Pour publier, tu dois vérifier ton identité. Continuer ?')) {
+            try {
+              const { data: identityData, error: identityError } = await supabaseClient.functions.invoke('create-stripe-identity-session', { body: { user_id: currentUser.id, return_url: window.location.href } })
+              if (identityError) throw identityError
+              if (identityData?.url) { window.location.href = identityData.url; return }
+            } catch (e) { console.error('Erreur Stripe Identity:', e); alert('Impossible de lancer la vérification.') }
+          }
+          setPublishing(false); setPublishBtnText('Publier l\'annonce'); return
         }
-        setPublishing(false); setPublishBtnText('Publier l\'annonce'); return
       }
 
       // Address check
