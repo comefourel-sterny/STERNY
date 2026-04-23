@@ -97,3 +97,45 @@ Le design system Sterny est déjà documenté dans le dossier `sterny-react/.cla
 Ces fichiers sont la source de vérité actuelle. Un audit de fraîcheur est prévu (cf. `docs/ETAT-COURANT.md` section 4 point 8) pour vérifier qu'ils reflètent bien les pages retravaillées récemment avant qu'ils soient considérés comme stables.
 
 En attendant cet audit, en cas de doute entre ces fichiers et une page récemment retravaillée, Claude Code doit demander validation à Côme plutôt que présumer.
+
+## Règles Git et secrets (auto-application)
+
+Les règles ci-dessous sont auto-appliquées par Claude Code à chaque session. Elles viennent d'erreurs réelles commises en sessions précédentes. Si Claude Code détecte une violation potentielle, il s'arrête et signale avant d'exécuter la commande risquée.
+
+**Règles Git anti-erreur** (journal alimenté au fil des sessions)
+
+Ces règles ont été ajoutées après des erreurs réelles commises par Claude.ai ou Claude Code. Elles ne sont pas théoriques — chaque règle traite une erreur identifiée.
+
+- **Jamais `git commit -a` ni `-am`** dans les prompts Claude Code. Toujours `git add <fichier-explicite>` puis `git commit -m`. Raison : le flag `-a` ramasse automatiquement tous les fichiers tracked modifiés, ce qui embarque accidentellement les modifs non-commitées volontairement (bypass DEV dans CreerAnnoncePage.jsx notamment).
+
+- **Toujours `git diff --staged --stat` avant chaque `git commit`**, pour confirmer que le commit contient exactement les fichiers voulus. Si autre chose apparaît, Claude Code s'arrête et signale avant de committer.
+
+- **`git revert` et `git checkout <commit> -- <fichier>` manipulent working tree ET index**, pas seulement l'historique. Avant de proposer l'une de ces commandes, simuler mentalement son effet sur les 3 zones (working tree, index, HEAD). Prévoir un `git reset HEAD <fichier>` ou un `git stash push -u` en amont ou en aval si nécessaire.
+
+- **Fichiers volontairement non-commités** (bypass DEV, tests temporaires) : ne jamais les commiter sans instruction explicite, même s'ils apparaissent "modifiés" dans `git status`. La liste des bypass connus est dans `docs/DETTE-TECHNIQUE.md` section "Bypass DEV en place dans le code".
+
+**Check-list secrets pré-commit**
+
+Obligatoire sur tout fichier issu d'un dump BDD, d'un export, d'un snapshot de schéma, ou de logs copiés. Patterns à tester :
+
+- `sbp_` (Supabase Personal Access Token)
+- `sk-ant-` (Anthropic API)
+- `re_[A-Za-z0-9]{6,}` (Resend API)
+- `sk_live_`, `sk_test_`, `pk_live_`, `pk_test_`, `whsec_` (Stripe)
+- `pk\.` (Mapbox tokens publics et privés)
+- `AIza[0-9A-Za-z_-]{35}` (Google Cloud, dont Vision)
+- `password`, `secret`, `token` (mots génériques, faux positifs fréquents)
+
+Commande type à intégrer dans chaque prompt de commit :
+`grep -nE "sbp_|sk-ant-|re_[A-Za-z0-9]{6,}|sk_live_|sk_test_|pk_live_|pk_test_|whsec_|pk\.|AIza[0-9A-Za-z_-]{35}|password|secret|token" <fichier>`
+
+Si retour non nul, analyser chaque match avant de commit. Faux positifs fréquents : noms de colonnes SQL (`"secret" "text"`), placeholders. Vrais positifs : valeurs après `Bearer`, `Authorization:`, `API_KEY=`, dans des chaînes JSON ou SQL.
+
+**Règle de manipulation des secrets dans les conversations**
+
+Quand un fichier contient potentiellement un secret (clé API, token, mot de passe), construire les commandes d'inspection pour ne JAMAIS afficher la valeur complète par défaut.
+
+- Mauvais : `grep "re_" fichier` affiche toute la ligne, donc toute la clé.
+- Bon : `grep -oE "re_[A-Za-z0-9]{3}" fichier | head -1` extrait uniquement le préfixe.
+
+Si une commande risque de renvoyer un secret, le préciser explicitement et demander de masquer la valeur avant de coller.
