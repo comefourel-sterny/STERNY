@@ -84,6 +84,16 @@ Aucune décision importante ne doit se perdre entre deux commits.
 
 ## 10. Frontend aesthetics
 
-*Section à écrire après audit du code actuel (voir ETAT-COURANT.md pour le suivi).*
+Le design system Sterny est déjà documenté dans le dossier `sterny-react/.claude/skills/design/` et via le slash-command `sterny-react/.claude/commands/global.md`.
 
-*Tant que cette section n'est pas complétée, Claude Code doit demander validation à Côme avant toute décision visuelle structurante (choix de font, palette, animation, structure de card, etc.).*
+**Claude Code doit consulter ces fichiers avant toute décision visuelle structurante** (choix de font, palette, animation, structure de card, etc.) :
+
+1. `sterny-react/.claude/skills/design/SKILL.md` — vue d'ensemble du design system
+2. `sterny-react/.claude/skills/design/design-rules.md` — règles visuelles (typo, couleurs, espacements)
+3. `sterny-react/.claude/skills/design/component-patterns.md` — patterns de composants (cards, dropdowns, etc.)
+4. `sterny-react/.claude/skills/design/generators.md` — générateurs de code visuels
+5. `sterny-react/.claude/commands/global.md` — commandes composées pour mise au propre d'une page
+
+Ces fichiers sont la source de vérité actuelle. Un audit de fraîcheur est prévu (cf. `docs/ETAT-COURANT.md` section 4 point 8) pour vérifier qu'ils reflètent bien les pages retravaillées récemment avant qu'ils soient considérés comme stables.
+
+En attendant cet audit, en cas de doute entre ces fichiers et une page récemment retravaillée, Claude Code doit demander validation à Côme plutôt que présumer.
