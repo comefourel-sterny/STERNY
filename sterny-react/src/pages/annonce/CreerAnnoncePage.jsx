@@ -1570,15 +1570,9 @@ export default function CreerAnnoncePage() {
   // ==========================================
 
   function showConfirmationModal() {
-    console.log('[DEBUG] showConfirmationModal called, currentStep =', currentStep)
-    if (!validateStep(currentStep)) {
-      console.log('[DEBUG] blocked by validateStep')
-      return
-    }
-    // DEV: bypass confirmation modal (CSS display:none bug to fix later)
-    // TODO: restore modal before production
-    console.log('[DEBUG] DEV bypass → calling publierAnnonce directly')
-    publierAnnonce()
+    if (!validateStep(currentStep)) return
+    setShowConfirmModal(true)
+    document.body.style.overflow = 'hidden'
   }
 
   function closeConfirmationModal() {
@@ -2626,7 +2620,6 @@ export default function CreerAnnoncePage() {
       )}
 
       {/* CONFIRMATION MODAL */}
-      {console.log('[DEBUG RENDER] showConfirmModal =', showConfirmModal)}
       {showConfirmModal && (
         <div className="modal-overlay">
           <div className="modal-content-confirm">
