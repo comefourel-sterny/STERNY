@@ -2,7 +2,31 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 23 avril 2026 — fin de journée, session close.
+**Dernière mise à jour** : 23 avril 2026 — soirée, après clôture Catégorie A et incident Resend.
+
+---
+
+## 0. Session du 23 avril soirée — Catégorie A close + incident Resend
+
+**Ce qui a été fait** :
+
+- ✅ **Catégorie A de l'audit Zone 1 close**. 3 dumps du schéma Supabase distant générés et versionnés (commit `6460ab0`). Vérifications sur les 2 colonnes suspectes : `annonces.proprietaire_id` confirmé absent (vraie dette, loguée DETTE #14), `paiements_loyer.stripe_session_id` confirmé présent (faux positif, dette de traçabilité loguée DETTE #15).
+- ✅ **Dette DETTE #14 et #15** loguées (commit `ea6ccaf` après revert `1ce1789` d'un commit fautif `01fc76e` qui avait embarqué des bypass DEV de CreerAnnoncePage.jsx — l'historique public garde la trace des 3 commits pour pédagogie).
+- ✅ **Incident Resend** : GitGuardian a détecté la clé Resend `Onboarding` (préfixe `re_dYZ...`) dans `supabase/remote_schema.sql` (commit `6460ab0`). La clé était en dur dans la fonction Postgres `handle_new_alerte` ligne 58. Révoquée immédiatement via dashboard Resend. Nouvelle clé `Onboarding` créée avec même scope (Sending access), stockée dans la note Apple Notes verrouillée. **La clé révoquée est morte — plus aucun risque d'exploitation, même si elle traîne encore dans l'historique Git.**
+- ✅ **Règles Git anti-erreur + check-list secrets pré-commit** ajoutées dans CONTEXTE-PROJET.md section 6 et dans CLAUDE.md racine (commit `b16918a`). Couvre : interdiction `commit -a/-am`, obligation `git diff --staged --stat` pré-commit, rappel que `git revert` et `git checkout <commit>` touchent le working tree + index, check-list secrets élargie (Supabase/Anthropic/Resend/Stripe/Mapbox/Google), règle de manipulation de secrets dans les conversations.
+
+**Ce qui n'a PAS été fait (reporté à la prochaine session)** :
+
+- ❌ **Nettoyage de l'historique Git** pour retirer la clé Resend révoquée de `supabase/remote_schema.sql` dans les commits précédents. À traiter en début de prochaine session avec `git filter-repo` ou `BFG Repo-Cleaner`, suivi d'un force-push. Non urgent (clé révoquée donc inexploitable) mais propreté attendue et prévention d'une fausse alerte GitGuardian future.
+- ❌ **Refactor du trigger `handle_new_alerte`** vers une Edge Function dédiée (option A validée en session). Actuellement le trigger ne fonctionne plus (clé révoquée), donc aucun email de confirmation d'alerte ne part. À prioriser en début de prochaine session. Impliqué : création d'une Edge Function `send-alerte-confirmation` qui lit `RESEND_API_KEY` depuis les secrets Supabase, configuration de la nouvelle clé dans les secrets, modification du trigger pour appeler l'Edge Function ou suppression complète du trigger au profit d'un appel direct depuis le frontend / Edge Function d'inscription.
+- ❌ **Domaine expéditeur à harmoniser** : la fonction actuelle envoie depuis `onboarding@resend.dev` (domaine de test Resend) au lieu d'un domaine Sterny vérifié. À traiter au moment du refactor. À noter : vérifier si `sterny.co` est déjà configuré dans Resend Domains, sinon le faire.
+
+**Plan de démarrage de la prochaine session** :
+
+1. **Action 1** : nettoyage Git `supabase/remote_schema.sql` pour retirer la clé révoquée + force-push (10 min)
+2. **Action 2** : refactor trigger `handle_new_alerte` → Edge Function `send-alerte-confirmation` (30-45 min)
+3. **Action 3** : configuration du domaine expéditeur `sterny.co` dans Resend si pas déjà fait
+4. **Action 4** : reprise de la feuille de route initiale (audit Zone 2 + Zone 3, puis bascule `rhythm_calendar`)
 
 ---
 
@@ -52,11 +76,11 @@ Entamé hier soir à partir du document `sterny-handoff-phase1-v2.docx`.
 
 L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lignes) a révélé **10 problèmes critiques backend**. Classés par niveau d'urgence :
 
-**Catégorie A — À vérifier rapidement (risque de casse silencieuse)** :
+**Catégorie A — CLOSE (23 avril soir) via dump du schéma distant** :
 
-- `annonces.proprietaire_id` lu par un trigger mais absent des migrations → notifications "candidature reçue" potentiellement cassées pour les propriétaires
-- `paiements_loyer.stripe_session_id` écrit par le webhook Stripe mais absent des migrations → paiements potentiellement pas enregistrés en BDD
-- Pas de dump reproductible du schéma Supabase (fichiers `remote_schema.sql` à 0 octet)
+- ✅ Dump reproductible du schéma : résolu, 3 fichiers versionnés dans `supabase/` (commit `6460ab0`).
+- ❌ CONFIRMÉ : `annonces.proprietaire_id` absent en prod, référencé par le trigger `trg_notif_candidature` qui plante à chaque INSERT dans `candidatures`. Détails dans DETTE-TECHNIQUE #14. Fix reporté après audit Zone 2.
+- ✅ FAUX POSITIF : `paiements_loyer.stripe_session_id` existe bien en prod (+ 3 autres colonnes Stripe). Simple dette de traçabilité tracée DETTE #15.
 
 **Catégorie B — À traiter avant les démos** :
 
@@ -83,10 +107,7 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
    - `CLAUDE.md` à la racine du repo
    - Upload dans Project Claude.ai + Custom Instructions
 
-2. **Vérifications Catégorie A** (30 min, après les docs)
-   - Dumper le schéma Supabase réel via `supabase db dump --linked`
-   - Confirmer si `annonces.proprietaire_id` et `paiements_loyer.stripe_session_id` existent vraiment ou pas
-   - Ces 2 vérifs tranchent : on saigne ou pas ?
+2. **Catégorie A — CLOSE** (voir section 0 et section 3)
 
 3. **Audit Zone 2 et Zone 3** (en tâche de fond, Claude Code)
    - Zone 2 : audit frontend complet (flow utilisateur, code React)
@@ -143,7 +164,8 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
 **État Git** :
 
 - Branche : `main`, à jour avec `origin/main`
-- 9 commits sur la journée du 23 avril (infrastructure docs) : `d17dcbf`, `f0d28dc`, `0ff9827`, `ede386d`, `2e78251`, `248fe8c`, `46486c1`, `cf75e27`, `cffaf86`
+- 9 commits diurnes (infrastructure docs) : `d17dcbf`, `f0d28dc`, `0ff9827`, `ede386d`, `2e78251`, `248fe8c`, `46486c1`, `cf75e27`, `cffaf86`
+- 5 commits du soir (Catégorie A + incident Resend + règles anti-erreur) : `6460ab0` (dumps), `01fc76e` (commit fautif), `1ce1789` (revert), `ea6ccaf` (DETTE propre), `b16918a` (règles anti-erreur)
 - Modifs non-commitées (décisions assumées) :
   - `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
   - `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — volontairement non-committed en attente de relecture à tête reposée
