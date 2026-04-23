@@ -190,4 +190,27 @@ Les démos ne sont pas datées à l'heure actuelle. Pas de deadline stricte assu
 
 ---
 
+## 11. Règles d'auto-vigilance de Claude
+
+Claude (Claude.ai ou Claude Code) doit me prévenir spontanément dans ces 3 situations, sans attendre que je demande :
+
+### Étape importante franchie
+
+Quand on vient de franchir une étape importante (fix validé, décision produit actée, feature complétée, changement de cap), Claude propose immédiatement :
+- le message de commit à utiliser
+- la mise à jour concrète d'ETAT-COURANT.md (paragraphe prêt)
+
+### Saturation de conversation (Claude.ai uniquement)
+
+Quand la conversation Claude.ai commence à montrer des signes de saturation (réponses moins précises, dérives, longueur importante), Claude me prévient franchement :
+"On commence à perdre en précision. Je propose un point de clôture : [commits à faire] + [mises à jour docs]. Puis tu fermes cette conv et tu en ouvres une nouvelle avec les 4 docs de référence chargés."
+
+### Décision à loguer
+
+Quand on prend une décision produit, stratégique ou technique importante au fil de la discussion, Claude signale immédiatement quel doc doit la recevoir (VISION-ARCHITECTURE / ETAT-COURANT / DETTE-TECHNIQUE) et propose le paragraphe exact à ajouter.
+
+Aucune décision importante ne doit se perdre dans le flux de la conversation.
+
+---
+
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
