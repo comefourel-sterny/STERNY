@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 23 avril 2026 — session matin.
+**Dernière mise à jour** : 23 avril 2026 — session matin/après-midi.
 
 ---
 
@@ -15,10 +15,11 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 - ✅ `DETTE-TECHNIQUE.md` — créé hier soir, committed
 - ✅ `AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — créé hier soir, **non committed** (décision volontaire)
 - ✅ `CONTEXTE-PROJET.md` — créé ce matin, committed (`d17dcbf`)
-- ⏳ **`ETAT-COURANT.md`** — en cours d'écriture (ce document)
-- ⏳ `VISION-ARCHITECTURE.md` — prochaine étape
-- ⏳ `CLAUDE.md` — à écrire après la vision
-- ⏳ Upload des docs dans le Project Claude.ai + Custom Instructions
+- ✅ `ETAT-COURANT.md` — créé ce matin, committed
+- ✅ `VISION-ARCHITECTURE.md` — créé ce matin, committed
+- ✅ `CLAUDE.md` à la racine — créé cet après-midi, committed (`2e78251`), remplace l'ancien `sterny-react/CLAUDE.md` (frontend aesthetics only)
+- ✅ Upload des 4 docs dans le Project Claude.ai — fait
+- ⏳ **Audit esthétique** — section 10 de `CLAUDE.md` laissée en placeholder, à remplir après scan du code actuel (voir section 4 ci-dessous)
 
 ---
 
@@ -74,26 +75,33 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
    - `CLAUDE.md` à la racine du repo
    - Upload dans Project Claude.ai + Custom Instructions
 
-2. **Vérifications Catégorie A** (30 min, après les docs)
+2. **Audit esthétique** (nouveau, priorité immédiate)
+   - Scanner le code actuel (pages de connexion/inscription, navbar, dashboard, pages d'informations, + autres pages retravaillées récemment)
+   - Extraire les patterns réels utilisés (typo, palette, espacements, animations, élévations, bordures)
+   - Rédiger la section 10 de `CLAUDE.md` alignée sur le vrai design system
+   - Commit dédié : `docs(claude-md): update section 10 frontend aesthetics to reflect current codebase`
+   - Raison du passage en priorité : tant que la section 10 est vide, Claude Code doit demander validation à chaque décision visuelle, ce qui ralentit les sessions
+
+3. **Vérifications Catégorie A** (30 min, après les docs)
    - Dumper le schéma Supabase réel via `supabase db dump --linked`
    - Confirmer si `annonces.proprietaire_id` et `paiements_loyer.stripe_session_id` existent vraiment ou pas
    - Ces 2 vérifs tranchent : on saigne ou pas ?
 
-3. **Audit Zone 2 et Zone 3** (en tâche de fond, Claude Code)
+4. **Audit Zone 2 et Zone 3** (en tâche de fond, Claude Code)
    - Zone 2 : audit frontend complet (flow utilisateur, code React)
    - Zone 3 : plan de transition détaillé vers `rhythm_calendar`
 
-4. **Traitement Catégorie A confirmée**
+5. **Traitement Catégorie A confirmée**
    - Si les bugs sont réels, on les fixe avant de toucher à la bascule
 
-5. **Bascule rhythm_calendar** (feuille de route issue de la Zone 3)
+6. **Bascule rhythm_calendar** (feuille de route issue de la Zone 3)
    - Reprise des Phases 1d à 1g du plan original avec la vision intégrée
    - Puis Phase 4 (upload-first à l'inscription)
 
-6. **Catégorie B — conformité et sécurité** (avant démos BPI / Initiative Rennes)
+7. **Catégorie B — conformité et sécurité** (avant démos BPI / Initiative Rennes)
    - RLS UPDATE + RGPD + Storage sécurité
 
-7. **Catégorie C — ménage** (plus tard)
+8. **Catégorie C — ménage** (plus tard)
    - Tables fantômes, doublons RLS, code dormant
 
 ---
