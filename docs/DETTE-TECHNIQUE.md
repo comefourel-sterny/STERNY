@@ -43,6 +43,26 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 13. **Logique normaliseur matchScore** : `userDansPerioDeHote.length || 1` à expliciter en JSDoc (partiellement traité en Phase 1d).
 
+## Bugs backend confirmés par audit du schéma distant (23 avril 2026)
+
+14. **`annonces.proprietaire_id` absent en prod, référencé par trigger actif** :
+    - Trigger : `trg_notif_candidature` (AFTER INSERT ON `public.candidatures`)
+    - Fonction : `trigger_notif_candidature()` définie lignes 140-166 de `supabase/remote_schema.sql`
+    - La fonction exécute `SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id`
+    - La colonne `proprietaire_id` n'existe pas dans `annonces` (confirmé lignes 204-233 du schema dump)
+    - Table `annonces` a seulement `user_id` comme pointeur vers les utilisateurs
+    - Conséquence attendue : chaque INSERT dans `candidatures` déclenche le trigger, qui plante avec "column a.proprietaire_id does not exist", ce qui fait rollback de toute la transaction
+    - Validation empirique à faire : tester une candidature end-to-end et observer si elle réussit ou échoue, et si le frontend affiche une erreur
+    - Fix à trancher entre (A) ajouter une colonne `proprietaire_id` à `annonces` et la remplir selon logique parrainage, ou (B) modifier la fonction pour lire `user_id` si ce dernier stocke bien le propriétaire. Décision à prendre après audit Zone 2.
+
+## Dette de traçabilité des migrations
+
+15. **Migrations locales désynchronisées de la prod** :
+    - Les colonnes Stripe de `paiements_loyer` (`stripe_session_id`, `stripe_payment_intent`, `stripe_payment_intent_id`, `stripe_invoice_id`) existent en prod mais sont absentes des fichiers de migration `supabase/migrations/`
+    - Idem possiblement sur d'autres tables (à auditer)
+    - Impact : reproduire une BDD vide depuis les migrations locales ne donnerait pas un état identique à la prod
+    - Fix : en Catégorie C, générer une migration baseline depuis `supabase/remote_schema.sql` et remplacer la pile actuelle
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage**, à faire après la Phase 1 complète.
