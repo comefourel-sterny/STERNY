@@ -2,28 +2,36 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 23 avril 2026 — session matin/après-midi/soir.
+**Dernière mise à jour** : 23 avril 2026 — fin de journée, session close.
 
 ---
 
-## 1. Session en cours
+## 1. Dernière session close — 23 avril 2026
 
-**Objectif du jour** : doter le projet de 4 documents de référence (`docs/*.md` + `CLAUDE.md`) pour que les nouvelles conversations Claude démarrent briefées automatiquement, sans perte d'information ni de temps.
+**Objectif tenu** : infrastructure de contexte (4 docs de référence + CLAUDE.md racine) en place pour que toute nouvelle session Claude démarre briefée automatiquement, sans perte d'information.
 
-**Avancement** :
+**Infrastructure docs — CLOSE** :
 
-- ✅ `DETTE-TECHNIQUE.md` — créé hier soir, committed
-- ✅ `AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — créé hier soir, **non committed** (décision volontaire)
-- ✅ `CONTEXTE-PROJET.md` — créé ce matin, committed (`d17dcbf`)
-- ✅ `ETAT-COURANT.md` — créé ce matin, committed
-- ✅ `VISION-ARCHITECTURE.md` — créé ce matin, committed
-- ✅ `CLAUDE.md` à la racine — créé cet après-midi, committed (`2e78251`), remplace l'ancien `sterny-react/CLAUDE.md` (frontend aesthetics only)
+- ✅ `CONTEXTE-PROJET.md` — committed (`d17dcbf`)
+- ✅ `VISION-ARCHITECTURE.md` — committed
+- ✅ `ETAT-COURANT.md` — créé (`0ff9827`) + 3 MAJ au fil de la journée (`248fe8c`, `46486c1`, `cf75e27`)
+- ✅ `CLAUDE.md` à la racine — committed (`2e78251`), remplace l'ancien `sterny-react/CLAUDE.md`
+- ✅ `CLAUDE.md` section 10 — pointe vers les fichiers design existants dans `sterny-react/.claude/skills/design/` (commit `cffaf86`)
 - ✅ Upload des 4 docs dans le Project Claude.ai — fait
-- ⏳ **Audit esthétique** — section 10 de `CLAUDE.md` laissée en placeholder, à remplir après scan du code actuel (voir section 4 ci-dessous)
+
+**Imprévus de la journée** :
+
+- Fausse alerte sur une hypothèse de "mauvais dossier de travail" : diagnostic complet a confirmé que tout est au bon endroit (`/Users/comefourel/Dev/sterny/sterny-react/`, servi par Vite, tracké par Git). Les 5 copies fantômes du repo identifiées (détail en section 6).
+
+**Décision actée** :
+
+- Audit esthétique reporté en dernière priorité (section 4 point 8). Les fichiers design existent déjà dans `sterny-react/.claude/skills/design/` et suffisent provisoirement.
 
 ---
 
 ## 2. Dernière avancée majeure — Phase 1 du plan matching (22 avril)
+
+> **Note pour la prochaine session** : l'infrastructure de contexte est close (voir section 1). La priorité immédiate est la **Catégorie A de l'audit Zone 1** (section 4 point 2) : dump du schéma Supabase + vérification de `annonces.proprietaire_id` et `paiements_loyer.stripe_session_id`.
 
 Entamé hier soir à partir du document `sterny-handoff-phase1-v2.docx`.
 
@@ -135,7 +143,10 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
 **État Git** :
 
 - Branche : `main`, à jour avec `origin/main`
-- Modifs non-commitées : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV), `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (volontairement non-committed pour l'instant)
+- 9 commits sur la journée du 23 avril (infrastructure docs) : `d17dcbf`, `f0d28dc`, `0ff9827`, `ede386d`, `2e78251`, `248fe8c`, `46486c1`, `cf75e27`, `cffaf86`
+- Modifs non-commitées (décisions assumées) :
+  - `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
+  - `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — volontairement non-committed en attente de relecture à tête reposée
 
 **Tâches de ménage à faire un jour calme** (non prioritaires) :
 
