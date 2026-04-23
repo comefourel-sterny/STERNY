@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 23 avril 2026 — session matin/après-midi.
+**Dernière mise à jour** : 23 avril 2026 — session matin/après-midi/soir.
 
 ---
 
@@ -75,34 +75,32 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
    - `CLAUDE.md` à la racine du repo
    - Upload dans Project Claude.ai + Custom Instructions
 
-2. **Audit esthétique** (nouveau, priorité immédiate)
-   - Scanner le code actuel (pages de connexion/inscription, navbar, dashboard, pages d'informations, + autres pages retravaillées récemment)
-   - Extraire les patterns réels utilisés (typo, palette, espacements, animations, élévations, bordures)
-   - Rédiger la section 10 de `CLAUDE.md` alignée sur le vrai design system
-   - Commit dédié : `docs(claude-md): update section 10 frontend aesthetics to reflect current codebase`
-   - Raison du passage en priorité : tant que la section 10 est vide, Claude Code doit demander validation à chaque décision visuelle, ce qui ralentit les sessions
-
-3. **Vérifications Catégorie A** (30 min, après les docs)
+2. **Vérifications Catégorie A** (30 min, après les docs)
    - Dumper le schéma Supabase réel via `supabase db dump --linked`
    - Confirmer si `annonces.proprietaire_id` et `paiements_loyer.stripe_session_id` existent vraiment ou pas
    - Ces 2 vérifs tranchent : on saigne ou pas ?
 
-4. **Audit Zone 2 et Zone 3** (en tâche de fond, Claude Code)
+3. **Audit Zone 2 et Zone 3** (en tâche de fond, Claude Code)
    - Zone 2 : audit frontend complet (flow utilisateur, code React)
    - Zone 3 : plan de transition détaillé vers `rhythm_calendar`
 
-5. **Traitement Catégorie A confirmée**
+4. **Traitement Catégorie A confirmée**
    - Si les bugs sont réels, on les fixe avant de toucher à la bascule
 
-6. **Bascule rhythm_calendar** (feuille de route issue de la Zone 3)
+5. **Bascule rhythm_calendar** (feuille de route issue de la Zone 3)
    - Reprise des Phases 1d à 1g du plan original avec la vision intégrée
    - Puis Phase 4 (upload-first à l'inscription)
 
-7. **Catégorie B — conformité et sécurité** (avant démos BPI / Initiative Rennes)
+6. **Catégorie B — conformité et sécurité** (avant démos BPI / Initiative Rennes)
    - RLS UPDATE + RGPD + Storage sécurité
 
-8. **Catégorie C — ménage** (plus tard)
+7. **Catégorie C — ménage** (plus tard)
    - Tables fantômes, doublons RLS, code dormant
+
+8. **Audit esthétique** (reporté — priorité technique d'abord)
+   - Reporté après la Phase 1 matching, l'audit Zone 1 Catégorie A, et la Catégorie B conformité
+   - Note importante : le dossier `sterny-react/.claude/skills/design/` contient déjà 4 fichiers design (SKILL.md, design-rules.md, component-patterns.md, generators.md) + un slash-command `commands/global.md`. Relire ces fichiers avant de lancer un audit from scratch — ils couvrent probablement déjà une bonne partie du design system
+   - Objectif final : rédiger la section 10 de `CLAUDE.md` (actuellement en placeholder) en s'appuyant sur ces fichiers existants + vérification sur les pages retravaillées récemment
 
 ---
 
@@ -138,6 +136,16 @@ L'audit backend complet (`docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`, 644 lig
 
 - Branche : `main`, à jour avec `origin/main`
 - Modifs non-commitées : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV), `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (volontairement non-committed pour l'instant)
+
+**Tâches de ménage à faire un jour calme** (non prioritaires) :
+
+- **Copies fantômes du repo** : 5 copies existent sur le disque en plus du vrai repo Git, identifiées le 23 avril via `find /Users/comefourel -type f -name "package.json" ... grep -l "sterny"`. À traiter un jour calme : vérifier que chaque copie ne contient rien d'unique que le Git actuel n'aurait pas, puis archiver ou supprimer. Les copies sont :
+  - `/Users/comefourel/Dev/sterny-old/`
+  - `/Users/comefourel/Dev/sterny-come-local-13avril-23h/`
+  - `/Users/comefourel/Dev/sterny-backup-avant-git/`
+  - `/Users/comefourel/Desktop-backup-sterny-20260413/version-bureau-icloud/`
+  - `/Users/comefourel/Library/Mobile Documents/com~apple~CloudDocs/Desktop/STERNY/sterny-react/` (iCloud)
+- **Désactiver iCloud Desktop sync** : macOS synchronise le Desktop sur iCloud par défaut. Cette synchro peut créer des copies silencieuses de projets si un dossier y transite. Désactiver via Préférences Système → Apple ID → iCloud → iCloud Drive → Options → décocher "Dossiers Bureau et Documents".
 
 ---
 
