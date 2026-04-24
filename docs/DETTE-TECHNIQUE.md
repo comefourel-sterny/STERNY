@@ -63,6 +63,27 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
     - Impact : reproduire une BDD vide depuis les migrations locales ne donnerait pas un état identique à la prod
     - Fix : en Catégorie C, générer une migration baseline depuis `supabase/remote_schema.sql` et remplacer la pile actuelle
 
+## Design des emails transactionnels à refaire
+
+16. **Design des templates email Resend à refondre** : les 6 Edge Functions d'envoi d'email (`send-alert-email`, `send-landing-email`, `send-proprietaire-invitation`, `send-recu-paiement`, `send-fin-bail-email`, `send-relance-impaye-email`) contiennent chacune un template HTML inline dans `supabase/functions/<nom>/index.ts`. Les designs actuels ne sont pas au niveau du design system Sterny (Navy `#1E293B`, Orange `#E8622A`, DM Sans, `border-radius: 20px`). Constat fait le 24 avril après réception du test de `send-alert-email`. À traiter une fois tous les aspects techniques opérationnels, en dernière priorité. Scope : uniformisation visuelle sur les 6 templates, cohérence avec la charte sterny.co, responsive mobile, respect des contraintes email (tables, inline styles, fonts système en fallback).
+
+## Désynchro code local ↔ prod sur Edge Functions
+
+17. **5 Edge Functions présentes en local mais non déployées en prod** (constat du 24 avril via `supabase functions list --project-ref rkffpmuhyvwwgfbdqmqr`) :
+    - `send-landing-email` : appelée par `PasswordGate.jsx` ligne 57 — probablement cassée en prod (chemin 404 testé au curl le 24 avril)
+    - `send-recu-paiement`
+    - `expire-candidatures`
+    - `export-data` : référencée par l'audit Zone 1 Catégorie B comme fonction RGPD non-conforme, donc cassée ET incomplète
+    - `restitution-caution`
+
+    Impact prioritaire : `send-landing-email` étant appelée en production par `PasswordGate.jsx`, l'inscription landing page ne génère aucun email de bienvenue (probablement silencieux côté user, qui voit juste son inscription validée). À vérifier avant démo.
+
+    Fix : déployer chaque fonction après audit de son code (`supabase functions deploy <nom> --project-ref rkffpmuhyvwwgfbdqmqr` depuis la racine du repo). À faire dans une session dédiée, pas dans l'Action 2 en cours.
+
+## Audit à faire des autres triggers SQL qui font des appels HTTP sortants
+
+18. **Auditer les autres triggers BDD qui utilisent `net.http_post()` ou `supabase_functions.http_request()`** : suite à la découverte que le trigger `send-alert-on-insert` envoyait un body vide `{}` par design (résolu le 24 avril par suppression du trigger + appels frontend explicites à `send-alert-email` depuis PasswordGate, RecherchePage et DashboardLocatairePage), il faut vérifier qu'aucun autre trigger ne souffre du même problème silencieux. Candidats connus : `trg_notif_candidature` (voir DETTE #14) et potentiellement d'autres. Objectif : vérifier qu'ils fonctionnent réellement, et arbitrer cas par cas leur migration vers des appels frontend explicites pour cohérence avec l'arrivée de l'app mobile native. À faire dans une session dédiée.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage**, à faire après la Phase 1 complète.

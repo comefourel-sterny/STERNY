@@ -220,7 +220,7 @@ Limites volontaires du produit, à défendre face aux tentations de sur-ingénie
 
 **Rythmes intra-hebdomadaires non supportés.** Sterny fonctionne à la granularité semaine binaire. Une semaine est école OU entreprise, pas un mélange. Les rythmes du type *"2 jours école / 3 jours entreprise chaque semaine"* ne sont pas dans la cible. Garde-fou prévu : détection automatique par le parser (`has_mixed_weeks: true`), message utilisateur clair, table `rhythm_unsupported_requests` pour compter la demande et décider plus tard, sur données réelles, d'ajouter ou non la feature.
 
-**Pas d'application mobile native en priorité.** Une web app responsive bien exécutée est suffisante pour les démos investisseurs et pour l'usage réel. Une application mobile native ne se justifie que quand les métriques d'usage montrent un besoin clair, pas avant.
+**L'application mobile native est différée, pas dépriorisée.** La plateforme web responsive est la priorité immédiate pour permettre un lancement opérationnel dès la rentrée. Mais l'app mobile est indispensable pour la cible (alternants jeunes qui font tout sur leur téléphone) et constitue le chantier suivant, à ouvrir dès que la web est opérationnelle. Les décisions d'architecture doivent donc anticiper cette app mobile à venir : logique métier dans des Edge Functions ou du code client (pas dans la BDD via triggers), SDKs compatibles multi-plateforme, pas de dépendance à des APIs DOM spécifiques au navigateur, etc.
 
 **Sterny n'est pas un moteur de recherche généraliste.** Si un alternant cherche un logement sans rythme à gérer (stage court, formation non-alternance), il ne trouvera pas sa réponse sur Sterny. La plateforme est spécialisée sur le cas d'usage alternance.
 
