@@ -151,6 +151,16 @@ Commande type à intégrer dans chaque prompt de commit :
 
 Si retour non nul, analyser chaque match avant de commit. Faux positifs fréquents : noms de colonnes SQL (`"secret" "text"`), placeholders. Vrais positifs : valeurs après `Bearer`, `Authorization:`, `API_KEY=`, dans des chaînes JSON ou SQL.
 
+**Règle de prévention à la charge de Claude avant tout copier-coller de terminal**
+
+Avant de demander à Côme de lui coller le résultat d'une commande shell, Claude classe explicitement le risque de la commande dans l'un des 3 niveaux suivants et annonce ce niveau clairement avant de demander le collage :
+
+- **🔒 Valeur sensible affichée** : la commande affiche ou contient potentiellement une clé, un token, un mot de passe, un email personnel, ou toute autre donnée privée. Claude précise exactement ce qu'il faut masquer dans le collage.
+- **⚠️ Possible exposition indirecte** : la commande affiche normalement du non-sensible (noms de fichiers, digests, logs), mais pourrait contenir du sensible dans certains cas (logs d'erreur avec tokens dedans, variables d'env au démarrage, etc.). Claude invite Côme à regarder le résultat avant de le coller.
+- **✓ Affichage propre** : la commande n'affiche ni ne contient de données sensibles dans son usage normal. Collage libre.
+
+Règle absolue : jamais de collage demandé sans classement explicite préalable. L'oubli de classement est une erreur qui se corrige dans la conversation (Claude s'excuse, classe rétroactivement, puis continue), pas une règle optionnelle.
+
 **Règle de manipulation des secrets dans les conversations**
 
 Quand un fichier contient potentiellement un secret (clé API, token, mot de passe), construire les commandes d'inspection pour ne JAMAIS afficher la valeur complète par défaut.
@@ -183,6 +193,29 @@ Pour les commandes qui nécessitent un token :
 **Avantage** : le token n'apparaît jamais dans une conversation, un fichier, un log, un commit. Il reste en mémoire locale, le temps de la session.
 
 **Si un token apparaît accidentellement dans une conversation** (logs collés, capture d'écran), Claude doit me signaler immédiatement qu'il faut révoquer ce token depuis le dashboard correspondant.
+
+**Tableau des préfixes de tokens utilisés sur Sterny**
+
+Rappel pour éviter les confusions au copier-coller dans Apple Notes entre les différents tokens stockés. Chaque service utilise un préfixe distinctif qui permet de reconnaître immédiatement le type de token :
+
+| Service | Préfixe | Usage |
+|---|---|---|
+| Supabase Personal Access Token | `sbp_` | CLI (`functions deploy`, `secrets set`, `db pull`, etc.) |
+| Supabase anon key / service_role | `eyJ` | Client frontend / Edge Functions (JWT) |
+| Resend API Key | `re_` | Envoi d'emails transactionnels |
+| Anthropic API Key | `sk-ant-` | Parser de calendrier scolaire |
+| Stripe Secret Key (live) | `sk_live_` | Production |
+| Stripe Secret Key (test) | `sk_test_` | Développement |
+| Stripe Publishable Key | `pk_live_` / `pk_test_` | Frontend |
+| Stripe Webhook Secret | `whsec_` | Vérification de signature |
+| Google Cloud / Vision | `AIza` | OCR documents |
+| Mapbox | `pk.` | Cartographie |
+
+Cas particuliers à connaître :
+
+- Les tokens qui commencent par `eyJ` sont des **JWT** (JSON Web Tokens) au format standard, utilisés par Supabase Auth pour authentifier les sessions utilisateur. Le JWT d'un utilisateur connecté est visible dans `Local Storage > sb-{project-ref}-auth-token > access_token`. Astuce : dans la console DevTools, `copy(JSON.parse(localStorage.getItem('sb-rkffpmuhyvwwgfbdqmqr-auth-token')).access_token)` copie directement le token dans le presse-papiers.
+- Un **Personal Access Token Supabase** (`sbp_`) et une **clé Supabase anon/service_role** (`eyJ`) sont 2 choses différentes. Le `sbp_` sert à gérer le projet depuis la CLI, le `eyJ` sert aux clients qui parlent à l'API du projet.
+- **En cas d'exposition accidentelle d'un token** (collage dans une conversation, log public, commit Git), révocation immédiate obligatoire via le dashboard du service correspondant, puis création d'une nouvelle clé, puis mise à jour de tous les endroits qui l'utilisent (secrets Supabase via `supabase secrets set`, `.env` local, déploiement Vercel pour les vars d'env, etc.).
 
 ---
 

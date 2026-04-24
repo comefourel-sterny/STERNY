@@ -21,15 +21,17 @@ const ALLOWED_MIME_TYPES = [
   "image/png",
   "image/heic",
   "image/webp",
+  "application/pdf",
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
 
 const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/heic": "heic",
   "image/webp": "webp",
+  "application/pdf": "pdf",
 };
 
 function jsonResponse(body: unknown, status: number) {

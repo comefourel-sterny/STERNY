@@ -2,7 +2,64 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 24 avril 2026 — après clôture Action 2 (chantier email alertes : nettoyage des 2 triggers SQL obsolètes + migration de la logique email 100% côté frontend).
+**Dernière mise à jour** : 24 avril 2026 soir — après incident Resend (rotation clé n°2) et clôture phase code d'Action A2 (Edge Function parse-school-calendar en version 5 prod, test curl reporté à la session suivante).
+
+---
+
+## 0. Session du 24 avril soir — Action A2 code (parser rhythm_calendar) + incident Resend n°2
+
+**Contexte** : session dédiée au chantier central rhythm_calendar, ouverte avec les 4 docs de référence chargés. Objectif initial : audit du parser + ajout support PDF + test sur 2 plannings réels. Le test curl n'a pas été fait dans la session (clôturée pour cause de fatigue après 3h de travail), mais toutes les modifications code ont été faites, vérifiées, déployées en prod v5.
+
+**Ce qui a été fait** :
+
+- ✅ **Audit complet de l'état du chantier rhythm_calendar** : backend prêt à 95% (Edge Function déployée depuis le 21 avril en version 4, table `rhythm_imports` avec RLS + FK + index, colonnes `users.rhythm_calendar` et `users.rhythm_import_id` en place), frontend non branché (0 appel aux tables côté `sterny-react/`). Surprise positive : la fonction `matchScore` dans `RecherchePage.jsx` est déjà alignée sur la vision cible (dates ISO + `disponibilites_pattern`), pas de refactor moteur nécessaire, uniquement changement de source des inputs.
+- ✅ **Dimensionnement du chantier complet** : 10 pages frontend à refactoriser pour supprimer les colonnes dépréciées (`rythme_pattern`, `type_alternance`, `rythme_alternance`), ~40 occurrences dispersées, concentration sur `RecherchePage.jsx` et `CreerAnnoncePage.jsx`. Estimation 10-14 sessions pour boucler le chantier (Blocs A-E).
+- ✅ **Action A2 — phase code** : 3 fichiers modifiés dans `supabase/functions/parse-school-calendar/` :
+  - `index.ts` : `application/pdf` ajouté à `ALLOWED_MIME_TYPES`, `MIME_TO_EXT` étendu, `MAX_FILE_SIZE` passé de 10 à 20 MB uniforme
+  - `providers/anthropic.ts` : branchement dynamique `type: "document"` pour PDF / `type: "image"` pour images selon `mimeType`, `max_tokens` passé de 32000 à 8000
+  - `prompts/school-calendar-v1.ts` : règle explicite ajoutée "les alternants n'ont pas de vacances scolaires, statut par défaut = company"
+- ✅ **Bucket Supabase Storage `rhythm-documents`** : File size limit passé à 20 MB, `application/pdf` déjà dans la liste MIME autorisée (vérification dashboard, capture sauvegardée). Bucket privé confirmé (non-public), cohérent RGPD.
+- ✅ **Redéploiement Edge Function** : `supabase functions deploy parse-school-calendar --project-ref rkffpmuhyvwwgfbdqmqr` lancé avec succès, version 5 en prod (script 82.24 kB).
+- ✅ **2 plannings réels de test en place** dans `test-plannings/` (dossier gitignoré car données personnelles) :
+  - `Planning_Martin.JPG` (222 Ko) : IUT Saint-Malo, BUT 3 GEA 2026-2027, 4 groupes (G1 CG2P, G2 GC2F, G3 GEMA LOG, G4 GEMA MD), 45 semaines, format tableau semaine par semaine avec couleurs jaune/vert
+  - `Planning_Mathis.pdf` (180 Ko) : format calendrier annuel 12 colonnes de mois, tous les jours en lignes, format dense type Hyperplanning
+  - Les 2 formats sont radicalement différents → combo idéal pour stresser le parser
+- ✅ **Rotation clé Resend n°2 en 24h** après incident : la clé `Onboarding` créée le 23 avril a été exposée par inadvertance dans le terminal (confusion au copier-coller dans Apple Notes entre tokens `sbp_` Supabase et clés `re_` Resend). Clé révoquée sur dashboard Resend, nouvelle clé créée avec même scope (Sending access), secret `RESEND_API_KEY` mis à jour côté Supabase via `supabase secrets set`, test end-to-end confirmé (email de confirmation d'alerte reçu depuis sterny.co).
+
+**Décisions produit actées** :
+
+1. **Les alternants n'ont pas de vacances scolaires** : recherche web confirme qu'ils sont salariés (5 semaines de congés payés posés avec accord employeur, pas de calendrier des vacances scolaires). Le modèle binaire `school` / `company` du `rhythm_calendar` est donc fidèle à la réalité et doit rester tel quel. Logué dans VISION-ARCHITECTURE section 3.
+2. **Mécanique d'ajustement manuel par l'hôte** : lors de la création d'annonce, `disponibilites_pattern` est pré-calculé automatiquement depuis le `rhythm_calendar` croisé avec la ville du logement, puis l'hôte peut modifier manuellement la liste (retirer des semaines où il reste chez lui, ajouter celles où il rentre chez ses parents). Cohérent avec le principe général de VISION section 4 : "la donnée automatique est une suggestion, l'utilisateur tranche". Logué aussi dans VISION-ARCHITECTURE section 3.
+3. **Upload accepté : PDF + images**. Xlsx, docx, liens iCal hors-scope au moins pour la v1.
+4. **Taille max uniforme à 20 Mo** pour PDF comme images. Simplifie l'UX.
+
+**Ce qui n'a PAS été fait dans cette session** :
+
+- ❌ **Test curl sur Planning_Martin.JPG et Planning_Mathis.pdf** : reporté à la prochaine session (fatigue à minuit). Le test est l'étape la plus importante pour valider le prompt LLM sur des vrais plannings — il faut y arriver frais.
+- ❌ **Analyse du rapport de parsing** : groupes détectés, cohérence des dates ISO du lundi, qualité de l'extraction des semaines, présence de statuts hors `school`/`company`. À faire en même temps que le test curl.
+
+**Ajustements à retenir pour la prochaine session** :
+
+1. **Token Supabase** : garder à portée de main, préfixe `sbp_`, ne pas confondre avec la clé Resend (préfixe `re_`). Le tableau des préfixes ajouté dans CONTEXTE-PROJET section 7 sert de rappel.
+2. **USER_JWT pour test curl** : récupérable via console DevTools de sterny.co avec la commande `copy(JSON.parse(localStorage.getItem('sb-rkffpmuhyvwwgfbdqmqr-auth-token')).access_token)` qui copie directement le token dans le presse-papiers. Plus rapide que la sélection manuelle dans Local Storage.
+3. **Classement sécurité des commandes** : nouvelle règle projet — avant toute demande de copier-coller de terminal, Claude doit classer explicitement le risque (🔒 sensible / ⚠️ possible / ✓ propre). Documenté dans CONTEXTE-PROJET section 6.
+
+**Plan de démarrage de la prochaine session (Action A2 — phase test)** :
+
+1. Export `SUPABASE_ACCESS_TOKEN` + `USER_JWT` dans le terminal
+2. Relance Claude Code dans la racine du repo avec un prompt de test curl sur Planning_Martin.JPG
+3. Lecture du rapport JSON : groupes détectés, dates des 5 premières semaines, cohérence des lundis, statuts uniquement `school`/`company`
+4. Si parsing Martin OK : même test sur Planning_Mathis.pdf (format plus dense, stress test)
+5. Si parsing Mathis OK : Action A2 close, commit de fin d'Action A2 avec message "test(parser): validated on real plannings Martin JPG + Mathis PDF"
+6. Enchaînement sur Bloc B : composants UI (`FileUpload` + `RhythmCalendar` visuel) — ouverture d'une nouvelle conversation Claude.ai pour partir sur une base fraîche
+
+**Commits de la session du 24 avril soir** (à venir une fois les commits de clôture poussés) :
+- 1 commit atomique `chore(gitignore): ignorer dossier test-plannings (données personnelles)`
+- 1 commit principal `feat(parser): add PDF support + vacation rule + tune max_tokens in parse-school-calendar` avec les 3 fichiers Edge Function + 3 fichiers docs
+
+**Modifs non-commitées volontairement conservées locales** (inchangé depuis session précédente) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans DETTE-TECHNIQUE
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A, en attente de relecture à tête reposée
 
 ---
 

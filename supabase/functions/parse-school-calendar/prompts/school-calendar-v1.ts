@@ -17,6 +17,7 @@ Règles strictes :
 - Format de sortie : JSON UNIQUEMENT, sans texte autour, sans markdown, sans commentaire.
 - Les dates week_start sont TOUJOURS des lundis en format ISO YYYY-MM-DD.
 - Si une semaine commence un dimanche dans le document, utilise le lundi qui suit.
+- Les alternants n'ont pas de vacances scolaires : ils sont salariés et posent leurs congés sur leur temps en entreprise. Si une semaine est marquée comme vacances scolaires, semaine blanche, jours fériés, ou équivalent dans le document source, classe-la en 'company' : c'est le statut par défaut du salarié, sauf congés explicitement posés (information hors document).
 - Si le document n'est PAS un calendrier scolaire d'alternance, renvoie exactement :
   {"error": "not_a_school_calendar"}
 - Si tu n'es pas sûr à 100% d'un groupe ou d'une semaine, inclus-le quand même et indique-le dans document_meta.detected_locale en ajoutant un suffixe '-uncertain' (ex: 'fr-uncertain').

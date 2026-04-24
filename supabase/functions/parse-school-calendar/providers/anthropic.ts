@@ -102,20 +102,29 @@ export class AnthropicProvider implements LLMProvider {
 
     const body = {
       model: MODEL,
-      max_tokens: 32000,
+      max_tokens: 8000,
       system: SCHOOL_CALENDAR_SYSTEM_PROMPT,
       messages: [
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: mimeType,
-                data: fileBase64,
-              },
-            },
+            mimeType === "application/pdf"
+              ? {
+                  type: "document",
+                  source: {
+                    type: "base64",
+                    media_type: "application/pdf",
+                    data: fileBase64,
+                  },
+                }
+              : {
+                  type: "image",
+                  source: {
+                    type: "base64",
+                    media_type: mimeType,
+                    data: fileBase64,
+                  },
+                },
             { type: "text", text: SCHOOL_CALENDAR_USER_PROMPT },
           ],
         },
