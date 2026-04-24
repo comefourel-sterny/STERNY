@@ -411,10 +411,20 @@ export default function DashboardLocatairePage() {
         }).eq('id', editingAlerteId)
         setAlerteSuccess('Alerte modifiee avec succes')
       } else {
-        await supabaseClient.from('alertes').insert({
+        const { error: insertError } = await supabaseClient.from('alertes').insert({
           email, ville: villeSlug, rythme, user_id: currentUserId,
           date_debut_alternance: alerteSelectedDate
         })
+        if (insertError) throw insertError
+
+        try {
+          await supabaseClient.functions.invoke('send-alert-email', {
+            body: { email, ville: villeSlug, rythme }
+          })
+        } catch (emailErr) {
+          console.warn('Email de confirmation non envoyé:', emailErr)
+        }
+
         setAlerteSuccess('Alerte activee avec succes')
       }
       setTimeout(() => {
