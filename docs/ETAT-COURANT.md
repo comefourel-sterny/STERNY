@@ -37,24 +37,31 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 - Intégration de **Google OAuth en mode production** (actuellement en "testing"). Passage en production nécessite une vérification Google qui prend ~3 semaines et impose de retirer temporairement le logo Sterny du consent screen ou de le faire certifier. À planifier suffisamment à l'avance du lancement.
 - Objectif commun : friction minimale à l'inscription, aligné avec le principe "5 minutes max pour entrer dans Sterny" de `VISION-ARCHITECTURE.md` section 4.
 
-**État Git au closing de l'Action 2** :
+**Commits de la session du 24 avril (tous poussés sur `origin/main`)** :
 
-- Branche `main`, à jour avec `origin/main` (pas encore push).
-- 2 commits créés aujourd'hui :
-  - `4579927` chore(alerte): supprimer pages orphelines CreerAlertePage + ModifierAlertePage
-  - `ea8a3ba` fix(dashboard): invoquer send-alert-email après création d'alerte
-- Modifs non-commitées (décisions assumées, inchangées) :
-  - `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
-  - `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — volontairement non-committed en attente de relecture à tête reposée
-- Snapshots locaux dans `supabase/_rollback/` (gitignoré) :
-  - `handle_new_alerte_snapshot.sql` (filet pour le DROP du matin)
-  - `send_alert_on_insert_snapshot.sql` (filet pour le DROP de l'après-midi)
+- `4579927` chore(alerte): supprimer pages orphelines CreerAlertePage + ModifierAlertePage
+- `ea8a3ba` fix(dashboard): invoquer send-alert-email après création d'alerte
+- `659ba3d` docs: close Action 2 (chantier email alertes) — MAJ ETAT-COURANT, DETTE, VISION
+- `3474de9` chore(gitignore): ignorer supabase/_rollback snapshots locaux
+
+Pour vérifier l'état réel de la branche à tout moment : `git log --oneline -6` et `git log --oneline origin/main..HEAD`. Ne pas se fier à des descriptions d'état Git en markdown, qui deviennent obsolètes dès le commit suivant.
+
+**Modifs non-commitées volontairement conservées locales** :
+
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A du 23 avril, en attente de relecture à tête reposée
+
+**Snapshots rollback locaux** (dossier `supabase/_rollback/`, gitignoré via pattern `_rollback/` dans `.gitignore` racine) :
+
+- `handle_new_alerte_snapshot.sql` (filet pour le DROP du matin du 24 avril)
+- `send_alert_on_insert_snapshot.sql` (filet pour le DROP de l'après-midi du 24 avril)
 
 **Plan de démarrage de la prochaine session** :
 
-1. Push des 2 commits de la session 24 avril (+ le commit docs qu'on va créer dans la foulée).
-2. Reprendre la feuille de route originelle : audit Zone 2 (frontend complet) + Zone 3 (plan de transition détaillé vers `rhythm_calendar`), puis bascule `rhythm_calendar`.
-3. À défaut ou en parallèle : Catégorie B de l'audit Zone 1 (RLS UPDATE, delete-account incomplet, export-data incomplet, Storage sécurité pièces d'identité) avant les démos BPI / Initiative Rennes.
+Les 4 commits du 24 avril sont pushés, rien à faire côté Git. Deux pistes au choix selon l'énergie et le temps disponible :
+
+1. Reprendre la feuille de route originelle : audit Zone 2 (frontend complet) + Zone 3 (plan de transition détaillé vers `rhythm_calendar`), puis bascule `rhythm_calendar`.
+2. À défaut ou en parallèle : Catégorie B de l'audit Zone 1 (RLS UPDATE, delete-account incomplet, export-data incomplet, Storage sécurité pièces d'identité) avant les démos BPI / Initiative Rennes.
 
 ---
 
