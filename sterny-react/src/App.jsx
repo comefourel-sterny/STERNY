@@ -71,10 +71,6 @@ import RenouvellementPage from './pages/transaction/RenouvellementPage'
 // Communication pages
 import MessagesPage from './pages/communication/MessagesPage'
 
-// Alerte pages
-import CreerAlertePage from './pages/alerte/CreerAlertePage'
-import ModifierAlertePage from './pages/alerte/ModifierAlertePage'
-
 // Legal pages
 import CguPage from './pages/legal/CguPage'
 import CgvPage from './pages/legal/CgvPage'
@@ -172,10 +168,6 @@ export default function App() {
 
           {/* Communication */}
           <Route path="/messages" element={<MessagesPage />} />
-
-          {/* Alerte */}
-          <Route path="/alerte/creer" element={<CreerAlertePage />} />
-          <Route path="/alerte/modifier" element={<ModifierAlertePage />} />
         </Route>
       </Routes>
 
