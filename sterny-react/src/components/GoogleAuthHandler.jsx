@@ -3,6 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { supabaseClient } from '../config/supabase'
 
+// Routes considérées comme callbacks d'authentification — seules routes où
+// le handler doit fetch le profil et router. Sur toute autre route, l'utilisateur
+// est arrivé volontairement et ne doit pas être redirigé.
+const AUTH_CALLBACK_ROUTES = ['/', '/connexion', '/completer-profil']
+
 export default function GoogleAuthHandler() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -10,6 +15,13 @@ export default function GoogleAuthHandler() {
   const checkedRef = useRef(false)
 
   useEffect(() => {
+    // Garde de route : ne déclencher la logique que sur les callbacks d'auth
+    // (homepage, /connexion, /completer-profil, /inscription/*). Sur toute autre
+    // route, l'utilisateur est arrivé volontairement et ne doit pas être redirigé.
+    const isInscriptionRoute = location.pathname.startsWith('/inscription')
+    const isAuthCallback = AUTH_CALLBACK_ROUTES.includes(location.pathname) || isInscriptionRoute
+    if (!isAuthCallback) return
+
     if (!user || checkedRef.current) return
 
     const checkProfile = async () => {
