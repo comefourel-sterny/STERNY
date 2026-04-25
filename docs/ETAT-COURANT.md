@@ -2,7 +2,55 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 25 avril 2026 — Session de fin de soirée : création de `INVENTAIRE-PLATEFORME.md`, 5e document de référence stable, et logage des 13 dettes (#21-#33) issues des audits du 25 avril.
+**Dernière mise à jour** : 25 avril 2026 — Session fin de soirée bis : Bloc B Étape 1 close (RhythmCalendar v1 technique) + fix `GoogleAuthHandler` (garde de route auth callback). Décision design importante : la v1 visuelle du calendrier n'est pas la version cible — redesign en frise temporelle horizontale planifié pour une session dédiée.
+
+---
+
+## 0. Session du 25 avril fin de soirée bis — Bloc B Étape 1 close (v1 technique) + fix GoogleAuthHandler
+
+**Contexte** : reprise du Bloc B Étape 1 après création de `INVENTAIRE-PLATEFORME.md`. Validation visuelle effectuée sur les 2 fixtures réelles (Martin IUT Saint-Malo BUT 3 GEA + Mathis Hyperplanning PDF R_CA_A3) dans la preview `/dev/rhythm-calendar-preview`.
+
+**Ce qui a été fait** :
+
+- ✅ **Bug latent corrigé** : `GoogleAuthHandler` (commit `9ea6e4d`) provoquait un redirect forcé vers `/dashboard` pour tout utilisateur logué sur toute route métier, pas seulement les callbacks OAuth. Ajout d'une garde de route au début du useEffect : `AUTH_CALLBACK_ROUTES = ['/', '/connexion', '/completer-profil']` + routes `/inscription/*`. Sur toute autre route, early return immédiat. Fix chirurgical, la cause racine (handler monté à la racine d'App.jsx avec mélange responsabilité auth callback + routing) reste à traiter en Phase 0bis (DETTE #34).
+- ✅ **`RhythmCalendar.css` patché** selon décision INVENTAIRE-PLATEFORME §9.4 : retrait `background`, `border-radius`, `box-shadow`, `padding` sur `.rc-card` (en règle de base ET dans `@media (max-width: 480px)`), suppression complète du sélecteur `.rc-header`. Variables CSS, font-family et color conservés.
+- ✅ **`RhythmCalendar.jsx` patché** : retrait des 2 occurrences de `<div className="rc-header">{groupLabel}</div>` (cas vide + cas normal). Le titre vient désormais du `.dp-card-title` parent.
+- ✅ **`RhythmCalendarPreview.jsx` refondue** : 2 sections finales par fixture (Contexte dashboard cible avec wrap `.dp-card` + Contexte onboarding nu sans contenant). Wrappée dans `.dashboard-proprio-container` (signature container dashboard standard). Route déplacée hors `<DashboardLayout/>` pour éviter la redirection automatique.
+- ✅ **Fixtures `martin.json` et `mathis.json` remplies** avec les données réelles parsées le 25 avril matin (Action A2). Martin : 4 groupes × 45 semaines, document_meta complet (IUT Saint-Malo, BUT 3 GEA, 2026/2027). Mathis : 1 groupe × 53 semaines, document_meta dégradé (school_name null, program_name "R_CA_A3" code technique).
+
+**Décision design importante actée** :
+
+**Le `RhythmCalendar` v1 visuel (calendrier vertical mois/semaines en cases) N'EST PAS la version cible.** La validation visuelle a confirmé que le rendu actuel est en dessous de la finesse Sterny appliquée sur le reste de la plateforme :
+
+1. La représentation verticale par mois/cases ne raconte pas naturellement la temporalité de l'alternance.
+2. Les chiffres isolés dans les cases sont sémantiquement vides (l'utilisateur doit décoder qu'il s'agit d'une semaine commençant ce lundi).
+3. Le composant n'a pas la qualité visuelle attendue d'un élément central du dashboard alternant.
+
+**Cible v2 envisagée** : calendrier horizontal type frise temporelle (passé → présent → futur de gauche à droite), passé compressé/atténué, futur mis en avant, blocs continus école/entreprise plutôt que cases isolées, curseur "Aujourd'hui" pour ancrer l'utilisateur dans le temps.
+
+**La v1 actuelle reste posée** comme groundwork technique (plomberie composant + plomberie fixtures + pattern de wrap dans `.dp-card` + gestion des cas dégradés). Elle ne sera pas supprimée mais réécrite visuellement dans une session dédiée.
+
+**Décisions méta actées** :
+
+1. **Le redesign visuel mérite sa propre session** avec cadrage en amont : références visuelles, maquettes/croquis sur papier, validation des 2-3 directions possibles avant écriture de code. Pas de bricolage CSS en fin de soirée sur une feature aussi centrale.
+2. **L'Étape 2 du Bloc B (importation drag-and-drop)** est indépendante du design visuel du composant d'affichage. Elle peut être attaquée en parallèle ou avant le redesign sans bloquer la chaîne.
+3. **L'icône emoji 📅 dans la preview** est un raccourci de la preview, pas le rendu cible. La version finale dans `/dashboard` utilisera une vraie icône SVG (lucide-react ou équivalent) dans la pill `.dp-card-icon` au fond Orange pâle `#FFF1E8`, conforme à la grammaire dashboard documentée en INVENTAIRE-PLATEFORME §9.2.
+
+**Modifs non-commitées volontairement conservées locales** (inchangé) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 en attente
+
+**Plan de la prochaine session — 2 chantiers possibles au choix** :
+
+1. **Bloc B Étape 2 — Importation drag-and-drop** (`FileUpload` standalone + invocation Edge Function `parse-school-calendar`). Indépendante du design visuel du composant d'affichage.
+2. **Bloc B redesign visuel** — refonte du `RhythmCalendar` en frise horizontale, à attaquer après cadrage design en amont (références, maquettes, croquis).
+
+**Commits de la session du 25 avril fin de soirée bis (poussés sur `origin/main`)** :
+
+- `9ea6e4d` fix(auth): scope GoogleAuthHandler to auth callback routes only
+- `599e045` feat(rhythm): close Bloc B Étape 1 (RhythmCalendar v1 technique)
+
+(+ ce 3e commit qui clôt la session sur la mise à jour des docs de référence.)
 
 ---
 
