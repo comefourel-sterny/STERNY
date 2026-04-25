@@ -92,6 +92,40 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 20. **Le `document_meta` extrait par le LLM peut contenir des valeurs `null` ou des codes techniques** selon ce qui est disponible dans le document uploadé (constat du 25 avril). Exemple sur Planning_Mathis.pdf (Hyperplanning) : `school_name: null`, `program_name: "R_CA_A3"`. Le LLM ne peut pas inventer ce qui n'existe pas dans le PDF source. Le frontend devra gérer ces cas (afficher "École non détectée" ou similaire au lieu de crasher). Tracé pour qu'on le prenne en compte dans le Bloc B (`RhythmCalendar` visuel) et dans tout écran qui affiche le rythme parsé.
 
+## Audits du 25 avril 2026 — anomalies plateforme
+
+Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-PLATEFORME-2026-04-25.md` (rapport jetable, gitignoré). Loguées ici comme dettes formelles à traiter en Phase 0bis (catégorie C ménage), sauf indication contraire.
+
+21. **Composants React morts définis mais non référencés** : `Stepper`, `FooterMinimal`, `HamburgerMenu`, `NotificationBell` (chemins respectifs : `sterny-react/src/components/Stepper.jsx`, `sterny-react/src/components/layout/FooterMinimal.jsx`, `sterny-react/src/components/layout/HamburgerMenu.jsx`, `sterny-react/src/components/layout/NotificationBell.jsx`). Conséquence importante pour `NotificationBell` : la table `notifications_in_app` n'a plus de consommateur frontend actif. À supprimer en Phase 0bis (catégorie C ménage).
+
+22. **Doublon de route `/annonce/creer` dans `sterny-react/src/App.jsx`** : la route est déclarée 2 fois — lignes 96-99 sous `<Layout/>` (zone "Temp: test"), lignes 145-147 sous `<DashboardLayout/>`. Le premier match (Layout simple) gagne, donc la garde `useAuth` du DashboardLayout n'est pas appliquée. Conséquence : la page de création d'annonce tourne sans la garde auth attendue. Fix : supprimer la déclaration sous `<Layout/>` (la "Temp: test"), garder uniquement celle sous `<DashboardLayout/>`.
+
+23. **`PresentationProprietairePage` est un placeholder de 31 lignes** qui n'utilise pas le param `:id` de sa route `/proprietaire/:id`. Affiche une carte teaser générique au lieu du profil propriétaire correspondant. À reconsidérer : soit implémenter une vraie page de présentation propriétaire, soit supprimer la route et le composant.
+
+24. **`EmailMatchConfirmationPage` exposée comme route produit `/email-match-confirmation` sous `<DashboardLayout/>`** alors que c'est une preview HTML d'email transactionnel, pas une vraie page produit. À déplacer dans `/dev/` (cohérent avec la nouvelle convention `dev/` introduite le 25 avril pour les fixtures et previews).
+
+25. **Route `/dev/rhythm-calendar-preview` sans garde auth** (page nue, hors `<DashboardLayout/>`). Pas critique car non liée dans la nav et le dossier `dev/` est un espace dev par convention, mais à ne pas oublier au moment du déploiement prod : soit supprimer toutes les routes `/dev/*` du build de production, soit ajouter une garde dev-mode (`if (!import.meta.env.DEV) return <Navigate to="/" />`).
+
+26. **Chemin obsolète dans `sterny-react/.claude/commands/global.md`** : référence à `/Users/arnaudfourel/Desktop/STERNY/...` au lieu de `/Users/comefourel/Dev/sterny/...`. Ancienne référence d'un autre poste, à corriger pour que le slash-command reste utilisable.
+
+27. **Faux positif "table fantôme `documents`"** dans l'audit Zone 1 Cat. C (rapport `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`). En réalité `documents` n'est pas une table BDD mais un bucket Supabase Storage (`storage.from('documents')` utilisé dans `DossierLocatairePage`, `ModifierProfilPage`, `delete-account`). À reclasser : pas une dette de table fantôme. Le seul vrai cas de table fantôme reste `matchs` (DETTE #28).
+
+28. **Table fantôme `matchs`** référencée dans `supabase/functions/export-data/index.ts:94` (`.from("matchs")`). N'existe pas dans `public.*` du schéma BDD. La fonction `export-data` n'est de toute façon pas déployée en prod (DETTE #17), mais à fixer en même temps que son déploiement. Le terme "match" correspond métier-wise à `candidatures` au statut `acceptee` ou à `mises_en_relation`.
+
+29. **Token Mapbox public en dur dans `sterny-react/src/pages/public/RecherchePage.jsx:10`** (préfixe `pk.`). Pratique courante pour les tokens Mapbox publics, **mais uniquement si des restrictions de domaine sont activées sur le dashboard Mapbox**. À vérifier en console Mapbox : que le token est bien restreint au domaine `sterny.co` (et `localhost` pour le dev). Si non, l'activer immédiatement.
+
+30. **Constantes dupliquées massivement dans 5+ pages** : `SYMMETRIC_OPTIONS` / `ASYMMETRIC_OPTIONS` (CompleterProfilPage, RecherchePage, HomePage, InscriptionRecherchePage, ModifierProfilPage), `SIGLES_ECOLES`, `ECOLES_POPULAIRES`, `ANNEES_ETUDES` (CompleterProfilPage, ModifierProfilPage), `MOTS_INTERDITS` et `PATTERNS_SUSPECTS` (CreerAnnoncePage, ModifierAnnoncePage), `CODE_POSTAL_VILLE` (idem). À factoriser dans `sterny-react/src/utils/constants/` ou équivalent. Cohérent avec le risque que ces constantes divergent silencieusement entre pages.
+
+## Audits du 25 avril 2026 — divergences design tokens
+
+Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-DESIGN-2026-04-25.md` (rapport jetable, gitignoré). Toutes traitables en un commit unique de "design tokens harmonization" en Phase 0bis (catégorie C ménage).
+
+31. **Variantes orthographiques du hover Orange** : `#D4571F` (3 hits) et `#D4561F` (3 hits) coexistent dans les CSS pour la même intention sémantique (hover de l'accent Orange `#E8622A`). À harmoniser sur une seule valeur (proposer `#D4571F` après vérification visuelle).
+
+32. **Quatre variantes d'Orange pâle** coexistent comme fonds d'icône / badge : `#FFF1E8` (5 hits, le plus utilisé), `#FFF3EE` (2 hits), `#FDF0EB` (2 hits), `#FFF7ED` (3 hits). À harmoniser sur `#FFF1E8` partout.
+
+33. **Trois chaînes de fallback différentes pour DM Sans** dans les CSS Sterny : `'DM Sans', system-ui, -apple-system, sans-serif` (récente), `'DM Sans', sans-serif` (minimaliste), `'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif` (longue legacy). À harmoniser sur la chaîne moderne `'DM Sans', system-ui, -apple-system, sans-serif`. Bonus connexe : la police `Space Grotesk` est importée dans `sterny-react/src/index.css` ligne 1 mais n'est utilisée nulle part dans les CSS audités. Soit nettoyer l'import, soit l'utiliser comme display secondaire.
+
 ## Planification
 
-Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage**, à faire après la Phase 1 complète.
+Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.
