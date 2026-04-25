@@ -1,0 +1,166 @@
+/*
+  DESIGN DECISION (Bloc B Étape 1, 25 avril 2026)
+  ───────────────────────────────────────────────
+  École = Orange Sterny plein (#E8622A). C'est l'événement saillant : sur le
+  calendrier d'un alternant, les semaines école sont celles qui CRÉENT la
+  disponibilité du logement (l'absence). C'est l'info structurellement utile
+  pour Sterny. La rendre visuellement dominante permet de lire le calendrier
+  en une seconde — "voilà mes semaines de dispo".
+
+  Entreprise = Navy Sterny diaphane (rgba 0.15 minimum). C'est le fond neutre,
+  "présence". Inverser (entreprise en orange plein) déséquilibrerait le sens
+  métier.
+
+  L'opacité 0.15 est un PLANCHER : elle assure la lisibilité même sur mobile
+  en plein soleil. À 0.08-0.10, le calendrier est perçu "à trous". Si refonte
+  esthétique future, ne pas descendre sous 0.15.
+
+  Dimensions exposées en CSS variables pour itération sans refactor JSX :
+  --rc-cell-size, --rc-month-label-width, --rc-gap, --rc-cell-radius.
+*/
+
+.rc-card {
+  --rc-cell-size: 40px;
+  --rc-month-label-width: 80px;
+  --rc-gap: 6px;
+  --rc-cell-radius: 6px;
+
+  --rc-school-bg: #E8622A;
+  --rc-school-fg: #FFFFFF;
+  --rc-company-bg: rgba(30, 41, 59, 0.15);
+  --rc-company-fg: #1E293B;
+  --rc-invalid-bg: rgba(30, 41, 59, 0.08);
+  --rc-cell-border: rgba(30, 41, 59, 0.05);
+
+  --rc-navy: #1E293B;
+  --rc-navy-soft: rgba(30, 41, 59, 0.6);
+
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  color: var(--rc-navy);
+}
+
+.rc-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--rc-navy);
+  margin-bottom: 12px;
+}
+
+.rc-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--rc-navy-soft);
+}
+
+.rc-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rc-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--rc-cell-border);
+}
+
+.rc-legend-swatch.rc-school { background: var(--rc-school-bg); }
+.rc-legend-swatch.rc-company { background: var(--rc-company-bg); }
+
+.rc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rc-gap);
+}
+
+.rc-month-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rc-month-label {
+  width: var(--rc-month-label-width);
+  font-size: 12px;
+  color: var(--rc-navy-soft);
+  text-transform: capitalize;
+  flex-shrink: 0;
+  padding-top: 12px;
+  line-height: 1.3;
+}
+
+.rc-month-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rc-gap);
+}
+
+.rc-cell {
+  width: var(--rc-cell-size);
+  height: var(--rc-cell-size);
+  border-radius: var(--rc-cell-radius);
+  border: 1px solid var(--rc-cell-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  font-feature-settings: "tnum";
+  cursor: default;
+  user-select: none;
+}
+
+.rc-cell.rc-school {
+  background: var(--rc-school-bg);
+  color: var(--rc-school-fg);
+}
+
+.rc-cell.rc-company {
+  background: var(--rc-company-bg);
+  color: var(--rc-company-fg);
+}
+
+.rc-cell.rc-invalid {
+  background: var(--rc-invalid-bg);
+  color: var(--rc-navy-soft);
+  font-weight: 700;
+}
+
+.rc-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--rc-navy-soft);
+  font-size: 14px;
+}
+
+.rc-meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rc-cell-border);
+  font-size: 12px;
+  color: var(--rc-navy-soft);
+}
+
+.rc-meta-sep {
+  margin: 0 4px;
+}
+
+@media (max-width: 480px) {
+  .rc-card {
+    --rc-cell-size: 36px;
+    --rc-month-label-width: 60px;
+    --rc-gap: 5px;
+    padding: 16px;
+  }
+
+  .rc-month-row {
+    gap: 8px;
+  }
+}

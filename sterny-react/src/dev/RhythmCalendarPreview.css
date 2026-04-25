@@ -1,0 +1,73 @@
+.rcp-page {
+  min-height: 100vh;
+  background: #F4F5F7;
+  padding: 32px 24px 64px;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  color: #1E293B;
+}
+
+.rcp-header {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+}
+
+.rcp-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.rcp-header p {
+  color: rgba(30, 41, 59, 0.6);
+  font-size: 14px;
+  margin: 0;
+}
+
+.rcp-header code,
+.rcp-fixture-meta code,
+.rcp-empty code {
+  background: rgba(30, 41, 59, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+
+.rcp-fixture {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+}
+
+.rcp-fixture-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.rcp-fixture-meta {
+  font-size: 13px;
+  color: rgba(30, 41, 59, 0.6);
+  margin: 0 0 16px;
+}
+
+.rcp-empty {
+  background: #FFFFFF;
+  border: 2px dashed rgba(30, 41, 59, 0.15);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  color: rgba(30, 41, 59, 0.7);
+  font-size: 14px;
+}
+
+.rcp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .rcp-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

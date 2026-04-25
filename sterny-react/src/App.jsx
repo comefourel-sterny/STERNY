@@ -81,6 +81,9 @@ import PolitiqueRemboursementPage from './pages/legal/PolitiqueRemboursementPage
 // Invitation page (no layout)
 import InvitationPage from './pages/invitation/InvitationPage'
 
+// Dev pages (no layout, not linked in nav)
+import RhythmCalendarPreview from './dev/RhythmCalendarPreview'
+
 // Other
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -92,6 +95,9 @@ export default function App() {
       <Routes>
         {/* Invitation — no layout */}
         <Route path="/invitation/:token" element={<InvitationPage />} />
+
+        {/* Dev — no layout, not linked in nav */}
+        <Route path="/dev/rhythm-calendar-preview" element={<RhythmCalendarPreview />} />
 
         {/* Temp: test */}
         <Route element={<Layout />}>
