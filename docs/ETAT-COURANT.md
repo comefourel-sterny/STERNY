@@ -2,7 +2,56 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 25 avril 2026 — clôture Action A2 phase test (parser rhythm_calendar validé sur JPG + PDF réels).
+**Dernière mise à jour** : 25 avril 2026 — clôture Bloc B Étape 0 (fonction RPC atomique `confirm_rhythm_calendar` déployée en prod, commit 65d81ca).
+
+---
+
+## 0. Session du 25 avril après-midi — Bloc B Étape 0 close (fondation RPC atomique)
+
+**Objectif tenu** : poser la fondation BDD du Bloc B (UI de validation visuelle obligatoire, VISION §4) avant d'attaquer les composants React. La transition `status='parsed' → 'confirmed'` d'une ligne `rhythm_imports` ne peut pas se faire en deux UPDATE séparés côté frontend (risque de désynchro entre `rhythm_imports.status` et `users.rhythm_calendar` si le 2e échoue) : il faut une transaction Postgres atomique.
+
+**Cadrage stratégique du Bloc B (4 étapes séquentielles)** :
+
+- **Étape 0** (cette session) : fonction RPC atomique `confirm_rhythm_calendar`.
+- **Étape 1** : `RhythmCalendar` dumb readonly, testé sur les 2 lignes BDD existantes (Martin `id=69a564e5-1444-4a6b-940c-0d9222fcee7d` et Mathis `id=0ff13d90-c148-492c-a718-c4e57505c258`).
+- **Étape 2** : `FileUpload` standalone (drag-and-drop, validation MIME côté client, upload bucket `rhythm-documents` + invoke Edge Function `parse-school-calendar`).
+- **Étape 3** : `RhythmOnboarding` parent qui orchestre upload + sélecteur de groupe + appel RPC + navigation.
+- **Étape 4** : intégration dans page onboarding nouvelle + 3 dashboards (locataire, hote, les_deux) en mode readonly.
+
+**3 décisions d'architecture validées** :
+
+1. **Atomicité par RPC Postgres**, pas par 2 UPDATE séparés via SDK (le réseau peut couper entre les 2 = état incohérent).
+2. **Matérialisation de `users.rhythm_calendar`** dans la fonction RPC, pas de dérivation par JOIN. Raison : unifier le cas `document_import` et le cas futur `manual` (fallback prévu en VISION §5 risque 1) sous le même chemin de lecture côté matching, et éviter au code de matching de naviguer dans `parsed_groups[selected].weeks` (cohérent avec DETTE #19).
+3. **`RhythmCalendar` purement dumb**, props uniquement (pas de fetch interne). Le parent (orchestrateur en onboarding, hook custom `useRhythmCalendar()` en dashboard) gère le fetch.
+
+**Ce qui a été fait** :
+
+- ✅ **Migration `20260425121949_confirm_rhythm_calendar_atomic_function.sql`** créée et appliquée en prod via `supabase db push`. Définit `public.confirm_rhythm_calendar(p_import_id uuid, p_group_id text) RETURNS jsonb`.
+- ✅ **`SECURITY INVOKER`** : la RLS s'applique, l'utilisateur ne peut confirmer que ses propres imports. Pas d'escalade de privilèges.
+- ✅ **Effets atomiques en transaction** :
+  1. UPDATE `rhythm_imports` SET `selected_group_id`, `status='confirmed'`
+  2. UPDATE `users` SET `rhythm_calendar` (matérialisation des semaines du groupe choisi), `rhythm_start_date` (MIN), `rhythm_end_date` (MAX), `rhythm_source='document_import'`, `rhythm_import_id`
+- ✅ **Validation côté serveur** : auth check (`auth.uid()`), ligne existe, statut ≠ 'failed', parsed_groups non NULL, group_id présent dans `parsed_groups.groups[]`, weeks non vide. `RAISE EXCEPTION` typés (28000, P0002, 22023) consommables côté frontend pour messages d'erreur clairs.
+- ✅ **Retour jsonb structuré** : `{ import_id, selected_group_id, weeks_count, rhythm_start_date, rhythm_end_date, status }` — le frontend récupère immédiatement de quoi mettre à jour l'UI sans nouvelle requête.
+- ✅ **`GRANT EXECUTE TO authenticated`** + `COMMENT ON FUNCTION` pour le dashboard.
+- ✅ **Vérification SQL passée** dans le dashboard Supabase : fonction présente, signature `(p_import_id uuid, p_group_id text)`, retour `jsonb`, sécurité `INVOKER`.
+- ✅ **Commit `65d81ca`** poussé sur origin/main : `feat(rhythm): add confirm_rhythm_calendar atomic RPC function`.
+
+**Décision technique actée** :
+
+- **Le pattern "RPC atomique" devient la convention pour toute transition multi-table** sur le chantier rhythm_calendar. Raison : éviter par construction les états BDD désynchronisés. À reproduire pour les futures transitions (ex. lors d'un re-parsing avec écrasement de l'ancien import, ou de la migration de profil descendante `les_deux` → `locataire`/`hote` qui touche plusieurs tables).
+
+**Vigilance signalée** :
+
+- La policy RLS UPDATE sur `users` n'a pas de `WITH CHECK` (visible dans `supabase/remote_schema.sql` lignes 1381, 1397, 1746). Pour `confirm_rhythm_calendar` en `SECURITY INVOKER` ce n'est pas bloquant aujourd'hui (l'UPDATE passe). Mais quand on durcira cette policy en Catégorie B de l'audit Zone 1, il faudra valider end-to-end que la fonction continue de passer après ajout du `WITH CHECK`. À intégrer au plan de validation Catégorie B le moment venu.
+
+**Modifs non-commitées volontairement conservées locales** (inchangé depuis sessions précédentes) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A en attente de relecture à tête reposée
+
+**Plan de démarrage du Bloc B Étape 1** :
+
+Création de `RhythmCalendar` dumb readonly, testé sur les 2 lignes BDD existantes ci-dessus. API minimale envisagée : `<RhythmCalendar parsedGroups={...} mode="readonly" selectedGroupId={...} onSelectGroup={...} />`. Charte design Sterny via `sterny-react/.claude/skills/design/`. Gestion explicite des `null` dans `document_meta` (DETTE #20). Pas de fetch interne, pas de side effect.
 
 ---
 
