@@ -2,7 +2,45 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 24 avril 2026 soir — après incident Resend (rotation clé n°2) et clôture phase code d'Action A2 (Edge Function parse-school-calendar en version 5 prod, test curl reporté à la session suivante).
+**Dernière mise à jour** : 25 avril 2026 — clôture Action A2 phase test (parser rhythm_calendar validé sur JPG + PDF réels).
+
+---
+
+## 0. Session du 25 avril matin — Action A2 phase test close
+
+**Objectif tenu** : valider le parser rhythm_calendar v5 sur 2 plannings réels avant d'enchaîner sur le Bloc B (composants UI). Tests menés via curl direct sur l'Edge Function `parse-school-calendar`, analyse des résultats côté terminal et côté BDD via SQL Editor.
+
+**Ce qui a été fait** :
+
+- ✅ **Test 1 — Planning_Martin.JPG (régression v4→v5)** : 222 Ko, IUT Saint-Malo BUT 3 GEA 2026/2027. HTTP 200, 42 s. Résultat persisté en BDD `id=69a564e5-1444-4a6b-940c-0d9222fcee7d`. 4 groupes détectés (FA CG2P, FA GC2F, FA GEMA LOG, FA GEMA MD), 45 semaines chacun, statuts strictement {school, company}, dates ISO du lundi confirmées (2026-08-31 = lundi). Document_meta complet (école, programme, année, locale fr). Aucune régression vs ligne v4 du 24 avril (`id=771afa43...`).
+
+- ✅ **Test 2 — Planning_Mathis.pdf (validation branche PDF)** : 176 Ko, format Hyperplanning annuel dense. HTTP 200, 41 s. Résultat persisté en BDD `id=0ff13d90-c148-492c-a718-c4e57505c258`. `source_file_type='application/pdf'` confirmé, preuve que la branche PDF de la v5 fonctionne. 1 groupe (planning individuel), 53 semaines (année d'alternance complète), répartition 21 school / 32 company, statuts strictement {school, company}, aucun "vacation"/"holiday"/"break" (règle A2 respectée même sur format PDF dense).
+
+- ✅ **Confirmations structurelles** : structure `parsed_groups` = `{ groups: [{group_id, group_label, weeks: [{week_start, status}]}], document_meta: {...} }` validée sur les 2 formats. Cohérent avec VISION-ARCHITECTURE section 3.
+
+**Découvertes du test** :
+
+1. **Asymétrie réponse client vs BDD** : la réponse JSON renvoyée par le curl contient `groups[].weeks = null` et `weeks_count: 0`, alors que les données en BDD contiennent les semaines complètes. Le client reçoit un `rhythm_import_id` qui lui permettra de lire la BDD via Supabase. Comportement intentionnel ou bug de sérialisation à investiguer hors phase test. Logué DETTE-TECHNIQUE.
+
+2. **Fragilité du document_meta sur PDF Hyperplanning** : pour Planning_Mathis.pdf, `school_name: null`, `program_name: "R_CA_A3"` (code technique au lieu d'un libellé humain). C'est une limite du document source, pas un bug du parser. Le LLM extrait ce qui est disponible. Implication produit ajoutée à VISION-ARCHITECTURE section 5 et à VISION section 3.
+
+3. **`parser_version` reste à 'v1'** sur les 3 lignes de test : v1 désigne la version sémantique de la sortie (structure JSON), pas la version de déploiement Supabase. Cohérent — la v5 a ajouté du support PDF et des règles, mais n'a pas changé le format de sortie.
+
+**Décisions produit actées** :
+
+1. Le parser v5 est validé pour les démos. Tests sur 2 formats réels OK, plus de doute sur le support PDF.
+2. La phase de test d'Action A2 est officiellement close. Le commit de clôture est `test(parser): validated v5 on real plannings Martin JPG + Mathis PDF`.
+3. Prochaine étape : ouverture d'une nouvelle conversation Claude.ai pour le Bloc B (composants UI `FileUpload` + `RhythmCalendar` visuel), en partant fraîche.
+
+**Tâches de ménage à faire en fin de chantier rhythm_calendar** (logué pour ne pas oublier) :
+- Nettoyer les fichiers de test du bucket `rhythm-documents` (Planning_Martin.JPG + Planning_Mathis.pdf uploadés par l'Edge Function lors des tests). Pas urgent (bucket privé, RLS, ~400 Ko cumulés).
+- Investiguer l'asymétrie réponse client/BDD (DETTE #19).
+
+**Plan de démarrage de la prochaine session** :
+
+1. Ouvrir une nouvelle conversation Claude.ai avec les 4 docs de référence chargés.
+2. Démarrer le Bloc B : composants UI `FileUpload` (drag-and-drop, validation MIME côté client, upload + appel Edge Function) + `RhythmCalendar` visuel (carrés fins par semaine, code couleur école/entreprise, interactions hôte pour ajustement manuel des disponibilités d'annonce).
+3. Référence design : `sterny-react/.claude/skills/design/` (charte Sterny déjà documentée).
 
 ---
 

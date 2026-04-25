@@ -84,6 +84,14 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 18. **Auditer les autres triggers BDD qui utilisent `net.http_post()` ou `supabase_functions.http_request()`** : suite à la découverte que le trigger `send-alert-on-insert` envoyait un body vide `{}` par design (résolu le 24 avril par suppression du trigger + appels frontend explicites à `send-alert-email` depuis PasswordGate, RecherchePage et DashboardLocatairePage), il faut vérifier qu'aucun autre trigger ne souffre du même problème silencieux. Candidats connus : `trg_notif_candidature` (voir DETTE #14) et potentiellement d'autres. Objectif : vérifier qu'ils fonctionnent réellement, et arbitrer cas par cas leur migration vers des appels frontend explicites pour cohérence avec l'arrivée de l'app mobile native. À faire dans une session dédiée.
 
+## Asymétrie réponse client vs persistance BDD du parser rhythm_calendar
+
+19. **Le JSON renvoyé par l'Edge Function `parse-school-calendar` au client est différent du JSON persisté en BDD** (constat du 25 avril lors de l'Action A2 phase test). La réponse client contient `groups[].weeks = null` et `weeks_count: 0`, alors que `rhythm_imports.parsed_groups` en BDD contient les semaines complètes. Le client reçoit `rhythm_import_id` au top-level pour pouvoir relire la BDD via Supabase. Comportement potentiellement intentionnel (économie de bande passante, le frontend lit la BDD via SDK plutôt que via le retour HTTP) ou bug de sérialisation côté provider/index.ts. À investiguer une fois le Bloc B terminé. Si intentionnel, le documenter explicitement dans le code de l'Edge Function. Si bug, fixer.
+
+## Limites métadonnées document selon format source
+
+20. **Le `document_meta` extrait par le LLM peut contenir des valeurs `null` ou des codes techniques** selon ce qui est disponible dans le document uploadé (constat du 25 avril). Exemple sur Planning_Mathis.pdf (Hyperplanning) : `school_name: null`, `program_name: "R_CA_A3"`. Le LLM ne peut pas inventer ce qui n'existe pas dans le PDF source. Le frontend devra gérer ces cas (afficher "École non détectée" ou similaire au lieu de crasher). Tracé pour qu'on le prenne en compte dans le Bloc B (`RhythmCalendar` visuel) et dans tout écran qui affiche le rythme parsé.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage**, à faire après la Phase 1 complète.

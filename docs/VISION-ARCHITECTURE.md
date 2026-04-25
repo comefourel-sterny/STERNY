@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 23 avril 2026.
+**Dernière mise à jour** : 25 avril 2026 — note sur la fragilité possible des métadonnées document selon format source (section 3 et section 5).
 
 ---
 
@@ -61,6 +61,12 @@ Deux colonnes portent la vérité :
 - **`annonces.disponibilites_pattern`** (jsonb) : tableau des lundis (format `"YYYY-MM-DD"`) où le logement est disponible à la location. Calculé automatiquement par Sterny à partir du `rhythm_calendar` de l'hôte et de la ville du logement proposé (voir règle ci-dessous).
 
 Toute logique de matching future doit se baser exclusivement sur ces deux colonnes.
+
+### Fragilité possible des métadonnées document
+
+Les colonnes `parsed_groups->'document_meta'` (school_name, program_name, academic_year, detected_locale) sont extraites par le parser IA en parallèle de `groups`. Selon le format du document uploadé, certains de ces champs peuvent être `null` ou contenir des codes techniques au lieu de libellés humains. Exemples observés en avril 2026 : un planning Hyperplanning au format PDF a renvoyé `school_name: null` et `program_name: "R_CA_A3"` (code technique). Le LLM ne peut pas inventer ce qui n'est pas présent dans le document source.
+
+**Règle pour Claude** : tout écran qui affiche `document_meta` doit gérer le cas `null` (afficher "École non détectée", "Programme non identifié" ou équivalent) plutôt que crasher ou afficher une chaîne vide. Ces métadonnées sont **descriptives**, pas structurelles : leur absence n'invalide pas le matching, qui repose uniquement sur `groups[].weeks`.
 
 ### Comment Sterny calcule automatiquement les disponibilités
 
@@ -181,6 +187,12 @@ Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Cla
 
 - L'étape de **validation visuelle** (section 4) n'est pas un confort UX, c'est un garde-fou critique. Elle ne doit jamais être supprimée pour alléger le flow.
 - Le calendrier visuel doit être suffisamment clair pour qu'une erreur d'une semaine soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
+
+**Risque 5 — Fragilité des métadonnées descriptives**
+
+Les champs `document_meta` peuvent être incomplets ou contenir des codes techniques selon le format source. Risque produit : un utilisateur qui voit "École : non détectée" sur sa propre fiche pourrait perdre confiance dans la plateforme.
+
+**Mitigation** : afficher les valeurs `null` ou techniques de manière neutre dans l'UI ("École non identifiée — vérifie ton planning"), permettre à l'utilisateur de **saisir manuellement** ces métadonnées si besoin (futur enrichissement, à prioriser uniquement si ce cas devient fréquent en exploitation), et communiquer clairement que ces champs sont descriptifs et n'affectent pas le matching.
 
 ---
 
