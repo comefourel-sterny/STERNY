@@ -101,7 +101,6 @@ export default function RhythmCalendar({ weeks, groupLabel, documentMeta, classN
   if (!Array.isArray(weeks) || weeks.length === 0) {
     return (
       <div className={`rc-card ${className}`}>
-        {groupLabel && <div className="rc-header">{groupLabel}</div>}
         <div className="rc-empty">Aucune semaine disponible pour ce groupe.</div>
       </div>
     );
@@ -111,8 +110,6 @@ export default function RhythmCalendar({ weeks, groupLabel, documentMeta, classN
 
   return (
     <div className={`rc-card ${className}`}>
-      {groupLabel && <div className="rc-header">{groupLabel}</div>}
-
       <div className="rc-legend">
         <span className="rc-legend-item">
           <span className="rc-legend-swatch rc-school" />

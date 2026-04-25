@@ -35,19 +35,8 @@
   --rc-navy: #1E293B;
   --rc-navy-soft: rgba(30, 41, 59, 0.6);
 
-  background: #FFFFFF;
-  border-radius: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  padding: 24px;
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   color: var(--rc-navy);
-}
-
-.rc-header {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--rc-navy);
-  margin-bottom: 12px;
 }
 
 .rc-legend {
@@ -157,7 +146,6 @@
     --rc-cell-size: 36px;
     --rc-month-label-width: 60px;
     --rc-gap: 5px;
-    padding: 16px;
   }
 
   .rc-month-row {
