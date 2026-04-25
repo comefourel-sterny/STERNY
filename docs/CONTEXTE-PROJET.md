@@ -95,6 +95,7 @@ Repo local : `/Users/comefourel/Dev/sterny/`
     │   ├── VISION-ARCHITECTURE.md      ← où on va, principes fondateurs
     │   ├── ETAT-COURANT.md             ← ce qu'on vient de faire, ce qui reste
     │   ├── DETTE-TECHNIQUE.md          ← bugs connus, bypass DEV à retirer
+    │   ├── INVENTAIRE-PLATEFORME.md    ← inventaire factuel de la plateforme
     │   └── AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md
     │
     └── CLAUDE.md                       ← instructions auto-lues par Claude Code
@@ -172,7 +173,7 @@ Si une commande risque de renvoyer un secret, le préciser explicitement et dema
 
 **Saturation de conversation**
 
-Quand une conversation Claude.ai commence à saturer (réponses moins précises, dérives récurrentes), j'en ouvre une nouvelle. Les 4 documents de référence (`docs/*.md`) permettent à la nouvelle conversation d'être immédiatement briefée. Pas besoin de tout réexpliquer.
+Quand une conversation Claude.ai commence à saturer (réponses moins précises, dérives récurrentes), j'en ouvre une nouvelle. Les 5 documents de référence (`docs/*.md`) permettent à la nouvelle conversation d'être immédiatement briefée. Pas besoin de tout réexpliquer.
 
 ---
 
@@ -274,7 +275,7 @@ Quand on vient de franchir une étape importante (fix validé, décision produit
 ### Saturation de conversation (Claude.ai uniquement)
 
 Quand la conversation Claude.ai commence à montrer des signes de saturation (réponses moins précises, dérives, longueur importante), Claude me prévient franchement :
-"On commence à perdre en précision. Je propose un point de clôture : [commits à faire] + [mises à jour docs]. Puis tu fermes cette conv et tu en ouvres une nouvelle avec les 4 docs de référence chargés."
+"On commence à perdre en précision. Je propose un point de clôture : [commits à faire] + [mises à jour docs]. Puis tu fermes cette conv et tu en ouvres une nouvelle avec les 5 docs de référence chargés."
 
 ### Décision à loguer
 
