@@ -6,4 +6,5 @@ node_modules/
 *.log
 backups/
 _rollback/
+_audit/
 test-plannings/
