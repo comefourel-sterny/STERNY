@@ -2,7 +2,58 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 25 avril 2026 — Bloc B Étape 1 partiellement avancée (composant + preview commités WIP, validation visuelle reportée) + décision d'architecture documentaire majeure (création à venir d'un 5e doc de référence `INVENTAIRE-PLATEFORME.md`).
+**Dernière mise à jour** : 25 avril 2026 — Session de fin de soirée : création de `INVENTAIRE-PLATEFORME.md`, 5e document de référence stable, et logage des 13 dettes (#21-#33) issues des audits du 25 avril.
+
+---
+
+## 0. Session du 25 avril fin de soirée — INVENTAIRE-PLATEFORME.md créé + dettes #21-#33 loguées
+
+**Contexte** : session dédiée à l'exécution de la décision actée en session du 25 avril fin d'après-midi (création d'un 5e document de référence stable inventoriant l'état de la plateforme). Les deux audits prévus ont été exécutés en pure lecture, condensés en un seul document propre, puis poussés.
+
+**Ce qui a été fait** :
+
+- ✅ **Audit plateforme** : prompt Claude Code de pure lecture exécuté (`docs/_audit/AUDIT-PLATEFORME-2026-04-25.md`, 559 lignes, jetable, gitignoré). Couvre 8 sections : routes actives, pages principales, composants partagés, edge functions, tables BDD, buckets Storage, skills `.claude/`, conventions de structure. 51 routes inventoriées, 41 pages, 15 composants partagés, 18 edge functions, 17 tables.
+- ✅ **Audit design** : second prompt Claude Code de pure lecture exécuté (`docs/_audit/AUDIT-DESIGN-2026-04-25.md`, 443 lignes, jetable, gitignoré). Couvre 8 sections : doctrine de la skill design, tokens couleur, typographie, espacements/layout, radius/shadows/transitions, patterns d'organisation des pages dashboard, écarts de RhythmCalendar, synthèse pour le doc cible. 20 tokens couleur identifiés, 18 tokens typo, 8 divergences skill/appliqué, 5 écarts RhythmCalendar.
+- ✅ **`docs/INVENTAIRE-PLATEFORME.md` créé** (commit `e1249ef`, 474 lignes) : 11 sections couvrant arborescence, routes, pages, composants, edge functions, tables, buckets, skills, design system appliqué (section 9, la plus dense), conventions de code, anomalies pointant vers DETTE. Document conçu pour être stable — mis à jour uniquement sur changement structurel, pas à chaque session.
+- ✅ **Décision design actée pour le Bloc B Étape 1** : `RhythmCalendar` doit être traité comme une **section complète**, pas un widget compact. À l'intégration dans `/dashboard`, `RhythmCalendar.css` doit perdre `background`, `border-radius`, `box-shadow`, `padding` sur `.rc-card` et le `.rc-header` doit être retiré. Le contenant et le titre viennent du parent `.dp-card` + `.dp-card-title`. Pour la page de preview standalone `/dev/rhythm-calendar-preview`, on wrap le composant dans une `.dp-card` factice côté preview, pas de prop `autonomous`. Documenté en section 9.4 de `INVENTAIRE-PLATEFORME.md`.
+- ✅ **Convention `_audit/` formalisée** : ajout du pattern `_audit/` dans `.gitignore` racine (sous `_rollback/`), commité dans un commit atomique séparé (`3b14ad8`). Cohérent avec la convention `_rollback/` existante pour les snapshots locaux pré-DROP. Permet aux deux machines (Mac et tour Windows) de partager la même règle sans friction.
+- ✅ **`CLAUDE.md` racine mis à jour** (commit `f6cd61f`) : ajout de `docs/INVENTAIRE-PLATEFORME.md` dans la liste des docs de référence à lire en début de session par Claude Code. 2 mentions "4 docs / 4 documents" passées à "5".
+- ✅ **`CONTEXTE-PROJET.md` mis à jour** (commit `4b399c9`) : ajout du 5e doc dans l'arborescence section 5, harmonisation des mentions "4 docs" → "5 docs" (lignes 175 et 277).
+- ✅ **13 dettes loguées dans `DETTE-TECHNIQUE.md`** (commit `29ae8fe`, 35 insertions, 1 deletion ciblée — phrase Planification réécrite, dettes #1-#20 préservées intégralement avec vérification MD5 du fichier en local) : composants morts (#21), doublon de route `/annonce/creer` (#22), placeholders (#23, #25), faux positifs de l'audit Zone 1 (#27, #28), constantes dupliquées (#30), variantes de couleurs Orange (#31, #32) et de fallbacks DM Sans (#33) à harmoniser. Toutes en Phase 0bis (catégorie C ménage).
+- ✅ **Section 11 de `INVENTAIRE-PLATEFORME.md`** : pointe directement vers les numéros DETTE #21 à #33 plutôt que de répéter le contenu, traçabilité bidirectionnelle assurée.
+
+**Décisions méta actées** :
+
+1. **L'inventaire factuel devient un document de référence stable** au même titre que les 4 autres. Sa logique de mise à jour est différente : pas à chaque session mais uniquement sur changement structurel (création/suppression/fusion de page, composant majeur, edge function, table, bucket, ou pattern visuel structurant).
+2. **Les rapports d'audit jetables atterrissent dans `docs/_audit/`** (gitignoré), pas committés. Servent d'étape intermédiaire entre exécution Claude Code et condensation en doc cible. Convention cohérente avec `supabase/_rollback/`.
+3. **La grammaire effective des CSS prévaut sur la doctrine de la skill design ou du slash-command** en cas de divergence. La skill et le slash-command restent inspirants mais la référence opérationnelle est `INVENTAIRE-PLATEFORME.md` section 9.
+
+**Modifs non-commitées volontairement conservées locales** (inchangé depuis sessions précédentes) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans `DETTE-TECHNIQUE.md`
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A en attente de relecture à tête reposée
+
+**Étape utilisateur restante (à faire manuellement, hors Claude Code)** :
+
+- Ajouter `docs/INVENTAIRE-PLATEFORME.md` au project knowledge Claude.ai pour que toute nouvelle conversation Claude.ai démarre avec les **5 docs** chargés.
+
+**Plan de la prochaine session (reprise du Bloc B Étape 1 sur bases saines)** :
+
+1. Ouverture d'une nouvelle conversation Claude.ai avec les **5 docs** chargés cette fois.
+2. Patch sur `RhythmCalendar.css` selon la décision 9.4 de l'inventaire (composant nu, retrait `background`/`border-radius`/`box-shadow`/`padding` sur `.rc-card`, retrait `.rc-header`).
+3. Patch sur la page de preview `RhythmCalendarPreview.jsx` : wrap dans une `.dp-card` factice + déplacement de la route preview sous `<DashboardLayout/>` pour validation en contexte réel.
+4. Validation visuelle des 2 plannings (Martin JPG + Mathis PDF) dans la preview.
+5. Décision sur le placement de `RhythmCalendar` dans `/dashboard` (probablement section dédiée "MON RYTHME" en haut, juste sous `.page-header`).
+6. Commit de clôture Étape 1 + documentation des décisions actées (contrat unifié `weeks` à logger dans VISION §3, séparation `RhythmCalendar` / `RhythmGroupSelector` à logger dans ETAT-COURANT, convention couleurs à documenter dans `.claude/skills/design/` une fois validée).
+
+**Commits de la session du 25 avril fin de soirée (tous poussés sur `origin/main`)** :
+
+- `3b14ad8` chore(gitignore): ignore _audit/ folder for transient audit reports
+- `e1249ef` docs: create INVENTAIRE-PLATEFORME.md
+- `f6cd61f` docs(claude): reference INVENTAIRE-PLATEFORME.md in CLAUDE.md root
+- `4b399c9` docs(contexte): list 5 reference docs in CONTEXTE-PROJET.md
+- `29ae8fe` docs(dette): log 13 anomalies surfaced by 25 avril audits
+
+(+ ce 6e commit qui clôt la session sur la mise à jour d'`ETAT-COURANT.md`.)
 
 ---
 
