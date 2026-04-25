@@ -1,15 +1,16 @@
 # Sterny — CLAUDE.md
 
-Fichier auto-lu par Claude Code en début de session. Règles opérationnelles courtes. Le détail vit dans les 4 docs de référence.
+Fichier auto-lu par Claude Code en début de session. Règles opérationnelles courtes. Le détail vit dans les 5 docs de référence.
 
 ## 1. Docs de référence — lecture obligatoire
 
-Les 4 documents suivants font autorité sur le projet. **Claude Code les lit au début de chaque session, dans cet ordre, sans exception** :
+Les 5 documents suivants font autorité sur le projet. **Claude Code les lit au début de chaque session, dans cet ordre, sans exception** :
 
 1. `docs/CONTEXTE-PROJET.md` — qui est Côme, stack, conventions
 2. `docs/VISION-ARCHITECTURE.md` — où on va, principes fondateurs (rhythm_calendar, dates ISO)
 3. `docs/ETAT-COURANT.md` — ce qu'on vient de faire, ce qui reste
 4. `docs/DETTE-TECHNIQUE.md` — bugs connus, bypass DEV actifs
+5. `docs/INVENTAIRE-PLATEFORME.md` — inventaire factuel de la plateforme : routes, pages, composants, Edge Functions, tables, design system appliqué
 
 Si l'un manque ou semble périmé, le signaler à Côme avant d'agir.
 
