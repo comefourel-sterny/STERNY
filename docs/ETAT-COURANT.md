@@ -2,7 +2,70 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 25 avril 2026 — clôture Bloc B Étape 0 (fonction RPC atomique `confirm_rhythm_calendar` déployée en prod, commit 65d81ca).
+**Dernière mise à jour** : 25 avril 2026 — Bloc B Étape 1 partiellement avancée (composant + preview commités WIP, validation visuelle reportée) + décision d'architecture documentaire majeure (création à venir d'un 5e doc de référence `INVENTAIRE-PLATEFORME.md`).
+
+---
+
+## 0. Session du 25 avril fin d'après-midi — Bloc B Étape 1 WIP + décision d'inventaire de plateforme
+
+**Contexte** : démarrage du Bloc B Étape 1 (composant `RhythmCalendar` dumb readonly + page de preview dev). Le code a été écrit, le build passe, le commit WIP est poussé. **Mais la validation visuelle a été suspendue volontairement** suite à la mise au jour d'une faille structurelle dans notre infrastructure documentaire.
+
+**Ce qui a été fait** :
+
+- ✅ **Composant `RhythmCalendar` créé** dans `sterny-react/src/components/rhythm/` (JSX + CSS avec CSS variables + commentaire DESIGN DECISION). Dumb readonly, props uniquement, contrat d'entrée unifié `weeks: [{week_start, status}]` (format de `users.rhythm_calendar` matérialisé ET de `parsed_groups.groups[i].weeks` brut). Cas dégradés gérés (weeks vide/null, document_meta avec champs null ou codes techniques type `R_CA_A3` détectés via regex `pas d'espace + ≤ 12 chars`, status invalide, week_start mal formée).
+- ✅ **Page de preview dev** créée dans `sterny-react/src/dev/RhythmCalendarPreview.jsx`, route `/dev/rhythm-calendar-preview` (placée hors `<Layout/>` dans cette première version), 2 fixtures JSON sur disque (`martin.json`, `mathis.json`) extraites des 2 lignes `rhythm_imports` existantes. Fixtures versionnées (pas de données personnelles).
+- ✅ **Build clean** (npm run build → 918ms, 1450 modules, 0 erreur).
+- ✅ **Commit WIP `8554879`** poussé sur `origin/main` : `feat(rhythm): WIP RhythmCalendar component + dev preview (validation pending)`. 8 fichiers, 544 insertions. Modifs volontairement non-commitées préservées (CreerAnnoncePage.jsx bypass DEV + docs/AUDIT-...md).
+
+**Ce qui n'a PAS été fait dans cette session (et ne le sera pas avant l'inventaire)** :
+
+- ❌ **Validation visuelle de la preview** sur les 2 plannings réels.
+- ❌ **Décision finale sur le contenant du composant** (card autoportée vs nu, à trancher selon le contexte d'usage).
+- ❌ **Décision finale sur le placement de la route preview** (sous Layout vs hors Layout).
+- ❌ **Patch des 3 décisions actées en conv** (signature unifiée `weeks` à logger dans VISION §3, séparation `RhythmCalendar` / `RhythmGroupSelector` à logger ici, convention couleurs à documenter dans `.claude/skills/design/` une fois validée).
+
+**Pourquoi cette suspension** :
+
+Au cours de la session, Côme a relevé que Claude.ai mélangeait des noms de pages obsolètes dans son raisonnement (`DashboardLocatairePage`, `DashboardHotePage`, `DashboardLesDeuxPage`) alors que ces pages ont été **fusionnées en une seule `/dashboard`** depuis plusieurs sessions. Diagnostic : les 4 docs de référence couvrent la **vision** (où on va, principes), l'**historique** (ce qu'on vient de faire), les **conventions** (qui je suis, stack), et les **dettes** (bugs connus) — mais **pas l'inventaire stable de l'existant**. Conséquence : à chaque nouvelle session, Claude.ai comble les trous par des memories obsolètes ou des suppositions, ce qui crée des dérives silencieuses et fait travailler les deux Claudes "à l'aveugle".
+
+**Décision actée** :
+
+**Création d'un 5e document de référence stable : `docs/INVENTAIRE-PLATEFORME.md`**. Document factuel, statique, mis à jour uniquement quand une page/composant majeur est créé/supprimé/fusionné — pas à chaque session. Rejoint les 4 autres dans le brief automatique de chaque nouvelle conversation Claude.ai (project knowledge) et est pointé depuis `CLAUDE.md` racine pour Claude Code.
+
+**Contenu prévu pour `INVENTAIRE-PLATEFORME.md`** :
+
+1. Routes actives (path, page associée, sous quel layout, types d'utilisateurs concernés)
+2. Pages principales (par dossier `pages/`, 2-3 lignes par page sur leur fonction et leur état stable)
+3. Composants partagés (par dossier `components/`, 1 ligne par composant)
+4. Edge Functions (état déployé/non-déployé/cassé, en lien avec DETTE #17)
+5. Tables BDD critiques (liste de noms, le détail vit dans `supabase/remote_schema.sql`)
+6. Buckets Supabase Storage
+7. Skills `.claude/` (notamment `sterny-react/.claude/skills/design/`)
+8. Conventions de structure (où vivent pages, composants, hooks, utils)
+
+**Plan de la prochaine session (dédiée à l'inventaire)** :
+
+1. Ouverture d'une nouvelle conversation Claude.ai avec les 4 docs de référence chargés.
+2. Préparation par Claude.ai d'un prompt Claude Code de **pure lecture** (zéro modification) qui produit un rapport markdown structuré et exhaustif sur l'état actuel de la plateforme.
+3. Travail à 2 sur le rapport pour le condenser en `INVENTAIRE-PLATEFORME.md` propre et stable.
+4. Commit du fichier dans `docs/`.
+5. Ajout de ce 5e doc au project knowledge Claude.ai.
+6. Mise à jour de `CLAUDE.md` racine pour mentionner ce 5e doc dans la liste des docs à lire en début de session.
+7. Mention dans `CONTEXTE-PROJET.md` (section à déterminer — probablement une nouvelle sous-section dans la section 1 ou une section 12 dédiée à la liste des docs de référence).
+
+**Plan de la session SUIVANTE (reprise du Bloc B Étape 1 sur bases saines)** :
+
+1. Ouverture d'une nouvelle conversation Claude.ai avec les **5 docs** chargés cette fois.
+2. Décision finale sur le placement de `RhythmCalendar` dans le dashboard fusionné (probablement section dédiée "MON RYTHME" en haut, juste sous "Bonjour [Prénom]" + toggle ville).
+3. Patch ciblé sur le composant : retrait du fond/radius/shadow/padding (Option B = composant nu, contenant fourni par le parent).
+4. Patch sur la route preview : déplacement dans `<Layout/>` pour validation en contexte réel.
+5. Enrichissement de la page preview avec 2 sections (contexte dashboard simulé + contexte onboarding nu).
+6. Validation visuelle des 2 plannings.
+7. Commit de clôture Étape 1 + commit séparé "docs: log Bloc B Étape 1 close" qui inclut les 3 décisions à logger (contrat unifié dans VISION §3, séparation RhythmCalendar/RhythmGroupSelector dans ETAT-COURANT, convention couleurs dans `.claude/skills/design/`).
+
+**Modifs non-commitées volontairement conservées locales** (inchangé) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans DETTE-TECHNIQUE
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A en attente de relecture
 
 ---
 
