@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 27 avril 2026 — Session de cadrage parser tenue. Levier 1 éliminé empiriquement (GPT-4o 5/10, Gemini 4/10). Aucune décision tranchée sur Leviers 2/3 : nécessité d'une session de recherche profonde en amont. 2 intuitions architecturales notées pour exploration. Élargissement de la base de fixtures de 2 à 5 plannings prévu avant la recherche.
+**Dernière mise à jour** : 27 avril 2026 (révision) — base de fixtures rectifiée à 3 plannings (Martin, Mathis, +1 nouveau collecté), pas 5 comme initialement prévu : les screenshots collectés par Côme sont illisibles donc écartés. Question produit ouverte ajoutée pour la session de recherche : quels formats accepter sur l'onboarding.
 
 ---
 
@@ -35,11 +35,21 @@ Aucun levier privilégié à l'issue de la session. La conversation a fait émer
 
 Cette session est probablement étalée sur 2-3 sessions Claude.ai consécutives (recherche, lecture de papiers, tests de libs sur fixtures), pas une session unique de 2h.
 
-**Prérequis avant la session de recherche — élargissement des fixtures** :
+**Base de fixtures pour la session de recherche** :
 
-- Aujourd'hui : 2 plannings testés (Planning_Martin.JPG IUT Saint-Malo BUT 3 GEA, Planning_Mathis.pdf Hyperplanning R_CA_A3).
-- Avant recherche : **collecter 3 plannings supplémentaires d'amis alternant** déjà identifiés (proposition Côme en session). Élargir la base de fixtures de 2 à 5 augmente significativement la robustesse du benchmark et permet de détecter les biais qui ne se voient que sur la diversité (formats, écoles, couleurs, structures).
-- Pour chaque planning collecté : noter en commentaire l'école d'origine, le type de format (PDF vectoriel, PDF raster, image JPG/PNG, autre), le nombre de groupes, la nature de la légende.
+- Plannings disponibles aujourd'hui : **3 fixtures** — Planning_Martin.JPG (IUT Saint-Malo BUT 3 GEA, image, 4 groupes), Planning_Mathis.pdf (Hyperplanning R_CA_A3, PDF vectoriel, 1 groupe), et un 3e planning collecté par Côme auprès d'un ami alternant (à documenter en début de session de recherche : école, format, nombre de groupes, nature de la légende).
+- Révision par rapport au plan initial du 27 avril matin : la cible de 5 fixtures n'a pas été atteinte. Les screenshots reçus par Côme sont illisibles (qualité photo insuffisante) et ont été écartés. 3 fixtures restent une base utilisable mais minimale — la session de recherche doit en tenir compte dans son protocole de validation (un pipeline qui marche sur 3 fixtures n'est pas démontré sur 3, mais c'est mieux que sur 1).
+- **Sourcing futur de fixtures** : la collecte continuera en parallèle de la recherche, en ciblant explicitement des PDF (Hyperplanning, exports Google Calendar, Word/Excel exportés en PDF) plutôt que des photos. Les screenshots et photos de mauvaise qualité ne sont pas exploitables pour mesurer un parser.
+
+**Question produit ouverte à instruire pendant la session de recherche — quels formats accepter sur l'onboarding** :
+
+Lien direct avec le sourcing de fixtures : si l'on conseille aux utilisateurs de fournir "un PDF ou doc de qualité", on simplifie le travail du parser mais on risque de **perdre des utilisateurs qui n'ont reçu leur planning qu'en photo via WhatsApp ou messagerie école** — cas réel chez des écoles qui ne distribuent pas de PDF. Cette tension entre exigence technique et inclusivité utilisateur est une **décision produit** à trancher avec les éléments techniques de la recherche en main. Hypothèses à explorer pendant la recherche :
+
+- Faut-il accepter uniquement les formats où la fiabilité est démontrée (>95% au benchmark) et rediriger les autres vers la saisie manuelle assistée ?
+- Faut-il accepter tous les formats avec une fiabilité variable et un message de transparence ("On a extrait 80% de ton planning, vérifie les semaines marquées en orange") ?
+- Faut-il un onboarding différencié selon ce que l'utilisateur déclare avoir : "j'ai un PDF" → upload, "j'ai une photo" → saisie manuelle assistée directe, "j'ai rien" → saisie manuelle assistée ?
+
+Pas de décision aujourd'hui — la question est notée pour traitement par la session de recherche, qui aura les éléments techniques pour l'éclairer.
 
 **Aucun commit de code dans cette session** (cadrage pur).
 
