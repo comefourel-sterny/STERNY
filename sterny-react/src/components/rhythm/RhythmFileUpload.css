@@ -1,0 +1,196 @@
+.rfu-root {
+  --rfu-orange: #E8622A;
+  --rfu-orange-pale: #FFF1E8;
+  --rfu-navy: #1E293B;
+  --rfu-navy-soft: rgba(30, 41, 59, 0.6);
+  --rfu-navy-faint: rgba(30, 41, 59, 0.45);
+  --rfu-border: #E8EAF0;
+  --rfu-success: #059669;
+  --rfu-danger: #dc2626;
+  --rfu-radius: 12px;
+
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  color: var(--rfu-navy);
+  width: 100%;
+}
+
+.rfu-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rfu-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 40px 24px;
+  border: 2px dashed var(--rfu-border);
+  border-radius: var(--rfu-radius);
+  background: transparent;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.rfu-zone:hover:not(.rfu-zone--busy):not(.rfu-zone--disabled) {
+  border-color: var(--rfu-orange);
+  background: var(--rfu-orange-pale);
+}
+
+.rfu-zone:focus-visible {
+  border-color: var(--rfu-orange);
+  box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
+}
+
+.rfu-zone--dragging {
+  border-style: solid;
+  border-color: var(--rfu-orange);
+  background: var(--rfu-orange-pale);
+  transform: translateY(-2px);
+}
+
+.rfu-zone--busy {
+  cursor: default;
+  border-style: solid;
+  border-color: var(--rfu-border);
+  background: transparent;
+}
+
+.rfu-zone--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.rfu-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.rfu-content--success,
+.rfu-content--error {
+  pointer-events: auto;
+}
+
+.rfu-icon {
+  color: var(--rfu-navy-soft);
+  margin-bottom: 4px;
+}
+
+.rfu-zone--dragging .rfu-icon {
+  color: var(--rfu-orange);
+}
+
+.rfu-icon--success {
+  color: var(--rfu-success);
+}
+
+.rfu-icon--error {
+  color: var(--rfu-danger);
+}
+
+.rfu-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--rfu-navy);
+  letter-spacing: -0.2px;
+}
+
+.rfu-title--loading {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--rfu-navy-soft);
+}
+
+.rfu-title--error {
+  color: var(--rfu-danger);
+  font-weight: 500;
+  font-size: 14px;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+.rfu-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--rfu-navy-soft);
+}
+
+.rfu-mention {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--rfu-navy-faint);
+  letter-spacing: 0.2px;
+}
+
+.rfu-button-secondary {
+  margin-top: 12px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rfu-navy);
+  background: #FFFFFF;
+  border: 1px solid var(--rfu-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rfu-button-secondary:hover {
+  border-color: var(--rfu-orange);
+  color: var(--rfu-orange);
+}
+
+.rfu-button-secondary:focus-visible {
+  outline: none;
+  border-color: var(--rfu-orange);
+  box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
+}
+
+@keyframes rfu-spin-keyframes {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rfu-spin {
+  animation: rfu-spin-keyframes 0.9s linear infinite;
+  color: var(--rfu-orange);
+}
+
+@media (max-width: 768px) {
+  .rfu-zone {
+    min-height: 160px;
+    padding: 24px 16px;
+  }
+
+  .rfu-title {
+    font-size: 15px;
+  }
+
+  .rfu-title--loading {
+    font-size: 14px;
+  }
+
+  .rfu-subtitle {
+    font-size: 12px;
+  }
+
+  .rfu-mention {
+    font-size: 11px;
+  }
+}
