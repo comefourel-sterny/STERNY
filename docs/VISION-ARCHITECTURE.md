@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 25 avril 2026 — note sur la fragilité possible des métadonnées document selon format source (section 3 et section 5).
+**Dernière mise à jour** : 26 avril 2026 — risque #4 de la section 5 (fiabilité perçue du parser) matérialisé en exploitation test sur 2 plannings réels. Mise à jour du paragraphe pour refléter l'observation et reconnaître la limite structurelle du parsing par vision LLM.
 
 ---
 
@@ -181,12 +181,21 @@ Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Cla
 
 ### Risque 4 — Fiabilité perçue même quand ça marche
 
-**Scénario** : le parser extrait 44 semaines sur 45 correctement, se trompe sur 1. L'utilisateur ne vérifie pas assez attentivement, valide, signe un contrat avec 1 semaine de décalage. Il ne peut pas habiter son logement la semaine où il est censé être sur place. Conséquences contractuelles et financières.
+**Scénario initial (rédaction d'origine)** : le parser extrait 44 semaines sur 45 correctement, se trompe sur 1. L'utilisateur ne vérifie pas assez attentivement, valide, signe un contrat avec 1 semaine de décalage. Il ne peut pas habiter son logement la semaine où il est censé être sur place. Conséquences contractuelles et financières.
 
-**Mitigation obligatoire** :
+**Observation en exploitation test (26 avril 2026)** : ce risque s'est matérialisé bien au-delà du scénario d'origine. Tests sur 2 plannings réels (Planning_Martin.JPG image 4 groupes, Planning_Mathis.pdf format Hyperplanning 1 groupe) ont révélé un **taux d'erreur ≥ 50% des cellules**, sans pattern systémique. Ce n'est pas une erreur de bord type "1 semaine sur 45" — c'est un **échec fonctionnel** du parsing par vision LLM sur des tableaux où l'information est encodée dans la couleur de fond des cellules.
 
-- L'étape de **validation visuelle** (section 4) n'est pas un confort UX, c'est un garde-fou critique. Elle ne doit jamais être supprimée pour alléger le flow.
-- Le calendrier visuel doit être suffisamment clair pour qu'une erreur d'une semaine soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
+**Cause structurelle identifiée** : les LLM vision actuels (Claude, GPT-4o, Gemini) ne sont pas fiables sur la classification couleur pixel-par-pixel à grande échelle (180-250 cellules à classer simultanément). Quand le modèle doute, il devine — d'où le pattern d'erreurs aléatoires observé. **Aucun prompt engineering ne corrige cette limite**.
+
+**Mitigations obligatoires révisées** :
+
+- L'étape de **validation visuelle** (section 4) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
+- Le **fallback de saisie manuelle** (section 5 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
+- Le calendrier visuel doit être suffisamment clair pour qu'une erreur soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
+
+**Décision stratégique à prendre dans une session dédiée** : pivoter le produit vers une saisie manuelle assistée comme étape principale (Levier 3 documenté dans DETTE-TECHNIQUE #37) ou investir dans un pipeline hybride extraction structurée + LLM pour mapping métier (Levier 2). Le statu quo (parsing par vision LLM pure) n'est pas tenable en production.
+
+**Implication pour le positionnement Sterny** : si le parser ne peut être fiable qu'à 70-80%, l'argument de vente "uploade ton planning, tout est automatique" doit évoluer vers "uploade ton planning, on extrait le maximum, tu corriges en 30 secondes". C'est une question produit majeure qui touche au principe fondateur (section 1) et qui doit être tranchée avant tout investissement supplémentaire dans le parser.
 
 **Risque 5 — Fragilité des métadonnées descriptives**
 

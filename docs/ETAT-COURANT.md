@@ -2,7 +2,64 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 25 avril 2026 — Session fin de soirée bis : Bloc B Étape 1 close (RhythmCalendar v1 technique) + fix `GoogleAuthHandler` (garde de route auth callback). Décision design importante : la v1 visuelle du calendrier n'est pas la version cible — redesign en frise temporelle horizontale planifié pour une session dédiée.
+**Dernière mise à jour** : 26 avril 2026 — Session Bloc B Étape 2 close fonctionnellement (RhythmFileUpload + sélecteur de groupe dans la preview). Découverte majeure : parser rhythm_calendar non fiable sur les 2 formats testés (50%+ d'erreur sur Martin et Mathis). Limite structurelle du parsing par vision LLM. Décision stratégique à prendre dans une session dédiée (loguée DETTE #37).
+
+---
+
+## 0. Session du 26 avril — Bloc B Étape 2 close fonctionnellement + découverte du problème parser
+
+**Contexte** : ouverture d'une nouvelle conversation Claude.ai avec les 5 docs de référence chargés. Objectif initial : Bloc B Étape 2 (composant FileUpload standalone + invocation Edge Function parse-school-calendar). Reco Claude.ai en début de session = Option B (Étape 2 upload) plutôt qu'Option A (redesign visuel RhythmCalendar) pour boucler la chaîne UX bout-en-bout en priorité.
+
+**Ce qui a été fait** :
+
+- ✅ **Composant `RhythmFileUpload` créé** dans `sterny-react/src/components/rhythm/` (commit `7b33fa8`). 317 lignes. 6 états visuels (idle / dragging / uploading / parsing / success / error), validation client MIME (PDF/JPG/PNG/WebP) et taille (20 Mo max), invocation `parse-school-calendar` en `multipart/form-data` (contrat réel de l'Edge Function, l'EF gère elle-même l'upload bucket avec service_role), vérification post-invoke du statut `rhythm_imports.status` (cf. DETTE #19), gestion anti-race via `isMountedRef` + `dragCounterRef` + cleanup timer au démontage, transition `uploading` → `parsing` à 3 secondes, callbacks `onParsed` et `onError` typés sur 6 codes (`INVALID_MIME`, `FILE_TOO_LARGE`, `UPLOAD_FAILED`, `PARSE_FAILED`, `NETWORK_ERROR`, `UNAUTHORIZED`).
+- ✅ **CSS dédié** `RhythmFileUpload.css` (196 lignes), composant nu, préfixe `rfu-`, CSS variables locales alignées tokens INVENTAIRE §9.1, hover Orange systématique, mobile <= 768px.
+- ✅ **Page de preview** `RhythmFileUploadPreview.jsx` créée dans `sterny-react/src/dev/`, route `/dev/rhythm-file-upload-preview` ajoutée hors `<DashboardLayout/>`. 3 sections : composant nu + zone de log live des callbacks, composant dans `.dp-card`, RhythmCalendar conditionnel après upload réussi avec fetch `parsed_groups` depuis `rhythm_imports`.
+- ✅ **Dépendance `lucide-react` ajoutée** au `package.json` (icônes UploadCloud, Loader2, CheckCircle2, AlertCircle). Validée comme dépendance standard du projet (cf. INVENTAIRE §9.6).
+- ✅ **Sélecteur de groupe ajouté à la preview** (commit `6240162`) après découverte que le composant rendait par défaut le premier groupe sans laisser le choix sur un planning multi-groupes (cas Martin = 4 groupes). CSS dédié `RhythmFileUploadPreview.css`, préfixe `rfup-` (différent du composant lui-même), tabs horizontaux Orange actif / blanc inactif + hover Orange. Init auto sur premier groupe après parsing, reset propre. Cas 1 groupe (Mathis) → mention "Planning unique" sans tabs.
+
+**Tests utilisateur** :
+
+Tests fonctionnels validés ✅ :
+- Test 2.1 (format non supporté) : `INVALID_MIME` levé, message clair, bouton Réessayer fonctionnel.
+- Test 2.2 (fichier > 20 Mo) : `FILE_TOO_LARGE` levé.
+- Chaîne UX bout-en-bout : upload Martin → parsing 40s → success → fetch BDD → rendu RhythmCalendar dans section 3.
+
+Tests de fiabilité du parser ❌ — DÉCOUVERTE MAJEURE :
+- **Planning_Martin.JPG** (4 groupes) : ~50% des cellules incorrectes sur les 4 groupes. Erreurs aléatoires, pas de pattern systémique. Le LLM vision semble faire du remplissage statistique quand il ne lit pas la couleur correctement.
+- **Planning_Mathis.pdf** (1 groupe, format Hyperplanning trivial avec légende explicite) : également échec — blocs entiers de mois en école qui devraient être mélangés école/entreprise.
+
+**Diagnostic stratégique** :
+
+Le parser actuel (Claude Sonnet 4.6 via Edge Function `parse-school-calendar` v5) repose sur du **parsing par vision LLM pure**. Les calendriers d'alternance encodent l'information dans la **couleur de fond des cellules**, pas dans le texte. Les LLM vision actuels ne sont pas fiables sur de la classification couleur cellule par cellule à grande échelle (180-250 cellules). Limite **structurelle**, pas réparable par prompt engineering.
+
+**Conséquence** : le principe fondateur de Sterny (VISION-ARCHITECTURE §1 — "le rythme réel extrait du planning scolaire est la seule source de vérité du matching") est en danger. Le risque #4 de VISION §5 (fiabilité perçue) s'est matérialisé bien au-delà du seuil acceptable.
+
+**Décisions actées** :
+
+1. **Le composant RhythmFileUpload reste en place sans modification** — la chaîne UX est techniquement bouclée, c'est uniquement le parser sous-jacent qui pose problème.
+2. **3 leviers possibles** documentés dans DETTE #37 : (1) tester un autre LLM vision via providers/, (2) pipeline hybride extraction structurée + LLM pour mapping métier, (3) pivoter vers saisie manuelle assistée avec IA en pré-remplissage optionnel. **Reco actée** : combiner Levier 2 + Levier 3 sur le moyen terme.
+3. **Une session dédiée à l'arbitrage stratégique du parser** est nécessaire avant toute autre avancée sur le chantier rhythm_calendar. Question préalable à se poser : "Si le parser ne peut être fiable qu'à 70-80%, suis-je prêt à pivoter vers une saisie manuelle assistée comme étape principale ?" Cette question touche au positionnement même de Sterny et à son argument de vente.
+
+**3 dettes loguées en clôture** : DETTE #37 (parser non fiable — critique stratégique), DETTE #38 (info périmée signature RhythmCalendar dans ETAT-COURANT), DETTE #39 (UI RhythmFileUpload à reprendre lors du redesign Bloc B avec DETTE #36).
+
+**Modifs non-commitées volontairement conservées locales** (inchangé depuis sessions précédentes) :
+- `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` — bypass DEV trackés dans DETTE-TECHNIQUE
+- `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` — audit Zone 1 Catégorie A en attente de relecture
+
+**Plan de la prochaine session — session dédiée arbitrage parser** :
+
+1. Ouverture d'une nouvelle conversation Claude.ai avec les 5 docs chargés.
+2. Cadrage produit en amont (avant code) : décision stratégique sur saisie manuelle assistée vs parser fiabilisé. Réflexion sur le positionnement Sterny si le parser n'est pas l'argument de vente principal.
+3. Selon la décision : soit benchmark des 3 leviers sur les 2 plannings (Martin + Mathis), soit cadrage de l'UI saisie manuelle, soit les deux en parallèle.
+4. Pas de code dans la première session — uniquement du cadrage et de la décision.
+
+**Commits de la session du 26 avril (tous poussés sur `origin/main`)** :
+
+- `7b33fa8` feat(rhythm): add RhythmFileUpload component + dev preview
+- `6240162` fix(rhythm): add group selector to file upload preview
+
+(+ ce 3e commit qui clôt la session sur la mise à jour des 3 docs de référence.)
 
 ---
 
