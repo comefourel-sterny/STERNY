@@ -1,0 +1,53 @@
+.rfup-group-selector-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #E8622A;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 12px;
+}
+
+.rfup-group-selector-hint {
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 0 0 12px;
+}
+
+.rfup-group-selector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.rfup-group-tab {
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E8EAF0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rfup-group-tab:hover {
+  border-color: #E8622A;
+  color: #E8622A;
+}
+
+.rfup-group-tab:focus-visible {
+  outline: none;
+  border-color: #E8622A;
+  box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.18);
+}
+
+.rfup-group-tab-active,
+.rfup-group-tab-active:hover {
+  background: #E8622A;
+  color: #FFFFFF;
+  border-color: #E8622A;
+  font-weight: 600;
+}

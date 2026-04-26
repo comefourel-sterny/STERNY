@@ -3,6 +3,7 @@ import RhythmFileUpload from '../components/rhythm/RhythmFileUpload';
 import RhythmCalendar from '../components/rhythm/RhythmCalendar';
 import { supabaseClient } from '../config/supabase';
 import '../pages/dashboard/DashboardProprietairePage.css';
+import './RhythmFileUploadPreview.css';
 
 const SUBSECTION_TITLE_STYLE = {
   fontSize: 13,
@@ -43,6 +44,7 @@ export default function RhythmFileUploadPreview() {
   const [logs, setLogs] = useState([]);
   const [rhythmImportId, setRhythmImportId] = useState(null);
   const [parsedGroups, setParsedGroups] = useState(null);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [fetchLoading, setFetchLoading] = useState(false);
   const isMountedRef = useRef(true);
@@ -71,6 +73,7 @@ export default function RhythmFileUploadPreview() {
   function handleResetImport() {
     setRhythmImportId(null);
     setParsedGroups(null);
+    setSelectedGroupId(null);
     setFetchError(null);
     appendLog('reset', 'preview state cleared');
   }
@@ -78,6 +81,7 @@ export default function RhythmFileUploadPreview() {
   useEffect(() => {
     if (!rhythmImportId) {
       setParsedGroups(null);
+      setSelectedGroupId(null);
       setFetchError(null);
       return;
     }
@@ -97,8 +101,15 @@ export default function RhythmFileUploadPreview() {
       if (error) {
         setFetchError(error.message || 'Erreur fetch parsed_groups');
         setParsedGroups(null);
+        setSelectedGroupId(null);
       } else {
-        setParsedGroups(data?.parsed_groups ?? null);
+        const fetched = data?.parsed_groups ?? null;
+        setParsedGroups(fetched);
+        const firstId =
+          fetched && Array.isArray(fetched.groups) && fetched.groups.length > 0
+            ? fetched.groups[0].group_id
+            : null;
+        setSelectedGroupId(firstId);
       }
       setFetchLoading(false);
     })();
@@ -108,11 +119,12 @@ export default function RhythmFileUploadPreview() {
     };
   }, [rhythmImportId]);
 
-  const firstGroup =
-    parsedGroups && Array.isArray(parsedGroups.groups) && parsedGroups.groups.length > 0
-      ? parsedGroups.groups[0]
-      : null;
+  const groups =
+    parsedGroups && Array.isArray(parsedGroups.groups) ? parsedGroups.groups : [];
+  const selectedGroup =
+    groups.find((g) => g.group_id === selectedGroupId) || groups[0] || null;
   const documentMeta = parsedGroups?.document_meta || null;
+  const showGroupSelector = groups.length > 1;
 
   return (
     <div className="dashboard-proprio-container">
@@ -203,21 +215,50 @@ export default function RhythmFileUploadPreview() {
             </div>
           )}
 
-          {!fetchLoading && !fetchError && parsedGroups && !firstGroup && (
+          {!fetchLoading && !fetchError && parsedGroups && !selectedGroup && (
             <div style={LOG_EMPTY_STYLE}>
               Aucun groupe dans <code>parsed_groups</code>.
             </div>
           )}
 
-          {!fetchLoading && !fetchError && firstGroup && (
+          {!fetchLoading && !fetchError && selectedGroup && (
             <div className="dp-card">
               <h3 className="dp-card-title">
                 <span aria-hidden="true">🎯</span>
                 PLANNING DÉTECTÉ
               </h3>
+
+              {showGroupSelector ? (
+                <>
+                  <div className="rfup-group-selector-label">Choisis ton groupe</div>
+                  <div className="rfup-group-selector-tabs" role="tablist">
+                    {groups.map((g) => {
+                      const isActive = g.group_id === selectedGroup.group_id;
+                      return (
+                        <button
+                          key={g.group_id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isActive}
+                          className={
+                            'rfup-group-tab' +
+                            (isActive ? ' rfup-group-tab-active' : '')
+                          }
+                          onClick={() => setSelectedGroupId(g.group_id)}
+                        >
+                          {g.group_label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="rfup-group-selector-hint">Planning unique</div>
+              )}
+
               <RhythmCalendar
-                weeks={firstGroup.weeks}
-                groupLabel={firstGroup.group_label}
+                weeks={selectedGroup.weeks}
+                groupLabel={selectedGroup.group_label}
                 documentMeta={documentMeta}
               />
             </div>
