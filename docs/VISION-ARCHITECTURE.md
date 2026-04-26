@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 26 avril 2026 — risque #4 de la section 5 (fiabilité perçue du parser) matérialisé en exploitation test sur 2 plannings réels. Mise à jour du paragraphe pour refléter l'observation et reconnaître la limite structurelle du parsing par vision LLM.
+**Dernière mise à jour** : 27 avril 2026 — ajout d'une 4e mitigation au risque #4 de la section 5 : principe UX de promesse non trahie (expectation violation + bait-and-switch involontaire), apprentissage acté en session de cadrage parser.
 
 ---
 
@@ -192,6 +192,7 @@ Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Cla
 - L'étape de **validation visuelle** (section 4) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
 - Le **fallback de saisie manuelle** (section 5 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
 - Le calendrier visuel doit être suffisamment clair pour qu'une erreur soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
+- **Principe UX à respecter sur tout chemin parser** : ne jamais promettre une fluidité (« uploade ton planning, tout est automatique en 30 secondes ») qui peut être démentie par l'échec du parser et la bascule vers une étape plus laborieuse. Cet effet (*expectation violation* + *loss aversion*, parfois nommé *bait-and-switch involontaire*) est particulièrement nuisible sur la cible jeune alternant, où l'attention est courte et l'exigence de fluidité immédiate. Conséquence concrète pour les choix produit : une UX honnête en amont (« on construit ton rythme en 3 minutes ») est préférable à une UX fluide en façade qui se trahit en cours de route. L'IA peut être proposée en accélérateur conditionnel uniquement pour les formats où la fiabilité a été démontrée objectivement par benchmark — jamais comme promesse universelle. Apprentissage acté lors de la session de cadrage du 27 avril 2026.
 
 **Décision stratégique à prendre dans une session dédiée** : pivoter le produit vers une saisie manuelle assistée comme étape principale (Levier 3 documenté dans DETTE-TECHNIQUE #37) ou investir dans un pipeline hybride extraction structurée + LLM pour mapping métier (Levier 2). Le statu quo (parsing par vision LLM pure) n'est pas tenable en production.
 

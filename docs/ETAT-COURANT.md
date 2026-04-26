@@ -2,7 +2,46 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 26 avril 2026 — Session Bloc B Étape 2 close fonctionnellement (RhythmFileUpload + sélecteur de groupe dans la preview). Découverte majeure : parser rhythm_calendar non fiable sur les 2 formats testés (50%+ d'erreur sur Martin et Mathis). Limite structurelle du parsing par vision LLM. Décision stratégique à prendre dans une session dédiée (loguée DETTE #37).
+**Dernière mise à jour** : 27 avril 2026 — Session de cadrage parser tenue. Levier 1 éliminé empiriquement (GPT-4o 5/10, Gemini 4/10). Aucune décision tranchée sur Leviers 2/3 : nécessité d'une session de recherche profonde en amont. 2 intuitions architecturales notées pour exploration. Élargissement de la base de fixtures de 2 à 5 plannings prévu avant la recherche.
+
+---
+
+## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
+
+**Contexte** : ouverture d'une nouvelle conversation Claude.ai avec les 5 docs de référence chargés. Objectif initial : trancher entre Leviers 1, 2, 3 documentés DETTE #37 et établir un plan d'implémentation pour le levier choisi.
+
+**Tests effectués pendant la session** :
+
+- **Vérification du caractère vectoriel du PDF Mathis** : texte sélectionnable dans Aperçu. Faisabilité technique d'extraction programmatique du texte confirmée. Faisabilité d'extraction des couleurs de fond cellule par cellule **non encore démontrée** — le caractère vectoriel du texte ne garantit pas que les fonds soient eux-mêmes vectoriels et lisibles. Reste un pari technique à confirmer par spike.
+- **Test à la main de GPT-4o et Gemini sur Planning_Martin.JPG** (10 premières semaines de FA CG2P, G1, vérité terrain établie : school, school, company, school, company, school, company, school, school, school). Résultats : **GPT-4o 5/10 corrects (50%)**, **Gemini 4/10 corrects (40%)**. Au même niveau que le parser Claude vision actuel. **Levier 1 éliminé empiriquement** : tous les LLM vision actuels échouent au même niveau, la limite est structurelle (modalité vision sur classification couleur à grande échelle) et non spécifique à un provider.
+
+**Ce qui n'a pas été tranché — et pourquoi** :
+
+Aucun levier privilégié à l'issue de la session. La conversation a fait émerger qu'agir précipitamment sur un sujet qui touche au principe fondateur de Sterny (VISION §1) serait une erreur. Le parser n'est pas un détail d'implémentation, c'est l'argument de vente principal de la plateforme. Toute décision d'architecture doit reposer sur une **recherche technique approfondie** explorant l'ensemble des techniques disponibles, pas seulement les 3 options documentées DETTE #37 sur la base d'une seule conversation.
+
+**Idées d'architecture émergées à explorer en session de recherche** :
+
+- **Pipeline multi-signaux (architecture d'ensemble)** : aucune méthode prise seule n'étant fiable à 100% sur la classification couleur de cellule, combiner plusieurs signaux indépendants (couleur de fond, texte intra-cellule, position dans la grille, légende, métadonnées PDF, contraste avec voisines, patterns de répétition, cohérence en-têtes) pour atteindre une fiabilité >99% par convergence des méthodes. Lorsque plusieurs méthodes convergent : forte confiance. Lorsqu'elles divergent : remontée ciblée à l'utilisateur sur cette cellule précise. Architecture **honnête sur l'incertitude**, ce qui est rare et précieux.
+- **Squelette de calendrier pré-généré + remplissage progressif annoté (structure de données centrale)** : pré-générer le squelette du calendrier dès qu'on connaît dates de début et fin de l'année scolaire (ex : 53 lundis du 2026-08-31 au 2027-08-30, toutes cellules à `status: null`). Chaque méthode d'extraction du pipeline multi-signaux dépose dans ce squelette ce qu'elle sait, avec une annotation de confiance par cellule. À la fin, certaines cellules sont **certaines** (plusieurs méthodes d'accord), d'autres **probables** (1-2 méthodes d'accord), d'autres **inconnues** (aucune méthode n'a su). Seules les cellules incertaines ou inconnues remontent à l'utilisateur pour validation ciblée — pas le calendrier entier. Pattern technique connu sous le nom **accumulateur** ou **structure de remplissage progressif**. Posée par Côme en session, intuition d'archi forte à creuser.
+- **Principe UX de promesse non trahie** : voir VISION §5 risque 4, 4e mitigation ajoutée le 27 avril. À garder présent à l'esprit dans toute décision sur l'UI parser.
+
+**Plan de la session de recherche profonde** :
+
+1. **Axe 1 — État de l'art académique et open source.** Cartographie des techniques existantes pour : extraction de tableaux structurés (PDF vectoriel et raster), classification de couleur de fond de cellule, OCR couplé à analyse de mise en page, reconnaissance de structure de calendrier. Acteurs marché à creuser : Adobe Extract, Microsoft Azure Document Intelligence, Google Document AI, AWS Textract. Open source à explorer : pdfplumber, camelot, tabula-py, PaddleOCR, LayoutLMv3, DETR. Lectures académiques 2022-2025 sur "table structure recognition", "color classification document", "calendar parsing from images".
+2. **Axe 2 — Inventaire exhaustif des signaux disponibles** dans les 5 fixtures (Martin, Mathis + 3 nouveaux plannings d'amis alternant à collecter). Pour chaque signal : présence, fiabilité d'extraction, indépendance vis-à-vis des autres signaux.
+3. **Axe 3 — Identification des techniques candidates par signal**, leur maturité, leur faisabilité en stack JS/TS Deno (rappel : pas de Python, contrainte assumée), leur coût de calcul. Sortie : tableau "signal × technique × maturité × complexité × coût".
+4. **Axe 4 — Esquisse de 2-3 architectures multi-signaux candidates** intégrant les 2 intuitions ci-dessus (pipeline multi-signaux + squelette accumulateur), avec logique de combinaison des signaux, protocole de gestion des désaccords, taux de fiabilité espéré.
+5. **À ce stade seulement**, comparaison rationnelle à la saisie manuelle assistée et arbitrage final.
+
+Cette session est probablement étalée sur 2-3 sessions Claude.ai consécutives (recherche, lecture de papiers, tests de libs sur fixtures), pas une session unique de 2h.
+
+**Prérequis avant la session de recherche — élargissement des fixtures** :
+
+- Aujourd'hui : 2 plannings testés (Planning_Martin.JPG IUT Saint-Malo BUT 3 GEA, Planning_Mathis.pdf Hyperplanning R_CA_A3).
+- Avant recherche : **collecter 3 plannings supplémentaires d'amis alternant** déjà identifiés (proposition Côme en session). Élargir la base de fixtures de 2 à 5 augmente significativement la robustesse du benchmark et permet de détecter les biais qui ne se voient que sur la diversité (formats, écoles, couleurs, structures).
+- Pour chaque planning collecté : noter en commentaire l'école d'origine, le type de format (PDF vectoriel, PDF raster, image JPG/PNG, autre), le nombre de groupes, la nature de la légende.
+
+**Aucun commit de code dans cette session** (cadrage pur).
 
 ---
 
