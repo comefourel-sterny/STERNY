@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 27 avril 2026 (révision) — base de fixtures rectifiée à 3 plannings (Martin, Mathis, +1 nouveau collecté), pas 5 comme initialement prévu : les screenshots collectés par Côme sont illisibles donc écartés. Question produit ouverte ajoutée pour la session de recherche : quels formats accepter sur l'onboarding.
+**Dernière mise à jour** : 28 avril 2026 — recherche profonde Axe 1 démarrée, Familles 1 et 2 cartographiées et committées (`f1de8fe` squelette, `21bc308` Famille 1, `7af2979` Famille 2).
 
 ---
 
@@ -52,6 +52,27 @@ Lien direct avec le sourcing de fixtures : si l'on conseille aux utilisateurs de
 Pas de décision aujourd'hui — la question est notée pour traitement par la session de recherche, qui aura les éléments techniques pour l'éclairer.
 
 **Aucun commit de code dans cette session** (cadrage pur).
+
+---
+
+## 0. Session du 28 avril — Recherche profonde Axe 1, Familles 1 et 2
+
+**Contexte** : ouverture session Claude.ai avec les 5 docs de référence + suite directe du cadrage du 27 avril sur la DETTE #37 parser. Objectif : démarrer la recherche profonde Axe 1 (état de l'art académique et open source) avec méthodologie commit par famille validée.
+
+**Méthodologie actée** : pour chaque famille technique, shortlist des candidates en 5-10 lignes → validation Côme → recherche détaillée des techniques retenues → commit d'ajout au doc (`docs(recherche): add family X to PARSER-AXE-1`). Doc vivant à `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md`.
+
+**Livrables Git** :
+- `f1de8fe` : squelette du doc + sous-dossier `docs/recherche/` créés en début de session.
+- `21bc308` : Famille 1 cartographiée (extraction structurée PDF vectoriel) — 4 techniques + repoussoirs + transversal cloud. Candidate principale identifiée : pdf.js via `getOperatorList()` avec build `pdfjs-serverless` pour Edge Function. Spike technique recommandé sur Mathis et Matthieu avant toute décision d'architecture.
+- `7af2979` : Famille 2 cartographiée (classification visuelle couleur de fond de cellule) — 6 techniques + verdict cloud approfondi. Candidate principale identifiée : `magick-wasm` (officiellement supporté par Supabase pour Edge Functions). Algo manuel ImageData identifié comme alternative légère pour premier spike. Vérification approfondie des 4 acteurs cloud : Google DocAI et AWS Textract pas de couleur de fond confirmé, **Azure DI expose `backgroundColor` via add-on STYLE_FONT** (utile pour Mathis/Matthieu mais pas Martin), Adobe Extract probable mais ambigu (à valider en spike).
+
+**Apprentissage méthodologique acté** : sur la Famille 2, la première version du livrable contenait 6 zones d'incertitude explicites dont 4 hypothèses non vérifiées. Côme a redirigé vers une vérification approfondie avant commit, ce qui a révélé 2 erreurs factuelles (Azure et Adobe disqualifiés à tort). **Règle pour la suite des sessions de recherche : aucune hypothèse non vérifiée ne doit être livrée comme conclusion provisoire — soit on vérifie, soit on dit explicitement "non vérifié, ne pas en tirer de conclusion".**
+
+**Reste à faire dans l'Axe 1** : Famille 3 (OCR couplé analyse mise en page — texte intra-cellule pour les fixtures raster, en cours dans une session Claude.ai dédiée), Famille 4 (ML appliqué aux documents type LayoutLMv3, Donut), Famille 5 (acteurs marché cloud transversal — partiellement déjà couvert via Famille 2, à compléter sur Adobe Extract en spike). Probablement 1-2 sessions Claude.ai consécutives.
+
+**Synchronisation project knowledge Claude.ai** : à effectuer après ce commit. Le project knowledge n'est pas synchronisé automatiquement avec le repo Git — il faut uploader manuellement les fichiers mis à jour via l'interface claude.ai. Fichiers à actualiser ou ajouter pour la suite : (1) `ETAT-COURANT.md` mis à jour par ce commit, (2) `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md` à ajouter (n'a jamais été uploadé dans le project knowledge).
+
+**Aucun commit de code dans cette session** (pure recherche, doc uniquement). Modifs working tree historiques toujours préservées : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
 ---
 
