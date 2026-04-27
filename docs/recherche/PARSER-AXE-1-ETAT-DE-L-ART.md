@@ -11,7 +11,7 @@ Document de recherche vivant. Construit séance par séance dans le cadre du pla
 
 **Méthodologie par famille** : shortlist des techniques candidates en 5-10 lignes → validation par Côme → recherche détaillée des techniques retenues → commit d'ajout de la famille au doc (`docs(recherche): add family X to PARSER-AXE-1`).
 
-**Dernière mise à jour** : 29 avril 2026 — ajout de la Famille 4 (ML appliqué aux documents). Reco principale : spike Florence-2 zero-shot et Surya/Marker via API hostée. Tous les modèles à fine-tuning requis disqualifiés en première intention.
+**Dernière mise à jour** : 30 avril 2026 — ajout de la Famille 5 (acteurs marché cloud, synthèse transversale). Axe 1 complet. Découverte F5 : Google DocAI OCR Processor + `compute_style_info` expose `backgroundColor` au niveau token, candidate non testée à intégrer au spike F2 cloud déjà prévu (parallèle direct d'Azure DI STYLE_FONT, ~2× moins cher). Périmètre des spikes cloud Sterny fermé.
 
 ---
 
@@ -21,7 +21,7 @@ Document de recherche vivant. Construit séance par séance dans le cadre du pla
 2. **Famille 2 — Classification visuelle de couleur de fond de cellule** *(commitée)*. Couvre Martin (JPG, image raster, 4 groupes, légende couleur seule) et le cas de fallback où les fonds de cellules de Matthieu ne seraient pas extractibles programmatiquement malgré le caractère vectoriel du texte.
 3. **Famille 3 — OCR couplé à analyse de mise en page** *(commitée)*. Couvre principalement les images raster (Martin) où le texte doit être relu, et tout cas où l'extraction PDF directe ne donne pas le texte intra-cellule. Sert aussi de signal redondant pour Mathis et Matthieu si on rastérise.
 4. **Famille 4 — ML appliqué aux documents** *(commitée)*. Couvre l'évaluation de modèles ML pré-entraînés ou fine-tunables (LayoutLMv3, Donut, Pix2Struct, Florence-2, Surya/Marker) en tant que compléments potentiels à F1/F2/F3, ainsi qu'un rappel sur TATR sous l'angle composant pipeline.
-5. **Acteurs marché cloud, en transversal** *(à venir)*. Adobe Extract, Microsoft Azure Document Intelligence, Google Document AI, AWS Textract — examinés famille par famille pour voir comment chaque acteur traite chaque problème, et notamment s'ils restituent ou non la couleur de fond.
+5. **Famille 5 — Acteurs marché cloud, synthèse transversale** *(commitée)*. Synthèse cross-familles des 4 acteurs cloud Document AI majeurs (Google DocAI, Azure DI, AWS Textract, Adobe Extract) + rappel Google Vision OCR. Consolide ce qui a été dit en F2 T5 et F3 T4, ferme les zones grises (Azure Read seul, AWS DetectDocumentText, distinction des 3 processeurs Google DocAI, ambiguïté Adobe couleur de fond), produit le tableau comparatif final.
 
 ---
 
@@ -575,9 +575,189 @@ Pour la majorité des candidats F4, le chemin le plus court côté implémentati
 
 ---
 
-## Acteurs marché cloud — synthèse transversale
+## Famille 5 — Acteurs marché cloud, synthèse transversale
 
-*(À venir, alimentée famille par famille.)*
+**Périmètre** : synthèse cross-familles des 4 acteurs cloud Document AI majeurs (Google DocAI, Microsoft Azure DI, AWS Textract, Adobe Extract) + rappel court de Google Vision OCR couvert en F3 T1. Une partie du périmètre a été couverte transversalement en F2 T5 (capacité couleur de fond) et F3 T4 (capacité OCR brut). F5 consolide sans réinventer, ferme les zones grises restantes et produit le tableau comparatif final lisible.
+
+**Question critique commune** : pour chaque acteur, **quelles capacités sont confirmées par doc officielle**, lesquelles sont annoncées-non-vérifiées, et lesquelles sont absentes — sur les 4 axes pertinents pour Sterny : (1) extraction de structure tabulaire, (2) classification de couleur de fond de cellule, (3) qualité OCR français, (4) pricing à la page 2026.
+
+**Posture méthodologique** : règle apprentissage F2 28 avril appliquée renforcée. Toute capacité annoncée doit être confirmée par doc officielle ou marquée ⚠️ explicitement. Pricing en USD/1000 pages avec date de la page consultée. EUR/FR pricing si dispo, sinon mention "tarification US, FR à confirmer".
+
+> **Note importante — zone grise F2 comblée par F5.** F2 T5 (28 avril) avait correctement vérifié l'absence de backgroundColor sur Google DocAI **Layout Parser** et conclu à la disqualification de Google DocAI sur le critère couleur de fond. Cette conclusion reste vraie pour Layout Parser. Mais Google DocAI **OCR Processor** (Enterprise Document OCR) avec premium feature `compute_style_info` expose `backgroundColor` au niveau token, exactement comme Azure DI STYLE_FONT, à un coût ~2× moins cher. Découverte F5 (cf. sous-section Google DocAI OCR Processor ci-dessous) : DocAI OCR + `compute_style_info` est une candidate non testée à intégrer au spike F2 cloud déjà prévu pour Mathis et Matthieu, en parallèle d'Azure DI Layout + STYLE_FONT.
+
+### Google Document AI — 3 processeurs distincts
+
+Google DocAI propose **3 processeurs généralistes** distincts pour les besoins texte/structure (catégorie GENERAL au sens API `fetchProcessorTypes`) — auxquels s'ajoutent les processeurs spécialisés métier (Invoice, Bank Statement, etc.) hors scope Sterny. F2 T5 avait testé Layout Parser uniquement et conclu "pas de couleur de fond". F5 distingue proprement les 3 et complète les zones grises côté OCR Processor et Form Parser.
+
+#### Google DocAI — OCR Processor (Enterprise Document OCR)
+
+**Référence** : `OCR_PROCESSOR`, doc `cloud.google.com/document-ai/docs/enterprise-document-ocr` (last updated 2026-04-24 UTC), GA en EU + US.
+
+- **Sortie** : hiérarchie page → block → paragraph → line → token avec bounding boxes, langues détectées par page, confidence par token. Équivalent fonctionnel direct de Google Vision OCR `DOCUMENT_TEXT_DETECTION` (F3 T1) en termes de structure de réponse, à un niveau de granularité comparable.
+- **Add-ons activables via `OcrConfig`** : `enable_native_pdf_parsing` (texte embarqué de PDFs digitaux), `enable_image_quality_scores` (8 dimensions de qualité dont blurriness, glare, small fonts), `enable_symbol` (granularité symbol = lettre).
+- **Premium features (facturées en sus)** : `compute_style_info` (font/style detection), `enable_math_ocr` (formules LaTeX), `enable_selection_mark_detection` (cases à cocher). Math OCR et selection_mark sont **mutuellement exclusifs**.
+- **Couleur de fond exposée ?** **OUI, confirmé par doc officielle**, via `compute_style_info: true` qui ajoute `Document.pages[].tokens[].styleInfo` avec attributs `fontSize`, `pixelFontSize`, `fontType`, `bold`, `fontWeight`, `textColor` (RGB normalisé 0-1), `backgroundColor` (RGB normalisé 0-1). Exemple JSON officiel :
+
+```json
+  "tokens": [{
+    "styleInfo": {
+      "fontType": "SANS_SERIF",
+      "textColor": { "red": 0.169, "green": 0.169, "blue": 0.169 },
+      "backgroundColor": { "red": 0.980, "green": 0.988, "blue": 0.992 }
+    }
+  }]
+```
+- **Nuance importante (parallèle direct avec Azure DI STYLE_FONT)** : c'est la couleur de fond du **bounding box du token** (mot), pas de la cellule entière. Conséquences pour Sterny :
+  - **Mathis (Hyperplanning, légende textuelle "Formation au centre" / "En Entreprise")** : potentiellement utilisable, le bounding box du token hérite de la couleur de fond cellule
+  - **Matthieu (calendrier civil avec mots intra-cellule "Examens", "Révisions", "Soutenance")** : potentiellement utilisable, idem
+  - **Martin (cellules colorées sans texte)** : aucun token détecté → aucun `styleInfo` retourné → pas de signal couleur. Hors scope.
+- **Couverture FR** : ⚠️ Liste exhaustive des langues OCR Processor non vérifiée cette session sur la doc officielle. Le marketing comparatif Azure cite "Azure 300+ langues vs Textract 6 langues", DocAI n'apparaît pas dans cette comparaison faute de chiffre officiel public. À mesurer en spike sur les fixtures FR.
+- **Pricing** (page consultée 27 avril 2026, source `cloud.google.com/document-ai/pricing`) :
+  - Base Enterprise Document OCR : **$1.50 / 1000 pages** (premiers 5M pages/mois), $0.60 / 1000 pages au-delà
+  - OCR add-ons (premium features dont `compute_style_info`) : **+$6.00 / 1000 pages**
+  - Total avec `compute_style_info` activé : **$7.50 / 1000 pages**
+  - Tarification US-East affichée. EU disponible, prix EUR non vérifié explicitement cette session. Tarification US, FR à confirmer.
+- **Verdict Sterny** : **candidat sérieux à tester en spike** sur Mathis et Matthieu, en parallèle d'Azure DI Layout + STYLE_FONT (F2 T5). Apport double : (a) couleur de fond au niveau token (utile pour les fixtures avec texte intra-cellule), (b) OCR FR comme alternative ou redondance vs Vision OCR. Coût ~2× moins cher qu'Azure DI Layout+STYLE_FONT pour la même capacité backgroundColor (Azure = $16/1000, DocAI = $7.50/1000). Pas pertinent sur Martin (pas de tokens dans les cellules colorées). Le spike Famille 2 cloud déjà prévu doit inclure DocAI OCR + compute_style_info à côté d'Azure DI.
+
+#### Google DocAI — Form Parser
+
+**Référence** : `FORM_PARSER_PROCESSOR`, doc `cloud.google.com/document-ai/docs/form-parser` (last updated 2026-04-24 UTC), GA en EU + US, **8 régions** au total selon doc.
+
+- **Sortie** : key-value pairs (KVP), tables, checkboxes (selection marks), generic entities, plus la sortie OCR équivalente Document OCR.
+- **Form Parser 2.0 (version courante)** : supporte **200+ langues** (confirmé doc), tables simples extraites avec contenu de cellules + headers de lignes/colonnes, mais **pas de cellules avec span multi-lignes/colonnes** (limite documentée).
+- **Couleur de fond exposée ?** ⚠️ **Non documenté clairement** sur la page Form Parser elle-même. Le proto `Document.pages[].tables.bodyRows[].cells[]` n'a pas d'attribut couleur natif. **Form Parser ne supporte pas le premium feature `compute_style_info`** d'après la doc des add-ons (cette feature est listée comme spécifique à Enterprise Document OCR, cf. note `[2]` page pricing : *"Only available for Enterprise Document OCR processor (v2)"*). Donc pas de chemin vers backgroundColor via Form Parser.
+- **Couverture FR** : oui via support 200+ langues (Form Parser 2.0).
+- **Pricing** (page consultée 27 avril 2026) :
+  - **$30 / 1000 pages** (premiers 1M pages/mois), $20 / 1000 pages au-delà
+  - 20× plus cher que Enterprise OCR pur, sans accès au backgroundColor.
+- **Verdict Sterny** : **disqualifié** — pas de couleur de fond, et structure tabulaire pour notre cas (calendrier d'alternance) ne demande pas la richesse d'extraction KVP/checkbox du Form Parser. Coût injustifié vs Enterprise OCR.
+
+#### Google DocAI — Layout Parser
+
+**Référence** : `LAYOUT_PARSER_PROCESSOR`, doc `cloud.google.com/document-ai/docs/layout-parse-chunk` (last updated 2026-04-24 UTC), implémentation Gemini layout parser depuis fin 2025.
+
+- **Cible métier** : préparation de documents pour pipelines RAG / Search. Génère un `DocumentLayout` proto structuré en arbre + chunks pré-découpés. Cible nominale = documents financiers / 10-K / rapports business.
+- **Sortie** : blocs `text`/`table`/`list` avec annotations descriptives. En mode preview, annote tables et figures comme blocs de texte descriptifs (verbalize). Chunking automatique pour ingestion BigQuery / vector DB.
+- **Couleur de fond exposée ?** **Non**, confirmé F2 T5 (avril 2026) : aucun attribut couleur dans le proto `DocumentLayout`, le `text style` peut contenir la couleur du texte mais pas du fond. Vérification F2 toujours valide en avril 2026, doc officielle inchangée sur ce point.
+- **Couverture FR** : ⚠️ Non documenté précisément. La cible RAG suggère une couverture multilingue large mais aucun chiffre officiel.
+- **Pricing** (page consultée 27 avril 2026) :
+  - **$10 / 1000 pages** (chunking initial inclus), tarif flat sans tier de volume.
+  - Re-chunking de documents déjà parsés : $0.02 / 1000 pages.
+- **Verdict Sterny** : **disqualifié** — cible métier (RAG / Search) ne correspond pas au besoin Sterny (extraction structurée d'un calendrier visuel). Pas de backgroundColor. Le chunking automatique est inutile sur un calendrier. F2 T5 reste valide.
+
+#### Régions Google DocAI
+
+EU disponible (`eu` location ID) pour OCR Processor, Form Parser et Layout Parser confirmé doc `processors-list`. Hosting des données dans la région choisie. Pas de **France-specific region** pour DocAI, mais EU multi-region (Belgique / Pays-Bas) couvre les besoins RGPD pour Sterny.
+
+### Microsoft Azure Document Intelligence — Read seul + Layout (rappel) + Custom Neural
+
+**Référence** : `learn.microsoft.com/azure/ai-services/document-intelligence`, API version `2024-11-30` GA (v4.0), pages consultées 27 avril 2026 (last updated 2026-02-10 UTC pour add-on capabilities et model overview).
+
+Azure DI propose plusieurs modèles distincts (`prebuilt-read`, `prebuilt-layout`, `prebuilt-document`, prebuilts métier, custom). F2 T5 a couvert `prebuilt-layout` + add-on `STYLE_FONT` (confirmé : `backgroundColor` au format `#rrggbb` au niveau spans dans le tableau `styles`). F5 ferme deux zones grises : **Read seul** côté OCR pur, et **Custom Neural** pour traçabilité.
+
+#### Azure DI — Read API (prebuilt-read)
+
+- **Sortie** : `pages` → `lines` → `words` avec `polygon` (bounding box) + `confidence` + `content`. Plus `styles[]` array contenant `isHandwritten` + confidence par span. Si add-on `styleFont` activé : extension du tableau `styles[]` avec `similarFontFamily`, `fontStyle`, `fontWeight`, `color`, `backgroundColor`. ⚠️ La doc Azure montre l'add-on `styleFont` activé sur exemples avec `prebuilt-layout`, **non vérifié explicitement sur `prebuilt-read` seul cette session** — la table model-overview indique que styleFont est dispo "for all models except business card model" mais sans démonstration sur Read pur. À confirmer en spike.
+- **Couverture FR** : oui, **300+ langues** OCR pour texte imprimé (chiffre cité par doc comparative Microsoft, `learn.microsoft.com/azure/ai-services/document-intelligence/language-support`).
+- **Pricing** (page consultée 27 avril 2026, source `azure.microsoft.com/en-us/pricing/details/document-intelligence/`) :
+  - Read (OCR) : **$1.50 / 1000 pages** (premiers 1M pages/mois), $0.60 / 1000 pages au-delà
+  - Layout / Prebuilt models : **$10 / 1000 pages**
+  - Add-on Font/Style/HighRes/Formula : **+$6 / 1000 pages** (premium feature, facturé en sus)
+  - Custom Neural inférence : $50 / 1000 pages
+  - Combinaison F2 cible (Layout + STYLE_FONT) : **$16 / 1000 pages**
+  - Régions : 60+ régions Azure dont **France Central** dispo (data residency FR possible). Tarification US affichée, FR à confirmer.
+- **Verdict Sterny — Read seul** : doublon fonctionnel propre vs Vision OCR (F3 T1) côté OCR pur. Pas d'avantage net hors capacité multi-langues plus large (non-prioritaire pour Sterny qui ne fait que FR). À garder comme **option B documentée** mais pas à intégrer en première intention.
+- **Verdict Sterny — Layout + STYLE_FONT** : déjà acté en F2 T5 comme candidate sérieuse à tester en spike pour Mathis et Matthieu. Inchangé en F5. Coût $16/1000 vs Google DocAI OCR + compute_style_info à $7.50/1000 pour la même capacité backgroundColor au niveau token — **DocAI OCR est ~2× moins cher**.
+
+#### Azure DI — Custom Neural (traçabilité)
+
+- **Principe** : fine-tuning sur dataset client annoté pour extraire des champs custom. Training : 10 heures gratuites puis $3/heure. Inférence : $50 / 1000 pages.
+- **Verdict Sterny** : **non actionable aujourd'hui** — Sterny n'a pas de dataset annoté de plannings d'alternance (situation analogue aux modèles ML fine-tunés disqualifiés en F4). Documenté pour traçabilité de l'état de l'art uniquement, à rouvrir si Sterny atteint un palier de plusieurs centaines de plannings annotés.
+
+### AWS Textract — DetectDocumentText vs AnalyzeDocument
+
+**Référence** : `aws.amazon.com/textract/pricing/` et `aws.amazon.com/textract/faqs/`, pages consultées 27 avril 2026.
+
+Textract propose plusieurs APIs distinctes selon le besoin. F2 T5 avait conclu "pas de couleur de fond exposée, disqualifié sur ce critère". F5 confirme et complète sur le pricing fin par API et la couverture FR.
+
+- **DetectDocumentText (OCR pur)** : Block objects `PAGE` → `LINE` → `WORD` avec `Geometry` (bounding box), `Confidence`, `Text`. Hiérarchie comparable à Vision OCR `fullTextAnnotation`. Pricing : **$1.50 / 1000 pages** (premiers 1M), $0.60 / 1000 au-delà.
+- **AnalyzeDocument** : 4 features activables (`TABLES`, `FORMS`, `QUERIES`, `SIGNATURES`, `LAYOUT`), avec OCR inclus dans tous les cas. Pricing par feature, additif :
+  - Tables seul : **$15 / 1000 pages**
+  - Forms seul : **$50 / 1000 pages**
+  - Forms + Tables : **$65 / 1000 pages**
+  - Queries (15-30 questions/page) : **$15 / 1000 pages** (basique) ou **$25 / 1000 pages** (Custom Queries fine-tunables)
+  - Layout : free **uniquement** quand utilisé avec Tables (selon doc pricing — confirmé)
+- **Couleur de fond exposée ?** **Non**, confirmé F2 T5 et reconfirmé doc Block objects 2026. Aucun attribut couleur dans `PAGE` / `LINE` / `WORD` / `TABLE` / `CELL` / `MERGED_CELL` / `SELECTION_ELEMENT`. Strictement orienté texte/structure.
+- **Couverture FR** : **6 langues** supportées par Textract (English, Spanish, German, French, Italian, Portuguese), confirmé doc FAQ et page best-practices. **Français inclus depuis novembre 2020**. Bien plus restreint qu'Azure DI (300+) mais couvre le cas Sterny.
+- **Régions** : EU disponibles (Ireland, London, **Paris**, Frankfurt). Pricing aligné US East depuis 2021 sur les 8 régions EU/Asia. Data residency FR possible.
+- **Verdict Sterny — DetectDocumentText** : doublon fonctionnel propre vs Vision OCR (F3 T1) à coût identique. Avantage marginal = région Paris native, FR confirmé. Pas de gain net pour intégrer en première intention si Vision OCR est déjà branché. **Option B documentée**, à rouvrir uniquement si Vision OCR échoue qualitativement sur les fixtures.
+- **Verdict Sterny — AnalyzeDocument** : disqualifié sur l'angle couleur de fond. Tables seul à $15/1000 pourrait extraire la grille du calendrier de Martin (image raster), mais sans backgroundColor le signal couleur de chaque cellule reste à extraire par un autre moyen (F2 algo manuel). Coût injustifié vs F2 T3 (algo manuel ImageData) qui ferait le même travail localement.
+
+### Adobe Extract API — synthèse cross-F2/F3
+
+**Référence** : `developer.adobe.com/document-services/docs/overview/pdf-extract-api/`, Adobe Technical Brief V1.0 du 26/10/2021 (URL `developer.adobe.com/.../Adobe_PDF_Extract_API_Technical_Brief.pdf`), pages consultées 27 avril 2026.
+
+F2 T5 a noté l'**ambiguïté brief marketing vs doc technique** sur la capacité couleur de fond. F3 T4 a noté la même ambiguïté côté granularité OCR (paragraphe / mot / symbole). F5 tranche ce qui est tranchable par doc et explicite ce qui ne l'est pas.
+
+- **Sortie** : `structuredData.json` avec `elements` (array ordonné de blocs sémantiques : headings, paragraphs, lists, tables, figures), `pages` (dimensions, rotation), `extended_metadata`, `version`. Chaque element a `Path` (XPath-like : `/Document/Sect/Table/TR/TD`), `Bounds` (rect en coord PDF), `Font`, `TextSize`, `Attributes` (line height, alignment), `Text`. Tables optionnellement exportées en CSV/XLSX, figures en PNG.
+- **Couleur de fond exposée ?** ⚠️ **Ambiguïté non tranchée par doc seule, persiste après vérification F5**. Le Technical Brief 2021 mentionne explicitement *"text position within cell, border thickness, and background color"* dans les attributs de table extraite. La doc How-To 2026 (`developer.adobe.com/.../howtos/extract-pdf/`) liste les attributs reportés (`Font`, `TextSize`, `Attributes` line height/alignment, `Path`, `Bounds`) **sans mentionner backgroundColor**. Le JSON Schema officiel n'a pas été inspecté ligne par ligne cette session ⚠️. **Conclusion sobre** : soit la capacité a été annoncée en 2021 mais jamais shippée, soit elle existe mais n'est pas documentée publiquement. Sans test direct sur fixture, **on ne peut pas conclure**.
+- **Couverture OCR FR** : ⚠️ **Liste des langues OCR non documentée publiquement**. Adobe Sensei AI traite "native and scanned PDFs" sans préciser les langues supportées par le mode OCR sur scans. À tester en spike sur Mathis (PDF natif) et sur une rastérisation de Martin pour mesurer.
+- **Pricing** (page consultée 27 avril 2026, source `developer.adobe.com/document-services/pricing/`) :
+  - **Free Tier** : 500 Document Transactions / mois (parfois communiqué comme 500 / mois pour 6 mois — terme exact ambigu, à vérifier au moment du spike). 1 Document Transaction Extract = jusqu'à 5 pages → 500 transactions = jusqu'à 2500 pages/mois.
+  - **Tier payant** : ⚠️ **opaque** — pas de pricing à la page affiché publiquement en 2026. Forum Adobe Community 2024 documente un seuil minimum Enterprise de 500 000 transactions/an à $0.05/call ≈ **$25 000/an minimum**, sans plan intermédiaire startup/indie. Statut au 1er trimestre 2024 : "Enterprise agreements only", "we're working toward opening a new sales channel". État 2026 inchangé sur le pricing public officiel. Tarification US, FR non disponible.
+- **Verdict Sterny** : **bloqueur structurel sur l'angle économique**. Free Tier suffisant pour spike (3 fixtures × spike répétés tiennent largement dans 2500 pages/mois), mais aucune trajectoire de mise en production viable — saut direct du Free Tier au minimum Enterprise ~$25k/an, prohibitif pour une startup au stade Sterny. Ambiguïté technique sur backgroundColor secondaire dans ce contexte. **Reco** : maintenir le spike Free Tier pour fermer définitivement la zone grise couleur de fond annoncée par le Technical Brief 2021 (intérêt académique pour l'état de l'art, et ça intéressera tout projet futur qui aurait besoin de parser des PDFs avec sémantique couleur — cf. note dans "Domaines connexes à explorer ultérieurement" du présent doc), mais **disqualifié comme candidate de mise en production** indépendamment du résultat technique.
+
+### Rappel Google Vision OCR
+
+Couvert intégralement en **F3 T1** comme candidate principale du pipeline OCR Sterny (`DOCUMENT_TEXT_DETECTION` via fetch direct depuis Edge Function Deno, SDK `@google-cloud/vision` exclu pour incompat Deno). Voir F3 T1 pour détails techniques (signaux extractibles, hiérarchie page→block→paragraph→word→symbol, bounding polygons + confidence + détection de langue, support FR confirmé). Pricing : $1.50 / 1000 features (`DOCUMENT_TEXT_DETECTION` = 1 feature/page), free tier 1000 features/mois (Google Cloud). Pas de re-cartographie en F5. Inclus dans le tableau comparatif final pour lisibilité du marché complet.
+
+### Acteurs volontairement écartés du scope F5
+
+Mentionnés pour traçabilité, à ne pas creuser cette session.
+
+- **Mistral OCR** (Mistral AI, France) : challenger récent avec pricing aggressif annoncé fin 2024. Pertinent sous l'angle "souveraineté EU" mais hors des 4 acteurs cadrés en plan recherche du 27 avril. À rouvrir en session dédiée si la dimension souveraineté devient un critère produit pour Sterny.
+- **Reducto / LlamaParse / Unstructured.io** : acteurs Document AI orientés ingestion RAG (chunking + Markdown + embeddings prep). Pas le bon match pour parser un calendrier visuel où la donnée critique (couleur de fond) n'est jamais transformée en texte exploitable par leurs pipelines.
+- **Gemini File API (Google Vertex AI)** : OCR via LLM multimodal. Doublon stratégique avec Vision OCR côté Google + même limite structurelle que Claude vision démontrée empiriquement le 27 avril (Levier 1 éliminé : tous les LLM vision actuels échouent au même niveau sur la classification couleur de cellule à grande échelle). Réouverture conditionnelle si un benchmark public futur démontre une amélioration spécifique de Gemini sur cette tâche.
+
+### Tableau comparatif synthétique
+
+Synthèse des 4 acteurs cloud + rappel Vision OCR sur les 4 axes pertinents pour Sterny. Cellules `⚠️` marquent les capacités annoncées-non-vérifiées ou les zones grises persistantes après recherche doc seule. Pricing en USD / 1000 pages, tarification US, FR à confirmer sauf mention contraire. Pages consultées 27 avril 2026.
+
+| Acteur — sous-produit | Extraction structure tableau | Couleur de fond cellule | OCR FR | Pricing | Verdict Sterny |
+|---|---|---|---|---|---|
+| **Google DocAI — OCR Processor + `compute_style_info`** | Non (granularité token, pas de table proto) | **Oui, confirmé** : `backgroundColor` au niveau token (bounding box du mot), pas de la cellule entière | ⚠️ Liste exhaustive non vérifiée doc, Sensei AI couvre large par défaut | $1.50 / 1000 base + $6 / 1000 add-on premium = **$7.50 / 1000** | **Candidate à tester en spike** sur Mathis et Matthieu (texte intra-cellule). Pas pertinent sur Martin. ~2× moins cher qu'Azure DI Layout+STYLE_FONT pour la même capacité |
+| **Google DocAI — Form Parser** | Oui (tables simples sans span multi-cellules) | Non | Oui (200+ langues confirmé Form Parser 2.0) | **$30 / 1000** (premiers 1M), $20 au-delà | **Disqualifié** — pas de couleur, coût injustifié vs Enterprise OCR |
+| **Google DocAI — Layout Parser** | Oui (cible RAG, chunking auto) | Non (confirmé F2 T5, doc inchangée 2026) | ⚠️ Non documenté précisément | **$10 / 1000** flat | **Disqualifié** — cible métier hors scope Sterny, pas de couleur |
+| **Azure DI — Read seul** | Non (pages → lines → words seulement) | ⚠️ STYLE_FONT add-on dispo "for all models except business card" selon doc, mais **non vérifié explicitement sur Read seul** | Oui (300+ langues OCR) | $1.50 / 1000 base + $6 / 1000 si STYLE_FONT = **$1.50 ou $7.50** | **Option B documentée** — doublon fonctionnel vs Vision OCR. Région France Central dispo |
+| **Azure DI — Layout + STYLE_FONT** *(rappel F2 T5)* | Oui | **Oui, confirmé** : `backgroundColor` au format `#rrggbb` au niveau spans (bounding box texte) | Oui | $10 / 1000 + $6 / 1000 = **$16 / 1000** | **Candidate à tester en spike** F2 cloud déjà prévu (inchangé F5) |
+| **Azure DI — Custom Neural** | Oui (fine-tunable) | Selon mode parent (Layout+STYLE_FONT possible) | Oui | $50 / 1000 inférence + $3/h training (10h gratuites) | **Non actionable aujourd'hui** — pas de dataset annoté Sterny. Traçabilité état de l'art |
+| **AWS Textract — DetectDocumentText** | Non (OCR pur, pages→lines→words) | Non (confirmé F2 T5 et reconfirmé 2026) | Oui (FR depuis nov 2020, 6 langues seulement) | **$1.50 / 1000** (premiers 1M), $0.60 au-delà | **Option B documentée** — doublon fonctionnel vs Vision OCR. Région Paris native, data residency FR |
+| **AWS Textract — AnalyzeDocument Tables** | Oui (TABLE / CELL / MERGED_CELL avec span) | Non | Oui (mêmes 6 langues) | **$15 / 1000** | **Disqualifié** — sans couleur, coût injustifié vs F2 T3 algo manuel |
+| **AWS Textract — AnalyzeDocument Forms** | Partiel (KVP, pas tables) | Non | Oui | **$50 / 1000** (Forms+Tables = $65) | **Disqualifié** — hors scope (formulaires, pas calendrier) |
+| **Adobe Extract API** | Oui (tables avec span, export CSV/XLSX/PNG en option) | ⚠️ **Ambiguïté non tranchée** : Technical Brief 2021 annonce "background color", doc How-To 2026 ne l'expose pas dans le schema documenté. JSON Schema non inspecté ligne par ligne cette session | ⚠️ Liste OCR non documentée publiquement | Free Tier 500 transactions/mois (≈2500 pages Extract). **Tier payant opaque** : minimum Enterprise ~500k transactions/an ≈ **$25k/an** sans plan intermédiaire startup | **Bloqueur économique structurel** — Free Tier OK pour spike (intérêt académique pour fermer la zone grise couleur), aucune trajectoire viable de mise en prod pour Sterny |
+| **Google Vision OCR** *(rappel F3 T1)* | Non (OCR pur, fullTextAnnotation hiérarchique) | Non | Oui (confirmé F3 T1) | **$1.50 / 1000** features (premiers 1000/mois gratuits) | **Candidate principale OCR** Sterny, déjà actée F3 T1. Inchangé F5 |
+
+### Recommandation pour la suite
+
+**1. Ajout au spike F2 cloud déjà prévu (DocAI OCR + `compute_style_info`)** : ~1h supplémentaire. Activer Free Tier Google Cloud (les 1000 features/mois Vision sont indépendantes du free tier DocAI), créer un OCR_PROCESSOR en région `eu`, envoyer Mathis et Matthieu avec `processOptions.ocrConfig.premiumFeatures.computeStyleInfo: true`, inspecter le `Document.pages[].tokens[].styleInfo.backgroundColor`. Mesures à produire : (a) couverture des cellules contenant du texte intra-cellule, (b) qualité de la couleur retournée vs vérité terrain visuelle, (c) latence comparée à Azure DI sur les mêmes fixtures. Comparaison directe Azure DI Layout+STYLE_FONT vs DocAI OCR+compute_style_info sur les mêmes fixtures, mêmes mesures, pour trancher entre les deux candidats équivalents fonctionnels au coût près (Azure $16 vs DocAI $7.50 / 1000 pages).
+
+**2. Spike Adobe Extract Free Tier maintenu** (~2h, déjà prévu en F2 T5). Objectif révisé après recherche F5 : **fermer définitivement la zone grise couleur de fond annoncée par le Technical Brief 2021**, indépendamment de la disqualification économique de Adobe pour Sterny en production. Intérêt académique pour l'état de l'art, et information utile pour tout projet futur qui aurait besoin de parser des PDFs avec sémantique couleur. Si la capacité existe réellement dans le JSON, l'ajouter à la note "Domaines connexes à explorer ultérieurement" du présent doc avec une mention explicite "non actionable Sterny pour raison économique".
+
+**3. Aucun nouveau spike cloud à ouvrir au-delà de ce qui précède.** Azure DI Read seul, AWS Textract DetectDocumentText, AWS Textract AnalyzeDocument Tables sont **tous documentés comme options B**, à rouvrir uniquement si Vision OCR (F3 T1) ou DocAI OCR + compute_style_info (F5) échouent qualitativement sur les fixtures. Pas de spike spéculatif sans signal d'échec préalable.
+
+**4. Custom Neural Azure DI / Custom Extractor DocAI** : non actionables tant que Sterny n'a pas de dataset annoté de plusieurs centaines de plannings. Cohérent avec la disqualification F4 des modèles ML à fine-tuning requis. À rouvrir uniquement si Sterny atteint ce palier en exploitation réelle.
+
+**Synthèse pour la phase spike technique à venir** : le périmètre des spikes cloud pour le pipeline Sterny est **fermé** par F5. Trois candidates testables, hiérarchisées par ordre de coût-bénéfice attendu :
+
+1. **Google Vision OCR** (F3 T1) — candidate primaire OCR, à tester sur Martin + Mathis + Matthieu
+2. **Google DocAI OCR + `compute_style_info`** (F5) — candidate primaire couleur de fond pour Mathis et Matthieu, $7.50/1000
+3. **Azure DI Layout + STYLE_FONT** (F2 T5) — candidate alternative couleur de fond, $16/1000, à comparer directement avec #2
+
+Le spike Adobe Extract reste prévu mais en mode académique (fermeture zone grise) sans dépendance produit Sterny. Tous les autres acteurs sont documentés en option B sans investissement spike initial.
+
+---
+
+*Famille 5 close. Axe 1 (état de l'art académique et open source + acteurs marché cloud) complet. Bascule en phase spike technique sur la base des 3 familles candidates ci-dessus + des recommandations Phase 1/2/3 de la Famille 4 (Florence-2 zero-shot, Surya/Marker via API hostée).*
 
 ---
 
