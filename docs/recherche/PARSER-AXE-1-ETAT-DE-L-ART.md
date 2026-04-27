@@ -11,15 +11,15 @@ Document de recherche vivant. Construit séance par séance dans le cadre du pla
 
 **Méthodologie par famille** : shortlist des techniques candidates en 5-10 lignes → validation par Côme → recherche détaillée des techniques retenues → commit d'ajout de la famille au doc (`docs(recherche): add family X to PARSER-AXE-1`).
 
-**Dernière mise à jour** : 28 avril 2026 — ajout de la Famille 2 (classification visuelle de couleur de fond de cellule), après vérification approfondie des services cloud et de la compat Deno.
+**Dernière mise à jour** : 28 avril 2026 — ajout de la Famille 3 (OCR couplé à analyse de mise en page), après vérification de la compat Vision API en Deno Edge Function et du bundle Tesseract.js.
 
 ---
 
 ## Table des matières prévisionnelle
 
-1. **Famille 1 — Extraction structurée depuis PDF vectoriel** *(en cours)*. Couvre Mathis (PDF Hyperplanning, légende textuelle, 1 groupe) et Matthieu (PDF Master CCA, calendrier civil jour-par-jour, encodage hybride couleur+texte, 2 pages), soit 2 fixtures sur 3.
-2. **Famille 2 — Classification visuelle de couleur de fond de cellule** *(à venir)*. Couvre Martin (JPG, image raster, 4 groupes, légende couleur seule) et le cas de fallback où les fonds de cellules de Matthieu ne seraient pas extractibles programmatiquement malgré le caractère vectoriel du texte.
-3. **Famille 3 — OCR couplé à analyse de mise en page** *(à venir)*. Couvre principalement les images raster (Martin) où le texte doit être relu, et tout cas où l'extraction PDF directe ne donne pas le texte intra-cellule.
+1. **Famille 1 — Extraction structurée depuis PDF vectoriel** *(commitée)*. Couvre Mathis (PDF Hyperplanning, légende textuelle, 1 groupe) et Matthieu (PDF Master CCA, calendrier civil jour-par-jour, encodage hybride couleur+texte, 2 pages), soit 2 fixtures sur 3.
+2. **Famille 2 — Classification visuelle de couleur de fond de cellule** *(commitée)*. Couvre Martin (JPG, image raster, 4 groupes, légende couleur seule) et le cas de fallback où les fonds de cellules de Matthieu ne seraient pas extractibles programmatiquement malgré le caractère vectoriel du texte.
+3. **Famille 3 — OCR couplé à analyse de mise en page** *(commitée)*. Couvre principalement les images raster (Martin) où le texte doit être relu, et tout cas où l'extraction PDF directe ne donne pas le texte intra-cellule. Sert aussi de signal redondant pour Mathis et Matthieu si on rastérise.
 4. **Famille 4 — ML appliqué aux documents (LayoutLM, DETR, Donut, etc.)** *(à venir)*. Famille la plus ambitieuse, explorée en dernier pour identifier ce que les approches plus simples n'auraient pas couvert.
 5. **Acteurs marché cloud, en transversal** *(à venir)*. Adobe Extract, Microsoft Azure Document Intelligence, Google Document AI, AWS Textract — examinés famille par famille pour voir comment chaque acteur traite chaque problème, et notamment s'ils restituent ou non la couleur de fond.
 
@@ -256,7 +256,121 @@ T4 et T6 documentés mais hors spike initial.
 
 ## Famille 3 — OCR couplé à analyse de mise en page
 
-*(À venir.)*
+**Périmètre** : Martin (JPG, 4 groupes, ~180 cellules par groupe, légende couleur seule sans annotation textuelle dans les cellules) pour les éléments textuels relisibles en raster (en-têtes, numéros de jours, noms de mois, libellés de groupes, légende), et tout cas futur où le document sera fourni en image (photo WhatsApp, scan, capture d'écran de mauvaise qualité). Sert aussi de **signal redondant** dans le pipeline multi-signaux pour Mathis et Matthieu si on rastérise leurs PDFs pour cross-check (la voie principale pour leur texte intra-cellule reste `pdf.js getTextContent()` cartographié en Famille 1).
+
+**Question critique de la famille** : sur une image raster, comment extraire fiablement le texte présent (en-têtes, libellés, mots-clés intra-cellule type `Examens`/`Révisions`/`Soutenance`/`Rattrapages`) **avec ses coordonnées géométriques**, pour pouvoir ensuite rattacher chaque mot à une cellule de la grille du calendrier ? La sortie utile n'est pas seulement le texte plat, c'est le texte avec bounding boxes — sans ça, impossible de croiser avec la couleur de fond extraite par Famille 2 ni d'agréger jour → semaine ISO.
+
+**Distinction nette à acter** : Google Vision OCR (`DOCUMENT_TEXT_DETECTION`) ≠ Google Document AI Layout Parser. Le premier est OCR brut + bounding boxes hiérarchiques (page/block/paragraph/word/symbol), c'est l'objet de cette famille. Le second est OCR + reconstruction de structure tabulaire (cellules, row/col span), traité en Famille 2 Technique 5 sous l'angle "couleur de fond" (disqualifié pour ce critère). Les deux APIs sont distinctes côté Google Cloud, avec endpoints, pricing et schémas de sortie séparés.
+
+**Contraintes stack rappelées** : Supabase Edge Functions = Deno 1.46, WASM ou pure TS uniquement, bundle ≤ 20 Mo après build, mémoire 512 Mo, timeout idle 150 s. Reprises de la Famille 2 Question critique.
+
+### Technique 1 — Google Vision OCR via DOCUMENT_TEXT_DETECTION (candidate principale)
+
+API REST Google Cloud Vision, mode `DOCUMENT_TEXT_DETECTION` optimisé pour documents denses. Endpoint unique `POST https://vision.googleapis.com/v1/images:annotate`, JSON in/out. Le mode renvoie `fullTextAnnotation` avec hiérarchie complète page → block → paragraph → word → symbol, chaque niveau exposant un `boundingBox` exploitable pour rattacher les mots aux cellules de la grille en aval (Famille 3 Technique 3).
+
+- **Stack** : appel `fetch()` direct depuis Deno. **Ne pas utiliser le SDK npm `@google-cloud/vision`** : une discussion publique Supabase (#36182) confirme que ce SDK provoque des timeouts inexpliqués dans le runtime Edge Function Deno, alors qu'un raw fetch sur le même endpoint fonctionne (réponse 401 si auth invalide, pas de timeout). Le SDK est donc à exclure dans cette stack, le fetch direct est la voie. Auth par API key préfixe `AIza` en query string `?key=AIza...` (Sterny a déjà cette clé en place pour `verify-document`).
+- **Runtime** : Node.js, navigateur, Deno, Supabase Edge Functions. Compat Deno = appel HTTPS standard, aucune dépendance lourde côté client.
+- **Maturité** : service Google Cloud production-grade, GA depuis 2016. API v1 stable.
+- **Signaux extractibles** : texte avec hiérarchie complète (block, paragraph, word, symbol) + bounding box à chaque niveau + score de confiance par symbol + détection de langue + saut de ligne/break. Multi-langue natif. Support PDF natif (chaque page traitée comme une image individuelle, 1 unité chacune).
+- **Signaux non couverts** : couleur de fond de cellule (déjà traitée par Famille 1 et 2), structure tabulaire reconstruite (c'est le rôle de Document AI, pas de Vision OCR — Sterny reconstruira la grille via Famille 2 morphologique ou via la grille déjà extraite Famille 1).
+- **Pièges connus à anticiper** :
+  - SDK `@google-cloud/vision` incompatible Deno Edge Function → utiliser `fetch()` direct.
+  - Restriction de la clé API par référer/IP recommandée pour limiter le risque d'exposition (la clé `AIza` Sterny est probablement déjà restreinte, à vérifier).
+  - Image envoyée en base64 inline OU via URL Cloud Storage publique. En Edge Function, base64 inline est le plus simple (pas de bucket public à gérer). Limite : 20 Mo de payload total par requête.
+  - Pour les PDF multi-pages (Mathis, Matthieu), chaque page = 1 unité de facturation. Pour les fixtures Sterny en stade démo, c'est négligeable.
+  - Coordonnées du `boundingPoly` sont des polygones à 4 vertices `(x, y)` en pixels image, origine top-left. Pas de transformation matricielle exotique à gérer (contrairement à pdf.js Famille 1).
+- **Faisabilité Supabase Edge Functions** : haute. Fetch HTTPS standard, aucune dépendance native, payload base64 dans les limites Edge.
+- **Coût** : tarification 2026 confirmée Google Cloud — 1000 unités gratuites par mois, 1001 à 5M unités à 1.50 USD / 1000 unités, > 5M à 0.60 USD / 1000. PDF multi-pages = chaque page comptée comme 1 unité. Pour Sterny au stade démo (estimation 100-500 plannings/mois), reste dans le free tier ou juste au-dessus. Coût marginal négligeable même en early production.
+- **Qualité OCR français** : avantage structurel confirmé sur Tesseract pour les langues non-anglaises et les fonts variées (cf. comparaisons publiques Tesseract vs Google Vision sur factures et documents scolaires manuscrits). Pour Sterny dont la cible est 100% francophone et où certains plannings auront potentiellement des fonts Hyperplanning, Word, Excel exotiques, c'est le meilleur pari par défaut.
+- **Coût d'implémentation** : faible. Wrapper fetch + base64 + parsing JSON ~80-150 lignes de TS. Pas de tuning de seuils.
+- **Verdict provisoire pour Sterny** : **candidate principale**. Vérifiée techniquement (compat Deno via fetch direct), économiquement (coût marginal nul vu volume + clé déjà en place pour `verify-document`), et qualitativement (avantage français net). À tester en spike sur Martin pour mesurer ce qui sort effectivement (en-têtes, libellés, légende — rappel ETAT-COURANT : "légende couleur seule, pas d'annotation textuelle dans les cellules" pour Martin, ce qui limite par construction le texte exploitable, à mesurer concrètement).
+
+### Technique 2 — Tesseract.js via fork Deno (alternative locale documentée)
+
+OCR open source Tesseract 5 compilé en WebAssembly. Fork principal `naptha/tesseract.js` actif, fork Deno-spécifique `weston-b/tesseract.js-deno` existant mais ⚠️ **maintenance non vérifiée cette session** (à investiguer si on rouvre la piste : commits récents ? issues actives ? compat avec Tesseract 5 actuel ?).
+
+- **Stack** : `tesseract.js` v5+ via npm (avec build WASM bundlé) ou fork Deno via `https://deno.land/x/...`. Charge un fichier `traineddata` par langue à l'initialisation.
+- **Runtime** : navigateur (Web Workers), Node.js (worker_threads), Deno (statut Edge Function ⚠️ non démontré — voir Pièges).
+- **Maturité** : Tesseract OCR existe depuis HP 1985, open-sourcé en 2005, soutenu par Google 2006-2018. Tesseract.js port WASM maintenu activement par naptha. Mais le fork Deno-spécifique a un statut moins clair, à vérifier.
+- **Signaux extractibles** : texte avec hiérarchie similaire à Vision (page, block, paragraph, line, word, symbol), bounding boxes, confidence par mot. Comparable fonctionnellement à Google Vision OCR sur la sortie.
+- **Pièges connus à anticiper** :
+  - **Bundle lourd** : avec paramètres par défaut, ~15.34 Mo chargés au premier usage (tesseract-core-simd.wasm ~4.74 Mo + traineddata anglais ~10.4 Mo). Pour le français, `fra.traineddata` est dans le même ordre de grandeur (~10 Mo). **Frottement direct avec la limite 20 Mo de bundle Edge Function Supabase** — il faudrait soit bundler le traineddata dans le déploiement (alourdit le déploiement, mange la limite), soit le télécharger depuis CDN à chaque cold start (latence + dépendance externe à un CDN tiers comme jsDelivr).
+  - **Compat Deno + Supabase Edge Function ⚠️ non démontrée** : aucun retour utilisateur public trouvé sur Tesseract.js tournant effectivement en Edge Function Supabase. Le pattern Web Workers + WASM + chargement asynchrone de traineddata est en zone grise du runtime Edge (V8 isolates avec contraintes CPU/mémoire spécifiques). À valider en spike avant toute conclusion.
+  - Initialisation asynchrone obligatoire (`createWorker`, `loadLanguage`, `initialize`) avant toute reconnaissance.
+  - Possibilité d'utiliser `tessdata_fast` au lieu de `tessdata_best` pour réduire le poids et le temps de calcul (compromis qualité acceptable selon naptha/tessdata).
+- **Faisabilité Supabase Edge Functions** : ⚠️ **non démontrée**. Plausible techniquement vu que WASM est officiellement supporté, mais aucun cas concret documenté publiquement, et la limite 20 Mo de bundle plus le pattern Web Workers posent question. Risque opérationnel à valider en spike avant tout investissement majeur.
+- **Coût opérationnel** : zéro côté licence (Apache 2.0). Côté compute : significatif à chaque exécution (initialisation Tesseract + reconnaissance ~2-10s par image selon densité, mémoire 100-300 Mo selon image et traineddata). Pas de quota externe à monitorer.
+- **Qualité OCR français** : ⚠️ **non mesurée sur fixtures Sterny**. Benchmarks publics 2024-2026 placent Tesseract significativement en-dessous de Google Vision sur le manuscrit (20-40% vs 80-95% accuracy), et un peu en-dessous sur l'imprimé propre (écart variable selon document). Pour des plannings imprimés propres type Hyperplanning, l'ordre de grandeur attendu est 70-90% accuracy mots — utilisable mais inférieur à T1.
+- **Coût d'implémentation** : moyen. Wrapper createWorker + recognize + parsing résultat ~150-250 lignes de TS, plus tuning éventuel de la stratégie de chargement traineddata.
+- **Verdict provisoire pour Sterny** : **alternative locale documentée**, **pas viable comme candidate principale en l'état**. Trois raisons : (a) compat Deno Edge Function non démontrée, (b) bundle 15+ Mo en frottement direct avec la limite 20 Mo, (c) qualité OCR français inférieure à T1. Sa valeur stratégique reste la décorrélation d'un provider externe pour un workflow critique du parser, et l'ouverture vers un mode offline éventuel. À reconsidérer en sérieux si Sterny décide un jour de couper la dépendance Google Vision.
+
+### Technique 3 — Pattern spatial OCR : assemblage applicatif (orchestration interne)
+
+Pas une lib externe, mais le **code applicatif Sterny** qui transforme un output OCR brut (T1 ou T2 → liste de mots avec bounding boxes) en **annotations sur le squelette de calendrier** (pattern accumulateur posé en session 27 avril, ETAT-COURANT). Cette technique est l'élément de jonction entre OCR et structure de la grille.
+
+Pipeline :
+1. **Output OCR amont** : T1 retourne `[{text, boundingBox: {x, y, w, h}, confidence}]` au niveau word ou paragraph.
+2. **Grille déjà connue** : soit produite par Famille 1 (PDF vectoriel) en coordonnées PDF, soit par Famille 2 (raster, détection morphologique) en coordonnées image. La grille fournit `[{cellId, weekStartISO, dayOfWeek, bounds: {x, y, w, h}}]` pour Mathis/Matthieu (jour-par-jour), ou `[{cellId, weekStartISO, bounds}]` pour Martin (semaine-par-semaine).
+3. **Rattachement word → cellule** : pour chaque mot OCR, calcul de la cellule contenant son centre de masse (test "centre dans bounds" simple, ou IoU bounding-box ↔ cellule pour les mots qui chevauchent — paramètre seuil IoU 0.3-0.5 à régler).
+4. **Pour Matthieu (calendrier civil jour-par-jour)** : agrégation jour → semaine ISO. Si tous les jours d'une semaine portent le même mot-clé `Examens`, la semaine est `school`. Si mixte, règle de majorité ou remontée à l'utilisateur.
+5. **Matching mots-clés métier** : table de correspondance prédéfinie pour Sterny (`Examens`, `Révisions`, `Soutenance`, `Rattrapages`, `Cours`, `École`, `Entreprise`, `Formation au centre`, `En entreprise`, `Jours fériés`, etc.) → annotation `{status, source: 'ocr_text', confidence}` déposée dans le squelette accumulateur.
+6. **Convergence multi-signaux** : si la couleur extraite par Famille 1 ou 2 sur la même cellule converge avec le mot-clé OCR, confiance haute. Si divergence, remontée ciblée à l'utilisateur sur cette cellule précise (cohérent avec l'architecture multi-signaux ETAT-COURANT 27 avril).
+
+- **Stack** : pur TypeScript Deno, pas de dépendance externe.
+- **Runtime** : universel (c'est du code applicatif, pas une lib).
+- **Maturité** : technique géométrique élémentaire (test point-dans-rectangle, IoU). Pas de risque technologique.
+- **Pièges connus** :
+  - **Mots multi-cellules** : un mot peut chevaucher la frontière entre deux cellules (typographie débordante, cellules très étroites). Politique à acter : centre de masse + tolérance, ou IoU max.
+  - **Mots multi-mots intra-cellule** : "Formation au centre" peut sortir comme 3 words distincts en T1, à recomposer côté Sterny via paragraph-level (pas word-level) ou via concaténation post-OCR par proximité spatiale.
+  - **Casse, accents, ligatures** : la table de mots-clés doit normaliser (lowercase + suppression accents) avant matching pour ne pas rater "EXAMENS" vs "Examens" ou "École" vs "ECOLE".
+  - **Faux positifs** : un mot `Cours` dans une légende NE doit PAS annoter une cellule de la zone "légende" comme `school`. La grille doit explicitement exclure les zones hors-tableau (en-têtes, légende, marges) avant matching.
+- **Faisabilité Supabase Edge Functions** : très haute. Code applicatif léger, zéro dépendance.
+- **Coût d'implémentation** : moyen. Pipeline ~250-400 lignes de TS dont la table de mots-clés métier (tuning au fil des fixtures) et la politique de rattachement word→cellule.
+- **Verdict provisoire pour Sterny** : **bloc d'orchestration indispensable**, pas une option. Sa qualité de sortie dépend entièrement de la qualité de T1/T2 en amont et de la grille en aval. À écrire de toute façon dès qu'un OCR est en place.
+
+### Repoussoirs (mentionnés pour traçabilité, à ne pas creuser)
+
+- **PaddleOCR** (Baidu, Python + C++) : excellent OCR multilingue, mais **stack Python uniquement**, viole la contrainte Deno/TS actée. Disqualifié pour cette raison structurelle.
+- **EasyOCR** (JaidedAI, Python) : idem, **Python uniquement**. Disqualifié.
+- **Tesseract natif binaire** : nécessite l'installation du binaire système Tesseract (libre, mais pas un module JS/WASM). Incompatible Edge Function Deno qui ne peut exécuter de binaire système. Disqualifié structurellement.
+- **ABBYY FineReader Cloud / Engine** : qualité OCR très élevée et leader historique du domaine, mais ⚠️ **tarification non investiguée cette session** (ordres de grandeur publics évoqués comme significativement supérieurs à Google Vision, **non vérifié**). Disqualifié par défaut au stade démo Sterny vu que T1 (Google Vision) couvre déjà le besoin avec un coût marginal négligeable. À rouvrir uniquement si T1 et T4 échouent tous.
+- **AWS Textract `DetectDocumentText`** (mode OCR brut) : traité en T4 avec verdict spécifique (pas un repoussoir net car n'a pas été investigué cette session sur le critère "bounding boxes hiérarchiques pour pattern spatial").
+
+### Technique 4 — Services cloud OCR concurrents
+
+Vérification des trois acteurs cloud autres que Google (déjà traité en T1) sur leur capacité à fournir du texte avec bounding boxes hiérarchiques exploitables pour le pattern spatial T3.
+
+#### Microsoft Azure Document Intelligence — modèle Read seul
+
+- **Output** : ⚠️ **non investigué cette session**. Famille 2 a couvert l'angle structure tabulaire + couleur de fond via add-on `STYLE_FONT` du modèle Layout. Le mode `Read` seul (OCR brut sans reconstruction tabulaire) est documenté comme retournant pages → lines → words avec bounding polygons, comparable à Google Vision OCR. Ne pas en tirer de conclusion ferme tant que vérifié.
+- **Coût** : ⚠️ tier S0 estimé ~1 USD pour 1000 pages, free tier 500 pages/mois (cohérent avec ce qui a été constaté en Famille 2 pour Layout, **non vérifié** spécifiquement pour Read seul).
+- **Verdict** : **à vérifier en session suivante ou en spike**. Si confirmé, candidate sérieuse en alternative ou redondance à T1, surtout pour Sterny qui aurait alors le choix de provider sur cette brique critique.
+
+#### AWS Textract `DetectDocumentText`
+
+- **Output** : Block objects de types PAGE, LINE, WORD avec attributs Geometry (bounding box) et Confidence. Hiérarchie comparable à Google Vision OCR sur le mode "détection de texte de document". ⚠️ **Non investigué en détail cette session** sur la qualité française et la richesse géométrique vs Vision.
+- **Coût** : tarification Textract DetectDocumentText ~1.50 USD / 1000 pages (cohérent avec marché). ⚠️ **Non vérifié 2026**.
+- **Verdict** : **à vérifier en session suivante**. Probablement équivalent fonctionnel à T1 sur le besoin OCR brut + bounding boxes, sans avantage net pour Sterny tant que Google Vision est déjà branché. Doublon fonctionnel coûteux à intégrer (nouveau provider, nouvelle clé, nouveau monitoring) sans gain identifié → à rouvrir uniquement si T1 échoue qualitativement.
+
+#### Adobe Extract API (mode OCR seul)
+
+- **Output** : Famille 2 a noté Adobe Extract probable mais ambigu sur la couleur de fond. Sur le critère "OCR brut + bounding boxes hiérarchiques", la doc technique Adobe Extract évoque des elements text avec bounds, mais la granularité (paragraphe ? mot ? symbol ?) ⚠️ **non vérifiée cette session**.
+- **Coût** : ~0.05 USD par page après free tier 500 transactions/mois (vérifié Famille 2).
+- **Verdict** : **à vérifier en spike Famille 2** (déjà prévu pour la couleur de fond) — autant en profiter pour mesurer le retour OCR sur les 2 fixtures envoyées. Pas un investissement séparé.
+
+**Synthèse cloud Famille 3** : Google Vision OCR (T1) reste la candidate principale, vérifiée. Azure Read et AWS Textract sont des doublons fonctionnels probables, à vérifier ponctuellement en spike pour avoir une option B documentée mais pas à intégrer en première intention. Adobe Extract est à mesurer en même temps que le spike Famille 2 sur Adobe.
+
+### Recommandation pour la suite (hors doc — à arbitrer avec Côme)
+
+**Phase 1 — Spike T1 sur Martin** : ~2-3h. Fetch direct vers `images:annotate` avec `DOCUMENT_TEXT_DETECTION`, image Planning_Martin.JPG en base64 inline, parsing du `fullTextAnnotation`. Mesures à produire : (a) liste exhaustive du texte récupéré et sa position (en-têtes ? numéros de jours ? noms de groupes ? légende couleur ?), (b) bounding boxes au niveau word et paragraph, (c) confidence par word. Sortie : un JSON et un overlay visuel sur l'image pour validation manuelle. Si la légende couleur sort propre, on a la passerelle légende → couleur → statut. Sinon, on documente ce qui sort vraiment.
+
+**Phase 2 — Spike T1 sur Mathis et Matthieu en mode redondance** : ~1h. Mêmes appels mais sur les PDFs (Vision API supporte PDF natif, 1 page = 1 unité). Objectif : voir si le texte intra-cellule de Matthieu (`Examens`, `Révisions`, `Soutenance`, `Rattrapages`) sort proprement avec bounding boxes — ce qui validerait T3 (pattern spatial) sur la fixture la plus structurée de Sterny. Pour Mathis, cross-check de la légende textuelle "Formation au centre / En Entreprise / Jours fériés".
+
+**Phase 3 — Spike T2 (Tesseract.js Deno Edge Function)** : ~3-4h, **uniquement si T1 a une limite identifiée** ou si la décorrélation provider externe devient un enjeu stratégique. Objectif : valider ou invalider la compat Deno Edge Function et mesurer la qualité française sur les fixtures.
+
+**Spikes T4 (Azure Read, Textract, Adobe Extract OCR)** : à grouper avec les spikes Famille 2 cloud déjà prévus. Pas de session dédiée tant que T1 n'a pas révélé de limite.
+
+T3 (pattern spatial) sera codé après le premier spike T1 réussi, en cohérence avec le squelette accumulateur (architecture ETAT-COURANT 27 avril).
 
 ---
 
