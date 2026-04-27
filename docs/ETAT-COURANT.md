@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 28 avril 2026 — recherche profonde Axe 1 poursuivie, Famille 3 cartographiée et committée. Trois familles sur cinq couvertes au total dans la session globale du 28 avril (`f1de8fe` squelette, `21bc308` Famille 1, `7af2979` Famille 2, commit Famille 3 ajouté en clôture).
+**Dernière mise à jour** : 29 avril 2026 — recherche profonde Axe 1 poursuivie, Famille 4 cartographiée et committée. Quatre familles sur cinq couvertes au total. Reste : Famille 5 (acteurs marché cloud transversal — synthèse Adobe Extract / Azure DI / Google DocAI / AWS Textract).
 
 ---
 
@@ -72,6 +72,23 @@ Pas de décision aujourd'hui — la question est notée pour traitement par la s
 **Reste à faire dans l'Axe 1** : Famille 4 (ML appliqué aux documents type LayoutLMv3, Donut), Famille 5 (acteurs marché cloud transversal — partiellement déjà couvert via Familles 2 et 3, à compléter sur Adobe Extract OCR en spike groupé Famille 2 et sur Azure Read / AWS Textract DetectDocumentText en session suivante). Probablement 1 session Claude.ai supplémentaire pour Famille 4 puis une synthèse transversale Famille 5.
 
 **Synchronisation project knowledge Claude.ai** : à effectuer après ce commit. Le project knowledge n'est pas synchronisé automatiquement avec le repo Git — il faut uploader manuellement les fichiers mis à jour via l'interface claude.ai. Fichiers à actualiser ou ajouter pour la suite : (1) `ETAT-COURANT.md` mis à jour par ce commit, (2) `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md` à ajouter (n'a jamais été uploadé dans le project knowledge).
+
+**Aucun commit de code dans cette session** (pure recherche, doc uniquement). Modifs working tree historiques toujours préservées : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
+
+---
+
+## 0. Session du 29 avril — Recherche profonde Axe 1, Famille 4
+
+**Contexte** : ouverture session Claude.ai en suite directe de la session du 28 avril sur la recherche Famille 3. Objectif : démarrer la Famille 4 (ML appliqué aux documents) avec la même méthodologie shortlist → validation → recherche détaillée → commit.
+
+**Livrables Git** :
+- `d5c0e77` : Famille 4 cartographiée (ML appliqué aux documents) — 5 techniques principales + rappel TATR sous angle composant pipeline + 5 repoussoirs + section transversale "Modes de consommation" en 6 sous-sections (HF Inference Providers, HF Inference Endpoints, Replicate, Modal, RunPod, self-host) + recommandation Phase 1/2/3. Candidate principale identifiée : **Florence-2 (Microsoft, 2024)** en zero-shot via prompts (`<OCR>`, `<OCR_WITH_REGION>`, `<CAPTION_TO_PHRASE_GROUNDING>`), seule candidate F4 ne demandant pas de fine-tuning, à comparer en spike avec Vision OCR de F3 sur Martin et Matthieu côté qualité française. **Surya/Marker (datalab.to)** identifiée comme candidate sérieuse pour API hostée (apport double : structure de table de Martin + conversion Markdown de Mathis/Matthieu). **TATR** rouvert sous angle nouveau "composant ML d'extraction de grille pour Martin en fallback morphologique F2" — fallback en réserve, pas candidate primaire. **LayoutLMv3, Donut, Pix2Struct** disqualifiés en première intention (fine-tuning requis sur dataset Sterny inexistant) mais documentés pour traçabilité de l'état de l'art.
+
+**Apprentissage méthodologique de la session** : la règle actée le 28 avril ("aucune hypothèse non vérifiée livrée comme conclusion provisoire — soit on vérifie, soit on dit explicitement non vérifié") s'est révélée particulièrement utile sur la Famille 4 où les modèles ML accumulent des chiffres difficiles à vérifier (latence exacte, pricing exact des providers, qualité française non documentée par benchmark public). Tous les éléments non vérifiables en session sont marqués ⚠️ explicitement dans le bloc Famille 4.
+
+**Reste à faire dans l'Axe 1** : Famille 5 (acteurs marché cloud transversal — synthèse). Note : une partie de la Famille 5 a déjà été couverte transversalement dans les Familles 2 (Azure DI STYLE_FONT, Google DocAI sans backgroundColor confirmé, AWS Textract idem, Adobe Extract ambigu) et 3 (Google Vision OCR `DOCUMENT_TEXT_DETECTION`, mention de Adobe Extract OCR à compléter). Famille 5 sera donc plus une **synthèse cross-familles** qu'une exploration fraîche, à compléter sur Azure Read et AWS Textract `DetectDocumentText` côté OCR pur.
+
+**Synchronisation project knowledge Claude.ai** : à effectuer après ce commit. Fichiers à actualiser dans le project knowledge claude.ai après cette session : (1) `ETAT-COURANT.md` mis à jour par ce commit, (2) `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md` à re-uploader (version commit `d5c0e77` avec Famille 4 incluse, remplace la version précédente).
 
 **Aucun commit de code dans cette session** (pure recherche, doc uniquement). Modifs working tree historiques toujours préservées : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
