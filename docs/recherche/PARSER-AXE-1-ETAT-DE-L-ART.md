@@ -11,7 +11,7 @@ Document de recherche vivant. Construit séance par séance dans le cadre du pla
 
 **Méthodologie par famille** : shortlist des techniques candidates en 5-10 lignes → validation par Côme → recherche détaillée des techniques retenues → commit d'ajout de la famille au doc (`docs(recherche): add family X to PARSER-AXE-1`).
 
-**Dernière mise à jour** : 28 avril 2026 — ajout de la Famille 3 (OCR couplé à analyse de mise en page), après vérification de la compat Vision API en Deno Edge Function et du bundle Tesseract.js.
+**Dernière mise à jour** : 29 avril 2026 — ajout de la Famille 4 (ML appliqué aux documents). Reco principale : spike Florence-2 zero-shot et Surya/Marker via API hostée. Tous les modèles à fine-tuning requis disqualifiés en première intention.
 
 ---
 
@@ -20,7 +20,7 @@ Document de recherche vivant. Construit séance par séance dans le cadre du pla
 1. **Famille 1 — Extraction structurée depuis PDF vectoriel** *(commitée)*. Couvre Mathis (PDF Hyperplanning, légende textuelle, 1 groupe) et Matthieu (PDF Master CCA, calendrier civil jour-par-jour, encodage hybride couleur+texte, 2 pages), soit 2 fixtures sur 3.
 2. **Famille 2 — Classification visuelle de couleur de fond de cellule** *(commitée)*. Couvre Martin (JPG, image raster, 4 groupes, légende couleur seule) et le cas de fallback où les fonds de cellules de Matthieu ne seraient pas extractibles programmatiquement malgré le caractère vectoriel du texte.
 3. **Famille 3 — OCR couplé à analyse de mise en page** *(commitée)*. Couvre principalement les images raster (Martin) où le texte doit être relu, et tout cas où l'extraction PDF directe ne donne pas le texte intra-cellule. Sert aussi de signal redondant pour Mathis et Matthieu si on rastérise.
-4. **Famille 4 — ML appliqué aux documents (LayoutLM, DETR, Donut, etc.)** *(à venir)*. Famille la plus ambitieuse, explorée en dernier pour identifier ce que les approches plus simples n'auraient pas couvert.
+4. **Famille 4 — ML appliqué aux documents** *(commitée)*. Couvre l'évaluation de modèles ML pré-entraînés ou fine-tunables (LayoutLMv3, Donut, Pix2Struct, Florence-2, Surya/Marker) en tant que compléments potentiels à F1/F2/F3, ainsi qu'un rappel sur TATR sous l'angle composant pipeline.
 5. **Acteurs marché cloud, en transversal** *(à venir)*. Adobe Extract, Microsoft Azure Document Intelligence, Google Document AI, AWS Textract — examinés famille par famille pour voir comment chaque acteur traite chaque problème, et notamment s'ils restituent ou non la couleur de fond.
 
 ---
@@ -376,7 +376,202 @@ T3 (pattern spatial) sera codé après le premier spike T1 réussi, en cohérenc
 
 ## Famille 4 — ML appliqué aux documents
 
-*(À venir.)*
+**Périmètre** : modèles ML pré-entraînés ou fine-tunables sur tâches de Document AI — extraction de structure de tableau, OCR + layout, image → texte structuré. Famille la plus ambitieuse en complexité de mise en œuvre. Tous les candidats sont des modèles Python/PyTorch ou similaires, donc consommés par Sterny via API externe ou microservice séparé (cf. section "Modes de consommation" en fin de famille).
+
+**Question critique de la famille — angle Sterny** : aucun de ces modèles ne fait directement de la classification de couleur de fond de cellule. Ils font de l'OCR, du layout analysis, de la détection de structure tabulaire, ou du image-to-text. **F4 n'est donc pas une alternative à F2** (couleur) — c'est un complément potentiel à F1 (extraction PDF) et F3 (OCR + pattern spatial), avec deux apports distincts à évaluer :
+
+1. **Détection de structure de table sans coder de morphologie OpenCV/ImageMagick** (apport principal pour Martin, raster). Si TATR ou un équivalent ML donne directement les bounding boxes des lignes/colonnes/cellules, ça simplifie l'extraction de la grille en aval.
+2. **OCR alternative à Google Vision F3** (zero-shot pour Florence-2, fine-tuné pour les autres). Apport si la qualité française dépasse Vision OCR ou si la décorrélation provider devient stratégique.
+
+**Question secondaire — zero-shot ou fine-tuning ?** Sterny n'a pas de dataset annoté de calendriers d'alternance. Tout candidat qui exige un fine-tuning sur N centaines/milliers d'exemples est de facto hors-jeu en première intention. Cette contrainte écarte d'avance la majorité des modèles Document AI classiques.
+
+**Contraintes** :
+- Stack Edge Function Deno / TypeScript. Aucun de ces modèles ne tourne nativement en Deno — tous sont consommés via API HTTP externe ou microservice Python séparé.
+- Aucune implémentation dans la session de recherche — pure cartographie.
+- ⚠️ **Avertissement spécifique F4** : les modèles ML sont le terrain où les hypothèses non vérifiées prolifèrent (latence, qualité zero-shot, capacité réelle en français, support PDF natif vs image-only). Chaque chiffre ou capacité non confirmée par la doc officielle est explicitement marqué ⚠️.
+
+### Technique 1 — LayoutLMv3 (Microsoft)
+
+**Architecture** : encoder transformer multi-modal qui prend en entrée trois modalités fusionnées — texte (depuis OCR externe), layout (coordonnées de chaque mot, fournies par l'OCR), image (patches ViT). Sortie : représentation par token, à brancher sur une tête de classification (`LayoutLMv3ForTokenClassification`) ou de question answering (`LayoutLMv3ForQuestionAnswering`) selon la tâche downstream.
+
+> Glossaire technique inline : *encoder transformer* = la moitié "compréhension" d'un transformer, qui produit une représentation interne riche du document. *Token* = unité de découpage du texte (mot ou sous-mot). *ViT (Vision Transformer)* = architecture qui découpe une image en patches carrés et les traite comme des tokens visuels. *Tête de classification* = petite couche ajoutée en sortie de l'encoder pour produire le label final. *Fine-tuning* = ré-entraîner le modèle sur un dataset spécifique à la tâche.
+
+- **Stack** : PyTorch + Hugging Face Transformers. Modèle base : `microsoft/layoutlmv3-base`. Modèles fine-tunés publics : FUNSD (formulaires), CORD (tickets de caisse), DocLayNet (layout analysis), PubLayNet (articles scientifiques) — aucun sur calendriers d'alternance.
+- **Runtime** : Python uniquement. Pas de port JS/TS connu. Conséquence : consommation obligatoirement via API externe ou microservice Python séparé.
+- **Maturité** : modèle CVPR/ACM MM 2022, largement utilisé en Document AI. État de l'art sur ses benchmarks d'origine, dépassé sur certaines tâches par modèles plus récents (Donut, Pix2Struct, Florence-2). Stable.
+- **Signaux extractibles si fine-tuné** : labels par token (entités nommées, classes de cellules, types de blocs), réponses à des questions sur le document. ⚠️ **Sans fine-tuning, le modèle base produit uniquement des embeddings non interprétables — pas exploitable directement par Sterny.**
+- **Faisabilité Deno** : sans objet directement. Microservice Python avec HF Transformers loadé en mémoire, exposé en HTTP. Edge Function Deno appelle le microservice par fetch. Latence dépend du déploiement (cf. "Modes de consommation").
+- **Coût d'implémentation** : très élevé. (1) annoter un dataset Sterny (au minimum quelques dizaines de plannings annotés cellule par cellule), (2) fine-tuner le modèle (script disponible mais demande GPU pendant des heures), (3) déployer le microservice. Au total, 3-5 jours/homme minimum, hors annotation.
+- **Verdict provisoire pour Sterny** : **disqualifié en première intention** — le coût d'annotation de dataset bloque l'approche tant que Sterny n'a pas de volume utilisateur réel pour générer des annotations en exploitation. À rouvrir uniquement si Sterny a un jour 500+ plannings réels avec rythme validé manuellement, et si le pipeline non-ML (F1+F2+F3) n'arrive pas à dépasser un plafond de fiabilité.
+
+### Technique 2 — Donut (NAVER)
+
+**Architecture** : encoder-decoder OCR-free. Encoder = Swin Transformer (vision), decoder = BART (génération de texte). L'image entre en pixels bruts, le modèle produit en sortie une chaîne de texte structuré — typiquement du XML ou JSON sérialisé en string. Pas d'OCR externe : Donut "lit" l'image directement via son encoder visuel, sans étape OCR séparée.
+
+> *OCR-free* = le modèle remplace la chaîne classique [OCR → parsing] par une lecture directe pixel → texte. *Encoder-decoder* = architecture où un module compresse l'entrée (encoder) et un autre génère la sortie token par token (decoder). *BART* = decoder de langue générative pré-entraîné par Facebook AI. *Swin Transformer* = ViT à fenêtres glissantes, plus efficace pour les images haute résolution.
+
+- **Stack** : PyTorch + HF Transformers, classe `VisionEncoderDecoderModel`. Modèle base : `naver-clova-ix/donut-base`. Modèles fine-tunés publics : DocVQA, RVL-CDIP, CORD.
+- **Runtime** : Python uniquement.
+- **Maturité** : ECCV 2022, repo NAVER CLOVA AI maintenu. Référence parmi les modèles OCR-free.
+- **Signaux extractibles** : si fine-tuné, JSON structuré directement à partir de l'image. Cas typique en demo : facture → JSON `{vendor, items, total}`. ⚠️ **La page HF du modèle de base indique explicitement "This model is meant to be fine-tuned on a downstream task" — donc pas de zero-shot exploitable.**
+- **Faisabilité Deno** : sans objet directement. Microservice Python à exposer.
+- **Coût d'implémentation** : élevé, similaire à LayoutLMv3 — fine-tuning sur dataset annoté requis.
+- **Verdict provisoire pour Sterny** : **disqualifié en première intention** pour les mêmes raisons que LayoutLMv3 (fine-tuning requis sur dataset Sterny inexistant). Architecturellement plus séduisant que LayoutLMv3 (pas d'OCR externe à orchestrer), mais ça ne change pas le verdict tant que le dataset manque.
+
+### Technique 3 — Pix2Struct (Google)
+
+**Architecture** : encoder-decoder image-to-text basé sur ViT, pré-entraîné sur 80M screenshots de pages web avec un objectif de "screenshot parsing" (apprendre à reconstituer la structure HTML simplifiée d'une page à partir de sa capture). Innovation principale : variable-resolution input — pas de redimensionnement carré obligatoire, ce qui préserve les ratios extrêmes des documents.
+
+- **Stack** : PyTorch + HF Transformers (`Pix2StructForConditionalGeneration`). Code original Google en JAX/T5X. Modèle base : `google/pix2struct-base` (282M params), `google/pix2struct-large` (1.3B params). Modèles fine-tunés publics : `pix2struct-docvqa-large`, `pix2struct-chartqa-base`, `pix2struct-screen2words-base`, etc.
+- **Runtime** : Python uniquement.
+- **Maturité** : ICML 2023, code ouvert mais entretenu de manière limitée (la doc dans le repo Google Research mentionne une dépendance JAX/T5X qui rebute en pratique — la plupart des utilisateurs passent par HF Transformers).
+- **Signaux extractibles** : variable selon le checkpoint utilisé. Le modèle base produit du HTML simplifié sur screenshot — pas utile pour un calendrier d'alternance. Les checkpoints fine-tunés produisent des réponses VQA, des captions, des transcriptions de chart. ⚠️ **Aucun checkpoint Pix2Struct connu pour la classification cellule par cellule de calendrier de planning** — il faudrait fine-tuner.
+- **Faisabilité Deno** : sans objet directement.
+- **Coût d'implémentation** : élevé. Fine-tuning requis pour notre tâche, et la conversion de la pipeline JAX vers PyTorch puis vers HF Transformers ajoute de la friction.
+- **Verdict provisoire pour Sterny** : **disqualifié en première intention** pour les mêmes raisons que LayoutLMv3 et Donut. Atout différenciant (variable-resolution input préservant les ratios extrêmes) intéressant si un jour Sterny attaque les screenshots WhatsApp en photo très allongée — mais ça ne lève pas le bloc fine-tuning.
+
+### Technique 4 — Florence-2 (Microsoft, 2024)
+
+**Architecture** : VLM (Vision-Language Model) sequence-to-sequence multi-tâche. Encoder = DaViT (Dual Attention Vision Transformer), decoder = transformer texte. **Tâches activées par prompts textuels spécifiques** (`<CAPTION>`, `<OD>` pour object detection, `<OCR>`, `<OCR_WITH_REGION>`, `<DENSE_REGION_CAPTION>`, `<REGION_TO_CATEGORY>`, etc.). Pré-entraîné sur FLD-5B (5.4 milliards d'annotations sur 126 millions d'images), conçu pour zero-shot.
+
+> *VLM (Vision-Language Model)* = modèle qui prend image + texte en entrée et produit du texte. *Sequence-to-sequence* = transforme une séquence d'entrée (image-en-tokens + prompt) en séquence de sortie (texte). *Zero-shot* = utilisable directement sur une tâche sans ré-entraînement, en variant juste le prompt.
+
+- **Stack** : PyTorch + HF Transformers (`AutoModelForCausalLM` avec `trust_remote_code=True`). Modèles publics : `microsoft/Florence-2-base` (~230M params), `microsoft/Florence-2-large` (~770M params), variantes `-ft` (généralistes fine-tunés sur tâches downstream).
+- **Runtime** : Python uniquement. Conversions disponibles : OpenVINO (Intel CPU/iGPU), ONNX (à confirmer ⚠️).
+- **Maturité** : CVPR 2024, MIT license. Adopté en production par Roboflow comme modèle standard de leur stack inference. Repo officiel Microsoft maintenu.
+- **Signaux extractibles en zero-shot** :
+  - `<OCR>` : transcription brute de tout le texte de l'image.
+  - `<OCR_WITH_REGION>` : transcription + bounding boxes au niveau ligne (équivalent fonctionnel à Google Vision OCR sur ce point).
+  - `<OD>` : détection d'objets ouverts avec bounding boxes.
+  - `<CAPTION_TO_PHRASE_GROUNDING>` : repérage spatial d'un texte dans l'image (ex : "find the cell labeled Examens").
+- **Performance vérifiée (sources Roboflow et HF discussions)** :
+  - Sur **NVIDIA T4 GPU** : ~1 seconde par image pour les tâches courantes.
+  - Sur **CPU** : "several seconds" — pas d'ordre de grandeur précis fourni officiellement. ⚠️ Un thread HF (#57) rapporte 15 min pour un batch séquentiel sur **M1 Mac** (≈ inférence CPU/MPS), soit 1.5-2 s/image dans l'hypothèse d'un batch de quelques centaines d'images, **non confirmé** en mesure ciblée.
+- **Capacité française** : ⚠️ **non vérifiée explicitement par la doc Microsoft**. Le dataset FLD-5B est principalement anglophone. Risque de qualité OCR dégradée sur le français — à mesurer en spike.
+- **Faisabilité Deno** : sans objet directement. Microservice Python ou consommation via API tiers (Roboflow, HF Spaces, microservice maison).
+- **Coût d'implémentation** :
+  - **Avec API Roboflow ou équivalent** : faible. Quelques dizaines de lignes pour l'intégration côté Edge Function.
+  - **En self-host** : moyen-élevé. Microservice Python avec poids à charger (~3 GB pour Florence-2-large), GPU recommandé, monitoring à mettre en place.
+- **Verdict provisoire pour Sterny** : **candidate intéressante en zero-shot** — c'est le seul modèle de la famille qui ne demande pas de fine-tuning. Apport potentiel : alternative à Google Vision OCR de F3 (point T1 de F3), avec en bonus la capacité de grounding spatial (`<CAPTION_TO_PHRASE_GROUNDING>` permet potentiellement de demander "trouve les cellules contenant Examens" et de récupérer leurs bounding boxes — utile pour Matthieu où le texte intra-cellule est métier-pertinent). À comparer en spike avec Vision OCR sur Martin et Matthieu : qualité de transcription FR + coût + latence. Si Florence-2 perd nettement face à Vision OCR sur la qualité française, à ranger.
+
+### Technique 5 — Surya / Marker (datalab.to)
+
+**Architecture** : Surya = pipeline ML d'OCR + layout analysis + reading order + table recognition. Marker = couche de plus haut niveau qui s'appuie sur Surya pour produire du Markdown / JSON / HTML à partir de PDFs ou images. Marker peut optionnellement appeler un LLM (Gemini 2.0 Flash par défaut, configurable) pour résoudre des cas ambigus (fusion de tables sur plusieurs pages, correction OCR).
+
+- **Stack** : Python / PyTorch. Surya disponible en `pip install surya-ocr`. Marker en `pip install marker-pdf`.
+- **Runtime** : Python uniquement, GPU recommandé.
+- **Maturité** : projet en développement actif (datalab.to est une startup avec API hostée commerciale). Versions publiées régulièrement. Benchmarks publics affichés contre Tesseract et Google Cloud Vision.
+- **Licensing** :
+  - Code Surya : **GPL** — incompatible avec une intégration directe en propriétaire fermé. Acceptable uniquement via API hostée ou via microservice isolé qui parle HTTP à Sterny (la séparation par le réseau évite la contamination GPL du code Sterny).
+  - Weights Surya : "modified AI Pubs Open Rail-M license" — free pour startups <2M$ funding/revenue. **Sterny rentre dans ce cadre** (solo founder bootstrapped). À reconfirmer juridiquement avant prod.
+  - Marker : voir repo (probablement même schéma).
+- **Signaux extractibles via la stack complète Marker** :
+  - Conversion PDF → Markdown / JSON structuré.
+  - **Détection de tables** avec structure ligne/colonne préservée.
+  - OCR multi-langues (90+ langues, dont français).
+  - Reading order (utile pour les documents multi-colonnes).
+  - Détection de blocks layout (titres, paragraphes, tables, équations).
+- **Capacité française** : ⚠️ **annoncée par la doc dans la liste des 90+ langues**, qualité spécifique non mesurée par benchmark public clair. À mesurer en spike sur Mathis et Matthieu.
+- **Faisabilité Deno** : sans objet directement.
+  - **Option A (API hostée datalab.to)** : appel HTTP depuis Edge Function. Pas de souci de licensing GPL. ⚠️ Pricing à vérifier — la doc parle d'une API hostée mais le tarif et les quotas n'ont pas été investigués cette session.
+  - **Option B (self-host)** : microservice Python avec Surya + Marker, isolé du reste de Sterny par le réseau, GPU recommandé.
+- **Coût d'implémentation** :
+  - **Option API** : faible. Quelques lignes d'intégration.
+  - **Option self-host** : élevé. Containerisation, GPU à provisionner, monitoring, mise à jour des poids.
+- **Verdict provisoire pour Sterny** : **candidate sérieuse à mesurer en spike** côté API hostée. Apport potentiel double : (a) extraction de la **structure de table de Martin** sans coder de morphologie (Surya fait du table recognition end-to-end), (b) conversion de Mathis et Matthieu en Markdown structuré utilisable en aval. Risque principal : opacité sur la fiabilité spécifique de la détection couleur de fond (Surya/Marker ne le mentionnent pas explicitement — probablement absent comme la majorité des outils OCR). ⚠️ **Hypothèse non vérifiée : Surya ne donne pas la couleur de fond, comme la quasi-totalité des outils OCR** — à confirmer en spike.
+
+### Rappel — Table Transformer / TATR (Microsoft)
+
+**Préambule explicite** : TATR a déjà été cartographié en F2 Technique 4 sous l'angle "solution autonome pour grille + couleur" et disqualifié à ce titre car il ne fournit pas la couleur de fond. **F4 le rouvre sous un angle distinct non tranché en F2 : composant ML d'extraction de grille pour Martin (image raster) en alternative aux approches morphologiques non-ML de F2 (magick-wasm, OpenCV.js, algo manuel ImageData)**.
+
+**Angle F4** : si les approches morphologiques de F2 échouent sur des fixtures dégradées (photos floues, qualité variable type screenshot WhatsApp), TATR peut être consulté comme fallback ML pour produire la grille — bounding boxes des lignes, des colonnes et des cellules. Une fois la grille extraite, F2 reprend la main pour la classification couleur de chaque cellule à partir des bounding boxes fournies par TATR.
+
+**Caractéristiques rapides (déjà détaillées en F2 T4)** :
+- Architecture DETR (Detection Transformer) fine-tuné par Microsoft sur PubTables-1M.
+- Stack PyTorch + HF Transformers, modèle `microsoft/table-transformer-structure-recognition`.
+- Zero-shot exploitable sur le domaine "tables de documents" — pas de fine-tuning Sterny requis.
+- Sortie : bounding boxes au format COCO pour chaque ligne, colonne et cellule détectée.
+
+**Verdict provisoire pour Sterny côté F4** : **fallback à garder en réserve**. Pas une candidate primaire — l'algo manuel ImageData ou magick-wasm de F2 sont nettement plus simples à intégrer si la grille se laisse extraire morphologiquement. À rouvrir en spike uniquement si F2 plafonne sur des fixtures dégradées dans la suite de la recherche.
+
+### Repoussoirs
+
+Modèles ou familles cités fréquemment dans le domaine Document AI mais hors-scope pour Sterny et fermés explicitement ici pour traçabilité.
+
+- **MarkupLM (Microsoft)** : encoder pour HTML/XML, cible documents structurés en markup. Hors scope — Sterny ne traite pas du HTML/XML.
+- **Nougat (Meta)** : OCR-free pour articles scientifiques (formules LaTeX, tables académiques). Domaine d'entraînement très éloigné des plannings d'alternance.
+- **GraphDoc / FormNet** : networks orientés formulaires textuels avec graphes relationnels. Cible cas d'usage "formulaires administratifs" — pas un calendrier.
+- **DiT seul (Document Image Transformer)** : encoder de pré-entraînement, pas une tâche utilisable telle quelle. Brique d'autres modèles, pas un candidat autonome.
+- **TableMaster, TableFormer (IBM)** : alternatives à TATR, mêmes limites côté couleur de fond. Pas de gain identifié à les rouvrir séparément si TATR est déjà en réserve.
+
+### Modes de consommation (transversal)
+
+Aucun des modèles ci-dessus ne tourne nativement en Deno. La question pratique pour Sterny est : **comment Edge Function → modèle ML ?**
+
+#### A. Hugging Face Inference Providers (serverless)
+
+**Principe** : appel HTTP depuis Edge Function vers `api-inference.huggingface.co`, HF route la requête vers le provider underlying (HF Inference, Replicate, Together, Fireworks, etc.) selon le modèle.
+
+- **Pricing** : pay-per-second sur le hardware du provider, sans markup HF. Crédits mensuels inclus avec les comptes (PRO 9$/mois donne 20× plus de crédits).
+- **Latence** : variable selon le modèle et le provider. Cold starts possibles si le modèle n'est pas pré-chauffé chez le provider.
+- ⚠️ **Limite documentée juillet 2025** : "hf-inference focuses mostly on CPU inference (e.g. embedding, text-ranking, text-classification, or smaller LLMs that have historical importance like BERT or GPT-2)". Conséquence : **les modèles ML lourds de F4 (Donut, Pix2Struct, Florence-2, LayoutLMv3 fine-tuné) ne sont en général pas servis en serverless HF** — il faut soit utiliser un autre provider routé par HF, soit un Inference Endpoint dédié.
+- **Pour Sterny** : peu praticable pour la majorité des candidats F4. À vérifier modèle par modèle si un provider routé est dispo.
+
+#### B. Hugging Face Inference Endpoints (dédié)
+
+**Principe** : déploiement du modèle sur une instance HF dédiée (CPU ou GPU), facturée à l'heure pendant la durée de vie de l'endpoint. Scale-to-zero possible mais avec cold start.
+
+- **Pricing** : ⚠️ pricing horaire par instance, ordres de grandeur cités sur le marché (cf. point C ci-dessous) — non vérifié spécifiquement sur la page HF Endpoints au moment de cette session.
+- **Latence** : faible quand l'endpoint est warm. Cold start de quelques secondes à quelques minutes selon la taille du modèle.
+- **Pour Sterny** : viable mais coûteux si l'endpoint reste warm 24/7 alors que Sterny a peu de trafic. Scale-to-zero atténue mais introduit cold starts visibles côté utilisateur.
+
+#### C. Replicate
+
+**Principe** : modèles publics ou privés exposés en REST API. Pricing par seconde GPU.
+
+- **Pricing observé sur le marché** : ⚠️ ~5$/h pour A100 80GB selon une source secondaire (blaxel.ai, février 2026), à comparer à ~2.50$/h sur Modal pour la même carte. **Pricing non vérifié sur la page officielle Replicate cette session.**
+- **Latence** : modèles publics pre-warmed → cold start faible. Modèles custom → cold starts plus longs.
+- **Pour Sterny** : viable pour Florence-2 si un modèle public Replicate l'expose (à vérifier ⚠️). Pour Donut/Pix2Struct/LayoutLMv3 fine-tunés sur Sterny, déploiement custom requis avec Cog (l'outil de packaging Replicate).
+
+#### D. Modal
+
+**Principe** : SDK Python pour déployer des fonctions GPU serverless. Sterny écrirait un microservice Python avec `@app.function(gpu="T4")` et appellerait l'endpoint depuis l'Edge Function.
+
+- **Pricing** : pay-per-second GPU. ⚠️ ~2.50$/h pour A100 80GB selon source secondaire — non vérifié page officielle Modal cette session.
+- **Latence** : cold start documenté à 2-4s sur warm pool, pouvant atteindre plus d'une minute pour gros modèles selon une source secondaire ⚠️ (spheron.network, mars 2026).
+- **Pour Sterny** : viable si l'équipe est à l'aise avec Python + Modal SDK. Plus de contrôle qu'avec Replicate, plus d'efforts d'intégration.
+
+#### E. RunPod Serverless
+
+**Principe** : containers Docker custom ou templates pré-faits, pricing par seconde GPU.
+
+- **Pricing observé** : ⚠️ A100 40GB ~1.89$/h, A100 80GB ~2.17$/h, H100 ~4.47$/h (introl.com, décembre 2025) — non vérifié page officielle.
+- **Latence** : 48% des cold starts sous 200ms d'après leur communication marketing (source RunPod direct, à pondérer), jusqu'à 60s pour gros containers customs.
+- **Pour Sterny** : viable, avec une learning curve plus importante (Docker custom).
+
+#### F. Self-host microservice Python (Cloud Run / Railway / Fly.io)
+
+**Principe** : Sterny héberge son propre microservice Python avec le modèle chargé en mémoire, exposé en HTTP, derrière un load balancer ou autoscaler.
+
+- **Pricing** : variable selon le provider, généralement par instance/heure ou par requête.
+- **Latence** : maîtrisée si l'instance reste warm, cold starts importants si scale-to-zero (un modèle de 770M params à charger depuis le disque prend plusieurs secondes).
+- **Pour Sterny** : option la plus flexible et la plus maîtrisée, mais demande un effort ops significatif (CI/CD du microservice, monitoring, mise à jour des poids, dimensionnement). À évaluer uniquement si un candidat F4 est confirmé comme indispensable et qu'aucune des options A-E ne convient.
+
+#### Synthèse modes de consommation pour Sterny
+
+Pour la majorité des candidats F4, le chemin le plus court côté implémentation est **HF Inference Endpoints dédié (B) ou Replicate (C)** si un modèle public est dispo. **Modal (D)** est le plan B le plus flexible si on doit packager du custom. **Self-host (F)** est la cible si Sterny industrialise un candidat sur la durée. **HF Inference Providers serverless (A)** est en général pas applicable aux modèles ML lourds de F4 selon la doc HF de juillet 2025.
+
+### Recommandation pour la suite
+
+**Reco principale : un seul candidat F4 mérite un spike rapide, c'est Florence-2 en zero-shot.** Tous les autres candidats demandent un fine-tuning sur dataset Sterny inexistant — ils restent documentés mais ne sont pas actionables tant que le pipeline non-ML (F1+F2+F3) n'est pas déjà en place et que Sterny n'a pas de volume de plannings réels annotés.
+
+**Phase 1 — Spike Florence-2 sur Martin** : ~2-3h. Comparer la transcription `<OCR>` et `<OCR_WITH_REGION>` de Florence-2-large à Google Vision OCR de F3 sur la même fixture. Mesures à produire : (a) qualité de transcription du texte présent dans l'image (en-têtes, légende, noms de groupes), (b) qualité spécifique sur le français, (c) bounding boxes au niveau ligne ou cellule, (d) latence sur l'option choisie (Replicate, HF Endpoints, ou Roboflow API). Si Florence-2 fait jeu égal ou mieux que Vision OCR sur le français, c'est une option B documentée pour Sterny ; sinon, on referme et Vision OCR reste la candidate primaire de F3.
+
+**Phase 2 — Spike Surya / Marker via API hostée datalab.to sur les 3 fixtures** : ~2h. Soumettre Martin, Mathis, Matthieu à l'API hostée et observer la sortie Markdown / JSON. Mesures : (a) qualité d'extraction du texte (FR), (b) qualité de la détection de structure de table (apport principal sur Martin), (c) capacité à exposer la couleur de fond (probablement non, mais à vérifier explicitement). Pricing API à clarifier en début de spike.
+
+**Phase 3 — Spike TATR comme composant grille pour Martin** : ~2h. **Conditionnel** — à n'ouvrir que si l'algo manuel ImageData / magick-wasm / OpenCV.js de F2 plafonne sur des fixtures dégradées dans la suite de la recherche. Sinon, classer en réserve.
+
+**Tous les autres candidats F4 (LayoutLMv3, Donut, Pix2Struct)** restent documentés ici pour traçabilité de l'état de l'art mais ne sont pas actionables dans le contexte Sterny actuel. À rouvrir uniquement si Sterny atteint un palier où un dataset annoté de plusieurs centaines de plannings devient disponible — situation qui n'arrivera pas avant des mois d'exploitation réelle.
 
 ---
 
