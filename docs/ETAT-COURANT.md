@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 29 avril 2026 — recherche profonde Axe 1 poursuivie, Famille 4 cartographiée et committée. Quatre familles sur cinq couvertes au total. Reste : Famille 5 (acteurs marché cloud transversal — synthèse Adobe Extract / Azure DI / Google DocAI / AWS Textract).
+**Dernière mise à jour** : 30 avril 2026 — Famille 5 cartographiée et committée, Axe 1 complet (5 familles sur 5). Découverte F5 sur Google DocAI OCR Processor + compute_style_info qui modifie la cartographie F2 T5 (zone grise comblée). 3 candidates cloud retenues pour la phase spike technique à venir. Bascule recherche → spike technique actée.
 
 ---
 
@@ -89,6 +89,30 @@ Pas de décision aujourd'hui — la question est notée pour traitement par la s
 **Reste à faire dans l'Axe 1** : Famille 5 (acteurs marché cloud transversal — synthèse). Note : une partie de la Famille 5 a déjà été couverte transversalement dans les Familles 2 (Azure DI STYLE_FONT, Google DocAI sans backgroundColor confirmé, AWS Textract idem, Adobe Extract ambigu) et 3 (Google Vision OCR `DOCUMENT_TEXT_DETECTION`, mention de Adobe Extract OCR à compléter). Famille 5 sera donc plus une **synthèse cross-familles** qu'une exploration fraîche, à compléter sur Azure Read et AWS Textract `DetectDocumentText` côté OCR pur.
 
 **Synchronisation project knowledge Claude.ai** : à effectuer après ce commit. Fichiers à actualiser dans le project knowledge claude.ai après cette session : (1) `ETAT-COURANT.md` mis à jour par ce commit, (2) `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md` à re-uploader (version commit `d5c0e77` avec Famille 4 incluse, remplace la version précédente).
+
+**Aucun commit de code dans cette session** (pure recherche, doc uniquement). Modifs working tree historiques toujours préservées : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
+
+---
+
+## 0. Session du 30 avril — Recherche profonde Axe 1, Famille 5 + clôture Axe 1
+
+**Contexte** : ouverture session claude.ai en suite directe de la session du 29 avril sur la recherche Famille 4. Objectif : démarrer la Famille 5 (acteurs marché cloud transversal) avec la même méthodologie shortlist → validation → recherche détaillée → commit. Cadrage explicite en début de session : Famille 5 doit rester sobre, en synthèse cross-familles plutôt qu'en exploration fraîche, puisque F2 T5 et F3 T4 ont déjà couvert une partie significative du périmètre.
+
+**Livrables Git** :
+- `422a883` : Famille 5 cartographiée (acteurs marché cloud, synthèse transversale) — 4 acteurs détaillés (Google DocAI avec ses 3 processeurs distincts, Microsoft Azure DI Read + Layout rappel + Custom Neural traçabilité, AWS Textract DetectDocumentText vs AnalyzeDocument, Adobe Extract synthèse cross-F2/F3) + rappel Vision OCR + 3 acteurs volontairement écartés (Mistral OCR, Reducto/LlamaParse/Unstructured, Gemini File API) + tableau comparatif synthétique 4 axes (extraction structure / couleur de fond / OCR FR / pricing) sur 11 lignes (acteurs et sous-produits) + recommandation finale en 4 points avec hiérarchisation des 3 candidates retenues pour la phase spike technique.
+
+**Découverte importante de la session — modification cartographie F2 T5** : Google DocAI **OCR Processor** (Enterprise Document OCR) avec premium feature `compute_style_info` expose `backgroundColor` au niveau token, exactement comme Azure DI STYLE_FONT mais via OCR Processor au lieu de Layout. F2 T5 avait correctement testé Layout Parser et conclu à l'absence de backgroundColor — cette conclusion reste vraie pour Layout Parser. Mais OCR Processor + premium feature n'avait jamais été investigué. Confirmé par doc officielle Google Cloud Document AI Enterprise OCR (2026-04-24 UTC) avec exemple JSON explicite. Limite identique à Azure DI : couleur du bounding box du token (mot), pas de la cellule entière. Pour Sterny : utile sur Mathis et Matthieu (texte intra-cellule), pas sur Martin (cellules colorées sans texte). Coût $7.50/1000 pages avec compute_style_info activé, soit **~2× moins cher qu'Azure DI Layout+STYLE_FONT à $16/1000**. À intégrer au spike F2 cloud déjà prévu en parallèle d'Azure DI.
+
+**Apprentissage méthodologique de la session** : la règle actée le 28 avril ("aucune hypothèse non vérifiée livrée comme conclusion provisoire — soit on vérifie, soit on dit explicitement non vérifié") s'est révélée critique sur la Famille 5 où les pages produit cloud sont particulièrement remplies de marketing speak. Application stricte : tous les chiffres pricing avec date de page consultée, tous les `⚠️` explicites pour les capacités annoncées-non-vérifiées (notamment l'ambiguïté Adobe couleur de fond Technical Brief 2021 vs doc How-To 2026 — non tranchée par doc seule, à fermer en spike Free Tier). Le tableau comparatif final ne contient QUE des affirmations vérifiées par doc officielle ou des `⚠️` explicites.
+
+**Reste à faire dans l'Axe 1** : **rien**. Axe 1 (état de l'art académique + open source + acteurs marché cloud transversal) **complet**. Bascule en phase spike technique actée, avec 3 candidates retenues hiérarchisées :
+1. **Google Vision OCR** (F3 T1) — candidate primaire OCR, à tester sur Martin + Mathis + Matthieu
+2. **Google DocAI OCR + `compute_style_info`** (F5) — candidate primaire couleur de fond, à tester sur Mathis et Matthieu, $7.50/1000
+3. **Azure DI Layout + STYLE_FONT** (F2 T5) — candidate alternative couleur de fond, à comparer directement avec #2 sur les mêmes fixtures, $16/1000
+
+Plus le spike Adobe Extract Free Tier en mode académique (fermeture zone grise) sans dépendance produit Sterny. Plus les recommandations Phase 1/2/3 de la Famille 4 (Florence-2 zero-shot sur Martin, Surya/Marker via API hostée datalab.to sur les 3 fixtures, TATR conditionnel).
+
+**Synchronisation project knowledge claude.ai** : à effectuer après ce commit. Fichiers à actualiser dans le project knowledge claude.ai après cette session : (1) `ETAT-COURANT.md` mis à jour par ce commit, (2) `docs/recherche/PARSER-AXE-1-ETAT-DE-L-ART.md` à re-uploader (version commit `422a883` avec Famille 5 incluse, remplace la version précédente `d5c0e77`).
 
 **Aucun commit de code dans cette session** (pure recherche, doc uniquement). Modifs working tree historiques toujours préservées : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
