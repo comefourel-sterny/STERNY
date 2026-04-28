@@ -154,6 +154,26 @@ Aussi présents : `setFont` 19, `save` 13, `restore` 13, `clip` 13, `dependency`
 
 **Trace audit** : ce CSV sera consommé par les scripts 1B.5 (Mathis) et 1B.7 (Matthieu). Si la projection `statut_observe_pdf → statut_business` se révèle fausse en 1B.4, on corrige une seule colonne sans re-saisir le reste.
 
+### Étape 1B.2 — Score Mathis vs vérité terrain
+
+**Statut au 28 avril 2026** : étape close, verdict **signal fort**.
+
+| Mesure | Valeur |
+|---|---|
+| Match cellule-par-cellule | **54 / 54** (100,0%) |
+| Critère go/no-go cible | ≥80% = signal fort |
+| Verdict | **signal fort dépassé largement** |
+| Mismatches | 0 |
+| Ancres ISO trouvées | 54 / 54 |
+| Fills retenus / total | 266 / 634 |
+| Fills orphelins | 16 (légende du PDF, hors grille) |
+| Distribution prédite | 36 company + 18 school = 54 |
+| Distribution attendue (vérité terrain) | 36 company + 18 school = 54 |
+
+**Anomalies à connaître pour la production (sans impact sur le score)** :
+- 7 semaines à votes faibles (1 à 4 votes au lieu de 5) sur les bordures du calendrier (semaine de rentrée 2025-09-01, fin de cycle 2026-08-31, transitions vacances) — Hyperplanning n'affiche pas tous les jours ouvrés sur ces semaines de bordure. Côme a confirmé visuellement que c'est le PDF lui-même qui est ainsi, pas un bug du script. Ces semaines auront un seuil de confiance plus exigeant en production (remontée à l'utilisateur).
+- 8 semaines à votes mixtes (5 votes mais couleurs différentes) — typiquement un jour férié rose isolé dans une semaine cyan/verte. La règle de majorité tranche correctement.
+
 ---
 
 ## 3bis. Étape 1A — Extraction brute des fills et textes
@@ -280,15 +300,13 @@ Choix techniques : Y-axis option 2 (pré-calcul `y_svg = H - y_pdf - height` pou
 
 ---
 
-## 4. Verdict 1A et décision suite (verdict global spike #1 reste en placeholder)
+## 4. Verdict go/no-go
 
-**Verdict 1A** : `pdf.js getOperatorList()` est confirmé comme voie viable pour extraire la structure d'une grille de calendrier sur PDF vectoriel (Hyperplanning + Word/PDF generator). L'extraction brute en JSON est fidèle visuellement (verdict A Côme), avec une couverture suffisante des cas courants pour passer à l'étape 1B.
+**Sur Mathis** : verdict atteint au 28 avril 2026 — **signal fort**, 100% de match cellule-par-cellule contre vérité terrain. pdf.js getOperatorList est confirmé comme voie viable pour le pipeline parser Sterny sur les PDFs Hyperplanning.
 
-**Étape suivante : 1B — matching contre vérité terrain.** Construction de la grille (clustering x/y des fills, détection de lignes, identification de cellules), classification cellule → semaine ISO, mapping couleur → statut school/company, puis comparaison avec un CSV vérité terrain rempli par Côme.
+**Sur Matthieu** : à mesurer en étapes 1B.6 et 1B.7. Le score Mathis seul ne suffit pas à acter la décision F1/F2/F3 sur le pipeline parser global. Matthieu porte 3 difficultés majeures absentes de Mathis : (1) calendrier civil jour-par-jour (agrégation jour→semaine côté code), (2) 2 pages, (3) hypothèse fragile "cellule vide = company" à valider ou invalider.
 
-**Prérequis 1B** : CSV vérité terrain Matthieu (M1 + M2 CCA, statut school/company par semaine ISO) à rédiger par Côme avant le run 1B.
-
-**Verdict global du spike #1** : reste en placeholder — sera complété après clôture de 1B (et 1C si nécessaire). Idem pour la décision globale F1 vs F2 vs F3 sur le pipeline parser Sterny.
+**Verdict global du spike #1** : reste en placeholder jusqu'à clôture de 1B.6/1B.7 sur Matthieu.
 
 ---
 
@@ -324,6 +342,14 @@ Conséquence : sur Mathis, le titre du PDF est rendu en gris par défaut dans le
 ### 5.4 Warning `standardFontDataUrl` — cosmétique
 
 Au load des PDFs, pdfjs-dist v5.7.284 émet un warning `Unable to load font data at: file://.../LiberationSans-Regular.ttf` malgré le `standardFontDataUrl` passé à `getDocument()`. **Le warning est cosmétique** : le texte est correctement extrait via `getTextContent()` — accents (`â é ê ô û`), mots métier (Toussaint, Examens, Révisions, Pâques, Rattrapages, Soutenance, noms de mois français complets), ponctuation, casse, le tout sans aucun caractère de contrôle ou substitution sur les 1 888 chaînes extraites. À ne pas creuser.
+
+### 5.5 Découverte 1B.2 : les annotations ISO sont rendues en 2 items texte distincts par pdf.js
+
+Sur Mathis, "L 01 (S 36)" est rendu par pdf.js getOperatorList comme deux items texte distincts ("L 01" puis "(S 36)") alignés sur le même Y, séparés en X par environ 26 unités. Pattern d'extraction à 2 passes nécessaire : matching séparé puis appariement par proximité spatiale (même Y avec tolérance 1 point, X croissant avec dx ∈ ]0, 50]). Réutilisable sur tous les PDFs Hyperplanning et probablement la majorité des PDFs vectoriels avec annotations multi-tokens.
+
+### 5.6 Découverte 1B.2 : modèle de grille jour-par-jour vertical pour Mathis
+
+Mathis (et probablement tous les calendriers Hyperplanning compacts annuels) a une grille jour-par-jour vertical : chaque colonne X = un mois, chaque rangée Y = un jour-du-mois (pas Y entre jours consécutifs ≈ 8,88 unités). Une semaine ouvrée s'étale donc sur 5 rangées Y consécutives descendantes dans la même colonne mois, pas sur la même rangée Y. La fenêtre de rattachement fill→ancre lundi est rectangulaire : dx ∈ [-5, +50] (même colonne mois) × dy ∈ [-3, +42] (5 jours sous l'ancre = 4 × 9 unités + tolérance). Cohérent avec le constat empirique de DETTE #37 : la lecture humaine d'un calendrier Hyperplanning n'est pas linéaire, mais bien jour-par-jour vertical par colonne mensuelle.
 
 ---
 
