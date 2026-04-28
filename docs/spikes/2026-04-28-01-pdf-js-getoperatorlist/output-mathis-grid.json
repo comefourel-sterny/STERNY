@@ -1,0 +1,1754 @@
+{
+  "fixture": "Mathis.pdf",
+  "generatedAt": "2026-04-28T15:18:43.010Z",
+  "totalWeeks": 54,
+  "metaCounts": {
+    "fillsTotal": 634,
+    "fillsRetained": 266,
+    "fillsOrphan": 16,
+    "anchorsFound": 54
+  },
+  "skeleton": [
+    {
+      "weekStartISO": "2025-09-01",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 458.86
+        }
+      ],
+      "anchorX": 52.2,
+      "anchorY": 460.9
+    },
+    {
+      "weekStartISO": "2025-09-08",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 396.67
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 387.79
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 378.91
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 361.15
+        }
+      ],
+      "anchorX": 52.2,
+      "anchorY": 398.71
+    },
+    {
+      "weekStartISO": "2025-09-15",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 334.51
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 325.63
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 316.75
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 307.87
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 298.97
+        }
+      ],
+      "anchorX": 52.2,
+      "anchorY": 336.55
+    },
+    {
+      "weekStartISO": "2025-09-22",
+      "status": "company",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 69.6,
+          "y": 272.33
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 263.45
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 254.57
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 236.81
+        }
+      ],
+      "anchorX": 52.2,
+      "anchorY": 274.37
+    },
+    {
+      "weekStartISO": "2025-09-29",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 210.17
+        },
+        {
+          "color": "#00ccff",
+          "x": 69.6,
+          "y": 201.29
+        }
+      ],
+      "anchorX": 52.2,
+      "anchorY": 212.21
+    },
+    {
+      "weekStartISO": "2025-10-06",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 414.46
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 405.58
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 396.67
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 387.79
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 378.91
+        }
+      ],
+      "anchorX": 101.66,
+      "anchorY": 416.5
+    },
+    {
+      "weekStartISO": "2025-10-13",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 352.27
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 343.39
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 334.51
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 325.63
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 316.75
+        }
+      ],
+      "anchorX": 101.66,
+      "anchorY": 354.31
+    },
+    {
+      "weekStartISO": "2025-10-20",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 290.09
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 281.21
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 272.33
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 263.45
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 254.57
+        }
+      ],
+      "anchorX": 101.66,
+      "anchorY": 292.13
+    },
+    {
+      "weekStartISO": "2025-10-27",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 227.93
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 219.05
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 210.17
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 201.29
+        },
+        {
+          "color": "#00ccff",
+          "x": 119.06,
+          "y": 192.38
+        }
+      ],
+      "anchorX": 101.66,
+      "anchorY": 229.97
+    },
+    {
+      "weekStartISO": "2025-11-03",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 168.5,
+          "y": 441.1
+        },
+        {
+          "color": "#00ccff",
+          "x": 168.5,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 168.5,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 168.5,
+          "y": 414.46
+        },
+        {
+          "color": "#00ccff",
+          "x": 168.5,
+          "y": 405.58
+        }
+      ],
+      "anchorX": 151.1,
+      "anchorY": 443.14
+    },
+    {
+      "weekStartISO": "2025-11-10",
+      "status": "school",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 378.91
+        },
+        {
+          "color": "#ff8080",
+          "x": 168.5,
+          "y": 370.03
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 361.15
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 352.27
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 343.39
+        }
+      ],
+      "anchorX": 151.1,
+      "anchorY": 380.95
+    },
+    {
+      "weekStartISO": "2025-11-17",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 316.75
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 307.87
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 298.97
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 290.09
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 281.21
+        }
+      ],
+      "anchorX": 151.1,
+      "anchorY": 318.79
+    },
+    {
+      "weekStartISO": "2025-11-24",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 254.57
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 245.69
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 236.81
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 227.93
+        },
+        {
+          "color": "#00ff00",
+          "x": 168.5,
+          "y": 219.05
+        }
+      ],
+      "anchorX": 151.1,
+      "anchorY": 256.61
+    },
+    {
+      "weekStartISO": "2025-12-01",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 458.86
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 449.98
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 441.1
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 432.22
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 423.34
+        }
+      ],
+      "anchorX": 200.54,
+      "anchorY": 460.9
+    },
+    {
+      "weekStartISO": "2025-12-08",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 396.67
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 387.79
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 378.91
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 370.03
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 361.15
+        }
+      ],
+      "anchorX": 200.54,
+      "anchorY": 398.71
+    },
+    {
+      "weekStartISO": "2025-12-15",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 334.51
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 325.63
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 316.75
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 307.87
+        },
+        {
+          "color": "#00ff00",
+          "x": 217.94,
+          "y": 298.97
+        }
+      ],
+      "anchorX": 200.54,
+      "anchorY": 336.55
+    },
+    {
+      "weekStartISO": "2025-12-22",
+      "status": "company",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 272.33
+        },
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 263.45
+        },
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 254.57
+        },
+        {
+          "color": "#ff8080",
+          "x": 217.94,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 236.81
+        }
+      ],
+      "anchorX": 200.54,
+      "anchorY": 274.37
+    },
+    {
+      "weekStartISO": "2025-12-29",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 210.17
+        },
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 201.29
+        },
+        {
+          "color": "#00ccff",
+          "x": 217.94,
+          "y": 192.38
+        }
+      ],
+      "anchorX": 200.54,
+      "anchorY": 212.21
+    },
+    {
+      "weekStartISO": "2026-01-05",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 414.46
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 405.58
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 396.67
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 387.79
+        }
+      ],
+      "anchorX": 250.01,
+      "anchorY": 425.38
+    },
+    {
+      "weekStartISO": "2026-01-12",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 361.15
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 352.27
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 343.39
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 334.51
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 325.63
+        }
+      ],
+      "anchorX": 250.01,
+      "anchorY": 363.19
+    },
+    {
+      "weekStartISO": "2026-01-19",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 298.97
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 290.09
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 281.21
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 272.33
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 263.45
+        }
+      ],
+      "anchorX": 250.01,
+      "anchorY": 301.01
+    },
+    {
+      "weekStartISO": "2026-01-26",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 236.81
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 227.93
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 219.05
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 210.17
+        },
+        {
+          "color": "#00ccff",
+          "x": 267.41,
+          "y": 201.29
+        }
+      ],
+      "anchorX": 250.01,
+      "anchorY": 238.85
+    },
+    {
+      "weekStartISO": "2026-02-02",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 449.98
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 441.1
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 414.46
+        }
+      ],
+      "anchorX": 299.45,
+      "anchorY": 452.02
+    },
+    {
+      "weekStartISO": "2026-02-09",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 387.79
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 378.91
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 361.15
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 352.27
+        }
+      ],
+      "anchorX": 299.45,
+      "anchorY": 389.83
+    },
+    {
+      "weekStartISO": "2026-02-16",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 325.63
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 316.75
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 307.87
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 298.97
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 290.09
+        }
+      ],
+      "anchorX": 299.45,
+      "anchorY": 327.67
+    },
+    {
+      "weekStartISO": "2026-02-23",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 263.45
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 254.57
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 236.81
+        },
+        {
+          "color": "#00ccff",
+          "x": 316.85,
+          "y": 227.93
+        }
+      ],
+      "anchorX": 299.45,
+      "anchorY": 265.49
+    },
+    {
+      "weekStartISO": "2026-03-02",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 449.98
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 441.1
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 414.46
+        }
+      ],
+      "anchorX": 348.89,
+      "anchorY": 452.02
+    },
+    {
+      "weekStartISO": "2026-03-09",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 387.79
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 378.91
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 361.15
+        },
+        {
+          "color": "#00ccff",
+          "x": 366.29,
+          "y": 352.27
+        }
+      ],
+      "anchorX": 348.89,
+      "anchorY": 389.83
+    },
+    {
+      "weekStartISO": "2026-03-16",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 325.63
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 316.75
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 307.87
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 298.97
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 290.09
+        }
+      ],
+      "anchorX": 348.89,
+      "anchorY": 327.67
+    },
+    {
+      "weekStartISO": "2026-03-23",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 263.45
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 254.57
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 245.69
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 236.81
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 227.93
+        }
+      ],
+      "anchorX": 348.89,
+      "anchorY": 265.49
+    },
+    {
+      "weekStartISO": "2026-03-30",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 201.29
+        },
+        {
+          "color": "#00ff00",
+          "x": 366.29,
+          "y": 192.38
+        }
+      ],
+      "anchorX": 348.89,
+      "anchorY": 203.33
+    },
+    {
+      "weekStartISO": "2026-04-06",
+      "status": "school",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#ff8080",
+          "x": 415.75,
+          "y": 414.46
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 405.58
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 396.67
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 387.79
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 378.91
+        }
+      ],
+      "anchorX": 398.35,
+      "anchorY": 416.5
+    },
+    {
+      "weekStartISO": "2026-04-13",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 352.27
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 343.39
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 334.51
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 325.63
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 316.75
+        }
+      ],
+      "anchorX": 398.35,
+      "anchorY": 354.31
+    },
+    {
+      "weekStartISO": "2026-04-20",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 290.09
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 281.21
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 272.33
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 263.45
+        },
+        {
+          "color": "#00ff00",
+          "x": 415.75,
+          "y": 254.57
+        }
+      ],
+      "anchorX": 398.35,
+      "anchorY": 292.13
+    },
+    {
+      "weekStartISO": "2026-04-27",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 415.75,
+          "y": 227.93
+        },
+        {
+          "color": "#00ccff",
+          "x": 415.75,
+          "y": 219.05
+        },
+        {
+          "color": "#00ccff",
+          "x": 415.75,
+          "y": 210.17
+        },
+        {
+          "color": "#00ccff",
+          "x": 415.75,
+          "y": 201.29
+        }
+      ],
+      "anchorX": 398.35,
+      "anchorY": 229.97
+    },
+    {
+      "weekStartISO": "2026-05-04",
+      "status": "company",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 414.46
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 405.58
+        },
+        {
+          "color": "#ff8080",
+          "x": 465.19,
+          "y": 396.67
+        }
+      ],
+      "anchorX": 447.79,
+      "anchorY": 434.26
+    },
+    {
+      "weekStartISO": "2026-05-11",
+      "status": "company",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 361.15
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 352.27
+        },
+        {
+          "color": "#ff8080",
+          "x": 465.19,
+          "y": 343.39
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 334.51
+        }
+      ],
+      "anchorX": 447.79,
+      "anchorY": 372.07
+    },
+    {
+      "weekStartISO": "2026-05-18",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 307.87
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 298.97
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 290.09
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 281.21
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 272.33
+        }
+      ],
+      "anchorX": 447.79,
+      "anchorY": 309.91
+    },
+    {
+      "weekStartISO": "2026-05-25",
+      "status": "company",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#ff8080",
+          "x": 465.19,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 236.81
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 227.93
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 219.05
+        },
+        {
+          "color": "#00ccff",
+          "x": 465.19,
+          "y": 210.17
+        }
+      ],
+      "anchorX": 447.79,
+      "anchorY": 247.73
+    },
+    {
+      "weekStartISO": "2026-06-01",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 458.86
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 449.98
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 441.1
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 423.34
+        }
+      ],
+      "anchorX": 497.23,
+      "anchorY": 460.9
+    },
+    {
+      "weekStartISO": "2026-06-08",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 396.67
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 387.79
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 378.91
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 361.15
+        }
+      ],
+      "anchorX": 497.23,
+      "anchorY": 398.71
+    },
+    {
+      "weekStartISO": "2026-06-15",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 334.51
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 325.63
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 316.75
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 307.87
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 298.97
+        }
+      ],
+      "anchorX": 497.23,
+      "anchorY": 336.55
+    },
+    {
+      "weekStartISO": "2026-06-22",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 272.33
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 263.45
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 254.57
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 514.63,
+          "y": 236.81
+        }
+      ],
+      "anchorX": 497.23,
+      "anchorY": 274.37
+    },
+    {
+      "weekStartISO": "2026-06-29",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 514.63,
+          "y": 210.17
+        },
+        {
+          "color": "#00ff00",
+          "x": 514.63,
+          "y": 201.29
+        }
+      ],
+      "anchorX": 497.23,
+      "anchorY": 212.21
+    },
+    {
+      "weekStartISO": "2026-07-06",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 414.46
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 405.58
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 396.67
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 387.79
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 378.91
+        }
+      ],
+      "anchorX": 546.7,
+      "anchorY": 416.5
+    },
+    {
+      "weekStartISO": "2026-07-13",
+      "status": "school",
+      "confidence": 0.8,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 352.27
+        },
+        {
+          "color": "#ff8080",
+          "x": 564.1,
+          "y": 343.39
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 334.51
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 325.63
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 316.75
+        }
+      ],
+      "anchorX": 546.7,
+      "anchorY": 354.31
+    },
+    {
+      "weekStartISO": "2026-07-20",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 290.09
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 281.21
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 272.33
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 263.45
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 254.57
+        }
+      ],
+      "anchorX": 546.7,
+      "anchorY": 292.13
+    },
+    {
+      "weekStartISO": "2026-07-27",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 227.93
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 219.05
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 210.17
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 201.29
+        },
+        {
+          "color": "#00ff00",
+          "x": 564.1,
+          "y": 192.38
+        }
+      ],
+      "anchorX": 546.7,
+      "anchorY": 229.97
+    },
+    {
+      "weekStartISO": "2026-08-03",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 441.1
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 432.22
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 423.34
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 414.46
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 405.58
+        }
+      ],
+      "anchorX": 596.14,
+      "anchorY": 443.14
+    },
+    {
+      "weekStartISO": "2026-08-10",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 378.91
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 370.03
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 361.15
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 352.27
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 343.39
+        }
+      ],
+      "anchorX": 596.14,
+      "anchorY": 380.95
+    },
+    {
+      "weekStartISO": "2026-08-17",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 316.75
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 307.87
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 298.97
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 290.09
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 281.21
+        }
+      ],
+      "anchorX": 596.14,
+      "anchorY": 318.79
+    },
+    {
+      "weekStartISO": "2026-08-24",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 254.57
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 245.69
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 236.81
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 227.93
+        },
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 219.05
+        }
+      ],
+      "anchorX": 596.14,
+      "anchorY": 256.61
+    },
+    {
+      "weekStartISO": "2026-08-31",
+      "status": "company",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ccff",
+          "x": 613.54,
+          "y": 192.38
+        }
+      ],
+      "anchorX": 596.14,
+      "anchorY": 194.42
+    },
+    {
+      "weekStartISO": "2026-09-07",
+      "status": "school",
+      "confidence": 1,
+      "votes": [
+        {
+          "color": "#00ff00",
+          "x": 662.98,
+          "y": 405.58
+        },
+        {
+          "color": "#00ff00",
+          "x": 662.98,
+          "y": 396.67
+        },
+        {
+          "color": "#00ff00",
+          "x": 662.98,
+          "y": 387.79
+        },
+        {
+          "color": "#00ff00",
+          "x": 662.98,
+          "y": 378.91
+        },
+        {
+          "color": "#00ff00",
+          "x": 662.98,
+          "y": 370.03
+        }
+      ],
+      "anchorX": 645.58,
+      "anchorY": 407.62
+    }
+  ],
+  "matchSummary": {
+    "matched": 54,
+    "unmatched": 0,
+    "matchRate": 1
+  }
+}
