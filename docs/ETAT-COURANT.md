@@ -46,9 +46,35 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 - **Apprentissages portés en mémoire** dans `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/RESULTS.md` §5 (4 points : tableau de divergence pdf.js v5 réutilisable pour futurs spikes, pattern clipping save→eoClip→endPath→eoFill sans surestimation visible des bbox, TilingPattern limite connue sans impact métier, warning standardFontDataUrl cosmétique).
 
-**Étape 1B (matching contre vérité terrain) — en attente** : prérequis = Côme rédige le CSV vérité terrain Matthieu (M1 + M2 CCA, statut school/company par semaine ISO, ~30-45 min). Ouverture d'une nouvelle conversation Claude.ai en suite directe pour 1B avec les 5 docs de référence à jour. **Verdict global du spike #1 + décision F1/F2/F3 sur le pipeline parser Sterny restent en placeholder** jusqu'à clôture de 1B (et 1C si nécessaire).
+**Étape 1B (matching contre vérité terrain) — ouverte 28 avril après-midi** : voir bloc "Suite 28 avril après-midi" ci-dessous. Verdict global du spike #1 et décision F1/F2/F3 sur le pipeline parser Sterny restent en placeholder jusqu'à clôture de 1B (et 1C si nécessaire).
 
 **Modifs working tree historiques toujours préservées** : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
+
+### Suite 28 avril après-midi — Ouverture spike 1B + consigne pédagogique transverse
+
+**Étape 1B.1 — Préparation vérité terrain Mathis (3 commits docs, pas de code applicatif)**
+
+- `2cae874` chore(spike-01): gitignore *.csv in fixtures
+- `3a4e024` docs(spike-01): mention ground-truth CSVs in fixtures README
+- `fbde82f` docs(spike-01): add ground-truth methodology to RESULTS section 3
+
+Format CSV vérité terrain figé : 5 colonnes uniformes pour Mathis et Matthieu (`groupe`, `week_start_iso`, `statut_observe_pdf`, `statut_business`, `notes`). Une ligne par semaine ISO. La séparation `statut_observe_pdf` / `statut_business` permet de corriger la projection couleur → statut métier sans re-saisir le CSV si elle se révèle fausse en 1B.4.
+
+Squelette CSV Mathis généré côté Claude.ai (53 lignes pré-remplies, lundis du 2025-09-01 au 2026-08-31, groupe `R_CA_A3_2025-2026`) puis déposé par Côme dans `fixtures/mathis-ground-truth.csv` (gitignored, non commité). Saisie manuelle en cours.
+
+**Consigne pédagogique transverse**
+
+Décision actée pendant la session 1B.1 : Claude doit expliquer plus simplement, sans abréviation non-définie ni jargon décoratif. La règle est ajoutée en sous-section `### Niveau d'explication attendu` à la fin de §8 de CONTEXTE-PROJET.md. Elle s'applique à toute future session Claude.ai et à Claude Code (enregistrée en feedback memory locale dans `~/.claude/projects/-Users-comefourel-Dev-sterny/memory/feedback_pedagogy.md`).
+
+- `acd9028` docs(contexte): add pedagogy rules for Claude explanations
+
+**Découverte technique secondaire (DETTE #37 confirmée empiriquement)**
+
+Claude.ai a tenté de lire directement le PDF Mathis uploadé pour valider la structure de grille, et s'est trompé — conclusion erronée que le calendrier était jour-par-jour alors qu'il est semaine-par-semaine. Côme l'a corrigé immédiatement. À retenir : sur les questions de structure visuelle PDF, Claude.ai s'appuie sur l'observation de Côme, pas sur sa propre lecture.
+
+**État Git fin de bloc** : HEAD = `acd9028`. 4 nouveaux commits depuis la clôture 1A (`09b444e`). Working tree inchangé hors les 3 modifications historiques préservées (CreerAnnoncePage.jsx, audit Zone 1, notes techniques spike).
+
+**Prochaine étape** : 1B.2 — Reconstruction de grille Mathis depuis `output-mathis-cells.json`. Prompt Claude Code à rédiger une fois le CSV vérité terrain saisi par Côme et relu par Claude.ai.
 
 ---
 
