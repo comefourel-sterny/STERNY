@@ -1,0 +1,91 @@
+{
+  "fixtures/Mathis.pdf": {
+    "numPages": 1,
+    "pages": [
+      {
+        "pageNum": 1,
+        "viewport": {
+          "width": 841.92,
+          "height": 595.32
+        },
+        "totalOps": 12805,
+        "counts": {
+          "beginMarkedContentProps": 833,
+          "save": 995,
+          "eoClip": 870,
+          "constructPath": 1754,
+          "setGState": 2,
+          "setFillRGBColor": 1380,
+          "restore": 995,
+          "dependency": 19,
+          "setFillColorN": 125,
+          "endMarkedContent": 833,
+          "beginText": 831,
+          "setFont": 831,
+          "setTextMatrix": 831,
+          "setStrokeRGBColor": 831,
+          "showText": 831,
+          "endText": 831,
+          "setCharSpacing": 13
+        }
+      }
+    ]
+  },
+  "fixtures/Plannig_Matthieu.pdf": {
+    "numPages": 2,
+    "pages": [
+      {
+        "pageNum": 1,
+        "viewport": {
+          "width": 841.6795999999999,
+          "height": 595.1998
+        },
+        "totalOps": 4322,
+        "counts": {
+          "setFillRGBColor": 144,
+          "constructPath": 258,
+          "beginMarkedContentProps": 701,
+          "endMarkedContent": 701,
+          "beginText": 21,
+          "dependency": 7,
+          "setFont": 19,
+          "setTextMatrix": 27,
+          "showText": 699,
+          "moveText": 672,
+          "setCharSpacing": 506,
+          "setWordSpacing": 507,
+          "endText": 21,
+          "save": 13,
+          "clip": 13,
+          "restore": 13
+        }
+      },
+      {
+        "pageNum": 2,
+        "viewport": {
+          "width": 841.6795999999999,
+          "height": 595.1998
+        },
+        "totalOps": 4386,
+        "counts": {
+          "setFillRGBColor": 143,
+          "constructPath": 265,
+          "beginMarkedContentProps": 709,
+          "endMarkedContent": 709,
+          "beginText": 21,
+          "dependency": 7,
+          "setFont": 19,
+          "setTextMatrix": 27,
+          "showText": 707,
+          "moveText": 680,
+          "setCharSpacing": 519,
+          "setWordSpacing": 520,
+          "endText": 21,
+          "save": 13,
+          "clip": 13,
+          "restore": 13
+        }
+      }
+    ]
+  }
+}
