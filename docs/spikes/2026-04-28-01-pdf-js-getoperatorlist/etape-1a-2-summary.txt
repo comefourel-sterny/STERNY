@@ -1,0 +1,150 @@
+===========================================================
+  Résumé chiffré étape 1A.2 — extraction fills + texts
+===========================================================
+
+---- Mathis.pdf ----
+fichier  : output-mathis-cells.json
+taille   : 207675 octets (202.8 Ko)
+pages    : 1
+
+  Page 1
+    viewport                                   : 841.92 × 595.32
+    fills extraits (avec couleur RGB exploitable) : 634
+    palette de couleurs (8 distinctes, triée décroissante) :
+      #ffffff → 284
+      #00ccff → 170
+      #00ff00 → 89
+      #c0c0c0 → 47
+      #000000 → 32
+      #ff8080 → 10
+      #404040 → 1
+      #262626 → 1
+    fills non-RGB ignorés (total)              : 250
+      └─ unsupportedFillsBecauseColorN          : 250
+      └─ unsupportedFillsBecauseNullColor       : 0
+    setFillColorN occurrences sur la page      : 125
+    endPath ignorés (paths de clipping)        : 870
+    textes extraits non-vides                  : 482
+    fillAction distribution                    : {"eoFill":634}
+
+---- Plannig_Matthieu.pdf ----
+fichier  : output-matthieu-cells.json
+taille   : 331583 octets (323.8 Ko)
+pages    : 2
+
+  Page 1
+    viewport                                   : 841.6796 × 595.1998
+    fills extraits (avec couleur RGB exploitable) : 245
+    palette de couleurs (7 distinctes, triée décroissante) :
+      #bfbfbf → 89
+      #000000 → 76
+      #ffff00 → 54
+      #ff0000 → 15
+      #83e28e → 9
+      #f7c7ac → 1
+      #c1f0c8 → 1
+    fills non-RGB ignorés (total)              : 0
+      └─ unsupportedFillsBecauseColorN          : 0
+      └─ unsupportedFillsBecauseNullColor       : 0
+    setFillColorN occurrences sur la page      : 0
+    endPath ignorés (paths de clipping)        : 13
+    textes extraits non-vides                  : 699
+    fillAction distribution                    : {"fill":88,"eoFill":157}
+
+  Page 2
+    viewport                                   : 841.6796 × 595.1998
+    fills extraits (avec couleur RGB exploitable) : 252
+    palette de couleurs (7 distinctes, triée décroissante) :
+      #bfbfbf → 89
+      #000000 → 76
+      #ffff00 → 58
+      #ff0000 → 18
+      #83e28e → 9
+      #f7c7ac → 1
+      #c1f0c8 → 1
+    fills non-RGB ignorés (total)              : 0
+      └─ unsupportedFillsBecauseColorN          : 0
+      └─ unsupportedFillsBecauseNullColor       : 0
+    setFillColorN occurrences sur la page      : 0
+    endPath ignorés (paths de clipping)        : 13
+    textes extraits non-vides                  : 707
+    fillAction distribution                    : {"fill":82,"eoFill":170}
+
+===========================================================
+  Échantillonnage texte (vérification qualité getTextContent)
+===========================================================
+
+---- Mathis.pdf page 1 (482 textes non-vides) ----
+
+  Échantillon (idx → str) :
+    [   0] "Edité le lundi 15 sept. 2025"
+    [   1] "L 01"
+    [   2] "(S 36)"
+    [   3] "M 01"
+    [   4] "S 01"
+    [  96] "S 07"
+    [ 120] "M 08"
+    [ 144] "V 10"
+    [ 241] "L 17"
+    [ 265] "S 18"
+    [ 337] "S 23"
+    [ 361] "D 25"
+    [ 479] "juillet 26"
+    [ 480] "août 26"
+    [ 481] "septembre 26"
+
+  Diagnostic page :
+    chaînes avec caractères de contrôle/replacement : 0 / 482
+    caractères accentués distincts présents         : é û
+    nb mots ≥6 lettres alphabétiques purs           : 0
+
+---- Plannig_Matthieu.pdf page 1 (699 textes non-vides) ----
+
+  Échantillon (idx → str) :
+    [   0] "1"
+    [   1] "L"
+    [   2] "1"
+    [   3] "M"
+    [   4] "1"
+    [ 139] "7"
+    [ 174] "D"
+    [ 209] "V"
+    [ 349] "M"
+    [ 384] "17"
+    [ 489] "M"
+    [ 524] "L"
+    [ 696] "Mars"
+    [ 697] "Avril"
+    [ 698] "Mai"
+
+  Diagnostic page :
+    chaînes avec caractères de contrôle/replacement : 0 / 699
+    caractères accentués distincts présents         : â é ê ô
+    nb mots ≥6 lettres alphabétiques purs           : 14
+    échantillon de mots longs                       : ["Toussaint","Examens","Révisions","Pâques","Rattrapages","Juillet","Septembre","Octobre","Novembre","Décembre","Janvier","Février"]
+
+---- Plannig_Matthieu.pdf page 2 (707 textes non-vides) ----
+
+  Échantillon (idx → str) :
+    [   0] "1"
+    [   1] "L"
+    [   2] "1"
+    [   3] "M"
+    [   4] "1"
+    [ 141] "7"
+    [ 176] "D"
+    [ 212] "M"
+    [ 353] "D"
+    [ 388] "17"
+    [ 494] "22"
+    [ 530] "24"
+    [ 704] "Mars"
+    [ 705] "Avril"
+    [ 706] "Mai"
+
+  Diagnostic page :
+    chaînes avec caractères de contrôle/replacement : 0 / 707
+    caractères accentués distincts présents         : â é ê ô
+    nb mots ≥6 lettres alphabétiques purs           : 22
+    échantillon de mots longs                       : ["Toussaint","Soutenance","Examens","Révisions","Pâques","Rattrapages","Juillet","Septembre","Octobre","Novembre","Décembre","Janvier"]
+

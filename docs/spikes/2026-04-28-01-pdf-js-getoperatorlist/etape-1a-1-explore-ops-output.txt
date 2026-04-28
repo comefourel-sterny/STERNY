@@ -1,0 +1,210 @@
+# Run 2 — investigation approfondie pdf.js v5
+
+## Table OPS complète (code → nom)
+    1 → dependency
+    2 → setLineWidth
+    3 → setLineCap
+    4 → setLineJoin
+    5 → setMiterLimit
+    6 → setDash
+    7 → setRenderingIntent
+    8 → setFlatness
+    9 → setGState
+   10 → save
+   11 → restore
+   12 → transform
+   13 → moveTo
+   14 → lineTo
+   15 → curveTo
+   16 → curveTo2
+   17 → curveTo3
+   18 → closePath
+   19 → rectangle
+   20 → stroke
+   21 → closeStroke
+   22 → fill
+   23 → eoFill
+   24 → fillStroke
+   25 → eoFillStroke
+   26 → closeFillStroke
+   27 → closeEOFillStroke
+   28 → endPath
+   29 → clip
+   30 → eoClip
+   31 → beginText
+   32 → endText
+   33 → setCharSpacing
+   34 → setWordSpacing
+   35 → setHScale
+   36 → setLeading
+   37 → setFont
+   38 → setTextRenderingMode
+   39 → setTextRise
+   40 → moveText
+   41 → setLeadingMoveText
+   42 → setTextMatrix
+   43 → nextLine
+   44 → showText
+   45 → showSpacedText
+   46 → nextLineShowText
+   47 → nextLineSetSpacingShowText
+   48 → setCharWidth
+   49 → setCharWidthAndBounds
+   50 → setStrokeColorSpace
+   51 → setFillColorSpace
+   52 → setStrokeColor
+   53 → setStrokeColorN
+   54 → setFillColor
+   55 → setFillColorN
+   56 → setStrokeGray
+   57 → setFillGray
+   58 → setStrokeRGBColor
+   59 → setFillRGBColor
+   60 → setStrokeCMYKColor
+   61 → setFillCMYKColor
+   62 → shadingFill
+   63 → beginInlineImage
+   64 → beginImageData
+   65 → endInlineImage
+   66 → paintXObject
+   67 → markPoint
+   68 → markPointProps
+   69 → beginMarkedContent
+   70 → beginMarkedContentProps
+   71 → endMarkedContent
+   72 → beginCompat
+   73 → endCompat
+   74 → paintFormXObjectBegin
+   75 → paintFormXObjectEnd
+   76 → beginGroup
+   77 → endGroup
+   80 → beginAnnotation
+   81 → endAnnotation
+   83 → paintImageMaskXObject
+   84 → paintImageMaskXObjectGroup
+   85 → paintImageXObject
+   86 → paintInlineImageXObject
+   87 → paintInlineImageXObjectGroup
+   88 → paintImageXObjectRepeat
+   89 → paintImageMaskXObjectRepeat
+   90 → paintSolidColorImageMask
+   91 → constructPath
+   92 → setStrokeTransparent
+   93 → setFillTransparent
+   94 → rawFillPath
+
+## 50 premiers opérateurs (total page = 12805)
+  0  [70] beginMarkedContentProps        args=String("P") | Number(0.0000)
+  1  [10] save                           args=null
+  2  [30] eoClip                         args=null
+  3  [91] constructPath                  args=Number(28.0000) | Array(1) [Array(13)] | Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]
+  4  [9] setGState                      args=Array(2) [Array(2), Array(2)]
+  5  [59] setFillRGBColor                args=String("#404040")
+  6  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [50.8800, 485.5000, 693.8400, 540.8440]
+  7  [11] restore                        args=null
+  8  [10] save                           args=null
+  9  [30] eoClip                         args=null
+ 10  [91] constructPath                  args=Number(28.0000) | Array(1) [Array(13)] | Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]
+ 11  [59] setFillRGBColor                args=String("#262626")
+ 12  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [50.8800, 467.7400, 693.8400, 476.7400]
+ 13  [11] restore                        args=null
+ 14  [10] save                           args=null
+ 15  [30] eoClip                         args=null
+ 16  [91] constructPath                  args=Number(28.0000) | Array(1) [Array(13)] | Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]
+ 17  [59] setFillRGBColor                args=String("#ffffff")
+ 18  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [50.8800, 458.8600, 69.7200, 467.8600]
+ 19  [11] restore                        args=null
+ 20  [59] setFillRGBColor                args=String("#00ccff")
+ 21  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [69.6000, 458.8600, 100.4640, 467.8600]
+ 22  [59] setFillRGBColor                args=String("#ffffff")
+ 23  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [100.3400, 458.8600, 119.1800, 467.8600]
+ 24  [59] setFillRGBColor                args=String("#00ccff")
+ 25  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [119.0600, 458.8600, 149.9000, 467.8600]
+ 26  [59] setFillRGBColor                args=String("#ffffff")
+ 27  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [149.7800, 458.8600, 168.6200, 467.8600]
+ 28  [10] save                           args=null
+ 29  [1] dependency                     args=String("img_p0_1")
+ 30  [55] setFillColorN                  args=String("TilingPattern") | null | Object{fnArray=Array(5) [10.0000, 12.0000, 1.0000, 85.0000, 11.0000], argsArray=Array(5) [object, Array(6), Array(1), Array(3), object], length=Number(5.0000)} | Array(6) [1.0000, 0.0000, 0.0000, 1.0000, 0.0000, 595.3200] | Array(4) [0.0000, 0.0000, 0.9600, 0.9600] | Number(0.9600) | Number(0.9600) | Number(1.0000) | Number(2.0000) | boolean(false)
+ 31  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [168.5000, 458.8600, 199.3400, 467.8600]
+ 32  [11] restore                        args=null
+ 33  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [199.2200, 458.8600, 218.0600, 467.8600]
+ 34  [59] setFillRGBColor                args=String("#00ff00")
+ 35  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [217.9400, 458.8600, 248.8040, 467.8600]
+ 36  [59] setFillRGBColor                args=String("#ffffff")
+ 37  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [248.6900, 458.8600, 267.5300, 467.8600]
+ 38  [59] setFillRGBColor                args=String("#ff8080")
+ 39  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [267.4100, 458.8600, 298.2500, 467.8600]
+ 40  [59] setFillRGBColor                args=String("#ffffff")
+ 41  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [298.1300, 458.8600, 316.9700, 467.8600]
+ 42  [10] save                           args=null
+ 43  [55] setFillColorN                  args=String("TilingPattern") | null | Object{fnArray=Array(5) [10.0000, 12.0000, 1.0000, 85.0000, 11.0000], argsArray=Array(5) [object, Array(6), Array(1), Array(3), object], length=Number(5.0000)} | Array(6) [1.0000, 0.0000, 0.0000, 1.0000, 0.0000, 595.3200] | Array(4) [0.0000, 0.0000, 0.9600, 0.9600] | Number(0.9600) | Number(0.9600) | Number(1.0000) | Number(2.0000) | boolean(false)
+ 44  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [316.8500, 458.8600, 347.6900, 467.8600]
+ 45  [11] restore                        args=null
+ 46  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [347.5700, 458.8600, 366.4100, 467.8600]
+ 47  [10] save                           args=null
+ 48  [55] setFillColorN                  args=String("TilingPattern") | null | Object{fnArray=Array(5) [10.0000, 12.0000, 1.0000, 85.0000, 11.0000], argsArray=Array(5) [object, Array(6), Array(1), Array(3), object], length=Number(5.0000)} | Array(6) [1.0000, 0.0000, 0.0000, 1.0000, 0.0000, 595.3200] | Array(4) [0.0000, 0.0000, 0.9600, 0.9600] | Number(0.9600) | Number(0.9600) | Number(1.0000) | Number(2.0000) | boolean(false)
+ 49  [91] constructPath                  args=Number(23.0000) | Array(1) [Array(13)] | Float32Array(4) [366.2900, 458.8600, 397.1540, 467.8600]
+
+## constructPath — analyse exhaustive (toute la page)
+  total constructPath = 1754
+  args[0] distribution :
+    23 (eoFill) → 884 occurrences
+    28 (endPath) → 870 occurrences
+  pathData length histogram :
+    len<50 → 1754
+
+  ### 5 premiers samples décortiqués
+  --- idx=3, args.length=3
+      a[0] = Number(28.0000)  (peut-être un code action)
+      a[1] = Float32Array(13) (déballé du wrapper Array(1)) content :
+        raw : [0.00, 51.36, 129.14, 1.00, 785.16, 129.14, 1.00, 785.16, 540.36, 1.00, 51.36, 540.36, 4.00]
+        decoded (hypothèse verbs 0/1/2/3/4/5) : moveTo(51.36,129.14) → lineTo(785.16,129.14) → lineTo(785.16,540.36) → lineTo(51.36,540.36) → closePath()
+      a[2] = Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]  (probablement minMax ou bbox)
+  --- idx=6, args.length=3
+      a[0] = Number(23.0000)  (peut-être un code action)
+      a[1] = Float32Array(13) (déballé du wrapper Array(1)) content :
+        raw : [0.00, 50.88, 485.50, 1.00, 693.84, 485.50, 1.00, 693.84, 540.84, 1.00, 50.88, 540.84, 4.00]
+        decoded (hypothèse verbs 0/1/2/3/4/5) : moveTo(50.88,485.50) → lineTo(693.84,485.50) → lineTo(693.84,540.84) → lineTo(50.88,540.84) → closePath()
+      a[2] = Float32Array(4) [50.8800, 485.5000, 693.8400, 540.8440]  (probablement minMax ou bbox)
+  --- idx=10, args.length=3
+      a[0] = Number(28.0000)  (peut-être un code action)
+      a[1] = Float32Array(13) (déballé du wrapper Array(1)) content :
+        raw : [0.00, 51.36, 129.14, 1.00, 785.16, 129.14, 1.00, 785.16, 540.36, 1.00, 51.36, 540.36, 4.00]
+        decoded (hypothèse verbs 0/1/2/3/4/5) : moveTo(51.36,129.14) → lineTo(785.16,129.14) → lineTo(785.16,540.36) → lineTo(51.36,540.36) → closePath()
+      a[2] = Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]  (probablement minMax ou bbox)
+  --- idx=12, args.length=3
+      a[0] = Number(23.0000)  (peut-être un code action)
+      a[1] = Float32Array(13) (déballé du wrapper Array(1)) content :
+        raw : [0.00, 50.88, 467.74, 1.00, 693.84, 467.74, 1.00, 693.84, 476.74, 1.00, 50.88, 476.74, 4.00]
+        decoded (hypothèse verbs 0/1/2/3/4/5) : moveTo(50.88,467.74) → lineTo(693.84,467.74) → lineTo(693.84,476.74) → lineTo(50.88,476.74) → closePath()
+      a[2] = Float32Array(4) [50.8800, 467.7400, 693.8400, 476.7400]  (probablement minMax ou bbox)
+  --- idx=16, args.length=3
+      a[0] = Number(28.0000)  (peut-être un code action)
+      a[1] = Float32Array(13) (déballé du wrapper Array(1)) content :
+        raw : [0.00, 51.36, 129.14, 1.00, 785.16, 129.14, 1.00, 785.16, 540.36, 1.00, 51.36, 540.36, 4.00]
+        decoded (hypothèse verbs 0/1/2/3/4/5) : moveTo(51.36,129.14) → lineTo(785.16,129.14) → lineTo(785.16,540.36) → lineTo(51.36,540.36) → closePath()
+      a[2] = Float32Array(4) [51.3600, 129.1400, 785.1600, 540.3600]  (probablement minMax ou bbox)
+
+## OPS.transform — toutes les occurrences (page entière)
+  total OPS.transform = 0
+
+## setFillRGBColor — échantillon
+  total OPS.setFillRGBColor = 1380
+  idx=5 args=["#404040"]
+  idx=11 args=["#262626"]
+  idx=17 args=["#ffffff"]
+  idx=20 args=["#00ccff"]
+  idx=22 args=["#ffffff"]
+  idx=24 args=["#00ccff"]
+  idx=26 args=["#ffffff"]
+  idx=34 args=["#00ff00"]
+
+## Présence des opérateurs fill/eoFill/stroke en v5 ?
+  OPS.fill (code 22) → 0 occurrences sur la page
+  OPS.eoFill (code 23) → 0 occurrences sur la page
+  OPS.stroke (code 20) → 0 occurrences sur la page
+  OPS.closeStroke (code 21) → 0 occurrences sur la page
+  OPS.closeFillStroke (code 26) → 0 occurrences sur la page
+  OPS.closeEOFillStroke (code 27) → 0 occurrences sur la page
+  OPS.fillStroke (code 24) → 0 occurrences sur la page
+  OPS.eoFillStroke (code 25) → 0 occurrences sur la page
