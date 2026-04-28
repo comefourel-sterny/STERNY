@@ -15,3 +15,10 @@ Sources canoniques dans `test-plannings/` à la racine du repo (lui-même gitign
 cp test-plannings/Planning_Mathis.pdf docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/fixtures/Mathis.pdf
 cp "test-plannings/Plannig Matthieu.pdf" docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/fixtures/Plannig_Matthieu.pdf
 ```
+
+## Fichiers de vérité terrain (1B)
+
+Saisis à la main par Côme avec PDF sous les yeux. Non commités (données personnelles : rythme alternance d'humains identifiables). Format CSV 5 colonnes uniformes pour Mathis et Matthieu — voir RESULTS.md §3 sous-section "Vérité terrain Mathis — méthodologie".
+
+- `mathis-ground-truth.csv` — 1 groupe (R_CA_A3 à confirmer), ~53 semaines. Saisi en 1B.1.
+- `matthieu-ground-truth.csv` — 2 groupes (M1 CCA + M2 CCA). Déjà rédigé par Côme avant la session, à valider en 1B.6.
