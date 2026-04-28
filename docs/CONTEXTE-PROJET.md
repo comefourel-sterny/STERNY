@@ -232,6 +232,16 @@ Cas particuliers à connaître :
 
 **Pédagogie.** Je code depuis 3 mois. Si j'utilise un terme de travers, ou si je pars hors-contexte technique, explique-moi simplement sans me faire perdre la face. Je préfère apprendre que bluffer.
 
+### Niveau d'explication attendu
+
+Côme code depuis 3 mois. Toute explication technique doit être compréhensible par quelqu'un qui n'a pas de bagage informatique formel. Règles concrètes :
+
+- **Pas d'abréviation sans définition à la première mention** dans une conversation. Exemples : ISO (norme internationale, ici une façon standard d'écrire les dates et numéros de semaine), hex code (le code couleur en `#xxxxxx`), CRLF/LF (les fins de ligne dans un fichier texte), BOM (un marqueur invisible en début de fichier qui peut casser la lecture), off-by-one (un décalage de 1 dans un calcul, typiquement quand on commence à compter à 0 au lieu de 1).
+- **Pas de jargon métier qui n'apporte rien à la compréhension**. Préférer la phrase ordinaire à l'expression technique stylée.
+- **Si un concept technique est nécessaire, l'expliquer en une phrase la première fois**. Ne pas considérer comme acquis le vocabulaire des sessions précédentes — chaque nouvelle conversation peut être lue par un Côme plus fatigué que la précédente.
+
+Cette consigne s'applique à toute future session Claude.ai sur le projet Sterny et est portée en mémoire de Claude. Origine : session 1B.1 du 28 avril 2026.
+
 ---
 
 ## 9. Prudence extrême sur les sujets non-techniques
