@@ -76,6 +76,37 @@ Claude.ai a tenté de lire directement le PDF Mathis uploadé pour valider la st
 
 **Prochaine étape** : 1B.2 — Reconstruction de grille Mathis depuis `output-mathis-cells.json`. Prompt Claude Code 1B.2 à rédiger en ouverture de la prochaine session (CSV Mathis désormais disponible dans fixtures/, relu côté Claude.ai).
 
+### Suite 28 avril fin de journée — Clôture étape 1B.2 (jalon majeur spike #1)
+
+**Étape 1B.2 — Reconstruction de grille Mathis et matching contre vérité terrain**
+
+Verdict atteint : **signal fort, 100% de match cellule-par-cellule** (54/54 semaines correctement classées). pdf.js getOperatorList officiellement confirmé comme voie viable pour le pipeline parser Sterny sur les PDFs Hyperplanning. Décision DETTE #37 directement éclairée par ce chiffre.
+
+Approche retenue et validée empiriquement :
+- Ancrage par texte ISO (annotations "L XX (S YY)" extraites du PDF servant de référence pour caler les fills colorés)
+- Squelette accumulateur 54 entrées avec votes[] par semaine
+- Agrégation par couleur dominante avec confidence calculée
+
+3 commits :
+- `8ead1aa` feat(spike-01): script 1B.2 grid reconstruction and ground-truth matching for Mathis
+- `aeca1c6` chore(spike-01): outputs 1B.2 - Mathis grid + match report (100% score)
+- `7fbaef8` docs(spike-01): close 1B.2 - Mathis 100% match, learnings 5.5 5.6
+
+Anomalies portées en mémoire pour la production (sans impact sur le score) :
+- 7 semaines à votes faibles (1-4 votes au lieu de 5) sur les bordures du calendrier — Hyperplanning n'affiche pas tous les jours sur ces semaines de bordure. Comportement réel du PDF, pas un bug du script. À traiter en production par un seuil de confidence plus exigeant et remontée à l'utilisateur.
+- 8 semaines à votes mixtes (5 votes mais couleurs différentes) — typiquement un jour férié rose isolé dans une semaine cyan/verte. Règle de majorité fonctionne.
+- 16 fills orphelins sans rattachement à une semaine — légende du PDF affichée hors-grille, sans incidence.
+
+**Apprentissages techniques portés dans `RESULTS.md` §5.5 et §5.6** :
+- Découverte 5.5 : annotations ISO rendues en 2 items texte distincts par pdf.js, pattern d'extraction à 2 passes nécessaire
+- Découverte 5.6 : modèle de grille jour-par-jour vertical pour Mathis (chaque colonne X = un mois, chaque rangée Y = un jour-du-mois)
+
+**Décision d'architecture actée** : le pattern accumulateur est promu au rang de contrat de données central du parser Sterny. Tous les spikes futurs (#2 Vision OCR, #3 DocAI) déposeront leurs votes dans la même structure. À documenter dans VISION-ARCHITECTURE.md (prochain prompt séparé).
+
+**État Git fin de bloc** : HEAD = `7fbaef8`. 9 commits non-pushés depuis la clôture 1A (`09b444e`). Working tree inchangé hors les 3 modifications historiques préservées (CreerAnnoncePage.jsx, audit Zone 1, notes techniques spike).
+
+**Prochaine étape** : 1B.6 — adaptation du script à Matthieu. 3 difficultés majeures absentes de Mathis : (1) calendrier civil jour-par-jour avec agrégation jour→semaine côté code, (2) 2 pages M1 + M2, (3) hypothèse fragile "cellule vide = company" à valider ou invalider. Le score Mathis seul ne suffit pas pour acter la décision globale F1/F2/F3 sur le pipeline parser. Verdict global du spike #1 reste en placeholder.
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
