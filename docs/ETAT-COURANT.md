@@ -60,7 +60,7 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 Format CSV vérité terrain figé : 5 colonnes uniformes pour Mathis et Matthieu (`groupe`, `week_start_iso`, `statut_observe_pdf`, `statut_business`, `notes`). Une ligne par semaine ISO. La séparation `statut_observe_pdf` / `statut_business` permet de corriger la projection couleur → statut métier sans re-saisir le CSV si elle se révèle fausse en 1B.4.
 
-Squelette CSV Mathis généré côté Claude.ai (53 lignes pré-remplies, lundis du 2025-09-01 au 2026-08-31, groupe `R_CA_A3_2025-2026`) puis déposé par Côme dans `fixtures/mathis-ground-truth.csv` (gitignored, non commité). Saisie manuelle en cours.
+Squelette CSV Mathis généré côté Claude.ai (54 lignes, lundis du 2025-09-01 au 2026-09-07, groupe `R_CA_A3_2025-2026`) puis saisi manuellement par Côme dans `fixtures/mathis-ground-truth.csv` (gitignored, non commité). **Saisie terminée le 28 avril vers 17h**. Résultat : 18 semaines école + 36 semaines entreprise = 54 semaines au total. Crosscheck légende PDF : 18 semaines école = match exact avec la mention "18 semaines de formation au centre" affichée dans le PDF. Crosscheck extraction 1A : 89 fills verts ÷ 5 jours/sem = 17,8 sem école attendues vs 18 saisies (écart 0,2 négligeable) ; 170 fills cyan ÷ 5 jours/sem = 34 sem entreprise attendues vs 36 saisies (écart de 2 sem expliqué par les 10 jours fériés roses absorbés dans le statut dominant cyan et les semaines de bordure école↔entreprise). Structure des blocs école : 3 blocs principaux (6+6+5 sem) + 1 semaine de rentrée 2026/2027 visible en chevauchement = cohérent avec un calendrier d'alternance.
 
 **Consigne pédagogique transverse**
 
@@ -74,7 +74,7 @@ Claude.ai a tenté de lire directement le PDF Mathis uploadé pour valider la st
 
 **État Git fin de bloc** : HEAD = `acd9028`. 4 nouveaux commits depuis la clôture 1A (`09b444e`). Working tree inchangé hors les 3 modifications historiques préservées (CreerAnnoncePage.jsx, audit Zone 1, notes techniques spike).
 
-**Prochaine étape** : 1B.2 — Reconstruction de grille Mathis depuis `output-mathis-cells.json`. Prompt Claude Code à rédiger une fois le CSV vérité terrain saisi par Côme et relu par Claude.ai.
+**Prochaine étape** : 1B.2 — Reconstruction de grille Mathis depuis `output-mathis-cells.json`. Prompt Claude Code 1B.2 à rédiger en ouverture de la prochaine session (CSV Mathis désormais disponible dans fixtures/, relu côté Claude.ai).
 
 ---
 
