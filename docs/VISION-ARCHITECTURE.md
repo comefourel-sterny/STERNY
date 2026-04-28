@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 27 avril 2026 — ajout d'une 4e mitigation au risque #4 de la section 5 : principe UX de promesse non trahie (expectation violation + bait-and-switch involontaire), apprentissage acté en session de cadrage parser.
+**Dernière mise à jour** : 28 avril 2026 — Ajout de §4 "Pipeline parser : pattern accumulateur" (validé empiriquement par le spike #1 étape 1B.2 sur Mathis, score 100%). Renumérotation des sections suivantes (+1).
 
 ---
 
@@ -108,7 +108,42 @@ Les colonnes suivantes existent dans la BDD mais n'ont plus vocation à être ut
 
 ---
 
-## 4. Conséquences sur l'UX
+## 4. Pipeline parser : pattern accumulateur
+
+### Pattern accumulateur — contrat de données du parser (validé empiriquement 28 avril 2026)
+
+Le parser rhythm_calendar de Sterny utilise un pattern de structure de données central : le **squelette accumulateur**.
+
+**Principe** : pré-générer un squelette de calendrier hebdomadaire dès qu'on connaît les dates de début et fin de l'année académique. Chaque entrée du squelette représente une semaine ISO et contient les champs suivants :
+
+- `weekStartISO` : date ISO du lundi de la semaine, au format `YYYY-MM-DD` (ex `2025-09-01`)
+- `status` : statut métier de la semaine, valeurs possibles `null`, `school`, `company`, `vacation`, `unknown`, `no_anchor`
+- `confidence` : niveau de confiance, valeur `null` ou nombre entre `0.0` et `1.0`
+- `votes` : tableau d'objets vote, chaque vote contenant `color` (hex `#rrggbb`), `x` et `y` (coordonnées dans le PDF), `source` (nom de la méthode qui a déposé le vote, ex `pdfjs`, `vision_ocr`, `docai`, `user`)
+- `anchorX`, `anchorY` : coordonnées de l'ancre de la semaine dans le PDF source, `null` si pas d'ancre trouvée
+
+**Comportement** : chaque méthode d'extraction du pipeline (pdf.js, Vision OCR, DocAI, saisie utilisateur) dépose ses votes dans le squelette. À la fin du pipeline :
+- Plusieurs sources d'accord sur une cellule → confidence haute, statut certain
+- 1-2 sources d'accord → confidence intermédiaire, statut probable
+- Aucune source ou désaccord → confidence basse, remontée ciblée à l'utilisateur
+
+**Origine** : intuition d'architecture posée par Côme en session du 27 avril 2026. Validée empiriquement le 28 avril 2026 dans le spike #1 étape 1B.2 sur Mathis (score 100% de match contre vérité terrain).
+
+**Implémentation de référence** : `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/etape-1b-2-grid-and-match.mjs`. La structure JSON produite (`output-mathis-grid.json`) est le contrat de données pour tous les spikes futurs et pour le pipeline production.
+
+**Conséquences pour les spikes futurs** :
+- Spike #2 (Google Vision OCR) doit déposer ses votes dans la même structure, source `vision_ocr`
+- Spike #3 (Google DocAI compute_style_info) idem, source `docai`
+- Spike #4 (Azure DI STYLE_FONT) idem, source `azure_di`
+- La saisie utilisateur (validation manuelle UI) idem, source `user`, confidence 1.0
+
+**Conséquences pour la production** :
+- Le seuil de confidence à partir duquel une cellule est acceptée sans validation utilisateur reste à arbitrer (probablement supérieur ou égal à 0.9, ou exigence de 2 sources d'accord ou plus)
+- Les semaines de bordure de calendrier où Hyperplanning omet des jours doivent toujours remonter à l'utilisateur (vu en 1B.2 : 7 semaines à votes faibles sur Mathis)
+
+---
+
+## 5. Conséquences sur l'UX
 
 ### Upload-first à l'inscription
 
@@ -147,7 +182,7 @@ Quand un nouveau planning est détecté pour une période future, l'UI prévient
 
 ---
 
-## 5. Dépendance critique à l'IA — analyse du risque
+## 6. Dépendance critique à l'IA — analyse du risque
 
 Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Claude Sonnet 4.6 via API Anthropic au jour de la rédaction). C'est un choix assumé mais qui crée 4 risques qu'il faut nommer et mitiger explicitement.
 
@@ -189,8 +224,8 @@ Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Cla
 
 **Mitigations obligatoires révisées** :
 
-- L'étape de **validation visuelle** (section 4) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
-- Le **fallback de saisie manuelle** (section 5 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
+- L'étape de **validation visuelle** (section 5) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
+- Le **fallback de saisie manuelle** (section 6 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
 - Le calendrier visuel doit être suffisamment clair pour qu'une erreur soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
 - **Principe UX à respecter sur tout chemin parser** : ne jamais promettre une fluidité (« uploade ton planning, tout est automatique en 30 secondes ») qui peut être démentie par l'échec du parser et la bascule vers une étape plus laborieuse. Cet effet (*expectation violation* + *loss aversion*, parfois nommé *bait-and-switch involontaire*) est particulièrement nuisible sur la cible jeune alternant, où l'attention est courte et l'exigence de fluidité immédiate. Conséquence concrète pour les choix produit : une UX honnête en amont (« on construit ton rythme en 3 minutes ») est préférable à une UX fluide en façade qui se trahit en cours de route. L'IA peut être proposée en accélérateur conditionnel uniquement pour les formats où la fiabilité a été démontrée objectivement par benchmark — jamais comme promesse universelle. Apprentissage acté lors de la session de cadrage du 27 avril 2026.
 
@@ -206,7 +241,7 @@ Les champs `document_meta` peuvent être incomplets ou contenir des codes techni
 
 ---
 
-## 6. Migration de profil
+## 7. Migration de profil
 
 Un utilisateur n'est pas figé dans le type avec lequel il s'est inscrit. La plateforme garantit sa flexibilité pour accompagner les changements de situation (nouvelle alternance, déménagement, opportunité d'investissement).
 
@@ -218,7 +253,7 @@ Un utilisateur n'est pas figé dans le type avec lequel il s'est inscrit. La pla
 
 ---
 
-## 7. Plan de transition vers la vision cible
+## 8. Plan de transition vers la vision cible
 
 La transition depuis l'architecture actuelle vers la vision cible se fait en trois phases séquentielles, pour éviter tout nœud dans le code ou toute régression silencieuse.
 
@@ -240,7 +275,7 @@ Une fois que le nouveau système est éprouvé (temps à définir — probableme
 
 ---
 
-## 8. Ce que Sterny ne fait PAS
+## 9. Ce que Sterny ne fait PAS
 
 Limites volontaires du produit, à défendre face aux tentations de sur-ingénierie ou aux demandes utilisateurs hors cible.
 
@@ -256,7 +291,7 @@ Limites volontaires du produit, à défendre face aux tentations de sur-ingénie
 
 ---
 
-## 9. Critères de succès de la vision
+## 10. Critères de succès de la vision
 
 Pour vérifier qu'on tient bien la ligne, quelques critères observables :
 
