@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 28 avril 2026 — Session de cadrage phase spike technique, plan ordonné en 4 spikes prioritaires (pdf.js #1 → Vision OCR #2 → DocAI #3 → Azure DI #4), démarrage par Mathis + Matthieu pour éclairer DETTE #37, convention `docs/spikes/YYYY-MM-DD-NN-*/` actée, template RESULTS.md standardisé. Étape 0 du spike #1 close le 28 avril (commit 1920e35), verdict scénario A confirmé sur les 2 fixtures.
+**Dernière mise à jour** : 28 avril 2026 — Spike #1 étape 1A close (commit e9dc421). pdf.js getOperatorList confirmé comme voie viable pour extraire la structure d'une grille de calendrier sur PDF vectoriel. Verdict A — extraction fidèle visuellement validée par Côme sur Mathis (1 page) et Matthieu (2 pages). Étape 1B (matching contre vérité terrain) en attente, prérequis : CSV vérité terrain Matthieu rempli par Côme.
 
 ---
 
@@ -35,6 +35,18 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 **Question ouverte non tranchée cette session** : statut des cellules vides dans le calendrier Matthieu. L'hypothèse "vide = company" est l'hypothèse fondatrice du pipeline cloud sur Matthieu, son invalidation entraîne la bascule pure et simple sur saisie manuelle assistée pour les formats type Matthieu. À fermer définitivement dans le spike #1 RESULTS.md.
 
 **Étape 0 du spike #1 close le 28 avril** : commit 1920e35. Verdict scénario A confirmé sur Mathis (1380 setFillRGBColor, 0 paintImage*) et Matthieu (~144 setFillRGBColor par page, 0 paintImage*). Investissement étape 1A (extraction réelle fills + texte) justifié et engagé. Sous-dossier spike créé : `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/` avec RESULTS.md sections 1-3 remplies, sections 4-6 en placeholder.
+
+**Étape 1A du spike #1 close le 28 avril** : commit e9dc421. pdf.js `getOperatorList()` confirmé comme voie viable pour extraire la structure d'une grille de calendrier sur PDF vectoriel.
+
+- **1A.1 — Investigation** : les 4 hypothèses des notes techniques sur la structure des opérateurs pdf.js v5.7.284 sont **toutes contredites** par la réalité observée. `setFillRGBColor` reçoit `["#rrggbb"]` (pas `[r,g,b]`), `constructPath` a un format Path API moderne avec actionCode + bbox pré-calculée (pas `[opsArray, argsArray, minMax]`), 0 occurrence d'`OPS.transform` (pas de CTM à tracker), `OPS.fill`/`OPS.eoFill` séparés absents (action fusionnée dans `constructPath` args[0]). Conséquence : machine à états radicalement simplifiée, durée totale 1A ~50 min vs 3-4h estimées en cadrage.
+
+- **1A.2 — Extraction principale** : sortie JSON par fixture, exploitable directement par 1B. Mathis p1 = 634 fills RGB (8 couleurs : `#ffffff`×284, `#00ccff`×170 cyan dominant, `#00ff00`×89 vert, `#c0c0c0`×47, `#000000`×32, `#ff8080`×10 rose, `#404040`×1, `#262626`×1), 250 fills non-RGB ignorés (TilingPattern × 125 sources, sans impact métier), 482 textes. Matthieu p1 = 245 fills (7 couleurs : `#bfbfbf`×89, `#000000`×76, `#ffff00`×54 jaune, `#ff0000`×15 rouge, `#83e28e`×9 vert, `#f7c7ac`×1 saumon, `#c1f0c8`×1 vert clair), 0 ignoré, 699 textes. Matthieu p2 = 252 fills (même palette), 707 textes. Texte parfaitement décodé malgré warning `standardFontDataUrl` cosmétique (accents, mots métier `Toussaint`, `Examens`, `Révisions`, `Pâques`, `Rattrapages`, `Soutenance`, noms de mois français complets).
+
+- **1A.3 — Validation visuelle SVG** : 3 SVGs produits (102.5 / 89.6 / 91.1 Ko), Y-axis option 2 (pré-calcul). Verdict Côme : **A — extraction fidèle pour les 2 fixtures**. Anomalie connue sans impact métier : titre Mathis rendu en gris par défaut dans le SVG (TilingPattern non décodé). Hypothèse `#000000`/`#bfbfbf` Matthieu = bordures fines confirmée visuellement (pas des fills de cellule pleins).
+
+- **Apprentissages portés en mémoire** dans `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/RESULTS.md` §5 (4 points : tableau de divergence pdf.js v5 réutilisable pour futurs spikes, pattern clipping save→eoClip→endPath→eoFill sans surestimation visible des bbox, TilingPattern limite connue sans impact métier, warning standardFontDataUrl cosmétique).
+
+**Étape 1B (matching contre vérité terrain) — en attente** : prérequis = Côme rédige le CSV vérité terrain Matthieu (M1 + M2 CCA, statut school/company par semaine ISO, ~30-45 min). Ouverture d'une nouvelle conversation Claude.ai en suite directe pour 1B avec les 5 docs de référence à jour. **Verdict global du spike #1 + décision F1/F2/F3 sur le pipeline parser Sterny restent en placeholder** jusqu'à clôture de 1B (et 1C si nécessaire).
 
 **Modifs working tree historiques toujours préservées** : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
