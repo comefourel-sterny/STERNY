@@ -107,6 +107,54 @@ Anomalies portées en mémoire pour la production (sans impact sur le score) :
 
 **Prochaine étape** : 1B.6 — adaptation du script à Matthieu. 3 difficultés majeures absentes de Mathis : (1) calendrier civil jour-par-jour avec agrégation jour→semaine côté code, (2) 2 pages M1 + M2, (3) hypothèse fragile "cellule vide = company" à valider ou invalider. Le score Mathis seul ne suffit pas pour acter la décision globale F1/F2/F3 sur le pipeline parser. Verdict global du spike #1 reste en placeholder.
 
+### Suite 28 avril nuit — Étape 1B.6.1 partielle (analyse exploratoire Matthieu)
+
+**Étape 1B.6.1 — Cartographie des fills Matthieu et détection d'anomalies**
+
+Session Claude.ai consacrée à l'analyse purement exploratoire du JSON output-matthieu-cells.json (2 pages) avant écriture du script de matching 1B.6.2. Aucune modification de code applicatif. Aucun commit de code. Validation par 11 inspections successives via jq sur les outputs 1A.2.
+
+**Structure des couleurs métier confirmée** :
+- #ffff00 jaune = cours (statut school) — 54 fills sur p1, 58 sur p2 dont bandeaux à exclure (width > 700)
+- #ff0000 rouge = examens / soutenance / rattrapages (statut school) — 15 fills p1, 18 p2
+- #83e28e vert saturé = révisions (statut school) — 9 fills par page, distribution identique (5 jours en Janvier 5-9 + 4 jours en Avril 27-30)
+- #c1f0c8 vert pâle = légende uniquement, aucune cellule métier dans la grille — à filtrer (1 fill par page en colonne Mai, position y proche du minimum global)
+- #bfbfbf gris + #000000 noir = bordures fines et glyphes — à filtrer
+- Pas de fill #ffffff blanc dans Matthieu (contrairement à Mathis qui en avait 284). La grille est définie uniquement par les bordures, donc une "cellule vide" est l'absence de fill métier dans la zone géométrique d'un jour.
+
+**2 anomalies de mise en page détectées (à gérer dans 1B.6.2)** :
+
+1. **Fills jaunes multi-mois sur M1 uniquement** : 5 fills de largeur ~211-214 px (vs 70-80 px pour une cellule normale) à x=369.24 et x=77.88 dans les colonnes Septembre/Octobre et Décembre/Janvier. Ces rectangles représentent des cours qui s'étendent visuellement sur 2-3 colonnes mensuelles consécutives. Côme confirme à l'œil : effet de mise en page lié à des colonnes de mois étroites. Implication 1B.6.2 : déplier ces fills en cellules-jour multiples selon les colonnes mois traversées (vote par mois traversé).
+
+2. **Fills rouges multi-colonnes sur M2 uniquement** : 4 fills de largeur ~149 px en début Mai (jours 4-7). Le rectangle déborde visuellement sur Avril mais correspond bien à des jours de mai (validation visuelle Côme). Implication 1B.6.2 : même logique de dépliage que pour le jaune M1, mais le centre x reste en colonne Mai.
+
+**1 trou de couverture pdf.js confirmé** :
+
+Sur la Soutenance M2 (semaine du 1 juin 2026), Côme observe 5 cellules rouges visuelles (lundi 1 → vendredi 5 juin) mais pdf.js n'extrait que 3 fills #ff0000 (lundi 1 → mercredi 3 juin). Les jours 4 et 5 juin sont absents du JSON sous toute couleur proche du rouge (filtre RGB élargi exécuté, aucun résultat). Aucun compteur "non supporté" du JSON ne signale ce manque (unsupportedFillsCount = 0 sur les 2 pages). Phénomène silencieux, qualitativement préoccupant. Tracé en DETTE #40.
+
+**Mapping géographique p1 vs p2 (jours école identifiés par couleur et par mois)** :
+
+| Période | M1 (p1) | M2 (p2) |
+|---|---|---|
+| Cours jaunes (cellules normales hors bandeaux) | 48 jours, étalés Sept→Avril | 57 jours, étalés Sept→Avril |
+| Cours jaunes "multi-mois" à déplier | 5 fills × ~3 cellules ≈ 15 jours additionnels | 0 |
+| Examens rouges Janvier | 5 jours (12-16) | 5 jours (12-16) |
+| Examens rouges Mai | 4 jours (4-7) | 4 jours (4-7, fills élargis) |
+| Soutenance rouge Juin | 0 | **5 jours visuels (1-5) dont 2 ratés par pdf.js** |
+| Rattrapages rouges Juin | 5 jours (22-26) | 5 jours (15-19) |
+| Révisions vertes Janvier | 5 jours (5-9) | 5 jours (5-9, identique) |
+| Révisions vertes Avril | 4 jours (27-30) | 4 jours (27-30, identique) |
+| Total jours école estimés | ~86 (incluant dépliage M1) | ~88 (Soutenance comptée à 5) |
+
+Cohérence : 2 plannings sur la **même année académique 2025-2026** (M1 et M2 à des cohortes différentes mais même école), avec révisions et examens partagés (l'école les fixe), cours différents (matières spécifiques par master), Soutenance unique à M2 fin mai/début juin.
+
+**Hypothèse "cellule vide = company" non encore validée** : étape 1B.6.1 close partiellement. La validation finale nécessite la saisie manuelle de la vérité terrain Matthieu (108 lignes au total : 54 semaines × 2 groupes), à faire hors session par Côme avec PDF sous les yeux.
+
+**Squelette CSV pré-rempli généré** : fichier fixtures/matthieu-ground-truth.csv (gitignored), 7 colonnes (groupe, week_start_iso, statut_observe_pdf, statut_business, proposition_pdfjs, confiance_proposition, notes). Les 2 colonnes statut_observe_pdf et statut_business sont vides à remplir par Côme. Les colonnes proposition_pdfjs et confiance_proposition sont auto-générées par le script throwaway generate-matthieu-skeleton.mjs (à supprimer en clôture spike) à partir de l'extraction pdf.js, comme aide à la saisie. Une fois la saisie complétée, comparaison automatique côté script 1B.6.2.
+
+**État Git fin de bloc** : pas de commit de code applicatif. 2 commits docs uniquement (ce bloc d'ETAT-COURANT + ajout DETTE #40). Working tree inchangé hors les 3 modifications historiques préservées. Le script generate-matthieu-skeleton.mjs et le CSV matthieu-ground-truth.csv ne sont pas versionnés (script throwaway + CSV gitignored).
+
+**Prochaine session** : 1B.6.2 — écriture du script etape-1b-6-grid-and-match-matthieu.mjs après que Côme ait complété la vérité terrain. Reprendre avec le message d'ouverture préparé en fin de session 1B.6.1.
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
