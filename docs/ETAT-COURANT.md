@@ -2,7 +2,41 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 — Famille 5 cartographiée et committée, Axe 1 complet (5 familles sur 5). Découverte F5 sur Google DocAI OCR Processor + compute_style_info qui modifie la cartographie F2 T5 (zone grise comblée). 3 candidates cloud retenues pour la phase spike technique à venir. Bascule recherche → spike technique actée.
+**Dernière mise à jour** : 1er mai 2026 — Session de cadrage phase spike technique, plan ordonné en 4 spikes prioritaires (pdf.js #1 → Vision OCR #2 → DocAI #3 → Azure DI #4), démarrage par Mathis + Matthieu pour éclairer DETTE #37, convention `docs/spikes/YYYY-MM-DD-NN-*/` actée, template RESULTS.md standardisé. Étape 0 du spike #1 close le 1er mai (commit 1920e35), verdict scénario A confirmé sur les 2 fixtures.
+
+---
+
+## 0. Session du 1er mai — Cadrage phase spike technique, plan de spikes ordonné
+
+**Contexte** : ouverture session Claude.ai en suite directe de la clôture Axe 1 du 30 avril. Bascule recherche → spike actée. Objectif : produire un plan de spikes ordonné (pas le spike lui-même), avec cadrage chiffrable par spike (fixture cible, mesures, go/no-go, livrables, conventions).
+
+**Décisions actées dans la session** :
+
+1. **Démarrage par Mathis + Matthieu, pas Martin.** Les deux fixtures favorables (PDFs vectoriels avec texte intra-cellule) sont prioritaires car elles éclairent la décision DETTE #37. Logique : si on ne sait pas atteindre >95% sur les cas faciles, le pipeline cloud est éliminé même sur cas faciles → bascule claire vers saisie manuelle assistée. Si on y arrive, la stratégie devient discriminante par format ("PDFs Hyperplanning et assimilés au parser, le reste en saisie manuelle"). Martin (image raster) est traité dans un second temps avec Florence-2 / Surya / algo manuel ImageData.
+
+2. **Plan de spikes ordonné en 4 spikes prioritaires sur les 8 envisagés en clôture du 30 avril** :
+   - **Spike #1 — pdf.js `getOperatorList()`** (F1 T1) sur Mathis + Matthieu. Local, gratuit, sans setup cloud. Audit étape 0 de 30 min sur les `OPS.*` rencontrés pour trancher entre fonds vectoriels (scénario A : on continue) / fonds rasterisés (scénario B : on ferme et bascule sur #2) / hybride (scénario C : décision au cas par cas). Si scénario A : reconstruction de la grille + extraction couleur + texte intra-cellule, ~3-4h additionnelles. Estimation totale 3-5h.
+   - **Spike #2 — Google Vision OCR `DOCUMENT_TEXT_DETECTION`** (F3 T1) sur Mathis + Matthieu. Conditionnel : ouvert si #1 échoue sur la couleur OU si signal redondant utile. Estimation 2-3h hors setup GCP.
+   - **Spike #3 — Google DocAI OCR + `compute_style_info`** (F5) sur Mathis + Matthieu. Conditionnel : ouvert si #1 et #2 ne couvrent pas la couleur. Estimation 2-3h.
+   - **Spike #4 — Azure DI Layout + STYLE_FONT** (F2 T5) sur Mathis + Matthieu. Comparaison directe avec #3 sur mêmes fixtures, mêmes mesures. Estimation 3-4h dont ~1h-1h30 setup Azure complet.
+
+3. **Réordonnancement vs plan de clôture du 30 avril** : pdf.js (anciennement spike #6) remonte en #1 car sur PDF vectoriel la vraie question est "couleur de fond extractible programmatiquement" pas "OCR FR fiable", et pdf.js peut potentiellement répondre aux deux (texte natif via `OPS.showText` + couleur via `OPS.setFillRGBColor`) en local sans setup cloud. Vision OCR descend en #2.
+
+4. **GCP en setup tâche de fond pendant #1** : Côme provisionne compte GCP + billing + projet + activation Vision API + DocAI API en parallèle de l'exécution du spike #1, pour ne pas bloquer #2 et #3 quand ils s'ouvriront.
+
+5. **Critère go/no-go avec projection 3→2 statuts pour Matthieu** : la légende source de Matthieu compte 3 catégories (cours / examens / révisions) à mapper sur les 2 statuts business (school/company). Le seuil de succès est "≥80% des cellules rattachables à un **statut business final** correspondant à la vérité terrain", pas "≥80% de mots OCR détectés". Mapping retenu : Cours/Formation/Examens/Révisions/Soutenance/Rattrapages → `school` ; cellule vide → hypothèse `company` à valider contre vérité terrain dans le spike #1 (point critique pour tout le pipeline cloud sur Matthieu — si l'hypothèse est fausse, aucune des 3 candidates cloud ne distingue "vide-vacances" de "vide-entreprise").
+
+6. **Convention de stockage des spikes** : nouveau dossier `docs/spikes/` à la racine du repo. Sous-dossiers nommés `YYYY-MM-DD-NN-nom-court/` (préfixe date pour tri chrono, NN sur 2 digits = numéro spike, nom court = technique). Chaque sous-dossier contient `run.{ts,mjs,js}` script reproductible, `fixtures/` copies locales des PDFs testés, outputs bruts (`output-<fixture>.json`), `RESULTS.md` synthèse. Garde-fous : pas dans `sterny-react/`, pas dans `supabase/functions/`, code throwaway non bundlé en prod.
+
+7. **Template `RESULTS.md` standardisé** réutilisable pour tous les spikes : 6 sections (1. Question à laquelle ce spike répond, 2. Méthode, 3. Résultats chiffrés avec tableau de mesures vs cible go/no-go + tableau vérité terrain, 4. Verdict go/no-go, 5. Apprentissages, 6. Décision suite). Métadonnées en tête : date, durée réelle vs estimation, coût réel vs estimation, statut, décision suite.
+
+**Vérité terrain à établir avant le spike #1** : Côme prépare la vérité terrain Matthieu (M1 CCA + M2 CCA, statut school/company par semaine ISO) à la main avec PDF sous les yeux. Format CSV proposé en session, ~30-45 min de saisie. La vérité terrain Mathis (1 groupe, ~53 semaines) est rapide à établir au moment du spike. La vérité terrain Martin existe déjà partiellement (10 premières semaines de FA CG2P G1 saisies en session du 27 avril).
+
+**Question ouverte non tranchée cette session** : statut des cellules vides dans le calendrier Matthieu. L'hypothèse "vide = company" est l'hypothèse fondatrice du pipeline cloud sur Matthieu, son invalidation entraîne la bascule pure et simple sur saisie manuelle assistée pour les formats type Matthieu. À fermer définitivement dans le spike #1 RESULTS.md.
+
+**Étape 0 du spike #1 close le 1er mai** : commit 1920e35. Verdict scénario A confirmé sur Mathis (1380 setFillRGBColor, 0 paintImage*) et Matthieu (~144 setFillRGBColor par page, 0 paintImage*). Investissement étape 1A (extraction réelle fills + texte) justifié et engagé. Sous-dossier spike créé : `docs/spikes/2026-05-01-01-pdf-js-getoperatorlist/` avec RESULTS.md sections 1-3 remplies, sections 4-6 en placeholder.
+
+**Modifs working tree historiques toujours préservées** : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
 ---
 
