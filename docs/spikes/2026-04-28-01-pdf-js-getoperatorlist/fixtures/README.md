@@ -12,6 +12,6 @@ Les PDFs eux-mêmes ne sont **pas commités** (gitignored via `.gitignore` local
 Sources canoniques dans `test-plannings/` à la racine du repo (lui-même gitignoré). Pour reconstituer ce dossier :
 
 ```bash
-cp test-plannings/Planning_Mathis.pdf docs/spikes/2026-05-01-01-pdf-js-getoperatorlist/fixtures/Mathis.pdf
-cp "test-plannings/Plannig Matthieu.pdf" docs/spikes/2026-05-01-01-pdf-js-getoperatorlist/fixtures/Plannig_Matthieu.pdf
+cp test-plannings/Planning_Mathis.pdf docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/fixtures/Mathis.pdf
+cp "test-plannings/Plannig Matthieu.pdf" docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/fixtures/Plannig_Matthieu.pdf
 ```

@@ -7,7 +7,7 @@
 | **Étape** | 0 — audit des opérateurs PDF (`OPS.*`) sur les 2 fixtures vectorielles |
 | **Durée réelle étape 0** | ~15 min (setup projet + script + run + analyse) |
 | **Coût** | 0 € (tout local, pdfjs-dist v5.7.284 OSS, pas d'API externe) |
-| **Périmètre** | docs/spikes/2026-05-01-01-pdf-js-getoperatorlist/ |
+| **Périmètre** | docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/ |
 | **Référence cadrage** | ETAT-COURANT section 1er mai (plan parser Sterny, Spike #1), DETTE #37 |
 
 ---

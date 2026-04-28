@@ -2,11 +2,11 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er mai 2026 — Session de cadrage phase spike technique, plan ordonné en 4 spikes prioritaires (pdf.js #1 → Vision OCR #2 → DocAI #3 → Azure DI #4), démarrage par Mathis + Matthieu pour éclairer DETTE #37, convention `docs/spikes/YYYY-MM-DD-NN-*/` actée, template RESULTS.md standardisé. Étape 0 du spike #1 close le 1er mai (commit 1920e35), verdict scénario A confirmé sur les 2 fixtures.
+**Dernière mise à jour** : 28 avril 2026 — Session de cadrage phase spike technique, plan ordonné en 4 spikes prioritaires (pdf.js #1 → Vision OCR #2 → DocAI #3 → Azure DI #4), démarrage par Mathis + Matthieu pour éclairer DETTE #37, convention `docs/spikes/YYYY-MM-DD-NN-*/` actée, template RESULTS.md standardisé. Étape 0 du spike #1 close le 28 avril (commit 1920e35), verdict scénario A confirmé sur les 2 fixtures.
 
 ---
 
-## 0. Session du 1er mai — Cadrage phase spike technique, plan de spikes ordonné
+## 0. Session du 28 avril — Cadrage phase spike technique, plan de spikes ordonné
 
 **Contexte** : ouverture session Claude.ai en suite directe de la clôture Axe 1 du 30 avril. Bascule recherche → spike actée. Objectif : produire un plan de spikes ordonné (pas le spike lui-même), avec cadrage chiffrable par spike (fixture cible, mesures, go/no-go, livrables, conventions).
 
@@ -34,7 +34,7 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 **Question ouverte non tranchée cette session** : statut des cellules vides dans le calendrier Matthieu. L'hypothèse "vide = company" est l'hypothèse fondatrice du pipeline cloud sur Matthieu, son invalidation entraîne la bascule pure et simple sur saisie manuelle assistée pour les formats type Matthieu. À fermer définitivement dans le spike #1 RESULTS.md.
 
-**Étape 0 du spike #1 close le 1er mai** : commit 1920e35. Verdict scénario A confirmé sur Mathis (1380 setFillRGBColor, 0 paintImage*) et Matthieu (~144 setFillRGBColor par page, 0 paintImage*). Investissement étape 1A (extraction réelle fills + texte) justifié et engagé. Sous-dossier spike créé : `docs/spikes/2026-05-01-01-pdf-js-getoperatorlist/` avec RESULTS.md sections 1-3 remplies, sections 4-6 en placeholder.
+**Étape 0 du spike #1 close le 28 avril** : commit 1920e35. Verdict scénario A confirmé sur Mathis (1380 setFillRGBColor, 0 paintImage*) et Matthieu (~144 setFillRGBColor par page, 0 paintImage*). Investissement étape 1A (extraction réelle fills + texte) justifié et engagé. Sous-dossier spike créé : `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/` avec RESULTS.md sections 1-3 remplies, sections 4-6 en placeholder.
 
 **Modifs working tree historiques toujours préservées** : `CreerAnnoncePage.jsx` (bypass DEV) + `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (audit Zone 1 en attente de relecture).
 
