@@ -127,6 +127,33 @@ Aussi présents : `setFont` 19, `save` 13, `restore` 13, `clip` 13, `dependency`
 
 **Nuance Matthieu à porter aux étapes 1-3** : la convention "absence de fill = couleur par défaut" doit être actée avant l'extraction. Sur Mathis, chaque cellule du calendrier a très probablement un fill explicite (1380 fills pour ~250 cellules attendues = ~5 fills par cellule, plausible avec hover/decorative + 1 fond + bordures). Sur Matthieu, la majorité des cellules n'aura aucun `setFillRGBColor` proche → algo doit gérer ce cas par défaut sans crasher.
 
+### Vérité terrain Mathis — méthodologie
+
+**Statut au 28 avril 2026 (étape 1B.1)** : en cours de saisie par Côme.
+
+**Source** : `fixtures/Mathis.pdf`, 1 page, 1 groupe `R_CA_A3` (label à confirmer en saisie), calendrier Hyperplanning semaine-par-semaine, année académique 2025/2026, ~53 semaines.
+
+**Format** : CSV 5 colonnes uniformes, partagé avec la vérité terrain Matthieu pour permettre un parseur unique en 1B.5/1B.7.
+
+| Colonne | Type | Description |
+|---|---|---|
+| `groupe` | string | Label exact du groupe tel qu'écrit dans le PDF (ex. `R_CA_A3`). |
+| `week_start_iso` | date ISO `YYYY-MM-DD` | Lundi de la semaine ISO. Pré-rempli pour les ~53 semaines du calendrier. |
+| `statut_observe_pdf` | terme libre | Ce que Côme humain VOIT dans la cellule du PDF, sans projection. Vocabulaire Mathis : `cyan`, `vert`, `rose`, `blanc`, `gris-fonce`, `?`. Pas d'accents. |
+| `statut_business` | enum 3 valeurs | Projection vers `school`, `company`, `vacation`. La projection finale `vacation → company` ou autre reste à arbitrer en 1B.4 selon les chiffres. |
+| `notes` | terme libre | Ambiguïtés, fériés nommés, weekends, anomalies. Vide si rien à signaler. |
+
+**Légende observable retenue pour Mathis** (sera contredite par les chiffres ou validée en 1B.4) :
+- `cyan` (#00ccff) → `company` — légende Hyperplanning "En Entreprise"
+- `vert` (#00ff00) → `school` — légende Hyperplanning "Formation au centre"
+- `rose` (#ff8080) → `vacation` — légende Hyperplanning "Jours fériés"
+- `blanc` (#ffffff) → `vacation` par défaut, à observer cellule par cellule
+- `gris-fonce` (#404040 / #262626) → à observer ; possiblement structure isolée, pas une cellule métier
+
+**Règle d'inclusion** : une ligne CSV par cellule métier identifiable. Les bordures (`#000000` × 32, `#c0c0c0` × 47) ne sont pas des cellules — pas de ligne pour elles.
+
+**Trace audit** : ce CSV sera consommé par les scripts 1B.5 (Mathis) et 1B.7 (Matthieu). Si la projection `statut_observe_pdf → statut_business` se révèle fausse en 1B.4, on corrige une seule colonne sans re-saisir le reste.
+
 ---
 
 ## 3bis. Étape 1A — Extraction brute des fills et textes
