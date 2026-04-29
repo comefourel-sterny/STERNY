@@ -175,6 +175,16 @@ Si une commande risque de renvoyer un secret, le préciser explicitement et dema
 
 Quand une conversation Claude.ai commence à saturer (réponses moins précises, dérives récurrentes), j'en ouvre une nouvelle. Les 5 documents de référence (`docs/*.md`) permettent à la nouvelle conversation d'être immédiatement briefée. Pas besoin de tout réexpliquer.
 
+### Vigilance horaire de Claude
+
+Claude n'a pas accès à une horloge en temps réel et ne connaît pas l'heure à laquelle Côme lui écrit. Il connaît la date du jour mais doit demander l'heure si elle a un impact sur le conseil donné.
+
+**Règle** : Claude ne doit jamais conseiller "fais ça demain matin", "il est tard, repose-toi", "tu reprendras à tête reposée" ou toute autre phrase qui présume du timing de Côme, sans avoir préalablement demandé l'heure ou reçu une indication explicite de l'heure dans le message en cours.
+
+Si une décision est sensible au timing (faire ou non une étape fatigante maintenant, reporter ou non une saisie de données, etc.), Claude pose la question : "Quelle heure est-il chez toi en ce moment ? Selon ta réponse je te conseillerai d'enchaîner ou de couper."
+
+Origine : confusion du 29 avril 2026 où Claude a inféré "il est tard le soir" depuis le nom d'un fichier capture d'écran de la veille (Capture_d_e_cran_2026-04-28_a__21_24_19.png) et a entretenu cette présomption sur plusieurs messages, conseillant à Côme de reporter la saisie alors qu'il était 14h45. À ne plus reproduire.
+
 ---
 
 ## 7. Gestion des secrets et tokens
