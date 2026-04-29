@@ -1,0 +1,2412 @@
+{
+  "fixture": "Plannig_Matthieu.pdf",
+  "generatedAt": "2026-04-29T13:28:05.968Z",
+  "groups": {
+    "M1_CCA_2025-2026": [
+      {
+        "weekStartISO": "2025-09-01",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-08",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 429.48,
+            "source": "pdfjs",
+            "_date": "2025-09-08",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 418.08,
+            "source": "pdfjs",
+            "_date": "2025-09-09",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 406.68,
+            "source": "pdfjs",
+            "_date": "2025-09-10",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 395.28,
+            "source": "pdfjs",
+            "_date": "2025-09-11",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 383.88,
+            "source": "pdfjs",
+            "_date": "2025-09-12",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-15",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-22",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 269.88,
+            "source": "pdfjs",
+            "_date": "2025-09-22",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 258.48,
+            "source": "pdfjs",
+            "_date": "2025-09-23",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 247.08,
+            "source": "pdfjs",
+            "_date": "2025-09-24",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 235.68,
+            "source": "pdfjs",
+            "_date": "2025-09-25",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 224.28,
+            "source": "pdfjs",
+            "_date": "2025-09-26",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-29",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-06",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-13",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 372.48,
+            "source": "pdfjs",
+            "_date": "2025-10-13",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 361.08,
+            "source": "pdfjs",
+            "_date": "2025-10-14",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 349.68,
+            "source": "pdfjs",
+            "_date": "2025-10-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2025-10-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2025-10-17",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-20",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-27",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 212.88,
+            "source": "pdfjs",
+            "_date": "2025-10-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 201.48,
+            "source": "pdfjs",
+            "_date": "2025-10-28",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 190.08,
+            "source": "pdfjs",
+            "_date": "2025-10-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 178.68,
+            "source": "pdfjs",
+            "_date": "2025-10-30",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 166.8,
+            "source": "pdfjs",
+            "_date": "2025-10-31",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-03",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-10",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-17",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2025-11-17",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 148.8,
+            "y": 315.48,
+            "source": "pdfjs",
+            "_date": "2025-11-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 148.8,
+            "y": 304.08,
+            "source": "pdfjs",
+            "_date": "2025-11-19",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 148.8,
+            "y": 292.68,
+            "source": "pdfjs",
+            "_date": "2025-11-20",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 148.8,
+            "y": 281.28,
+            "source": "pdfjs",
+            "_date": "2025-11-21",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-24",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-01",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 509.28,
+            "source": "pdfjs",
+            "_date": "2025-12-01",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 497.88,
+            "source": "pdfjs",
+            "_date": "2025-12-02",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 486.48,
+            "source": "pdfjs",
+            "_date": "2025-12-03",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 475.08,
+            "source": "pdfjs",
+            "_date": "2025-12-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 463.68,
+            "source": "pdfjs",
+            "_date": "2025-12-05",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-08",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-15",
+        "status": "school",
+        "confidence": 0.6,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 349.68,
+            "source": "pdfjs",
+            "_date": "2025-12-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 220.2,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2025-12-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 77.88,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2025-12-17",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-22",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-29",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-05",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#83e28e",
+            "x": 289.2,
+            "y": 463.68,
+            "source": "pdfjs",
+            "_date": "2026-01-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 289.2,
+            "y": 452.28,
+            "source": "pdfjs",
+            "_date": "2026-01-06",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 289.2,
+            "y": 440.88,
+            "source": "pdfjs",
+            "_date": "2026-01-07",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 289.2,
+            "y": 429.48,
+            "source": "pdfjs",
+            "_date": "2026-01-08",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 289.2,
+            "y": 418.08,
+            "source": "pdfjs",
+            "_date": "2026-01-09",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-12",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 289.2,
+            "y": 383.88,
+            "source": "pdfjs",
+            "_date": "2026-01-12",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 289.2,
+            "y": 372.48,
+            "source": "pdfjs",
+            "_date": "2026-01-13",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 289.2,
+            "y": 361.08,
+            "source": "pdfjs",
+            "_date": "2026-01-14",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 289.2,
+            "y": 349.68,
+            "source": "pdfjs",
+            "_date": "2026-01-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 289.2,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2026-01-16",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-19",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-26",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 289.2,
+            "y": 224.28,
+            "source": "pdfjs",
+            "_date": "2026-01-26",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 289.2,
+            "y": 212.88,
+            "source": "pdfjs",
+            "_date": "2026-01-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 289.2,
+            "y": 201.48,
+            "source": "pdfjs",
+            "_date": "2026-01-28",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 289.2,
+            "y": 190.08,
+            "source": "pdfjs",
+            "_date": "2026-01-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 289.2,
+            "y": 178.68,
+            "source": "pdfjs",
+            "_date": "2026-01-30",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-02",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 497.88,
+            "source": "pdfjs",
+            "_date": "2026-02-02",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 486.48,
+            "source": "pdfjs",
+            "_date": "2026-02-03",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 475.08,
+            "source": "pdfjs",
+            "_date": "2026-02-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 463.68,
+            "source": "pdfjs",
+            "_date": "2026-02-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 452.28,
+            "source": "pdfjs",
+            "_date": "2026-02-06",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-09",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-16",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2026-02-16",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2026-02-17",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 315.48,
+            "source": "pdfjs",
+            "_date": "2026-02-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 304.08,
+            "source": "pdfjs",
+            "_date": "2026-02-19",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 292.68,
+            "source": "pdfjs",
+            "_date": "2026-02-20",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-23",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-02",
+        "status": "unknown",
+        "confidence": 0.4,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 497.88,
+            "source": "pdfjs",
+            "_date": "2026-03-02",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 486.48,
+            "source": "pdfjs",
+            "_date": "2026-03-03",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-09",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-16",
+        "status": "unknown",
+        "confidence": 0.4,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2026-03-16",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2026-03-17",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-23",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-30",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 509.28,
+            "source": "pdfjs",
+            "_date": "2026-04-01",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 497.88,
+            "source": "pdfjs",
+            "_date": "2026-04-02",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 486.48,
+            "source": "pdfjs",
+            "_date": "2026-04-03",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 438.24,
+            "y": 178.68,
+            "source": "pdfjs",
+            "_date": "2026-03-30",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 438.24,
+            "y": 166.8,
+            "source": "pdfjs",
+            "_date": "2026-03-31",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-06",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-13",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 372.48,
+            "source": "pdfjs",
+            "_date": "2026-04-13",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 361.08,
+            "source": "pdfjs",
+            "_date": "2026-04-14",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 349.68,
+            "source": "pdfjs",
+            "_date": "2026-04-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 338.28,
+            "source": "pdfjs",
+            "_date": "2026-04-16",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 369.24,
+            "y": 326.88,
+            "source": "pdfjs",
+            "_date": "2026-04-17",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-20",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-27",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 212.88,
+            "source": "pdfjs",
+            "_date": "2026-04-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 201.48,
+            "source": "pdfjs",
+            "_date": "2026-04-28",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 190.08,
+            "source": "pdfjs",
+            "_date": "2026-04-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 178.68,
+            "source": "pdfjs",
+            "_date": "2026-04-30",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-04",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 583.8,
+            "y": 475.08,
+            "source": "pdfjs",
+            "_date": "2026-05-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 583.8,
+            "y": 463.68,
+            "source": "pdfjs",
+            "_date": "2026-05-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 583.8,
+            "y": 452.28,
+            "source": "pdfjs",
+            "_date": "2026-05-06",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 583.8,
+            "y": 440.88,
+            "source": "pdfjs",
+            "_date": "2026-05-07",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-11",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-18",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-25",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-01",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-08",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-15",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-22",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 661.92,
+            "y": 269.88,
+            "source": "pdfjs",
+            "_date": "2026-06-22",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 661.92,
+            "y": 258.48,
+            "source": "pdfjs",
+            "_date": "2026-06-23",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 661.92,
+            "y": 247.08,
+            "source": "pdfjs",
+            "_date": "2026-06-24",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 661.92,
+            "y": 235.68,
+            "source": "pdfjs",
+            "_date": "2026-06-25",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 661.92,
+            "y": 224.28,
+            "source": "pdfjs",
+            "_date": "2026-06-26",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-29",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-06",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-13",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-20",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-27",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-03",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-10",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-17",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-24",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-31",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-09-07",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M1_CCA_2025-2026"
+      }
+    ],
+    "M2_CCA_2025-2026": [
+      {
+        "weekStartISO": "2025-09-01",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-08",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-15",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 345.6,
+            "source": "pdfjs",
+            "_date": "2025-09-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 333.96,
+            "source": "pdfjs",
+            "_date": "2025-09-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 322.32,
+            "source": "pdfjs",
+            "_date": "2025-09-17",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 310.68,
+            "source": "pdfjs",
+            "_date": "2025-09-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 299.04,
+            "source": "pdfjs",
+            "_date": "2025-09-19",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-22",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-09-29",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 508.56,
+            "source": "pdfjs",
+            "_date": "2025-10-01",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 496.92,
+            "source": "pdfjs",
+            "_date": "2025-10-02",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 485.28,
+            "source": "pdfjs",
+            "_date": "2025-10-03",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 182.64,
+            "source": "pdfjs",
+            "_date": "2025-09-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 6.96,
+            "y": 171,
+            "source": "pdfjs",
+            "_date": "2025-09-30",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-06",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-13",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-20",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 287.4,
+            "source": "pdfjs",
+            "_date": "2025-10-20",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 275.76,
+            "source": "pdfjs",
+            "_date": "2025-10-21",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 264.12,
+            "source": "pdfjs",
+            "_date": "2025-10-22",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 252.48,
+            "source": "pdfjs",
+            "_date": "2025-10-23",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-10-27",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-03",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-10",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-17",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-11-24",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 76.44,
+            "y": 240.84,
+            "source": "pdfjs",
+            "_date": "2025-11-24",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 146.4,
+            "y": 229.2,
+            "source": "pdfjs",
+            "_date": "2025-11-25",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 146.4,
+            "y": 217.56,
+            "source": "pdfjs",
+            "_date": "2025-11-26",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 146.4,
+            "y": 205.92,
+            "source": "pdfjs",
+            "_date": "2025-11-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 146.4,
+            "y": 194.28,
+            "source": "pdfjs",
+            "_date": "2025-11-28",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-01",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 508.56,
+            "source": "pdfjs",
+            "_date": "2025-12-01",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 496.92,
+            "source": "pdfjs",
+            "_date": "2025-12-02",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 485.28,
+            "source": "pdfjs",
+            "_date": "2025-12-03",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 473.64,
+            "source": "pdfjs",
+            "_date": "2025-12-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 462,
+            "source": "pdfjs",
+            "_date": "2025-12-05",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-08",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-15",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 345.6,
+            "source": "pdfjs",
+            "_date": "2025-12-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 333.96,
+            "source": "pdfjs",
+            "_date": "2025-12-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 322.32,
+            "source": "pdfjs",
+            "_date": "2025-12-17",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 310.68,
+            "source": "pdfjs",
+            "_date": "2025-12-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 218.64,
+            "y": 299.04,
+            "source": "pdfjs",
+            "_date": "2025-12-19",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-22",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2025-12-29",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-05",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#83e28e",
+            "x": 288.6,
+            "y": 462,
+            "source": "pdfjs",
+            "_date": "2026-01-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 288.6,
+            "y": 450.36,
+            "source": "pdfjs",
+            "_date": "2026-01-06",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 288.6,
+            "y": 438.72,
+            "source": "pdfjs",
+            "_date": "2026-01-07",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 288.6,
+            "y": 427.08,
+            "source": "pdfjs",
+            "_date": "2026-01-08",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 288.6,
+            "y": 415.44,
+            "source": "pdfjs",
+            "_date": "2026-01-09",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-12",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 288.6,
+            "y": 380.52,
+            "source": "pdfjs",
+            "_date": "2026-01-12",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 288.6,
+            "y": 368.88,
+            "source": "pdfjs",
+            "_date": "2026-01-13",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 288.6,
+            "y": 357.24,
+            "source": "pdfjs",
+            "_date": "2026-01-14",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 288.6,
+            "y": 345.6,
+            "source": "pdfjs",
+            "_date": "2026-01-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 288.6,
+            "y": 333.96,
+            "source": "pdfjs",
+            "_date": "2026-01-16",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-19",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-01-26",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 288.6,
+            "y": 217.56,
+            "source": "pdfjs",
+            "_date": "2026-01-26",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 288.6,
+            "y": 205.92,
+            "source": "pdfjs",
+            "_date": "2026-01-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 288.6,
+            "y": 194.28,
+            "source": "pdfjs",
+            "_date": "2026-01-28",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 288.6,
+            "y": 182.64,
+            "source": "pdfjs",
+            "_date": "2026-01-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 288.6,
+            "y": 171,
+            "source": "pdfjs",
+            "_date": "2026-01-30",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-02",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-09",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-16",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 363.48,
+            "y": 333.96,
+            "source": "pdfjs",
+            "_date": "2026-02-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 363.48,
+            "y": 322.32,
+            "source": "pdfjs",
+            "_date": "2026-02-17",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 363.48,
+            "y": 310.68,
+            "source": "pdfjs",
+            "_date": "2026-02-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 363.48,
+            "y": 299.04,
+            "source": "pdfjs",
+            "_date": "2026-02-19",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 363.48,
+            "y": 287.4,
+            "source": "pdfjs",
+            "_date": "2026-02-20",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-02-23",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-02",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 496.92,
+            "source": "pdfjs",
+            "_date": "2026-03-02",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 485.28,
+            "source": "pdfjs",
+            "_date": "2026-03-03",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 473.64,
+            "source": "pdfjs",
+            "_date": "2026-03-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 462,
+            "source": "pdfjs",
+            "_date": "2026-03-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 450.36,
+            "source": "pdfjs",
+            "_date": "2026-03-06",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-09",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-16",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-23",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 252.48,
+            "source": "pdfjs",
+            "_date": "2026-03-23",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 240.84,
+            "source": "pdfjs",
+            "_date": "2026-03-24",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 229.2,
+            "source": "pdfjs",
+            "_date": "2026-03-25",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 217.56,
+            "source": "pdfjs",
+            "_date": "2026-03-26",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 205.92,
+            "source": "pdfjs",
+            "_date": "2026-03-27",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-03-30",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-06",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 438.72,
+            "source": "pdfjs",
+            "_date": "2026-04-07",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 427.08,
+            "source": "pdfjs",
+            "_date": "2026-04-08",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 415.44,
+            "source": "pdfjs",
+            "_date": "2026-04-09",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 403.8,
+            "source": "pdfjs",
+            "_date": "2026-04-10",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-13",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-20",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 287.4,
+            "source": "pdfjs",
+            "_date": "2026-04-20",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 275.76,
+            "source": "pdfjs",
+            "_date": "2026-04-21",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 507.24,
+            "y": 264.12,
+            "source": "pdfjs",
+            "_date": "2026-04-22",
+            "_multiCell": false
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 252.48,
+            "source": "pdfjs",
+            "_date": "2026-04-23",
+            "_multiCell": true
+          },
+          {
+            "color": "#ffff00",
+            "x": 433.44,
+            "y": 240.84,
+            "source": "pdfjs",
+            "_date": "2026-04-24",
+            "_multiCell": true
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-04-27",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 205.92,
+            "source": "pdfjs",
+            "_date": "2026-04-27",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 194.28,
+            "source": "pdfjs",
+            "_date": "2026-04-28",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 182.64,
+            "source": "pdfjs",
+            "_date": "2026-04-29",
+            "_multiCell": false
+          },
+          {
+            "color": "#83e28e",
+            "x": 507.24,
+            "y": 171,
+            "source": "pdfjs",
+            "_date": "2026-04-30",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-04",
+        "status": "school",
+        "confidence": 0.8,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 584.88,
+            "y": 473.64,
+            "source": "pdfjs",
+            "_date": "2026-05-04",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 584.88,
+            "y": 462,
+            "source": "pdfjs",
+            "_date": "2026-05-05",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 584.88,
+            "y": 450.36,
+            "source": "pdfjs",
+            "_date": "2026-05-06",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 584.88,
+            "y": 438.72,
+            "source": "pdfjs",
+            "_date": "2026-05-07",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-11",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-18",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-05-25",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-01",
+        "status": "school",
+        "confidence": 0.6,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 508.56,
+            "source": "pdfjs",
+            "_date": "2026-06-01",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 496.92,
+            "source": "pdfjs",
+            "_date": "2026-06-02",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 485.28,
+            "source": "pdfjs",
+            "_date": "2026-06-03",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-08",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-15",
+        "status": "school",
+        "confidence": 1,
+        "votes": [
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 345.6,
+            "source": "pdfjs",
+            "_date": "2026-06-15",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 333.96,
+            "source": "pdfjs",
+            "_date": "2026-06-16",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 322.32,
+            "source": "pdfjs",
+            "_date": "2026-06-17",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 310.68,
+            "source": "pdfjs",
+            "_date": "2026-06-18",
+            "_multiCell": false
+          },
+          {
+            "color": "#ff0000",
+            "x": 663.96,
+            "y": 299.04,
+            "source": "pdfjs",
+            "_date": "2026-06-19",
+            "_multiCell": false
+          }
+        ],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-22",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-06-29",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-06",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-13",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-20",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-07-27",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-03",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-10",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-17",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-24",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-08-31",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      },
+      {
+        "weekStartISO": "2026-09-07",
+        "status": "company",
+        "confidence": 1,
+        "votes": [],
+        "anchorX": null,
+        "anchorY": null,
+        "groupe": "M2_CCA_2025-2026"
+      }
+    ]
+  },
+  "metaCounts": {
+    "M1": {
+      "fillsTotal": 245,
+      "fillsRetained": 77,
+      "unfoldedFillsCount": 5,
+      "invalidDateCount": 2,
+      "monthsDetected": 11,
+      "dayRowsDetected": 31
+    },
+    "M2": {
+      "fillsTotal": 252,
+      "fillsRetained": 84,
+      "unfoldedFillsCount": 2,
+      "invalidDateCount": 2,
+      "monthsDetected": 11,
+      "dayRowsDetected": 31
+    }
+  },
+  "matchSummary": {
+    "M1": {
+      "matched": 52,
+      "unmatched": 2,
+      "total": 54,
+      "unknownInSkeleton": 2
+    },
+    "M2": {
+      "matched": 54,
+      "unmatched": 0,
+      "total": 54,
+      "unknownInSkeleton": 0,
+      "ceilingMatches": 54,
+      "ceilingRate": 1
+    },
+    "consolidated": {
+      "matched": 106,
+      "unmatched": 2,
+      "total": 108,
+      "matchRate": 0.9814814814814815,
+      "verdict": "signal fort"
+    }
+  }
+}
