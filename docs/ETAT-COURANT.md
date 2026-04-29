@@ -188,6 +188,36 @@ Implication pour la question 1 : ne pas créer de colonnes séparées users.alte
 
 Règle ajoutée à CONTEXTE-PROJET §6 le 29 avril 2026. Claude doit demander l'heure si elle conditionne son conseil, plutôt que de la déduire d'indices indirects (noms de fichiers, métadonnées de captures, etc.).
 
+### Étape 1B.6.2 — Reconstruction grille + matching Matthieu (29 avril après-midi)
+
+Commit `b9e74b1`. Script `etape-1b-6-grid-and-match-matthieu.mjs` créé (777 lignes). Reconstruction de grille calendaire civile pour les 2 groupes M1 CCA et M2 CCA, agrégation jour→semaine ISO, déduplication par jour unique, politique de majorité 3/5, matching contre vérité terrain saisie main par Côme (108 lignes).
+
+**Score consolidé Matthieu : 98.1% (106/108)**
+
+- M1 CCA : 96.3% (52/54), 2 unknown localisés zone Mars (semaines 2 mars + 16 mars)
+- M2 CCA : 100% (54/54), DETTE #40 absorbée par majorité 3/5
+
+**Pattern d'erreur des 2 unknown M1** : ces 2 semaines sont en colonne Mars où les 5 fills jaunes "multi-mois" M1 (width ~211-214) sont dépliés en 1 vote par mois traversé, pas 1 vote par jour-cellule. Une semaine de cours réelle qui n'est représentée que par des fills multi-mois sur un seul mois reçoit donc 2 votes au lieu de 5, déclenchant le statut `unknown` (politique majorité 3/5 stricte, identique Mathis 1B.2). Pré-screening basse confiance à la génération du squelette a identifié exactement ces 2 semaines (ventilation 0 haute / 0 moyenne / 2 basse). Calibration du pré-screening jugée correcte. Stratégie alternative "1 vote par jour-cellule traversé" non implémentée car ferait gagner 2 cellules sur 108 au prix d'un risque de surcomptage ailleurs.
+
+**Anomalie attendue Soutenance M2 absorbée** : pdf.js extrait 3 fills rouge sur 5 visuels (DETTE #40), mais la politique majorité 3/5 considère 3/5 ≥ 3 comme suffisant pour `status = school`. Confidence dégradée à 0.6 au lieu de 1.0, signal correct du contrat accumulateur (VISION §4). Plafond théorique M2 = score obtenu M2 = 100%.
+
+**Verdict partiel spike #1 — pdf.js validé empiriquement sur PDFs vectoriels**
+
+Mathis (1B.2, 100%, 54 semaines) + Matthieu (1B.6.2, 98.1%, 108 semaines) = 162 semaines testées sur 2 fixtures aux structures différentes (Hyperplanning 1 page 1 groupe / Master CCA 2 pages 2 groupes), score consolidé moyen 99.1%. Verdict cible ≥80% largement dépassé.
+
+**pdf.js `getOperatorList` retenu comme candidate principale F1 pour les PDFs vectoriels.** Spikes #2 (Vision OCR), #3 (DocAI), #4 (Azure DI) deviennent **optionnels** — ils n'étaient prévus que comme conditionnels en cas d'échec pdf.js. Découverte F5 (Google DocAI `compute_style_info` exposant `backgroundColor`) reste référencée pour intégration future si jamais nécessaire.
+
+**Reste à faire pour clore le spike #1 entièrement** :
+
+- Spike Martin (image raster JPG, 4 groupes) : pdf.js inopérant par construction sur image. À traiter dans un spike dédié image raster (Florence-2 / Surya / algo manuel ImageData, technique à arbitrer).
+- DETTE #37 (décision F1/F2/F3 sur le levier parser) : à formaliser une fois Martin tranché. Verdict probable : "stratégie discriminante par format" — PDFs vectoriels au pdf.js, images raster à la méthode retenue par spike Martin, fallback saisie manuelle assistée pour tout le reste.
+- Clôture formelle du spike #1 : RESULTS.md final à rédiger (sections 4-5-6 actuellement en placeholder), suppression du script throwaway `generate-matthieu-skeleton.mjs`.
+- Composant de saisie manuelle assistée (Levier 3 DETTE #37) : à concevoir comme fallback obligatoire (VISION §6 risque 1 et 4).
+
+**État Git fin de bloc** : HEAD = `b9e74b1`. 6 commits non-pushés depuis la clôture 1A enrichie (`f959f6e`) : `a8aefb8`, `72f5f0c`, `712fc37`, `dbf6aec`, `651be24`, `b9e74b1`. Working tree historique préservé hors les 4 modifications connues (CreerAnnoncePage bypass DEV, audit Zone 1 untracked, notes techniques 1A, throwaway 1B.6.1).
+
+**Prochaine session** : à arbitrer parmi spike Martin (suite naturelle pour finir #1), une session dédiée parquée (couverture temporelle / flexibilité BDD), ou tâche annexe (refonte UI rythme, fix z-index CompleterProfilPage/CreerAnnoncePage).
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
