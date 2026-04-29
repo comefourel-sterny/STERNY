@@ -218,6 +218,24 @@ Mathis (1B.2, 100%, 54 semaines) + Matthieu (1B.6.2, 98.1%, 108 semaines) = 162 
 
 **Prochaine session** : à arbitrer parmi spike Martin (suite naturelle pour finir #1), une session dédiée parquée (couverture temporelle / flexibilité BDD), ou tâche annexe (refonte UI rythme, fix z-index CompleterProfilPage/CreerAnnoncePage).
 
+### Spike #2 Martin — Étape 0 audit faisabilité (29 avril fin de journée)
+
+Squelette TypeScript Deno `etape-0-audit-faisabilite.ts` exécuté avec 13 cellules échantillons cliquées via outil throwaway `pick-coordinates.html` (créé puis supprimé dans le même commit de clôture). Pin `imagescript@1.2.17` requis pour stabilité Deno. Image décodée 720×1560 px, 13 hex extraits sans crash.
+
+**Verdict étape 0 : GO cascade A** (algo manuel ImageData pure TypeScript).
+
+- Sous-point 1 (décodage JPG Deno) : PASS.
+- Sous-point 2 (palette extraite) : PASS. Gamme jaune `#ffff01` → `#e0de10`, gamme vert `#91cf52` → `#7cb145`.
+- Sous-point 3 (distinguabilité au pixel près) : PASS pour le périmètre binaire jaune=school / vert=company. 56/78 paires testées avec Δmax > 50. Aucune paire jaune↔vert ne tombe sous le seuil 30. Toutes les confusions sous seuil sont intra-teinte (jaune-pur vs jaune-or, vert moyen vs vert foncé), explicables par la compression JPG.
+
+**Apprentissage portant pour l'étape 1** : 3 points sur 13 (~23%) ont retourné des valeurs très foncées (`#2c5e00`, `#0c3b00`, `#3d3900`) qui ne sont ni jaune school ni vert company. Confirmé visuellement par Côme comme artefacts de clic sur bordure ou texte intra-cellule (hypothèse A). Le code de l'étape 1 doit moyenner plusieurs pixels par cellule au lieu d'un seul, pour absorber le bruit JPG et les artefacts d'échantillonnage.
+
+Plan B magick-wasm non engagé. Cascade C/C bis restent en réserve documentaire.
+
+**Reste à faire pour le spike #2** : étape 1 (détection de grille par projection + extraction couleur cellule par cellule + classification K-means K=2 + matching contre vérité terrain CSV 45 lignes), étape 2 robustesse 3 autres groupes FA si étape 1 valide ≥80%. RESULTS.md sections 4-5-6 remplies dans ce même commit de clôture étape 0.
+
+**État Git fin de bloc** : HEAD = (hash du commit de clôture étape 0). Working tree historique préservé hors les 4 modifications connues.
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde

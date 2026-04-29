@@ -59,25 +59,24 @@ Vérité terrain saisie main par Côme dans fixtures/martin-ground-truth.csv (gi
 
 ## 4. Verdict go/no-go
 
-À compléter en clôture du spike.
+**GO cascade A** — algo manuel ImageData en pure TypeScript Deno. Les 3 sous-points d'audit sont passés.
 
-Critères :
-- ≥80% sur 45 semaines G1 = signal fort, plan A retenu, étape 2 robustesse engagée
-- 50-80% = zone grise, envisager plan B sur même fixture pour comparaison
-- <50% = plan A invalidé, bascule plan B obligatoire
+| Sous-point | Statut | Mesure |
+|---|---|---|
+| 1. Décodage JPG côté Deno via imagescript | PASS | Image décodée 720 × 1560 px, lecture 222 360 octets, format JPG. Pin `imagescript@1.2.17` requis pour stabilité. |
+| 2. Palette de couleurs extraite sur 13 cellules échantillons | PASS | 13 hex récupérés sans crash. Gamme jaune `#ffff01` → `#e0de10`. Gamme vert `#91cf52` → `#7cb145`. |
+| 3. Fonds de cellules distinguables au pixel près | PASS | 56/78 paires testées avec Δmax > 50 (palette nette inter-teintes). Aucune paire jaune↔vert sous le seuil de séparation 30. |
+
+Plan B magick-wasm non engagé. Cascade C (Florence-2 / Surya / Adobe Extract via API hostée) et C bis (OpenCV.js / TATR) restent en réserve documentaire, non activées.
 
 ## 5. Apprentissages
 
-À compléter en clôture du spike.
+**5.1 — Bruit de compression JPG sur les bords et le centre des cellules.** La palette n'est pas binaire jaune-pur / vert-pur comme on l'aurait attendu sur un PDF vectoriel. Au moins 3 nuances de jaune et 5 nuances de vert sont apparues sur 13 échantillons, dues au chroma subsampling JPG (blocs 8×8) qui dégrade la couleur selon la position du sample point. Pour un classifieur K-means K=2 (jaune→school / vert→company) c'est suffisant. Pour K=3 ou K=4 il faudrait un échantillonnage multi-pixel moyenné.
 
-Notes de cadrage (29 avril Claude.ai) à acter dans cette section au moment de la clôture :
-- Divergence à réconcilier dans ETAT-COURANT : magick-wasm est candidate principale F2 dans PARSER-AXE-1 mais absente du bloc 28 avril ETAT-COURANT (citait "Florence-2 / Surya / algo manuel ImageData"). Cascade de candidates Martin réordonnancée 29 avril en plan A→B→C→C bis avec algo manuel en plan A et magick-wasm en plan B.
-- Posture Python interdit pour le spike Martin (stack Sterny Deno/TS). À rouvrir uniquement si plan C avec exécution locale Florence-2/Surya devient nécessaire.
-- Convention .gitignore par dossier fixtures/ (héritée commit 2cae874 du spike #1) à acter explicitement : chaque nouveau spike crée son propre fixtures/.gitignore avec *.pdf et *.csv au moment de la création du dossier.
-- Le spike #2 mesure UNIQUEMENT la performance de classification couleur. La règle métier "alternant en vacances scolaires → company" (VISION §3) ne s'applique pas dans ce spike — le matching se fait sur statut_observe_martin (couleur réelle), pas sur statut_business.
+**5.2 — Échantillonnage 1-pixel central insuffisant en isolation.** 3 points sur 13 (~23%) ont retourné des valeurs très foncées (`#2c5e00`, `#0c3b00`, `#3d3900`) qui n'étaient ni jaune school ni vert company. Cause confirmée visuellement par Côme : ces points cliqués au centre visuel sont tombés sur une bordure de cellule ou un texte intra-cellule. Le code de l'étape 1 doit moyenner plusieurs pixels par cellule pour absorber ces artefacts.
+
+**5.3 — Pin de version imagescript obligatoire.** L'import `https://deno.land/x/imagescript/mod.ts` sans version a échoué côté Deno. Pin `@1.2.17` requis. À documenter pour tous les futurs scripts Deno qui décodent des images raster.
 
 ## 6. Décision suite
 
-À compléter en clôture du spike.
-
-Sortie attendue : décision finale F1/F2/F3 sur le levier parser Sterny (DETTE #37), bloquée jusque-là par l'absence de signal Martin. Verdict probable : stratégie discriminante par format (PDFs vectoriels au pdf.js, images raster à la méthode retenue par ce spike, fallback saisie manuelle assistée pour le reste).
+Engager l'étape 1 du spike #2 (détection de grille par projection horizontale/verticale + extraction couleur cellule par cellule + classification K-means K=2 + matching contre la vérité terrain CSV de 45 lignes Côme). Périmètre : FA CG2P G1 uniquement. Échantillonnage multi-pixel obligatoire (apprentissage 5.2). Si étape 1 valide ≥80% cellule-par-cellule contre la vérité terrain, étape 2 robustesse sur les 3 autres groupes FA. Si étape 1 échoue, bascule plan B magick-wasm.

@@ -8,17 +8,28 @@
 //
 // Si l'un des 3 échoue : STOP, bascule plan B magick-wasm sans coder l'étape 1.
 
-import { decode } from "https://deno.land/x/imagescript/mod.ts";
+import { decode } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
 
 const FIXTURE_PATH = new URL("./fixtures/Planning_Martin.JPG", import.meta.url);
 
 // Coordonnées (x, y) approximatives de 5-10 cellules échantillons.
-// À remplir par Côme côté Claude.ai avant exécution, en lisant le JPG.
-// Format : { label, x, y } — viser le centre visuel de la cellule.
-const SAMPLE_POINTS: Array<{ label: string; x: number; y: number }> = [
-  // À remplir — exemples de format :
-  // { label: "FA_CG2P_G1_S1_2026-08-31_jaune", x: 250, y: 180 },
-  // { label: "FA_CG2P_G1_S3_2026-09-14_vert", x: 350, y: 180 },
+// Cliquées au centre visuel des cellules via pick-coordinates.html (29 avril 2026).
+// `label` rendu optionnel pour pouvoir coller des paires { x, y } seules ;
+// fallback `pt-N` côté audit functions.
+const SAMPLE_POINTS: Array<{ label?: string; x: number; y: number }> = [
+  { x: 356, y: 537 },
+  { x: 366, y: 575 },
+  { x: 361, y: 647 },
+  { x: 360, y: 697 },
+  { x: 358, y: 727 },
+  { x: 358, y: 739 },
+  { x: 358, y: 792 },
+  { x: 356, y: 828 },
+  { x: 356, y: 839 },
+  { x: 356, y: 903 },
+  { x: 359, y: 964 },
+  { x: 356, y: 1008 },
+  { x: 358, y: 1051 },
 ];
 
 async function audit1_decoding() {
@@ -42,14 +53,15 @@ function audit2_palette(image: any) {
     console.warn("⚠️  SAMPLE_POINTS vide — remplir manuellement avant exécution");
     return;
   }
-  for (const pt of SAMPLE_POINTS) {
+  SAMPLE_POINTS.forEach((pt, i) => {
+    const lbl = pt.label ?? `pt-${i + 1}`;
     const pixel = image.getPixelAt(pt.x, pt.y);
     const r = (pixel >> 24) & 0xff;
     const g = (pixel >> 16) & 0xff;
     const b = (pixel >> 8) & 0xff;
     const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
-    console.log(`  ${pt.label.padEnd(40)} (${pt.x}, ${pt.y}) → RGB(${r}, ${g}, ${b}) ${hex}`);
-  }
+    console.log(`  ${lbl.padEnd(40)} (${pt.x}, ${pt.y}) → RGB(${r}, ${g}, ${b}) ${hex}`);
+  });
 }
 
 function audit3_distinguability(image: any) {
@@ -58,9 +70,9 @@ function audit3_distinguability(image: any) {
     console.warn("⚠️  Au moins 2 SAMPLE_POINTS de couleurs différentes nécessaires");
     return;
   }
-  const rgbs = SAMPLE_POINTS.map((pt) => {
+  const rgbs = SAMPLE_POINTS.map((pt, i) => {
     const p = image.getPixelAt(pt.x, pt.y);
-    return { label: pt.label, r: (p >> 24) & 0xff, g: (p >> 16) & 0xff, b: (p >> 8) & 0xff };
+    return { label: pt.label ?? `pt-${i + 1}`, r: (p >> 24) & 0xff, g: (p >> 16) & 0xff, b: (p >> 8) & 0xff };
   });
   for (let i = 0; i < rgbs.length; i++) {
     for (let j = i + 1; j < rgbs.length; j++) {
