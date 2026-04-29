@@ -59,24 +59,35 @@ Vérité terrain saisie main par Côme dans fixtures/martin-ground-truth.csv (gi
 
 ## 4. Verdict go/no-go
 
-**GO cascade A** — algo manuel ImageData en pure TypeScript Deno. Les 3 sous-points d'audit sont passés.
+**GO cascade A confirmé empiriquement** — algo manuel ImageData en pure TypeScript Deno valide sur image raster JPG. Score final **93.33% (42/45)** sur Martin FA CG2P G1, ≥ seuil cible ≥80% largement dépassé.
 
-| Sous-point | Statut | Mesure |
+| Étape | Mesure | Statut |
 |---|---|---|
-| 1. Décodage JPG côté Deno via imagescript | PASS | Image décodée 720 × 1560 px, lecture 222 360 octets, format JPG. Pin `imagescript@1.2.17` requis pour stabilité. |
-| 2. Palette de couleurs extraite sur 13 cellules échantillons | PASS | 13 hex récupérés sans crash. Gamme jaune `#ffff01` → `#e0de10`. Gamme vert `#91cf52` → `#7cb145`. |
-| 3. Fonds de cellules distinguables au pixel près | PASS | 56/78 paires testées avec Δmax > 50 (palette nette inter-teintes). Aucune paire jaune↔vert sous le seuil de séparation 30. |
+| 0. Audit faisabilité (3 sous-points) | Décodage JPG OK, palette extraite OK, distinguabilité jaune↔vert nette | PASS |
+| 1A. Détection grille par gradient vertical | Sur-segmentation hors grille, sous-segmentation intra-grille (49 cellules vs 45) | FAIL → bypass |
+| 1A bis. Division uniforme entre 2 ancrages cliqués | 45 cellules sur 45, 0 low_confidence, 0 bucket "autre" | PASS |
+| 1B. Matching contre vérité terrain CSV | 42 matchs sur 45 = 93.33% | PASS (≥80%) |
 
-Plan B magick-wasm non engagé. Cascade C (Florence-2 / Surya / Adobe Extract via API hostée) et C bis (OpenCV.js / TATR) restent en réserve documentaire, non activées.
+Plan B magick-wasm non engagé. Cascade C (Florence-2 / Surya / API hostée) et C bis (OpenCV.js / TATR) restent en réserve documentaire, non activées.
 
 ## 5. Apprentissages
 
-**5.1 — Bruit de compression JPG sur les bords et le centre des cellules.** La palette n'est pas binaire jaune-pur / vert-pur comme on l'aurait attendu sur un PDF vectoriel. Au moins 3 nuances de jaune et 5 nuances de vert sont apparues sur 13 échantillons, dues au chroma subsampling JPG (blocs 8×8) qui dégrade la couleur selon la position du sample point. Pour un classifieur K-means K=2 (jaune→school / vert→company) c'est suffisant. Pour K=3 ou K=4 il faudrait un échantillonnage multi-pixel moyenné.
+**5.1 — Bruit de compression JPG sur les bords et le centre des cellules.** La palette n'est pas binaire jaune-pur / vert-pur comme on l'aurait attendu sur un PDF vectoriel. Au moins 3 nuances de jaune et 5 nuances de vert sur 13 échantillons étape 0, dues au chroma subsampling JPG (compression qui dégrade la couleur en blocs 8×8 pixels). Pour un classifieur K-means K=2 (jaune→school / vert→company) c'est suffisant. Pour K=3 ou K=4 il faudrait un échantillonnage multi-pixel moyenné.
 
-**5.2 — Échantillonnage 1-pixel central insuffisant en isolation.** 3 points sur 13 (~23%) ont retourné des valeurs très foncées (`#2c5e00`, `#0c3b00`, `#3d3900`) qui n'étaient ni jaune school ni vert company. Cause confirmée visuellement par Côme : ces points cliqués au centre visuel sont tombés sur une bordure de cellule ou un texte intra-cellule. Le code de l'étape 1 doit moyenner plusieurs pixels par cellule pour absorber ces artefacts.
+**5.2 — Échantillonnage 1-pixel central insuffisant en isolation.** 3 points sur 13 (~23%) ont retourné des valeurs très foncées (`#2c5e00`, `#0c3b00`, `#3d3900`) à l'étape 0. Cause confirmée visuellement : ces points cliqués au centre visuel sont tombés sur une bordure de cellule ou un texte intra-cellule. Conséquence : le code des étapes ultérieures doit moyenner plusieurs pixels par cellule. Implémenté en 1A puis 1A bis avec fenêtre 7×7 et filtrage luminance [80, 230], résultat 0 cellule low_confidence sur 45.
 
-**5.3 — Pin de version imagescript obligatoire.** L'import `https://deno.land/x/imagescript/mod.ts` sans version a échoué côté Deno. Pin `@1.2.17` requis. À documenter pour tous les futurs scripts Deno qui décodent des images raster.
+**5.3 — Pin de version imagescript obligatoire.** L'import `https://deno.land/x/imagescript/mod.ts` sans version échoue côté Deno. Pin `@1.2.17` requis. À documenter pour tous les futurs scripts Deno qui décodent des images raster.
+
+**5.4 — La détection automatique de grille par gradient vertical échoue sur ce type de planning.** Étape 1A originale : le gradient vertical sur-segmente l'extérieur de la grille (en-têtes, légende confondus avec des cellules) et sous-segmente l'intérieur (2 cellules de même couleur consécutives n'ont pas de saut RGB fort entre elles, bordure ratée). 49 cellules détectées au lieu de 45. Conclusion : sur ce type d'image raster, abandonner la détection automatique au profit d'une **division uniforme entre 2 ancrages saisis manuellement** (centres semaine 1 et semaine 45). Plus robuste, plus simple, score parfait sur la détection.
+
+**5.5 — Précision de l'ancrage manuel critique pour l'extrémité haute.** Recalibrage entre 1A bis run 1 (Y_FIRST=535) et run 2 (Y_FIRST=537) a fait passer le score 1B de 84.44% à 93.33%, soit +4 cellules pour un décalage de 2 pixels seulement. La grille calendrier amplifie les erreurs d'ancrage : 1 px d'erreur en haut se propage cumulativement sur 44 cellules, créant des erreurs systématiques sur les premières semaines. Implication production : si l'utilisateur Sterny doit cliquer manuellement les ancrages, l'UI doit prévoir un zoom élevé (×3 ou ×4) au moment du clic et un mode de validation visuelle avec markers superposés avant confirmation.
+
+**5.6 — Erreurs résiduelles concentrées sur cellules à hex verdâtre ambigu.** Les 3 erreurs résiduelles à 93.33% portent sur des hex `#cdd72e`, `#bad431`, `#b7d332` dont les composantes R et G sont très proches (vert-citron / jaune-vert ambigu). Cause non tranchée en fin de session : peut être bruit JPG localisé, ambiguïté visuelle réelle, ou défaut d'alignement vertical résiduel non résolu (Côme observe que tous les markers semblent légèrement décalés vers le haut malgré le recalibrage). Voir DETTE-TECHNIQUE #41 pour suivi.
 
 ## 6. Décision suite
 
-Engager l'étape 1 du spike #2 (détection de grille par projection horizontale/verticale + extraction couleur cellule par cellule + classification K-means K=2 + matching contre la vérité terrain CSV de 45 lignes Côme). Périmètre : FA CG2P G1 uniquement. Échantillonnage multi-pixel obligatoire (apprentissage 5.2). Si étape 1 valide ≥80% cellule-par-cellule contre la vérité terrain, étape 2 robustesse sur les 3 autres groupes FA. Si étape 1 échoue, bascule plan B magick-wasm.
+**Décision DETTE #37 prête à formaliser** : stratégie discriminante par format. PDFs vectoriels au pdf.js getOperatorList (validé spike #1, score 99.1% consolidé sur Mathis + Matthieu). Images raster à l'algo manuel ImageData en pure TypeScript Deno avec ancrage manuel UI (validé spike #2, score 93.33% sur Martin). Composant de saisie manuelle assistée comme fallback pour tout le reste (Levier 3 DETTE #37, à concevoir séparément).
+
+**Étape 2 du spike #2 (robustesse 3 autres groupes FA Martin) reportée** : non bloquante pour la décision DETTE #37 (verdict cascade A déjà acquis sur G1). À engager si et quand le pipeline production a besoin de couvrir la fixture Martin complète.
+
+**Implication produit** : l'UI de saisie d'ancrage utilisateur (clic semaine 1 + clic semaine 45 dans le planning) devient un composant à concevoir, pas un détail technique. Critères : zoom ×3/×4 obligatoire au clic, validation visuelle par markers superposés avant confirmation, fallback saisie manuelle assistée si l'utilisateur ne reconnaît pas la structure du planning.

@@ -236,6 +236,30 @@ Plan B magick-wasm non engagé. Cascade C/C bis restent en réserve documentaire
 
 **État Git fin de bloc** : HEAD = (hash du commit de clôture étape 0). Working tree historique préservé hors les 4 modifications connues.
 
+### Spike #2 Martin — Étapes 1A, 1A bis, 1B (29 avril soirée)
+
+3 étapes successives en suite directe de l'étape 0.
+
+**Étape 1A — détection grille par gradient vertical sur image raster** : FAIL. Le détecteur sur-segmente hors grille (en-têtes confondus avec cellules) et sous-segmente intra-grille (bordures entre cellules de même couleur ratées). 49 cellules détectées au lieu de 45. Conclusion : abandon de la détection automatique, bypass par ancrage manuel.
+
+**Étape 1A bis — division uniforme entre 2 ancrages cliqués manuellement** : PASS. Côme a cliqué semaine 1 (358, 537) et semaine 45 (357, 1204) via outil throwaway pick-coordinates.html. Le script découpe l'intervalle en 45 centres équidistants (step 15.16 px), Phase B (extraction couleur médiane multi-pixel filtrée luminance [80, 230]) appliquée sur chacun. 45 cellules extraites, 0 low_confidence, 0 bucket "autre", distribution 26 jaune + 19 vert.
+
+**Étape 1B — matching cellule-par-cellule contre vérité terrain CSV** : score final **93.33% (42/45)**. Run 1 (Y_FIRST=535) : 84.44%. Run 2 après recalibrage (Y_FIRST=537, +2 px) : 93.33%, soit +4 cellules pour 2 pixels d'ancrage corrigé. 3 erreurs résiduelles persistantes sur semaines 2, 5, 9 — cellules à hex verdâtre ambigu (`#cdd72e`, `#bad431`, `#b7d332`), cause non tranchée en fin de session (voir DETTE #41).
+
+**Verdict spike #2 : GO cascade A** (algo manuel ImageData pure TypeScript Deno) sur image raster JPG. Cible go/no-go ≥80% largement dépassée. Décision DETTE #37 désormais déblocable.
+
+**Apprentissage majeur portant pour la production** : la précision de l'ancrage manuel est critique. 2 px d'erreur d'ancrage en haut = 4 cellules mal classées sur 44 (effet d'amplification cumulative). L'UI Sterny qui demandera à l'utilisateur de cliquer les ancrages doit prévoir un zoom élevé au clic (×3 ou ×4) et un mode de validation visuelle (markers superposés sur les 45 cellules calculées) avant confirmation.
+
+**Reste à faire pour le spike #2** :
+- Étape 2 robustesse sur les 3 autres groupes FA Martin : reportée, non bloquante pour DETTE #37.
+- DETTE #41 à investiguer avant production : 3 erreurs résiduelles concentrées sur hex verdâtre ambigu, et observation Côme "tous les markers légèrement décalés vers le haut malgré recalibrage".
+- Suppression des throwaway pick-coordinates.html et verify-grid-static.html : faite dans ce commit.
+- Suppression du script étape 1A original (étape-1a-grille-couleurs.ts) et son output : faite dans ce commit (1A bis l'a remplacé).
+
+**État Git fin de bloc** : HEAD = (hash du commit de clôture spike #2). Working tree historique préservé hors les 4 modifications connues.
+
+**Décision DETTE #37 actable maintenant** : stratégie discriminante par format. À formaliser dans une session dédiée (rédaction de la décision dans VISION-ARCHITECTURE.md + clôture DETTE #37 + cadrage du composant saisie manuelle assistée).
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
