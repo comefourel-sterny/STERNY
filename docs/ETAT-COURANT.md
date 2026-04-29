@@ -107,7 +107,7 @@ Anomalies portées en mémoire pour la production (sans impact sur le score) :
 
 **Prochaine étape** : 1B.6 — adaptation du script à Matthieu. 3 difficultés majeures absentes de Mathis : (1) calendrier civil jour-par-jour avec agrégation jour→semaine côté code, (2) 2 pages M1 + M2, (3) hypothèse fragile "cellule vide = company" à valider ou invalider. Le score Mathis seul ne suffit pas pour acter la décision globale F1/F2/F3 sur le pipeline parser. Verdict global du spike #1 reste en placeholder.
 
-### Suite 28 avril nuit — Étape 1B.6.1 partielle (analyse exploratoire Matthieu)
+### Étape 1B.6.1 partielle — analyse exploratoire Matthieu (28 avril nuit + 29 avril après-midi)
 
 **Étape 1B.6.1 — Cartographie des fills Matthieu et détection d'anomalies**
 
@@ -154,6 +154,39 @@ Cohérence : 2 plannings sur la **même année académique 2025-2026** (M1 et M2
 **État Git fin de bloc** : pas de commit de code applicatif. 2 commits docs uniquement (ce bloc d'ETAT-COURANT + ajout DETTE #40). Working tree inchangé hors les 3 modifications historiques préservées. Le script generate-matthieu-skeleton.mjs et le CSV matthieu-ground-truth.csv ne sont pas versionnés (script throwaway + CSV gitignored).
 
 **Prochaine session** : 1B.6.2 — écriture du script etape-1b-6-grid-and-match-matthieu.mjs après que Côme ait complété la vérité terrain. Reprendre avec le message d'ouverture préparé en fin de session 1B.6.1.
+
+### Questions produit + architecture en parking — discussion 29 avril après-midi
+
+Trois discussions ouvertes en marge de la session 1B.6.1, à traiter dans des sessions dédiées séparées. Aucune n'est tranchée à ce jour. Documentées ici pour ne pas se perdre.
+
+**Question 1 — Modèle de couverture temporelle du rhythm_calendar**
+
+Un planning scolaire couvre 1 année universitaire (typiquement septembre→juillet). Mais un contrat d'alternance peut durer 2 ou 3 ans. Sterny doit-il ne couvrir que le PDF (approche minimaliste) ? Extrapoler en company sur les périodes hors PDF (approche déductive) ? Demander à l'utilisateur la durée totale de son contrat et orchestrer une chaîne de plannings successifs (approche déclarative) ?
+
+Reco provisoire de Côme (à valider en session dédiée) : approche déclarative, avec :
+- Champ durée totale d'alternance demandé à l'inscription
+- Page profil à créer avec deux actions distinctes (modifier le planning de l'année en cours vs ajouter le planning de l'année suivante)
+- Fusion automatique des plannings successifs en un rythm_calendar continu côté dashboard
+- Affichage explicite "tu es en entreprise" pendant les périodes creuses inter-plannings (juillet-août)
+- Notification active à la rentrée pour rappeler l'upload du nouveau planning
+
+Cas limite identifié : changement d'école entre années universitaires (M1 école A → M2 école B). Approche pressentie : la fusion gère naturellement ce cas grâce à la période creuse incompressible entre fin juillet et début septembre. Mais la **faisabilité juridique** du changement d'école en cours de contrat d'alternance n'est pas évidente — beaucoup d'entreprises financent la formation et le changement d'école peut nécessiter un avenant. À soumettre à un avocat spécialisé en droit du travail / formation professionnelle dans la consultation professionnelle obligatoire pré-lancement (cf. VISION §9).
+
+À traiter en session dédiée Couverture Temporelle.
+
+**Question 2 — Principe de flexibilité BDD pour Sterny**
+
+Côme part de zéro sur beaucoup de domaines (cf. CONTEXTE §1). Il va inévitablement découvrir des cas non anticipés en exploitation réelle. Si la BDD est conçue de manière rigide, chaque découverte demandera une migration SQL coûteuse et ralentira la réactivité au pire moment.
+
+Direction privilégiée (à formaliser en session dédiée) : adopter un mix de colonnes typées (pour ce qui est stable et critique : signatures de bail, paiements, dates ISO de contrats) et de colonnes jsonb (pour ce qui est susceptible d'évoluer dans les 12 premiers mois : préférences alternant, métadonnées de planning, parcours d'alternance, attributs descriptifs des annonces). Le principe doit être ajouté à VISION-ARCHITECTURE pour être appliqué à toute nouvelle table créée.
+
+Implication pour la question 1 : ne pas créer de colonnes séparées users.alternance_start_date / users.alternance_end_date / users.alternance_duration_years, mais une unique colonne users.alternance_metadata jsonb avec structure documentée mais évolutive.
+
+À traiter en session dédiée Flexibilité BDD, après consolidation de la phase 1 pour ne pas faire évoluer le schéma sur des features encore en mouvement.
+
+**Question 3 — Vigilance horaire de Claude**
+
+Règle ajoutée à CONTEXTE-PROJET §6 le 29 avril 2026. Claude doit demander l'heure si elle conditionne son conseil, plutôt que de la déduire d'indices indirects (noms de fichiers, métadonnées de captures, etc.).
 
 ---
 
