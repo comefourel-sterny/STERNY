@@ -136,7 +136,7 @@ Sur la Soutenance M2 (semaine du 1 juin 2026), Côme observe 5 cellules rouges v
 | Période | M1 (p1) | M2 (p2) |
 |---|---|---|
 | Cours jaunes (cellules normales hors bandeaux) | 48 jours, étalés Sept→Avril | 57 jours, étalés Sept→Avril |
-| Cours jaunes "multi-mois" à déplier | 5 fills × ~3 cellules ≈ 15 jours additionnels | 0 |
+| Cours jaunes "multi-mois" à déplier | 5 fills (largeur ~211-214) × ~3 cellules ≈ 15 jours additionnels | 2 fills (largeur ~151.56 à x=433.44, y=240 et 252, traversée Mars+Avril) × 2 cellules = 4 jours additionnels — découvert pendant la génération du squelette CSV par generate-matthieu-skeleton.mjs |
 | Examens rouges Janvier | 5 jours (12-16) | 5 jours (12-16) |
 | Examens rouges Mai | 4 jours (4-7) | 4 jours (4-7, fills élargis) |
 | Soutenance rouge Juin | 0 | **5 jours visuels (1-5) dont 2 ratés par pdf.js** |
@@ -147,7 +147,7 @@ Sur la Soutenance M2 (semaine du 1 juin 2026), Côme observe 5 cellules rouges v
 
 Cohérence : 2 plannings sur la **même année académique 2025-2026** (M1 et M2 à des cohortes différentes mais même école), avec révisions et examens partagés (l'école les fixe), cours différents (matières spécifiques par master), Soutenance unique à M2 fin mai/début juin.
 
-**Hypothèse "cellule vide = company" non encore validée** : étape 1B.6.1 close partiellement. La validation finale nécessite la saisie manuelle de la vérité terrain Matthieu (108 lignes au total : 54 semaines × 2 groupes), à faire hors session par Côme avec PDF sous les yeux.
+**Hypothèse "cellule vide = company" non encore validée** : étape 1B.6.1 close partiellement. La validation finale nécessite la saisie manuelle de la vérité terrain Matthieu (108 lignes au total : 54 semaines × 2 groupes), à faire hors session par Côme avec PDF sous les yeux. Borne temporelle de la saisie : la vérité terrain s'arrête à la dernière semaine couverte par le PDF (mois de juillet 2026, à confirmer visuellement par Côme). Les semaines au-delà du PDF (août 2026 et après) gardent les colonnes statut_observe_pdf et statut_business vides dans le CSV — elles seront ignorées par le matching 1B.6.2 (script à coder pour filtrer les lignes col 4 vide). Logique : on ne mesure pas la qualité de l'extraction pdf.js sur des semaines absentes du PDF source.
 
 **Squelette CSV pré-rempli généré** : fichier fixtures/matthieu-ground-truth.csv (gitignored), 7 colonnes (groupe, week_start_iso, statut_observe_pdf, statut_business, proposition_pdfjs, confiance_proposition, notes). Les 2 colonnes statut_observe_pdf et statut_business sont vides à remplir par Côme. Les colonnes proposition_pdfjs et confiance_proposition sont auto-générées par le script throwaway generate-matthieu-skeleton.mjs (à supprimer en clôture spike) à partir de l'extraction pdf.js, comme aide à la saisie. Une fois la saisie complétée, comparaison automatique côté script 1B.6.2.
 
