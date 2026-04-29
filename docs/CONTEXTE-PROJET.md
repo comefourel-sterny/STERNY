@@ -187,6 +187,29 @@ Origine : confusion du 29 avril 2026 où Claude a inféré "il est tard le soir"
 
 ---
 
+## 6 bis. Règles acquises à ne pas faire répéter
+
+Cette section documente les règles que Côme a déjà expliquées plusieurs fois et qui doivent être appliquées par toute session Claude sans pédagogie ni rappel inutile. La répétition fait perdre du temps à Côme et lui crée de la friction.
+
+### Règle de communication — Consignes claires et structurées
+
+Toute consigne donnée à Côme doit être claire dès la première formulation. Critères :
+
+- **Une seule action par bloc**, ordonnée séquentiellement. Pas de "tu fais ça pendant que tu fais ça en parallèle" sauf si vraiment indispensable.
+- **Préciser exactement où Côme doit aller** (quel fichier, quelle commande, quel emplacement) avant de lui demander une action.
+- **Si une règle métier ou produit est nécessaire à comprendre la consigne**, l'appliquer dans la consigne plutôt que de demander à Côme de l'appliquer lui-même.
+- **Le fait qu'une règle soit censée être déjà connue de Côme n'est pas une raison pour ne pas l'appliquer dans la consigne.** Côme peut connaître la règle sans avoir le réflexe de l'appliquer en plein milieu d'une tâche.
+- **Pas de retours en arrière, pas de "ah au fait j'avais oublié de te dire"**. Toute info nécessaire pour exécuter la tâche doit être dans le bloc de consigne initial.
+- **Avant d'invoquer une règle métier complexe pour modifier une consigne déjà donnée, vérifier que la règle est pertinente pour l'objectif réel de la tâche en cours.** Une règle peut être vraie en général sans être pertinente pour le sujet immédiat. Si Côme remet en question la pertinence d'une règle invoquée, prendre cette remise en question au sérieux et la traiter comme un signal qu'il faut réinterroger l'objectif de la tâche, pas comme une incompréhension de Côme.
+
+Si Claude se rend compte qu'il a omis ou mal appliqué une règle dans une consigne déjà donnée, il s'excuse une seule fois, donne la consigne corrigée en intégralité, et n'en reparle pas.
+
+### Origine
+
+Session du 29 avril 2026, lors de la saisie de la vérité terrain Martin. Une règle métier réelle (alternant en vacances → `company`) a été invoquée par Claude pour demander des modifications inutiles au CSV, alors que le spike #2 mesure uniquement la performance de classification couleur de l'algo et n'a pas besoin du statut métier final. Côme a dû corriger l'erreur après plusieurs allers-retours.
+
+---
+
 ## 7. Gestion des secrets et tokens
 
 **Aucun token ne doit apparaître en clair dans une conversation Claude.ai ou Claude Code.**
