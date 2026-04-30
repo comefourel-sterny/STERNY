@@ -343,7 +343,7 @@ Les éléments suivants ne peuvent pas être conclus en lecture statique seule. 
 | Recherche d'un logement (`/recherche` avec filtres ville + rythme) | | |
 | Ouverture d'une annonce (`/logement?id=...`) | | |
 | Candidature à l'annonce (modal candidature ou bouton dédié) | | |
-| **Vérifier que l'INSERT candidature ne plante pas (DETTE #14)** | KO | Confirmé en SQL le 2026-05-01 (Supabase Dashboard SQL Editor, INSERT + ROLLBACK). Erreur 42703 column a.proprietaire_id does not exist levée depuis trigger_notif_candidature() ligne 7. P0 bloquant. Détails dans DETTE-TECHNIQUE.md #14. |
+| **Vérifier que l'INSERT candidature ne plante pas (DETTE #14)** | KO | Confirmé en SQL le 2026-04-30 soir (Supabase Dashboard SQL Editor, INSERT + ROLLBACK). Erreur 42703 column a.proprietaire_id does not exist levée depuis trigger_notif_candidature() ligne 7. P0 bloquant. Détails dans DETTE-TECHNIQUE.md #14. |
 | Suivi de la candidature dans `/dashboard` | | |
 | Match créé : page `/match-confirmation?match_id=...` | | |
 | Page dossier locataire `/dossier-locataire` (upload pièces) | | |
@@ -438,7 +438,7 @@ Les éléments suivants ne peuvent pas être conclus en lecture statique seule. 
 | Élément | OK / KO / Partiel | Notes |
 |---|---|---|
 | Token Mapbox restreint au domaine (DETTE #29) | | |
-| Trigger `trg_notif_candidature` non plantant (DETTE #14) | KO | Plante systématiquement, validé en SQL 2026-05-01. |
+| Trigger `trg_notif_candidature` non plantant (DETTE #14) | KO | Plante systématiquement, validé en SQL 2026-04-30 soir. |
 | Bucket Storage `documents` lecture publique conforme RGPD (audit Zone 1 Cat. B) | | |
 | Variables d'env Supabase Dashboard complètes | | |
 | Edge Functions non déployées listées (DETTE #17) | | |

@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er mai 2026 fin de matinée — Suite session matin : audit fonctionnel parcours locataire suspendu après confirmation DETTE #14, basculé en cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5, première matérialisation). 9 questions de design tranchées en session. Investigation schéma `rhythm_imports` : 4 colonnes NOT NULL spécifiques au parser LLM (`source_file_path`, `source_file_type`, `llm_provider`, `llm_model`) + 1 CHECK sur `source_file_type` interdisent l'écriture d'une saisie manuelle dans son état actuel. Stratégie 2 retenue (migration BDD pour rendre 4 colonnes nullable + ajout colonne `source` discriminante), à exécuter en nouvelle conv. Nouvelle DETTE #44 ajoutée (UX mobile non aboutie depuis création).
+**Dernière mise à jour** : 30 avril 2026 soir bis — Suite session soirée : audit fonctionnel parcours locataire suspendu après confirmation DETTE #14, basculé en cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5, première matérialisation). 9 questions de design tranchées en session. Investigation schéma `rhythm_imports` : 4 colonnes NOT NULL spécifiques au parser LLM (`source_file_path`, `source_file_type`, `llm_provider`, `llm_model`) + 1 CHECK sur `source_file_type` interdisent l'écriture d'une saisie manuelle dans son état actuel. Stratégie 2 retenue (migration BDD pour rendre 4 colonnes nullable + ajout colonne `source` discriminante), à exécuter en nouvelle conv. Nouvelle DETTE #44 ajoutée (UX mobile non aboutie depuis création).
 
 ---
 
@@ -54,7 +54,7 @@ Signature texte sobre créée via générateur HubSpot le 30 avril, intégrée d
 
 ---
 
-## 2026-05-01 — Audit fonctionnel parcours locataire (en cours)
+## 2026-04-30 soir bis — Suite session : audit fonctionnel parcours locataire + cadrage RhythmManualBuilder
 
 ### Bloc 1 — DETTE #14 confirmée empiriquement
 
@@ -64,7 +64,7 @@ Test SQL exécuté dans Supabase Dashboard SQL Editor (BEGIN / INSERT / ROLLBACK
     QUERY: SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id
     CONTEXT: PL/pgSQL function trigger_notif_candidature() line 7 at SQL statement
 
-DETTE #14 passe du statut "validation empirique à faire" à "**confirmée empiriquement le 1er mai 2026**".
+DETTE #14 passe du statut "validation empirique à faire" à "**confirmée empiriquement le 30 avril 2026 soir**".
 
 **Conséquence produit** : aucune candidature ne peut aboutir en production tant que la dette n'est pas résolue. Tout le parcours locataire en aval (suivi candidature, match, signature contrat, paiement, restitution) est bloqué structurellement. Toute démo qui inclut le parcours locataire bout-en-bout est non-démontrable jusqu'au fix. Statut P0 bloquant pour démo.
 
@@ -72,7 +72,7 @@ DETTE #14 passe du statut "validation empirique à faire" à "**confirmée empir
 
 **Discipline anti-redondance respectée** : DETTE #14 était déjà tracée depuis l'audit Zone 1 du 23 avril 2026, ce bloc met simplement à jour son statut de "à valider" à "confirmé".
 
-**Reste de l'audit parcours locataire** : étapes 1 à 19 de la section 7.1 du document d'audit (`docs/AUDIT-FONCTIONNEL-2026-05-04.md`) en cours, à dérouler dans la suite de la matinée.
+**Reste de l'audit parcours locataire** : étapes 1 à 19 de la section 7.1 du document d'audit (`docs/AUDIT-FONCTIONNEL-2026-05-04.md`) à dérouler dans une session ultérieure (matin du 1er mai ou plus tard, selon arbitrage Côme).
 
 ### Bloc 2 — Bascule audit → cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5)
 
@@ -139,7 +139,7 @@ La CHECK `rhythm_imports_parsed_groups_required` (status = parsed/confirmed → 
 
 ### Bloc 4 — Clôture conv et bascule prochaine session
 
-État de la session Claude.ai du 1er mai matin : conv arrivée en zone de saturation après cadrage 9 questions et investigation BDD. Le dev React (composant) + la migration BDD réclament de la précision et bénéficient d'une conv fraîche.
+État de la session Claude.ai du 30 avril 2026 soir bis : conv arrivée en zone de saturation après cadrage 9 questions et investigation BDD. Le dev React (composant) + la migration BDD réclament de la précision et bénéficient d'une conv fraîche.
 
 **À faire en début de prochaine conv** (avec les 4 docs de référence + ce bloc fraîchement à jour comme brief) :
 
