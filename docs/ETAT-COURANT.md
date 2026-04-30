@@ -315,6 +315,59 @@ HEAD = `9349d1a` sur main, synchronisé avec origin/main. 5 commits poussés sur
 
 Ouverture de la session stratégique dédiée au rôle de l'algorithme automatique dans la chaîne UX, dans la foulée de la rédaction de ce bloc rétro. Trois pistes à examiner ensemble (suggesteur chemin 2, suggesteur chemin 1, refonte chaîne d'inscription complète).
 
+### Suite 30 avril après-midi — Cadrage sujet 2 (rôle de l'algo dans la chaîne UX), bascule sur spike d'amélioration parser
+
+Session ouverte sur la question stratégique parquée le matin (rôle de l'algorithme automatique dans la chaîne UX face à la cible « jeune alternant qui ne relira pas »). Le cadrage a abouti à un déplacement plus fondamental : avant de concevoir l'UX qui rattrape les erreurs du parser, on ré-investigue si le parser peut être amélioré au-delà des chiffres bruts actuels.
+
+**Modèle utilisateur cible acté pour la conception du parcours rythme**
+
+L'alternant cible est imprégné du réflexe vitesse hérité des plateformes courtes (réseaux sociaux à scroll continu, format TikTok). Sa posture par défaut sur tout écran est : échantillonner le début, extrapoler, valider. Sur un calendrier de 45-53 semaines affiché d'un coup, cette posture mène mécaniquement à valider sans détecter des erreurs logées hors des premières cellules — ce qui matérialise précisément le risque 4 de VISION §7. Les autres profils alternants (année 2 ou 3 prudents, profils `les_deux` plus engagés) existent mais ne sont pas le cas critique à protéger : ils prendront le temps quoi qu'il arrive, et un design calibré sur le profil à risque ne les pénalise pas. Les `proprietaire` non-alternants ne sont pas concernés par cette UX (ils ne valident pas de calendrier).
+
+**Calcul de fréquence d'erreur en mode validation passive (ordres de grandeur)**
+
+Sur le chemin 2 (image raster, 93.33% bruts) : ~75% des utilisateurs valident un calendrier comportant au moins une erreur réelle en mode scan rapide (3 erreurs en moyenne par calendrier de 45 semaines, échantillonnage utilisateur des premières cellules, statistiquement les erreurs tombent rarement dans les 5-10 premières). Sur le chemin 1 (PDF vectoriel, 99.1% bruts) : ~25% des utilisateurs valident un calendrier comportant au moins une erreur. Ces chiffres sont des ordres de grandeur dérivés des spikes #1 et #2, pas des prédictions statistiques précises.
+
+**Intuition produit Côme — bascule de la session**
+
+Constat : « 93.33% n'est pas un standard sérieux pour la vision Sterny ». À titre de comparaison de marché : OCR documentaire commercial 98-99.5%, lecture automatique de chèques bancaires 99.5-99.8%, OCR Google DocAI 98%+ sur du texte standard. À 93%, une plateforme grand public crée une expérience laborieuse même avec validation séquentielle UX bien conçue, parce que chaque utilisateur doit corriger en moyenne 3 cellules sur 45.
+
+**Vérification exhaustive du panorama testé vs cartographié (effectuée pendant la session)**
+
+Techniques **testées empiriquement** sur fixtures Sterny : Claude Sonnet 4.6 vision (~50% sur Martin et Mathis, échec), GPT-4o vision (5/10 sur 10 semaines Martin, échec), Gemini vision (4/10 sur 10 semaines Martin, échec), pdf.js getOperatorList (99.1% sur Mathis + Matthieu, succès), algo manuel ImageData (93.33% sur Martin G1, succès partiel).
+
+Techniques **cartographiées dans PARSER-AXE-1-ETAT-DE-L-ART.md mais jamais testées empiriquement** : magick-wasm / ImageMagick WASM (F2 T1, candidate principale officielle Supabase, plan B non engagé sur spike #2), OpenCV.js (F2 T2), Google DocAI compute_style_info (F5, spike #3 plan original jamais lancé), Azure DI STYLE_FONT (F2 T5, spike #4 plan original jamais lancé), Adobe Extract (zone grise), Florence-2 zero-shot (F4 T4), Surya/Marker via API datalab.to (F4 T5), TATR (F4 T6, fallback réserve).
+
+Techniques **disqualifiées par documentation sans test** : AWS Textract (n'expose pas couleur de fond), LayoutLMv3 / Donut / Pix2Struct (fine-tuning requis, dataset Sterny inexistant).
+
+**Décision actée — bascule sur spike d'amélioration parser avant cadrage UX**
+
+Le cadrage du composant de validation visuelle (séquentiel colonne par colonne avec assombrissement, idée Côme du brief design précédent) est **suspendu** le temps de mener un spike d'amélioration parser sur les techniques non-testées. Logique : on ne conçoit pas l'UX qui rattrape un mauvais signal tant qu'on n'a pas confirmé qu'on ne peut pas avoir un meilleur signal. Périmètre du spike :
+
+- **Chemin 2 (image raster, cible >97-98%)** : tester en priorité magick-wasm (candidate principale officielle de la recherche), puis DocAI compute_style_info, puis Azure DI STYLE_FONT en redondance si besoin. Tester aussi une variante d'implémentation de l'algo manuel ImageData : homographie 3-4 ancres au lieu de division uniforme 2 ancres, qui résout précisément le défaut géométrique diagnostiqué dans DETTE #41 (inexactitude cumulative de la division uniforme, pattern 21+21+7).
+- **Chemin 1 (PDF vectoriel, cible >99.7%)** : investiguer les trous silencieux pdf.js (DETTE #40, 2 cellules sur 5 manquantes sur Soutenance M2 Matthieu), élargir éventuellement la palette d'opérateurs PDF captés par le parser, et envisager une politique de majorité plus stricte (4/5 ou 5/5) avec remontée explicite des semaines sous le seuil de confiance.
+- **Florence-2 / Surya / TATR** restent en réserve si les premiers tests plafonnent.
+- **Hyperplanning API** : sortie du périmètre technique, basculée en sujet commercial (partenariats école) à porter quand le produit sera vendable.
+
+**§5 et §6 de VISION-ARCHITECTURE non figés tant que le spike n'a pas livré ses résultats**
+
+La sous-section "Posture de l'utilisateur cible et conséquence sur le design de validation" était envisagée pour ajout en VISION §6, elle n'est pas ajoutée maintenant : si le spike fait grimper le chemin 2 à 98%+, la conclusion produit pourrait être reformulée. La décision UX (validation séquentielle obligatoire vs alternative) est explicitement reportée à après le spike.
+
+**DETTE #41 — décision opérationnelle reportée**
+
+L'investigation enrichie du 30 avril matin reste valable (diagnostic structurel : inexactitude cumulative de la division uniforme). Mais la résolution opérationnelle dépend désormais des résultats du spike d'amélioration parser : si magick-wasm ou DocAI sortent à >97% sur Martin, l'algo manuel ImageData pourrait être abandonné au profit d'une autre technique, et DETTE #41 disparaîtrait par changement de chemin technique. Si l'algo manuel reste retenu, la variante homographie 3-4 ancres est la voie de résolution préférée.
+
+**Auto-vigilance Claude — saturation de session signalée**
+
+Cette conversation Claude.ai a couvert : sujet 1 (clôture rétro 30 avril matin avec un raté de lecture diff sur le commit c453ba9), cadrage modèle utilisateur sujet 2, discussion pattern UX validation séquentielle, vérification exhaustive du panorama des techniques (Claude.ai a re-proposé en début de session des techniques déjà cartographiées sans avoir vérifié dans les docs, redressé par Côme). Saturation pointée par Claude.ai en clôture de session pour ne pas enchaîner sur la rédaction du plan de spike dans une conv déjà chargée.
+
+**État Git fin de bloc**
+
+HEAD avant ce commit = `c453ba9`. Working tree historique préservé hors les 4 modifications connues : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV), `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (untracked, attente relecture), `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/etape-1a-notes-techniques.md`, `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/generate-matthieu-skeleton.mjs`.
+
+**Prochaine étape**
+
+Pause Côme, puis ouverture d'une nouvelle conversation Claude.ai dédiée : « Cadrage spike d'amélioration parser — exploration des techniques non testées (magick-wasm en tête, DocAI, Azure DI, homographie chemin 2, investigation chemin 1 DETTE #40) ». Brief de démarrage de cette nouvelle conv : les 4 docs de référence + PARSER-AXE-1-ETAT-DE-L-ART.md + ce bloc rétro comme contexte d'ouverture. Le travail de design composant de validation visuelle reste en attente après le spike.
+
 ---
 
 ## 0. Session du 27 avril — Cadrage parser, décision reportée à recherche profonde
