@@ -1,0 +1,677 @@
+{
+  "generated_at": "2026-04-30T07:18:27.927Z",
+  "params": {
+    "COL_X_CENTER": 358,
+    "Y_FIRST": 537,
+    "Y_LAST": 1204,
+    "step": 15.159090909090908,
+    "WINDOW_HALF": 3,
+    "LUM_MIN": 80,
+    "LUM_MAX": 230,
+    "RAYON_PALETTE": 80
+  },
+  "centroides": {
+    "jaune_palette": {
+      "r": 242,
+      "g": 242,
+      "b": 31,
+      "n_pixels": 1027,
+      "hex": "#f2f21f"
+    },
+    "vert_palette": {
+      "r": 150,
+      "g": 202,
+      "b": 86,
+      "n_pixels": 666,
+      "hex": "#96ca56"
+    }
+  },
+  "error_weeks_excluded_from_phase_1": [
+    2,
+    5,
+    9
+  ],
+  "score": {
+    "run_1c_matches": 41,
+    "run_1c_total": 45,
+    "run_1c_pct": 91.11,
+    "run_2_1b_ref": {
+      "matches": 42,
+      "total": 45,
+      "pct": 93.33
+    },
+    "delta_cells": -1
+  },
+  "cells": [
+    {
+      "week": 1,
+      "week_start_iso": "2026-08-31",
+      "center": {
+        "x": 358,
+        "y": 537
+      },
+      "n_fond_jaune": 49,
+      "n_fond_vert": 0,
+      "n_rejeté": 0,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 2,
+      "week_start_iso": "2026-09-07",
+      "center": {
+        "x": 358,
+        "y": 552
+      },
+      "n_fond_jaune": 24,
+      "n_fond_vert": 14,
+      "n_rejeté": 11,
+      "verdict": "school",
+      "observed": "company",
+      "match": false
+    },
+    {
+      "week": 3,
+      "week_start_iso": "2026-09-14",
+      "center": {
+        "x": 358,
+        "y": 567
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 38,
+      "n_rejeté": 11,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 4,
+      "week_start_iso": "2026-09-21",
+      "center": {
+        "x": 358,
+        "y": 582
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 38,
+      "n_rejeté": 11,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 5,
+      "week_start_iso": "2026-09-28",
+      "center": {
+        "x": 358,
+        "y": 598
+      },
+      "n_fond_jaune": 21,
+      "n_fond_vert": 21,
+      "n_rejeté": 7,
+      "verdict": "ambigu",
+      "observed": "school",
+      "match": false
+    },
+    {
+      "week": 6,
+      "week_start_iso": "2026-10-05",
+      "center": {
+        "x": 358,
+        "y": 613
+      },
+      "n_fond_jaune": 42,
+      "n_fond_vert": 0,
+      "n_rejeté": 7,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 7,
+      "week_start_iso": "2026-10-12",
+      "center": {
+        "x": 358,
+        "y": 628
+      },
+      "n_fond_jaune": 21,
+      "n_fond_vert": 21,
+      "n_rejeté": 7,
+      "verdict": "ambigu",
+      "observed": "company",
+      "match": false
+    },
+    {
+      "week": 8,
+      "week_start_iso": "2026-10-19",
+      "center": {
+        "x": 358,
+        "y": 643
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 42,
+      "n_rejeté": 7,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 9,
+      "week_start_iso": "2026-10-26",
+      "center": {
+        "x": 358,
+        "y": 658
+      },
+      "n_fond_jaune": 21,
+      "n_fond_vert": 21,
+      "n_rejeté": 7,
+      "verdict": "ambigu",
+      "observed": "school",
+      "match": false
+    },
+    {
+      "week": 10,
+      "week_start_iso": "2026-11-02",
+      "center": {
+        "x": 358,
+        "y": 673
+      },
+      "n_fond_jaune": 42,
+      "n_fond_vert": 0,
+      "n_rejeté": 7,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 11,
+      "week_start_iso": "2026-11-09",
+      "center": {
+        "x": 358,
+        "y": 689
+      },
+      "n_fond_jaune": 14,
+      "n_fond_vert": 26,
+      "n_rejeté": 9,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 12,
+      "week_start_iso": "2026-11-16",
+      "center": {
+        "x": 358,
+        "y": 704
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 38,
+      "n_rejeté": 11,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 13,
+      "week_start_iso": "2026-11-23",
+      "center": {
+        "x": 358,
+        "y": 719
+      },
+      "n_fond_jaune": 25,
+      "n_fond_vert": 14,
+      "n_rejeté": 10,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 14,
+      "week_start_iso": "2026-11-30",
+      "center": {
+        "x": 358,
+        "y": 734
+      },
+      "n_fond_jaune": 42,
+      "n_fond_vert": 0,
+      "n_rejeté": 7,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 15,
+      "week_start_iso": "2026-12-07",
+      "center": {
+        "x": 358,
+        "y": 749
+      },
+      "n_fond_jaune": 14,
+      "n_fond_vert": 26,
+      "n_rejeté": 9,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 16,
+      "week_start_iso": "2026-12-14",
+      "center": {
+        "x": 358,
+        "y": 764
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 41,
+      "n_rejeté": 8,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 17,
+      "week_start_iso": "2026-12-21",
+      "center": {
+        "x": 358,
+        "y": 780
+      },
+      "n_fond_jaune": 26,
+      "n_fond_vert": 9,
+      "n_rejeté": 14,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 18,
+      "week_start_iso": "2026-12-28",
+      "center": {
+        "x": 358,
+        "y": 795
+      },
+      "n_fond_jaune": 36,
+      "n_fond_vert": 0,
+      "n_rejeté": 13,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 19,
+      "week_start_iso": "2027-01-04",
+      "center": {
+        "x": 358,
+        "y": 810
+      },
+      "n_fond_jaune": 38,
+      "n_fond_vert": 0,
+      "n_rejeté": 11,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 20,
+      "week_start_iso": "2027-01-11",
+      "center": {
+        "x": 358,
+        "y": 825
+      },
+      "n_fond_jaune": 7,
+      "n_fond_vert": 29,
+      "n_rejeté": 13,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 21,
+      "week_start_iso": "2027-01-18",
+      "center": {
+        "x": 358,
+        "y": 840
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 39,
+      "n_rejeté": 10,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 22,
+      "week_start_iso": "2027-01-25",
+      "center": {
+        "x": 358,
+        "y": 855
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 35,
+      "n_rejeté": 14,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 23,
+      "week_start_iso": "2027-02-01",
+      "center": {
+        "x": 358,
+        "y": 871
+      },
+      "n_fond_jaune": 34,
+      "n_fond_vert": 0,
+      "n_rejeté": 15,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 24,
+      "week_start_iso": "2027-02-08",
+      "center": {
+        "x": 358,
+        "y": 886
+      },
+      "n_fond_jaune": 35,
+      "n_fond_vert": 0,
+      "n_rejeté": 14,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 25,
+      "week_start_iso": "2027-02-15",
+      "center": {
+        "x": 358,
+        "y": 901
+      },
+      "n_fond_jaune": 34,
+      "n_fond_vert": 0,
+      "n_rejeté": 15,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 26,
+      "week_start_iso": "2027-02-22",
+      "center": {
+        "x": 358,
+        "y": 916
+      },
+      "n_fond_jaune": 36,
+      "n_fond_vert": 0,
+      "n_rejeté": 13,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 27,
+      "week_start_iso": "2027-03-01",
+      "center": {
+        "x": 358,
+        "y": 931
+      },
+      "n_fond_jaune": 30,
+      "n_fond_vert": 0,
+      "n_rejeté": 19,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 28,
+      "week_start_iso": "2027-03-08",
+      "center": {
+        "x": 358,
+        "y": 946
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 36,
+      "n_rejeté": 13,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 29,
+      "week_start_iso": "2027-03-15",
+      "center": {
+        "x": 358,
+        "y": 961
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 36,
+      "n_rejeté": 13,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 30,
+      "week_start_iso": "2027-03-22",
+      "center": {
+        "x": 358,
+        "y": 977
+      },
+      "n_fond_jaune": 30,
+      "n_fond_vert": 7,
+      "n_rejeté": 12,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 31,
+      "week_start_iso": "2027-03-29",
+      "center": {
+        "x": 358,
+        "y": 992
+      },
+      "n_fond_jaune": 42,
+      "n_fond_vert": 0,
+      "n_rejeté": 7,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 32,
+      "week_start_iso": "2027-04-05",
+      "center": {
+        "x": 358,
+        "y": 1007
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 30,
+      "n_rejeté": 19,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 33,
+      "week_start_iso": "2027-04-12",
+      "center": {
+        "x": 358,
+        "y": 1022
+      },
+      "n_fond_jaune": 32,
+      "n_fond_vert": 6,
+      "n_rejeté": 11,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 34,
+      "week_start_iso": "2027-04-19",
+      "center": {
+        "x": 358,
+        "y": 1037
+      },
+      "n_fond_jaune": 31,
+      "n_fond_vert": 0,
+      "n_rejeté": 18,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 35,
+      "week_start_iso": "2027-04-26",
+      "center": {
+        "x": 358,
+        "y": 1052
+      },
+      "n_fond_jaune": 34,
+      "n_fond_vert": 0,
+      "n_rejeté": 15,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 36,
+      "week_start_iso": "2027-05-03",
+      "center": {
+        "x": 358,
+        "y": 1068
+      },
+      "n_fond_jaune": 36,
+      "n_fond_vert": 0,
+      "n_rejeté": 13,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 37,
+      "week_start_iso": "2027-05-10",
+      "center": {
+        "x": 358,
+        "y": 1083
+      },
+      "n_fond_jaune": 36,
+      "n_fond_vert": 0,
+      "n_rejeté": 13,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 38,
+      "week_start_iso": "2027-05-17",
+      "center": {
+        "x": 358,
+        "y": 1098
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 37,
+      "n_rejeté": 12,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 39,
+      "week_start_iso": "2027-05-24",
+      "center": {
+        "x": 358,
+        "y": 1113
+      },
+      "n_fond_jaune": 33,
+      "n_fond_vert": 0,
+      "n_rejeté": 16,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 40,
+      "week_start_iso": "2027-05-31",
+      "center": {
+        "x": 358,
+        "y": 1128
+      },
+      "n_fond_jaune": 36,
+      "n_fond_vert": 0,
+      "n_rejeté": 13,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 41,
+      "week_start_iso": "2027-06-07",
+      "center": {
+        "x": 358,
+        "y": 1143
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 39,
+      "n_rejeté": 10,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 42,
+      "week_start_iso": "2027-06-14",
+      "center": {
+        "x": 358,
+        "y": 1159
+      },
+      "n_fond_jaune": 0,
+      "n_fond_vert": 28,
+      "n_rejeté": 21,
+      "verdict": "company",
+      "observed": "company",
+      "match": true
+    },
+    {
+      "week": 43,
+      "week_start_iso": "2027-06-21",
+      "center": {
+        "x": 358,
+        "y": 1174
+      },
+      "n_fond_jaune": 32,
+      "n_fond_vert": 0,
+      "n_rejeté": 17,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 44,
+      "week_start_iso": "2027-06-28",
+      "center": {
+        "x": 358,
+        "y": 1189
+      },
+      "n_fond_jaune": 26,
+      "n_fond_vert": 0,
+      "n_rejeté": 23,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    },
+    {
+      "week": 45,
+      "week_start_iso": "2027-07-05",
+      "center": {
+        "x": 358,
+        "y": 1204
+      },
+      "n_fond_jaune": 37,
+      "n_fond_vert": 0,
+      "n_rejeté": 12,
+      "verdict": "school",
+      "observed": "school",
+      "match": true
+    }
+  ]
+}
