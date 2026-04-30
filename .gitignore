@@ -8,3 +8,6 @@ backups/
 _rollback/
 _audit/
 test-plannings/
+
+# Vérités terrain partagées des fixtures parser (gitignorées par convention)
+docs/fixtures-ground-truth/**/*.csv
