@@ -2,7 +2,55 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 après-midi (post-spike #3) — Ouverture spike #4 magick-wasm cadrée. Nettoyage DETTE #42 exécuté (commit `780077e`). CONCEPTION.md du spike #4 créé (141 lignes, 2 missions détection auto de grille + pré-traitement couleur, plan de mesures séquentielles à 3 scores). État Git nominal : HEAD `780077e` sur `main`, prêt pour reprise scaffold run.ts dans une nouvelle conversation Claude.ai.
+**Dernière mise à jour** : 30 avril 2026 soir — Soirée stratégique : cadrage Initiative Rennes (email Pauline Leboissetier 17h33, 3 pistes données) + lancement audit fonctionnel (commit `b3488c3`, document `docs/AUDIT-FONCTIONNEL-2026-05-04.md`) + décisions opérationnelles séquençage 30 avril → 4 mai (appel Le Poool prévu lundi 4 mai 9h30) + signature email Gmail mise en place + discipline anti-redondance ajoutée à CONTEXTE-PROJET. Création de `docs/idees-en-attente.md`.
+
+---
+
+## 2026-04-30 — Soirée stratégique : cadrage Initiative Rennes + lancement audit fonctionnel
+
+### Cadrage Initiative Rennes
+
+Premier échange téléphonique avec Pauline Leboissetier (chargée de mission Initiative Rennes) suivi d'un email de cadrage le 30 avril 2026 à 17h33. Initiative Rennes ne suivra pas Sterny en l'état (projet jugé pas suffisamment mature côté terrain et financier), mais a explicitement laissé la porte ouverte pour un retour ultérieur en demandant à être tenue informée. Trois pistes données par Pauline :
+
+1. Le Poool (lepoool.com) — accompagnement à solliciter en priorité.
+2. Maxime BOHELAY chez CAPEOS (Rennes Cedex) — m.bohelay@capeos.fr — 02 99 54 74 44 — 1er échange prévisionnel financier.
+3. Aurélie DERRIEN chez SECOB (Cesson-Sévigné) — aurelie.derrien@secob.fr — 02 99 23 40 77 — 1er échange prévisionnel financier.
+
+Checklist exacte des attentes du comité Initiative Rennes pour un futur retour Sterny :
+- Offre : proposition de valeur, contenus.
+- Marché et clientèle : segmentation rigoureuse.
+- Concurrence et positionnement par rapport aux concurrents.
+- Développement commercial : stratégie, moyens, actions, arguments.
+- Équipe.
+- Partie financière : construction du CA, réalisme, cohérence avec la stratégie commerciale, rentabilité, plan de financement.
+- Premiers tests utilisateurs (POC) appréciés, avec contacts identifiés pour les tests / 1ers clients.
+- Évolution du projet dans la durée (roadmap).
+
+Le comité est particulièrement attentif à : segmentation clientèle, capacité à trouver des clients rapidement, positionnement du pricing, stratégie d'acquisition client, cohérence de l'équipe. Présentation attendue : concrète, synthétique, pragmatique.
+
+Action : email de remerciement et plan d'action à rédiger avec parents le week-end du 1er-3 mai, programmé pour envoi automatique le lundi 4 mai à 7h30. Retour à Pauline planifié d'ici 3-4 semaines avec un point d'avancement.
+
+Sujet à anticiper pour les RDV CAPEOS et SECOB : impact financier d'un futur passage à un prestataire eIDAS Lv2/Lv3 pour la signature électronique des baux (sujet déjà tracé dans VISION-ARCHITECTURE.md §10, à intégrer comme ligne du prévisionnel — pas une nouvelle dette à créer).
+
+### Décision stratégique — Format de l'étude de marché
+
+Pour pitch Le Poool / Initiative Rennes / financiers à ce stade : étude courte (10-15 pages), factuelle, basée sur verbatims d'entretiens (15-30 alternants cible), et non étude longue de type cabinet de conseil. Justification : à ce stade du projet (solo founder pré-traction), une étude longue est un signal négatif. La crédibilité vient de la proximité avec la cible.
+
+### Décision opérationnelle — Séquençage 30 avril → 4 mai
+
+- 30 avril soir : audit code statique lancé par Claude Code (commit `b3488c3`, document `docs/AUDIT-FONCTIONNEL-2026-05-04.md`). Vérification croisée effectuée : les 4 "trous critiques" remontés en synthèse correspondent à des dettes déjà tracées (DETTE #14, #17, #22, et VISION §10), pas à des découvertes. Le vrai apport du document est la cartographie page-par-page en section 2.
+- 1er mai matin : audit fonctionnel manuel parcours locataire, en commençant par tester DETTE #14 (trigger candidature qui plante).
+- 1er mai après-midi/soir : repos.
+- 2 mai : audit fonctionnel manuel parcours hôte, les_deux, propriétaire, flux Stripe, flux signature.
+- 3 mai matin : prépa étude de terrain (guide entretien, mails écoles, liste 15 alternants) + rédaction mail Pauline avec parents.
+- 3 mai après-midi : compilation audit + mémo prépa appel Poool.
+- 3 mai soir : programmer envoi mail Pauline pour 4 mai 7h30.
+- 4 mai 9h30-10h30 : appel découverte Le Poool.
+- 4 mai 11h-12h : envoi mails Le Poool confirmation, 2 écoles, 15 alternants, CAPEOS, SECOB.
+
+### Outil — Signature email professionnelle Gmail
+
+Signature texte sobre créée via générateur HubSpot le 30 avril, intégrée dans Gmail comme signature par défaut. Format : Modèle 3 HubSpot, police Arial moyenne, couleur principale `#1E293B`, lien `#E8622A`. Pas de logo ni photo de profil pour l'instant.
 
 ---
 

@@ -277,6 +277,14 @@ Cette consigne s'applique à toute future session Claude.ai sur le projet Sterny
 
 ---
 
+## 8 bis. Adaptation cognitive
+
+Côme a un TDA/TDAH. Pour les futures sessions Claude.ai sur Sterny, privilégier des réponses structurées visuellement (titres clairs, tableaux, listes courtes, jalons datés) plutôt que des paragraphes denses, pour permettre un scan rapide et limiter la charge cognitive. Une seule action par moment, jamais de tâches concurrentes empilées. Les fichiers de documentation projet (ETAT-COURANT, VISION-ARCHITECTURE, DETTE-TECHNIQUE, INVENTAIRE-PLATEFORME, idees-en-attente) servent de mémoire externe pour décharger la charge mentale — les enrichir activement à chaque session.
+
+Discipline anti-redondance : avant d'ajouter une nouvelle entrée dans DETTE-TECHNIQUE.md ou VISION-ARCHITECTURE.md, vérifier systématiquement que le sujet n'est pas déjà tracé (par grep ou lecture ciblée). Croiser tout rapport généré par Claude Code en synthèse contre la dette existante avant de pousser une décision en commit.
+
+---
+
 ## 9. Prudence extrême sur les sujets non-techniques
 
 Comme indiqué en section 1, je suis parti de zéro sur l'ensemble des domaines non-techniques qui touchent Sterny : juridique, réglementaire, fiscal, assurance, protection des données, contrats, responsabilité. J'apprends au fur et à mesure mais je n'ai aucun filet de sécurité professionnel sur ces sujets.
