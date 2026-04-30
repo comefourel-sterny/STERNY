@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 après-midi (post-spike #3) — Ouverture session spike #4 magick-wasm. Nettoyage préalable de DETTE #42 (anomalies CSV vérité terrain Martin G3/G4) exécuté et clos avant le spike. État Git nominal : HEAD `016182e` (clôture spike #3) sur `main`, working tree strictement aux 4 modifs historiques connues. Spike #4 prêt à démarrer en conception.
+**Dernière mise à jour** : 30 avril 2026 après-midi (post-spike #3) — Ouverture spike #4 magick-wasm cadrée. Nettoyage DETTE #42 exécuté (commit `780077e`). CONCEPTION.md du spike #4 créé (141 lignes, 2 missions détection auto de grille + pré-traitement couleur, plan de mesures séquentielles à 3 scores). État Git nominal : HEAD `780077e` sur `main`, prêt pour reprise scaffold run.ts dans une nouvelle conversation Claude.ai.
 
 ---
 
@@ -442,9 +442,25 @@ Session ouverte en suite directe de la clôture du spike #3 (commit `016182e` du
 
 HEAD avant ce commit = `016182e`. Working tree strictement aux 4 modifs historiques connues. Le commit de clôture DETTE #42 ne porte que sur `docs/DETTE-TECHNIQUE.md` (ajout du statut de clôture) et `docs/ETAT-COURANT.md` (mise à jour métadonnée + ce bloc).
 
+**Sous-bloc — Ouverture spike #4 magick-wasm (CONCEPTION.md créé)**
+
+Sous-dossier `docs/spikes/2026-04-30-04-magick-wasm/` créé. CONCEPTION.md rédigé (141 lignes, 7 sections numérotées) couvrant les 2 missions du spike :
+- Mission (a) — détection automatique de grille via opérations morphologiques magick-wasm (kernel horizontal long + kernel vertical long + intersection des masques → coins de cellule), alternative à l'ancrage manuel à 4 clics du spike #3.
+- Mission (b) — pré-traitement d'image (modulate + level) en amont de l'échantillonnage couleur, pour résoudre le plafond classification couleur diagnostiqué par le spike #3 (DETTE #43, 10 erreurs sur hex jaune-verdâtres frontière).
+
+Plan de mesures séquentielles à 3 scores : (i) baseline 94.44 % spike #3 rappelée, (ii) mission (a) seule, (iii) missions (a)+(b) combinées. Comparaison à froid pour isoler la contribution propre de chaque mission. Tuning sur G1 uniquement, application sans nouveau tuning sur G2+G3+G4. Cible >97 % consolidé sur 180 sem.
+
+4 routes de repli cartographiées en cas de score insuffisant, par ordre d'engagement croissant : tuning prolongé magick-wasm, options 1 et 2 de DETTE #43 (élargir plage jaune ou k-NN), bascule F4 ML (cadrage produit séparé requis), bascule chemin 3 saisie manuelle assistée (VISION §5).
+
+Exécution étape 2A close (création sous-dossier + CONCEPTION.md). Étapes 2B-2G du plan d'exécution pour exécution dans une nouvelle conversation Claude.ai.
+
+**État Git fin de bloc**
+
+HEAD avant ce commit = `780077e`. Working tree strictement aux 4 modifs historiques connues + nouveau fichier `docs/spikes/2026-04-30-04-magick-wasm/CONCEPTION.md`. Le commit de clôture porte sur ce CONCEPTION.md + cette mise à jour ETAT-COURANT.md.
+
 **Prochaine étape**
 
-Conception du spike #4 magick-wasm (étape 2 du plan validé en session du 30 avril après-midi bis). Sous-dossier à créer : `docs/spikes/2026-04-30-04-magick-wasm/`. Ouverture par CONCEPTION.md avant tout code (héritage de la méthodologie du spike #3).
+Reprise dans une nouvelle conversation Claude.ai sur le spike #4. Brief de démarrage : les 4 docs de référence à jour + ce bloc rétro + CONCEPTION.md du spike #4 lu depuis le repo. Démarrage à l'étape 2B du plan d'exécution : scaffold run.ts + setup magick-wasm Deno + smoke test sur Martin (charger l'image, afficher les dimensions, valider l'environnement).
 
 ---
 
