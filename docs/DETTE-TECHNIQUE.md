@@ -268,6 +268,20 @@ Sur les 10 erreurs résiduelles du spike #3, le profil est **systématique** : `
 
 Voir docs/spikes/2026-04-30-03-homographie-3-4-ancres/RESULTS.md section 5 pour le détail des 10 erreurs résiduelles.
 
+## DETTE #44 — UX mobile globale non aboutie depuis la création
+
+**Statut au 1er mai 2026** : créée par la session de cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5).
+
+Constat verbalisé par Côme en session : « pour le mobile c'est la catastrophe, pas du tout réfléchi depuis la création ». La plateforme Sterny est conçue principalement sur desktop, et l'adaptation mobile n'a pas fait l'objet d'un travail dédié. Conséquence : les écrans qui semblent corrects sur Mac sont potentiellement inutilisables sur téléphone, ce qui contredit la cible utilisateur (jeune alternant qui fait tout sur son téléphone, voir VISION §10 « L'application mobile native est différée, pas dépriorisée »).
+
+**Périmètre à investiguer** : tous les composants frontend du projet, mais en priorité ceux du parcours d'inscription et de recherche (entrée critique des nouveaux utilisateurs).
+
+**Conséquence sur les composants en cours de développement** : `RhythmManualBuilder` v1 (chemin 3) est explicitement cadré desktop-only en première version. Sa responsiveness mobile sera reprise dans le cadre de la passe globale UX mobile, pas en spike isolé.
+
+**Plan de résolution** : passe dédiée UX mobile à programmer après la démo Le Poool du 4 mai. Audit page-par-page sur navigateur mobile (DevTools → mode responsive Chrome ou Firefox), liste des défauts observés, priorisation des chantiers de refonte. Pas de fix anticipé tant que l'audit n'est pas complet — risque de patcher les symptômes sans traiter les causes (probablement un manque de tokens responsive dans le design system ou des grids qui ne s'adaptent pas).
+
+**Sujet distinct de VISION §10 (app mobile native différée)** : VISION §10 traite de la décision stratégique de différer l'app native iOS/Android. DETTE #44 traite de la qualité responsive du web actuel, qui doit rester utilisable sur mobile en attendant l'app native. Les 2 sujets sont complémentaires.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.

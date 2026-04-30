@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er mai 2026 matin — Soirée stratégique 30 avril : cadrage Initiative Rennes (email Pauline Leboissetier 17h33, 3 pistes données) + lancement audit fonctionnel (commit `b3488c3`, document `docs/AUDIT-FONCTIONNEL-2026-05-04.md`) + décisions opérationnelles séquençage 30 avril → 4 mai (appel Le Poool prévu lundi 4 mai 9h30) + signature email Gmail mise en place + discipline anti-redondance ajoutée à CONTEXTE-PROJET. Création de `docs/idees-en-attente.md`. **+ confirmation empirique de DETTE #14 (test SQL ROLLBACK, INSERT candidature plante systématiquement, P0 bloquant pour démo)**.
+**Dernière mise à jour** : 1er mai 2026 fin de matinée — Suite session matin : audit fonctionnel parcours locataire suspendu après confirmation DETTE #14, basculé en cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5, première matérialisation). 9 questions de design tranchées en session. Investigation schéma `rhythm_imports` : 4 colonnes NOT NULL spécifiques au parser LLM (`source_file_path`, `source_file_type`, `llm_provider`, `llm_model`) + 1 CHECK sur `source_file_type` interdisent l'écriture d'une saisie manuelle dans son état actuel. Stratégie 2 retenue (migration BDD pour rendre 4 colonnes nullable + ajout colonne `source` discriminante), à exécuter en nouvelle conv. Nouvelle DETTE #44 ajoutée (UX mobile non aboutie depuis création).
 
 ---
 
@@ -73,6 +73,84 @@ DETTE #14 passe du statut "validation empirique à faire" à "**confirmée empir
 **Discipline anti-redondance respectée** : DETTE #14 était déjà tracée depuis l'audit Zone 1 du 23 avril 2026, ce bloc met simplement à jour son statut de "à valider" à "confirmé".
 
 **Reste de l'audit parcours locataire** : étapes 1 à 19 de la section 7.1 du document d'audit (`docs/AUDIT-FONCTIONNEL-2026-05-04.md`) en cours, à dérouler dans la suite de la matinée.
+
+### Bloc 2 — Bascule audit → cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5)
+
+**Décision actée** : l'audit fonctionnel parcours locataire est suspendu en cours de bloc 1 pour cadrer puis coder la première version du composant de saisie manuelle de planning d'alternance. Justification : sans porte d'entrée alternant fonctionnelle pour le parcours d'inscription, la démo Le Poool du 4 mai 2026 n'a pas de pitch crédible. Le parser LLM est cassé (DETTE #37, taux d'erreur ≥50%), le chemin 1 pdf.js et le chemin 2 ImageData ne sont pas industrialisés en production, donc le chemin 3 saisie manuelle assistée doit être livré en premier. L'audit fonctionnel reprend après livraison du composant.
+
+**Conformité VISION §5** : ce composant est la première matérialisation du chemin 3 défini comme « couche universelle pour tout document hors chemin 1 et 2, et fallback obligatoire ». Quand les chemins 1 et 2 seront industrialisés, ils alimenteront ce même composant en pré-remplissage, l'utilisateur valide ou corrige. Aucun travail jeté quand le parser sera de retour.
+
+**9 décisions de design tranchées en session** :
+
+1. **Nom et emplacement** : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx`, cohérent avec `RhythmFileUpload.jsx` et `RhythmCalendar.jsx` déjà existants.
+
+2. **Rôle** : chemin autonome principal pour cette première version, indépendant de l'état du parser. Composant conçu pour accepter un calendrier vide (cas du jour) ou pré-rempli (futur, quand parser industrialisé).
+
+3. **Contrat BDD** : identique à celui du système d'importation (`users.rhythm_calendar` jsonb + ligne dans `rhythm_imports` + `users.rhythm_import_id` pointant vers la nouvelle ligne). Pas de nouvelle colonne, pas de nouvelle table — voir Bloc 3 ci-dessous pour les ajustements de schéma nécessaires sur `rhythm_imports`.
+
+4. **Période couverte** : année académique fixe lundi 31 août 2026 → dimanche 30 août 2027 (52 semaines ISO, format `YYYY-MM-DD` sur les `week_start` lundi). Pas de choix utilisateur sur les dates de début/fin dans cette première version. Cas tordus (étudiant en cours d'année, alternance chevauchant 2 années académiques) reportés post-démo.
+
+5. **Granularité** : semaine binaire école/entreprise, conforme VISION §3. Pas de saisie jour par jour. Chaque case bascule entre 3 états : `null` (non renseigné), `school`, `company`.
+
+6. **Layout visuel** : 12 colonnes verticales, une par mois (sept 2026 → août 2027), chaque colonne contenant 4 ou 5 cases-semaines selon le mois (la semaine est rattachée au mois qui contient son lundi). Forme générale rappelant l'égaliseur Deezer retourné vers le bas. Survol = info-bulle avec dates de la semaine. Code couleur : `null` gris clair `#F4F5F7` avec bordure fine, `school` orange `#E8622A`, `company` navy `#1E293B`. **Première version optimisée pour desktop uniquement** — la responsiveness mobile est à reprendre après refonte UX mobile globale (voir DETTE #44).
+
+7. **Mode de saisie** : clic case par case. Cycle simple sur chaque case. Pas de drag/swipe dans cette première version.
+
+8. **Logique de sélection inverse** : l'utilisateur clique uniquement sur les semaines où il sera présent dans le logement qu'il cherche. Les cases non-cliquées sont automatiquement classées en statut inverse. La logique d'inversion école↔entreprise est gérée par le frontend selon la ville recherchée (déjà connue dans le profil utilisateur à ce stade du parcours). En BDD, le contrat reste celui de VISION §3 (`status` valeurs `school` ou `company`). Trois éléments visuels permanents en haut du composant : phrase de consigne dynamique selon ville recherchée, légende permanente avec compteurs live, bouton "Confirmer mon planning". Au clic Confirmer, modale de prévention obligatoire (texte exact à valider en début de prochaine conv) expliquant la gravité d'une saisie incorrecte si le contrat de logement est déjà signé. **Wording à valider par avocat avant production** — le wording v1 fait le job pédagogique pour la démo Le Poool, pas plus.
+
+9. **Intégration parcours d'inscription** : intégration dans `CompleterProfilPage` v1, après les étapes type_user/ville_ecole/ville_entreprise/ville_recherchée (ces villes sont prérequises pour la logique de sélection inverse Q8). Pas de blocage dur si l'utilisateur quitte sans saisir le calendrier. Pop-up explicatif au clic sur action protégée (Recherche, Créer une annonce, Candidater) qui propose 2 boutons : "Compléter mon planning maintenant" / "Plus tard". Wording de pop-up à valider avec le composant. Idée plus large de fusion `Inscription*Page` + `CompleterProfilPage` parquée dans `idees-en-attente.md` pour traitement post-démo.
+
+**Conformité discipline anti-redondance** : croisement effectué en session avec VISION-ARCHITECTURE.md §5 et §6, DETTE #37 (parser cassé, raison fondatrice du chemin 3), DETTE #41 (3 erreurs résiduelles spike #2, sera traitée par le composant chemin 3). Aucune décision contradictoire avec ces sources, le chemin 3 est cadré conformément à la stratégie discriminante par format.
+
+### Bloc 3 — Investigation schéma `rhythm_imports` et stratégie BDD pour saisie manuelle
+
+**Vérifications SQL exécutées** : structure complète de `rhythm_imports`, contraintes CHECK, exemple de ligne réelle (parsing Mathis du 26 avril).
+
+**Découverte structurelle** : la table `rhythm_imports` est fortement couplée au parser LLM dans son schéma actuel. 4 colonnes NOT NULL sans valeur par défaut n'ont aucun sens pour une saisie manuelle :
+
+- `source_file_path` (chemin du fichier en Storage Supabase)
+- `source_file_type` (MIME type)
+- `llm_provider` (nom du fournisseur de modèle)
+- `llm_model` (nom du modèle)
+
+Une CHECK constraint supplémentaire renforce le couplage : `rhythm_imports_source_file_type_check` n'autorise que les valeurs `image/jpeg`, `image/png`, `image/heic`, `application/pdf`. Une saisie manuelle ne peut pas s'inscrire dans cette liste.
+
+La CHECK `rhythm_imports_parsed_groups_required` (status = parsed/confirmed → parsed_groups NOT NULL) est en revanche satisfiable proprement par la saisie manuelle, qui produit naturellement un objet `parsed_groups` à un seul groupe (l'utilisateur lui-même) avec les 52 semaines de l'année académique 2026/2027.
+
+**4 stratégies envisagées en session** :
+
+1. Valeurs bidon (`'manual'` partout) — éliminée par la CHECK constraint sur `source_file_type`.
+2. Migration BDD pour rendre les 4 colonnes nullable + ajouter une colonne `source` discriminante (`parser_llm` / `manual_input` / `parser_pdfjs` / `parser_imagedata`).
+3. Bypass complet : écrire seulement `users.rhythm_calendar`, ne pas créer de ligne dans `rhythm_imports` pour la saisie manuelle.
+4. Version sans persistance BDD (sessionStorage uniquement) — éliminée car ne résout pas l'objectif initial du chemin 3 (plateforme cohérente derrière le calendrier saisi).
+
+**Stratégie 2 retenue**. Justification : c'est la seule qui (a) atteint l'objectif fonctionnel, (b) prépare proprement les chemins 1 et 2 du parser quand ils seront industrialisés (la colonne `source` permettra de discriminer les 4 types d'origine), (c) respecte VISION §6 multi-fichiers et historique sans créer d'exception pour la saisie manuelle, (d) maintient un audit-trail BDD propre.
+
+**Migration SQL à préparer en début de prochaine conv** :
+
+- `ALTER COLUMN source_file_path DROP NOT NULL`
+- `ALTER COLUMN source_file_type DROP NOT NULL`
+- `ALTER COLUMN llm_provider DROP NOT NULL`
+- `ALTER COLUMN llm_model DROP NOT NULL`
+- Recréation de `rhythm_imports_source_file_type_check` pour autoriser explicitement `NULL`
+- `ADD COLUMN source text NOT NULL DEFAULT 'parser_llm' CHECK (source IN ('parser_llm', 'manual_input', 'parser_pdfjs', 'parser_imagedata'))`
+
+**Risque migration** : faible. Sterny n'a pas d'utilisateurs réels actifs aujourd'hui, c'est exactement le bon moment pour faire ça proprement. Migration à valider en revue par Côme avant exécution sur la base de production.
+
+### Bloc 4 — Clôture conv et bascule prochaine session
+
+État de la session Claude.ai du 1er mai matin : conv arrivée en zone de saturation après cadrage 9 questions et investigation BDD. Le dev React (composant) + la migration BDD réclament de la précision et bénéficient d'une conv fraîche.
+
+**À faire en début de prochaine conv** (avec les 4 docs de référence + ce bloc fraîchement à jour comme brief) :
+
+1. Valider le wording exact de la modale de prévention Q8 et du pop-up Q9
+2. Préparer le SQL de migration `rhythm_imports` (Stratégie 2), revue + validation Côme avant exécution
+3. Préparer le prompt Claude Code pour générer `RhythmManualBuilder.jsx` complet (52 cases, layout 12 colonnes mensuelles, logique de sélection inverse, intégration BDD avec colonne `source` après migration)
+4. Intégration dans `CompleterProfilPage` avec ordre des étapes type_user → villes → calendrier
+5. Pop-up explicatif sur les actions protégées (`/recherche`, `/annonce/creer`, candidature)
+6. Tests en local avant commit
+
+**Reprise audit fonctionnel parcours locataire** : reportée après livraison `RhythmManualBuilder` v1. Si le séquençage du 4 mai ne le permet pas, reportée au lendemain de l'appel Le Poool.
 
 ---
 
