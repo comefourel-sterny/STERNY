@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 soir — Soirée stratégique : cadrage Initiative Rennes (email Pauline Leboissetier 17h33, 3 pistes données) + lancement audit fonctionnel (commit `b3488c3`, document `docs/AUDIT-FONCTIONNEL-2026-05-04.md`) + décisions opérationnelles séquençage 30 avril → 4 mai (appel Le Poool prévu lundi 4 mai 9h30) + signature email Gmail mise en place + discipline anti-redondance ajoutée à CONTEXTE-PROJET. Création de `docs/idees-en-attente.md`.
+**Dernière mise à jour** : 1er mai 2026 matin — Soirée stratégique 30 avril : cadrage Initiative Rennes (email Pauline Leboissetier 17h33, 3 pistes données) + lancement audit fonctionnel (commit `b3488c3`, document `docs/AUDIT-FONCTIONNEL-2026-05-04.md`) + décisions opérationnelles séquençage 30 avril → 4 mai (appel Le Poool prévu lundi 4 mai 9h30) + signature email Gmail mise en place + discipline anti-redondance ajoutée à CONTEXTE-PROJET. Création de `docs/idees-en-attente.md`. **+ confirmation empirique de DETTE #14 (test SQL ROLLBACK, INSERT candidature plante systématiquement, P0 bloquant pour démo)**.
 
 ---
 
@@ -51,6 +51,28 @@ Pour pitch Le Poool / Initiative Rennes / financiers à ce stade : étude courte
 ### Outil — Signature email professionnelle Gmail
 
 Signature texte sobre créée via générateur HubSpot le 30 avril, intégrée dans Gmail comme signature par défaut. Format : Modèle 3 HubSpot, police Arial moyenne, couleur principale `#1E293B`, lien `#E8622A`. Pas de logo ni photo de profil pour l'instant.
+
+---
+
+## 2026-05-01 — Audit fonctionnel parcours locataire (en cours)
+
+### Bloc 1 — DETTE #14 confirmée empiriquement
+
+Test SQL exécuté dans Supabase Dashboard SQL Editor (BEGIN / INSERT / ROLLBACK pour éviter de polluer la BDD avec une candidature de test). Comportement observé : la transaction plante avant que la ligne `candidatures` soit créée, avec le message d'erreur PostgreSQL :
+
+    ERROR: 42703: column a.proprietaire_id does not exist
+    QUERY: SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id
+    CONTEXT: PL/pgSQL function trigger_notif_candidature() line 7 at SQL statement
+
+DETTE #14 passe du statut "validation empirique à faire" à "**confirmée empiriquement le 1er mai 2026**".
+
+**Conséquence produit** : aucune candidature ne peut aboutir en production tant que la dette n'est pas résolue. Tout le parcours locataire en aval (suivi candidature, match, signature contrat, paiement, restitution) est bloqué structurellement. Toute démo qui inclut le parcours locataire bout-en-bout est non-démontrable jusqu'au fix. Statut P0 bloquant pour démo.
+
+**Décision sur le fix reportée en session stratégique dédiée**. Choix entre (A) ajouter une colonne `proprietaire_id` à `annonces` avec logique de parrainage propriétaire, ou (B) modifier la fonction trigger pour lire `user_id` à la place. Le choix touche au modèle de parrainage propriétaire (qui pointe vers qui dans la chaîne de contrat de sous-location) et ne se tranche pas dans le flux d'un audit fonctionnel.
+
+**Discipline anti-redondance respectée** : DETTE #14 était déjà tracée depuis l'audit Zone 1 du 23 avril 2026, ce bloc met simplement à jour son statut de "à valider" à "confirmé".
+
+**Reste de l'audit parcours locataire** : étapes 1 à 19 de la section 7.1 du document d'audit (`docs/AUDIT-FONCTIONNEL-2026-05-04.md`) en cours, à dérouler dans la suite de la matinée.
 
 ---
 

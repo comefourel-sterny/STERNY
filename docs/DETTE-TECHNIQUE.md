@@ -45,15 +45,15 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 ## Bugs backend confirmés par audit du schéma distant (23 avril 2026)
 
-14. **`annonces.proprietaire_id` absent en prod, référencé par trigger actif** :
+14. **`annonces.proprietaire_id` absent en prod, référencé par trigger actif** — **CONFIRMÉE EMPIRIQUEMENT 2026-05-01** :
     - Trigger : `trg_notif_candidature` (AFTER INSERT ON `public.candidatures`)
     - Fonction : `trigger_notif_candidature()` définie lignes 140-166 de `supabase/remote_schema.sql`
     - La fonction exécute `SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id`
     - La colonne `proprietaire_id` n'existe pas dans `annonces` (confirmé lignes 204-233 du schema dump)
     - Table `annonces` a seulement `user_id` comme pointeur vers les utilisateurs
     - Conséquence attendue : chaque INSERT dans `candidatures` déclenche le trigger, qui plante avec "column a.proprietaire_id does not exist", ce qui fait rollback de toute la transaction
-    - Validation empirique à faire : tester une candidature end-to-end et observer si elle réussit ou échoue, et si le frontend affiche une erreur
-    - Fix à trancher entre (A) ajouter une colonne `proprietaire_id` à `annonces` et la remplir selon logique parrainage, ou (B) modifier la fonction pour lire `user_id` si ce dernier stocke bien le propriétaire. Décision à prendre après audit Zone 2.
+    - **Validation empirique faite le 1er mai 2026** : INSERT test exécuté dans Supabase Dashboard SQL Editor avec ROLLBACK forcé. Message d'erreur capturé : `ERROR 42703: column a.proprietaire_id does not exist`, `QUERY: SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id`, `CONTEXT: PL/pgSQL function trigger_notif_candidature() line 7 at SQL statement`. La transaction est rollbackée par PostgreSQL avant même que la ligne candidature soit créée. **Aucune candidature ne peut aboutir en production tant que la dette n'est pas résolue. Tout le parcours locataire en aval (suivi candidature, match, signature contrat, paiement) est bloqué structurellement.** Statut : P0 bloquant pour démo.
+    - Fix à trancher entre (A) ajouter une colonne `proprietaire_id` à `annonces` et la remplir selon logique parrainage, ou (B) modifier la fonction pour lire `user_id` si ce dernier stocke bien le propriétaire. **Décision à prendre en session stratégique dédiée** — le choix A vs B touche au modèle de parrainage propriétaire, ne pas trancher dans le flux de l'audit fonctionnel.
 
 ## Dette de traçabilité des migrations
 
