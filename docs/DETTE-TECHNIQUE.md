@@ -216,6 +216,12 @@ Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-DESIGN-2026-0
 
     DETTE #41 reste **ouverte** : la question des 3 erreurs résiduelles sera reprise lors du cadrage du chemin 3 VISION §5 (composant de saisie manuelle assistée), où elle se résoudra naturellement par la couche de validation visuelle obligatoire — ou disparaîtra si l'on reformule le rôle de l'algo automatique en suggesteur plutôt que pré-remplisseur.
 
+    **Statut au 30 avril 2026 après-midi bis — résolution programmée par le spike #3 (homographie 3-4 ancres).** Le diagnostic du 30 avril matin (« inexactitude cumulative de la division uniforme entre les 2 ancres cliquées ») est traité directement par la variante d'algo testée dans le spike #3. Une homographie calculée sur 3 ou 4 ancres aux coins du tableau remplace la division uniforme entre 2 ancres, ce qui élimine par construction l'accumulation d'erreurs de fraction de pixel responsable du chevauchement de bordures observé sur les semaines 5, 7, 9 (pattern 21+21+7 de la sortie 1C).
+
+    Si le spike #3 livre un score >97-98% sur les 4 groupes Martin (180 sem), DETTE #41 sera close à la clôture du spike (mise à jour de cette section). Si le spike #3 plafonne sous le seuil, le spike #4 (magick-wasm) prend le relais avec une approche structurellement différente (détection automatique de grille par morphologie au lieu d'ancres cliquées, ce qui contourne entièrement la problématique de division), et DETTE #41 sera close ou recadrée selon le résultat du spike #4.
+
+    Voir ETAT-COURANT.md bloc « Suite 30 avril après-midi bis » pour le plan complet du spike.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.

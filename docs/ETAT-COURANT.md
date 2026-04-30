@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 — Spike #2 Martin clos (93.33% sur image raster, commit étape 1B la veille au soir). DETTE #37 close stratégiquement par formalisation §5 dans VISION-ARCHITECTURE.md (commit d26f6cb) : stratégie discriminante par format source actée — pdf.js getOperatorList pour PDFs vectoriels, algorithme manuel ImageData pour images raster, saisie manuelle assistée comme couche universelle et fallback. Investigation DETTE #41 enrichie (commit 9349d1a) : diagnostic structurel "inexactitude cumulative de la division uniforme", hypothèses (a) bruit JPG et (b) ambiguïté visuelle éliminées, (c) recadrée. DETTE #41 reste ouverte, à reprendre lors du cadrage chemin 3.
+**Dernière mise à jour** : 30 avril 2026 après-midi bis — Cadrage du spike d'amélioration parser chemin 2 (Martin image raster). Plan ordonné et chiffré validé : étape 0 saisie vérité terrain G2+G3+G4 (~2h), étape 1 spike #3 homographie 3-4 ancres (3-5h), étape 2 spike #4 magick-wasm + comparaison (6-10h), étape 3 robustesse multi-fixtures conditionnelle, étape 4 update docs. Périmètre strictement chemin 2 (DocAI / Azure / chemin 1 / F4 ML hors périmètre). Cible chiffrée >97-98% sur 180 sem (4 groupes Martin). Principe acquis : la mesure d'une candidate parser doit se faire sur l'intégralité d'un planning fixture, jamais sur un seul groupe. Aucun commit de code à ce stade — le bloc qui suit ouvre la phase d'exécution.
 
 ---
 
@@ -367,6 +367,63 @@ HEAD avant ce commit = `c453ba9`. Working tree historique préservé hors les 4 
 **Prochaine étape**
 
 Pause Côme, puis ouverture d'une nouvelle conversation Claude.ai dédiée : « Cadrage spike d'amélioration parser — exploration des techniques non testées (magick-wasm en tête, DocAI, Azure DI, homographie chemin 2, investigation chemin 1 DETTE #40) ». Brief de démarrage de cette nouvelle conv : les 4 docs de référence + PARSER-AXE-1-ETAT-DE-L-ART.md + ce bloc rétro comme contexte d'ouverture. Le travail de design composant de validation visuelle reste en attente après le spike.
+
+### Suite 30 avril après-midi bis — Cadrage spike d'amélioration parser, plan validé
+
+Session ouverte en suite directe de la clôture précédente (bloc Suite 30 avril après-midi), pour produire le plan ordonné et chiffré du spike d'amélioration parser. Pas le spike lui-même. Démarrage avec les 4 docs de référence + PARSER-AXE-1-ETAT-DE-L-ART.md chargés. Cadrage en mode question-réponse séquentiel sur 5 points avant rédaction du plan.
+
+**5 décisions de cadrage actées**
+
+1. **État Git et infra** : HEAD = `d6b3f13` (commit retro 30 avril après-midi), working tree historique préservé sur 4 modifs connues. GCP entièrement provisionné depuis le 28 avril : projet `sterny-492413` créé, billing actif (260€ de crédit, 89 jours), Cloud Vision API + Cloud Document AI API activées, clé API restreinte aux 2 APIs uniquement (bonne hygiène). Azure neutre — compte Microsoft créé sans abonnement, aucun setup intégré au plan. Aucun setup cloud à intégrer comme prérequis du spike.
+
+2. **Périmètre du spike — strictement chemin 2 (Martin, image raster)**. Décision actée après identification d'une incohérence dans le brief de clôture du 30 avril après-midi : DocAI `compute_style_info` et Azure DI Layout+STYLE_FONT exposent la couleur du bounding box du **token** (mot), pas de la cellule entière. Sur Martin il n'y a pas de texte dans les cellules colorées, donc pas de signal exploitable. Ces 2 candidates sont pertinentes pour Mathis et Matthieu (PDFs avec texte intra-cellule, chemin 1), pas pour Martin. Posture acceptée : on cherche d'abord la solution pour le format qui ne marche pas (Martin à 93.33%) avant de tester le format qui marche (Mathis/Matthieu à 99.1%). Conséquence : DocAI / Azure / chemin 1 / F4 ML / Adobe Extract / Florence-2 / Surya / TATR sont tous **hors périmètre du spike actuel**.
+
+3. **Ordre de test — séquentiel sans condition d'arrêt**. Variante (A') retenue contre une exécution parallèle. Homographie 3-4 ancres testée d'abord (modif géométrique localisée sur l'algo actuel, faible coût d'implémentation, traite directement le défaut diagnostiqué de DETTE #41). Magick-wasm testé ensuite **dans tous les cas** (pas de condition d'arrêt à mi-spike). Comparaison à froid à la fin sur les deux scores publiés. Justification : (a) le séquentiel respecte la convention de spikes posée le 28 avril (un dossier par technique, RESULTS.md standardisé), (b) le diagnostic produit par le spike #3 informe le tuning du spike #4, (c) charge cognitive divisée entre deux chantiers techniques au lieu de menée en parallèle. Aucune candidate sacrifiée.
+
+4. **Base de mesure — vérité terrain sur les 4 groupes Martin (~180 sem)**. Variante (B) retenue contre G1 seul ou G1+G2 compromis. Posture qualité Côme : le score doit refléter les conditions réelles d'utilisation, pas les conditions où l'algo a été initialement réglé. Risque sinon de sur-ajustement involontaire à G1 (« overfitting » : un système qui marche très bien sur les données précises sur lesquelles il a été réglé mais échoue sur des données nouvelles parce qu'il a appris les particularités du training set au lieu de la règle générale). Sur 45 sem, 1 erreur = 2.2% de variation, bruit aussi gros que l'écart au seuil. Sur 180 sem, 1 erreur = 0.55%, lecture du score 4× plus serrée. Coût accepté : ~2h de saisie manuelle attentive de vérité terrain G2+G3+G4, fractionnée en 3 sessions de 30-45 min, AVANT que le spike démarre.
+
+5. **F4 (Florence-2 / Surya / TATR) — hors plan, à cadrer séparément**. Variante (B) retenue contre un spike conditionnel chiffré-à-la-louche. Si homographie ET magick-wasm plafonnent tous les deux sous le seuil >97-98%, le spike actuel est clos avec ce constat et une **session de cadrage dédiée** est ouverte pour arbitrer entre (a) attaquer F4 ML (avec dépendance à un service externe payant, à cadrer produit), (b) basculer Martin sur le chemin 3 saisie manuelle assistée (cohérent avec VISION §5). Justification : F4 introduit une dépendance externe non-anodine qui mérite son propre cadrage produit, pas une décision dans le rush d'un spike qui plafonne.
+
+**Principe acquis — mesure parser sur planning intégral**
+
+Décision méthodologique acquise au point 4 du cadrage qui dépasse le spike actuel : pour tout spike de mesure du parser rhythm_calendar, la base de mesure doit couvrir **l'intégralité du planning fixture testé** (tous les groupes du PDF si applicable), pas un seul groupe sélectionné. Sinon le score mesure « la candidate marche sur le groupe que je connais » au lieu de « la candidate marche sur le planning tel qu'un utilisateur l'uploaderait ». Ce principe est inscrit dans VISION-ARCHITECTURE.md §4 (sous-section « Mesure d'une candidate parser »).
+
+**Plan ordonné et chiffré du spike**
+
+| Étape | Description | Durée |
+|---|---|---|
+| 0 | Saisie vérité terrain G2+G3+G4 (3 CSV gitignored) | 1h30 - 2h15 |
+| 1 | Spike #3 homographie 3-4 ancres (1A implémentation, 1B mesure 4 groupes, 1C analyse) | 3-5h |
+| 2 | Spike #4 magick-wasm (2A setup, 2B implémentation, 2C mesure, 2D comparaison vs spike #3) | 6-10h |
+| 3 (cond.) | Robustesse multi-fixtures sur la candidate retenue | non chiffré |
+| 4 | Update VISION / DETTE / ETAT-COURANT après verdict spike | 1h |
+
+Total avant étape 3 : **11h30 - 18h15**, étalable sur 3-5 sessions.
+
+**Convention de stockage des CSVs vérité terrain**
+
+Décision actée à la question Q1 du plan : les CSVs vérité terrain G2/G3/G4 ne vont **pas** dans le dossier du spike #2 passé. Création d'un dossier partagé `docs/fixtures-ground-truth/martin/` à la racine `docs/`, contenant les 4 CSVs (G1 migré depuis le dossier spike #2 + G2/G3/G4 nouveaux). Tous gitignored par convention héritée du spike #2. Justification : la vérité terrain est un actif réutilisable au-delà du spike #2, donc ne doit pas vivre dans un dossier de spike technique passé. Tous les futurs spikes de mesure parser sur Martin pointent vers ce dossier partagé.
+
+**Convention de stockage des nouveaux spikes**
+
+- Spike #3 homographie : `docs/spikes/2026-04-30-03-homographie-3-4-ancres/`
+- Spike #4 magick-wasm : `docs/spikes/2026-04-30-04-magick-wasm/`
+
+Les deux respectent la structure standard (`run.{ts,mjs}`, `RESULTS.md` 6 sections, outputs JSON par groupe).
+
+**Posture méthodologique pour le spike**
+
+- Vérité terrain saisie d'abord, en bloc, avant tout code de spike. Pas de mesure préliminaire sur G1 seul tant que les 4 groupes ne sont pas couverts.
+- Tuning des seuils morphologiques (spike #4) sur G1 uniquement (référence connue 93.33%), puis application sans nouveau tuning sur G2+G3+G4 pour éviter l'overfitting.
+- Crosscheck systématique en fin de saisie de chaque vérité terrain : le compte des semaines `school` saisies doit être cohérent avec ce que la légende du PDF annonce.
+
+**État Git fin de bloc**
+
+HEAD avant ce bloc = `d6b3f13` (clôture session 30 avril après-midi). Aucun commit de code dans cette session de cadrage. La présente mise à jour de docs est commitée à la fin de la session avec message dédié.
+
+**Prochaine étape**
+
+Étape 0 du plan (saisie vérité terrain G2+G3+G4) à exécuter sur 2-3 sessions de saisie attentive. Une fois les 3 CSVs saisis et crosscheckés, ouverture d'une nouvelle conversation Claude.ai dédiée au spike #3 (homographie). Conv de cadrage actuelle clôturée par cette mise à jour de docs.
 
 ---
 

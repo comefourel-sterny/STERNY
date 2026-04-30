@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 29 avril 2026 — Ajout de §5 "Stratégie discriminante par format source" (clôture stratégique de DETTE #37, après validation empirique des spikes #1 PDFs vectoriels 99.1% et #2 images raster 93.33%). Renumérotation des sections suivantes (+1).
+**Dernière mise à jour** : 30 avril 2026 après-midi bis — Ajout dans §4 du principe « mesure parser sur planning intégral » (toute candidate doit être mesurée sur l'intégralité du planning fixture, pas sur un seul groupe). Origine : cadrage du spike d'amélioration parser chemin 2 (cf. ETAT-COURANT bloc Suite 30 avril après-midi bis).
 
 ---
 
@@ -140,6 +140,18 @@ Le parser rhythm_calendar de Sterny utilise un pattern de structure de données 
 **Conséquences pour la production** :
 - Le seuil de confidence à partir duquel une cellule est acceptée sans validation utilisateur reste à arbitrer (probablement supérieur ou égal à 0.9, ou exigence de 2 sources d'accord ou plus)
 - Les semaines de bordure de calendrier où Hyperplanning omet des jours doivent toujours remonter à l'utilisateur (vu en 1B.2 : 7 semaines à votes faibles sur Mathis)
+
+### Mesure d'une candidate parser — couverture intégrale du planning fixture
+
+Toute candidate technique mesurée par un spike parser doit être évaluée sur **l'intégralité d'un planning fixture** (tous les groupes contenus dans le PDF source si plusieurs groupes coexistent), pas sur un sous-ensemble sélectionné.
+
+**Raison** : un score mesuré sur un seul groupe d'un planning multi-groupes ne reflète pas le score réel en exploitation. Le risque est l'**overfitting involontaire** — un système qui marche très bien sur le groupe précis sur lequel il a été réglé, mais échoue sur les autres groupes du même planning parce qu'il a appris les particularités de ce groupe (positions de cellules, palette précise, structure de grille) au lieu de la règle générale. Sur Sterny, l'utilisateur ne sélectionne pas son groupe : il uploade le PDF entier puis Sterny détecte ses groupes. Si la candidate ne marche que sur un groupe sur quatre, le système est cassé pour 75% des utilisateurs de ce planning sans qu'on l'ait mesuré.
+
+**Conséquence pratique pour les spikes** : la vérité terrain de tout planning fixture multi-groupes doit couvrir **tous les groupes** avant qu'un spike démarre sa phase de mesure. Le tuning éventuel des seuils techniques (filtres couleur, kernels morphologiques, etc.) se fait sur un seul groupe de référence, mais la mesure de validation se fait sur l'ensemble des groupes sans nouveau tuning.
+
+**Conséquence statistique** : sur 45 semaines (1 groupe Martin), 1 erreur représente 2.2% de variation, ce qui rend les scores fragiles autour des seuils >95%. Sur 180 semaines (4 groupes Martin), 1 erreur représente 0.55%, lecture du score 4× plus serrée. Pour des seuils exigeants (>97-98% en cible production), la base 1 groupe est insuffisante.
+
+**Origine** : principe acquis lors du cadrage du spike d'amélioration parser le 30 avril 2026 après-midi bis. Acté pour tous les futurs spikes parser, pas seulement Martin.
 
 ---
 
