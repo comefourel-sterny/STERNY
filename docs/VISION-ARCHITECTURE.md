@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 28 avril 2026 — Ajout de §4 "Pipeline parser : pattern accumulateur" (validé empiriquement par le spike #1 étape 1B.2 sur Mathis, score 100%). Renumérotation des sections suivantes (+1).
+**Dernière mise à jour** : 29 avril 2026 — Ajout de §5 "Stratégie discriminante par format source" (clôture stratégique de DETTE #37, après validation empirique des spikes #1 PDFs vectoriels 99.1% et #2 images raster 93.33%). Renumérotation des sections suivantes (+1).
 
 ---
 
@@ -143,7 +143,61 @@ Le parser rhythm_calendar de Sterny utilise un pattern de structure de données 
 
 ---
 
-## 5. Conséquences sur l'UX
+## 5. Stratégie discriminante par format source
+
+Le parser rhythm_calendar de Sterny ne suit pas un chemin unique. Selon la nature du document que l'utilisateur uploade, la plateforme aiguille l'extraction vers une technique adaptée à ce format. Cette stratégie remplace le parsing par vision LLM pure, qui s'est révélé non fiable à grande échelle (cf. §7 risque 4 et DETTE #37).
+
+### Trois chemins, un contrat de données commun
+
+Quel que soit le chemin emprunté, chaque méthode d'extraction dépose ses votes dans le squelette accumulateur défini en §4. Le routage choisit la méthode ; le contrat de données reste identique.
+
+**Chemin 1 — PDFs vectoriels : `pdf.js getOperatorList`**
+
+Pour les PDFs où le contenu est encodé en instructions de dessin vectoriel (texte sélectionnable, formes définies par coordonnées plutôt que par pixels), Sterny utilise la méthode `getOperatorList` de la librairie pdf.js. Cette méthode retourne la liste brute des opérations de dessin du PDF (couleurs de remplissage, rectangles, positions), ce qui permet de lire la couleur de fond de chaque cellule directement, sans OCR (reconnaissance optique de caractères) ni vision LLM.
+
+Validé empiriquement par le spike #1 étape 1B (28 avril 2026) : score consolidé **99.1% sur 162 semaines** (Mathis 100%, Matthieu 98.1%).
+
+**Chemin 2 — Images raster : algorithme manuel sur `ImageData` avec ancrage manuel UI**
+
+Pour les images raster (JPG, PNG — c'est-à-dire des images encodées pixel par pixel, par opposition à des descriptions vectorielles), Sterny utilise un algorithme manuel en TypeScript pur, exécuté côté Edge Function Deno (le runtime serveur TypeScript des Edge Functions Supabase). L'algorithme lit le tableau `ImageData` (la représentation pixel par pixel d'une image en mémoire JavaScript) cellule par cellule.
+
+L'utilisateur clique deux ancres dans l'image (la première et la dernière semaine de son groupe), Sterny en déduit les coordonnées des semaines intermédiaires par division uniforme, puis échantillonne la couleur médiane de chaque cellule sur une fenêtre 7×7 pixels filtrée pour ignorer le texte intra-cellule. La classification jaune = école / vert = entreprise se fait par règles de bucket sur les composantes RGB.
+
+Validé empiriquement par le spike #2 étape 1B (29 avril 2026) : score **93.33% (42/45)** sur Martin FA CG2P G1. Trois erreurs résiduelles tracées en DETTE #41 et à investiguer avant industrialisation production.
+
+**Chemin 3 — Saisie manuelle assistée (couche universelle et fallback obligatoire)**
+
+Pour tout document qui ne tombe ni dans le chemin 1 (PDFs scannés, PDFs sans fonds vectoriels exploitables, formats inconnus) ni dans le chemin 2 (planning manuscrit, photo de mauvaise qualité, format atypique), Sterny propose une UI de saisie manuelle assistée. L'utilisateur reconstruit son rythme semaine par semaine sur un calendrier visuel, avec ou sans pré-remplissage IA selon ce qui aura pu être détecté.
+
+Ce chemin joue aussi un second rôle, indépendant du routage : il est la **couche universelle de validation**. Tout résultat des chemins 1 ou 2 est présenté à l'utilisateur dans la même UI pour confirmation explicite avant que `rhythm_calendar` ne passe au statut `confirmed` (cf. §6 règle de validation visuelle obligatoire).
+
+La conception détaillée du composant de saisie manuelle assistée fait l'objet d'une session dédiée. À ce jour le concept est posé, l'UI ne l'est pas encore.
+
+### Critère de discrimination à l'upload
+
+Sterny détermine le chemin à appliquer en inspectant le fichier uploadé :
+
+1. Si le MIME type (le code qui identifie le type d'un fichier, par exemple `application/pdf` ou `image/jpeg`) est un PDF, Sterny vérifie si le PDF contient des instructions de dessin vectoriel exploitables (présence de fills colorés en quantité cohérente avec un calendrier d'alternance).
+   - Oui → chemin 1
+   - Non (PDF scanné ou converti depuis image) → chemin 3
+2. Si le MIME type est une image raster (`image/jpeg`, `image/png`) → chemin 2
+3. Tout autre format → chemin 3
+
+L'heuristique exacte d'aiguillage pour le critère 1 (présence d'instructions vectorielles exploitables dans un PDF) reste à formaliser et à valider sur fixtures avant industrialisation. Une approche simple sera testée d'abord : compter les opérations `setFillRGBColor` (ou équivalent) retournées par `getOperatorList`, et exiger un seuil minimal cohérent avec un calendrier de 40-50 semaines.
+
+### Pourquoi cette stratégie remplace le parsing par vision LLM pure
+
+Les LLM vision (Claude, GPT-4o, Gemini) ne sont pas fiables sur la classification couleur pixel par pixel à grande échelle (180-250 cellules à classer simultanément). Cette limite a été documentée en §7 risque 4 et confirmée empiriquement le 27 avril 2026 sur GPT-4o (5/10) et Gemini (4/10) testés à la main sur les 10 premières semaines de FA CG2P G1 du Planning_Martin.JPG. Aucun prompt engineering ne corrige cette limite structurelle.
+
+L'approche discriminante s'appuie sur la nature exacte du fichier source. Pour un PDF vectoriel, la couleur est une donnée brute lisible par programme — il serait absurde de demander à un LLM vision de la "voir". Pour une image raster, l'algorithme manuel sur `ImageData` lit la couleur des pixels directement, sans intermédiaire qui pourrait deviner. La saisie manuelle assistée garantit un chemin terminal sûr pour tout cas que l'automatique ne sait pas traiter, et joue par ailleurs son rôle de validation visuelle obligatoire pour les chemins 1 et 2.
+
+**Conséquence pour le principe fondateur (§1)** : le rythme réel de l'alternant, extrait de son emploi du temps, reste la seule source de vérité du matching. Ce qui change, c'est la manière dont ce rythme est extrait. La promesse marketing évolue de « uploade ton planning, tout est automatique » vers « uploade ton planning, on extrait ce qui est extractible automatiquement, tu valides ou complètes en quelques clics ». Cette honnêteté en amont est cohérente avec le principe UX énoncé en §7 risque 4.
+
+**Origine** : décision actée le 29 avril 2026 après clôture des spikes #1 (PDFs vectoriels) et #2 (images raster). Tranche l'arbitrage F1/F2/F3 documenté dans DETTE #37 : levier 1 (autre LLM vision) éliminé empiriquement, leviers 2 (pipeline hybride spécifique par format) et 3 (saisie manuelle assistée) retenus en combinaison. DETTE #37 close stratégiquement, voir DETTE-TECHNIQUE.md.
+
+---
+
+## 6. Conséquences sur l'UX
 
 ### Upload-first à l'inscription
 
@@ -182,7 +236,7 @@ Quand un nouveau planning est détecté pour une période future, l'UI prévient
 
 ---
 
-## 6. Dépendance critique à l'IA — analyse du risque
+## 7. Dépendance critique à l'IA — analyse du risque
 
 Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Claude Sonnet 4.6 via API Anthropic au jour de la rédaction). C'est un choix assumé mais qui crée 4 risques qu'il faut nommer et mitiger explicitement.
 
@@ -224,14 +278,14 @@ Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Cla
 
 **Mitigations obligatoires révisées** :
 
-- L'étape de **validation visuelle** (section 5) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
-- Le **fallback de saisie manuelle** (section 6 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
+- L'étape de **validation visuelle** (section 6) devient une **étape de correction**, pas seulement de vérification. L'utilisateur doit pouvoir corriger semaine par semaine, intuitivement, sans friction. Sans cette capacité, le pré-remplissage IA est plus dangereux qu'utile.
+- Le **fallback de saisie manuelle** (section 7 risque 1) n'est plus une mitigation de bord pour les cas atypiques — il devient potentiellement le **chemin principal** d'entrée du `rhythm_calendar`, l'IA devenant un accélérateur optionnel pour les utilisateurs dont le format de planning permet une extraction fiable.
 - Le calendrier visuel doit être suffisamment clair pour qu'une erreur soit détectable au premier coup d'œil (code couleur franc, navigation par mois, zoom possible).
 - **Principe UX à respecter sur tout chemin parser** : ne jamais promettre une fluidité (« uploade ton planning, tout est automatique en 30 secondes ») qui peut être démentie par l'échec du parser et la bascule vers une étape plus laborieuse. Cet effet (*expectation violation* + *loss aversion*, parfois nommé *bait-and-switch involontaire*) est particulièrement nuisible sur la cible jeune alternant, où l'attention est courte et l'exigence de fluidité immédiate. Conséquence concrète pour les choix produit : une UX honnête en amont (« on construit ton rythme en 3 minutes ») est préférable à une UX fluide en façade qui se trahit en cours de route. L'IA peut être proposée en accélérateur conditionnel uniquement pour les formats où la fiabilité a été démontrée objectivement par benchmark — jamais comme promesse universelle. Apprentissage acté lors de la session de cadrage du 27 avril 2026.
 
-**Décision stratégique à prendre dans une session dédiée** : pivoter le produit vers une saisie manuelle assistée comme étape principale (Levier 3 documenté dans DETTE-TECHNIQUE #37) ou investir dans un pipeline hybride extraction structurée + LLM pour mapping métier (Levier 2). Le statu quo (parsing par vision LLM pure) n'est pas tenable en production.
+**Décision stratégique actée le 29 avril 2026** : la stratégie discriminante par format source (§5) tranche cet arbitrage en combinant les leviers 2 (pipeline spécifique par format : pdf.js getOperatorList pour les PDFs vectoriels, algorithme manuel ImageData pour les images raster) et 3 (saisie manuelle assistée comme couche universelle et fallback obligatoire). Le parsing par vision LLM pure est abandonné pour la production. Voir DETTE #37 pour l'historique de l'arbitrage F1/F2/F3.
 
-**Implication pour le positionnement Sterny** : si le parser ne peut être fiable qu'à 70-80%, l'argument de vente "uploade ton planning, tout est automatique" doit évoluer vers "uploade ton planning, on extrait le maximum, tu corriges en 30 secondes". C'est une question produit majeure qui touche au principe fondateur (section 1) et qui doit être tranchée avant tout investissement supplémentaire dans le parser.
+**Implication pour le positionnement Sterny** : la promesse marketing évolue de "uploade ton planning, tout est automatique" vers "uploade ton planning, on extrait ce qui est extractible automatiquement, tu valides ou complètes en quelques clics". Cette honnêteté en amont reste cohérente avec le principe fondateur (section 1). Question tranchée le 29 avril 2026 par la stratégie discriminante (§5).
 
 **Risque 5 — Fragilité des métadonnées descriptives**
 
@@ -241,7 +295,7 @@ Les champs `document_meta` peuvent être incomplets ou contenir des codes techni
 
 ---
 
-## 7. Migration de profil
+## 8. Migration de profil
 
 Un utilisateur n'est pas figé dans le type avec lequel il s'est inscrit. La plateforme garantit sa flexibilité pour accompagner les changements de situation (nouvelle alternance, déménagement, opportunité d'investissement).
 
@@ -253,7 +307,7 @@ Un utilisateur n'est pas figé dans le type avec lequel il s'est inscrit. La pla
 
 ---
 
-## 8. Plan de transition vers la vision cible
+## 9. Plan de transition vers la vision cible
 
 La transition depuis l'architecture actuelle vers la vision cible se fait en trois phases séquentielles, pour éviter tout nœud dans le code ou toute régression silencieuse.
 
@@ -275,7 +329,7 @@ Une fois que le nouveau système est éprouvé (temps à définir — probableme
 
 ---
 
-## 9. Ce que Sterny ne fait PAS
+## 10. Ce que Sterny ne fait PAS
 
 Limites volontaires du produit, à défendre face aux tentations de sur-ingénierie ou aux demandes utilisateurs hors cible.
 
@@ -291,7 +345,7 @@ Limites volontaires du produit, à défendre face aux tentations de sur-ingénie
 
 ---
 
-## 10. Critères de succès de la vision
+## 11. Critères de succès de la vision
 
 Pour vérifier qu'on tient bien la ligne, quelques critères observables :
 

@@ -158,6 +158,29 @@ Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-DESIGN-2026-0
 
     **Statut au 27 avril 2026 — session de cadrage tenue, décision reportée à une session de recherche profonde.** Levier 1 éliminé empiriquement : test à la main de GPT-4o (5/10) et Gemini (4/10) sur 10 premières semaines de FA CG2P (G1) du Planning_Martin.JPG. Tous les LLM vision actuels échouent au même niveau, ce qui confirme que la limite est structurelle (modalité vision sur classification couleur à grande échelle) et non spécifique à un provider. Test technique sur Mathis : PDF identifié comme vectoriel (texte sélectionnable dans Aperçu), mais faisabilité d'extraction couleur de fond cellule par cellule **non encore démontrée** — le caractère vectoriel du texte ne garantit pas que les fonds de cellules soient eux-mêmes vectoriels et lisibles programmatiquement. Aucune décision actée sur le levier à privilégier : la session de cadrage a fait émerger qu'aucune des 3 options documentées (Levier 1/2/3) ne doit être tranchée tant qu'une recherche technique approfondie n'a pas exploré l'ensemble des techniques disponibles pour combiner plusieurs signaux (couleur + texte intra-cellule + position + légende + métadonnées PDF) en un pipeline multi-signaux. Cette recherche est le prérequis de toute décision d'architecture. Voir ETAT-COURANT.md section 0 du 27 avril pour le plan de la session de recherche.
 
+    **Statut au 29 avril 2026 — DETTE #37 close stratégiquement.** Les deux spikes techniques ont été menés à terme :
+
+    - **Spike #1** (PDFs vectoriels via pdf.js getOperatorList) : verdict GO à **99.1% consolidé** sur Mathis (100%) et Matthieu (98.1%), 162 semaines testées.
+    - **Spike #2** (images raster via algorithme manuel sur ImageData en TypeScript Deno pur) : verdict GO à **93.33%** sur Martin FA CG2P G1, 45 semaines testées. Trois erreurs résiduelles tracées en DETTE #41.
+
+    L'arbitrage F1/F2/F3 (leviers 1, 2, 3) est tranché : levier 1 (autre LLM vision) éliminé empiriquement le 27 avril 2026 (GPT-4o 5/10, Gemini 4/10 sur 10 semaines Martin), leviers 2 et 3 retenus en combinaison sous forme d'une **stratégie discriminante par format source** :
+
+    - PDFs vectoriels → pdf.js getOperatorList (chemin automatique 1)
+    - Images raster → algorithme manuel sur ImageData avec ancrage manuel UI (chemin automatique 2)
+    - Tout le reste → saisie manuelle assistée (chemin 3, couche universelle, à concevoir séparément)
+
+    La décision est formalisée dans VISION-ARCHITECTURE.md §5 ("Stratégie discriminante par format source"), qui devient la référence canonique sur l'architecture parser de Sterny.
+
+    **Implémentation production restant à faire** (cette dette est résolue stratégiquement, pas opérationnellement) :
+
+    - Industrialisation du chemin 1 dans une Edge Function dédiée (ou dans `parse-school-calendar` existante après refactor) : intégration de pdf.js, heuristique de détection de PDF vectoriel exploitable, parsing complet de fixtures supplémentaires au-delà de Mathis et Matthieu.
+    - Industrialisation du chemin 2 : intégration de l'algorithme dans une Edge Function Deno, conception et implémentation de l'UI d'ancrage manuel (clic des deux ancres, validation visuelle des 45 cellules calculées avant confirmation), gestion de la précision d'ancrage (cf. apprentissage du spike #2 : 2 px d'erreur = 4 cellules mal classées).
+    - Investigation et résolution de DETTE #41 (3 erreurs résiduelles spike #2) avant industrialisation chemin 2.
+    - Conception détaillée et implémentation du composant de saisie manuelle assistée (chemin 3), à cadrer en session dédiée.
+    - Aiguillage à l'upload : règle d'orientation du fichier vers le bon chemin selon MIME type et heuristique vectorielle, avec fallback systématique vers le chemin 3 en cas d'échec d'un chemin automatique.
+
+    Ces chantiers seront tracés au fil des sessions dans ETAT-COURANT.md et logueront leurs propres dettes au moment de leur cadrage. La dette stratégique #37 est résolue, les dettes d'implémentation lui succèdent.
+
 38. **Information périmée dans ETAT-COURANT sur la signature de RhythmCalendar**. Découvert lors du fix de la preview avec sélecteur de groupe le 26 avril : la session du 25 avril après-midi (Bloc B Étape 0 close) avait mentionné une signature `<RhythmCalendar parsedGroups={...} mode="readonly" selectedGroupId={...} onSelectGroup={...} />` dans son plan de démarrage Étape 1. La signature finale livrée le 25 avril fin de soirée bis (commit 599e045) est en réalité plus simple : `({ weeks, groupLabel, documentMeta, className })`. Le contrat unifié `weeks` posé en Étape 1 a remplacé l'API multi-props envisagée initialement. Pas un bug, juste une trace périmée dans l'historique d'ETAT-COURANT — la nouvelle session du 26 avril a reposé sur ce point pour rectifier. À noter pour les futures sessions : la source de vérité pour la signature actuelle de RhythmCalendar est le code lui-même (`sterny-react/src/components/rhythm/RhythmCalendar.jsx`), pas les sections historiques d'ETAT-COURANT.
 
 39. **Composant RhythmFileUpload — UI à reprendre lors du redesign Bloc B**. La v1 du composant posée le 26 avril (commit 7b33fa8) est techniquement fonctionnelle (6 états, validations client, multipart/form-data vers Edge Function, callbacks typés sur 6 codes d'erreur) mais visuellement non aboutie selon les standards Sterny (cf. INVENTAIRE §9). Constat utilisateur en session : "rien sur cette page ne me satisfait visuellement". À reprendre dans la même session que le redesign de RhythmCalendar (DETTE #36) pour cohérence visuelle d'ensemble — les 2 composants seront posés côte à côte dans le futur RhythmOnboarding (Bloc B Étape 3) et doivent partager la même grammaire raffinée. Pas urgent — la priorité reste le diagnostic et la résolution du problème parser (DETTE #37).
