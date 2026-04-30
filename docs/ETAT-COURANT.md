@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 28 avril 2026 — Spike #1 étape 1A close (commit e9dc421). pdf.js getOperatorList confirmé comme voie viable pour extraire la structure d'une grille de calendrier sur PDF vectoriel. Verdict A — extraction fidèle visuellement validée par Côme sur Mathis (1 page) et Matthieu (2 pages). Étape 1B (matching contre vérité terrain) en attente, prérequis : CSV vérité terrain Matthieu rempli par Côme.
+**Dernière mise à jour** : 30 avril 2026 — Spike #2 Martin clos (93.33% sur image raster, commit étape 1B la veille au soir). DETTE #37 close stratégiquement par formalisation §5 dans VISION-ARCHITECTURE.md (commit d26f6cb) : stratégie discriminante par format source actée — pdf.js getOperatorList pour PDFs vectoriels, algorithme manuel ImageData pour images raster, saisie manuelle assistée comme couche universelle et fallback. Investigation DETTE #41 enrichie (commit 9349d1a) : diagnostic structurel "inexactitude cumulative de la division uniforme", hypothèses (a) bruit JPG et (b) ambiguïté visuelle éliminées, (c) recadrée. DETTE #41 reste ouverte, à reprendre lors du cadrage chemin 3.
 
 ---
 
@@ -259,6 +259,61 @@ Plan B magick-wasm non engagé. Cascade C/C bis restent en réserve documentaire
 **État Git fin de bloc** : HEAD = (hash du commit de clôture spike #2). Working tree historique préservé hors les 4 modifications connues.
 
 **Décision DETTE #37 actable maintenant** : stratégie discriminante par format. À formaliser dans une session dédiée (rédaction de la décision dans VISION-ARCHITECTURE.md + clôture DETTE #37 + cadrage du composant saisie manuelle assistée).
+
+### Suite 30 avril matin — Formalisation §5 (clôture stratégique DETTE #37) + investigation enrichie DETTE #41
+
+Session ouverte avec le verdict spike #2 acquis la veille au soir (93.33% sur Martin FA CG2P G1, cascade A confirmée). DETTE #37 désormais actable, double objectif tenu : formaliser la décision d'architecture parser dans VISION-ARCHITECTURE.md, et reprendre dans la foulée l'investigation des 3 erreurs résiduelles (DETTE #41) sans laisser le sujet refroidir.
+
+**Volet 1 — Formalisation §5 dans VISION-ARCHITECTURE.md (commit d26f6cb)**
+
+Ajout de la section §5 "Stratégie discriminante par format source", qui devient la référence canonique sur l'architecture parser de Sterny. Trois chemins, un contrat de données commun (le squelette accumulateur de §4) :
+
+- **Chemin 1 — PDFs vectoriels** : `pdf.js getOperatorList`. Validé empiriquement à 99.1% consolidé (Mathis 100%, Matthieu 98.1%, 162 semaines testées).
+- **Chemin 2 — Images raster** : algorithme manuel sur `ImageData` en TypeScript Deno pur, avec ancrage manuel UI (l'utilisateur clique la première et la dernière semaine de son groupe, division uniforme entre les deux). Validé à 93.33% sur Martin FA CG2P G1.
+- **Chemin 3 — Saisie manuelle assistée** : couche universelle pour tout document hors chemin 1 et 2, et fallback obligatoire. Joue aussi le rôle de couche de validation visuelle obligatoire pour les chemins 1 et 2 (cf. §6). Conception détaillée à venir en session dédiée.
+
+Critère de discrimination à l'upload formalisé : inspection du MIME type, et pour les PDFs heuristique sur la présence d'instructions de dessin vectoriel exploitables (compter les `setFillRGBColor` retournés par `getOperatorList`, exiger un seuil minimal cohérent avec un calendrier d'alternance). Le seuil exact reste à valider sur fixtures avant industrialisation.
+
+**DETTE #37 close stratégiquement, pas opérationnellement.** L'arbitrage F1/F2/F3 est tranché : levier 1 (autre LLM vision) éliminé empiriquement le 27 avril, leviers 2 (pipeline spécifique par format) et 3 (saisie manuelle assistée) retenus en combinaison sous forme de la stratégie discriminante. Le parsing par vision LLM pure est abandonné pour la production. L'implémentation production reste à faire : pipeline pdf.js intégré dans une Edge Function, pipeline algo manuel ImageData intégré côté serveur Deno, conception du chemin 3, intégration UX, investigation et résolution DETTE #41 avant industrialisation chemin 2.
+
+**Conséquence pour le principe fondateur (§1)** : le rythme réel reste la seule source de vérité du matching, c'est la manière de l'extraire qui change. Reformulation de la promesse marketing actée : « uploade ton planning, on extrait ce qui est extractible automatiquement, tu valides ou complètes en quelques clics » plutôt que « uploade ton planning, tout est automatique en 30 secondes ». Honnêteté en amont cohérente avec le principe UX énoncé en §7 risque 4.
+
+**Volet 2 — Investigation enrichie DETTE #41 (commit 9349d1a)**
+
+Investigation menée en deux sessions de debug consécutives. Traces dans `debug-dette-41.ts`, `debug-dette-41-markers.png`, `debug-dette-41-colors.json`, `etape-1c-debug-palette-filter.ts`, `etape-1c-results.json` du dossier spike #2.
+
+*Première session — échantillonnage multi-positions sur les 3 cellules erronées (semaines 2, 5, 9).* Pour chaque cellule, 13 hex échantillonnés à des positions précises autour du centre calculé (centre + 8 voisins ±5 px + 4 voisins ±10 px), plus le hex moyen filtré luminance 7×7. Constat : sur la semaine 2, dispersion énorme dans la fenêtre 7×7 (R varie de 74 à 255, B de 0 à 77) avec un gradient vertical lumineux→sombre. Sur les semaines 5 et 9, le centre lui-même est très sombre (luminance < 80, exclu par le filtre actuel) et un trait sombre horizontal traverse la cellule au niveau y=0 dans la fenêtre. Ces patterns sont **structurés**, pas aléatoires. → Hypothèse (a) bruit JPG **éliminée**. Les 13 hex échantillonnés ne sont pas similaires entre eux. → Hypothèse (b) cellule à teinte vert-citron uniforme **éliminée**. Les hex `#cdd72e`, `#bad431`, `#b7d332` ne sont pas des couleurs de cellules : ce sont des médianes calculées sur des fenêtres contaminées par un mélange jaune lumineux + vert moyen + sombre.
+
+*Seconde session — approche B, filtre par distance euclidienne RGB à la palette extraite automatiquement.* Le filtre luminance [80, 230] remplacé par un filtre palette : extraction des centroïdes jaune et vert sur les 42 cellules non-erronées (`#f2f21f` jaune, `#96ca56` vert, cohérents avec la palette de l'étape 0 du spike), puis classification par distance euclidienne avec un seuil RAYON_PALETTE=80. Score : **91.11% (41/45)**, soit une régression d'une cellule vs le filtre luminance (93.33% au run 2 1B). Les 3 cellules erronées initiales (2, 5, 9) restent en erreur, et 1 nouvelle cellule (semaine 7) bascule en "ambigu".
+
+*Pattern frappant dans la sortie 1C.* Sur les semaines 5, 7, 9, la fenêtre 7×7 contient exactement **21 pixels classés jaune et 21 pixels classés vert** (égalité parfaite, 7 pixels rejetés sur les 49 totaux). Une fenêtre 7×7 a 7 lignes de 7 pixels. La distribution 21+21+7 correspond précisément à 3 lignes complètes d'un côté, 3 lignes complètes de l'autre, 1 ligne médiane rejetée car à mi-chemin entre les deux centroïdes. Cela révèle que la frontière entre la cellule cible et la cellule adjacente passe **pile au milieu de la fenêtre 7×7**.
+
+*Diagnostic structurel au 30 avril.* Le problème n'est ni couleur, ni bruit, ni alignement uniforme. C'est une **inexactitude cumulative de la division uniforme entre les 2 ancres cliquées**. Le step 15.16 px est arrondi à l'entier le plus proche par cellule, ce qui accumule des sous-pixels d'erreur jusqu'à ce que certains markers tombent pile sur des bordures inter-cellules. Aucun ajustement du filtre couleur (luminance, palette, ou autre) ne peut résoudre cela — c'est un défaut géométrique, à corriger côté géométrie. → Hypothèse (c) **recadrée** : pas un décalage uniforme vertical de tous les markers (« tous décalés vers le haut »), mais une accumulation d'erreurs de fraction de pixel qui se manifeste par chevauchement de bordures sur les cellules dont la position calculée tombe pile sur la frontière entre 2 cellules.
+
+DETTE #41 reste **ouverte**. À reprendre lors du cadrage du chemin 3 (composant de saisie manuelle assistée), où elle se résoudra naturellement par la couche de validation visuelle obligatoire — ou disparaîtra si le rôle de l'algo automatique est reformulé en suggesteur plutôt qu'en pré-remplisseur (cf. question stratégique ci-dessous).
+
+**Question stratégique parquée en fin de session — rôle de l'algorithme automatique dans la chaîne UX**
+
+Question soulevée à froid en fin de session : le 99.1% chemin 1 et le 93.33% chemin 2 ne sont peut-être pas suffisants pour la production si l'utilisateur valide par réflexe sans relire, sur une cible « jeune alternant qui ne relira pas ». L'erreur validée sans contrôle se transforme en contrat signé avec un décalage de semaine, conséquences contractuelles et financières (cf. VISION §7 risque 4). Trois pistes ouvertes :
+
+- *Piste 1* — recadrer le rôle de l'algo chemin 2 en « suggesteur » plutôt que « pré-remplisseur » : l'utilisateur construit son rythme, l'algo aide.
+- *Piste 2* — recadrer le rôle de l'algo chemin 1 (PDF vectoriel) sous le même angle, même à 99.1%.
+- *Piste 3* — repenser l'UX d'inscription complète, reformuler la chaîne de promesse (touche VISION §1 principe fondateur, sans le contredire).
+
+Cette question touche §5 (formalisée le matin même) et §7 risque 4. Elle est susceptible de modifier la formulation de §5. Cadrage produit complet à mener avant toute décision. Session dédiée à ouvrir dans la foulée (objectif : ouverture le 30 avril après-midi, après quelques heures de pause pour laisser §5 se tester mentalement).
+
+**Tâches de fond non priorisées** (rappel pour ne pas perdre)
+
+- Étape 2 robustesse spike #2 : tester l'algorithme manuel ImageData sur les 3 autres groupes FA Martin (G2 GC2F, G3 GEMA LOG, G4 GEMA MD). Non bloquante pour DETTE #37, utile pour la mesure d'impact production.
+- Investigation DETTE #41 à reprendre lors du cadrage du chemin 3 VISION §5.
+
+**État Git fin de bloc**
+
+HEAD = `9349d1a` sur main, synchronisé avec origin/main. 5 commits poussés sur les sessions du 29 avril soirée et du 30 avril matin : clôtures spike #1, clôture spike #2, décision DETTE #37 (formalisation §5) `d26f6cb`, investigation DETTE #41 `9349d1a`. Working tree historique préservé hors les 4 modifications connues : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV), `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` (untracked, attente relecture), `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/etape-1a-notes-techniques.md`, `docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/generate-matthieu-skeleton.mjs`.
+
+**Prochaine étape**
+
+Ouverture de la session stratégique dédiée au rôle de l'algorithme automatique dans la chaîne UX, dans la foulée de la rédaction de ce bloc rétro. Trois pistes à examiner ensemble (suggesteur chemin 2, suggesteur chemin 1, refonte chaîne d'inscription complète).
 
 ---
 
