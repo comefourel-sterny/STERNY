@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 30 avril 2026 après-midi bis — Ajout dans §4 du principe « mesure parser sur planning intégral » (toute candidate doit être mesurée sur l'intégralité du planning fixture, pas sur un seul groupe). Origine : cadrage du spike d'amélioration parser chemin 2 (cf. ETAT-COURANT bloc Suite 30 avril après-midi bis).
+**Dernière mise à jour** : 30 avril 2026 fin de journée — Ajout dans §4 du paragraphe « Mapping couleur → statut (school/company) — étape utilisateur obligatoire ». Origine : insight produit du 30 avril fin de journée pendant le spike #3 (planning Martin sans légende textuelle, le parser ne peut pas déduire seul quelle couleur signifie école et quelle couleur signifie entreprise). Conserve la mention précédente du principe « mesure parser sur planning intégral » qui reste valide.
 
 ---
 
@@ -152,6 +152,16 @@ Toute candidate technique mesurée par un spike parser doit être évaluée sur 
 **Conséquence statistique** : sur 45 semaines (1 groupe Martin), 1 erreur représente 2.2% de variation, ce qui rend les scores fragiles autour des seuils >95%. Sur 180 semaines (4 groupes Martin), 1 erreur représente 0.55%, lecture du score 4× plus serrée. Pour des seuils exigeants (>97-98% en cible production), la base 1 groupe est insuffisante.
 
 **Origine** : principe acquis lors du cadrage du spike d'amélioration parser le 30 avril 2026 après-midi bis. Acté pour tous les futurs spikes parser, pas seulement Martin.
+
+### Mapping couleur → statut (school/company) — étape utilisateur obligatoire
+
+Le parser détecte des **couleurs** (jaune, vert, rose, bleu...) sur un planning, pas des **statuts** (school, company). Sur les plannings qui ne contiennent pas de légende textuelle exploitable (ex. : Martin, où aucune mention "jaune = cours / vert = entreprise" n'apparaît dans le PDF), le parser n'a aucun moyen de déduire seul quelle couleur correspond à quelle modalité.
+
+**Conséquence** : le pipeline parser doit toujours présenter à l'utilisateur, en fin d'extraction, un écran de confirmation de la forme « la couleur jaune représente : ☐ tes semaines de cours ☐ tes semaines en entreprise ». Tant que ce mapping n'est pas validé, le calendrier produit reste neutre (pas de catégorie school/company posée).
+
+Cette validation est cohérente avec le principe « UX honnête en amont » (§7 risque 4) : on ne promet pas une extraction 100 % automatique, on présente une étape de validation rapide qui sécurise le matching contre une inversion catastrophique.
+
+Cas où cette étape pourrait être contournée (à n'envisager qu'après spike dédié) : planning contenant une légende textuelle clairement exploitable (mots-clés "centre/école/formation" vs "entreprise/alternance" associés sans ambiguïté à des zones colorées). À ne pas implémenter dans la phase actuelle — toute candidate parser doit livrer son verdict couleur, l'écran de confirmation reste obligatoire.
 
 ---
 

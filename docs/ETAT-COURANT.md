@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 après-midi bis — Cadrage du spike d'amélioration parser chemin 2 (Martin image raster). Plan ordonné et chiffré validé : étape 0 saisie vérité terrain G2+G3+G4 (~2h), étape 1 spike #3 homographie 3-4 ancres (3-5h), étape 2 spike #4 magick-wasm + comparaison (6-10h), étape 3 robustesse multi-fixtures conditionnelle, étape 4 update docs. Périmètre strictement chemin 2 (DocAI / Azure / chemin 1 / F4 ML hors périmètre). Cible chiffrée >97-98% sur 180 sem (4 groupes Martin). Principe acquis : la mesure d'une candidate parser doit se faire sur l'intégralité d'un planning fixture, jamais sur un seul groupe. Aucun commit de code à ce stade — le bloc qui suit ouvre la phase d'exécution.
+**Dernière mise à jour** : 30 avril 2026 fin de journée — Spike #3 homographie 4 ancres Martin exécuté de bout en bout. Verdict : hypothèse confirmée, l'homographie résout DETTE #41 (G1 spike #2 = 93.33 % → spike #3 = 97.78 %, +4.45 pts attribuables exclusivement au changement d'ancrage). Score consolidé 4 groupes = 94.44 % (170/180), sous le seuil cible 97 % à cause d'un plafond classification couleur (DETTE #43 nouvelle) qui sera traité hors spike #3. DETTE #41 éligible à clôture, conditionnée au verdict spike #4. DETTE #42 nouvelle (anomalies CSV G3/G4) loguée hors-scope. Décision produit additionnelle : mapping couleur → statut requiert validation utilisateur obligatoire (VISION §4 nouveau paragraphe). Spike #4 magick-wasm est l'étape suivante, à ouvrir dans une nouvelle conversation Claude.ai.
 
 ---
 
@@ -424,6 +424,58 @@ HEAD avant ce bloc = `d6b3f13` (clôture session 30 avril après-midi). Aucun co
 **Prochaine étape**
 
 Étape 0 du plan (saisie vérité terrain G2+G3+G4) à exécuter sur 2-3 sessions de saisie attentive. Une fois les 3 CSVs saisis et crosscheckés, ouverture d'une nouvelle conversation Claude.ai dédiée au spike #3 (homographie). Conv de cadrage actuelle clôturée par cette mise à jour de docs.
+
+---
+
+### Suite 30 avril fin de journée — Spike #3 homographie 4 ancres Martin exécuté
+
+Session ouverte en suite directe de la clôture du cadrage (commit `c60a057`). Objectif unique de la session : exécuter le spike #3, étape 1 du plan validé (homographie 4 ancres sur le bloc Martin entier, cible >97 % sur 180 sem). Étape 0 (saisie vérité terrain G2/G3/G4) avait été finalisée entre les deux sessions, crosscheck légende validé en début de cette session.
+
+**Décisions produit prises pendant la session (avant exécution du code)**
+
+1. **Mapping couleur → statut (school/company) requiert validation utilisateur obligatoire**. Sur Martin, le PDF n'affiche pas de légende textuelle qui dirait quelle couleur signifie école et quelle couleur signifie entreprise. Le parser détecte des couleurs, pas des statuts. Conséquence inscrite en VISION-ARCHITECTURE §4 (nouvelle sous-section) : le pipeline parser doit toujours présenter à l'utilisateur, en fin d'extraction, un écran de confirmation du mapping couleur → statut, sinon risque d'inversion catastrophique du rythme.
+
+2. **Stratégie d'ancrage pour le bloc Martin** : 4 clics au total sur les 4 coins extérieurs du bloc des 4 colonnes (G1 sem 1, G4 sem 1, G1 sem 45, G4 sem 45), une seule matrice d'homographie partagée par les 4 groupes. Justification : écart en X plus grand donc matrice plus stable, 4 clics au lieu de 16, mesure homogène valable partout simultanément.
+
+3. **Versionnement intégral du dossier spike #3** : `anchors.json`, `pick-coordinates.html`, `output-g*.json` tous versionnés (pas de gitignore local). Reproductibilité d'un spike = actif d'équipe.
+
+**Exécution du spike — passes 1A.2.a / 1A.2.b / 1A.2.c / 1A.2.d**
+
+Conception (CONCEPTION.md), implémentation (run.ts en Deno + TypeScript, héritage textuel des fonctions du spike #2 sur extract/classify/match, 511 lignes), création de l'outil pick-coordinates.html (HTML statique 100 lignes, marqueurs visuels au clic, copie JSON), pick des 4 ancres par Côme (HG=357,538 / HD=584,537 / BG=357,1205 / BD=585,1204 — cohérence géométrique validée arithmétiquement), exécution Deno avec téléchargement imagescript@1.2.17, génération des 4 outputs JSON.
+
+**Itération mid-run sur la vérité terrain** : le run a remonté 2 cellules (G3 sem 7 et G4 sem 7, 2026-10-12) avec `statut_observe_martin` vide dans les CSVs. Côme a relu le PDF, confirmé que ces cellules sont colorées en vert (company), corrigé les 2 lignes uniquement, relancé le run. Pas de révision pour faire matcher le score : correction de saisie incomplète repérée par le run, PDF en main. Le run a aussi remonté 2 anomalies de format CSV hors-scope (8 colonnes au lieu de 5 sur ces 2 mêmes lignes ; label groupe G4 incorrect sur 45 lignes) qui ont été loguées en DETTE #42 sans être corrigées dans ce spike.
+
+**Scores finaux**
+
+| Groupe | Score | Erreurs |
+|---|---|---|
+| G1 | 44/45 = 97.78 % | 1 |
+| G2 | 44/45 = 97.78 % | 1 |
+| G3 | 42/45 = 93.33 % | 3 |
+| G4 | 40/45 = 88.89 % | 5 |
+| **Consolidé** | **170/180 = 94.44 %** | **10** |
+
+**Verdict du spike**
+
+Hypothèse confirmée : l'homographie 4 ancres résout DETTE #41 (défaut géométrique de la division uniforme). Comparaison directe sur G1 entre spike #2 (2 ancres + division uniforme = 93.33 %) et spike #3 (4 ancres + homographie DLT = 97.78 %) : +4.45 points attribuables exclusivement au changement d'ancrage, toutes les autres variables du pipeline étant strictement identiques. DETTE #41 éligible à clôture, conditionnée au verdict du spike #4.
+
+Plafond résiduel diagnostiqué : 10 erreurs sur 180 toutes du même profil `predit=company / observe=school` sur des hex jaune-verdâtres à la frontière du bucket de classification couleur. Pas un problème de positionnement géométrique. Logué en DETTE #43 (nouvelle).
+
+Voir `docs/spikes/2026-04-30-03-homographie-3-4-ancres/RESULTS.md` pour le rapport complet (6 sections standard + annexes).
+
+**Anomalies CSV remontées hors-scope du spike**
+
+Loguées en DETTE #42 pour traitement dédié avant le spike #4 ou avant tout traitement cross-fixture :
+1. Format à 8 colonnes (au lieu de 5) sur les lignes G3 sem 7 et G4 sem 7 des CSVs vérité terrain.
+2. Label de groupe G4 = `FA_GEMA_LOG_G4_2026-2027` au lieu de `FA_GEMA_MD_G4_2026-2027` sur les 45 lignes du fichier g4 (probable copier-coller depuis G3).
+
+**État Git fin de bloc**
+
+HEAD avant ce commit = `c60a057`. Working tree historique préservé hors les 4 modifications connues (CreerAnnoncePage.jsx bypass DEV, AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md untracked, etape-1a-notes-techniques.md, generate-matthieu-skeleton.mjs).
+
+**Prochaine étape**
+
+Ouverture d'une nouvelle conversation Claude.ai dédiée au spike #4 magick-wasm (étape 2 du plan validé en session du 30 avril après-midi bis). Brief de démarrage : les 4 docs de référence à jour + ce bloc rétro + RESULTS.md du spike #3 comme contexte. Objectif du spike #4 : (a) tester la détection automatique de grille par opérations morphologiques magick-wasm comme alternative à l'ancrage manuel, (b) tester si le pré-traitement d'image magick-wasm améliore par effet de bord la robustesse du bucket couleur sur les teintes frontière jaune-verdâtres (mission complémentaire ajoutée par le verdict du spike #3, cf. DETTE #43).
 
 ---
 

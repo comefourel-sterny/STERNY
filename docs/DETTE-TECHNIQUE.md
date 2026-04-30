@@ -216,11 +216,49 @@ Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-DESIGN-2026-0
 
     DETTE #41 reste **ouverte** : la question des 3 erreurs résiduelles sera reprise lors du cadrage du chemin 3 VISION §5 (composant de saisie manuelle assistée), où elle se résoudra naturellement par la couche de validation visuelle obligatoire — ou disparaîtra si l'on reformule le rôle de l'algo automatique en suggesteur plutôt que pré-remplisseur.
 
-    **Statut au 30 avril 2026 après-midi bis — résolution programmée par le spike #3 (homographie 3-4 ancres).** Le diagnostic du 30 avril matin (« inexactitude cumulative de la division uniforme entre les 2 ancres cliquées ») est traité directement par la variante d'algo testée dans le spike #3. Une homographie calculée sur 3 ou 4 ancres aux coins du tableau remplace la division uniforme entre 2 ancres, ce qui élimine par construction l'accumulation d'erreurs de fraction de pixel responsable du chevauchement de bordures observé sur les semaines 5, 7, 9 (pattern 21+21+7 de la sortie 1C).
+    **Statut au 30 avril 2026 fin de journée — éligible à clôture, conditionnée au verdict du spike #4 magick-wasm.** Le spike #3 (homographie 4 ancres bloc Martin entier) a confirmé l'hypothèse de DETTE #41 : remplacer la division uniforme entre 2 ancres par une transformation par homographie sur 4 ancres élimine l'accumulation d'erreur subpixel et fait passer le score G1 de 93.33 % (spike #2) à 97.78 % (spike #3), soit +4.45 points attribuables exclusivement au changement d'ancrage. Le défaut géométrique diagnostiqué par cette dette est résolu par construction.
 
-    Si le spike #3 livre un score >97-98% sur les 4 groupes Martin (180 sem), DETTE #41 sera close à la clôture du spike (mise à jour de cette section). Si le spike #3 plafonne sous le seuil, le spike #4 (magick-wasm) prend le relais avec une approche structurellement différente (détection automatique de grille par morphologie au lieu d'ancres cliquées, ce qui contourne entièrement la problématique de division), et DETTE #41 sera close ou recadrée selon le résultat du spike #4.
+    Le score consolidé 4 groupes du spike #3 (94.44 % = 170/180) reste sous le seuil cible 97 %, mais le plafond résiduel est diagnostiqué comme un problème de **classification couleur** (10 erreurs sur 180, toutes de profil predit=company / observe=school sur des hex jaune-verdâtres à la frontière du bucket). Ce plafond est hors périmètre de DETTE #41 (qui porte sur la géométrie d'ancrage, pas la classification couleur). Voir DETTE #43 (nouvelle, créée par cette même session de clôture).
 
-    Voir ETAT-COURANT.md bloc « Suite 30 avril après-midi bis » pour le plan complet du spike.
+    DETTE #41 est éligible à clôture définitive. La clôture sera prononcée à la fin du spike #4 magick-wasm, selon le verdict :
+    - Si magick-wasm ouvre une voie qui supprime entièrement l'algo manuel ImageData → DETTE #41 disparaît par changement de chemin technique.
+    - Si l'algo manuel ImageData avec homographie 4 ancres reste retenu → DETTE #41 est close, l'homographie est documentée comme la voie de référence pour le chemin 2 image raster.
+
+    Voir docs/spikes/2026-04-30-03-homographie-3-4-ancres/RESULTS.md pour le détail complet.
+
+## DETTE #42 — Anomalies de saisie CSVs vérité terrain Martin G3/G4
+
+**Statut au 30 avril 2026 fin de journée** : créée pendant la passe d'exécution du spike #3, hors-scope du spike (préservation de la discipline « une variable change à la fois »). À traiter en passe dédiée de nettoyage CSV avant tout futur spike de mesure parser sur Martin qui ferait du filtrage par préfixe de groupe.
+
+Deux anomalies distinctes ont été remontées dans `docs/fixtures-ground-truth/martin/` :
+
+1. **Format à 8 colonnes au lieu de 5 sur G3 et G4 sem 7 (2026-10-12)** : les 2 lignes ont 3 virgules surnuméraires en queue + une duplication du champ `statut_business` en colonne 5. Probable scorie de saisie. Sans impact sur run.ts du spike #3 (qui split puis lit `cols[2]` en ignorant les colonnes surnuméraires) mais à normaliser pour propreté et pour éviter les pièges sur des parsers CSV plus stricts.
+
+2. **Label de groupe G4 incorrect sur les 45 lignes de `martin-ground-truth-g4-gema-md.csv`** : la colonne `groupe` contient `FA_GEMA_LOG_G4_2026-2027` au lieu de `FA_GEMA_MD_G4_2026-2027` (probable copier-coller depuis G3 lors de la saisie). Sans impact sur le spike #3 (run.ts ne filtre pas par préfixe, lecture directe par chemin de fichier) mais piège silencieux pour tout futur run cross-fixture qui matcherait par préfixe groupe — l'erreur passerait inaperçue jusqu'à ce qu'un croisement de données échoue sans message clair.
+
+**Action de clôture** : passe dédiée de correction CSV (~10 minutes), à exécuter avant le spike #4 ou avant tout autre traitement cross-fixture. Pas urgent mais à ne pas oublier.
+
+## DETTE #43 — Plafond du bucket de classification couleur sur teintes ambiguës
+
+**Statut au 30 avril 2026 fin de journée** : créée par le spike #3 qui a diagnostiqué le facteur limitant du score consolidé après résolution de DETTE #41.
+
+Le bucket de classification couleur actuel (hérité du spike #2) :
+- `R>200 && G>180 && B<150 → jaune (school)`
+- `G>R && G>B → vert (company)` (hors jaune)
+- sinon → autre (unknown)
+
+Sur les 10 erreurs résiduelles du spike #3, le profil est **systématique** : `predit=company / observe=school` sur des hex de cellule à composantes RGB ≈ (180-190, 210-215, 40-50). La règle `G>R && G>B → vert` classe ces hex en vert (G domine R de 15-25 unités sur 255) alors qu'ils sont visuellement jaunes dans le PDF. La règle n'a pas de zone tampon entre les 2 buckets.
+
+**Pistes de résolution à arbitrer** :
+1. Élargir la plage jaune sur l'axe G/R (par exemple `G > R-20 && B<150 → jaune` au lieu d'exiger `G > R`).
+2. Remplacer la règle déterministe par un classifieur k-NN (k Nearest Neighbors — méthode statistique de classification : on a une palette de référence avec couleurs étiquetées, et chaque hex de cellule est classé selon la couleur de référence la plus proche en distance RGB ; plus robuste aux teintes frontière qu'une règle binaire).
+3. Pré-traiter l'image via magick-wasm (saturation, contraste, lissage colorimétrique) pour augmenter l'écart entre les buckets avant échantillonnage. Cette piste est partiellement testée par le spike #4 (mission complémentaire ajoutée à son cadrage par le verdict du spike #3).
+
+**Décision de planning** : DETTE #43 sera adressée selon le verdict du spike #4 :
+- Si magick-wasm résout cette dette par effet de bord (option 3) → DETTE #43 close.
+- Sinon, ouverture d'un spike #5 dédié à la classification couleur (option 1 ou 2 à arbitrer).
+
+Voir docs/spikes/2026-04-30-03-homographie-3-4-ancres/RESULTS.md section 5 pour le détail des 10 erreurs résiduelles.
 
 ## Planification
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Pick anchors — Spike #3 homographie Martin</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; display: flex; }
+  .image-container { position: relative; flex: 0 0 auto; }
+  .image-container img { display: block; cursor: crosshair; }
+  .marker {
+    position: absolute;
+    width: 20px; height: 20px;
+    border: 2px solid red;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-weight: bold;
+    text-align: center;
+    line-height: 18px;
+    color: red;
+    font-size: 12px;
+  }
+  .panel { padding: 16px; flex: 1; min-width: 320px; }
+  .panel h1 { font-size: 16px; margin: 0 0 12px 0; }
+  .panel ol { padding-left: 20px; }
+  .panel li { margin-bottom: 4px; font-family: monospace; font-size: 13px; }
+  .panel button { padding: 8px 12px; margin-right: 8px; cursor: pointer; }
+  .order { font-size: 13px; color: #666; margin-bottom: 12px; }
+  .order strong { color: #000; }
+  pre { background: #f4f4f4; padding: 8px; font-size: 12px; max-width: 320px; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="image-container" id="container">
+  <img id="img" src="Planning_Martin.JPG" alt="Planning Martin">
+</div>
+<div class="panel">
+  <h1>Spike #3 — Pick 4 ancres</h1>
+  <div class="order">Ordre exact des clics : <strong>HG → HD → BG → BD</strong><br>
+  HG = centre cellule G1 sem 1<br>
+  HD = centre cellule G4 sem 1<br>
+  BG = centre cellule G1 sem 45<br>
+  BD = centre cellule G4 sem 45</div>
+  <ol id="list"></ol>
+  <button id="copy">Copier anchors.json</button>
+  <button id="reset">Reset</button>
+  <h2 style="font-size:14px;margin-top:24px;">Aperçu JSON</h2>
+  <pre id="preview">[]</pre>
+</div>
+<script>
+  const labels = ['HG (G1 sem 1)', 'HD (G4 sem 1)', 'BG (G1 sem 45)', 'BD (G4 sem 45)'];
+  const points = [];
+  const img = document.getElementById('img');
+  const container = document.getElementById('container');
+  const list = document.getElementById('list');
+  const preview = document.getElementById('preview');
+
+  function render() {
+    list.innerHTML = '';
+    points.forEach((p, i) => {
+      const li = document.createElement('li');
+      li.textContent = labels[i] + ' → x=' + p.x + ', y=' + p.y;
+      list.appendChild(li);
+    });
+    preview.textContent = JSON.stringify(points, null, 2);
+  }
+
+  img.addEventListener('click', (e) => {
+    if (points.length >= 4) return;
+    const rect = img.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    points.push({ x, y });
+    const m = document.createElement('div');
+    m.className = 'marker';
+    m.style.left = x + 'px';
+    m.style.top = y + 'px';
+    m.textContent = points.length;
+    container.appendChild(m);
+    render();
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    points.length = 0;
+    document.querySelectorAll('.marker').forEach(m => m.remove());
+    render();
+  });
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    if (points.length !== 4) {
+      alert('Il faut cliquer exactement 4 ancres avant de copier (' + points.length + ' actuellement).');
+      return;
+    }
+    await navigator.clipboard.writeText(JSON.stringify(points, null, 2));
+    alert('anchors.json copié dans le presse-papier. Colle-le dans le fichier anchors.json du dossier spike #3.');
+  });
+</script>
+</body>
+</html>
