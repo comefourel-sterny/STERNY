@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 fin de journée — Spike #3 homographie 4 ancres Martin exécuté de bout en bout. Verdict : hypothèse confirmée, l'homographie résout DETTE #41 (G1 spike #2 = 93.33 % → spike #3 = 97.78 %, +4.45 pts attribuables exclusivement au changement d'ancrage). Score consolidé 4 groupes = 94.44 % (170/180), sous le seuil cible 97 % à cause d'un plafond classification couleur (DETTE #43 nouvelle) qui sera traité hors spike #3. DETTE #41 éligible à clôture, conditionnée au verdict spike #4. DETTE #42 nouvelle (anomalies CSV G3/G4) loguée hors-scope. Décision produit additionnelle : mapping couleur → statut requiert validation utilisateur obligatoire (VISION §4 nouveau paragraphe). Spike #4 magick-wasm est l'étape suivante, à ouvrir dans une nouvelle conversation Claude.ai.
+**Dernière mise à jour** : 30 avril 2026 après-midi (post-spike #3) — Ouverture session spike #4 magick-wasm. Nettoyage préalable de DETTE #42 (anomalies CSV vérité terrain Martin G3/G4) exécuté et clos avant le spike. État Git nominal : HEAD `016182e` (clôture spike #3) sur `main`, working tree strictement aux 4 modifs historiques connues. Spike #4 prêt à démarrer en conception.
 
 ---
 
@@ -424,6 +424,27 @@ HEAD avant ce bloc = `d6b3f13` (clôture session 30 avril après-midi). Aucun co
 **Prochaine étape**
 
 Étape 0 du plan (saisie vérité terrain G2+G3+G4) à exécuter sur 2-3 sessions de saisie attentive. Une fois les 3 CSVs saisis et crosscheckés, ouverture d'une nouvelle conversation Claude.ai dédiée au spike #3 (homographie). Conv de cadrage actuelle clôturée par cette mise à jour de docs.
+
+---
+
+### Suite 30 avril après-midi (post-spike #3) — Nettoyage DETTE #42 avant ouverture spike #4
+
+Session ouverte en suite directe de la clôture du spike #3 (commit `016182e` du 30 avril fin de journée — convention de séquence, pas timing horaire). Étape de propreté préalable au spike #4 : clôture de DETTE #42, créée par le spike #3 hors-scope (anomalies de saisie remontées par le run sans être corrigées dans le spike par discipline « une variable change à la fois »).
+
+**Inspection préalable** : 4 CSVs vérité terrain Martin (G1, G2, G3, G4) confirmés à 46 lignes chacun, header uniforme à 5 colonnes (`groupe,week_start_iso,statut_observe_martin,statut_business,notes`). Périmètre des anomalies confirmé exact :
+- 1 ligne fautive dans G3 sur 2026-10-12 (8 colonnes au lieu de 5)
+- 1 ligne fautive dans G4 sur 2026-10-12 (8 colonnes au lieu de 5)
+- 45 occurrences du label `FA_GEMA_LOG_G4_2026-2027` dans le fichier g4 à remplacer par `FA_GEMA_MD_G4_2026-2027`
+
+**Corrections appliquées** : 3 sed sur disque, CSVs gitignored (convention héritée du spike #2) donc corrections sur disque uniquement, hors commit. Vérifications post-corrections nominales : 4 lignes 2026-10-12 à 5 colonnes propres, 0 occurrence du label fautif, 45 occurrences du label correct.
+
+**État Git fin de bloc**
+
+HEAD avant ce commit = `016182e`. Working tree strictement aux 4 modifs historiques connues. Le commit de clôture DETTE #42 ne porte que sur `docs/DETTE-TECHNIQUE.md` (ajout du statut de clôture) et `docs/ETAT-COURANT.md` (mise à jour métadonnée + ce bloc).
+
+**Prochaine étape**
+
+Conception du spike #4 magick-wasm (étape 2 du plan validé en session du 30 avril après-midi bis). Sous-dossier à créer : `docs/spikes/2026-04-30-04-magick-wasm/`. Ouverture par CONCEPTION.md avant tout code (héritage de la méthodologie du spike #3).
 
 ---
 

@@ -228,6 +228,14 @@ Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-DESIGN-2026-0
 
 ## DETTE #42 — Anomalies de saisie CSVs vérité terrain Martin G3/G4
 
+**Statut au 30 avril 2026 après-midi (post-spike #3) — DETTE #42 close.** Passe dédiée de nettoyage exécutée en début de session du 30 avril après-midi (post-spike #3), avant ouverture du spike #4. Les 3 corrections ont été appliquées sur les CSVs vérité terrain Martin (gitignored, donc corrections sur disque uniquement, pas en commit) :
+
+1. Format à 8 colonnes ramené à 5 colonnes sur la ligne 2026-10-12 du fichier `martin-ground-truth-g3-gema-log.csv` (1 ligne corrigée).
+2. Format à 8 colonnes ramené à 5 colonnes sur la ligne 2026-10-12 du fichier `martin-ground-truth-g4-gema-md.csv` (1 ligne corrigée).
+3. Label de groupe `FA_GEMA_LOG_G4_2026-2027` remplacé par `FA_GEMA_MD_G4_2026-2027` sur les 45 lignes du fichier `martin-ground-truth-g4-gema-md.csv` (45 lignes corrigées).
+
+Vérifications post-corrections : 4 lignes 2026-10-12 propres à 5 colonnes sur l'ensemble des CSVs, 0 occurrence du label fautif dans le dossier `docs/fixtures-ground-truth/martin/`, 45 occurrences du label correct dans le fichier g4. État de la vérité terrain Martin propre pour le spike #4.
+
 **Statut au 30 avril 2026 fin de journée** : créée pendant la passe d'exécution du spike #3, hors-scope du spike (préservation de la discipline « une variable change à la fois »). À traiter en passe dédiée de nettoyage CSV avant tout futur spike de mesure parser sur Martin qui ferait du filtrage par préfixe de groupe.
 
 Deux anomalies distinctes ont été remontées dans `docs/fixtures-ground-truth/martin/` :
