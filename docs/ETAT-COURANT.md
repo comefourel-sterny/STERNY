@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 30 avril 2026 soir bis — Suite session soirée : audit fonctionnel parcours locataire suspendu après confirmation DETTE #14, basculé en cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5, première matérialisation). 9 questions de design tranchées en session. Investigation schéma `rhythm_imports` : 4 colonnes NOT NULL spécifiques au parser LLM (`source_file_path`, `source_file_type`, `llm_provider`, `llm_model`) + 1 CHECK sur `source_file_type` interdisent l'écriture d'une saisie manuelle dans son état actuel. Stratégie 2 retenue (migration BDD pour rendre 4 colonnes nullable + ajout colonne `source` discriminante), à exécuter en nouvelle conv. Nouvelle DETTE #44 ajoutée (UX mobile non aboutie depuis création).
+**Dernière mise à jour** : 1er mai 2026 matin — Étape 1 (wording Q8 v3 + Q9 + DETTE #45 logué) et Étape 2 (migration BDD `rhythm_imports` Stratégie 2) closes. Migration tentée sur Supabase Dashboard, retour `column "source" already exists` : diagnostic SQL complet montre que la BDD est déjà dans l'état cible (4 colonnes parser nullable, colonne `source` avec default `parser_llm`, 2 CHECK attendus présents). Migration équivalente appliquée à un moment antérieur non tracé dans `supabase/migrations/` — relié à DETTE #15. Fichier de migration conservé pour traçabilité avec note historique en tête. Étape 3 (prompt Claude Code pour `RhythmManualBuilder.jsx`) reportée en conv fraîche.
 
 ---
 
@@ -51,6 +51,71 @@ Pour pitch Le Poool / Initiative Rennes / financiers à ce stade : étude courte
 ### Outil — Signature email professionnelle Gmail
 
 Signature texte sobre créée via générateur HubSpot le 30 avril, intégrée dans Gmail comme signature par défaut. Format : Modèle 3 HubSpot, police Arial moyenne, couleur principale `#1E293B`, lien `#E8622A`. Pas de logo ni photo de profil pour l'instant.
+
+---
+
+## 2026-05-01 matin — Étapes 1 et 2 du chantier RhythmManualBuilder closes
+
+### Bloc 1 — Wording Q8 v3 + Q9 verrouillés, DETTE #45 à logger
+
+3 itérations sur le wording de la modale Q8 (prévention au clic Confirmer) et du pop-up Q9 (action protégée sans planning saisi). Choix de vocabulaire actés et tracés pour validation avocat ultérieure :
+
+- « colocataire » écarté (factuellement faux dans le modèle Sterny — pas de cohabitation, pas de loi ALUR, pas de responsabilité solidaire), remplacé par « un autre alternant ».
+- « facturé » écarté (préjuge de l'émetteur de la facture dans la chaîne contractuelle, point non tranché tant que le montage juridique n'est pas validé), remplacé par « payer ».
+- 2 risques utilisateurs énoncés en conséquences factuelles dans Q8 (présence simultanée dans le logement, paiement d'une semaine non occupée), aucune clause d'exonération.
+- Vérification systématique de l'absence de 10 formulations contractuelles interdites (« vous reconnaissez », « vous acceptez », « Sterny ne pourra être tenu responsable », « à vos risques et périls », « vous êtes seul responsable », etc.).
+
+Q9 : 3 amorces selon action protégée (Recherche, Créer une annonce, Candidater), bouton « Plus tard » qui ferme la pop-up sans rediriger.
+
+DETTE #45 à logger dans `docs/DETTE-TECHNIQUE.md` : wording v1 à valider par avocat avant production. Couvre aussi le périmètre alternant↔alternant (ne couvre pas le cas propriétaire non-alternant) et la cohérence de la phrase « vous paierez » avec le modèle de facturation final. Localisation : commentaire `// TODO validation avocat avant production` à poser au-dessus des 2 textes dans le code source à l'étape 3.
+
+Wordings exacts archivés dans la conv Claude.ai du 1er mai matin pour reprise étape 3.
+
+### Bloc 2 — Migration BDD `rhythm_imports` Stratégie 2 — déjà appliquée, fichiers tracés
+
+Migration prévue (Stratégie 2 actée le 30 avril soir bis Bloc 3) : 4 `DROP NOT NULL` sur les colonnes parser, recréation du CHECK `source_file_type` pour autoriser NULL, ajout colonne `source` avec CHECK sur 4 valeurs, ajout CHECK conditionnel `parser_llm_columns_required`.
+
+Revue technique préalable demandée à Claude Code : verdict « OK sans correction nécessaire », avec coordination déploiement R4 mineur (appliquer migration avant frontend) et R2 sur le rollback non-idempotent si lignes non-legacy existent.
+
+Fichiers créés dans le repo :
+- `supabase/migrations/20260501113000_rhythm_imports_support_manual_input.sql` (54 lignes)
+- `supabase/_rollback/20260501113000_rhythm_imports_support_manual_input_rollback.sql` (34 lignes, gitignoré conformément à INVENTAIRE §1)
+
+Tentative d'exécution dans Supabase Dashboard SQL Editor le 1er mai 2026 à 11h30. Erreur retournée : `ERROR: 42701: column "source" of relation "rhythm_imports" already exists`. Le `BEGIN; ... COMMIT;` a annulé toute la transaction (atomicité OK, BDD intacte).
+
+Diagnostic SQL complet effectué dans la foulée :
+
+1. `information_schema.columns` sur `rhythm_imports` : 4 colonnes parser (`source_file_path`, `source_file_type`, `llm_provider`, `llm_model`) sont déjà nullable. Colonne `source` présente avec default `'parser_llm'::text`.
+2. `pg_constraint` sur `rhythm_imports` : 5 CHECK constraints en place, dont les 3 nouvelles attendues — `rhythm_imports_source_file_type_check` (version avec `IS NULL OR ...`), `rhythm_imports_parser_llm_columns_required`, et la CHECK anonyme `rhythm_imports_source_check` générée par `ADD COLUMN`.
+
+Conclusion : la BDD était déjà entièrement dans l'état cible avant la tentative d'exécution. Une migration équivalente a été appliquée à un moment antérieur sans être tracée dans `supabase/migrations/`. Cause probable : script ad-hoc lancé directement dans le Dashboard, ou migration créée en parallèle dans une autre conversation. Cas typique de **DETTE #15** (migrations désynchronisées de la prod), déjà tracée.
+
+État des données existantes au moment du diagnostic : 8 lignes dans `rhythm_imports`, toutes avec un MIME type valide, aucune avec `source <> 'parser_llm'`. Aucun risque pour le rollback à ce stade.
+
+Décision : **fichier de migration conservé pour traçabilité** (option B retenue), bloc de note historique inséré en tête du fichier expliquant le contexte de la tentative et son résultat. Le fichier ne doit pas être rejoué (planterait à nouveau sur le `ADD COLUMN source`). Si on veut formellement réenregistrer cet état dans l'historique des migrations Supabase, utiliser `supabase migration repair` (commande dédiée à ce cas).
+
+**Conséquence opérationnelle** : la BDD est prête pour `RhythmManualBuilder` v1. Une ligne `source='manual_input'` avec `source_file_path=NULL` etc. peut être insérée dès l'étape 3.
+
+### Bloc 3 — Étape 3 reportée en conv fraîche
+
+Étape 3 du plan = prompt Claude Code pour générer `RhythmManualBuilder.jsx` (composant ~52 cases en grille 12 colonnes mensuelles, logique de sélection inverse selon ville recherchée, modale Q8 hardcodée, intégration BDD avec `source='manual_input'`).
+
+Schéma utilisateur reçu en milieu de session (croquis sur papier quadrillé) : grille 12 mois × 5 lignes de cases, en-tête mois en haut, cases-fantômes pour les mois à 4 lundis. Cohérent avec le cadrage Q6 du 30 avril soir bis. Aucun impact BDD : le découpage visuel mensuel est un calcul frontend, le stockage `users.rhythm_calendar` reste un tableau plat ordonné par date du lundi.
+
+Reco design (validée par Côme) : pour les cases-fantômes, ne rien afficher du tout (chaque mois est une colonne flex avec 4 ou 5 enfants, l'alignement reste correct par construction).
+
+Décision de coupure : conv saturée après lecture des 4 docs de référence + 3 itérations de wording + audit Claude Code SQL + diagnostic en 3 requêtes successives. L'étape 3 demande de la précision sur un prompt long et bénéficie d'une conv neuve.
+
+**À faire en début de prochaine conv** (avec les 4 docs + ce bloc fraîchement à jour comme brief) :
+
+1. Récupérer les wordings exacts Q8 v3 et Q9 archivés dans la conv Claude.ai du 1er mai matin (à coller en pièce jointe ou à reformuler).
+2. Vérifier l'existence et la signature de la fonction RPC `confirm_rhythm_calendar` dans le repo (`git show 65d81ca` + `grep -r "confirm_rhythm_calendar" sterny-react/ supabase/`) pour décider si elle peut être réutilisée pour le chemin manuel ou s'il faut une nouvelle RPC.
+3. Rédiger le prompt Claude Code pour `RhythmManualBuilder.jsx` (composant ~52 cases, layout 12 colonnes, logique de sélection inverse selon ville recherchée, modale Q8 hardcodée avec commentaire `// TODO validation avocat avant production`, écriture BDD avec `source='manual_input'`).
+4. **Étape 4 différée d'une session de plus** (intégration dans `CompleterProfilPage` + pop-up Q9) — ne pas tenter d'enchaîner étape 3 et 4 dans la même conv.
+
+DETTE à logger dans `docs/DETTE-TECHNIQUE.md` à la fin de cette session ou en début de la suivante :
+
+- **DETTE #45** : wording v1 modale Q8 + pop-up Q9 à valider par avocat (texte complet préparé dans la conv Claude.ai du 1er mai matin).
 
 ---
 

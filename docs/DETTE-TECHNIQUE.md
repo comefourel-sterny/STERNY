@@ -282,6 +282,25 @@ Constat verbalisé par Côme en session : « pour le mobile c'est la catastrophe
 
 **Sujet distinct de VISION §10 (app mobile native différée)** : VISION §10 traite de la décision stratégique de différer l'app native iOS/Android. DETTE #44 traite de la qualité responsive du web actuel, qui doit rester utilisable sur mobile en attendant l'app native. Les 2 sujets sont complémentaires.
 
+## DETTE #45 — Wording v1 modale Q8 + pop-up Q9 RhythmManualBuilder à valider par avocat
+
+**Statut au 1er mai 2026 matin** : créée par la session de cadrage `RhythmManualBuilder` v1 (chemin 3 VISION §5).
+
+Le wording de la modale de prévention affichée au clic "Confirmer mon planning" et celui du pop-up affiché sur les actions protégées (`/recherche`, `/annonce/creer`, candidater) ont été rédigés en interne pour la démo Le Poool du 4 mai 2026. Objectif : faire le job pédagogique auprès des testeurs sans contenir de formulation à effet contractuel ou de décharge de responsabilité (interdictions explicites au moment de la rédaction : pas de "vous reconnaissez", "vous acceptez", "Sterny ne pourra être tenu responsable", "à vos risques et périls", "vous êtes seul responsable", etc.). Les deux risques utilisateurs sont énoncés en conséquences factuelles (présence simultanée dans le logement, paiement d'une semaine non occupée) sans clause d'exonération.
+
+**Pourquoi cette dette existe** : informer un utilisateur qu'une saisie incorrecte peut conduire à un conflit avec un autre alternant ou à un paiement indu touche aux questions de responsabilité de la plateforme et au modèle contractuel (cf. CONTEXTE-PROJET.md §9 et VISION-ARCHITECTURE.md §10). Un wording mal calibré peut soit créer une obligation que Sterny n'est pas en mesure d'assumer, soit dégager une responsabilité qu'on n'a pas le droit de dégager unilatéralement, soit n'être tout simplement pas opposable.
+
+**Choix de vocabulaire actés en v1, à challenger en consultation avocat** :
+
+- Le terme « colocataire » a été explicitement écarté du wording v1 car factuellement faux dans le modèle Sterny (pas de cohabitation, pas de loi ALUR, pas de responsabilité solidaire). Remplacé par « un autre alternant ».
+- Le verbe « facturer » a été écarté car il préjuge de l'émetteur de la facture dans la chaîne contractuelle (Sterny vs propriétaire), point non tranché tant que le montage juridique n'est pas validé. Remplacé par « payer », qui décrit le flux financier sans préjuger de qui émet.
+- La phrase « vous paierez pour une semaine que vous n'occuperez pas » suppose que l'utilisateur final est partie au paiement — à reconfirmer une fois le modèle contractuel gelé.
+- L'expression « un autre alternant » couvre uniquement le pitch principal alternant↔alternant (VISION §1 principe fondateur). Elle ne couvre pas le cas où l'autre partie est un propriétaire non-alternant (CONTEXTE §3 type_user `proprietaire`). Choix assumé pour la démo Le Poool. À élargir si pertinent en v2 du wording, après validation que ce cas existe bien dans le modèle déployé.
+
+**Plan de résolution** : faire valider les deux wordings par un avocat spécialisé en droit du logement et droit de la consommation avant tout déploiement en production. La consultation est listée comme prérequis dans VISION-ARCHITECTURE.md §10. À intégrer dans la liste des consultations professionnelles pré-lancement.
+
+**Localisation des wordings** : commentaire `// TODO validation avocat avant production` à poser au-dessus de chacun des 2 textes dans le code source — chercher cette chaîne pour les retrouver. Concerné en première intégration : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` (modale Q8) et le composant pop-up Q9 (nom à arrêter à l'étape 4, probablement `sterny-react/src/components/rhythm/RhythmRequiredPopup.jsx`).
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.
