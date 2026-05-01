@@ -297,6 +297,46 @@ Le wording de la modale de prévention affichée au clic "Confirmer mon planning
 - La phrase « vous paierez pour une semaine que vous n'occuperez pas » suppose que l'utilisateur final est partie au paiement — à reconfirmer une fois le modèle contractuel gelé.
 - L'expression « un autre alternant » couvre uniquement le pitch principal alternant↔alternant (VISION §1 principe fondateur). Elle ne couvre pas le cas où l'autre partie est un propriétaire non-alternant (CONTEXTE §3 type_user `proprietaire`). Choix assumé pour la démo Le Poool. À élargir si pertinent en v2 du wording, après validation que ce cas existe bien dans le modèle déployé.
 
+**Texte v1 archivé** (référence pour l'étape 3 RhythmManualBuilder.jsx) :
+
+### Modale Q8 — déclenchée au clic "Confirmer mon planning"
+
+**Titre** : `Avant de confirmer, vérifiez votre planning`
+
+**Corps** :
+
+> Ce calendrier indique les semaines où vous serez présent dans le logement que vous cherchez. Sterny s'en sert pour vous mettre en relation avec un autre alternant dont les semaines de présence sont opposées aux vôtres — pour que vous n'occupiez jamais le logement en même temps.
+>
+> Deux types d'erreurs peuvent avoir des conséquences une fois le bail signé :
+>
+> — Si vous oubliez de cocher une semaine où vous serez réellement présent, vous pouvez vous retrouver dans le logement en même temps que l'autre alternant cette semaine-là.
+>
+> — Si vous cochez une semaine où vous serez en réalité ailleurs, vous paierez pour une semaine que vous n'occuperez pas, et l'autre alternant croira le logement occupé.
+>
+> Prenez un instant pour comparer ce calendrier à votre planning officiel d'alternance avant de continuer.
+
+**Boutons** : `Revenir au calendrier` (secondaire, fond blanc bordure navy) / `Confirmer mon planning` (primaire, fond orange `#E8622A`).
+
+### Pop-up Q9 — déclenché au clic sur action protégée si rhythm_calendar est NULL ou vide
+
+**Titre** : `Complétez votre planning d'alternance`
+
+**Amorce variable selon l'action protégée** :
+
+| Action | Amorce |
+|---|---|
+| Recherche (`/recherche`) | `Pour chercher un logement sur Sterny,` |
+| Créer annonce (`/annonce/creer`) | `Pour publier une annonce sur Sterny,` |
+| Candidater | `Pour candidater à cette annonce,` |
+
+**Suite commune** (s'enchaîne directement après l'amorce sans saut de ligne) :
+
+> votre planning d'alternance est nécessaire — c'est lui qui permet à Sterny de vous mettre en relation avec un autre alternant dont le rythme est compatible avec le vôtre.
+>
+> Vous pouvez le compléter en quelques minutes maintenant, ou plus tard depuis votre profil.
+
+**Boutons** : `Plus tard` (secondaire, ferme le pop-up sans rediriger) / `Compléter mon planning maintenant` (primaire orange, redirige vers `/completer-profil` à l'étape calendrier).
+
 **Plan de résolution** : faire valider les deux wordings par un avocat spécialisé en droit du logement et droit de la consommation avant tout déploiement en production. La consultation est listée comme prérequis dans VISION-ARCHITECTURE.md §10. À intégrer dans la liste des consultations professionnelles pré-lancement.
 
 **Localisation des wordings** : commentaire `// TODO validation avocat avant production` à poser au-dessus de chacun des 2 textes dans le code source — chercher cette chaîne pour les retrouver. Concerné en première intégration : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` (modale Q8) et le composant pop-up Q9 (nom à arrêter à l'étape 4, probablement `sterny-react/src/components/rhythm/RhythmRequiredPopup.jsx`).
