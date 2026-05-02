@@ -370,6 +370,32 @@ Côme a remonté en validation visuelle de l'étape C que le wording v1 de la mo
 
 **Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées pour cadrer le modèle. Premier livrable : un document `docs/recherche/MODELE-MULTI-ANNEES.md` qui décrit les scénarios, les options de modèle, et tranche par grand bloc (stockage, matching, transitions, contrats). À programmer après la démo Le Poool, en priorité haute (avant tout codage du flux contrat/paiement, qui dépend de ce modèle).
 
+## DETTE #47 — Barre de recherche homepage propose un rythme abstrait obsolète + flow visiteur non-connecté à repenser
+
+**Statut au 2 mai 2026 après-midi** : créée par identification du désalignement entre VISION §2 (rythme abstrait abandonné) et le code actuel de la HomePage et de `/recherche`, qui continue de demander un rythme à l'utilisateur dans la barre de recherche.
+
+**Constat** : le formulaire de recherche actuel demande à un visiteur (connecté ou non) de saisir un rythme abstrait (type "4-2", "2-2"), or VISION §2 a tranché que ces patterns ne sont pas une donnée de matching valide. Conséquence : le visiteur remplit un champ qui ne sert à rien, et le code post-soumission essaie probablement de matcher sur `rythme_pattern` (colonne dépréciée par VISION §3). Désalignement code ↔ vision.
+
+**Proposition produit (validée le 2 mai après-midi sur le principe, détails à trancher en session dédiée)** :
+
+- Réduire le formulaire homepage à la **ville uniquement** (comportement standard de toute plateforme de recherche logement : Leboncoin, SeLoger, Bien'ici, Airbnb).
+- Au clic "Rechercher" → page `/recherche` qui affiche la liste publique des annonces de la ville (sans matching personnel pour visiteur non-connecté).
+- **Modale d'incitation non-bloquante** en overlay sur la page `/recherche` grisée derrière, fermable par croix en haut à droite. L'utilisateur peut soit s'inscrire/se connecter via la modale, soit la fermer et continuer à consulter la liste publique. Pattern "soft signup wall" type Booking ou Doctolib.
+- Pour utilisateur connecté : barre de recherche pré-remplie avec sa propre ville (cohérent VISION §6).
+
+**Sujets à trancher en session dédiée post-Poool** :
+
+- Visibilité publique des annonces : que voit exactement un visiteur non-connecté dans la liste (photo, ville, fourchette prix, pas de contact ni de dispos détaillées) — à valider RGPD + impact SEO du rendu indexable.
+- Wording de la modale d'incitation : éviter le générique, mettre la promesse Sterny en frontal (matching planning d'alternance, pas message vague). Validation copywriting à anticiper.
+- Comportement du formulaire actuel sur les utilisateurs déjà inscrits avec un `rythme_pattern` rempli (descriptif uniquement, à ignorer pour le matching).
+- Cohérence avec VISION §6 (homepage pré-remplie pour utilisateur connecté avec ses propres villes selon `ville_recherchee` saisie en étape D du chantier RhythmManualBuilder).
+
+**Impact sur la démo Le Poool du 4 mai 2026** : aucun. La démo évalue le concept et le parcours alternant authentifié, pas le détail du formulaire homepage. Acceptable de laisser l'ancien formulaire pendant la démo.
+
+**Bloquant pré-production** : oui — un visiteur qui remplit un champ rythme abstrait obsolète et atterrit sur une recherche cassée est un point de friction de premier ordre pour la conversion.
+
+**Plan de résolution** : 1 session Claude.ai dédiée post-Poool, couvrant audit du code actuel de HomePage et `/recherche`, refonte des champs, refonte du flow visiteur non-connecté, design et wording de la modale d'incitation. À séquencer avec le cadrage DETTE #46 multi-années — l'ordre exact (DETTE #46 ou DETTE #47 en premier) à arbitrer selon priorité du moment.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.
