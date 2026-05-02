@@ -430,6 +430,42 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 **Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées post-Poool, livrant un document `docs/recherche/MATCHING-PARTIEL.md` qui couvre les 6 sous-problèmes ci-dessus avec scénarios, options, et tranches par grand bloc (algorithme, UX, copywriting, modèle contractuel multi-logements). À séquencer en priorité haute aux côtés de DETTE #46 (multi-années) et DETTE #47 (refonte barre recherche). Ces 3 dettes forment ensemble le "noyau produit pré-lancement" — aucune ne peut être skipée.
 
+## DETTE #49 — Extraction des étapes de CompleterProfilPage en sous-composants
+
+**Statut au 2 mai 2026 soir** : créée par audit lecture-seule de `sterny-react/src/pages/auth/CompleterProfilPage.jsx` en préparation du chantier unification inscription (Option A actée en VISION §6).
+
+**Constat** : `CompleterProfilPage.jsx` est un monolithe de 1125 lignes qui porte 5 responsabilités (4 étapes + cropper photo). L'ajout d'une étape `RhythmManualBuilder` + popup Q9 le pousserait au-dessus de 1500 lignes. La refonte du chantier unification inscription (Option A) va ajouter encore plus de logique. Sans extraction, le composant devient ingérable et fragile.
+
+**Recommandation** : extraire chaque étape en sous-composant dans `sterny-react/src/pages/auth/CompleterProfilSteps/` (ou équivalent) avant tout ajout de logique majeure. Sous-composants envisagés : `Step1Identity.jsx`, `Step2Cities.jsx`, `Step3Studies.jsx`, `Step4Profile.jsx`, plus `PhotoCropper.jsx` extrait.
+
+**Bloquant pré-production** : non. Le composant fonctionne. C'est de la dette d'évolutivité, pas de stabilité.
+
+**Plan de résolution** : 1 session Claude.ai dédiée à intégrer dans la séquence du chantier unification inscription (Option A). À faire AVANT toute nouvelle ajout de logique métier. Si l'unification inscription démarre par une refonte from-scratch du composant, cette dette devient caduque (l'extraction se fera de facto pendant la refonte).
+
+## DETTE #50 — Couplage redondant statut_ville_* ↔ type_user dans DashboardLocatairePage
+
+**Statut au 2 mai 2026 soir** : créée par audit lecture-seule de `CompleterProfilPage.jsx` qui a remonté un grep d'usage des colonnes ville_* dans `DashboardLocatairePage.jsx`.
+
+**Constat** : `DashboardLocatairePage.jsx` ligne ~104 utilise le couple `statut_ville_*` comme détection alternative de `les_deux`, en parallèle de `users.type_user`. Les 2 sources d'information décrivent la même réalité métier (l'utilisateur est-il `les_deux` ou pas) mais peuvent diverger en pratique : si un utilisateur passe de `locataire` à `les_deux` via une migration de profil sans qu'on mette à jour `statut_ville_*` correctement (ou inversement), les 2 sources renvoient des résultats incohérents.
+
+**Risque** : bug silencieux où le dashboard affiche un état utilisateur qui ne correspond pas à `type_user` réel, ou inversement.
+
+**Plan de résolution** : auditer chaque endroit du code où `statut_ville_*` est lu pour décider du comportement. Tracer une seule source de vérité officielle (probablement `type_user` qui est protégé par CHECK constraint et plus simple à raisonner). Refactor pour que toute logique métier passe par `type_user` exclusivement, et que `statut_ville_*` reste descriptif uniquement (qui propose / qui cherche, pas un proxy de type_user).
+
+À séquencer dans le chantier unification inscription (Option A) ou dans une session dédiée immédiatement après, parce que l'unification touche aussi à l'écriture de ces colonnes.
+
+**Bloquant pré-production** : non, mais à fixer avant lancement opérationnel pour éviter des bugs de dashboard qui dégraderaient la confiance utilisateur dès la première utilisation.
+
+## DETTE #51 — Apple OAuth à implémenter dans le cadre du chantier unification inscription
+
+**Statut au 2 mai 2026 soir** : créée par cadrage du chantier unification inscription (Option A) qui doit traiter les 3 méthodes d'authentification (email, Google OAuth, Apple OAuth) au même niveau.
+
+**Constat** : Apple Developer account actif, Apple OAuth pas encore implémenté côté code Sterny. Le chantier unification inscription doit inclure le branchement Apple au même titre que Google et email — toutes les méthodes d'auth doivent converger vers le parcours d'inscription unifié et garantir le même état BDD final (4 colonnes ville renseignées + `type_user` choisi + `rhythm_calendar` saisi pour `locataire/hote/les_deux`).
+
+**Plan de résolution** : à intégrer dans le chantier unification inscription (Option A), en ajoutant Apple OAuth comme 3e flow dès le cadrage initial — ne pas le traiter en post-traitement. Spécifications Sign in with Apple (Apple Developer documentation) à étudier : redirect URI, gestion du `name` qui n'est fourni qu'une fois (premier connexion uniquement, contrairement à Google qui le renvoie à chaque session), gestion des emails masqués Apple Hide My Email (les utilisateurs Apple peuvent fournir un email aliasé qui forwarde vers leur vrai email — implications RGPD à valider).
+
+**Bloquant pré-production** : non strictement, Sterny peut lancer avec email + Google sans Apple. Mais cible alternants jeunes = forte proportion d'utilisateurs iOS, donc à prioriser à court terme post-démo.
+
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.

@@ -2,7 +2,76 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 mai 2026 après-midi — Étape C close (composant RhythmManualBuilder v1 démo livré + preview /dev/rhythm-manual-builder-preview), 3 corrections Q4/Q5/Q6 + décisions Q10/Q11 (troncature + sélecteur d'année) + Fix 1 ergonomique sélecteur. Multi-années gelé en DETTE #46 pour traitement dédié post-démo. Ajouts VISION §3 (passé/présent/futur) et VISION §10 (pas de découpage technique imposé à l'utilisateur). Enrichissement DETTE #45 (densité du wording Q8). Création DETTE #46.
+**Dernière mise à jour** : 2 mai 2026 soir — Décision Option A actée : fusion `InscriptionRecherchePage` + `CompleterProfilPage` en parcours d'inscription unifié, comme cible architecture. Ordre des chantiers post-démo réorganisé : unification inscription AVANT intégration `RhythmManualBuilder`. Étape D originelle (intégration dans `CompleterProfilPage` actuel) annulée — son périmètre est intégré au chantier unification. Création DETTE #49 (extraction sous-composants), #50 (couplage `statut_ville_*` ↔ `type_user`), #51 (Apple OAuth). Maj VISION §3 (modèle officiel `(ville_*, statut_ville_*)`) et VISION §6 (parcours d'inscription unifié). Rectification du Bloc 8 du 2 mai après-midi (note `users.ville_recherchee` obsolète, modèle existant retenu).
+
+---
+
+## 2026-05-02 soir — Décision Option A unification inscription + clôture session étape D
+
+### Bloc 1 — Reprise et logging des dettes #47 et #48
+
+Session démarrée sur le périmètre étape D (intégration `RhythmManualBuilder` dans `CompleterProfilPage`). Avant code : 2 dettes loggées et pushées :
+
+- **DETTE #47** — Barre de recherche homepage propose un rythme abstrait obsolète. Désalignement code ↔ VISION §2. Plan : refonte post-Poool en session dédiée. Cas connecté (barre pré-remplie ville uniquement, accès direct `/recherche` sans modale) ajouté en complément de la dette principale.
+
+- **DETTE #48** — Matching partiel et présentation du score de compatibilité. 6 sous-problèmes identifiés (algorithme de scoring, présentation non-décourageante, composition multi-logements en set cover, tension hôte ↔ locataire, UX parcours fragmenté, question stratégique de fond sur la promesse Sterny). Document de recherche `docs/recherche/MATCHING-PARTIEL.md` à produire post-Poool.
+
+### Bloc 2 — Audit BDD `users.ville_recherchee` — note du Bloc 8 du 2 mai après-midi RECTIFIÉE
+
+L'audit BDD a confirmé que la colonne `users.ville_recherchee` n'existe pas. Mais le grep code mené dans la foulée a révélé que **le modèle 2-villes officiel `(ville_ecole, statut_ville_ecole, ville_entreprise, statut_ville_entreprise)` existe déjà en BDD** et est écrit par `InscriptionRecherchePage`, lu par `ModifierProfilPage`, `ProfilPage`, `DashboardLocatairePage`.
+
+**Conséquence** : la migration `users.ville_recherchee` proposée dans le Bloc 8 du 2 mai après-midi n'est pas nécessaire. La sémantique "ville recherchée" est dérivable du modèle existant via un helper `deriveVilleRecherchee(user)` à créer.
+
+**Décision** : utiliser le modèle existant, pas de migration. Helper `deriveVilleRecherchee(user)` à créer dans le chantier unification inscription. Le modèle officiel est désormais documenté en VISION §3.
+
+### Bloc 3 — Audit lecture-seule `CompleterProfilPage.jsx` — révélation du désalignement structurel
+
+L'audit a révélé 3 trous structurels :
+
+1. `CompleterProfilPage.jsx` n'écrit pas le modèle officiel `(ville_*, statut_ville_*)` — il écrit uniquement la colonne legacy `users.ville` + les colonnes dépréciées `type_alternance` et `rythme_alternance`.
+2. Aucune étape `rhythm_calendar` n'existe dans le parcours actuel (à créer, pas à remplacer).
+3. Un utilisateur qui s'inscrit via Google OAuth atterrit sur `CompleterProfilPage` sans passer par `InscriptionRecherchePage`, donc avec les 4 colonnes ville NULL — `villeRecherchee` indérivable.
+
+**Conséquence** : le parcours d'inscription email et le parcours d'inscription Google OAuth produisent des états BDD différents. Dette structurelle, à corriger avant lancement opérationnel.
+
+### Bloc 4 — Décision Option A actée : parcours d'inscription unifié
+
+Plutôt que de coder l'étape D originelle sur `CompleterProfilPage` actuel (qui aurait été détruite à la refonte unification), décision actée : **fusionner `InscriptionRecherchePage` + `CompleterProfilPage` en un parcours d'inscription unifié unique**, accessible via les 3 méthodes d'authentification (email, Google OAuth, Apple OAuth).
+
+**Ordre des chantiers post-démo réorganisé** :
+
+1. Chantier unification inscription (Option A) — refonte from-scratch d'un parcours unique pour les 3 méthodes auth, avec saisie sur le modèle officiel `(ville_*, statut_ville_*)` et arrêt d'écriture des colonnes dépréciées.
+2. Intégration `RhythmManualBuilder` + popup Q9 dans le parcours unifié (= ex-étape D, mais sur le bon socle).
+3. DETTE #46 (multi-années) — séquençage à arbitrer selon priorité du moment.
+4. DETTE #47 (refonte barre recherche) — séquençage à arbitrer.
+5. DETTE #48 (matching partiel) — séquençage à arbitrer.
+
+**Étape D originelle annulée en tant que telle** — son périmètre est intégré au chantier unification (refonte étape 2 saisie 4 colonnes ville, retrait écritures `type_alternance` et `rythme_alternance`) + à la session post-unification d'intégration `RhythmManualBuilder`.
+
+**Justification d'ordre** : faire l'unification d'abord évite de toucher 2 fois à `CompleterProfilPage` (refonte étape D puis re-refonte unification), supprime le risque de double travail, et adresse le sujet d'inscription à la racine (la fondation de tout site).
+
+Décision tracée en VISION §6 nouvelle section "Parcours d'inscription unifié".
+
+### Bloc 5 — Nouvelles dettes loguées
+
+- **DETTE #49** — Extraction des étapes de `CompleterProfilPage` en sous-composants. Bloquant : non. À séquencer avant ou pendant le chantier unification.
+- **DETTE #50** — Couplage redondant `statut_ville_*` ↔ `type_user` dans `DashboardLocatairePage`. Bloquant : non, mais à fixer avant lancement.
+- **DETTE #51** — Apple OAuth à implémenter dans le cadre du chantier unification. Bloquant : non strict, mais prioritaire post-démo.
+
+### Bloc 6 — Idées en attente ajoutées
+
+- Cas marginal `les_deux` qui propose 2 logements sans rien chercher.
+- Audit sémantique de `users.ville_recherche_secondaire`.
+
+### Bloc 7 — Saturation et prochaine session
+
+Session productive : 4 dettes loguées proprement (#47, #48, #49, #50, #51), Option A actée comme cible architecture, modèle BDD officiel documenté en VISION §3, ordre des chantiers post-démo clarifié.
+
+Avant fermeture : Côme upload dans le project knowledge claude.ai les 4 docs à jour : `DETTE-TECHNIQUE.md`, `VISION-ARCHITECTURE.md`, `ETAT-COURANT.md`, `idees-en-attente.md`. Sans cet upload, la prochaine session démarrera avec des docs périmés et risquera de re-proposer la migration `users.ville_recherchee`.
+
+**Prochaine conv** : cadrage du chantier unification inscription. Livrable cible : document `docs/recherche/UNIFICATION-INSCRIPTION.md` — modèle BDD final consolidé, séquence des étapes du parcours unifié, design des écrans, gestion des 3 méthodes d'authentification (email, Google OAuth, Apple OAuth), table des 12 parcours à tester (4 `type_user` × 3 méthodes auth). Pas de code dans cette conv, juste cadrage.
+
+**Conv suivantes** : implémentation par tranches commitables, tests bout-en-bout, puis intégration `RhythmManualBuilder` + popup Q9 dans le parcours unifié.
 
 ---
 

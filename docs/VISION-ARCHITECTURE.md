@@ -62,6 +62,40 @@ Deux colonnes portent la vérité :
 
 Toute logique de matching future doit se baser exclusivement sur ces deux colonnes.
 
+### Modèle officiel des colonnes ville utilisateur
+
+Sterny utilise 4 colonnes BDD pour décrire les villes d'un utilisateur alternant :
+
+| Colonne | Sémantique |
+|---|---|
+| `users.ville_ecole` | Ville de l'école / centre de formation |
+| `users.ville_entreprise` | Ville de l'employeur / lieu de l'alternance entreprise |
+| `users.statut_ville_ecole` | `'recherche'` (l'utilisateur cherche un logement dans cette ville) ou `'hote'` (l'utilisateur propose son logement dans cette ville) |
+| `users.statut_ville_entreprise` | `'recherche'` ou `'hote'` (même sémantique) |
+
+Une 5e colonne `users.ville` existe historiquement (saisie unique générique) et est **dépréciée** — à ne plus écrire dans les nouveaux flows, à supprimer en phase de nettoyage.
+
+Une colonne `users.ville_recherche_secondaire` existe et a été observée par grep mais sa sémantique exacte n'a pas encore été clarifiée — à investiguer avant tout nouveau code qui la touche.
+
+**Table des cas utilisateur typiques** :
+
+| Cas | `ville_ecole` | `statut_ville_ecole` | `ville_entreprise` | `statut_ville_entreprise` |
+|---|---|---|---|---|
+| `locataire` qui cherche dans ville d'école | Rennes | `'recherche'` | NULL | NULL |
+| `locataire` qui cherche dans ville d'entreprise | NULL | NULL | Quimper | `'recherche'` |
+| `hote` qui propose ville d'école | Rennes | `'hote'` | NULL | NULL |
+| `hote` qui propose ville d'entreprise | NULL | NULL | Quimper | `'hote'` |
+| `les_deux` cherche école + propose entreprise | Rennes | `'recherche'` | Quimper | `'hote'` |
+| `les_deux` cherche entreprise + propose école | Rennes | `'hote'` | Quimper | `'recherche'` |
+| `les_deux` cherche les 2 villes | Rennes | `'recherche'` | Quimper | `'recherche'` |
+| `les_deux` propose les 2 villes (cas marginal) | Rennes | `'hote'` | Quimper | `'hote'` |
+
+**Helper de dérivation** : un helper `deriveVilleRecherchee(user)` doit être créé dans `sterny-react/src/utils/` pour retourner `'ecole' | 'entreprise' | null` selon ces colonnes — à utiliser comme prop par tout composant qui a besoin de cette information (ex. `RhythmManualBuilder` pour la logique de sélection inverse Q8).
+
+**Règle pour Claude** : aucune nouvelle migration BDD ne doit être proposée pour stocker la "ville recherchée" — cette information est dérivable du modèle existant. Toute proposition d'ajouter une colonne `ville_recherchee` est un signal qu'on n'a pas pris connaissance de ce modèle.
+
+**Origine** : grep d'usage des colonnes `ville_*` mené le 2 mai 2026 soir (audit `CompleterProfilPage.jsx`). Le modèle existait déjà et était utilisé par `InscriptionRecherchePage`, `ModifierProfilPage`, `ProfilPage`, `DashboardLocatairePage` — il n'avait juste pas été documenté en VISION.
+
 ### Fragilité possible des métadonnées document
 
 Les colonnes `parsed_groups->'document_meta'` (school_name, program_name, academic_year, detected_locale) sont extraites par le parser IA en parallèle de `groups`. Selon le format du document uploadé, certains de ces champs peuvent être `null` ou contenir des codes techniques au lieu de libellés humains. Exemples observés en avril 2026 : un planning Hyperplanning au format PDF a renvoyé `school_name: null` et `program_name: "R_CA_A3"` (code technique). Le LLM ne peut pas inventer ce qui n'est pas présent dans le document source.
@@ -242,6 +276,34 @@ L'approche discriminante s'appuie sur la nature exacte du fichier source. Pour u
 Le parcours d'inscription d'un nouvel alternant doit être le plus court possible. Idéalement : création de compte → upload du planning → détection automatique du rythme → choix du groupe si le planning en contient plusieurs → fin.
 
 Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utilisateur n'a pas besoin de savoir ce qu'est un "rythme symétrique". Il uploade un document qu'il a déjà.
+
+### Parcours d'inscription unifié (décision actée le 2 mai 2026 soir)
+
+**Cible architecture** : les 3 méthodes d'authentification disponibles (inscription email, Google OAuth, Apple OAuth) doivent converger vers un **parcours d'inscription unifié unique**, qui demande exactement les mêmes informations dans le même ordre, et qui garantit le même état BDD final (4 colonnes ville renseignées, `type_user` choisi, `rhythm_calendar` saisi pour `locataire/hote/les_deux`).
+
+**État actuel à corriger** :
+
+- `InscriptionRecherchePage.jsx` est le parcours d'inscription email actuel et écrit les 4 colonnes ville (`ville_ecole`, `statut_ville_ecole`, `ville_entreprise`, `statut_ville_entreprise`).
+- `CompleterProfilPage.jsx` est le parcours de complétion post-Google OAuth et écrit uniquement la colonne legacy `users.ville` (sans toucher aux 4 colonnes du modèle officiel décrit en §3).
+- Apple OAuth pas implémenté.
+
+**Conséquence concrète** : un utilisateur qui s'inscrit par email arrive avec un état BDD différent d'un utilisateur qui s'inscrit par Google. C'est une dette structurelle qui se voit dès la première utilisation (dashboards qui affichent des choses différentes selon la méthode d'inscription).
+
+**Décision** : refondre le parcours d'inscription en un seul flow unifié, accessible via les 3 méthodes d'authentification. `InscriptionRecherchePage` et `CompleterProfilPage` fusionnent en un seul composant (nom à arrêter pendant le chantier — probablement `ParcoursInscription.jsx` ou équivalent). `GoogleAuthHandler` et le futur `AppleAuthHandler` redirigent vers ce parcours unifié quand `profil_complet = false`. Aucune écriture BDD n'est faite par les handlers OAuth eux-mêmes — toute la saisie se fait dans le parcours unifié.
+
+**Justification** :
+
+- L'inscription est la base de tout site, elle doit être impeccable et cohérente quelle que soit la méthode d'auth utilisée.
+- Maintenir 2 parcours séparés multiplie les bugs et les divergences d'état BDD.
+- Le chantier unification est l'occasion parfaite pour aligner aussi la saisie sur le modèle officiel `(ville_*, statut_ville_*)` décrit en §3 et arrêter d'écrire les colonnes dépréciées (`users.ville`, `users.type_alternance`, `users.rythme_alternance`).
+
+**Ordre d'implémentation prévisionnel** : le chantier unification inscription doit être traité **avant** l'intégration de `RhythmManualBuilder` dans le parcours d'inscription. L'intégration `RhythmManualBuilder` se fera comme une étape du parcours unifié, une fois ce parcours en place. Faire l'inverse créerait du double travail (intégrer `RhythmManualBuilder` dans `CompleterProfilPage` actuel, puis le re-intégrer dans le parcours unifié après refonte).
+
+**Plan de chantier** : 1 session Claude.ai dédiée pour le cadrage (document `docs/recherche/UNIFICATION-INSCRIPTION.md` — modèle BDD final, séquence des étapes, design des écrans, gestion des 3 méthodes auth), puis 2-3 sessions d'implémentation avec commits atomiques par tranche, puis tests bout-en-bout sur 4 `type_user` × 3 méthodes auth = 12 parcours à valider.
+
+**Bloquant pré-production** : oui. Aucun lancement opérationnel n'est envisageable tant que les 3 méthodes d'inscription ne convergent pas vers le même état BDD.
+
+**Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.
 
 ### Rythme personnel comme moteur de la plateforme
 
