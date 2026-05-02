@@ -2,7 +2,43 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 mai 2026 soir — Décision Option A actée : fusion `InscriptionRecherchePage` + `CompleterProfilPage` en parcours d'inscription unifié, comme cible architecture. Ordre des chantiers post-démo réorganisé : unification inscription AVANT intégration `RhythmManualBuilder`. Étape D originelle (intégration dans `CompleterProfilPage` actuel) annulée — son périmètre est intégré au chantier unification. Création DETTE #49 (extraction sous-composants), #50 (couplage `statut_ville_*` ↔ `type_user`), #51 (Apple OAuth). Maj VISION §3 (modèle officiel `(ville_*, statut_ville_*)`) et VISION §6 (parcours d'inscription unifié). Rectification du Bloc 8 du 2 mai après-midi (note `users.ville_recherchee` obsolète, modèle existant retenu).
+**Dernière mise à jour** : 2 mai 2026 soir bis — Audit lecture-seule des 5 pages d'inscription + composant GoogleAuthHandler + modèle BDD users (51 colonnes catégorisées). Document `docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md` produit (gitignoré). 8 décisions Q8-Q15 actées en cadrage : durcissement garde `/inscription/proprietaire`, suppression `InscriptionPartagerPage`, alignement sens `type_user`, classement `a_logement` legacy, `profil_complet` en 1 passe, photo/bio optionnelles avec message confiance, champs profil intégrés au parcours unifié. Maj VISION §6 (paragraphe "Périmètre élargi"). Création DETTE #52 (bypass DEV CompleterProfilPage).
+
+---
+
+## 2026-05-02 soir bis — Audit lecture-seule pages inscription + élargissement scope chantier unification
+
+### Bloc 1 — Audit produit par Claude Code
+
+Document `docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md` produit (467 lignes, dossier `docs/_audit/` gitignoré). 9 sections couvrant : routing inscription complet, ChoixInscriptionPage, InscriptionRecherchePage, InscriptionProprietairePage, InscriptionPartagerPage, CompleterProfilPage, GoogleAuthHandler, modèle BDD `users` complet (51 colonnes catégorisées), 12 incohérences observées.
+
+### Bloc 2 — 5 découvertes majeures
+
+1. `/inscription/proprietaire` publiquement accessible sans token de parrainage (anomalie vs CONTEXTE-PROJET §3).
+2. `InscriptionPartagerPage` est une page fantôme : seul lien actif depuis `UserDropdown` est sémantiquement faux (un user connecté ne peut pas se réinscrire), schéma BDD incohérent vs `InscriptionRecherchePage` chemin partage.
+3. `GoogleAuthHandler` fait des INSERT BDD au callback (`:96-105`), pas seulement de la redirection. Profil créé est ultra-minimal.
+4. Aucun parcours d'inscription n'écrit `profil_complet = true` — cette colonne n'est mise à `true` que via `CompleterProfilPage`.
+5. `InscriptionRecherchePage` écrit `type_user='locataire'` même quand intent='partage' (couplé DETTE #50).
+
+### Bloc 3 — 8 décisions actées en cadrage Q8-Q15
+
+- Q8 : durcissement garde `/inscription/proprietaire` (token obligatoire) + retrait CTA "Je suis propriétaire" sur `ChoixInscriptionPage`.
+- Q9 : suppression `InscriptionPartagerPage` dans le même chantier.
+- Q10 : `type_user` aligné sur choix explicite (intent partage → `'hote'`).
+- Q11 : `users.a_logement` classée legacy (à ne plus écrire).
+- Q12 : `profil_complet = true` mis en 1 passe à la sortie du parcours unifié.
+- Q13 : photo et bio optionnelles + message confiance, complétion possible plus tard.
+- Q14 : bypass DEV CompleterProfilPage caducs en sortie du chantier (logué DETTE #52).
+- Q15 : champs `prenom/nom/date_naissance/sexe/ecole/annee_etudes/filiere` intégrés au parcours unifié, RGPD à signaler en section 6 du doc cadrage.
+
+### Bloc 4 — Mises à jour docs
+
+- VISION §6 sous-section "Parcours d'inscription unifié" : ajout d'un paragraphe "Périmètre élargi du chantier" qui consolide les 8 décisions.
+- DETTE #52 créée (bypass DEV `CompleterProfilPage`).
+
+### Bloc 5 — Suite immédiate
+
+Rédaction de `docs/recherche/UNIFICATION-INSCRIPTION.md` section par section dans la même conv Claude.ai (hors scope code). Estimation 1h30-2h. Si saturation détectée, coupure propre + reprise en nouvelle conv avec docs à jour.
 
 ---
 

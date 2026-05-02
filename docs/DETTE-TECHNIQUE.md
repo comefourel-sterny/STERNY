@@ -2,6 +2,8 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
+**Dernière mise à jour** : 2 mai 2026 soir bis — Ajout DETTE #52 (bypass DEV CompleterProfilPage).
+
 ## Nomenclature des bugs
 
 Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
@@ -469,3 +471,15 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 ## Planification
 
 Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis — Stabilisation CreerAnnoncePage et ménage post-audits**, à faire après la Phase 1 complète. Les dettes #21 à #33 (anomalies plateforme et divergences design) viennent étoffer la catégorie C ménage de cette Phase 0bis.
+
+## DETTE #52 — Bypass DEV `import.meta.env.DEV` dans CompleterProfilPage
+
+**Statut au 2 mai 2026 soir bis** : créée par audit lecture-seule `docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md` (§6).
+
+**Constat** : `sterny-react/src/pages/auth/CompleterProfilPage.jsx` contient 5 bypass `import.meta.env.DEV` aux lignes 332, 338, 362, 378, 804 qui désactivent la validation des 4 étapes du wizard et les redirections automatiques en mode dev/preview. Ces bypass n'étaient pas logués dans la liste DETTE-TECHNIQUE existante (qui ne couvrait jusque-là que `CreerAnnoncePage.jsx`).
+
+**Risque** : faible en l'état (bypass actifs uniquement quand `import.meta.env.DEV === true`, donc absent du build production Vercel). Mais à l'origine de divergences de comportement entre dev et prod qui peuvent égarer pendant les tests manuels.
+
+**Bloquant pré-production** : non.
+
+**Plan de résolution** : caduque en sortie du chantier unification inscription. La refonte from-scratch de `CompleterProfilPage` en `InscriptionAlternantPage` ne reproduira pas ces bypass — l'ancienne page sera supprimée dans le même chantier (Q12 actée : modèle 1 passe, plus de complétion séparée). Aucune action préalable nécessaire.

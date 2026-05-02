@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2 mai 2026 après-midi — Ajout §3 distinction passé/présent/futur dans les flux financiers + §10 principe pas de découpage technique imposé à l'utilisateur. Tracé en ETAT-COURANT bloc 2026-05-02 après-midi.
+**Dernière mise à jour** : 2 mai 2026 soir bis — Élargissement scope chantier unification inscription après audit lecture-seule (`docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md`). 8 décisions Q8-Q15 actées, périmètre §6 enrichi d'un paragraphe "Périmètre élargi du chantier". Note : ajouts §3 (modèle officiel ville) et §6 (parcours unifié) du 2 mai soir présents depuis cette date dans le contenu mais non reflétés dans le précédent header — corrigé ici.
 
 ---
 
@@ -302,6 +302,17 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 **Plan de chantier** : 1 session Claude.ai dédiée pour le cadrage (document `docs/recherche/UNIFICATION-INSCRIPTION.md` — modèle BDD final, séquence des étapes, design des écrans, gestion des 3 méthodes auth), puis 2-3 sessions d'implémentation avec commits atomiques par tranche, puis tests bout-en-bout sur 4 `type_user` × 3 méthodes auth = 12 parcours à valider.
 
 **Bloquant pré-production** : oui. Aucun lancement opérationnel n'est envisageable tant que les 3 méthodes d'inscription ne convergent pas vers le même état BDD.
+
+**Périmètre élargi du chantier (acté 2 mai 2026 soir bis, après audit `docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md`)** :
+
+- Suppression de `InscriptionPartagerPage` (page fantôme : seul lien actif depuis `UserDropdown` sémantiquement incorrect, doublonne le chemin partage de `InscriptionRecherchePage` avec un schéma BDD incohérent).
+- Durcissement de la garde sur `/inscription/proprietaire` : route accessible uniquement avec `?r=token` valide (présence + résolution réussie via `users.invitation_token` en BDD), sinon redirection vers `/inscription`. Le CTA "Je suis propriétaire" de `ChoixInscriptionPage` est retiré (proprio = parcours par invitation uniquement, jamais publiquement accessible).
+- Migration de toute écriture BDD hors de `GoogleAuthHandler` : le handler ne fait que rediriger, aucun INSERT/UPDATE de `users` au callback OAuth. Toute saisie passe par le parcours unifié.
+- `profil_complet = true` mis à la sortie du parcours unifié, en **1 seule passe**. Le modèle "inscription minimale puis complétion ultérieure via `/completer-profil`" est abandonné. Si un utilisateur abandonne en cours de parcours, le compte reste avec `profil_complet=false` et la prochaine connexion le ramène au parcours unifié à l'étape où il s'est arrêté (pattern de reprise à concevoir dans le doc de cadrage).
+- `users.a_logement` rejoint la liste des colonnes legacy à ne plus écrire (sémantique dérivable de `type_user IN ('hote', 'les_deux')` ou de `statut_ville_* = 'hote'`). Audit ciblé des lectures à mener avant suppression définitive (cohérent avec phase de gel VISION §9).
+- Le sens canonique de `type_user` est aligné sur le choix utilisateur explicite : intent "partage" → `type_user = 'hote'` (plus jamais `'locataire'` + `a_logement=true` comme dans `InscriptionRecherchePage` actuel). Lié à DETTE #50.
+- Photo et bio profil restent **optionnelles** dans le parcours unifié, avec un message qui explique que les renseigner augmente la confiance des autres utilisateurs. Possibilité de les ajouter plus tard via `ModifierProfilPage`. La complétude du profil est définie par les champs structurants (type_user, villes, statuts villes, rhythm_calendar), pas par photo/bio.
+- Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
 
 **Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.
 
