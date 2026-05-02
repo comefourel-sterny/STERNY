@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2 mai 2026 soir bis — Ajout DETTE #52 (bypass DEV CompleterProfilPage).
+**Dernière mise à jour** : 2 mai 2026 nuit — Ajout DETTE #53 (variables sémantiques error/success divergentes design system).
 
 ## Nomenclature des bugs
 
@@ -483,3 +483,15 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Bloquant pré-production** : non.
 
 **Plan de résolution** : caduque en sortie du chantier unification inscription. La refonte from-scratch de `CompleterProfilPage` en `InscriptionAlternantPage` ne reproduira pas ces bypass — l'ancienne page sera supprimée dans le même chantier (Q12 actée : modèle 1 passe, plus de complétion séparée). Aucune action préalable nécessaire.
+
+## DETTE #53 — Variables sémantiques `--error` et `--success` divergent du design system Sterny
+
+**Statut au 2 mai 2026 nuit** : créée par audit design `docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md` § 2 (table des design tokens).
+
+**Constat** : `sterny-react/src/index.css:25-40` définit `--error: #ff6b6b` et `--success: #51cf66`. Ces valeurs divergent du design system Sterny documenté en `INVENTAIRE-PLATEFORME.md` §9.1, qui cite `#dc2626` (rouge) et `#059669` (vert) comme couleurs sémantiques.
+
+**Risque** : faible. Cohérence visuelle légèrement compromise selon le contexte d'affichage des erreurs/succès. Pas de bug fonctionnel.
+
+**Plan de résolution** : à harmoniser dans une passe "design tokens" plus large (introduction de variables CSS pour border-radius, box-shadows, transitions, espacements actuellement hardcodés). Décision : laquelle des 2 valeurs est la "vraie" référence Sterny ? À arbitrer en session dédiée. Cohérent avec DETTE #31 (token hover orange `#D4571F` hardcodé) et DETTE #44 (UX mobile globale).
+
+**Bloquant pré-production** : non.

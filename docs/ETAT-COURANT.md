@@ -2,7 +2,48 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 mai 2026 soir bis — Audit lecture-seule des 5 pages d'inscription + composant GoogleAuthHandler + modèle BDD users (51 colonnes catégorisées). Document `docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md` produit (gitignoré). 8 décisions Q8-Q15 actées en cadrage : durcissement garde `/inscription/proprietaire`, suppression `InscriptionPartagerPage`, alignement sens `type_user`, classement `a_logement` legacy, `profil_complet` en 1 passe, photo/bio optionnelles avec message confiance, champs profil intégrés au parcours unifié. Maj VISION §6 (paragraphe "Périmètre élargi"). Création DETTE #52 (bypass DEV CompleterProfilPage).
+**Dernière mise à jour** : 2 mai 2026 nuit — Audit design visuel des 2 pages d'inscription wizard produit (`docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md`, gitignoré). Création du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` avec sections 1-2 finalisées (modèle BDD final consolidé + séquence des 7 étapes du parcours unifié). Sections 3-7 à produire en nouvelle conv Claude.ai 2 dédiée pour préserver la précision. 5 décisions actées Q-S1.A à D + Q-S2.A. Création DETTE #53 (variables sémantiques error/success divergentes du design system).
+
+---
+
+## 2026-05-02 nuit — Audit design visuel + sections 1-2 du doc cadrage UNIFICATION-INSCRIPTION
+
+### Bloc 1 — Audit design visuel des 2 pages wizard
+
+Document `docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md` produit (393 lignes, dossier gitignoré). 8 sections couvrant : inventaire CSS, design tokens, descriptions visuelles InscriptionRecherchePage et CompleterProfilPage (8 axes a-h chacun + 9ᵉ axe cropper pour CP), comparaison tableau, 12 composants extractibles, recommandation parcours unifié.
+
+Recommandation principale : design hybride IR+CP pour `InscriptionAlternantPage`. Squelette IR (animation appliquée), bouton 48px IR, sous-titre dynamique par étape CP, hover input CP, OAuth + séparateur "ou" IR, cropper photo CP, shake bouton sur erreur IR.
+
+Manques à designer ex nihilo : étape calendrier E-5 (intégration `RhythmManualBuilder` dans card 460px ou plein écran), étape récap E-7, pop-up RhythmRequiredPopup, écran de choix méthode auth en début de parcours.
+
+### Bloc 2 — Création doc cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md`
+
+Sections 1-2 finalisées :
+- Section 1 : modèle BDD final consolidé (51 colonnes catégorisées, écritures par étape, table des cas `(statut_ville_*, type_user)`, mécanisme RPC atomique recommandé)
+- Section 2 : séquence des 7 étapes (E-1 Identité → E-2 Type de profil → E-3 Études → E-4 Villes → E-5 Calendrier saisie manuelle → E-6 Profil → E-7 Validation finale), justification ordre, conditions de skip, phase auth amont 3 méthodes, persistance progressive et reprise, routing et URLs.
+
+Sections 3-7 à produire en nouvelle conv Claude.ai 2 dédiée :
+- 3. Design des écrans (audit design disponible)
+- 4. Gestion des 3 méthodes auth
+- 5. Table des 9 parcours bout-en-bout à tester
+- 6. Sujets RGPD et juridiques
+- 7. Plan d'implémentation séquencé
+
+### Bloc 3 — Décisions actées Q-S1.A à D + Q-S2.A
+
+- Q-S1.A : `telephone` obligatoire à l'inscription (E-1), validation format simple, pas de SMS, RGPD à signaler section 6
+- Q-S1.B : Option A — saisie systématique des 2 villes (école + entreprise) pour tous les type_user, pas de message explicatif particulier
+- Q-S1.C : `sexe` à 3 valeurs `'homme' / 'femme' / 'autre'`, validation frontend, pas de CHECK BDD, finalité métier à clarifier section 6 RGPD (sinon retrait du champ)
+- Q-S1.D : pas de parrainage entre alternants pour le lancement, `parrain_id` et `code_parrainage` toujours NULL en sortie. Parrainage proprio reste en place inchangé.
+- Q-S2.A : E-5 = saisie manuelle assistée uniquement via `RhythmManualBuilder`. Pas d'upload planning dans le parcours unifié (parser hors-ligne, abandon production acté 29 avril 2026, VISION §5 et §7 risque 4).
+
+### Bloc 4 — Création DETTE #53
+
+Variables sémantiques `--error: #ff6b6b` et `--success: #51cf66` divergent du design system Sterny INVENTAIRE §9.1 (`#dc2626` et `#059669`). Découverte par audit design § 2. Faible criticité, à harmoniser dans une passe design tokens.
+
+### Bloc 5 — Saturation conv 1 et plan de relance
+
+Saturation détectée à mi-parcours du livrable (sections 3-7 restantes). Coupure propre actée pour préserver la précision sur la suite. Nouvelle conv Claude.ai 2 à ouvrir avec les 5 docs de référence + audits + doc cadrage déjà commencé. Message de relance préparé par Claude.ai 1 pour démarrage immédiat de Claude.ai 2.
 
 ---
 
