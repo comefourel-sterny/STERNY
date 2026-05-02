@@ -2,7 +2,78 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er mai 2026 matin — Étape 1 (wording Q8 v3 + Q9 + DETTE #45 logué) et Étape 2 (migration BDD `rhythm_imports` Stratégie 2) closes. Migration tentée sur Supabase Dashboard, retour `column "source" already exists` : diagnostic SQL complet montre que la BDD est déjà dans l'état cible (4 colonnes parser nullable, colonne `source` avec default `parser_llm`, 2 CHECK attendus présents). Migration équivalente appliquée à un moment antérieur non tracé dans `supabase/migrations/` — relié à DETTE #15. Fichier de migration conservé pour traçabilité avec note historique en tête. Étape 3 (prompt Claude Code pour `RhythmManualBuilder.jsx`) reportée en conv fraîche.
+**Dernière mise à jour** : 2 mai 2026 après-midi — Étape C close (composant RhythmManualBuilder v1 démo livré + preview /dev/rhythm-manual-builder-preview), 3 corrections Q4/Q5/Q6 + décisions Q10/Q11 (troncature + sélecteur d'année) + Fix 1 ergonomique sélecteur. Multi-années gelé en DETTE #46 pour traitement dédié post-démo. Ajouts VISION §3 (passé/présent/futur) et VISION §10 (pas de découpage technique imposé à l'utilisateur). Enrichissement DETTE #45 (densité du wording Q8). Création DETTE #46.
+
+---
+
+## 2026-05-02 après-midi — Étape C close (composant + preview livrés v1 démo) + arrêt sur DETTE #46 multi-années
+
+### Bloc 1 — Étape C livrée par Claude Code
+
+4 fichiers (3 créés, 1 modifié) :
+
+- `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` (composant v1 desktop-only)
+- `sterny-react/src/components/rhythm/RhythmManualBuilder.css` (CSS scopé préfixe `rmb-`)
+- `sterny-react/src/dev/RhythmManualBuilderPreview.jsx` (preview 2 sections villeRecherchee)
+- `sterny-react/src/App.jsx` (+2 lignes : import + Route `/dev/rhythm-manual-builder-preview`)
+
+Convention import Supabase : `import { supabaseClient } from '../../config/supabase'`. RPC : `supabaseClient.rpc('confirm_rhythm_calendar_manual', { p_calendar })` — 6 RAISE EXCEPTION (28000 + 5×22023) mappés sur messages utilisateur.
+
+Wordings Q8 verbatim de DETTE #45 collés tels quels avec commentaire `// TODO validation avocat avant production`.
+
+### Bloc 2 — 3 corrections de décisions Q4/Q5/Q6 du bloc 2026-04-30 soir bis
+
+**Q4 corrigée** : cadrage 52 semaines précis. Première week_start lundi 31 août, dernière week_start lundi 23 août, couverture jusqu'au dimanche 29 août inclus (52 semaines, 364 jours). Appliqué à toute année académique sélectionnée via le sélecteur Q11.
+
+**Q5 corrigée** : cycle case simplifié à 2 états (cliqué/non-cliqué), induit par Q8 (sélection inverse).
+
+**Q6 corrigée** : règle ISO du jeudi pour l'attribution semaine→mois (12 colonnes pile pour 52 semaines).
+
+### Bloc 3 — Décisions Q10 (troncature) et Q11 (sélecteur d'année) appliquées
+
+**Q10 — Troncature dynamique** : cases dont le jeudi est antérieur au lundi de la semaine ISO en cours sont affichées en gris désactivé (#E8EAF0 fond, opacity 0.5), non-cliquables, tooltip "Semaine déjà passée". À la matérialisation, auto-classées `status='company'` (cohérent VISION §3 alinéa "non-école = company par défaut").
+
+**Q11 — Sélecteur d'année académique** : select natif toujours visible avec 2 options (année courante + suivante). Calcul de l'année par défaut selon mois courant : ≥9 → "Y - Y+1", ≤8 → "(Y-1) - Y". Validation 2 mai 2026 → "2025-2026".
+
+**Compteur reformulé** : "X / 52 semaines sélectionnées" — un seul compteur, pas de pastilles, X compte uniquement les cases cliquées par l'utilisateur.
+
+### Bloc 4 — Fix 1 appliqué après validation visuelle Côme
+
+Le sélecteur d'année initial avait un toggle "(changer)" qui exigeait 2 clics avant ouverture du menu. Remplacé par select natif affiché en permanence — 1 clic suffit pour ouvrir le menu.
+
+### Bloc 5 — Arrêt sur le multi-années — DETTE #46 créée
+
+Côme a identifié pendant la phase code que la saisie de plusieurs années académiques en une fois (cas réel : utilisateur qui a déjà son nouveau planning) demande un cadrage architectural transversal qui dépasse le composant : modèle de stockage `rhythm_imports`, transitions entre années, contrats multiples successifs, matching de l'année active.
+
+**Décision de gel pour la démo Le Poool** : la v1 du composant supporte 1 année académique à la fois, suffisant pour démontrer le concept. Le cas multi-années en saisie est marginal en démo.
+
+**Cadrage multi-années reporté** : DETTE #46 créée dans `DETTE-TECHNIQUE.md`, à traiter en 1-2 sessions Claude.ai dédiées après la démo. Bloquant pré-production : aucun lancement opérationnel possible tant que le modèle multi-années n'est pas tranché.
+
+### Bloc 6 — Ajouts VISION-ARCHITECTURE.md
+
+**§3 — Distinction passé / présent / futur dans les flux financiers** : `rhythm_calendar` est descriptif, pas transactionnel. Date d'effet du contrat distincte de la date de signature. Consultation des plannings historiques = écran dashboard distinct.
+
+**§10 — Pas de découpage technique imposé à l'utilisateur** : nouveau principe transversal acté. Les contraintes techniques (RPC, migrations, BDD) ne doivent jamais transparaître en friction côté utilisateur. Quand simplification technique vs fluidité utilisateur entrent en conflit, c'est l'utilisateur qui gagne. Origine : arbitrage du 2 mai après-midi sur la saisie multi-années.
+
+### Bloc 7 — Enrichissement DETTE #45
+
+Wording v1 modale Q8 trop dense pour être lu en pratique. Acceptable démo Le Poool, à réécrire en version compacte (≤ 60 mots, ≤ 10 secondes de lecture) avant production, en parallèle de la consultation avocat.
+
+### Bloc 8 — Note pour étape D (intégration CompleterProfilPage)
+
+Audit obligatoire en début d'étape D : vérifier si `users.ville_recherchee` existe en BDD. Si non, prévoir migration `ALTER TABLE users ADD COLUMN ville_recherchee text CHECK (ville_recherchee IN ('ecole', 'entreprise'))`.
+
+L'étape D doit fournir cette valeur à la prop `villeRecherchee` du composant. Sans cette saisie, le composant ne peut pas appliquer la logique de sélection inverse Q8.
+
+Origine : remarque produit de Côme du 2 mai après-midi : "une personne ne cherche pas forcément un logement pour son école".
+
+### Bloc 9 — Saturation et prochaine session
+
+Conv saturée. Bonne productivité globale (étape C livrée + 5 décisions logées dans VISION et DETTE), mais le multi-années dépasse le périmètre de cette conv et a été correctement identifié comme tel. Plutôt que de bâcler le cadrage architectural, on l'isole en DETTE #46 pour traitement dédié.
+
+Avant fermeture : Côme upload dans le project knowledge claude.ai les 3 docs à jour : `ETAT-COURANT.md`, `VISION-ARCHITECTURE.md`, `DETTE-TECHNIQUE.md`. Sans cet upload, la prochaine session démarrera avec des docs périmés.
+
+Prochaine conv : étape D (intégration CompleterProfilPage + pop-up Q9 + audit `users.ville_recherchee`) ou cadrage DETTE #46 multi-années — au choix selon priorité du moment, mais DETTE #46 doit passer avant tout codage de flux contrat/paiement.
 
 ---
 

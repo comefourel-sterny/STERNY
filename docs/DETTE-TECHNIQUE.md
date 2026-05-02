@@ -337,9 +337,38 @@ Le wording de la modale de prévention affichée au clic "Confirmer mon planning
 
 **Boutons** : `Plus tard` (secondaire, ferme le pop-up sans rediriger) / `Compléter mon planning maintenant` (primaire orange, redirige vers `/completer-profil` à l'étape calendrier).
 
+**Densité du wording v1 — point UX à acter en parallèle de la consultation avocat (2 mai 2026 après-midi)**
+
+Côme a remonté en validation visuelle de l'étape C que le wording v1 de la modale Q8, bien qu'irréprochable juridiquement, est trop dense et lourd pour être effectivement lu par un utilisateur. 5 paragraphes consécutifs avec 2 tirets cadratins constituent un pavé de texte que les jeunes alternants (cible Sterny) ne liront pas en pratique. Le risque produit n'est plus juridique mais fonctionnel : un wording non-lu ne fait pas le job pédagogique qu'il prétend faire.
+
+**Acceptable pour la démo Le Poool** : les évaluateurs institutionnels liront le wording attentivement. Donc on garde le wording v1 tel quel pour la présentation du 4 mai 2026.
+
+**À reprendre avant production** : la consultation avocat (déjà prévue en plan de résolution) doit inclure une demande explicite de réécriture en version compacte — 2 phrases d'avertissement clair, plutôt que 5 paragraphes — qui conserve l'absence de formulations contractuelles interdites tout en étant effectivement lisible. Test attendu : un utilisateur de 20 ans doit comprendre les 2 risques en moins de 10 secondes. Cible : modale tient en 1 écran sans scroll, total ≤ 60 mots.
+
 **Plan de résolution** : faire valider les deux wordings par un avocat spécialisé en droit du logement et droit de la consommation avant tout déploiement en production. La consultation est listée comme prérequis dans VISION-ARCHITECTURE.md §10. À intégrer dans la liste des consultations professionnelles pré-lancement.
 
 **Localisation des wordings** : commentaire `// TODO validation avocat avant production` à poser au-dessus de chacun des 2 textes dans le code source — chercher cette chaîne pour les retrouver. Concerné en première intégration : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` (modale Q8) et le composant pop-up Q9 (nom à arrêter à l'étape 4, probablement `sterny-react/src/components/rhythm/RhythmRequiredPopup.jsx`).
+
+## DETTE #46 — Modèle de données multi-années pour utilisateurs récurrents
+
+**Statut au 2 mai 2026 après-midi** : créée par l'arrêt du cadrage de l'étape C lorsque Côme a identifié que la décision de structure pour la saisie multi-années touche à un fondement architectural transversal (`rhythm_imports`, contrats, transitions entre années, matching année en cours).
+
+**Constat** : Sterny est conçu pour des utilisateurs qui resteront sur la plateforme plusieurs années (formation alternance 2-3 ans typique, plus si renouvellements). Un utilisateur va inscrire son planning de l'année 1, signer un contrat A, finir cette année. Démarrer l'année 2, re-saisir son nouveau planning, signer un contrat B, potentiellement avec un autre alternant. Et ainsi de suite. La probabilité qu'un seul match couvre 3 ans à 100% est très faible donc le modèle doit nativement supporter une succession de plannings annuels et de contrats indépendants, sans bug, sans mélange entre années, sans confusion entre contrats déjà signés et contrats à venir.
+
+**Sujets à cadrer (liste indicative non-exhaustive)** :
+
+- Modèle de stockage des plannings annuels successifs (1 ligne `rhythm_imports` par année académique vs ligne unique consolidée).
+- Détermination de l'année active pour le matching à un instant T (par fenêtre de dates de chaque import vs `users.rhythm_import_id` unique).
+- Cohérence avec VISION §6 « Multi-fichiers et historique » (les contrats référencent des dates explicites, pas le rythme source).
+- Transition entre années (utilisateur qui re-saisit en septembre N, planning N-1 doit rester consultable, planning N devient actif).
+- Cas particuliers : changement d'école entre 2 années, année de césure, rupture de contrat en cours d'année, chevauchement contractuel sur 1 semaine de transition.
+- Évolution de la RPC `confirm_rhythm_calendar_manual` pour accepter une saisie multi-années en une seule confirmation utilisateur (cf. principe VISION §10 « pas de découpage technique imposé à l'utilisateur »).
+
+**Impact sur la v1 démo Le Poool du 4 mai 2026** : aucun. La v1 supporte 1 année académique à la fois, suffisant pour démontrer le concept. Le cas multi-années en saisie est rare et improbable en démo.
+
+**Bloquant pré-production** : oui. Aucun lancement opérationnel ne peut être fait tant que ce modèle n'est pas tranché et implémenté, sinon le premier utilisateur qui revient pour son année 2 trouve un système qui ne sait pas quoi faire.
+
+**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées pour cadrer le modèle. Premier livrable : un document `docs/recherche/MODELE-MULTI-ANNEES.md` qui décrit les scénarios, les options de modèle, et tranche par grand bloc (stockage, matching, transitions, contrats). À programmer après la démo Le Poool, en priorité haute (avant tout codage du flux contrat/paiement, qui dépend de ce modèle).
 
 ## Planification
 

@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 30 avril 2026 fin de journée — Ajout dans §4 du paragraphe « Mapping couleur → statut (school/company) — étape utilisateur obligatoire ». Origine : insight produit du 30 avril fin de journée pendant le spike #3 (planning Martin sans légende textuelle, le parser ne peut pas déduire seul quelle couleur signifie école et quelle couleur signifie entreprise). Conserve la mention précédente du principe « mesure parser sur planning intégral » qui reste valide.
+**Dernière mise à jour** : 2 mai 2026 après-midi — Ajout §3 distinction passé/présent/futur dans les flux financiers + §10 principe pas de découpage technique imposé à l'utilisateur. Tracé en ETAT-COURANT bloc 2026-05-02 après-midi.
 
 ---
 
@@ -92,6 +92,22 @@ Un alternant étudie à Rennes et fait son entreprise à Quimper. Il propose un 
 **Pas de semaines vacances dans le modèle.** Les alternants ne bénéficient pas des vacances scolaires : ils sont salariés et ont droit aux mêmes 5 semaines de congés payés par an que tout salarié, posés en accord avec leur employeur. Un planning d'alternance ne contient donc que deux états : semaine école, semaine entreprise. Le modèle binaire `school` / `company` du `rhythm_calendar` reflète cette réalité. Le prompt LLM intègre explicitement cette règle : toute semaine marquée comme vacances scolaires, semaine blanche ou jours fériés dans un document source est classée en `company` par défaut (statut du salarié).
 
 Les 5 semaines de congés que l'alternant pose au fil de l'année sont des décisions personnelles imprévisibles au moment de l'extraction du planning. Elles sont traitées par une mécanique d'ajustement manuel : lors de la création d'annonce, `disponibilites_pattern` est pré-calculé automatiquement à partir du `rhythm_calendar` croisé avec la ville du logement, puis l'hôte **peut modifier manuellement** cette liste pour retirer des semaines (il garde son logement pendant ses congés, il veut y rester pour réviser) ou en ajouter (il rentre chez ses parents pendant les vacances scolaires de son pote locataire). L'hôte connaît sa situation, Sterny lui fait confiance pour l'ajuster. Cette règle s'applique à tout pré-calcul : la donnée automatique est une suggestion, l'utilisateur tranche.
+
+### Distinction passé / présent / futur dans les flux financiers
+
+`users.rhythm_calendar` est un référentiel descriptif du rythme annuel de l'utilisateur. Il ne porte aucune valeur transactionnelle. Aucune facturation, aucune disponibilité de logement, aucun matching ne doit être calculé sur des semaines déjà passées à la date de l'opération.
+
+Les semaines passées présentes dans `rhythm_calendar` servent uniquement à l'historique et à la cohérence du calendrier annuel — elles ne donnent jamais lieu à paiement, occupation, ou match.
+
+**Date d'effet du contrat distincte de la date de signature.** Au moment de la signature d'un contrat de sous-location, l'utilisateur doit pouvoir choisir explicitement la semaine à partir de laquelle son contrat prend effet. Cette semaine ne peut pas être antérieure à la semaine ISO en cours à la date de signature, mais elle peut être la semaine en cours, la semaine suivante, ou plusieurs semaines plus tard selon le besoin de l'utilisateur (temps d'emménagement, contraintes personnelles). La facturation et le calcul des semaines occupées partent de cette date d'effet, pas de la date de signature.
+
+Cette règle s'applique à tous les flux : création d'annonce (`disponibilites_pattern` ne contient que des semaines futures), recherche, candidature, signature, génération d'échéancier de paiement.
+
+**Consultation des plannings historiques en dashboard utilisateur.** Un utilisateur ayant déjà signé un contrat sur une année passée doit pouvoir consulter cet ancien planning en lecture seule depuis son dashboard, pour référence personnelle. Cette consultation est distincte de la saisie d'un planning courant et ne doit pas se confondre avec un sélecteur d'année dans le parcours d'inscription, qui ne propose que l'année courante et l'année suivante.
+
+**À auditer avant tout codage du flux contrat/paiement** : vérifier que chaque endroit du code qui lit `rhythm_calendar` ou `disponibilites_pattern` filtre bien les semaines passées au moment de la requête, et que tout flux de signature offre le choix explicite de la semaine de début.
+
+**Origine** : décision actée le 2 mai 2026 après-midi pendant le cadrage de la troncature dynamique du composant `RhythmManualBuilder` (chemin 3 VISION §5). Tracée dans ETAT-COURANT bloc 2026-05-02 après-midi.
 
 ### Colonnes dépréciées
 
@@ -364,6 +380,14 @@ Limites volontaires du produit, à défendre face aux tentations de sur-ingénie
 **Sterny ne remplace pas un avocat ni un expert-comptable.** Les contrats et processus de la plateforme doivent reposer sur des templates et workflows validés juridiquement en amont. Tout cas particulier doit être validé par un professionnel. La plateforme ne donne pas de conseil juridique personnalisé.
 
 **État actuel de la consultation professionnelle** : **à ce stade du projet, aucun avis professionnel n'a encore été sollicité**. La démo est en cours de finalisation précisément dans le but de pouvoir présenter Sterny à des professionnels de chaque domaine concerné (avocat spécialisé en droit du logement, expert-comptable, DPO pour le RGPD, assureur, notaire). Cette consultation professionnelle est une **étape obligatoire** avant tout lancement opérationnel de la plateforme. Aucune feature juridique ou contractuelle ne doit être considérée comme validée tant que ces consultations n'ont pas eu lieu.
+
+### Pas de découpage technique imposé à l'utilisateur
+
+Les contraintes techniques de Sterny (RPC, migrations, structure BDD) ne doivent jamais transparaître dans l'expérience utilisateur sous forme de friction. Si une opération apparaît naturelle à l'utilisateur (saisir 2 plannings d'un coup, modifier plusieurs champs en une fois, candidater à plusieurs annonces dans la foulée), elle doit être livrée comme une opération unique en surface, quitte à orchestrer plusieurs appels techniques en coulisse.
+
+Conséquence pour l'arbitrage produit/tech : quand une simplification technique entre en conflit avec une fluidité utilisateur, c'est l'utilisateur qui gagne. La complexité reste à la charge du backend et de l'orchestration, pas de la cible.
+
+**Origine** : remarque de Côme le 2 mai 2026 après-midi pendant le cadrage du composant `RhythmManualBuilder` chemin 3, en réaction à une option ergo qui aurait imposé 2 confirmations distinctes pour saisir 2 années académiques. Acté comme principe transversal. La mise en application concrète sur le composant est tracée dans DETTE #46 (modèle de données multi-années).
 
 ---
 
