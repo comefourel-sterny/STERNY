@@ -84,6 +84,7 @@ import InvitationPage from './pages/invitation/InvitationPage'
 // Dev pages (no layout, not linked in nav)
 import RhythmCalendarPreview from './dev/RhythmCalendarPreview'
 import RhythmFileUploadPreview from './dev/RhythmFileUploadPreview'
+import RhythmManualBuilderPreview from './dev/RhythmManualBuilderPreview'
 
 // Other
 import NotFoundPage from './pages/NotFoundPage'
@@ -100,6 +101,7 @@ export default function App() {
         {/* Dev — no layout, not linked in nav */}
         <Route path="/dev/rhythm-calendar-preview" element={<RhythmCalendarPreview />} />
         <Route path="/dev/rhythm-file-upload-preview" element={<RhythmFileUploadPreview />} />
+        <Route path="/dev/rhythm-manual-builder-preview" element={<RhythmManualBuilderPreview />} />
 
         {/* Temp: test */}
         <Route element={<Layout />}>

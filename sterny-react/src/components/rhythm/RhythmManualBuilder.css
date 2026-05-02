@@ -1,0 +1,310 @@
+/* RhythmManualBuilder — préfixe rmb- (cf. INVENTAIRE §9.5).
+   Tokens design system Sterny appliqués (DM Sans, navy/orange, radius, shadow). */
+
+.rmb-root {
+  --rmb-cell-size: 28px;
+  --rmb-cell-radius: 6px;
+  --rmb-cell-gap: 4px;
+  --rmb-month-gap: 18px;
+  --rmb-bg-empty: #F4F5F7;
+  --rmb-border-subtle: #E8EAF0;
+  --rmb-past-bg: #E8EAF0;
+  --rmb-past-border: #D4D9E1;
+  --rmb-school: #E8622A;
+  --rmb-school-hover: #D4571F;
+  --rmb-company: #1E293B;
+  --rmb-text-primary: #1E293B;
+  --rmb-text-secondary: #94A3B8;
+  --rmb-transition: all 0.2s;
+
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  color: var(--rmb-text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+}
+
+/* Zone 0 — sélecteur d'année académique (Q10) */
+.rmb-year-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: -8px; /* compense le gap parent (24px) → ~16px sous le sélecteur */
+}
+
+.rmb-year-label {
+  color: var(--rmb-text-secondary);
+  font-weight: 400;
+}
+
+.rmb-year-select {
+  font: inherit;
+  font-weight: 600;
+  color: var(--rmb-text-primary);
+  padding: 4px 8px;
+  border: 1px solid var(--rmb-border-subtle);
+  border-radius: 6px;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: var(--rmb-transition);
+}
+
+.rmb-year-select:hover {
+  border-color: var(--rmb-school);
+}
+
+.rmb-year-select:focus-visible {
+  outline: 2px solid var(--rmb-school);
+  outline-offset: 2px;
+}
+
+/* Zone 1 — consigne dynamique */
+.rmb-instructions {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--rmb-text-primary);
+  max-width: 720px;
+}
+
+/* Zone 2 — compteur live unique (Q11 D) */
+.rmb-counter-line {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rmb-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.rmb-counter-value {
+  color: var(--rmb-school);
+}
+
+/* Grille 12 colonnes mensuelles */
+.rmb-grid {
+  display: flex;
+  gap: var(--rmb-month-gap);
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.rmb-month-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rmb-cell-gap);
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.rmb-month-header {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--rmb-text-primary);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.rmb-cell {
+  width: var(--rmb-cell-size);
+  height: var(--rmb-cell-size);
+  border-radius: var(--rmb-cell-radius);
+  border: 1px solid var(--rmb-border-subtle);
+  background: var(--rmb-bg-empty);
+  cursor: pointer;
+  padding: 0;
+  transition: var(--rmb-transition);
+}
+
+.rmb-cell:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.10);
+}
+
+.rmb-cell:focus-visible {
+  outline-offset: 2px;
+}
+
+.rmb-ecole .rmb-cell:focus-visible {
+  outline: 2px solid var(--rmb-school);
+}
+
+.rmb-entreprise .rmb-cell:focus-visible {
+  outline: 2px solid var(--rmb-company);
+}
+
+.rmb-ecole .rmb-cell-clicked {
+  background: var(--rmb-school);
+  border-color: var(--rmb-school);
+}
+
+.rmb-entreprise .rmb-cell-clicked {
+  background: var(--rmb-company);
+  border-color: var(--rmb-company);
+}
+
+/* Cellules passées (Q11 B) — sobre, réversible, non-cliquables */
+.rmb-cell-past {
+  background: var(--rmb-past-bg);
+  border-color: var(--rmb-past-border);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rmb-cell-past:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Zone 3 — actions */
+.rmb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.rmb-cancel-btn {
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid var(--rmb-company);
+  background: #FFFFFF;
+  color: var(--rmb-company);
+  cursor: pointer;
+  transition: var(--rmb-transition);
+}
+
+.rmb-cancel-btn:hover {
+  background: var(--rmb-bg-empty);
+}
+
+.rmb-confirm-btn {
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background: var(--rmb-school);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: var(--rmb-transition);
+}
+
+.rmb-confirm-btn:hover {
+  background: var(--rmb-school-hover);
+  box-shadow: 0 4px 14px rgba(232, 98, 42, 0.25);
+}
+
+/* Modale Q8 */
+.rmb-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 41, 59, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+.rmb-modal-panel {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(30, 41, 59, 0.18);
+  color: var(--rmb-text-primary);
+}
+
+.rmb-modal-title {
+  margin: 0 0 18px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rmb-text-primary);
+  line-height: 1.3;
+}
+
+.rmb-modal-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--rmb-text-primary);
+}
+
+.rmb-modal-body p {
+  margin: 0 0 12px 0;
+}
+
+.rmb-modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+.rmb-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.rmb-modal-btn-secondary {
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid var(--rmb-company);
+  background: #FFFFFF;
+  color: var(--rmb-company);
+  cursor: pointer;
+  transition: var(--rmb-transition);
+}
+
+.rmb-modal-btn-secondary:hover:not(:disabled) {
+  background: var(--rmb-bg-empty);
+}
+
+.rmb-modal-btn-primary {
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background: var(--rmb-school);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: var(--rmb-transition);
+  min-width: 200px;
+}
+
+.rmb-modal-btn-primary:hover:not(:disabled) {
+  background: var(--rmb-school-hover);
+}
+
+.rmb-modal-btn-primary:disabled,
+.rmb-modal-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rmb-modal-error {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #FEF2F2;
+  color: #dc2626;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
