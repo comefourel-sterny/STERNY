@@ -390,11 +390,45 @@ Côme a remonté en validation visuelle de l'étape C que le wording v1 de la mo
 - Comportement du formulaire actuel sur les utilisateurs déjà inscrits avec un `rythme_pattern` rempli (descriptif uniquement, à ignorer pour le matching).
 - Cohérence avec VISION §6 (homepage pré-remplie pour utilisateur connecté avec ses propres villes selon `ville_recherchee` saisie en étape D du chantier RhythmManualBuilder).
 
+**Cas utilisateur connecté (décision actée le 2 mai 2026 après-midi en complément de cette dette)** :
+
+Pour un utilisateur connecté ayant déjà saisi son `rhythm_calendar`, la barre de recherche homepage est pré-remplie avec **uniquement la ville** (sa ville d'école ou ville d'entreprise selon `users.ville_recherchee`, saisie en étape D du chantier RhythmManualBuilder). Au clic "Rechercher", il arrive directement sur `/recherche` **sans modale d'incitation** (puisqu'il est connecté). La page `/recherche` affiche les annonces de la ville filtrées et scorées par compatibilité avec son `rhythm_calendar`.
+
+Le mécanisme de filtrage et de scoring par compatibilité est traité dans une dette dédiée — voir DETTE #48 (matching partiel et présentation du score de compatibilité).
+
 **Impact sur la démo Le Poool du 4 mai 2026** : aucun. La démo évalue le concept et le parcours alternant authentifié, pas le détail du formulaire homepage. Acceptable de laisser l'ancien formulaire pendant la démo.
 
 **Bloquant pré-production** : oui — un visiteur qui remplit un champ rythme abstrait obsolète et atterrit sur une recherche cassée est un point de friction de premier ordre pour la conversion.
 
 **Plan de résolution** : 1 session Claude.ai dédiée post-Poool, couvrant audit du code actuel de HomePage et `/recherche`, refonte des champs, refonte du flow visiteur non-connecté, design et wording de la modale d'incitation. À séquencer avec le cadrage DETTE #46 multi-années — l'ordre exact (DETTE #46 ou DETTE #47 en premier) à arbitrer selon priorité du moment.
+
+## DETTE #48 — Matching partiel et présentation du score de compatibilité
+
+**Statut au 2 mai 2026 après-midi** : créée par identification d'un trou produit fondamental lors de la session étape D du chantier RhythmManualBuilder.
+
+**Constat** : un alternant n'a presque jamais un rythme symétrique parfait (2 semaines école / 2 semaines entreprise, ou similaire). Conséquence : pour qu'un locataire trouve un hôte dont les semaines sont parfaitement opposées aux siennes, la probabilité d'un match 100% est très faible. Dans la majorité des cas, le locataire devra **combiner plusieurs logements** pour couvrir l'ensemble de ses semaines à l'école — par exemple logement A pour 40% des semaines + logement B pour 30% + logement C pour 30%, en composition complémentaire.
+
+Sterny doit donc présenter un **score de compatibilité partielle** par annonce et orchestrer une **logique de composition multi-logements** pour aider le locataire à approcher 100% de couverture sans friction. Si ce mécanisme n'est pas conçu finement, le produit perd sa promesse : un locataire qui voit "compatibilité 40%" et rien d'autre se décourage et part. Et un hôte qui se voit proposer des locataires qui ne prennent qu'une partie de ses semaines disponibles risque de refuser de signer (il préfère 1 contrat sur 100% de ses semaines).
+
+**6 sous-problèmes à cadrer en session dédiée** :
+
+1. **Algorithme de scoring** : calcul du pourcentage de couverture des semaines `school` du locataire par les semaines de disponibilité de l'hôte. Intersection de sets de dates ISO du lundi (cohérent VISION §3). À formaliser pour l'implémentation et à documenter dans le doc de recherche.
+
+2. **Présentation non-décourageante du score** : "40%" sonne comme un échec alors que ça peut représenter 18 semaines couvertes sur 32. Reformulation à privilégier en absolu plutôt qu'en ratio (par exemple : *"Ce logement couvre 18 de tes 32 semaines à Rennes"*), avec framing positif. Choix de copywriting à valider.
+
+3. **Composition multi-logements pour couvrir 100%** : problème de **set cover** au sens algorithmique (NP-difficile en général, mais résoluble par heuristiques efficaces sur des sets de quelques dizaines d'éléments — donc faisable en pratique sur les volumes Sterny). Sterny doit suggérer au locataire la combinaison optimale d'annonces complémentaires pour combler ses trous.
+
+4. **Tension entre intérêts hôte et locataire** : l'hôte veut combler ses semaines vite et idéalement en 1 seul contrat (réduit la friction admin et le risque d'impayé). Le locataire qui ne prend qu'une partie des dispos d'un hôte lui laisse un trou difficile à recombler. Comment l'algorithme de matching arbitre-t-il entre intérêt hôte (préférer les locataires qui prennent toutes ses dispos) et intérêt locataire (lui présenter les meilleures couvertures partielles dispo) ? Question stratégique à trancher.
+
+5. **UX du parcours fragmenté** : comment présenter au locataire qu'il devra signer 2 ou 3 contrats différents pour couvrir son année. Signature séquentielle ou en parallèle ? Gestion des états intermédiaires (j'ai signé contrat A pour ces semaines, je cherche encore pour les semaines restantes). Affichage clair de la couverture cumulée au fil des signatures.
+
+6. **Question stratégique de fond** : Sterny vend-elle "tu auras toujours un logement chaque semaine" (promesse forte mais difficile à tenir), ou "Sterny te trouve les meilleures combinaisons possibles, mais 100% de couverture n'est pas garanti" (promesse honnête mais moins sexy) ? Ce choix conditionne le copywriting de la homepage, des annonces, et le pricing.
+
+**Impact sur la démo Le Poool du 4 mai 2026** : aucun. La démo peut se faire avec des comptes test ayant des rythmes parfaitement opposés (matching 100%). Le sujet sera mentionné comme axe de réflexion produit avancée, pas comme bloqueur immédiat.
+
+**Bloquant pré-production** : oui — sans ce mécanisme, le produit ne tient pas sa promesse pour la majorité des utilisateurs réels. Aucun lancement opérationnel ne peut se faire tant que le matching partiel et la composition multi-logements ne sont pas conçus, implémentés et testés.
+
+**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées post-Poool, livrant un document `docs/recherche/MATCHING-PARTIEL.md` qui couvre les 6 sous-problèmes ci-dessus avec scénarios, options, et tranches par grand bloc (algorithme, UX, copywriting, modèle contractuel multi-logements). À séquencer en priorité haute aux côtés de DETTE #46 (multi-années) et DETTE #47 (refonte barre recherche). Ces 3 dettes forment ensemble le "noyau produit pré-lancement" — aucune ne peut être skipée.
 
 ## Planification
 
