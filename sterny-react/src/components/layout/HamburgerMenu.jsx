@@ -3,6 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 
+// Routes où le CTA "S'inscrire" du menu mobile est masqué (cohérence avec
+// la navbar desktop, cf. Navbar.jsx HIDE_SIGNUP_ROUTES).
+const HIDE_SIGNUP_ROUTES = ['/inscription', '/connexion']
+
 const NOTIF_ICONS = {
   candidature_recue: '\u{1F4E9}',
   candidature_acceptee: '\u{1F389}',
@@ -80,6 +84,8 @@ export default function HamburgerMenu() {
 
   // Close on route change
   useEffect(() => { setIsOpen(false) }, [location.pathname])
+
+  const hideSignupCTA = HIDE_SIGNUP_ROUTES.some(route => location.pathname.startsWith(route))
 
   const getDashboardPath = () => {
     switch (userRole) {
@@ -232,9 +238,11 @@ export default function HamburgerMenu() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                   Devenir hote
                 </Link>
-                <Link to="/inscription" className="hm-item hm-item-cta" onClick={() => setIsOpen(false)}>
-                  S'inscrire
-                </Link>
+                {!hideSignupCTA && (
+                  <Link to="/inscription" className="hm-item hm-item-cta" onClick={() => setIsOpen(false)}>
+                    S'inscrire
+                  </Link>
+                )}
               </div>
             </>
           )}

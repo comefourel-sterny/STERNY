@@ -4,6 +4,7 @@ import './BottomAuthLinks.css'
 export default function BottomAuthLinks({
   onRetour,
   retourTo,
+  retourLabel = 'Retour',
   showSignInLink = false,
   signInTo = '/connexion',
   className = '',
@@ -13,7 +14,7 @@ export default function BottomAuthLinks({
     if (!onRetour && !retourTo) return null
     if (retourTo) {
       return (
-        <Link to={retourTo} className="aw-bottom-auth-link">Retour</Link>
+        <Link to={retourTo} className="aw-bottom-auth-link">{retourLabel}</Link>
       )
     }
     return (
@@ -22,7 +23,7 @@ export default function BottomAuthLinks({
         className="aw-bottom-auth-link"
         onClick={(e) => { e.preventDefault(); onRetour?.() }}
       >
-        Retour
+        {retourLabel}
       </a>
     )
   })()

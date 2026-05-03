@@ -12,6 +12,7 @@ import GoogleSignInButton from '../components/auth-wizard/GoogleSignInButton'
 import AppleSignInButton from '../components/auth-wizard/AppleSignInButton'
 import OrSeparator from '../components/auth-wizard/OrSeparator'
 import BackLink from '../components/auth-wizard/BackLink'
+import BottomAuthLinks from '../components/auth-wizard/BottomAuthLinks'
 import InfoBox from '../components/auth-wizard/InfoBox'
 import IntentCardRadio from '../components/auth-wizard/IntentCardRadio'
 import RecapBlock from '../components/auth-wizard/RecapBlock'
@@ -170,6 +171,14 @@ export default function AuthWizardSandbox() {
       <Section title="10. BackLink">
         <div className="aws-card">
           <BackLink onClick={() => alert('Retour')}>← Retour</BackLink>
+        </div>
+      </Section>
+
+      <Section title="10-bis. BottomAuthLinks (3 variants)">
+        <div className="aws-card aws-card-stack">
+          <BottomAuthLinks retourTo="/inscription" showSignInLink />
+          <BottomAuthLinks onRetour={() => alert('Retour')} showSignInLink />
+          <BottomAuthLinks retourTo="/inscription" />
         </div>
       </Section>
 

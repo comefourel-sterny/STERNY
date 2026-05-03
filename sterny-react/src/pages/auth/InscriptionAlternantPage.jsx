@@ -1,17 +1,14 @@
-import { useNavigate } from 'react-router-dom'
 import { useInscriptionWizard } from '../../hooks/useInscriptionWizard'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
 import WizardTitle from '../../components/auth-wizard/WizardTitle'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import PrimaryButton from '../../components/auth-wizard/PrimaryButton'
-import BackLink from '../../components/auth-wizard/BackLink'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import './InscriptionAlternantPage.css'
 
 const TOTAL_STEPS = 7
 
 export default function InscriptionAlternantPage() {
-  const navigate = useNavigate()
   const { state, goToPrevStep, goToNextStep } = useInscriptionWizard()
 
   if (!state.initialized) {
@@ -56,22 +53,14 @@ export default function InscriptionAlternantPage() {
         >
           {isFinalStep ? 'Finaliser' : 'Suivant'}
         </PrimaryButton>
-        {isFirstStep ? (
-          <BottomAuthLinks
-            retourTo="/inscription"
-            showSignInLink
-            className="iap-stagger"
-            style={{ animationDelay: '0.32s' }}
-          />
-        ) : (
-          <BackLink
-            onClick={goToPrevStep}
-            className="iap-stagger"
-            style={{ animationDelay: '0.32s' }}
-          >
-            ← Précédent
-          </BackLink>
-        )}
+        <BottomAuthLinks
+          onRetour={isFirstStep ? undefined : goToPrevStep}
+          retourTo={isFirstStep ? '/inscription' : undefined}
+          retourLabel="Retour"
+          showSignInLink
+          className="iap-stagger"
+          style={{ animationDelay: '0.32s' }}
+        />
       </div>
     </AuthScreenContainer>
   )

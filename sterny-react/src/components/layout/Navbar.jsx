@@ -3,12 +3,17 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import UserDropdown from './UserDropdown'
 
+// Routes où le CTA "S'inscrire" de la navbar est masqué (l'utilisateur est
+// déjà sur un parcours d'inscription ou de connexion, le CTA serait redondant).
+const HIDE_SIGNUP_ROUTES = ['/inscription', '/connexion']
+
 export default function Navbar({ variant = 'default' }) {
   const [scrolled, setScrolled] = useState(false)
   const { user } = useAuth()
   const location = useLocation()
   const isHomepage = location.pathname === '/'
   const showModeToggle = variant === 'dark'
+  const hideSignupCTA = HIDE_SIGNUP_ROUTES.some(route => location.pathname.startsWith(route))
 
   useEffect(() => {
     if (variant !== 'dark') return
@@ -51,7 +56,9 @@ export default function Navbar({ variant = 'default' }) {
           {!user && (
             <>
               <Link to="/connexion" className="nav-right-link">Se connecter</Link>
-              <Link to="/inscription" className="nav-cta-inscription">S'inscrire</Link>
+              {!hideSignupCTA && (
+                <Link to="/inscription" className="nav-cta-inscription">S'inscrire</Link>
+              )}
             </>
           )}
           <UserDropdown />
