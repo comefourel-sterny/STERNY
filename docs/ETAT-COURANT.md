@@ -2,7 +2,43 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 mai 2026 nuit — Audit design visuel des 2 pages d'inscription wizard produit (`docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md`, gitignoré). Création du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` avec sections 1-2 finalisées (modèle BDD final consolidé + séquence des 7 étapes du parcours unifié). Sections 3-7 à produire en nouvelle conv Claude.ai 2 dédiée pour préserver la précision. 5 décisions actées Q-S1.A à D + Q-S2.A. Création DETTE #53 (variables sémantiques error/success divergentes du design system).
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 sur le chantier UNIFICATION-INSCRIPTION. Sections 3-7 du doc cadrage finalisées (5 commits successifs). Création doc consolidé QUESTIONS-PROFESSIONNELS.md (19 questions pré-remplies pour avocat/DPO/assureur/dev). MAJ DETTE-TECHNIQUE (DETTE #51 caduque, création #54 et #55). Précision Q8 ajoutée à VISION §6. Doc UNIFICATION-INSCRIPTION désormais finalisé sur 7 sections — démarrage Sprint 1 (T1 extraction composants partagés) possible dès prochaine session Claude Code.
+
+---
+
+## 2026-05-03 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION
+
+### Bloc 1 — Sections 3-7 du doc cadrage UNIFICATION-INSCRIPTION
+
+5 commits successifs sur main, validés visuellement avant push à chaque étape :
+
+- `380e592` — Section 3 design des écrans : 14 sous-sections couvrant Écran 0 + E-1 à E-7 + pop-up RhythmRequiredPopup, 17 composants/hooks à créer dans tranche 1, 5 patterns audit § 7 arbitrés, bouton principal aligné sur pattern existant des pages d'auth, stepper enrichi sans le total "sur 7", E-5 dans card 460px (prérequis DETTE #54).
+- `c69374e` — Section 4 gestion 3 méthodes auth : 10 sous-sections, signatures Supabase Auth exactes (signUp, signInWithOAuth Google + Apple), refonte GoogleAuthHandler → OAuthHandler générique, DETTE #51 résolue par cette refonte (caduque), migration INSERT users hors handler (Q5) couvrant alternant + proprio, § 4.5.3 cas particulier route /inscription/proprietaire exclue, § 4.10 dépendance critique InscriptionProprietairePage doit faire son propre INSERT (DETTE #55), Apple Hide My Email géré en transparence, pattern de reprise détaillé.
+- `187b072` — Section 5 table 9 parcours bout-en-bout : 9 parcours alternant (3 type_user × 3 méthodes auth), état BDD attendu colonne par colonne, variations par dimension, table croisée 3×3, 7 tests transverses, 5 critères de succès/échec, parcours proprio hors scope (tracé via DETTE #55).
+- `9fe17be` — Section 6 sujets RGPD juridiques : index de 5 sujets + 1 bonus à examiner avec professionnels avant lancement, source unique référencée QUESTIONS-PROFESSIONNELS.md, identifiants Q-DPO-NNN / Q-AVO-NNN / Q-ASS-NNN, aucun lancement sans validation préalable.
+- `4a9d515` — Section 7 plan d'implémentation séquencé : 9 tranches T1 à T9 détaillées (objectif, fichiers, critères de succès, plan de rollback, durée, commit message), diagramme de dépendances, plan de rollback global, 6 sous-tâches transverses non séquencées, stratégie 4 sprints, estimation 19h-28h Claude Code total.
+
+### Bloc 2 — Doc consolidé QUESTIONS-PROFESSIONNELS.md créé
+
+Création du nouveau doc `docs/recherche/QUESTIONS-PROFESSIONNELS.md` source unique pour préparer les RDV pros pré-lancement. Structure 7 sections (Avocat, Avocat/DPO, Notaire, Assureur, Banque, Expert-comptable, Développeur) + sujets transversaux + table de suivi tabulaire. 19 questions pré-remplies avec identifiants `[Q-XXX-NNN]` (4 Q-AVO + 7 Q-DPO + 1 Q-ASS + 7 Q-DEV). Sections Notaire / Banque / Expert-comptable à étoffer dans les sessions ultérieures. La section Développeur permet à Côme de présenter rapidement (5-10 min) les choix structurants techniques de Sterny à un dev rencontré pour recueillir un avis externe.
+
+### Bloc 3 — MAJ DETTE-TECHNIQUE.md
+
+- DETTE #51 (AppleAuthHandler dédié) marquée **CADUQUE** — résolue par la refonte OAuthHandler générique (cf. UNIFICATION-INSCRIPTION § 4.5.2).
+- Création DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié. Prérequis bloquant de la tranche T8.
+- Création DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler (Q5). Intégrée comme commit 2/2 de la tranche T4.
+
+### Bloc 4 — MAJ VISION-ARCHITECTURE.md §6
+
+Ajout d'un nouveau paragraphe "Précision sur le parcours propriétaire" après "Périmètre élargi du chantier" qui documente : (1) UX du proprio invité revenant sans le lien (message de redirection explicite à concevoir), (2) réversibilité stratégique (garde implémentée comme flag isolable, pas logique enchevêtrée).
+
+### État final du chantier UNIFICATION-INSCRIPTION
+
+**Statut** : doc cadrage finalisé sur 7 sections (1-2 en conv 1 le 2 mai nuit, 3-7 en conv 2 le 3 mai). Implémentation pas encore démarrée. Prêt pour Sprint 1 (T1 extraction des 17 composants partagés en `components/auth-wizard/`) dès prochaine session Claude Code.
+
+**Validation requise avant lancement opérationnel** : RDV pro à organiser (avocat + DPO en priorité) pour arbitrer les 12 questions pré-remplies dans `QUESTIONS-PROFESSIONNELS.md` sections 1-2-4. Sans ces validations, l'implémentation peut avancer mais aucun lancement n'est envisageable.
+
+**Décisions clés de la conv 2** : Q-S3.A (sexe conservé tant que finalité non validée), Q-S3.B (écriture progressive BDD à chaque "Continuer"), Q-S3.C (2 URL distinctes /inscription + /inscription/alternant), refonte OAuthHandler générique unique, DETTE #51 caduque, DETTE #54 + #55 créées, précision Q8 réversibilité parcours proprio.
 
 ---
 
