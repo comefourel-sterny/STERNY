@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2 mai 2026 nuit — Ajout DETTE #53 (variables sémantiques error/success divergentes design system).
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : DETTE #51 résolue (caduque, OAuthHandler générique remplace AppleAuthHandler dédié), création DETTE #54 (refonte responsive RhythmManualBuilder) et DETTE #55 (adaptation parcours proprio post-Q5).
 
 ## Nomenclature des bugs
 
@@ -458,15 +458,19 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 **Bloquant pré-production** : non, mais à fixer avant lancement opérationnel pour éviter des bugs de dashboard qui dégraderaient la confiance utilisateur dès la première utilisation.
 
-## DETTE #51 — Apple OAuth à implémenter dans le cadre du chantier unification inscription
+## DETTE #51 — Apple OAuth à implémenter dans le cadre du chantier unification inscription [RÉSOLUE — caduque]
 
-**Statut au 2 mai 2026 soir** : créée par cadrage du chantier unification inscription (Option A) qui doit traiter les 3 méthodes d'authentification (email, Google OAuth, Apple OAuth) au même niveau.
+**Statut au 3 mai 2026** : **CADUQUE** suite au cadrage de la section 4 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
-**Constat** : Apple Developer account actif, Apple OAuth pas encore implémenté côté code Sterny. Le chantier unification inscription doit inclure le branchement Apple au même titre que Google et email — toutes les méthodes d'auth doivent converger vers le parcours d'inscription unifié et garantir le même état BDD final (4 colonnes ville renseignées + `type_user` choisi + `rhythm_calendar` saisi pour `locataire/hote/les_deux`).
+**Résolution** : la création d'un `AppleAuthHandler.jsx` séparé n'est plus nécessaire. La refonte `GoogleAuthHandler.jsx` → `OAuthHandler.jsx` générique (cf. UNIFICATION-INSCRIPTION § 4.5.2 et § 4.6) gère Google + Apple + toute future méthode OAuth dans un seul composant. Le handler ne lit pas le provider — il s'applique à toute session Auth ouverte. Le pré-remplissage prenom/nom spécifique au provider est fait côté `InscriptionAlternantPage` E-1, pas dans le handler.
 
-**Plan de résolution** : à intégrer dans le chantier unification inscription (Option A), en ajoutant Apple OAuth comme 3e flow dès le cadrage initial — ne pas le traiter en post-traitement. Spécifications Sign in with Apple (Apple Developer documentation) à étudier : redirect URI, gestion du `name` qui n'est fourni qu'une fois (premier connexion uniquement, contrairement à Google qui le renvoie à chaque session), gestion des emails masqués Apple Hide My Email (les utilisateurs Apple peuvent fournir un email aliasé qui forwarde vers leur vrai email — implications RGPD à valider).
+**Statut original** (laissé pour traçabilité) : créée par cadrage du chantier unification inscription (Option A) qui doit traiter les 3 méthodes d'authentification (email, Google OAuth, Apple OAuth) au même niveau.
 
-**Bloquant pré-production** : non strictement, Sterny peut lancer avec email + Google sans Apple. Mais cible alternants jeunes = forte proportion d'utilisateurs iOS, donc à prioriser à court terme post-démo.
+**Constat original** : Apple Developer account actif, Apple OAuth pas encore implémenté côté code Sterny.
+
+**Plan de résolution effectif** : intégré à la tranche T4 du plan d'implémentation UNIFICATION-INSCRIPTION (cf. UNIFICATION-INSCRIPTION § 7.3.4).
+
+**Bloquant pré-production** : non.
 
 ## Planification
 
@@ -495,3 +499,29 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Plan de résolution** : à harmoniser dans une passe "design tokens" plus large (introduction de variables CSS pour border-radius, box-shadows, transitions, espacements actuellement hardcodés). Décision : laquelle des 2 valeurs est la "vraie" référence Sterny ? À arbitrer en session dédiée. Cohérent avec DETTE #31 (token hover orange `#D4571F` hardcodé) et DETTE #44 (UX mobile globale).
 
 **Bloquant pré-production** : non.
+
+## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié
+
+**Statut au 3 mai 2026** : créée par cadrage section 3.9 et section 7.3.8 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
+
+**Constat** : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` a été livré le 2 mai après-midi avec un design pleine largeur (12 colonnes mensuelles qui scrollent horizontalement) qui ne tient pas dans la card 460px du parcours d'inscription unifié `InscriptionAlternantPage`.
+
+**Décision Côme du 3 mai 2026** : E-5 reste dans la card 460px standard (cohérence visuelle avec les autres étapes du wizard). Le composant `RhythmManualBuilder` doit être refondu pour s'adapter à cette largeur avant intégration.
+
+**Plan de résolution** : session Claude Code dédiée à la refonte responsive avant T8 du plan d'implémentation UNIFICATION-INSCRIPTION. Options de layout à explorer en début de tranche : layout vertical avec sélecteur mois en haut, layout compact mois × semaines redimensionné, layout calendaire condensé. Validation visuelle desktop + mobile obligatoire. Cohérent avec DETTE #44 (UX mobile globale).
+
+**Bloquant pré-production** : oui — prérequis bloquant de la tranche T8 du chantier UNIFICATION-INSCRIPTION (intégration RhythmManualBuilder en E-5 du wizard).
+
+## DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler (Q5)
+
+**Statut au 3 mai 2026** : créée par cadrage section 4.10 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
+
+**Constat** : la décision Q5 (suppression de l'INSERT `users` dans le handler OAuth, cf. UNIFICATION-INSCRIPTION section 4) **casse le parcours proprio Google actuel** qui dépendait de cet INSERT. Aujourd'hui `InscriptionProprietairePage.jsx:72` appelle `signInWithOAuth` avec `sessionStorage.signup_type='proprietaire'` puis le handler `GoogleAuthHandler` INSERT `users` avec `type_user='proprietaire'` au callback. Sans le handler qui fait l'INSERT, le proprio Google se retrouve avec une session Auth active mais aucune ligne `public.users` correspondante.
+
+**Plan de résolution** : adapter `InscriptionProprietairePage.jsx` pour qu'elle fasse son propre INSERT au callback OAuth (cf. UNIFICATION-INSCRIPTION § 4.10.2) — détection session Auth active au montage, SELECT users, INSERT minimal avec `type_user='proprietaire'` + `parrain_id` du token + `email` + `prenom`/`nom` depuis user_metadata + `profil_complet=false`. Suppression du `sessionStorage.signup_type='proprietaire'` côté `signInWithOAuth`.
+
+**Séquencement** : intégré comme commit 2/2 de la tranche T4 du plan d'implémentation UNIFICATION-INSCRIPTION (cf. UNIFICATION-INSCRIPTION § 7.3.4 et § 4.10.5). 2 commits dans la même session Claude Code, indissociables — pousser commit 1 (refonte OAuthHandler) sans commit 2 casse le proprio Google en prod.
+
+**Tests à valider en sortie** : parcours proprio Google complet avec lien `?r=<token>` valide, INSERT au callback avec valeurs correctes, wizard proprio existant fonctionne jusqu'à fin. Ne sera pas couvert par les 9 parcours nominaux UNIFICATION-INSCRIPTION (qui sont alternant only, cf. § 5.1) — table de tests proprio à produire dans le cadre de cette DETTE.
+
+**Bloquant pré-production** : oui — sans cette adaptation, le parcours proprio Google ne fonctionne plus après la refonte UNIFICATION.
