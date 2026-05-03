@@ -8,6 +8,12 @@ import { supabaseClient } from '../config/supabase'
 // est arrivé volontairement et ne doit pas être redirigé.
 const AUTH_CALLBACK_ROUTES = ['/', '/connexion', '/completer-profil']
 
+// Routes /inscription/* qui gèrent leur propre session detection et ne doivent
+// PAS être interceptées par le handler. Patch transitoire avant la refonte
+// complète en OAuthHandler générique (T4 du chantier UNIFICATION-INSCRIPTION,
+// cf. docs/recherche/UNIFICATION-INSCRIPTION.md § 4.5.2 et § 4.5.3).
+const HANDLER_BYPASS_ROUTES = ['/inscription/alternant']
+
 export default function GoogleAuthHandler() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -18,7 +24,9 @@ export default function GoogleAuthHandler() {
     // Garde de route : ne déclencher la logique que sur les callbacks d'auth
     // (homepage, /connexion, /completer-profil, /inscription/*). Sur toute autre
     // route, l'utilisateur est arrivé volontairement et ne doit pas être redirigé.
-    const isInscriptionRoute = location.pathname.startsWith('/inscription')
+    // Exclusion explicite des routes qui gèrent leur propre session (HANDLER_BYPASS_ROUTES).
+    const isBypassedRoute = HANDLER_BYPASS_ROUTES.some(route => location.pathname.startsWith(route))
+    const isInscriptionRoute = location.pathname.startsWith('/inscription') && !isBypassedRoute
     const isAuthCallback = AUTH_CALLBACK_ROUTES.includes(location.pathname) || isInscriptionRoute
     if (!isAuthCallback) return
 
