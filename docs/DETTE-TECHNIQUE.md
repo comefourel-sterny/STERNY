@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : DETTE #51 résolue (caduque, OAuthHandler générique remplace AppleAuthHandler dédié), création DETTE #54 (refonte responsive RhythmManualBuilder) et DETTE #55 (adaptation parcours proprio post-Q5).
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : DETTE #51 résolue (caduque, OAuthHandler générique remplace AppleAuthHandler dédié), création DETTE #54 (refonte responsive RhythmManualBuilder) et DETTE #55 (adaptation parcours proprio post-Q5) ; création DETTE #56 (tokenisation systématique couleurs sémantiques danger/succès, découverte par grep T1-PARTIE-1).
 
 ## Nomenclature des bugs
 
@@ -525,3 +525,19 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Tests à valider en sortie** : parcours proprio Google complet avec lien `?r=<token>` valide, INSERT au callback avec valeurs correctes, wizard proprio existant fonctionne jusqu'à fin. Ne sera pas couvert par les 9 parcours nominaux UNIFICATION-INSCRIPTION (qui sont alternant only, cf. § 5.1) — table de tests proprio à produire dans le cadre de cette DETTE.
 
 **Bloquant pré-production** : oui — sans cette adaptation, le parcours proprio Google ne fonctionne plus après la refonte UNIFICATION.
+
+## DETTE #56 — Tokenisation systématique des couleurs sémantiques danger/succès hardcodées
+
+**Statut au 3 mai 2026** : créée par découverte lors du grep préalable T1-PARTIE-1 (tranche 1 du chantier UNIFICATION-INSCRIPTION).
+
+**Constat** : 43 occurrences hardcodées de `#dc2626` (rouge danger, 6 occurrences) et `#059669` (vert succès, 37 occurrences) dans la base CSS de la plateforme. Aucune n'utilise `var(--error)` ou `var(--success)`. Fichiers principaux concernés : `DashboardProprietairePage.css` (8 occurrences `#059669`), `EtatDesLieuxPage.css` (4), `ContratLocationPage.css` (4), `DashboardLocatairePage.css` (3), `RenouvellementPage.css` (5), plus 12 autres fichiers répartis sur dashboards, transactions, profil, public.
+
+**Conséquence** : si la palette danger/succès évolue un jour (changement de tonalité, mode sombre, accessibilité), il faudra modifier 43 endroits dispersés au lieu d'une seule ligne dans `:root`. Risque de divergence visuelle silencieuse.
+
+**Action requise** : passe dédiée de tokenisation systématique. Remplacer toutes les occurrences hardcodées par `var(--error)` et `var(--success)` (vars définies dans `:root` après T1). Vérification visuelle par capture d'écran avant/après sur les pages les plus touchées (Dashboard Proprio, EtatDesLieux, ContratLocation).
+
+**Effort estimé** : 1h-1h30 Claude Code (find + replace + visual diff).
+
+**Priorité** : faible. La plateforme fonctionne, aucune régression visuelle. À traiter dans une session de nettoyage design system globale, hors scope T1-T9 du chantier UNIFICATION-INSCRIPTION.
+
+**Origine** : grep préalable T1-PARTIE-1 (3 mai 2026), session Claude Code.
