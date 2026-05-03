@@ -1411,8 +1411,427 @@ Cette section est un **index** des sujets RGPD et juridiques touchés par le cha
 
 ## 7. Plan d'implémentation séquencé
 
-9 tranches commitables identifiées au cadrage initial, à formaliser : dépendances entre tranches, critères de succès, plan de rollback, durée estimée par session.
+### 7.1 Périmètre et conventions
+
+Le chantier d'unification de l'inscription est découpé en **9 tranches commitables** + des sous-tâches transverses non séquencées. Chaque tranche correspond à un objectif testable de bout en bout, et est pensée pour faire l'objet d'un commit atomique (ou de 2 commits qui se suivent dans la même session pour les tranches double comme T4).
+
+**Conventions** :
+
+- 1 tranche = 1 session Claude Code dédiée (sauf T4 qui contient 2 commits dépendants — refonte handler + adaptation proprio — à traiter dans la même session).
+- Estimation de durée : "courte" (< 1h30 Claude Code), "moyenne" (1h30 à 3h), "longue" (3h à 6h).
+- Validation gate Côme entre chaque tranche : diff revu visuellement, push manuel, test fonctionnel rapide en local avant d'enchaîner.
+- Aucun déploiement Vercel n'intervient en cours de tranche — la branche `main` peut rester en avance sur prod tant que toutes les tranches inter-dépendantes ne sont pas commitées (cf. § 7.3.4 plan de rollback).
+
+**Dettes connexes à séquencer en parallèle ou en post-implémentation** : DETTE #30 (listes hardcodées E-3), DETTE #44 (mobile UX globale), DETTE #54 (refonte responsive RhythmManualBuilder, prérequis bloquant T8), DETTE #55 (adaptation parcours proprio, intégrée à T4).
+
+### 7.2 Vue d'ensemble des 9 tranches et dépendances
+
+| Tranche | Objectif | Durée | Dépend de | Notes |
+|---|---|---|---|---|
+| T1 | Extraction des 17 composants partagés en `components/auth-wizard/` | moyenne 2-3h | (aucune) | tokenisation `--accent-hover`, `--error`, `--success` (DETTE #31, #53) |
+| T2 | Création `InscriptionAlternantPage.jsx` from-scratch (E-1 → E-4, E-6, E-7), E-5 placeholder | longue 4-5h | T1 | configuration "Confirm email" Supabase à acter en début de tranche |
+| T3 | Refonte `ChoixInscriptionPage` (3 OAuth + retrait CTA proprio) | courte 1h | T1, T2 | T2 doit exister pour pouvoir y rediriger |
+| T4 | Refonte `GoogleAuthHandler.jsx` → `OAuthHandler.jsx` générique + adaptation `InscriptionProprietairePage` (DETTE #55) | moyenne 2-3h | T2 | 2 commits dans la même session, indissociables (cf. § 4.10.5) |
+| T5 | Suppression `InscriptionPartagerPage` + correction lien `UserDropdown` (Q9) + durcissement garde `/inscription/proprietaire` (Q8) | courte 1h | (aucune) | peut être commit en parallèle de T1-T4 |
+| T6 | Redirections 301 : `/inscription/recherche` → `/inscription/alternant` (Q3) + `/completer-profil` redirige selon `profil_complet` (Q12) | courte 30min-1h | T2, T3, T4 | sinon redirige vers du code pas prêt |
+| T7 | RPC PostgreSQL `complete_inscription_alternant` + intégration submit E-7 | moyenne 2-3h | T2 | RPC SQL en migration Supabase + appel frontend |
+| T8 | Refonte responsive `RhythmManualBuilder` (DETTE #54) + intégration en E-5 du wizard | longue 4-6h | T2, T7, **DETTE #54 résolue** | session dédiée pour la refonte responsive avant intégration |
+| T9 | Tests bout-en-bout des 9 parcours + 7 tests transverses (cf. section 5) | moyenne 2-3h | toutes les autres | tableur de tracking + captures d'écran tables `users` |
+
+**Diagramme de dépendances simplifié** :
+
+```
+T1 ──┬─→ T2 ──┬─→ T3 ──┐
+     │        ├─→ T4 ──┼─→ T6 ──→ T9
+     │        ├─→ T7 ──┘         ↑
+     │        └─→ T8 ────────────┤
+     │                            │
+T5 (indépendant) ─────────────────┘
+```
+
+**Ordre d'exécution recommandé** : T1, T5 (en parallèle si désiré), T2, T3, T4, T7, T6, T8, T9.
+
+**Estimation totale** : entre 19h et 28h de Claude Code, réparties sur 8 à 12 sessions étalées sur 2-3 semaines selon disponibilité de Côme et avancement de DETTE #54 en parallèle.
+
+### 7.3 Détail tranche par tranche
+
+#### 7.3.1 T1 — Extraction des 17 composants partagés
+
+**Objectif** : créer le dossier `sterny-react/src/components/auth-wizard/` avec les 17 composants/hooks identifiés sections 3.3 + 3.13. Tokeniser les variables CSS manquantes en `:root`.
+
+**Fichiers créés** : 17 fichiers `.jsx` + leurs CSS scopés.
+- 12 composants partagés : `AuthScreenContainer`, `WizardProgressBar`, `WizardTitle`, `WizardStepSubtitle`, `TextInput`, `TextArea`, `CustomSelect`, `AutocompleteInput`, `PrimaryButton`, `GoogleSignInButton`, `AppleSignInButton`, `OrSeparator`, `BackLink`, `PhotoCropperModal`, `useShakeButton` (hook).
+- 5 spécifiques wizard : `IntentCardRadio`, `RecapBlock`, `RhythmCalendarPreview`, `RhythmRequiredPopup`, `InfoBox`.
+
+**Fichiers modifiés** : `sterny-react/src/index.css` — ajout de `--accent-hover: #D4571F`, `--error: #dc2626`, `--success: #059669` dans `:root`.
+
+**Critères de succès** :
+- Les 17 composants compilent sans erreur (build Vite OK).
+- Chaque composant a un test visuel manuel dans une page sandbox éphémère ou un Storybook minimal.
+- Les variables CSS sont accessibles via `var(--accent-hover)` etc. dans tout fichier CSS.
+
+**Plan de rollback** : `git revert <hash>` du commit T1. Aucun composant n'est encore utilisé ailleurs dans la base à ce stade, donc le revert est sans impact.
+
+**Durée estimée** : moyenne 2-3h.
+
+**Commit message proposé** :
+```
+feat(auth-wizard): extract 17 shared components for inscription unification
+
+- 12 shared components in components/auth-wizard/ (AuthScreenContainer,
+  WizardProgressBar, TextInput, CustomSelect, AutocompleteInput, etc.)
+- 5 wizard-specific components (IntentCardRadio, RecapBlock, RhythmCalendarPreview,
+  RhythmRequiredPopup, InfoBox)
+- 1 hook (useShakeButton)
+- Tokenize --accent-hover, --error, --success in index.css :root
+- Resolves part of DETTE #31 and DETTE #53
+- Pre-requisite for T2 (InscriptionAlternantPage from-scratch)
+```
+
+#### 7.3.2 T2 — Création `InscriptionAlternantPage.jsx` from-scratch
+
+**Objectif** : créer la nouvelle page `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` avec la structure 7 étapes E-1 à E-7. E-5 reste placeholder (intégration RhythmManualBuilder en T8).
+
+**Fichiers créés** : `InscriptionAlternantPage.jsx`, `InscriptionAlternantPage.css`.
+
+**Fichiers modifiés** : `App.jsx` — ajout de la route `<Route path="/inscription/alternant" element={<InscriptionAlternantPage />} />`.
+
+**Étapes implémentées** :
+- E-1 : branchement par méthode auth (cf. § 3.5 et § 4.2/4.3/4.4), INSERT initial `users`, gestion erreur + shake bouton.
+- E-2 : `IntentCardRadio` × 3, écriture `type_user`, navigation E-3.
+- E-3 : `AutocompleteInput` école, `CustomSelect` année, `AutocompleteInput` filière. Listes hardcodées en l'état (DETTE #30 non couverte par cette tranche).
+- E-4 : UI conditionnelle selon `type_user`, écriture des 4 colonnes ville_*.
+- E-5 : `<div class="placeholder">Étape calendrier — à intégrer en T8</div>` + bouton "Continuer" temporairement no-op.
+- E-6 : champs date_naissance + sexe + photo cropper + bio + InfoBox.
+- E-7 : layout récap avec `RecapBlock`, mais pas encore d'appel RPC (T7 le branchera). Bouton "Finaliser" temporairement appelle un UPDATE manuel `profil_complet=true`.
+
+**Sous-tâche en début de tranche** : configuration "Confirm email" sur le projet Supabase production (cf. § 4.2.2). Décision Côme : activé (recommandé) ou désactivé. Si activé, ajouter un écran intermédiaire "Vérifie ta boîte mail" entre E-1 submit et E-2.
+
+**Logique de reprise au montage** : SELECT `users` WHERE `id = session.user.id`, parcours étape par étape pour détecter la 1ère étape avec un champ obligatoire vide, set `currentStep` en conséquence (cf. § 4.8).
+
+**Critères de succès** :
+- La page se monte sans erreur sur la route `/inscription/alternant`.
+- Les 7 étapes sont navigables (← Précédent / Continuer →).
+- Pour méthode email : signUp Supabase OK, INSERT initial users en E-1.
+- Pour méthode Google/Apple : redirection externe + retour, pré-remplissage prenom/nom OK en E-1.
+- L'écriture progressive en BDD à chaque clic "Continuer" fonctionne (vérifiable via Supabase Studio table `users`).
+- L'écran E-5 placeholder ne bloque pas le flow (clic Continuer passe à E-6).
+- Le submit E-7 (provisoire UPDATE direct) flippe `profil_complet=true` et redirige `/dashboard`.
+
+**Plan de rollback** : `git revert <hash>`. La page `InscriptionAlternantPage` disparaît, la route 404, mais aucun parcours existant n'est cassé tant que T6 (redirections 301) n'est pas appliqué.
+
+**Durée estimée** : longue 4-5h.
+
+**Commit message proposé** :
+```
+feat(auth-wizard): create InscriptionAlternantPage with 7 steps from-scratch
+
+- New page sterny-react/src/pages/auth/InscriptionAlternantPage.jsx
+- Steps E-1 → E-4, E-6, E-7 fully implemented (E-5 placeholder, T8 will integrate)
+- Auth method branching in E-1 (email signUp, Google/Apple OAuth pre-fill)
+- Progressive BDD writes at each "Continuer" click (resume pattern)
+- Conditional UI in E-4 based on type_user (locataire / hote / les_deux)
+- Photo cropper integrated in E-6 via PhotoCropperModal
+- E-7 recap with editable RecapBlocks, provisional submit (T7 will branch RPC)
+- Route /inscription/alternant added in App.jsx
+- Supabase "Confirm email" config decision logged separately
+```
+
+#### 7.3.3 T3 — Refonte `ChoixInscriptionPage`
+
+**Objectif** : refondre `sterny-react/src/pages/auth/ChoixInscriptionPage.jsx` pour qu'elle ne contienne plus que les 3 boutons OAuth + le lien "Se connecter", conformément à § 3.4.
+
+**Fichiers modifiés** : `ChoixInscriptionPage.jsx`, `ChoixInscriptionPage.css`.
+
+**Suppressions** :
+- Cartes choix `type_user` (déplacé en E-2 du wizard).
+- Bouton "Je suis propriétaire" (Q8 actée).
+- Toute écriture `sessionStorage.signup_type` ou `referral_token` côté handlers OAuth — les `signInWithOAuth` n'écrivent plus rien en sessionStorage.
+
+**Ajouts** :
+- 3 boutons via `<GoogleSignInButton>`, `<AppleSignInButton>`, `<PrimaryButton variant="email">` (composants T1).
+- Séparateur "ou" via `<OrSeparator>`.
+
+**Critères de succès** :
+- Page `/inscription` n'affiche plus que ces 4 éléments + lien "Se connecter".
+- Clic Google/Apple lance `signInWithOAuth` avec `redirectTo: '/inscription/alternant'`.
+- Clic email navigue vers `/inscription/alternant` directement (E-1 méthode email s'affiche).
+- Aucun sessionStorage écrit.
+
+**Plan de rollback** : `git revert <hash>`. La page revient à son état pré-refonte. Pas de casse fonctionnelle si T2 et T4 sont en place (la page existe juste en 2 versions transitoires).
+
+**Durée estimée** : courte 1h.
+
+**Commit message proposé** :
+```
+refactor(auth): simplify ChoixInscriptionPage to auth method choice only
+
+- Remove type_user choice (moved to E-2 of new wizard)
+- Remove "Je suis propriétaire" CTA (Q8 - proprio via invitation only)
+- Remove all sessionStorage writes (Q5 - INSERT moved to wizard E-1)
+- Use shared components from auth-wizard/ (T1)
+- redirectTo points to /inscription/alternant for OAuth flows
+```
+
+#### 7.3.4 T4 — Refonte `OAuthHandler` + adaptation `InscriptionProprietairePage`
+
+**Objectif (commit 1/2)** : renommer `GoogleAuthHandler.jsx` → `OAuthHandler.jsx`, supprimer la logique INSERT, ajouter l'exclusion route `/inscription/proprietaire`.
+
+**Objectif (commit 2/2)** : adapter `InscriptionProprietairePage.jsx` pour qu'elle fasse son propre INSERT au callback OAuth (DETTE #55).
+
+**Pourquoi 2 commits dans la même session** : commit 1 sans commit 2 casse le proprio Google en prod. Les deux doivent être poussés ensemble (window minimale, cf. § 4.10.5).
+
+**Fichiers modifiés (commit 1)** :
+- `sterny-react/src/components/GoogleAuthHandler.jsx` → renommé `OAuthHandler.jsx`. Volume passe de ~128 lignes à ~70 lignes.
+- `App.jsx` : import et usage `OAuthHandler` au lieu de `GoogleAuthHandler`.
+- Suppression de toute lecture `sessionStorage.signup_type`, `referrer_id`, `referral_token`, `code_parrainage`.
+
+**Fichiers modifiés (commit 2)** :
+- `sterny-react/src/pages/auth/InscriptionProprietairePage.jsx` : ajout de la logique INSERT au callback OAuth (cf. § 4.10.2). Suppression du `sessionStorage.signup_type='proprietaire'` côté `signInWithOAuth`.
+
+**Critères de succès** :
+- Test parcours alternant Google : callback redirige vers `/inscription/alternant`, wizard E-1 saisit telephone, INSERT initial OK, parcours complet jusqu'à `/dashboard`.
+- Test parcours proprio Google avec lien `?r=<token>` valide : callback redirige vers `/inscription/proprietaire?r=<token>`, INSERT au callback avec `type_user='proprietaire'` + `parrain_id` du token, wizard proprio existant fonctionne jusqu'à fin.
+- DETTE #51 marquée résolue (cf. commit groupé clôture conv 2).
+
+**Plan de rollback** : `git revert` des 2 commits ensemble. Si revert d'un seul, casse soit alternant soit proprio.
+
+**Durée estimée** : moyenne 2-3h pour les 2 commits cumulés.
+
+**Commit messages proposés** :
+```
+refactor(auth): rename GoogleAuthHandler to OAuthHandler, remove INSERT logic (Q5)
+
+- Renamed src/components/GoogleAuthHandler.jsx → OAuthHandler.jsx
+- Generic handler for Google + Apple + future OAuth providers
+- Routing logic only: SELECT users + redirect based on profil_complet
+- Removed sessionStorage reads (signup_type, referrer_id, referral_token)
+- Removed direct INSERT users (Q5 - moved to wizard E-1)
+- Excluded route /inscription/proprietaire (handled separately, cf. § 4.10)
+- DETTE #51 (AppleAuthHandler dedicated) becomes obsolete
+- Volume: 128 lines → ~70 lines
+
+```
+```
+refactor(auth): InscriptionProprietairePage handles its own OAuth callback INSERT (DETTE #55)
+
+- Page detects active session at mount, performs SELECT users
+- INSERT users with type_user='proprietaire' + parrain_id from token
+- Removes sessionStorage.signup_type='proprietaire' write
+- Required by Q5 - INSERT moved out of OAuthHandler
+- Pairs with previous commit (refactor OAuthHandler) - must be deployed together
+```
+
+#### 7.3.5 T5 — Nettoyage routes (Q8 + Q9)
+
+**Objectif** : supprimer `InscriptionPartagerPage` (Q9), corriger le lien `UserDropdown` qui pointait dessus, durcir la garde sur `/inscription/proprietaire` (Q8).
+
+**Fichiers supprimés** : `sterny-react/src/pages/auth/InscriptionPartagerPage.jsx` + son CSS.
+
+**Fichiers modifiés** :
+- `App.jsx` : suppression de la route `/inscription/partager`.
+- `UserDropdown.jsx` : remplacement du lien "Partager mon logement" par un nouveau CTA cohérent (à arbitrer côté Côme — peut-être "Devenir hôte" pointant vers une page d'explication post-MVP).
+- `InscriptionProprietairePage.jsx` : durcissement de la garde token — si `?r=<token>` absent ou non résolu en BDD, redirection 301 vers `/inscription` avec message explicatif (cf. paragraphe Q8 ajouté à VISION §6 en commit groupé clôture conv 2).
+
+**Critères de succès** :
+- Tentative d'accès à `/inscription/partager` → 404.
+- Clic "Partager mon logement" dans UserDropdown → redirection vers nouveau CTA.
+- Tentative d'accès à `/inscription/proprietaire` sans token → redirection `/inscription` avec message clair "Le parcours propriétaire requiert le lien d'invitation que votre locataire vous a envoyé".
+
+**Plan de rollback** : `git revert <hash>`. Restaure les routes et la page.
+
+**Durée estimée** : courte 1h.
+
+**Commit message proposé** :
+```
+refactor(routes): remove InscriptionPartagerPage (Q9), harden /inscription/proprietaire (Q8)
+
+- Delete sterny-react/src/pages/auth/InscriptionPartagerPage.jsx + CSS
+- Remove /inscription/partager route from App.jsx
+- Update UserDropdown link to point to new "Devenir hôte" CTA
+- InscriptionProprietairePage: redirect /inscription with explicit message if no valid token
+```
+
+#### 7.3.6 T6 — Redirections 301
+
+**Objectif** : redirection `/inscription/recherche` → `/inscription/alternant` (Q3 actée, durée 30 jours), redirection `/completer-profil` selon `users.profil_complet` (Q12).
+
+**Fichiers modifiés** :
+- `App.jsx` : ajout des `<Navigate>` ou logique de redirect.
+- Optionnel : `vercel.json` avec rules de redirect 301 pour `/inscription/recherche` (préférable au React Router pour SEO).
+
+**Comportement** :
+- `/inscription/recherche` → 301 `/inscription/alternant` (toute requête).
+- `/completer-profil` : si pas de session → `/connexion`. Si session + `profil_complet=true` → `/dashboard`. Si session + `profil_complet=false` → `/inscription/alternant` (le wizard prend la main avec pattern de reprise).
+
+**Critères de succès** :
+- Test direct URL `/inscription/recherche` → redirige vers `/inscription/alternant`.
+- Test `/completer-profil` selon état session : redirections cohérentes.
+
+**Plan de rollback** : `git revert <hash>`. Les anciennes URLs redeviennent accessibles — pas de casse mais incohérence avec T2 (la nouvelle page est sans entrée).
+
+**Durée estimée** : courte 30min-1h.
+
+**Commit message proposé** :
+```
+feat(routes): add 301 redirects /inscription/recherche → /alternant (Q3) and /completer-profil routing (Q12)
+
+- /inscription/recherche redirects 301 to /inscription/alternant (Q3, 30 days)
+- /completer-profil routes based on users.profil_complet:
+  - no session → /connexion
+  - profil_complet=true → /dashboard
+  - profil_complet=false → /inscription/alternant (wizard resume)
+- Pre-requisites: T2 + T3 + T4 must be in place
+```
+
+#### 7.3.7 T7 — RPC `complete_inscription_alternant` + intégration submit E-7
+
+**Objectif** : créer la fonction PostgreSQL `complete_inscription_alternant(p_payload jsonb)` côté Supabase (cf. section 1.5), et la brancher au clic "Finaliser mon inscription" en E-7.
+
+**Fichiers créés** : nouvelle migration Supabase dans `supabase/migrations/<timestamp>_create_complete_inscription_alternant_rpc.sql`.
+
+**Fichiers modifiés** : `InscriptionAlternantPage.jsx` E-7 — remplacer l'UPDATE direct provisoire par un appel `supabaseClient.rpc('complete_inscription_alternant', { p_payload: {...} })`.
+
+**Logique de la RPC** :
+1. Valide la cohérence finale : toutes les colonnes structurantes sont présentes (`type_user`, `ville_ecole`, `ville_entreprise`, au moins un `statut_ville_*` non NULL, `rhythm_calendar` non vide, `date_naissance`, `prenom`, `nom`, `telephone`).
+2. Si validation OK : UPDATE final + flippe `profil_complet=true` dans la même transaction.
+3. Retourne succès ou code d'erreur explicite (RAISE EXCEPTION mappable côté frontend).
+
+**Critères de succès** :
+- Migration Supabase appliquée sans erreur (`supabase db push`).
+- Test E-7 : clic "Finaliser" → RPC appelée → `profil_complet=true` en BDD → redirection `/dashboard`.
+- Test E-7 avec données incomplètes (corruption manuelle BDD pour test) : RPC retourne erreur → frontend affiche `<ErrorMessage>`.
+
+**Plan de rollback** : revert du commit + migration de revert pour DROP la fonction RPC. Le wizard E-7 redevient l'UPDATE direct provisoire.
+
+**Durée estimée** : moyenne 2-3h.
+
+**Commit message proposé** :
+```
+feat(rpc): add complete_inscription_alternant atomic RPC for E-7 submit
+
+- New Supabase migration creating complete_inscription_alternant(p_payload jsonb)
+- Validates all structuring columns present, then UPDATE + flip profil_complet=true
+- Atomic transaction (all-or-nothing)
+- Frontend E-7: replace provisional UPDATE with RPC call
+- Mappable RAISE EXCEPTION codes for frontend error handling
+```
+
+#### 7.3.8 T8 — Refonte responsive `RhythmManualBuilder` + intégration en E-5
+
+**Objectif** : refondre `RhythmManualBuilder.jsx` pour qu'il s'adapte à la card 460px du wizard (DETTE #54), puis l'intégrer en E-5 du wizard.
+
+**Sous-tranche A — Refonte responsive RhythmManualBuilder (DETTE #54)** :
+- Repenser le layout pour tenir dans 460px max-width (vs design pleine largeur actuel avec 12 colonnes mensuelles).
+- Options de layout à explorer côté Côme : layout vertical avec sélecteur mois en haut, layout compact mois × semaines redimensionné, layout calendaire condensé. Décision spécifique à arbitrer en début de tranche.
+- Validation visuelle desktop + mobile.
+
+**Sous-tranche B — Intégration en E-5** :
+- Remplacer le placeholder E-5 dans `InscriptionAlternantPage.jsx` par `<RhythmManualBuilder>` refondu.
+- Brancher la logique de validation : pop-up `RhythmRequiredPopup` si pas de calendrier au clic "Continuer".
+- Brancher l'écriture des 5 colonnes `rhythm_*` à l'UPDATE qui suit le clic "Continuer".
+
+**Fichiers modifiés** :
+- `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` + CSS associé.
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` : E-5 placeholder remplacé.
+
+**Critères de succès** :
+- `RhythmManualBuilder` s'affiche correctement dans la card 460px desktop + mobile.
+- Saisie d'un calendrier en E-5 → écriture BDD au clic Continuer → navigation E-6.
+- Refus de calendrier → pop-up `RhythmRequiredPopup` affichée → blocage E-5.
+- DETTE #54 marquée résolue.
+
+**Plan de rollback** : revert le commit. E-5 redevient placeholder, le wizard ne peut plus aller jusqu'à E-7 (validation RPC échoue car `rhythm_calendar` vide). Régression fonctionnelle.
+
+**Durée estimée** : longue 4-6h. À scinder en 2 sessions Claude Code si nécessaire (refonte responsive d'abord, intégration ensuite).
+
+**Commit message proposé** :
+```
+feat(wizard): integrate refactored RhythmManualBuilder in E-5 (DETTE #54 resolved)
+
+- Refactor RhythmManualBuilder for responsive 460px card layout
+- Integrate in InscriptionAlternantPage E-5 (replacing placeholder)
+- Branch RhythmRequiredPopup on missing calendar at "Continuer" click
+- Write rhythm_calendar, rhythm_start_date, rhythm_end_date, rhythm_source, rhythm_import_id
+- DETTE #54 resolved
+```
+
+#### 7.3.9 T9 — Tests bout-en-bout des 9 parcours + 7 tests transverses
+
+**Objectif** : exécuter les 16 tests décrits en section 5 (9 parcours nominaux + 7 tests transverses) en mode manuel, tracker les résultats dans un tableur.
+
+**Fichiers créés** : `docs/tests/UNIFICATION-INSCRIPTION-E2E-2026-MM-DD.md` — tableur markdown avec 16 lignes, colonnes (parcours, méthode auth, type_user, étape critique, résultat observé, OK/KO, capture d'écran liée).
+
+**Procédure** :
+- 1 compte test par méthode auth (3 comptes Google de test, 3 comptes Apple de test, ou 9 emails uniques pour la méthode email).
+- Pour chaque parcours : exécution complète, capture d'écran de la table `users` après soumission (via Supabase Studio), validation des 5 critères de succès § 5.9.
+- Pour chaque test transverse : reproduction, capture d'écran du résultat.
+
+**Critères de succès** :
+- 9/9 parcours nominaux passent les 5 critères.
+- 7/7 tests transverses produisent le résultat attendu.
+- Aucune colonne legacy à valeur non NULL après inscription.
+- Tableur committé et lié dans `ETAT-COURANT.md`.
+
+**Plan de rollback** : aucun (tests, pas de modification du code de prod).
+
+**Durée estimée** : moyenne 2-3h pour les 16 tests + capture + tracking.
+
+**Commit message proposé** :
+```
+test(unification-inscription): E2E manual validation of 9 parcours + 7 transverse tests
+
+- All 9 nominal parcours validated (3 type_user × 3 auth methods)
+- All 7 transverse tests validated (email already used, mdp short, abandon/resume,
+  back-edit from E-7, calendar refused, Apple Hide My Email, Apple 2nd connection)
+- Tracker docs/tests/UNIFICATION-INSCRIPTION-E2E-<date>.md committed with screenshots
+- All 5 success criteria § 5.9 met for each parcours
+- Chantier UNIFICATION-INSCRIPTION marked complete
+```
+
+### 7.4 Plan de rollback global
+
+Si le chantier doit être annulé en cours, deux scénarios :
+
+**Scénario 1 — Rollback partiel (revert d'une tranche isolée)** :
+- T1, T5, T6, T9 : rollback simple, pas de dépendance forte.
+- T2, T3, T7, T8 : rollback simple si la tranche est la dernière committée. Sinon, peut casser les tranches qui en dépendent.
+- T4 : ne jamais reverter un seul des 2 commits T4 sans l'autre.
+
+**Scénario 2 — Rollback global du chantier** :
+- `git revert` des 9 commits dans l'ordre inverse (T9 → T8 → T7 → T6 → T5 → T4 → T3 → T2 → T1).
+- Restauration de l'ancien `GoogleAuthHandler.jsx` et de l'ancien `InscriptionRecherchePage.jsx` à partir du dernier commit pré-T1.
+- Aucun impact côté BDD : les colonnes structurantes étaient déjà présentes avant le chantier (cf. section 1.4).
+
+**Critère de décision rollback global** : si plus de 3 tranches consécutives échouent en validation, ou si un arbitrage produit majeur invalide une décision actée du doc UNIFICATION (ex : Q8, Q12, Q-S2.A remises en question en cours de chantier), arrêter, reverter, refaire un cadrage en conv Claude.ai dédiée.
+
+### 7.5 Sous-tâches transverses non séquencées
+
+Les éléments suivants ne sont pas des tranches du chantier UNIFICATION mais doivent être traités en parallèle ou en post-implémentation :
+
+| Sous-tâche | Priorité | Quand | Référence |
+|---|---|---|---|
+| Configuration "Confirm email" Supabase prod | haute | en début de T2 | § 4.2.2 |
+| DETTE #30 listes hardcodées (écoles, années, filières E-3) | moyenne | session dédiée post-T9 | section 3.7 |
+| DETTE #44 mobile UX globale | moyenne | session dédiée post-MVP | INVENTAIRE-PLATEFORME §9.1 |
+| Politique de confidentialité + CGU | haute, bloquante avant lancement | post-validation pro section 6 | section 6 + QUESTIONS-PROFESSIONNELS.md |
+| Édition profil post-inscription (`ModifierProfilPage` à concevoir) | moyenne | session dédiée post-T9 | mention § 1.2.7 + § 3.10 |
+| Suppression définitive `/completer-profil` (route legacy) | basse | post-stabilisation | § 2.6 + Q12 |
+
+### 7.6 Estimation totale et stratégie de séquencement
+
+**Estimation cumulée** : 19h (basse, si tout va bien) à 28h (haute, avec retours d'arbitrage et reprises mineures) de Claude Code, hors validation et tests Côme.
+
+**Stratégie de séquencement recommandée** :
+- **Sprint 1** (5-7 jours) : T1 + T2 + T3. Aboutit à un parcours alternant fonctionnel sur `/inscription/alternant` mais isolé du reste de la plateforme.
+- **Sprint 2** (3-5 jours) : T4 + T5 + T6. Aboutit à l'intégration complète dans la plateforme : OAuthHandler générique, anciennes routes redirigées, parcours proprio adapté.
+- **Sprint 3** (3-5 jours) : T7 + T8. Aboutit à la finalisation du wizard avec submit RPC + calendrier intégré. Prérequis : DETTE #54 résolue en début de T8.
+- **Sprint 4** (1-2 jours) : T9 tests E2E + corrections résiduelles + clôture.
+
+**Parallélisme possible** : T5 peut être commit à n'importe quel moment du Sprint 1 ou 2 (pas de dépendance). Les sous-tâches transverses (DETTE #30, ModifierProfilPage) peuvent être démarrées en parallèle des sprints en sessions Claude Code distinctes.
+
+**Validation de fin de chantier** : à la fin de T9, le doc `UNIFICATION-INSCRIPTION.md` est marqué `## Statut : implémenté` dans son intro, et les sujets RGPD section 6 deviennent la priorité opérationnelle (consultation avocat / DPO / assureur avant lancement).
 
 ---
 
-*Document de cadrage en cours de rédaction. Sections 1-6 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-6 en conv Claude.ai 2 le 3 mai). Section 7 à produire dans la suite de la conv Claude.ai 2.*
+*Document de cadrage finalisé. 7 sections produites entre le 2 mai 2026 nuit (sections 1-2 en conv Claude.ai 1) et le 3 mai 2026 (sections 3-7 en conv Claude.ai 2). Document prêt pour démarrage de l'implémentation séquencée selon le plan de la section 7.*
