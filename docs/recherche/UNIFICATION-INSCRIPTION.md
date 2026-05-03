@@ -1098,11 +1098,195 @@ Cette adaptation est tracée comme **DETTE #55 — Adaptation parcours proprio p
 
 ---
 
-## 5-7. Sections à produire dans la suite de la conv Claude.ai 2
+## 5. Table des 9 parcours bout-en-bout à tester
 
-### 5. Table des 9 parcours bout-en-bout à tester
+### 5.1 Périmètre
 
-3 type_user × 3 méthodes auth = 9 parcours. Pour chacun : méthode auth de départ, champs saisis par étape, état BDD attendu colonne par colonne en sortie, redirection finale.
+9 parcours alternant à tester en bout-en-bout : 3 `type_user` (`locataire`, `hote`, `les_deux`) × 3 méthodes auth (email, Google, Apple). Pour chacun : amorçage, séquence des 7 étapes, état BDD attendu colonne par colonne en sortie, redirection finale.
+
+**Hors scope de cette table** : 3 parcours propriétaire (email + Google + Apple) à tester séparément après implémentation de DETTE #55 (adaptation `InscriptionProprietairePage` post-Q5). Une table de tests proprio sera produite dans le cadre de cette DETTE, pas dans ce doc.
+
+**Méthodologie** : la section décrit d'abord l'état BDD commun aux 9 parcours, puis les variations selon les 2 dimensions (méthode auth, type_user), et termine sur une table croisée 3×3 récapitulative et les tests transverses.
+
+### 5.2 État BDD initial avant inscription
+
+Avant que l'utilisateur ne clique "Continuer avec X" sur l'écran 0 :
+
+- `auth.users` : aucune ligne pour cet utilisateur (pas encore de session Supabase).
+- `public.users` : aucune ligne (pas encore d'INSERT).
+- Aucune entrée sessionStorage liée à l'inscription (cf. § 4.7 — sessionStorage `signup_type` retiré).
+
+### 5.3 État BDD attendu commun aux 9 parcours en sortie
+
+Colonnes écrites identiquement par les 9 parcours, à la fin du wizard E-7 (après RPC `complete_inscription_alternant`) :
+
+| Colonne `public.users` | Type | Valeur attendue |
+|---|---|---|
+| `id` | uuid | `auth.users.id` (FK CASCADE) |
+| `email` | text | non NULL, format email valide |
+| `prenom` | text | non NULL après trim |
+| `nom` | text | non NULL après trim |
+| `telephone` | text | non NULL, format permissif validé |
+| `ecole` | text | valeur saisie en E-3 (liste hardcodée DETTE #30) |
+| `annee_etudes` | text | valeur saisie en E-3 |
+| `filiere` | text | valeur saisie en E-3 |
+| `rhythm_calendar` | jsonb | tableau non vide `[{week_start, status}, ...]` |
+| `rhythm_start_date` | date | premier lundi du calendrier |
+| `rhythm_end_date` | date | dernier lundi du calendrier |
+| `rhythm_source` | text | `'manual'` |
+| `rhythm_import_id` | uuid | NULL (saisie manuelle, Q-S2.A) |
+| `date_naissance` | text | format `YYYY-MM-DD`, âge ≥ 18 ans |
+| `sexe` | text | `'homme'` / `'femme'` / `'autre'` |
+| `photo_profil_url` | text | URL Supabase Storage si renseignée, sinon NULL |
+| `bio` | text | texte si renseigné, sinon NULL |
+| `profil_complet` | boolean | **`true`** (flippé par RPC E-7) |
+| `identite_verifiee` | text | `'non_verifiee'` (default BDD) |
+| `is_admin` | boolean | `false` (default BDD) |
+| `preferences_email` | jsonb | objet par défaut (5 clés) |
+| `invitation_token` | text | UUID v4 généré (permet parrainage proprio futur, cf. section 1.2.8) |
+| `parrain_id` | uuid | NULL (Q-S1.D — pas de parrainage entre alternants) |
+| `code_parrainage` | text | NULL (idem Q-S1.D) |
+| `type_alternance` | text | NULL (déprécié VISION §3, cf. section 1.4.2) |
+| `rythme_alternance` | text | NULL (déprécié VISION §3) |
+| `ville` (legacy) | text | NULL (gel d'écriture, cf. section 1.4.1) |
+| `a_logement` | boolean | NULL (gel d'écriture, Q11) |
+| `created_at` | timestamptz | `now()` du moment de l'INSERT initial E-1 |
+
+Les colonnes "flux métier post-inscription" (documents `doc_*`, garant) restent NULL (cf. section 1.4.3).
+
+### 5.4 Variations par méthode auth (E-1 + colonnes auth)
+
+#### 5.4.1 Méthode email
+
+`auth.users.app_metadata.provider = 'email'`. Champs saisis en E-1 (5) : prenom, nom, telephone, email, mdp. Pas de pré-remplissage. INSERT `public.users` au submit E-1 avec `email = emailInput`, `prenom/nom/telephone = inputs trim()`. Si "Confirm email" activé en prod, écran intermédiaire entre E-1 submit et E-2 (cf. § 4.2.2).
+
+#### 5.4.2 Méthode Google
+
+`auth.users.app_metadata.provider = 'google'`. Champs saisis en E-1 (3) : prenom, nom, telephone. Pré-remplissage prenom + nom depuis `user_metadata.full_name` (split sur espace). Email = `user.email` Google (jamais aliasé). INSERT `public.users` au submit E-1 avec `email = session.user.email`, prenom + nom = inputs (modifiables avant submit), telephone = input.
+
+#### 5.4.3 Méthode Apple
+
+`auth.users.app_metadata.provider = 'apple'`. Champs saisis en E-1 (3) : prenom, nom, telephone. Pré-remplissage prenom + nom depuis `user_metadata.name.firstName/lastName` **si présent à la 1ère connexion** (cf. § 4.4.2), sinon vides. Email = `user.email` Apple, **potentiellement aliasé** `*@privaterelay.appleid.com`. INSERT `public.users` identique à Google. Flag local React `isAppleRelay` levé si email aliasé (pas écrit en BDD à ce stade).
+
+### 5.5 Variations par `type_user` (E-2 + E-4)
+
+E-2 écrit `users.type_user`. E-4 écrit `ville_ecole`, `statut_ville_ecole`, `ville_entreprise`, `statut_ville_entreprise` selon les 8 cas de la table 1.3 (section 1).
+
+Pour les tests bout-en-bout, on retient un cas représentatif par `type_user` (les autres cas étant testables en variation supplémentaire au sein de chaque parcours principal) :
+
+#### 5.5.1 `type_user = 'locataire'`
+
+Cas représentatif : cherche dans la ville d'école.
+
+| Colonne | Valeur attendue |
+|---|---|
+| `type_user` | `'locataire'` |
+| `ville_ecole` | non NULL (saisie utilisateur) |
+| `statut_ville_ecole` | `'recherche'` |
+| `ville_entreprise` | non NULL (saisie utilisateur) |
+| `statut_ville_entreprise` | NULL |
+
+Variation à tester en complément : "cherche dans la ville d'entreprise" → `statut_ville_ecole = NULL`, `statut_ville_entreprise = 'recherche'`.
+
+#### 5.5.2 `type_user = 'hote'`
+
+Cas représentatif : propose dans la ville d'école.
+
+| Colonne | Valeur attendue |
+|---|---|
+| `type_user` | `'hote'` |
+| `ville_ecole` | non NULL |
+| `statut_ville_ecole` | `'hote'` |
+| `ville_entreprise` | non NULL |
+| `statut_ville_entreprise` | NULL |
+
+Variation à tester : "propose dans la ville d'entreprise" → statuts inversés.
+
+#### 5.5.3 `type_user = 'les_deux'`
+
+Cas représentatif : propose école + cherche entreprise.
+
+| Colonne | Valeur attendue |
+|---|---|
+| `type_user` | `'les_deux'` |
+| `ville_ecole` | non NULL |
+| `statut_ville_ecole` | `'hote'` |
+| `ville_entreprise` | non NULL |
+| `statut_ville_entreprise` | `'recherche'` |
+
+Variations à tester : 3 autres cas de la table 1.3 (cherche école + propose entreprise, cherche les 2, propose les 2).
+
+### 5.6 Table croisée 3×3 des 9 parcours
+
+| # | Parcours | Méthode auth | type_user | Champs E-1 saisis | E-2 | E-4 colonnes critiques |
+|---|---|---|---|---|---|---|
+| P1 | Email × Locataire | email | `'locataire'` | 5 (prenom, nom, tel, email, mdp) | radio "Je cherche" | `statut_ville_ecole='recherche'`, `statut_ville_entreprise=NULL` |
+| P2 | Email × Hôte | email | `'hote'` | 5 | radio "Je propose" | `statut_ville_ecole='hote'`, `statut_ville_entreprise=NULL` |
+| P3 | Email × Les deux | email | `'les_deux'` | 5 | radio "Les deux" | `statut_ville_ecole='hote'`, `statut_ville_entreprise='recherche'` |
+| P4 | Google × Locataire | google | `'locataire'` | 3 (prenom*, nom*, tel) | radio "Je cherche" | identique P1 |
+| P5 | Google × Hôte | google | `'hote'` | 3 | radio "Je propose" | identique P2 |
+| P6 | Google × Les deux | google | `'les_deux'` | 3 | radio "Les deux" | identique P3 |
+| P7 | Apple × Locataire | apple | `'locataire'` | 3 (prenom**, nom**, tel) | radio "Je cherche" | identique P1 |
+| P8 | Apple × Hôte | apple | `'hote'` | 3 | radio "Je propose" | identique P2 |
+| P9 | Apple × Les deux | apple | `'les_deux'` | 3 | radio "Les deux" | identique P3 |
+
+\* prenom/nom Google : pré-remplis depuis `user_metadata.full_name`, modifiables.
+\** prenom/nom Apple : pré-remplis depuis `user_metadata.name` à la 1ère connexion uniquement, sinon vides.
+
+### 5.7 Redirection finale commune aux 9 parcours
+
+Au clic "Finaliser mon inscription" en E-7 :
+
+1. RPC `complete_inscription_alternant` exécutée (cf. section 1.5).
+2. `users.profil_complet` flippé à `true` dans la transaction.
+3. Redirection `navigate('/dashboard')`.
+4. `OAuthHandler` ne ré-intercepte pas (route `/dashboard` hors `AUTH_CALLBACK_ROUTES`).
+5. Le dashboard alternant s'affiche, l'utilisateur voit son rythme et ses options de matching.
+
+**Pas de cas `'/dashboard/proprietaire'`** — exclu par construction (les 9 parcours sont tous alternant).
+
+### 5.8 Tests transverses à valider en complément
+
+En plus des 9 parcours nominaux, 7 cas transverses à tester :
+
+| # | Cas | Procédure | Résultat attendu |
+|---|---|---|---|
+| T1 | Email déjà utilisé | P1 démarrage avec un email déjà inscrit | `<ErrorMessage>` en E-1 + lien "Se connecter", pas d'INSERT |
+| T2 | Mot de passe trop court | P1 avec mdp 5 caractères | `<ErrorMessage>` sous mdp, pas de submit |
+| T3 | Abandon en E-3 et reprise plus tard | Démarrage P1 jusqu'à E-3 saisie, fermer onglet, revenir 1h plus tard | Reprise à E-4 (E-3 OK), valeurs préservées en BDD |
+| T4 | Modification arrière depuis E-7 | P3 jusqu'à E-7, clic crayon "Études" | Retour à E-3 en mode édition, valeurs pré-remplies, retour E-7 après modif |
+| T5 | Refus du calendrier en E-5 | P1 jusqu'à E-5, clic "Continuer" sans calendrier | Pop-up `RhythmRequiredPopup` (cf. § 3.12), pas de progression vers E-6 |
+| T6 | Apple Hide My Email | P7 avec compte Apple en mode "Cacher mon adresse" | `users.email = '*@privaterelay.appleid.com'`, flag UI local levé, pas d'erreur |
+| T7 | Apple 2ᵉ connexion sans `name` | P7 démarré une 1ère fois sans terminer, retour 2ᵉ fois via Apple | E-1 avec inputs prenom/nom **vides**, l'utilisateur saisit manuellement |
+
+### 5.9 Critères de succès / d'échec par parcours
+
+Un parcours P_n est considéré **réussi** si et seulement si, après "Finaliser mon inscription" :
+
+1. `public.users` contient une ligne avec `id = auth.users.id` actuel.
+2. Toutes les colonnes structurantes attendues (cf. § 5.3 + variation § 5.5) sont renseignées avec les valeurs attendues.
+3. `profil_complet = true`.
+4. Les colonnes legacy/dépréciées (`type_alternance`, `rythme_alternance`, `ville`, `a_logement`) sont **NULL**.
+5. La page `/dashboard` s'affiche correctement avec les données du nouvel utilisateur.
+
+Un parcours est **échoué** si l'une des 5 conditions est violée. En particulier :
+
+- Une colonne legacy à valeur non NULL est un échec (signe que du code legacy a été oublié dans le pipeline d'écriture).
+- Un `profil_complet = false` après le submit final est un échec (signe que la RPC `complete_inscription_alternant` n'a pas été appelée ou a échoué silencieusement).
+- Une absence d'`id` dans `public.users` est un échec (INSERT initial E-1 raté).
+
+### 5.10 Outillage de test recommandé
+
+Pour exécuter ces 9 + 7 = 16 tests :
+
+- **Manuel** : tableur avec 16 lignes, 1 colonne par champ critique, 1 colonne "résultat observé" + "OK/KO". Suffisant pour la 1ère version du parcours unifié.
+- **Automatisable plus tard** : Playwright ou Cypress en E2E + assertions Supabase via service role key. Hors scope de cette section (sujet potentiel de session ultérieure).
+
+Pour le 1er passage de tests bout-en-bout (à faire en sortie de tranche 9 du plan d'implémentation, cf. section 7), un test manuel avec un compte test par méthode auth + capture d'écran de la table `users` après chaque parcours est suffisant.
+
+---
+
+## 6-7. Sections à produire dans la suite de la conv Claude.ai 2
 
 ### 6. Sujets RGPD et juridiques à signaler
 
@@ -1114,4 +1298,4 @@ Cette adaptation est tracée comme **DETTE #55 — Adaptation parcours proprio p
 
 ---
 
-*Document de cadrage en cours de rédaction. Sections 1-4 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-4 en conv Claude.ai 2 le 3 mai). Sections 5-7 à produire dans la suite de la conv Claude.ai 2.*
+*Document de cadrage en cours de rédaction. Sections 1-5 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-5 en conv Claude.ai 2 le 3 mai). Sections 6-7 à produire dans la suite de la conv Claude.ai 2.*
