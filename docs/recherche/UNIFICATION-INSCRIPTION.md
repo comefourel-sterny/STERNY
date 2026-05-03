@@ -286,65 +286,456 @@ Routes liées :
 
 ---
 
-## 3-7. Sections à produire en nouvelle conv Claude.ai
+## 3. Design des écrans
 
-Sections restantes du livrable cible, à produire en partant des 2 audits sources (`docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md` et `docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md`) déjà à disposition :
+### 3.1 Principes design hérités
 
-### 3. Design des écrans
+Le parcours unifié reprend le design hybride IR + CP recommandé par `docs/_audit/AUDIT-DESIGN-INSCRIPTION-2026-05-02.md` § 7. Synthèse des choix fondateurs :
 
-Description écran par écran (E-1 à E-7) en partant du design hybride IR+CP recommandé par audit design § 7 :
-- Squelette card + animation `irFadeIn` appliquée + `overflow: visible`
-- Bouton principal 48px (IR)
-- Sous-titre dynamique par étape (CP)
-- Hover input border `#CBD5E1` (CP)
-- Inscription via OAuth + séparateur "ou" (IR)
-- Cropper photo (CP) tel quel
-- Shake bouton sur erreur (IR)
+| Élément | Source | Détail |
+|---|---|---|
+| Squelette page | IR | flex centré fond `#F4F5F7`, card 460px max-width, animation `irFadeIn` appliquée systématiquement |
+| Card | IR + CP | border-radius 16px, padding 36px, fond blanc, box-shadow `0 6px 28px rgba(232,98,42,0.10)`, border `1.5px solid #E8EAF0`, `overflow: visible` (autorise dropdowns) |
+| Bouton principal | pattern existant des pages d'auth de la plateforme | identique à `ChoixInscriptionPage` / `ConnexionPage` — pas de modification dans le scope de ce chantier |
+| Sous-titre dynamique d'étape | CP | `.cp-subtitle` 11px weight 600 ls 1.5px gris uppercase, affiche le nom de l'étape courante |
+| Hover input | CP | border `#CBD5E1` au survol (micro-affordance) |
+| Cropper photo | CP | modal 360px radius 20px overlay sombre, drag + zoom + canvas.toBlob |
+| Shake bouton sur erreur | IR | hook `useShakeButton` |
+| OAuth + séparateur "ou" | IR | uniquement sur l'écran 0 (page choix méthode auth) |
 
-7 patterns à arbitrer recensés audit design § 7. Étapes E-5 (calendrier) et E-7 (récap) à designer ex nihilo. Pop-up Q9 RhythmRequiredPopup à designer en cohérence avec pattern `.cp-crop-overlay`.
+Design system Sterny appliqué (cf. `INVENTAIRE-PLATEFORME.md` §9.1) : Navy `#1E293B`, Orange `#E8622A`, Fond `#F4F5F7`, DM Sans, focus orange + ring `0 0 0 3px rgba(232,98,42,0.15)`, animations stagger 0.4s avec délais 0.08s × index.
 
-### 4. Gestion des 3 méthodes auth (email, Google, Apple)
+### 3.2 Arbitrages des patterns recensés audit § 7
 
-Spécifications détaillées de chaque flow :
-- Signature exacte des appels `supabase.auth.signUp` / `supabase.auth.signInWithOAuth`
-- Handlers `GoogleAuthHandler` (refonte) et `AppleAuthHandler` (création, DETTE #51)
-- Migration de l'INSERT BDD hors des handlers vers le parcours unifié (Q5 actée)
-- Gestion du callback (URL retour, scopes OAuth, redirect_uri)
-- Pré-remplissage prenom/nom depuis providers
-- Particularité Apple `name` 1ère connexion uniquement
+| # | Pattern | Décision | Justification |
+|---|---|---|---|
+| 1 | Animation entrée card | **appliquer systématiquement** | corrige bug CP (`cpFadeIn` définie mais jamais appliquée) |
+| 2 | Sous-titre par étape | **conserver** | gain de clarté pour wizard 7 étapes |
+| 3 | Stepper visuel | **barre 2px + libellé "Étape N — [Nom]"** au-dessus, sans le total "sur 7" | volonté UX : progression visible (barre) + repère d'étape (libellé) sans afficher le total qui pourrait décourager |
+| 4 | Couleur hover orange | **tokeniser en `--accent-hover: #D4571F`** | DETTE #31, à faire dans la tranche 1 d'extraction composants |
+| 5 | Variables `--error / --success` | **harmoniser sur design system Sterny** (`#dc2626` / `#059669`) | DETTE #53, à faire dans la même tranche 1 |
 
-### 5. Table des 9 parcours bout-en-bout à tester
+Hauteur bouton principal et style disabled bouton : non modifiés — on réutilise le pattern existant des pages d'auth de la plateforme.
 
-3 type_user alternant × 3 méthodes auth = 9 parcours. Pour chacun :
-- Méthode auth de départ
-- Champs saisis par étape
-- État BDD attendu en sortie (colonnes par colonnes)
-- Redirection finale attendue
+### 3.3 Composants partagés à créer (`components/auth-wizard/`)
 
-### 6. Sujets RGPD et juridiques à signaler
+12 composants identifiés audit § 6, à extraire dans la tranche 1 du plan d'implémentation (cf. section 7) :
 
-À consolider pour consultation DPO/avocat :
-- `telephone` obligatoire (finalité contact opérationnel — standard mais à documenter en politique de confidentialité)
-- `date_naissance` (donnée personnelle, finalité validation âge ≥ 18 ans)
-- `sexe` ⚠️ finalité métier à clarifier — si pas justifiée, retrait du champ (principe de minimisation)
-- Apple Hide My Email (alias `@privaterelay.appleid.com`, traçabilité, perte de contact si alias révoqué)
-- Conditions de stockage des tokens OAuth Supabase
+| Composant | Rôle | Réutilisable ailleurs ? |
+|---|---|---|
+| `<AuthScreenContainer>` | page flex centrée + card | oui (reset password, Apple OAuth handler) |
+| `<WizardProgressBar progress={n/7} stepLabel="Études" stepNumber={3}>` | barre 2px + libellé "Étape N — [Nom]" | oui (autres wizards futurs) |
+| `<WizardTitle>` + `<WizardStepSubtitle>` | titre INSCRIPTION + sous-titre dynamique | oui |
+| `<TextInput>` | input texte avec hover + focus orange + ring | oui (toute la plateforme) |
+| `<TextArea>` | idem version multilignes | oui |
+| `<CustomSelect>` | trigger + portal dropdown chevron | oui (remplace `CustomSelect` IR + `CpSelect` CP) |
+| `<AutocompleteInput>` | input + suggestions portal générique | oui (remplace `VilleAutocomplete` + `CpSuggestionsPortal`) |
+| `<PrimaryButton>` | wrapper minimal sur le pattern bouton standard d'auth | oui — wrapper, pas un nouveau bouton |
+| `<GoogleSignInButton>` + `<AppleSignInButton>` + `<OrSeparator>` | OAuth + séparateur "ou" | oui (page de connexion) |
+| `<BackLink>` | séparateur top + lien retour orange | oui |
+| `<PhotoCropperModal>` | modal 360px drag + zoom + canvas | oui (modification profil) |
+| `useShakeButton` (hook) | shake animation sur erreur | oui |
 
-### 7. Plan d'implémentation séquencé
+Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (audit § 6).
 
-Découpage en sessions Claude.ai dédiées + tranches commitables :
-- Tranche 1 : extraction des 12 composants partagés identifiés audit design § 6 (`<AuthScreenContainer>`, `<WizardProgressBar>`, etc.)
-- Tranche 2 : création `InscriptionAlternantPage.jsx` from-scratch avec étapes E-1 à E-4, E-6, E-7 (E-5 = placeholder)
-- Tranche 3 : refonte `ChoixInscriptionPage` (3 OAuth + retrait CTA proprio, Q8)
-- Tranche 4 : refonte `GoogleAuthHandler` + création `AppleAuthHandler` (DETTE #51)
-- Tranche 5 : durcissement garde `/inscription/proprietaire` (Q8) + suppression `InscriptionPartagerPage` + lien UserDropdown corrigé (Q9)
-- Tranche 6 : redirection 301 `/inscription/recherche` + redirection `/completer-profil` (Q3 + Q12)
-- Tranche 7 : RPC `complete_inscription_alternant` + intégration submit E-7
-- Tranche 8 : intégration `RhythmManualBuilder` en E-5 (session post-unification)
-- Tranche 9 : tests bout-en-bout des 9 parcours
+### 3.4 Écran 0 — `/inscription` (ChoixInscriptionPage refondue)
 
-Dépendances entre tranches, étape de tests bout-en-bout en final, critères de succès, plan de rollback à formaliser.
+**Périmètre** : page d'entrée publique, choix de la méthode d'authentification. Pas de wizard — page simple d'arrivée.
+
+**Layout** : `<AuthScreenContainer>` standard, card 460px.
+
+**Contenu** :
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardStepSubtitle> "Crée ton compte alternant"
+├── <GoogleSignInButton>     "Continuer avec Google"
+├── <AppleSignInButton>      "Continuer avec Apple"
+├── <OrSeparator>            "ou"
+├── <PrimaryButton variant="email">  "Continuer avec mon email"
+└── <BackLink>               "Déjà un compte ? Se connecter"
+```
+
+**Interactions** :
+
+- Clic Google → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`
+- Clic Apple → idem provider `'apple'`
+- Clic email → navigation route `/inscription/alternant` directe, E-1 affiche le formulaire 5 champs (prenom, nom, telephone, email, mdp)
+- Clic "Se connecter" → `/connexion`
+
+**Suppressions vs version actuelle** :
+
+- Plus de cartes choix `type_user` (déplacé en E-2)
+- Plus de bouton "Je suis propriétaire" (Q8 — proprio par invitation uniquement)
+
+**Pas de `<WizardProgressBar>`** : pas une étape du wizard, pas de progression à afficher.
+
+### 3.5 Écran E-1 — Identité
+
+**Périmètre** : 1ère étape du wizard. Création/complétion de la session Auth + capture identité.
+
+**Branchement par méthode auth** (cf. audit `AUDIT-INSCRIPTION-2026-05-02.md` § 3 signatures Supabase Auth) :
+
+#### 3.5.1 Méthode email (5 champs)
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={1/7} stepLabel="Identité" stepNumber={1}>
+├── <WizardStepSubtitle> "Tes informations de contact"
+├── <TextInput label="Prénom" required>
+├── <TextInput label="Nom" required>
+├── <TextInput label="Téléphone" type="tel" required>
+├── <TextInput label="Email" type="email" required>
+├── <TextInput label="Mot de passe" type="password" required>
+├── <PrimaryButton> "Continuer"
+└── <BackLink href="/inscription"> "Retour"
+```
+
+Validation au submit :
+- prenom non vide après trim()
+- nom non vide après trim()
+- telephone : regex permissive (10 chiffres FR ou format international avec `+`), pas de validation SMS
+- email : regex standard
+- mdp : longueur ≥ 8 caractères
+
+Au clic "Continuer" :
+1. `supabase.auth.signUp({email, password, options: {data: {prenom, nom, telephone}}})` — la session se crée, `auth.users.id` est généré
+2. INSERT initial `users` avec `id`, `email`, `prenom`, `nom`, `telephone`, `profil_complet=false`
+3. Navigation E-2
+
+#### 3.5.2 Méthode Google ou Apple (3 champs)
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={1/7} stepLabel="Identité" stepNumber={1}>
+├── <WizardStepSubtitle> "Confirme tes informations"
+├── <TextInput label="Prénom" required value={prenom_oauth_pre_rempli}>
+├── <TextInput label="Nom" required value={nom_oauth_pre_rempli}>
+├── <TextInput label="Téléphone" type="tel" required>
+├── <PrimaryButton> "Continuer"
+└── <BackLink href="/inscription"> "Retour"
+```
+
+Pré-remplissage prenom + nom depuis `user.user_metadata.full_name` (Google) ou `user.user_metadata.name` (Apple, 1ère connexion uniquement). Champs modifiables au cas où le provider renvoie un nom incorrect (courant chez Apple).
+
+Au clic "Continuer" :
+1. INSERT initial `users` avec `id` (= `auth.users.id` déjà créée par OAuth), `email`, `prenom`, `nom`, `telephone`, `profil_complet=false`
+2. Navigation E-2
+
+**Pas d'email/mdp à saisir** : la session Auth est déjà ouverte au retour du callback OAuth, le wizard arrive avec une session active.
+
+**Cas particulier Apple Hide My Email** : l'`email` peut matcher `*@privaterelay.appleid.com`. Détection au callback, flag interne `email_is_apple_relay` à logger côté frontend, à signaler section 6.
+
+**Erreur** : si email déjà existant en BDD (signup email) ou conflit de session (OAuth), affichage `<ErrorMessage>` rouge sous le formulaire + shake bouton via `useShakeButton`.
+
+### 3.6 Écran E-2 — Type de profil
+
+**Périmètre** : choix `type_user` parmi 3 valeurs.
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={2/7} stepLabel="Type de profil" stepNumber={2}>
+├── <WizardStepSubtitle> "Tu cherches, tu proposes, ou les deux ?"
+│
+├── <IntentCardRadio name="type_user" value="locataire">
+│     [Icône maison + flèche vers la droite]
+│     Je cherche un logement
+│     Pour les semaines où je suis en cours
+│
+├── <IntentCardRadio name="type_user" value="hote">
+│     [Icône maison avec clé sortante]
+│     Je propose mon logement
+│     Pour les semaines où je suis en entreprise
+│
+├── <IntentCardRadio name="type_user" value="les_deux">
+│     [Icône cycle / 2 flèches alternées]
+│     Les deux
+│     Je cherche dans une ville et je propose dans l'autre
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink onClick={prevStep}> "Retour"
+```
+
+**Composant `<IntentCardRadio>`** : carte cliquable pleine largeur, border `1.5px solid #E8EAF0` au repos, border + bg orange diaphane quand sélectionnée (état `aria-checked="true"`). Repris du pattern `.intent-card` IR (audit § 6).
+
+Validation : un radio doit être coché. Bouton "Continuer" disabled sinon.
+
+Au clic "Continuer" : UPDATE `users.type_user` + navigation E-3.
+
+### 3.7 Écran E-3 — Études
+
+**Périmètre** : école, année, filière.
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={3/7} stepLabel="Études" stepNumber={3}>
+├── <WizardStepSubtitle> "Ton cursus actuel"
+│
+├── <AutocompleteInput label="École" placeholder="Tape les premières lettres" suggestions={ecoles_api}>
+│
+├── <CustomSelect label="Année d'études" options={["BTS 1", "BTS 2", "BUT 1", "BUT 2", "BUT 3", "Licence 1", ..., "Master 2", "Autre"]}>
+│
+├── <AutocompleteInput label="Filière" placeholder="Ex : Informatique, GEA, Marketing" suggestions={filieres_api}>
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink onClick={prevStep}> "Retour"
+```
+
+**Note** : les listes `ecoles_api`, `annee_etudes`, `filieres_api` sont aujourd'hui hardcodées (DETTE #30). À remplacer par dropdown autocomplete BDD dans une session ultérieure dédiée. En sortie de section 7 du doc cadrage, on pose la dette : pour la première version du parcours unifié on conserve les listes hardcodées, le remplacement BDD est à séquencer en parallèle.
+
+Validation : tous les champs requis. Au clic "Continuer" : UPDATE `users.ecole + annee_etudes + filiere` + navigation E-4.
+
+### 3.8 Écran E-4 — Villes & statuts
+
+**Périmètre** : 4 colonnes BDD à remplir : `ville_ecole`, `statut_ville_ecole`, `ville_entreprise`, `statut_ville_entreprise`.
+
+UI conditionnelle selon `type_user` choisi en E-2 (cf. table 1.3 section 1) :
+
+#### Cas `type_user = 'locataire'`
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={4/7} stepLabel="Villes & statuts" stepNumber={4}>
+├── <WizardStepSubtitle> "Où sont ton école et ton entreprise ?"
+│
+├── <AutocompleteInput label="Ville de mon école" required>
+├── <AutocompleteInput label="Ville de mon entreprise" required>
+│
+├── <Question> "Dans laquelle des deux cherches-tu un logement ?"
+├── <RadioGroup>
+│     ○ Ville de mon école
+│     ○ Ville de mon entreprise
+│   </RadioGroup>
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink> "Retour"
+```
+
+Logique : la ville sélectionnée → `statut_ville_X = 'recherche'`, l'autre `statut_ville_X = NULL`.
+
+#### Cas `type_user = 'hote'`
+
+Même UI, libellé radio adapté : "Dans laquelle des deux proposes-tu ton logement ?". La ville sélectionnée → `statut_ville_X = 'hote'`, l'autre `NULL`.
+
+#### Cas `type_user = 'les_deux'`
+
+```
+[Card]
+├── ...
+│
+├── <AutocompleteInput label="Ville de mon école" required>
+├── <CustomSelect label="Dans cette ville je..." options={["cherche un logement", "propose mon logement"]}>
+│
+├── <AutocompleteInput label="Ville de mon entreprise" required>
+├── <CustomSelect label="Dans cette ville je..." options={["cherche un logement", "propose mon logement"]}>
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink> "Retour"
+```
+
+Mapping : "cherche un logement" → `'recherche'`, "propose mon logement" → `'hote'`. Les 8 combinaisons de la table 1.3 sont toutes couvertes.
+
+Validation : 2 villes saisies (BDD : NOT NULL respecté), 1 (locataire / hote) ou 2 (les_deux) statuts choisis. Bouton disabled tant que non-conforme.
+
+Au clic "Continuer" : UPDATE des 4 colonnes + navigation E-5.
+
+### 3.9 Écran E-5 — Calendrier d'alternance
+
+**Périmètre** : capture du `rhythm_calendar` via `RhythmManualBuilder`.
+
+**Layout** : E-5 reste **dans la card 460px standard**, comme toutes les autres étapes du wizard. Pas de rupture visuelle.
+
+```
+[Card 460px standard]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={5/7} stepLabel="Calendrier" stepNumber={5}>
+├── <WizardStepSubtitle> "Renseigne semaine par semaine ton rythme"
+│
+├── <RhythmManualBuilder>
+│   [composant refondu pour s'adapter à la largeur 460px de la card]
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink onClick={prevStep}> "Retour"
+```
+
+**Prérequis bloquant — refonte responsive de RhythmManualBuilder** : le composant a été livré le 2 mai après-midi avec un design pleine largeur (12 colonnes mensuelles qui scrollent horizontalement) qui ne tient pas dans 460px. Le composant doit être refondu pour s'adapter à cette largeur avant d'être intégré au parcours unifié. Dette logguée en `DETTE-TECHNIQUE.md` (DETTE #54). Cette refonte est un prérequis bloquant de la tranche 8 du plan d'implémentation (cf. section 7).
+
+**Validation** : le composant remonte `rhythm_calendar` (tableau de semaines) + `rhythm_start_date` + `rhythm_end_date`. Validation non vide.
+
+**Particularité Q9 — pop-up RhythmRequiredPopup** : l'utilisateur qui essaie de "Continuer" sans avoir renseigné de calendrier déclenche la pop-up RhythmRequiredPopup (cf. § 3.12 ci-dessous). Pas de simple bouton disabled — la pop-up explique pourquoi le calendrier est indispensable au matching Sterny et ne propose pas de skip.
+
+Au clic "Continuer" (calendrier renseigné) : UPDATE `users.rhythm_calendar + rhythm_start_date + rhythm_end_date + rhythm_source = 'manual' + rhythm_import_id = NULL` + navigation E-6.
+
+### 3.10 Écran E-6 — Profil personnel
+
+**Périmètre** : date_naissance, sexe, photo (optionnel), bio (optionnel).
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={6/7} stepLabel="À propos de toi" stepNumber={6}>
+├── <WizardStepSubtitle> "Pour personnaliser ton expérience"
+│
+├── <TextInput label="Date de naissance" type="date" required>
+│
+├── <CustomSelect label="Sexe" options={["Homme", "Femme", "Autre"]} required>
+│
+├── <PhotoUploadButton onClick={openCropper}>
+│     [Icône appareil photo + texte "Ajouter une photo de profil"]
+│   </PhotoUploadButton>
+│   ← (si photo déjà sélectionnée : aperçu rond 80×80 + bouton "Modifier")
+│
+├── <TextArea label="Bio" placeholder="Quelques mots sur toi (optionnel)" maxLength={300}>
+│
+├── <InfoBox> "Photo et bio sont optionnelles. Les renseigner augmente la confiance des autres alternants. Tu pourras les ajouter plus tard si tu préfères."</InfoBox>
+│
+├── <PrimaryButton> "Continuer"
+└── <BackLink> "Retour"
+```
+
+Validation : date_naissance NOT NULL + âge ≥ 18 ans (calculé côté frontend), sexe NOT NULL. Photo et bio optionnelles : bouton "Continuer" cliquable même si vides.
+
+**Cropper** : `<PhotoCropperModal>` se déclenche au clic `<PhotoUploadButton>`. UX identique au cropper CP actuel (modal 360px overlay sombre, drag + zoom + bouton "Recadrer"). À la confirmation, l'image cropée est uploadée vers Supabase Storage et l'URL est stockée en state local React (pas encore en BDD : seulement à l'UPDATE qui suit le clic "Continuer").
+
+Au clic "Continuer" : UPDATE `users.date_naissance + sexe + photo_profil_url + bio` + navigation E-7.
+
+### 3.11 Écran E-7 — Validation finale
+
+**Périmètre** : récapitulatif éditable + appel RPC `complete_inscription_alternant` qui flippe `profil_complet=true`.
+
+```
+[Card]
+├── <WizardTitle> "INSCRIPTION"
+├── <WizardProgressBar progress={7/7} stepLabel="Validation" stepNumber={7}>
+├── <WizardStepSubtitle> "Vérifie tes informations avant de finaliser"
+│
+├── <RecapBlock title="Identité" editable onEdit={() => goToStep(1)}>
+│     Prénom, Nom
+│     Téléphone : +33 6 XX XX XX XX
+│     Email : xxx@xxx
+│   </RecapBlock>
+│
+├── <RecapBlock title="Type de profil" editable onEdit={() => goToStep(2)}>
+│     "Je cherche un logement" / "Je propose mon logement" / "Les deux"
+│   </RecapBlock>
+│
+├── <RecapBlock title="Études" editable onEdit={() => goToStep(3)}>
+│     IUT de Saint-Malo
+│     BUT 3 — Gestion des Entreprises et Administrations
+│   </RecapBlock>
+│
+├── <RecapBlock title="Villes" editable onEdit={() => goToStep(4)}>
+│     École : Saint-Malo (je propose)
+│     Entreprise : Rennes (je cherche)
+│   </RecapBlock>
+│
+├── <RecapBlock title="Calendrier" editable onEdit={() => goToStep(5)}>
+│     [Mini-aperçu visuel : semaines colorées école/entreprise]
+│     Du 02/09/2026 au 27/06/2027 — 43 semaines
+│   </RecapBlock>
+│
+├── <RecapBlock title="À propos de toi" editable onEdit={() => goToStep(6)}>
+│     [Aperçu photo rond 60×60 si présente]
+│     Né(e) le XX/XX/XXXX
+│     Bio (si présente)
+│   </RecapBlock>
+│
+├── <PrimaryButton> "Finaliser mon inscription"
+└── <BackLink> "Retour"
+```
+
+**Composant `<RecapBlock>` à créer** : carte plate avec border subtle 1.5px, padding 16px, titre 11px weight 700 navy uppercase + icône crayon en haut à droite, contenu en texte foncé `#1E293B`. Au clic sur l'icône crayon : navigation à l'étape correspondante en mode édition. Au retour de l'étape : retour automatique en E-7 avec le récap mis à jour.
+
+**Mini-aperçu calendrier** : version réduite du `<RhythmManualBuilder>` en mode read-only, sans interaction. Composant à créer : `<RhythmCalendarPreview>`.
+
+Au clic "Finaliser mon inscription" :
+1. Appel RPC `complete_inscription_alternant(p_payload jsonb)` (cf. section 1.5)
+2. La RPC valide la cohérence finale (toutes les colonnes structurantes présentes), fait l'UPDATE final, flippe `profil_complet=true` dans la même transaction
+3. Si succès : redirection `/dashboard`
+4. Si erreur (exemple : validation BDD côté serveur échoue) : `<ErrorMessage>` au-dessus du bouton + shake bouton, l'utilisateur reste en E-7 avec ses données préservées
+
+### 3.12 Pop-up Q9 — RhythmRequiredPopup
+
+**Périmètre** : pop-up affichée quand l'utilisateur tente de "Continuer" en E-5 sans avoir renseigné son calendrier.
+
+**Pattern visuel** : reprise du `.cp-crop-overlay` (overlay sombre plein écran + panel centré).
+
+```
+[Overlay rgba(15,20,35,0.85) plein écran z-index 1000]
+│
+[Panel centré, max-width 400px, fond blanc, border-radius 20px, padding 32px, box-shadow 0 24px 64px rgba(0,0,0,0.25)]
+│
+├── [Icône calendrier en haut, 48×48, orange diaphane]
+│
+├── <Title> "Ton calendrier est indispensable"
+│   (font-size 18px, weight 700, navy)
+│
+├── <Body>
+│     Sterny te trouve des logements seulement pour les semaines où tu en as besoin. Sans ton calendrier, on ne peut pas savoir quelles semaines tu cherches ni quelles semaines tu proposes.
+│
+│     Renseigner ton calendrier prend environ 2 minutes. Tu peux le modifier plus tard si ton planning change.
+│   </Body>
+│   (font-size 14px, weight 400, gris #4B5563, line-height 1.5)
+│
+└── <PrimaryButton> "Renseigner mon calendrier"
+    (ferme la pop-up, focus sur le builder)
+```
+
+**Pas de bouton "Continuer sans calendrier"** : la pop-up ne propose pas de skip. Le calendrier est non-négociable (cf. VISION §1 — principe fondateur).
+
+**Pas de bouton "Fermer"** type croix : la pop-up se ferme uniquement par le clic CTA, qui ramène au builder. Un clic sur l'overlay sombre ferme aussi la pop-up (UX standard) mais ne fait pas progresser le wizard — l'utilisateur reste bloqué en E-5 jusqu'à renseignement.
+
+Composant `<RhythmRequiredPopup>` à créer dans `components/auth-wizard/`.
+
+### 3.13 Récapitulatif des composants à créer
+
+Total : **17 composants/hooks** pour la section design, à créer dans la tranche 1 du plan d'implémentation (section 7) :
+
+12 composants partagés audit § 6 + 5 composants spécifiques wizard identifiés section 3 :
+- `<IntentCardRadio>` (§ 3.6)
+- `<RecapBlock>` (§ 3.11)
+- `<RhythmCalendarPreview>` (§ 3.11)
+- `<RhythmRequiredPopup>` (§ 3.12)
+- `<InfoBox>` (§ 3.10)
+
+### 3.14 Sujets à arbitrer ailleurs dans le doc
+
+- **Variables CSS à introduire** (DETTE #31, #53) : `--accent-hover: #D4571F`, `--error: #dc2626`, `--success: #059669`, plus tokens pour border-radius, box-shadows, transitions actuellement hardcodés. À traiter dans la tranche 1 (extraction composants partagés).
+
+- **DETTE #30 listes hardcodées** (écoles, années, filières en E-3) : à remplacer par dropdown autocomplete BDD dans une session ultérieure dédiée. Pour la 1ère version du parcours unifié, on conserve les listes hardcodées telles quelles.
+
+- **DETTE #54 refonte responsive RhythmManualBuilder** : prérequis bloquant de la tranche 8. À traiter dans une session dédiée avant intégration en E-5.
+
+- **Animations de transition entre étapes** : aujourd'hui aucune (display none/flex brut). Possibilité d'ajouter une animation slide ou fade horizontale en v2. Hors scope de la 1ère version.
+
+- **Mobile UX** : la card 460px se réduit à `padding 28px 24px + border-radius 14px` à `max-width: 480px` (DETTE #44). Spécificités E-5 (RhythmManualBuilder dans card refondue) à valider visuellement sur mobile une fois implémenté.
 
 ---
 
-*Document de cadrage produit le 2 mai 2026 nuit. Sections 1-2 finalisées en conv Claude.ai 1. Sections 3-7 à produire en conv Claude.ai 2 dédiée.*
+## 4-7. Sections à produire dans la suite de la conv Claude.ai 2
+
+### 4. Gestion des 3 méthodes auth (email, Google, Apple)
+
+Spécifications détaillées de chaque flow : signature exacte des appels Supabase Auth, refonte GoogleAuthHandler, création AppleAuthHandler (DETTE #51), migration INSERT BDD hors handlers (Q5), gestion callback OAuth, particularité Apple `name` 1ère connexion, gestion alias `@privaterelay.appleid.com` Apple Hide My Email.
+
+### 5. Table des 9 parcours bout-en-bout à tester
+
+3 type_user × 3 méthodes auth = 9 parcours. Pour chacun : méthode auth de départ, champs saisis par étape, état BDD attendu colonne par colonne en sortie, redirection finale.
+
+### 6. Sujets RGPD et juridiques à signaler
+
+5 sujets identifiés à intégrer dans le doc consolidé QUESTIONS-PROFESSIONNELS.md (à créer en parallèle) : telephone obligatoire, date_naissance, sexe (finalité métier à clarifier avec avocat/DPO — champ conservé en l'état), Apple Hide My Email, conditions de stockage tokens OAuth.
+
+### 7. Plan d'implémentation séquencé
+
+9 tranches commitables identifiées au cadrage initial, à formaliser : dépendances entre tranches, critères de succès, plan de rollback, durée estimée par session.
+
+---
+
+*Document de cadrage en cours de rédaction. Sections 1-3 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, section 3 en conv Claude.ai 2 le 3 mai). Sections 4-7 à produire dans la suite de la conv Claude.ai 2.*
