@@ -1,0 +1,43 @@
+.aw-primary-button {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E8622A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.aw-primary-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+  background-color: var(--accent-hover);
+}
+
+.aw-primary-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(232, 98, 42, 0.2);
+}
+
+.aw-primary-button:disabled {
+  background: #E8EAF0;
+  color: #94A3B8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.aw-primary-button-spinner {
+  animation: awPbSpin 0.8s linear infinite;
+}
+
+@keyframes awPbSpin {
+  to { transform: rotate(360deg); }
+}

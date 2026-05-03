@@ -1,0 +1,82 @@
+.aw-rcp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aw-rcp-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 6px;
+  background: #F4F5F7;
+  border-radius: 8px;
+}
+
+.aw-rcp-week {
+  display: block;
+  width: 12px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.aw-rcp-week-school {
+  background: #1E293B;
+}
+
+.aw-rcp-week-company {
+  background: #E8622A;
+}
+
+.aw-rcp-meta {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4B5563;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.aw-rcp-meta-sep {
+  color: #CBD5E1;
+}
+
+.aw-rcp-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4B5563;
+}
+
+.aw-rcp-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aw-rcp-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.aw-rcp-swatch-school {
+  background: #1E293B;
+}
+
+.aw-rcp-swatch-company {
+  background: #E8622A;
+}
+
+.aw-rcp-empty {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #94A3B8;
+  font-style: italic;
+}

@@ -1,0 +1,28 @@
+.aw-oauth-button {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: white;
+  color: #1E293B;
+  border: 1.5px solid #E8EAF0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s ease;
+}
+
+.aw-oauth-button:hover {
+  border-color: #E8622A;
+  transform: translateY(-1px);
+}
+
+.aw-oauth-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

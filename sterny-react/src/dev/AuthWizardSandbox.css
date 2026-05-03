@@ -1,0 +1,73 @@
+.aws-page {
+  min-height: 100vh;
+  background: #F4F5F7;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aws-header {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aws-h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1E293B;
+  margin: 0;
+}
+
+.aws-sub {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0;
+}
+
+.aws-section {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aws-h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin: 0;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.aws-card {
+  background: white;
+  border: 1.5px solid #E8EAF0;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.aws-card-stack > * + * {
+  margin-top: 0;
+}
+
+.aws-placeholder {
+  font-size: 14px;
+  color: #94A3B8;
+  text-align: center;
+  margin: 0;
+  padding: 16px;
+  background: #F4F5F7;
+  border-radius: 10px;
+}

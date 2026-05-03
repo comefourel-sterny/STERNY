@@ -1,0 +1,33 @@
+.aw-backlink {
+  display: block;
+  text-align: center;
+  margin: 12px 0 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #E8EAF0;
+  color: #94A3B8;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aw-backlink-anchor,
+.aw-backlink-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aw-backlink-text {
+  color: #E8622A;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.aw-backlink-anchor:hover .aw-backlink-text,
+.aw-backlink-button:hover .aw-backlink-text {
+  opacity: 0.8;
+}

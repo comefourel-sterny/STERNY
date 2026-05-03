@@ -1,0 +1,36 @@
+.aw-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4F5F7;
+  padding: 40px 20px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aw-screen-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border: 1.5px solid #E8EAF0;
+  border-radius: 16px;
+  padding: 36px;
+  box-shadow: 0 6px 28px rgba(232, 98, 42, 0.10);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: awScreenFadeIn 0.4s ease both;
+}
+
+@keyframes awScreenFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .aw-screen-card {
+    padding: 28px 24px;
+    border-radius: 14px;
+  }
+}

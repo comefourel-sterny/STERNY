@@ -1,0 +1,72 @@
+.aw-rrp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 35, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: awRrpFadeIn 0.2s ease;
+}
+
+@keyframes awRrpFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.aw-rrp-panel {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  font-family: 'DM Sans', sans-serif;
+  animation: awRrpPanelIn 0.25s ease;
+}
+
+@keyframes awRrpPanelIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.aw-rrp-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF1E8;
+  color: #E8622A;
+  border-radius: 14px;
+}
+
+.aw-rrp-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0;
+}
+
+.aw-rrp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+  color: #4B5563;
+  line-height: 1.5;
+}
+
+.aw-rrp-body p {
+  margin: 0;
+}
+
+.aw-rrp-panel > button {
+  margin-top: 8px;
+}

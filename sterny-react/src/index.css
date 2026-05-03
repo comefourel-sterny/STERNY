@@ -27,8 +27,9 @@ html {
     --primary-dark: #334155;
     --secondary: #334155;
     --accent: #E8622A;
-    --success: #51cf66;
-    --error: #ff6b6b;
+    --accent-hover: #D4571F;
+    --success: #059669;
+    --error: #dc2626;
     --gray-50: #F4F5F7;
     --gray-100: #f3f4f6;
     --gray-200: #E8EAF0;

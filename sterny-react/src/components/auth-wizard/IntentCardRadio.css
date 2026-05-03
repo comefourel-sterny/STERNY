@@ -1,0 +1,91 @@
+.aw-intent-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1.5px solid #E8EAF0;
+  border-radius: 14px;
+  background: white;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  width: 100%;
+  position: relative;
+}
+
+.aw-intent-card:hover {
+  border-color: #CBD5E1;
+}
+
+.aw-intent-card.selected {
+  border-color: #E8622A;
+  background: rgba(232, 98, 42, 0.06);
+}
+
+.aw-intent-card-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.aw-intent-card-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF1E8;
+  color: #E8622A;
+  border-radius: 10px;
+}
+
+.aw-intent-card.selected .aw-intent-card-icon {
+  background: #E8622A;
+  color: white;
+}
+
+.aw-intent-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.aw-intent-card-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1.3;
+}
+
+.aw-intent-card-desc {
+  font-size: 13px;
+  font-weight: 400;
+  color: #64748B;
+  line-height: 1.3;
+}
+
+.aw-intent-card-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #E8EAF0;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: transparent;
+  transition: all 0.2s;
+}
+
+.aw-intent-card.selected .aw-intent-card-check {
+  background: #E8622A;
+  border-color: #E8622A;
+  color: white;
+}

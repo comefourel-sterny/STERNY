@@ -1,0 +1,50 @@
+.aw-recap-block {
+  border: 1.5px solid #E8EAF0;
+  border-radius: 14px;
+  padding: 16px;
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aw-recap-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aw-recap-block-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #1E293B;
+}
+
+.aw-recap-block-edit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.aw-recap-block-edit:hover {
+  color: #E8622A;
+  background: rgba(232, 98, 42, 0.08);
+}
+
+.aw-recap-block-body {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1E293B;
+  line-height: 1.5;
+}

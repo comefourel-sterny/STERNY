@@ -85,6 +85,7 @@ import InvitationPage from './pages/invitation/InvitationPage'
 import RhythmCalendarPreview from './dev/RhythmCalendarPreview'
 import RhythmFileUploadPreview from './dev/RhythmFileUploadPreview'
 import RhythmManualBuilderPreview from './dev/RhythmManualBuilderPreview'
+import AuthWizardSandbox from './dev/AuthWizardSandbox'
 
 // Other
 import NotFoundPage from './pages/NotFoundPage'
@@ -102,6 +103,7 @@ export default function App() {
         <Route path="/dev/rhythm-calendar-preview" element={<RhythmCalendarPreview />} />
         <Route path="/dev/rhythm-file-upload-preview" element={<RhythmFileUploadPreview />} />
         <Route path="/dev/rhythm-manual-builder-preview" element={<RhythmManualBuilderPreview />} />
+        <Route path="/dev/auth-wizard-sandbox" element={<AuthWizardSandbox />} />
 
         {/* Temp: test */}
         <Route element={<Layout />}>
