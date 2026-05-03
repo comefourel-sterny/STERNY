@@ -10,6 +10,16 @@
   padding: 24px 0;
 }
 
+.iap-step-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.iap-bottom {
+  margin-top: auto;
+}
+
 .iap-placeholder {
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
@@ -20,4 +30,13 @@
   padding: 24px 16px;
   text-align: center;
   line-height: 1.5;
+}
+
+.iap-stagger {
+  animation: iapStaggerIn 0.4s ease both;
+}
+
+@keyframes iapStaggerIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

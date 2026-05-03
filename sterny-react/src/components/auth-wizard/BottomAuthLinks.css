@@ -1,0 +1,26 @@
+.aw-bottom-auth {
+  display: block;
+  text-align: center;
+  margin: 12px 0 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #E8EAF0;
+  color: #94A3B8;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aw-bottom-auth-link {
+  color: #E8622A;
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.aw-bottom-auth-link:hover {
+  opacity: 0.8;
+}
+
+.aw-bottom-auth-sep {
+  color: #94A3B8;
+}

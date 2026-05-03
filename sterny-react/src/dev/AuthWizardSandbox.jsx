@@ -69,11 +69,12 @@ export default function AuthWizardSandbox() {
         </AuthScreenContainer>
       </Section>
 
-      <Section title="2. WizardProgressBar (3 instances)">
+      <Section title="2. WizardProgressBar (3 instances avec label, 1 sans)">
         <div className="aws-card">
-          <WizardProgressBar progress={1 / 7} stepLabel="Identité" stepNumber={1} />
-          <WizardProgressBar progress={4 / 7} stepLabel="Villes & statuts" stepNumber={4} />
-          <WizardProgressBar progress={7 / 7} stepLabel="Validation" stepNumber={7} />
+          <WizardProgressBar progress={1 / 7} stepLabel="Identité" stepNumber={1} showLabel />
+          <WizardProgressBar progress={4 / 7} stepLabel="Villes & statuts" stepNumber={4} showLabel />
+          <WizardProgressBar progress={7 / 7} stepLabel="Validation" stepNumber={7} showLabel />
+          <WizardProgressBar progress={3 / 7} />
         </div>
       </Section>
 
