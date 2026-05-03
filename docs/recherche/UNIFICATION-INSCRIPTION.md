@@ -718,11 +718,387 @@ Total : **17 composants/hooks** pour la section design, à créer dans la tranch
 
 ---
 
-## 4-7. Sections à produire dans la suite de la conv Claude.ai 2
+## 4. Gestion des 3 méthodes auth (email, Google, Apple)
 
-### 4. Gestion des 3 méthodes auth (email, Google, Apple)
+### 4.1 Vue d'ensemble des 3 flows
 
-Spécifications détaillées de chaque flow : signature exacte des appels Supabase Auth, refonte GoogleAuthHandler, création AppleAuthHandler (DETTE #51), migration INSERT BDD hors handlers (Q5), gestion callback OAuth, particularité Apple `name` 1ère connexion, gestion alias `@privaterelay.appleid.com` Apple Hide My Email.
+Les 3 méthodes convergent vers le même état BDD final (cf. section 1) en passant par les 7 mêmes étapes du wizard E-1 → E-7. La seule différence est l'amorçage : qui crée la session Supabase Auth, et avec quels champs pré-remplis.
+
+| Aspect | Email | Google | Apple |
+|---|---|---|---|
+| Crée la session Auth | submit E-1 | callback OAuth provider | callback OAuth provider |
+| Champs E-1 | 5 (prenom, nom, telephone, email, mdp) | 3 (prenom, nom, telephone) | 3 (prenom, nom, telephone) |
+| Pré-remplissage prenom/nom | aucun | `user.user_metadata.full_name` | `user.user_metadata.name` (1ère connexion uniquement) |
+| Email | saisi par l'utilisateur | renvoyé par Google | renvoyé par Apple (potentiellement aliasé `@privaterelay.appleid.com`) |
+| INSERT initial `users` | E-1 submit | E-1 submit | E-1 submit |
+| Particularité | aucune | aucune | `name` non re-fourni aux connexions suivantes, alias Hide My Email possible |
+
+Principe acté Q5 : **aucun handler OAuth n'écrit dans la table `users`**. L'INSERT initial est fait depuis le wizard E-1 au clic "Continuer", avec l'`id` de la session Auth déjà créée par le provider. Cas particulier du parcours propriétaire : cf. § 4.5.3 et § 4.10 ci-dessous.
+
+### 4.2 Méthode email — `supabase.auth.signUp`
+
+#### 4.2.1 Appel exact
+
+À déclencher au clic "Continuer" en E-1 méthode email, après validation frontend des 5 champs :
+
+```javascript
+const { data, error } = await supabaseClient.auth.signUp({
+  email: emailInput.trim(),
+  password: passwordInput,
+  options: {
+    emailRedirectTo: `${window.location.origin}/inscription/alternant`,
+    data: {
+      // Métadonnées non-sensibles, lisibles via user.user_metadata
+      prenom: prenomInput.trim(),
+      nom: nomInput.trim()
+    }
+  }
+});
+```
+
+#### 4.2.2 Comportement Supabase
+
+`supabase.auth.signUp` crée immédiatement une ligne dans `auth.users` (table système Supabase, distincte de `public.users`). Selon la configuration du projet Supabase :
+
+- Si "Confirm email" est activé (configuration recommandée production) : Supabase envoie un mail de confirmation, la session n'est pas active tant que l'utilisateur ne clique pas le lien. Au clic → redirection sur `emailRedirectTo` avec la session active.
+- Si "Confirm email" est désactivé (configuration dev/test possible) : la session est immédiatement active, pas de mail envoyé.
+
+**À arbitrer en tranche d'implémentation** : configuration "Confirm email" sur le projet Supabase production. Recommandé activé (sécurité standard, évite les comptes avec emails frauduleux). Implication UX : l'utilisateur quitte le wizard pour aller dans sa boîte mail puis revient — il faut un écran intermédiaire "Vérifie ta boîte mail" entre E-1 submit et E-2.
+
+À noter dans `DETTE-TECHNIQUE.md` ou en section 7 du doc cadrage comme sous-tâche.
+
+#### 4.2.3 INSERT initial `users` côté wizard
+
+Une fois la session Auth ouverte (immédiatement si email confirm OFF, après clic mail si ON), le wizard exécute son INSERT initial en E-1 :
+
+```javascript
+await supabaseClient.from('users').insert({
+  id: session.user.id,             // = auth.users.id généré par signUp
+  email: session.user.email,
+  prenom: prenomInput.trim(),
+  nom: nomInput.trim(),
+  telephone: telephoneInput.trim(),
+  profil_complet: false
+  // tous les autres champs structurants restent NULL et seront remplis 
+  // aux UPDATE successifs des étapes E-2 → E-6, puis profil_complet 
+  // flippé à true par la RPC complete_inscription_alternant en E-7
+});
+```
+
+#### 4.2.4 Gestion d'erreur
+
+| Erreur Supabase | Code | Réaction wizard |
+|---|---|---|
+| Email déjà utilisé | `User already registered` | Affichage `<ErrorMessage>` "Cet email est déjà utilisé. Tu as déjà un compte ?" + lien `<a href="/connexion">Se connecter</a>` + shake bouton |
+| Mot de passe trop court | `Password should be at least 6 characters` | Affichage `<ErrorMessage>` sous le champ mdp + shake bouton |
+| Email invalide | `Invalid email` | Idem, sous le champ email |
+| Erreur réseau / Supabase down | timeout | `<ErrorMessage>` "Une erreur est survenue, réessaie dans un instant" + shake bouton, données préservées en state React |
+
+### 4.3 Méthode Google — `supabase.auth.signInWithOAuth`
+
+#### 4.3.1 Appel exact
+
+Déclenché au clic du bouton `<GoogleSignInButton>` sur l'écran 0 (`/inscription`) :
+
+```javascript
+const { error } = await supabaseClient.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${window.location.origin}/inscription/alternant`,
+    scopes: 'email profile',
+    queryParams: {
+      access_type: 'online',
+      prompt: 'select_account'
+    }
+  }
+});
+```
+
+Note sur les `queryParams` :
+- `access_type: 'online'` : on n'a pas besoin de refresh tokens long-terme côté Google (Sterny ne consomme aucune API Google après l'auth, juste l'identité). Réduit la surface RGPD.
+- `prompt: 'select_account'` : force l'affichage du sélecteur de compte Google même si une seule session est active. UX plus claire pour l'utilisateur.
+
+#### 4.3.2 Callback côté Supabase
+
+Au retour de Google, Supabase :
+1. Crée ou retrouve la ligne dans `auth.users` (clé : email Google).
+2. Renseigne `auth.users.user_metadata` avec les champs renvoyés par Google (`full_name`, `email`, `picture`, `email_verified`, etc.).
+3. Redirige le navigateur vers `redirectTo` avec un fragment d'URL `#access_token=...`.
+4. Le client Supabase JS détecte ce fragment, l'échange contre une session active, déclenche les listeners `onAuthStateChange`.
+
+#### 4.3.3 Lecture des champs Google côté wizard E-1
+
+Au montage de E-1 (méthode Google) :
+
+```javascript
+const { data: { session } } = await supabaseClient.auth.getSession();
+const googleMetadata = session?.user?.user_metadata ?? {};
+
+// full_name fourni par Google sous forme "Prénom Nom"
+const fullName = googleMetadata.full_name ?? '';
+const [prenomGoogle, ...rest] = fullName.split(' ');
+const nomGoogle = rest.join(' ');
+
+// Pré-remplissage des inputs (modifiables par l'utilisateur)
+setPrenom(prenomGoogle);
+setNom(nomGoogle);
+```
+
+Le découpage `full_name` → `prenom + nom` est imprécis (Google ne sépare pas explicitement). On considère que le 1er token est le prénom et le reste le nom. L'utilisateur peut corriger dans les inputs pré-remplis avant de cliquer "Continuer".
+
+### 4.4 Méthode Apple — `supabase.auth.signInWithOAuth`
+
+#### 4.4.1 Appel exact
+
+```javascript
+const { error } = await supabaseClient.auth.signInWithOAuth({
+  provider: 'apple',
+  options: {
+    redirectTo: `${window.location.origin}/inscription/alternant`,
+    scopes: 'email name'
+  }
+});
+```
+
+Le scope `name` doit être demandé explicitement — sinon Apple ne fournit pas le nom du tout. Sterny le demande à chaque appel pour assurer le pré-remplissage E-1 lors de la 1ère connexion.
+
+#### 4.4.2 Particularité Apple — `name` à la 1ère connexion uniquement
+
+Apple ne renvoie le `name` que lors de la **première** auth d'un utilisateur sur l'app (ou plus précisément : lors du premier consentement de partage d'identité). Aux connexions suivantes du même utilisateur, `user_metadata.name` est absent.
+
+**Implication pour Sterny** :
+- 1ère connexion utilisateur Apple → `name` présent → pré-remplissage E-1 possible.
+- Connexion 2+ d'un utilisateur Apple **qui n'aurait pas terminé son inscription la 1ère fois** → `name` absent → E-1 affiche les champs `<TextInput label="Prénom">` et `<TextInput label="Nom">` **vides** — l'utilisateur doit les saisir manuellement.
+- Pour un utilisateur Apple qui a terminé son inscription : ses données `prenom`/`nom` sont sauvegardées dans `public.users` à l'INSERT E-1 de la 1ère session. Aux connexions suivantes, on les relit depuis `public.users`, pas depuis `user_metadata.name`.
+
+```javascript
+// Au montage de E-1 méthode Apple
+const { data: { session } } = await supabaseClient.auth.getSession();
+const appleMetadata = session?.user?.user_metadata ?? {};
+
+// Apple renvoie un objet { firstName, lastName } à la 1ère connexion
+const appleName = appleMetadata.name;
+const prenomApple = appleName?.firstName ?? '';
+const nomApple = appleName?.lastName ?? '';
+
+// Pré-remplissage si présent, sinon inputs vides
+setPrenom(prenomApple);
+setNom(nomApple);
+```
+
+#### 4.4.3 Particularité Apple Hide My Email
+
+Apple permet à l'utilisateur de masquer son vrai email derrière un alias de la forme `<chaîne aléatoire>@privaterelay.appleid.com`. Cet alias forwarde les emails reçus vers le vrai email Apple ID, qui reste invisible de Sterny.
+
+**Implications** :
+
+- Sterny enregistre l'alias tel quel dans `public.users.email`. Aucune tentative de récupérer le vrai email (impossible et contraire à l'intention RGPD du mécanisme Apple).
+- Détection au callback E-1 :
+
+```javascript
+const isAppleRelay = session.user.email?.endsWith('@privaterelay.appleid.com');
+// Stocké en state React local pour usage UI ultérieur (ex : message 
+// "Tu utilises un email aliasé Apple" dans Modifier mon profil)
+// Pas écrit en BDD à ce stade — colonne dédiée à arbitrer plus tard si 
+// besoin (sujet RGPD section 6).
+```
+
+- Si un jour l'utilisateur révoque l'alias depuis ses paramètres Apple ID, les emails envoyés par Sterny (notifications matching, demandes de réservation) sont silencieusement perdus. Sterny n'est pas alertée. Sujet à logger en `QUESTIONS-PROFESSIONNELS.md` section avocat/DPO et section assureur (continuité de service).
+
+### 4.5 GoogleAuthHandler refondu en OAuthHandler générique
+
+#### 4.5.1 État actuel (audit § 7)
+
+`sterny-react/src/components/GoogleAuthHandler.jsx` (128 lignes) joue 2 rôles couplés :
+
+1. **Routage** : si user authentifié arrive sur `/`, `/connexion`, `/completer-profil`, ou toute route `/inscription/*`, il décide de la redirection finale en fonction de `users.profil_complet` et `users.type_user`.
+2. **INSERT initial** : si `users` n'existe pas pour l'`auth.users.id` actuel, il INSERT directement avec `id, email, prenom, nom, type_user, parrain_id` lus depuis `sessionStorage.signup_type` + `sessionStorage.referral_token`.
+
+Le 2ᵉ rôle est ce qui doit disparaître (Q5 actée).
+
+#### 4.5.2 OAuthHandler refondu — rôle unique : routeur
+
+Renommage `GoogleAuthHandler.jsx` → `OAuthHandler.jsx`. Le handler ne lit plus le provider — il s'applique à toute session Auth ouverte, peu importe la méthode (Google, Apple, ou demain n'importe quel autre provider).
+
+**Routes traitées** : `'/'`, `'/connexion'`, `'/completer-profil'`, et toute route `/inscription/*` **sauf `/inscription/proprietaire`** (cf. § 4.5.3 ci-dessous).
+
+```
+Au montage / changement de route / changement d'auth state :
+  1. Si pas de session Auth → return (laisser passer)
+  2. Si route est /inscription/proprietaire ou /inscription/proprietaire/* → return (cf. § 4.5.3)
+  3. Si route hors AUTH_CALLBACK_ROUTES (cf. ci-dessus) → return (laisser passer)
+  4. SELECT id, type_user, profil_complet FROM users WHERE id = session.user.id
+  5. Cas A — ligne users absente :
+     redirection /inscription/alternant (le wizard fera l'INSERT en E-1)
+  6. Cas B — ligne users existe, profil_complet = false :
+     redirection /inscription/alternant (le wizard détecte les champs déjà 
+     saisis et reprend à la première étape avec un champ obligatoire vide, 
+     cf. section 2.5 pattern de reprise)
+  7. Cas C — ligne users existe, profil_complet = true :
+     redirection /dashboard (plus de cas type_user='proprietaire' à gérer 
+     ici — ce flow est sur sa route dédiée /dashboard/proprietaire 
+     accessible séparément)
+```
+
+**Suppressions** vs version actuelle :
+- Lecture sessionStorage `signup_type`, `referrer_id`, `referral_token`, `code_parrainage`
+- INSERT users
+- Cleanup sessionStorage post-INSERT
+- Redirection conditionnelle selon `type_user === 'proprietaire'`
+
+**Ajouts** :
+- Cas explicite "ligne users absente → wizard prend la main pour INSERT"
+- Cas explicite d'exclusion route `/inscription/proprietaire`
+- Pattern de reprise pour `profil_complet=false`
+
+Volume estimé après refonte : ~70 lignes vs 128 actuellement.
+
+#### 4.5.3 Cas particulier : route `/inscription/proprietaire` exclue
+
+`OAuthHandler` doit explicitement **ne pas intercepter** les routes `/inscription/proprietaire` et `/inscription/proprietaire/*` (sous-chemins éventuels avec query params type `?r=token`).
+
+Pourquoi : le parcours propriétaire conserve son flow d'inscription propre (hors scope unification, cf. intro de ce doc et VISION §6). Si `OAuthHandler` interceptait au callback Google d'un proprio, il regarderait `users.profil_complet`, ne trouverait pas de ligne (proprio nouveau) et redirigerait vers `/inscription/alternant` — ce qui détournerait le proprio vers le mauvais parcours.
+
+Implémentation côté code : la liste de routes traitées du handler ajoute une exclusion explicite, type :
+
+```javascript
+const isOAuthCallbackRoute = (pathname) => {
+  if (pathname.startsWith('/inscription/proprietaire')) return false; // exclusion
+  if (pathname === '/' || pathname === '/connexion' || pathname === '/completer-profil') return true;
+  if (pathname.startsWith('/inscription/')) return true;
+  return false;
+};
+```
+
+C'est la responsabilité de `InscriptionProprietairePage` de gérer son propre callback OAuth. Cf. § 4.10 ci-dessous pour la spécification détaillée.
+
+### 4.6 AppleAuthHandler à créer (DETTE #51) — caduque
+
+DETTE #51 demandait la création d'un `AppleAuthHandler.jsx` séparé du `GoogleAuthHandler.jsx`. Ce besoin est **caduc** avec la refonte § 4.5.2 : un seul `OAuthHandler` générique gère Google, Apple, et toute future méthode OAuth. Le composant ne lit pas le provider — il lit juste `session.user.id` et la table `users`.
+
+**Pré-remplissage spécifique au provider en E-1** : le handler ne fait pas de pré-remplissage. C'est `InscriptionAlternantPage` étape E-1 qui, au montage, lit `session.user.app_metadata.provider` (`'google'` / `'apple'` / `'email'`) pour décider quelle logique de pré-remplissage appliquer (cf. § 4.3.3 et § 4.4.2).
+
+DETTE #51 est donc fermée par cette refonte (pas d'AppleAuthHandler dédié à créer). La trace dans `DETTE-TECHNIQUE.md` doit être mise à jour pour acter cette résolution lors du commit groupé de clôture conv 2.
+
+### 4.7 Migration INSERT users hors handlers (Q5)
+
+Tableau récapitulatif avant/après :
+
+| Aspect | Avant | Après |
+|---|---|---|
+| Qui INSERT `users` (alternant) | `GoogleAuthHandler` (callback OAuth) ou `InscriptionRecherchePage`/`CompleterProfilPage` (parcours email) | `InscriptionAlternantPage` E-1 (au clic "Continuer", toutes méthodes auth confondues) |
+| Qui INSERT `users` (proprio) | `GoogleAuthHandler` (callback OAuth proprio) ou `InscriptionProprietairePage` (parcours email) | `InscriptionProprietairePage` au callback OAuth proprio + au submit email (cf. § 4.10) |
+| Quand (alternant) | au callback OAuth ou au submit final email | toujours au submit E-1 |
+| Avec quels champs (alternant) | minimal (id, email, prenom, nom, type_user, parrain_id) côté OAuth ; complet côté email | minimal (id, email, prenom, nom, telephone, profil_complet=false) — uniforme toutes méthodes |
+| `type_user` à l'INSERT (alternant) | depuis sessionStorage | NULL à l'INSERT, écrit à l'UPDATE E-2 |
+| `type_user` à l'INSERT (proprio) | `'proprietaire'` depuis sessionStorage | `'proprietaire'` en dur côté `InscriptionProprietairePage` |
+| `parrain_id` (alternant) | écrit à l'INSERT depuis sessionStorage | NULL en sortie d'inscription alternant (Q-S1.D actée) |
+
+**Impact côté code** :
+
+- Suppression de tous les `signInWithOAuth` qui écrivent `signup_type` en sessionStorage (alternant ET proprio).
+- Suppression du fallback `typeUser = sessionStorage.getItem('signup_type') || 'locataire'` dans le handler.
+- Les sources de `signInWithOAuth` après refonte : écran 0 `/inscription` (parcours alternant), `ConnexionPage` (utilisateurs existants), `InscriptionProprietairePage` (parcours proprio, conservé).
+
+### 4.8 Pattern de reprise et routage en fonction de l'état BDD
+
+Cohérent avec section 2.5. Vue synthétique pour le parcours alternant :
+
+| État BDD `users` | Décision `OAuthHandler` | Décision wizard `InscriptionAlternantPage` |
+|---|---|---|
+| Ligne absente | redirige vers `/inscription/alternant` | E-1 démarre, INSERT initial au submit |
+| Ligne existe, `profil_complet=false`, `prenom/nom/telephone` saisis seulement | redirige vers `/inscription/alternant` | charge `users` au montage, détecte que E-1 est OK, démarre à E-2 |
+| Ligne existe, `profil_complet=false`, jusqu'à `ville_*` saisis | redirige vers `/inscription/alternant` | démarre à E-5 (1ère étape avec un champ obligatoire encore vide) |
+| Ligne existe, `profil_complet=true` | redirige vers `/dashboard` | jamais atteint (handler intercepte avant) |
+
+Algorithme de reprise au montage du wizard :
+
+```
+SELECT * FROM users WHERE id = session.user.id;
+Pour chaque étape E-1 → E-7 dans l'ordre :
+  Vérifier si tous les champs obligatoires de l'étape sont renseignés
+  Si non → définir currentStep = cette étape, render
+  Si oui → continuer à la suivante
+Si toutes les étapes obligatoires sont OK → currentStep = E-7 récap
+```
+
+L'utilisateur peut toujours revenir en arrière via le `<BackLink>`. Les valeurs déjà saisies sont préservées dans le state React et en BDD.
+
+### 4.9 Tableau récapitulatif des appels Supabase Auth dans la plateforme
+
+Synthèse des appels `supabase.auth.*` après refonte du chantier unification :
+
+| Fichier | Méthode appelée | Rôle |
+|---|---|---|
+| `ChoixInscriptionPage.jsx` (écran 0 refondu) | `signInWithOAuth({provider:'google'})` + `redirectTo:'/inscription/alternant'` | Démarrage flow Google depuis inscription alternant |
+| `ChoixInscriptionPage.jsx` (écran 0 refondu) | `signInWithOAuth({provider:'apple'})` + `redirectTo:'/inscription/alternant'` | Démarrage flow Apple depuis inscription alternant |
+| `InscriptionAlternantPage.jsx` E-1 méthode email | `auth.signUp({email, password, options})` | Création compte email alternant |
+| `InscriptionProprietairePage.jsx` (existant, à adapter cf. § 4.10) | `signInWithOAuth({provider:'google'})` + `redirectTo:'/inscription/proprietaire?r=<token>'` | Démarrage flow Google depuis inscription proprio (token préservé) |
+| `InscriptionProprietairePage.jsx` (existant, à adapter cf. § 4.10) | `signInWithOAuth({provider:'apple'})` + `redirectTo:'/inscription/proprietaire?r=<token>'` | Démarrage flow Apple depuis inscription proprio (token préservé) |
+| `InscriptionProprietairePage.jsx` (existant) | `auth.signUp({email, password, options})` | Création compte email proprio |
+| `ConnexionPage.jsx` (existant, à minimement adapter) | `signInWithOAuth({provider:'google'})` + `redirectTo:'/dashboard'` | Connexion utilisateur Google existant |
+| `ConnexionPage.jsx` (existant, à minimement adapter) | `signInWithOAuth({provider:'apple'})` + `redirectTo:'/dashboard'` | Connexion utilisateur Apple existant |
+| `ConnexionPage.jsx` (existant) | `auth.signInWithPassword({email, password})` | Connexion utilisateur email existant |
+| `OAuthHandler.jsx` (ex-GoogleAuthHandler) | `auth.getSession()` (lecture) | Routage post-callback (sauf `/inscription/proprietaire`) |
+| Toute la plateforme | `auth.onAuthStateChange()` (listener) | Détection sessions |
+
+**Les pages suivantes n'appellent plus `signInWithOAuth`** (vs version actuelle) :
+- `InscriptionRecherchePage` — supprimée (Q3 redirection 301)
+- `InscriptionPartagerPage` — supprimée (Q9)
+
+### 4.10 Dépendance critique — adaptation du parcours propriétaire post-Q5
+
+#### 4.10.1 Constat
+
+La décision Q5 (suppression de l'INSERT `users` dans le handler OAuth) **casse le parcours proprio Google actuel**, qui dépendait de cet INSERT pour fonctionner. L'audit fonctionnel `AUDIT-INSCRIPTION-2026-05-02.md` § 4 et § 7 confirme la chaîne : aujourd'hui `InscriptionProprietairePage.jsx:72` appelle `signInWithOAuth` avec `sessionStorage.signup_type='proprietaire'` puis le handler `GoogleAuthHandler` INSERT `users` avec `type_user='proprietaire'` au callback. Sans le handler qui fait l'INSERT, le proprio Google se retrouve avec une session Auth active mais aucune ligne `public.users` correspondante, et l'application est dans un état indéfini.
+
+Cette dépendance n'est pas optionnelle : la refonte alternant et l'adaptation proprio doivent être commitées **dans le même chantier** ou **dans des commits qui se suivent**, pas dans l'ordre inverse (sinon on casse la prod proprio le temps que la suite arrive).
+
+#### 4.10.2 Adaptation requise dans `InscriptionProprietairePage.jsx`
+
+Spec de l'adaptation, cohérente avec le principe Q5 (chaque page fait son propre INSERT, pas le handler) :
+
+```
+Au montage de InscriptionProprietairePage (route /inscription/proprietaire?r=<token>) :
+  1. Vérifier la présence et la validité du token ?r=<token> 
+     (logique existante à conserver, durcie Q8 — token obligatoire, 
+     sinon redirection /inscription)
+  2. Décoder le token → récupérer les données de parrainage 
+     (parrain_id locataire, ville pré-remplie, etc., logique existante)
+  3. Vérifier l'état de la session Auth :
+     a. Pas de session active → afficher l'écran "comment t'inscrire" 
+        (3 boutons Google / Apple / email, logique existante adaptée)
+     b. Session Auth active (l'utilisateur revient d'un callback OAuth) :
+        - SELECT users WHERE id = session.user.id
+        - Si ligne users absente → INSERT minimal avec type_user='proprietaire',
+          email = session.user.email, prenom + nom depuis user_metadata, 
+          parrain_id depuis le token, profil_complet=false. 
+          Puis afficher l'étape suivante du wizard proprio.
+        - Si ligne users existe (utilisateur revient finir son inscription 
+          plus tard) → reprise à l'étape proprio avec un champ obligatoire 
+          encore vide.
+```
+
+**Différences vs parcours alternant** :
+- Le proprio fait son INSERT au callback OAuth (au montage de la page après retour de Google/Apple), pas après une étape "Identité" explicite. L'utilisateur ne saisit pas son prenom/nom/telephone dans une 1ère étape distincte — le parcours proprio est plus court.
+- `type_user='proprietaire'` est écrit en dur, pas issu d'un choix utilisateur (le proprio n'a pas le choix de son type — il arrive par invitation, son type est déterminé).
+- `parrain_id` est écrit à l'INSERT depuis le token décodé.
+
+#### 4.10.3 Suppression du sessionStorage
+
+Le mécanisme `sessionStorage.signup_type='proprietaire'` lu par l'ancien `GoogleAuthHandler` n'a plus d'utilité après refonte (`OAuthHandler` ne lit plus rien de sessionStorage, et `InscriptionProprietairePage` connaît son `type_user` en dur). À supprimer dans le même commit.
+
+#### 4.10.4 DETTE technique tracée
+
+Cette adaptation est tracée comme **DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler** dans `DETTE-TECHNIQUE.md`, à créer en commit groupé de clôture conv 2.
+
+#### 4.10.5 Séquencement dans le plan d'implémentation
+
+À traiter dans la **même tranche** que la refonte `OAuthHandler` (tranche 4 du plan d'implémentation, cf. section 7) ou **immédiatement après dans la même session Claude Code**. Pas dans une session ultérieure séparée — la fenêtre entre les 2 commits doit être minimale en prod pour éviter une période de cassure du proprio Google.
+
+---
+
+## 5-7. Sections à produire dans la suite de la conv Claude.ai 2
 
 ### 5. Table des 9 parcours bout-en-bout à tester
 
@@ -738,4 +1114,4 @@ Spécifications détaillées de chaque flow : signature exacte des appels Supaba
 
 ---
 
-*Document de cadrage en cours de rédaction. Sections 1-3 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, section 3 en conv Claude.ai 2 le 3 mai). Sections 4-7 à produire dans la suite de la conv Claude.ai 2.*
+*Document de cadrage en cours de rédaction. Sections 1-4 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-4 en conv Claude.ai 2 le 3 mai). Sections 5-7 à produire dans la suite de la conv Claude.ai 2.*
