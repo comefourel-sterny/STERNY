@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2 mai 2026 soir bis — Élargissement scope chantier unification inscription après audit lecture-seule (`docs/_audit/AUDIT-INSCRIPTION-2026-05-02.md`). 8 décisions Q8-Q15 actées, périmètre §6 enrichi d'un paragraphe "Périmètre élargi du chantier". Note : ajouts §3 (modèle officiel ville) et §6 (parcours unifié) du 2 mai soir présents depuis cette date dans le contenu mais non reflétés dans le précédent header — corrigé ici.
+**Dernière mise à jour** : 3 mai 2026 — Précision sur le parcours propriétaire ajoutée en §6 (UX proprio invité revenant sans le lien + réversibilité stratégique de la garde token). Issue de la conv Claude.ai 2 sur le chantier UNIFICATION-INSCRIPTION (clôture).
 
 ---
 
@@ -315,6 +315,16 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 - Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
 
 **Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.
+
+**Précision sur le parcours propriétaire (3 mai 2026, conv 2 cadrage UNIFICATION)** :
+
+La garde durcie sur `/inscription/proprietaire` (Q8) n'est pas une fermeture définitive. La route reste publiquement accessible (pas un endpoint interne) mais ne laisse passer que les utilisateurs avec un `?r=token` valide. Deux implications de design à respecter :
+
+1. **UX du proprio invité qui revient sans le lien** : si un propriétaire reçoit le lien d'invitation par email à un moment peu pratique (au travail, en déplacement) et revient plus tard sur le site directement sans le lien, il atterrit sur `/inscription/proprietaire` sans token et est redirigé. Le message de redirection (ou la page d'arrivée sur `/inscription`) doit être explicite : "Le parcours propriétaire requiert le lien d'invitation que votre locataire vous a envoyé. Vous l'avez perdu ? Demandez-lui de vous le renvoyer."
+
+2. **Réversibilité stratégique** : le code de la garde doit être un simple guard isolable (un paramètre / une feature flag / une variable d'environnement, à arbitrer au moment de l'implémentation), pas une logique enchevêtrée dans la page proprio. Cas d'usage anticipé : si la traction Sterny le justifie plus tard, ouverture du parcours proprio au grand public sans nécessiter d'invitation locataire — on doit pouvoir le faire en flippant un flag, pas en refondant.
+
+Ces deux points sont à intégrer dans la tranche d'implémentation "durcissement garde proprio" du chantier UNIFICATION-INSCRIPTION (T5 du plan d'implémentation, cf. `docs/recherche/UNIFICATION-INSCRIPTION.md` § 7.3.5).
 
 ### Rythme personnel comme moteur de la plateforme
 
