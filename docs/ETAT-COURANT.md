@@ -2,7 +2,56 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : sections 3-7 finalisées, QUESTIONS-PROFESSIONNELS.md créé, DETTE #51 caduque, DETTE #54 + #55 créées, précision Q8 VISION §6 ; conv 3 du 3 mai après-midi : DETTE #56 créée (commit 6c480f0), T1 livrée (commit a70d69b — 17 composants auth-wizard + sandbox /dev/auth-wizard-sandbox + tokenisation 3 vars CSS).
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 4 chantier UNIFICATION-INSCRIPTION : T2 sub-commits 0/1/1-bis/1-ter livrés sur branche feat/unification-inscription (5 commits poussés sur origin), Confirm email Supabase activé puis désactivé en cours de conv suite au bug parcours proprio (DETTE #55 enrichie), DETTE #57 créée pour customisation template email Supabase.
+
+---
+
+## 2026-05-03 ter — Conv 4 : T2 sub-commits 0/1/1-bis/1-ter livrés sur branche feat/unification-inscription
+
+### Bloc 1 — Branche feature créée et 4 commits poussés
+
+Branche `feat/unification-inscription` créée à partir de `main` (HEAD = 11f0e0f, clôture conv 3). 4 commits poussés sur origin, prod (sterny.co) inchangée.
+
+| Hash | Sous-commit | Sujet |
+|---|---|---|
+| 52d6e79 | sub-0 (hors compteur) | fix(auth): exclude /inscription/alternant from GoogleAuthHandler interception |
+| f0ec0b4 | sub-1/5 | feat(auth-wizard): scaffold InscriptionAlternantPage + useInscriptionWizard hook |
+| 838f027 | sub-1bis (hors compteur) | fix(auth-wizard): align InscriptionAlternantPage rendering with existing inscription pages |
+| 45777b9 | sub-1ter (hors compteur) | fix(auth): hide signup CTA on auth routes + unify BottomAuthLinks across wizard steps |
+
+### Bloc 2 — Sous-commit 0 (52d6e79) : fix handler
+
+Patch chirurgical transitoire dans `GoogleAuthHandler.jsx` : ajout d'un tableau `HANDLER_BYPASS_ROUTES = ['/inscription/alternant']` qui exclut le wizard alternant de l'interception du handler. Sans ce fix, le handler aurait redirigé l'utilisateur vers `/completer-profil` avant même que `useInscriptionWizard` puisse monter et faire son SELECT users. Refonte complète prévue en T4 (OAuthHandler générique) qui ajoutera `/inscription/proprietaire` au tableau (cf. UNIFICATION-INSCRIPTION § 4.5.3).
+
+### Bloc 3 — Sous-commit 1 (f0ec0b4) : scaffold
+
+Création du squelette technique sans logique BDD : page `InscriptionAlternantPage.jsx` (77 lignes) + custom hook `useInscriptionWizard.js` (120 lignes, useReducer, 15+ champs state, 5 actions wrappées) + CSS (23 lignes) + route `/inscription/alternant` dans `App.jsx`. Détection `authMethod` au mount via `session.user.app_metadata.provider`. Aucun INSERT/UPDATE BDD — placeholders d'étape navigables E-1 à E-7. JSDoc pédagogique en tête de useInscriptionWizard.js pour expliquer useReducer (premier usage par Côme).
+
+### Bloc 4 — Sous-commit 1-bis (838f027) : fix design alignment
+
+13 divergences corrigées entre rendu T1/T2 initial et rendu cible des pages `/inscription` + `/inscription/recherche` existantes. Modifs sur 6 composants `auth-wizard/` partagés (WizardTitle.css, WizardProgressBar.jsx + .css, AuthScreenContainer.css, BackLink.css) + nouveau composant `BottomAuthLinks.jsx` pour ligne combinée "Retour · Déjà un compte ? Se connecter". Ajout `min-height: 536px` sur `.aw-screen-card` pour stabilité visuelle entre étapes du wizard. WizardProgressBar : nouvelle prop `showLabel` (default false) — sandbox `/dev/auth-wizard-sandbox` mise à jour avec démo (3 instances avec label, 1 sans).
+
+### Bloc 5 — Sous-commit 1-ter (45777b9) : navbar masquée + label "Retour" uniforme
+
+Modif transversale `Navbar.jsx` + `HamburgerMenu.jsx` : CTA "S'inscrire" masqué sur les routes `/inscription/*` et `/connexion` (HIDE_SIGNUP_ROUTES + check `useLocation().pathname.startsWith()`). Label "Retour" uniforme sur toutes les étapes du wizard (suppression du distinguo "← Précédent" suggéré initialement, alignement 1:1 sur le pattern IR/CI). Ajout d'une section démo "10-bis. BottomAuthLinks (3 variants)" dans la sandbox.
+
+### Bloc 6 — Décisions prises pendant la conv 4
+
+- **Confirm email Supabase** : a été activé en début de conv 4 (Supabase Studio → Authentication → Sign In/Providers → User Signups → Confirm email ON), nécessaire pour le sous-commit 2 (écran "Vérifie ta boîte mail"). **Désactivé en fin de conv 4** suite à la découverte qu'il casse le parcours proprio email en prod (cf. mise à jour DETTE #55). À **réactiver impérativement** au début du sous-commit 2 en conv 5, et à laisser ON en permanence après livraison T4.
+- **URL Configuration Supabase** : Site URL = `https://sterny.co`. Redirect URLs = 3 entrées (`https://sterny.co/**`, `http://localhost:5173/**`, `https://sterny-*.vercel.app/**`).
+- **Configuration Vercel** : compte Vercel = `come-1859s-projects` (pas `comefourel-sterny` comme initialement supposé). URL preview branche feature = `https://sterny-git-feat-unification-inscription-come-1859s-projects.vercel.app`. Deployment Protection laissée activée par défaut sur le plan Hobby.
+- **Pattern OAuth écran 0 ChoixInscriptionPage refondue (T3)** : 3 boutons OAuth + email à intégrer en T3 suivront le pattern row icônes seules façon Mistral (Apple, Google) sans label texte, + bouton email pleine largeur séparé en dessous. Justification : compacité, alignement design Sterny, pas de modification de la card 460×536. À détailler dans le mockup T3 le moment venu (cf. UNIFICATION-INSCRIPTION § 3.4 à enrichir).
+- **Sous-commit 2 architecture** : décidé en conv 4 que le sous-commit 2 démarrera par la création d'un composant `<ErrorMessage>` partagé (aligné 1:1 sur le pattern IR/CI) + démo dans la sandbox **avant** le branchement sur la logique réelle de validation E-1. Cette étape permet à Côme de valider visuellement le rendu d'erreur (couleur, position, comportement shake) avant que la logique soit codée.
+
+### État final du chantier UNIFICATION-INSCRIPTION fin conv 4
+
+Sprint 1 ouvert. T1 livrée (commit a70d69b sur main). T2 partiellement livrée sur branche `feat/unification-inscription` :
+- Sous-commits 0, 1, 1-bis, 1-ter ✅
+- Sous-commits 2, 3, 4, 5 restants (~3-4h Claude Code cumulées)
+
+Prochaine étape : conv 5 dédiée au sous-commit 2 (E-1 méthode email + écran "Vérifie ta boîte mail" + INSERT initial users post-confirmation). Confirm email Supabase à réactiver au démarrage de la conv 5.
+
+Aucun changement visible pour les utilisateurs de sterny.co (main reste sur 11f0e0f). La branche feature accumulera les sous-commits T2 jusqu'à T7 avant merge en main.
 
 ---
 

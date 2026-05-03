@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : DETTE #51 résolue (caduque, OAuthHandler générique remplace AppleAuthHandler dédié), création DETTE #54 (refonte responsive RhythmManualBuilder) et DETTE #55 (adaptation parcours proprio post-Q5) ; création DETTE #56 (tokenisation systématique couleurs sémantiques danger/succès, découverte par grep T1-PARTIE-1).
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 4 chantier UNIFICATION-INSCRIPTION : DETTE #55 enrichie d'une précision empirique (Confirm email Supabase casse le parcours proprio email en prod) ; création DETTE #57 (template email de confirmation Supabase à customiser, distinct de DETTE #16 sur les emails Resend transactionnels).
 
 ## Nomenclature des bugs
 
@@ -524,6 +524,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Tests à valider en sortie** : parcours proprio Google complet avec lien `?r=<token>` valide, INSERT au callback avec valeurs correctes, wizard proprio existant fonctionne jusqu'à fin. Ne sera pas couvert par les 9 parcours nominaux UNIFICATION-INSCRIPTION (qui sont alternant only, cf. § 5.1) — table de tests proprio à produire dans le cadre de cette DETTE.
 
+**Précision 3 mai 2026 (conv 4)** : confirmation empirique du bug — l'activation de "Confirm email" sur le projet Supabase prod casse immédiatement le parcours `/inscription/proprietaire` méthode email avec l'erreur PostgreSQL `insert or update on table "users" violates foreign key constraint "users_id_fkey"`. Cause probable : le code actuel d'`InscriptionProprietairePage.jsx` ne gère pas le cas `data.session === null` post-signUp (comportement de signUp quand Confirm email est ON) et tente un INSERT users avec un id mal initialisé. Workaround temporaire : Confirm email désactivé sur Supabase prod jusqu'à livraison T4. Test reproductible avant fix : activer Confirm email Supabase + remplir le formulaire `/inscription/proprietaire` méthode email + clic "Créer mon compte" → erreur affichée sous le bouton Google. À traiter dans la même tranche T4 que la refonte OAuthHandler générique (commit 2/2). À réactiver impérativement avant test du sous-commit 2 du chantier UNIFICATION-INSCRIPTION (qui dépend de Confirm email ON pour valider l'écran "Vérifie ta boîte mail"), et à laisser ON en permanence après livraison T4.
+
 **Bloquant pré-production** : oui — sans cette adaptation, le parcours proprio Google ne fonctionne plus après la refonte UNIFICATION.
 
 ## DETTE #56 — Tokenisation systématique des couleurs sémantiques danger/succès hardcodées
@@ -541,3 +543,21 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : faible. La plateforme fonctionne, aucune régression visuelle. À traiter dans une session de nettoyage design system globale, hors scope T1-T9 du chantier UNIFICATION-INSCRIPTION.
 
 **Origine** : grep préalable T1-PARTIE-1 (3 mai 2026), session Claude Code.
+
+## DETTE #57 — Email de confirmation Supabase à customiser (template + SMTP custom Resend)
+
+**Statut au 3 mai 2026** : créée par cadrage du sous-commit 2 du chantier UNIFICATION-INSCRIPTION en conv Claude.ai 4.
+
+**Constat** : avec "Confirm email" activé sur le projet Supabase, Supabase envoie un email de confirmation au signUp via son template par défaut (expéditeur générique `noreply@mail.app.supabase.io`, design générique sans branding Sterny). C'est fonctionnel mais pas au niveau du design system Sterny (Navy `#1E293B`, Orange `#E8622A`, DM Sans, `border-radius: 20px`, signature de marque).
+
+**Distinct de DETTE #16** (refonte des 6 templates email Resend transactionnels) : l'email de confirmation Supabase est un **7ᵉ email distinct**, géré directement par Supabase et non par Resend. Il ne s'agit pas d'une refonte mais d'une création initiale au niveau du standard Sterny.
+
+**Plan de résolution** :
+1. Customisation du template HTML dans Supabase Studio → Authentication → Email Templates → Confirm signup. Reprise des codes visuels Sterny et tone of voice cohérent avec les autres emails.
+2. Idéalement : configuration SMTP custom Resend pour expéditeur `noreply@sterny.co` (Authentication → SMTP Settings). Permet aussi un meilleur contrôle anti-spam et brand integrity.
+
+**Bloquant pré-production** : non, mais à traiter avant lancement opérationnel pour cohérence brand. Décision Côme à arbitrer avec l'avocat/DPO sur les mentions légales obligatoires dans l'email de confirmation (cf. QUESTIONS-PROFESSIONNELS.md Q-DPO-001 à Q-DPO-007).
+
+**Effort estimé** : 1h-2h Claude Code (template HTML inline + tests sur dev avec inscription bidon, validation visuelle Côme).
+
+**Origine** : sous-commit 2 du chantier UNIFICATION-INSCRIPTION (3 mai 2026, conv 4).
