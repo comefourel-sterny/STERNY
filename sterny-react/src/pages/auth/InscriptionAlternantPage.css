@@ -1,0 +1,23 @@
+/* Styles spécifiques au wizard d'inscription alternant. La majorité du style
+   vient des composants auth-wizard/ et des variables :root. */
+
+.iap-loading {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #94A3B8;
+  text-align: center;
+  margin: 0;
+  padding: 24px 0;
+}
+
+.iap-placeholder {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #4B5563;
+  background: #F4F5F7;
+  border: 1.5px dashed #E8EAF0;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  line-height: 1.5;
+}
