@@ -1457,6 +1457,8 @@ T5 (indépendant) ─────────────────┘
 
 #### 7.3.1 T1 — Extraction des 17 composants partagés
 
+**Statut** : ✅ LIVRÉE le 3 mai 2026 (commit a70d69b sur main). 43 fichiers, +2284 / -2 lignes. Validation visuelle par sandbox /dev/auth-wizard-sandbox effectuée par Côme avant push.
+
 **Objectif** : créer le dossier `sterny-react/src/components/auth-wizard/` avec les 17 composants/hooks identifiés sections 3.3 + 3.13. Tokeniser les variables CSS manquantes en `:root`.
 
 **Fichiers créés** : 17 fichiers `.jsx` + leurs CSS scopés.

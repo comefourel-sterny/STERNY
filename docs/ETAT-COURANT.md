@@ -2,7 +2,43 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 sur le chantier UNIFICATION-INSCRIPTION. Sections 3-7 du doc cadrage finalisées (5 commits successifs). Création doc consolidé QUESTIONS-PROFESSIONNELS.md (19 questions pré-remplies pour avocat/DPO/assureur/dev). MAJ DETTE-TECHNIQUE (DETTE #51 caduque, création #54 et #55). Précision Q8 ajoutée à VISION §6. Doc UNIFICATION-INSCRIPTION désormais finalisé sur 7 sections — démarrage Sprint 1 (T1 extraction composants partagés) possible dès prochaine session Claude Code.
+**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 2 chantier UNIFICATION-INSCRIPTION : sections 3-7 finalisées, QUESTIONS-PROFESSIONNELS.md créé, DETTE #51 caduque, DETTE #54 + #55 créées, précision Q8 VISION §6 ; conv 3 du 3 mai après-midi : DETTE #56 créée (commit 6c480f0), T1 livrée (commit a70d69b — 17 composants auth-wizard + sandbox /dev/auth-wizard-sandbox + tokenisation 3 vars CSS).
+
+---
+
+## 2026-05-03 bis — Démarrage Sprint 1 chantier UNIFICATION-INSCRIPTION : T1 livrée
+
+### Bloc 1 — DETTE #56 créée (commit 6c480f0)
+
+Découverte par grep préalable T1-PARTIE-1 : 43 occurrences hardcodées de #dc2626 (rouge danger, 6 occurrences) et #059669 (vert succès, 37 occurrences) dans la base CSS, aucune n'utilise var(--error) / var(--success). Tracée comme dette de tokenisation systématique, priorité faible, hors scope T1-T9.
+
+### Bloc 2 — T1 livrée (commit a70d69b)
+
+Tranche 1 du plan d'implémentation UNIFICATION-INSCRIPTION § 7.3.1. 43 fichiers, +2284 / -2 lignes.
+
+Créés dans sterny-react/src/components/auth-wizard/ :
+- 17 composants/hooks publics : AuthScreenContainer, WizardProgressBar, WizardTitle, WizardStepSubtitle, TextInput, TextArea, CustomSelect, AutocompleteInput, PrimaryButton, GoogleSignInButton, AppleSignInButton, OrSeparator, BackLink, PhotoCropperModal, IntentCardRadio, RecapBlock, RhythmCalendarPreview, RhythmRequiredPopup, InfoBox + hook useShakeButton.
+- 1 sous-composant privé interne : OAuthButton (mutualisation Google + Apple, hors compteur 17).
+
+Créés dans sterny-react/src/dev/ : AuthWizardSandbox.jsx + .css. Route /dev/auth-wizard-sandbox accessible directement par URL, non linkée (convention héritée des 3 autres routes /dev/* existantes).
+
+Modifiés :
+- sterny-react/src/index.css : tokenisation --accent-hover (#D4571F nouveau), --error (#ff6b6b → #dc2626), --success (#51cf66 → #059669). DETTE #31 et DETTE #53 résolues localement (cf. DETTE #56 pour le reste de la base).
+- sterny-react/src/App.jsx : ajout import + route /dev/auth-wizard-sandbox.
+
+### Bloc 3 — Décisions clés Sprint 1 conv 3
+
+- Q-T1.A : sandbox éphémère sur route permanente non linkée /dev/auth-wizard-sandbox (alignée sur les 3 routes /dev/* existantes), pas de wrap import.meta.env.DEV.
+- Q-T1.B : ordre d'extraction en 4 vagues — hook → atomes purs → atomes avec deps → composés lourds.
+- Q-T1.C : <PrimaryButton> = base .cx-submit (ConnexionPage) + :hover:not(:disabled) de .ci-btn (ChoixInscriptionPage) + :disabled propre de .ci-btn. API : children, onClick, type, disabled, loading (spinner), className, style, ref (forwardRef pour useShakeButton).
+- Q-T1.D : <GoogleSignInButton> + <AppleSignInButton> distincts en API publique, mutualisation interne via <OAuthButton> sous-composant privé. Hauteur 48px fixe (corrige incohérence 44px de InscriptionProprietairePage qui sera reprise en T4).
+- Q-T1.E : écrasement --error / --success dans T1. Liste brute du grep préalable révélait 5 usages var(--error/success) tous dans RecherchePage.jsx (harmonisation visuelle bénigne) vs 43 hardcodés ailleurs (objet de DETTE #56).
+
+### État final du chantier UNIFICATION-INSCRIPTION
+
+Sprint 1 ouvert, T1 livrée. Prochaine étape : T2 (création InscriptionAlternantPage.jsx from-scratch, durée estimée 4-5h Claude Code, dépendances : T1 only). T2 à ouvrir en nouvelle session Claude.ai 4 dédiée pour préserver la précision du contexte.
+
+Pages d'inscription/connexion actuelles intouchées (ChoixInscriptionPage, InscriptionRecherchePage, CompleterProfilPage, ConnexionPage, InscriptionProprietairePage, InscriptionPartagerPage). Aucun changement visible pour les utilisateurs après push T1.
 
 ---
 
