@@ -1286,16 +1286,133 @@ Pour le 1er passage de tests bout-en-bout (à faire en sortie de tranche 9 du pl
 
 ---
 
-## 6-7. Sections à produire dans la suite de la conv Claude.ai 2
+## 6. Sujets RGPD et juridiques à signaler
 
-### 6. Sujets RGPD et juridiques à signaler
+### 6.1 Périmètre et positionnement
 
-5 sujets identifiés à intégrer dans le doc consolidé QUESTIONS-PROFESSIONNELS.md (à créer en parallèle) : telephone obligatoire, date_naissance, sexe (finalité métier à clarifier avec avocat/DPO — champ conservé en l'état), Apple Hide My Email, conditions de stockage tokens OAuth.
+Cette section est un **index** des sujets RGPD et juridiques touchés par le chantier d'unification de l'inscription. Elle ne tranche aucune question juridique — c'est le rôle des professionnels (avocat spécialisé en droit des plateformes, DPO, conseil RGPD).
 
-### 7. Plan d'implémentation séquencé
+**Source unique de référence pour les RDV professionnels** : `docs/recherche/QUESTIONS-PROFESSIONNELS.md` (doc consolidé à créer en commit groupé de clôture conv 2). Chaque sujet ci-dessous est repris dans ce doc avec un identifiant `[Q-DPO-NNN]` ou `[Q-AVO-NNN]` pour traçabilité.
+
+**Avertissement explicite** : tant que ces sujets ne sont pas validés par un professionnel, le code peut être implémenté en l'état (la plateforme n'est pas lancée, aucun utilisateur réel n'est concerné), mais **aucun lancement opérationnel ne peut intervenir** avant que les 5 sujets ci-dessous aient été passés en revue avec un avocat / DPO et que les arbitrages aient été tracés dans `QUESTIONS-PROFESSIONNELS.md`.
+
+### 6.2 Sujet 1 — Téléphone obligatoire à l'inscription
+
+**Champ concerné** : `users.telephone`, rendu obligatoire frontend en E-1 (Q-S1.A actée).
+
+**Contexte** : aujourd'hui le téléphone est demandé pour le contact opérationnel en cas d'incident matching, de question contractuelle, ou pour une éventuelle vérification d'identité. C'est aussi un standard du marché (Airbnb, Le Bon Coin, Stripe Identity).
+
+**Question à valider avec un professionnel** :
+
+- La finalité "contact opérationnel en cas d'incident" est-elle suffisante au sens RGPD pour rendre le champ obligatoire ?
+- Faut-il documenter cette finalité dans la politique de confidentialité publiée sur le site ?
+- Y a-t-il un risque à ne pas envoyer de SMS de validation à l'inscription (Sterny ne le fait pas dans la 1ère version) ? Cohérence vs Stripe Identity qui valide le numéro plus tard dans le parcours utilisateur.
+
+**Référence** : `[Q-DPO-001]` dans `QUESTIONS-PROFESSIONNELS.md`.
+
+### 6.3 Sujet 2 — Date de naissance et validation âge ≥ 18 ans
+
+**Champ concerné** : `users.date_naissance`, saisi en E-6, validé frontend `âge ≥ 18 ans`.
+
+**Contexte** : la date de naissance est une donnée personnelle au sens RGPD. Sa finalité explicite chez Sterny : valider que l'utilisateur est majeur (la plateforme n'accepte pas de mineurs comme utilisateurs principaux — cf. politique produit).
+
+**Questions à valider avec un professionnel** :
+
+- La finalité "validation âge ≥ 18 ans" est-elle suffisante pour la collecte de la date de naissance complète, ou serait-il proportionné de demander seulement l'année de naissance (principe de minimisation) ?
+- Faut-il une mention spécifique dans la politique de confidentialité ?
+- Que faire si un mineur tente de s'inscrire malgré la validation frontend (ex : il saisit une fausse date) ? Y a-t-il une obligation de vérification additionnelle (ex : Stripe Identity à un moment du parcours) ?
+- Conséquences si Sterny découvre a posteriori qu'un compte appartient à un mineur (suppression immédiate, notification CNIL, etc.) ?
+
+**Référence** : `[Q-DPO-002]` et `[Q-AVO-001]`.
+
+### 6.4 Sujet 3 — Champ `sexe` et finalité métier
+
+**Champ concerné** : `users.sexe`, saisi en E-6, valeurs `'homme'` / `'femme'` / `'autre'`. Décision actée Q-S3.A : conservé en l'état tant que la finalité n'est pas validée par un professionnel (la plateforme n'étant pas lancée, le risque de collecte est nul tant qu'aucun utilisateur réel ne s'inscrit).
+
+**Contexte** : ce champ est une **donnée personnelle particulièrement sensible** au sens RGPD (catégorie spéciale article 9). Sa collecte requiert une finalité métier explicite et proportionnée.
+
+**Questions à valider avec un professionnel — priorité haute** :
+
+- Y a-t-il une finalité métier légitime à collecter ce champ chez Sterny ? Hypothèses à examiner :
+  - **Matching genré** (un locataire pourrait préférer un hôte du même sexe pour partager le logement) — hypothèse à arbitrer côté produit avant de la défendre RGPD.
+  - **Statistiques agrégées** (équilibre démographique de la plateforme) — finalité plus faible, peut être satisfaite par déclaration volontaire optionnelle.
+  - **Aucune finalité claire** — dans ce cas le champ doit être retiré avant lancement (principe de minimisation, le risque de conservation sans finalité documentée est élevé).
+- Si la finalité retenue est "matching genré", quelle base légale ? Consentement explicite renforcé ?
+- Quelles mentions obligatoires dans la politique de confidentialité ?
+- Faut-il rendre le champ optionnel à terme, même si conservé pour la 1ère version ?
+
+**Action obligatoire avant lancement** : si l'avocat / DPO ne valide pas une finalité, le champ est **retiré** du modèle E-6 et de la table `users`. Reflet en table 1.3 et toutes les sections du doc UNIFICATION + tables 5.3 et 5.5.
+
+**Référence** : `[Q-DPO-003]` (priorité haute).
+
+### 6.5 Sujet 4 — Apple Hide My Email et continuité de service
+
+**Mécanisme concerné** : alias `*@privaterelay.appleid.com` que l'utilisateur Apple peut utiliser à l'inscription (cf. § 4.4.3).
+
+**Contexte** : l'utilisateur peut choisir de cacher son vrai email. Sterny enregistre l'alias tel quel. Ses paramètres Apple ID lui permettent à tout moment de **révoquer l'alias** sans en informer Sterny — auquel cas tous les emails envoyés par la plateforme (notifications matching, demandes de réservation, factures) sont silencieusement perdus.
+
+**Questions à valider avec un professionnel** :
+
+- **Côté DPO / RGPD** : Sterny doit-elle informer l'utilisateur, à l'inscription, que la révocation de l'alias casse la communication avec la plateforme ? Mention dans la politique de confidentialité ? CGU ?
+- **Côté avocat** : si un utilisateur perd des notifications importantes (réservation refusée, deadline contractuelle) à cause d'un alias révoqué de son côté, quelle est la responsabilité de Sterny ? Y a-t-il des clauses CGU à inclure pour limiter cette responsabilité ?
+- **Côté assureur (responsabilité civile pro)** : ce risque de continuité de service doit-il être couvert ? Est-il connu et accepté par l'assureur ?
+
+**Action recommandée pour la 1ère version** : afficher un message visible côté UI (à concevoir dans une session ultérieure) lorsque l'utilisateur utilise un alias Apple, expliquant le risque. Pas de blocage de l'inscription.
+
+**Référence** : `[Q-DPO-004]`, `[Q-AVO-002]`, `[Q-ASS-001]`.
+
+### 6.6 Sujet 5 — Stockage des tokens OAuth Supabase
+
+**Mécanisme concerné** : Supabase Auth gère côté serveur le stockage des refresh tokens OAuth (Google, Apple). Côté client, le SDK `supabase-js` stocke la session active dans `localStorage` du navigateur par défaut.
+
+**Contexte** : aucun code Sterny ne manipule directement les tokens OAuth — ils sont gérés par le SDK Supabase. Mais leur existence côté navigateur (localStorage) et côté serveur (Supabase Auth schema) crée des sujets RGPD à expliciter.
+
+**Questions à valider avec un professionnel** :
+
+- **Côté DPO** : Sterny est-elle responsable des tokens stockés par Supabase Auth ? Sterny est-elle co-responsable de traitement avec Supabase au sens RGPD ? Le contrat de sous-traitance avec Supabase couvre-t-il bien les obligations RGPD ?
+- **Côté DPO** : faut-il mentionner explicitement le stockage de tokens dans `localStorage` du navigateur dans la politique de cookies / confidentialité ?
+- **Côté avocat** : que se passe-t-il en cas de fuite des tokens (`localStorage` accessible si l'utilisateur partage son navigateur, attaque XSS) ? Quelles obligations de notification CNIL et utilisateur ?
+- **Côté avocat** : en cas de demande d'effacement RGPD (article 17), comment garantir la suppression complète des tokens côté Supabase ? Est-ce que la suppression d'un compte `auth.users` purge bien les sessions associées ?
+
+**Référence** : `[Q-DPO-005]`, `[Q-AVO-003]`.
+
+### 6.7 Sujet bonus — Pattern de reprise d'inscription et données partielles
+
+**Mécanisme concerné** : pattern de reprise (cf. section 2.5 et § 4.8). Un utilisateur qui abandonne en E-3 laisse en BDD une ligne `users` partielle avec `profil_complet = false` qui peut rester là indéfiniment si l'utilisateur ne revient jamais.
+
+**Contexte** : ce sont des **données personnelles partielles non utilisées** (prenom, nom, telephone, email, type_user). Stocker des données dont la finalité est incomplète crée un risque RGPD (durée de conservation, principe de finalité).
+
+**Questions à valider avec un professionnel** :
+
+- **Côté DPO** : quelle durée de conservation maximale pour une ligne `users.profil_complet = false` qui n'a pas eu d'activité depuis X mois ? Faut-il un mécanisme de purge automatique ?
+- **Côté DPO** : faut-il informer l'utilisateur à l'INSERT initial E-1 que ses données sont conservées même s'il abandonne le parcours ?
+- **Côté avocat** : faut-il une CGU explicite acceptée à E-1 (et pas seulement à E-7) pour couvrir cette conservation partielle ?
+
+**Action technique recommandée** : prévoir une Edge Function ou un cron Supabase qui purge les lignes `users` avec `profil_complet=false` et `created_at < now() - interval '90 days'` (durée à arbitrer avec DPO). À séquencer en post-lancement.
+
+**Référence** : `[Q-DPO-006]`.
+
+### 6.8 Récapitulatif et action de clôture
+
+| # | Sujet | Champ / mécanisme | Priorité | Réf. doc QUESTIONS-PROFESSIONNELS |
+|---|---|---|---|---|
+| 1 | Téléphone obligatoire | `users.telephone` | moyenne | `[Q-DPO-001]` |
+| 2 | Date de naissance + validation 18 ans | `users.date_naissance` | moyenne | `[Q-DPO-002]`, `[Q-AVO-001]` |
+| 3 | Champ `sexe` | `users.sexe` | **haute** | `[Q-DPO-003]` |
+| 4 | Apple Hide My Email | `users.email` aliasé | moyenne | `[Q-DPO-004]`, `[Q-AVO-002]`, `[Q-ASS-001]` |
+| 5 | Stockage tokens OAuth | `localStorage` + Supabase Auth | moyenne | `[Q-DPO-005]`, `[Q-AVO-003]` |
+| 6 (bonus) | Données partielles d'inscription abandonnée | `users.profil_complet=false` orphelins | basse mais bloquante avant lancement | `[Q-DPO-006]` |
+
+**Action de clôture conv 2** : ces 6 sujets seront pré-remplis dans le doc consolidé `docs/recherche/QUESTIONS-PROFESSIONNELS.md` créé en commit groupé de clôture, avec les identifiants ci-dessus.
+
+**Action de clôture du chantier UNIFICATION-INSCRIPTION** : aucun lancement opérationnel n'est envisageable avant que les 6 sujets aient été examinés et arbitrés par un avocat / DPO / assureur, avec les décisions tracées dans `QUESTIONS-PROFESSIONNELS.md`. À séquencer en parallèle de la fin de l'implémentation technique.
+
+---
+
+## 7. Plan d'implémentation séquencé
 
 9 tranches commitables identifiées au cadrage initial, à formaliser : dépendances entre tranches, critères de succès, plan de rollback, durée estimée par session.
 
 ---
 
-*Document de cadrage en cours de rédaction. Sections 1-5 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-5 en conv Claude.ai 2 le 3 mai). Sections 6-7 à produire dans la suite de la conv Claude.ai 2.*
+*Document de cadrage en cours de rédaction. Sections 1-6 finalisées au 3 mai 2026 (sections 1-2 en conv Claude.ai 1 le 2 mai nuit, sections 3-6 en conv Claude.ai 2 le 3 mai). Section 7 à produire dans la suite de la conv Claude.ai 2.*
