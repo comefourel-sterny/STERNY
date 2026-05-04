@@ -8,6 +8,11 @@
  * un seul reducer (state, action) => newState, à la place d'une cascade de
  * setState dispersés. Le hook expose state + actions wrappées (setField,
  * goToNextStep, etc.) pour que la page n'ait pas à connaître les types d'action.
+ *
+ * Modèle d'erreur (Fix B, conv 5) : un seul `globalError` (string | null) qui
+ * porte le message unique affiché par <AuthErrorBanner>. Plus d'objet `errors`
+ * par-champ — la page n'affiche qu'un message global qui auto-disparaît au bout
+ * de 2s ou dès que l'utilisateur retape dans un champ (clearError au typing).
  */
 
 import { useReducer, useEffect, useCallback } from 'react'
@@ -19,8 +24,9 @@ const initialState = {
   currentStep: 1,
   loading: false,
   error: null,
+  globalError: null,        // string | null — message affiché par <AuthErrorBanner>
   awaitingEmailVerification: false,
-  authMethod: null, // 'email' | 'google' | 'apple'
+  authMethod: null,         // 'email' | 'google' | 'apple'
   initialized: false,
   userId: null,
   // E-1 Identité
@@ -65,6 +71,8 @@ function reducer(state, action) {
       return { ...state, loading: action.loading }
     case 'SET_ERROR':
       return { ...state, error: action.error }
+    case 'SET_GLOBAL_ERROR':
+      return { ...state, globalError: action.message }
     default:
       return state
   }
@@ -76,6 +84,70 @@ function detectAuthMethod(session) {
   if (provider === 'google') return 'google'
   if (provider === 'apple') return 'apple'
   return 'email'
+}
+
+// ─── Validation frontend E-1 méthode email ─────────────────────────────────
+//
+// Règles précisées dans UNIFICATION-INSCRIPTION § 3.5.1.
+// Renvoie un message global (string) ou null si tout OK.
+//
+// Logique Fix B (conv 5) :
+// - Si AU MOINS UN champ vide → "Veuillez remplir tous les champs"
+// - Si TOUS remplis mais PLUSIEURS invalides → "Certains champs sont invalides"
+// - Si TOUS remplis mais UN SEUL invalide → message ciblé du seul champ invalide
+
+const PHONE_RE = /^(?:\+\d{1,3}\d{6,14}|0[1-9]\d{8})$/
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function cleanPhone(raw) {
+  return (raw ?? '').replace(/[\s.-]/g, '')
+}
+
+export function validateE1Email(state) {
+  const prenom = (state.prenom ?? '').trim()
+  const nom = (state.nom ?? '').trim()
+  const telephoneClean = cleanPhone(state.telephone)
+  const email = (state.email ?? '').trim()
+
+  // 1. Détection des champs vides
+  const empties = []
+  if (prenom.length === 0) empties.push('prenom')
+  if (nom.length === 0) empties.push('nom')
+  if (telephoneClean.length === 0) empties.push('telephone')
+  if (email.length === 0) empties.push('email')
+
+  if (empties.length > 0) {
+    return 'Veuillez remplir tous les champs'
+  }
+
+  // 2. Tous remplis : détection des invalides
+  const invalids = []
+  if (prenom.length < 2) invalids.push('Prénom requis (min. 2 caractères)')
+  if (nom.length < 2) invalids.push('Nom requis (min. 2 caractères)')
+  if (!PHONE_RE.test(telephoneClean)) invalids.push('Numéro de téléphone invalide')
+  if (!EMAIL_RE.test(email)) invalids.push('Email invalide')
+
+  if (invalids.length === 0) return null
+  if (invalids.length === 1) return invalids[0]
+  return 'Certains champs sont invalides'
+}
+
+// getE1InvalidFields — Set des noms de champs E-1 à marquer en erreur visuelle
+// (bordure rouge). Logique alignée sur validateE1Email : un champ vide est
+// invalide (cas particulier de "longueur < 2" pour prenom/nom, et regex échoue
+// sur '' pour telephone/email). Tous-vides → Set des 4 noms.
+export function getE1InvalidFields(state) {
+  const prenom = (state.prenom ?? '').trim()
+  const nom = (state.nom ?? '').trim()
+  const telephoneClean = cleanPhone(state.telephone)
+  const email = (state.email ?? '').trim()
+
+  const invalid = new Set()
+  if (prenom.length < 2) invalid.add('prenom')
+  if (nom.length < 2) invalid.add('nom')
+  if (!PHONE_RE.test(telephoneClean)) invalid.add('telephone')
+  if (!EMAIL_RE.test(email)) invalid.add('email')
+  return invalid
 }
 
 export function useInscriptionWizard() {
@@ -110,11 +182,23 @@ export function useInscriptionWizard() {
     dispatch({ type: 'GO_TO_STEP', step: Math.min(TOTAL_STEPS, state.currentStep + 1) })
   }, [state.currentStep])
 
+  // clearError : efface globalError. Conserve le nom historique (compat usages
+  // existants côté page) — équivaut à dispatch SET_GLOBAL_ERROR null.
+  const clearError = useCallback(() => {
+    dispatch({ type: 'SET_GLOBAL_ERROR', message: null })
+  }, [])
+
+  const setGlobalError = useCallback((message) => {
+    dispatch({ type: 'SET_GLOBAL_ERROR', message })
+  }, [])
+
   return {
     state,
     setField,
     goToStep,
     goToPrevStep,
     goToNextStep,
+    clearError,
+    setGlobalError,
   }
 }

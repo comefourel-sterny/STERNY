@@ -1,42 +1,98 @@
-/* Styles spécifiques au wizard d'inscription alternant. La majorité du style
-   vient des composants auth-wizard/ et des variables :root. */
+/* Styles propres à InscriptionAlternantPage. Le wrapper page + card vient de
+   AuthScreenContainer.css ; les champs viennent de TextInput.css ; bannière
+   et zones bas viennent de AuthErrorBanner.css / BottomAuthLinks.css /
+   BackLink.css. Ce fichier ajoute uniquement le titre, le wrapper de form,
+   le bouton primaire, et les bouts de placeholder E-2. */
 
-.iap-loading {
+.aw-screen-title {
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  color: #94A3B8;
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #E8622A;
   text-align: center;
-  margin: 0;
-  padding: 24px 0;
+  margin: 0 0 32px 0;
 }
 
-.iap-step-body {
-  flex: 1;
+.ial-form {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  flex: 1;
 }
 
-.iap-bottom {
+.ial-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ial-placeholder-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.ial-btn-continuer {
+  width: 100%;
+  height: 48px;
+  background: #E8622A;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
   margin-top: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.iap-placeholder {
+.ial-btn-continuer:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 98, 42, 0.3);
+  background-color: #D4571F;
+}
+
+.ial-btn-continuer:disabled {
+  background: #E8EAF0;
+  color: #94A3B8;
+  cursor: not-allowed;
+}
+
+.ial-placeholder-text {
+  text-align: center;
+  color: #64748B;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  margin: 0;
+}
+
+.ial-btn-precedent {
+  display: block;
+  margin: auto auto 0 auto;
+  background: transparent;
+  border: 1.5px solid #E8EAF0;
+  color: #1E293B;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  color: #4B5563;
-  background: #F4F5F7;
-  border: 1.5px dashed #E8EAF0;
-  border-radius: 12px;
-  padding: 24px 16px;
-  text-align: center;
-  line-height: 1.5;
+  font-weight: 600;
 }
 
-.iap-stagger {
-  animation: iapStaggerIn 0.4s ease both;
-}
+@media (max-width: 480px) {
+  .aw-screen-title {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
 
-@keyframes iapStaggerIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  .ial-form-row {
+    grid-template-columns: 1fr;
+  }
 }

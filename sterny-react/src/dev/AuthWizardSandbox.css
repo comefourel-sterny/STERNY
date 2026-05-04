@@ -71,3 +71,46 @@
   background: #F4F5F7;
   border-radius: 10px;
 }
+
+/* ═══ ErrorMessage demo (section 17) ═══ */
+.aws-em-sub {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.5;
+  margin: -4px 0 4px 0;
+}
+
+.aws-em-sub code {
+  background: #F4F5F7;
+  border: 1px solid #E8EAF0;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-family: 'Space Grotesk', monospace;
+  color: #1E293B;
+}
+
+.aws-em-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .aws-em-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aws-em-cell {
+  gap: 12px;
+}
+
+.aws-em-h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94A3B8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin: 0;
+}

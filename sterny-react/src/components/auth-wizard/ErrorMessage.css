@@ -1,0 +1,24 @@
+.em-message {
+  color: var(--error);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  text-align: center;
+  margin: 0;
+  animation: emFadeIn 0.25s ease both;
+}
+
+.em-message a {
+  color: var(--error);
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.em-message a:hover {
+  opacity: 0.8;
+}
+
+@keyframes emFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

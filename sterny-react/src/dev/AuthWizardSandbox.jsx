@@ -13,6 +13,7 @@ import AppleSignInButton from '../components/auth-wizard/AppleSignInButton'
 import OrSeparator from '../components/auth-wizard/OrSeparator'
 import BackLink from '../components/auth-wizard/BackLink'
 import BottomAuthLinks from '../components/auth-wizard/BottomAuthLinks'
+import ErrorMessage from '../components/auth-wizard/ErrorMessage'
 import InfoBox from '../components/auth-wizard/InfoBox'
 import IntentCardRadio from '../components/auth-wizard/IntentCardRadio'
 import RecapBlock from '../components/auth-wizard/RecapBlock'
@@ -46,6 +47,8 @@ export default function AuthWizardSandbox() {
   const [cropperFile, setCropperFile] = useState(null)
   const fileInputRef = useRef(null)
   const { ref: shakeRef, shake } = useShakeButton()
+  const { ref: emShakeRef, shake: emShake } = useShakeButton()
+  const [emErrorVisible, setEmErrorVisible] = useState(false)
 
   const openCropperPicker = () => fileInputRef.current?.click()
   const onFileChosen = (e) => {
@@ -268,6 +271,55 @@ export default function AuthWizardSandbox() {
           <InfoBox>
             Photo et bio sont optionnelles. Les renseigner augmente la confiance des autres alternants. Tu pourras les ajouter plus tard si tu préfères.
           </InfoBox>
+        </div>
+      </Section>
+
+      <Section title="17. ErrorMessage — message d'erreur de formulaire">
+        <p className="aws-em-sub">
+          Validation E-1 du wizard d'inscription, mapping codes Supabase Auth (cf. UNIFICATION-INSCRIPTION § 3.5.1 et § 4.2.4). Couleur <code>var(--error)</code>, animation <code>emFadeIn</code> 0.25s, attributs <code>role="alert"</code> + <code>aria-live="polite"</code>.
+        </p>
+
+        <div className="aws-em-grid">
+          <div className="aws-card aws-em-cell">
+            <h3 className="aws-em-h3">(a) Message court isolé</h3>
+            <ErrorMessage>Cet email n'est pas valide</ErrorMessage>
+          </div>
+
+          <div className="aws-card aws-em-cell">
+            <h3 className="aws-em-h3">(b) Avec lien intégré</h3>
+            <ErrorMessage>
+              Cet email est déjà utilisé. <a href="/connexion">Se connecter</a>
+            </ErrorMessage>
+          </div>
+
+          <div className="aws-card aws-em-cell">
+            <h3 className="aws-em-h3">(c) Sous un TextInput</h3>
+            <TextInput
+              label="Email"
+              type="email"
+              value="user@invalide"
+              onChange={() => {}}
+              required
+              id="aws-em-input-email"
+            />
+            <ErrorMessage id="aws-em-input-email-error">Email invalide</ErrorMessage>
+          </div>
+
+          <div className="aws-card aws-em-cell">
+            <h3 className="aws-em-h3">(d) Sous un PrimaryButton avec shake</h3>
+            <PrimaryButton
+              ref={emShakeRef}
+              onClick={() => {
+                emShake()
+                setEmErrorVisible(true)
+              }}
+            >
+              Continuer
+            </PrimaryButton>
+            {emErrorVisible && (
+              <ErrorMessage>Une erreur est survenue, réessaie dans un instant</ErrorMessage>
+            )}
+          </div>
         </div>
       </Section>
     </div>

@@ -1,0 +1,20 @@
+.aeb-banner {
+  /* Aligné sur BottomAuthLinks pour zéro saut visuel quand l'un remplace l'autre :
+     même margin-top (12px), même padding-top (16px), même border-top (1px solid #E8EAF0),
+     même font-family. Couleur var(--error) au lieu du gris standard. */
+  display: block;
+  text-align: center;
+  margin: 12px 0 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #E8EAF0;
+  color: var(--error);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  animation: aebFadeIn 0.25s ease both;
+}
+
+@keyframes aebFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

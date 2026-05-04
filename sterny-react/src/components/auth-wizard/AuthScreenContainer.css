@@ -9,8 +9,14 @@
 }
 
 .aw-screen-card {
+  /* Largeur déterministe : margin auto + flex-shrink 0 renforcent
+     max-width 460px contre les interactions flex parent (body column +
+     .aw-screen row) qui peuvent étirer un width: 100% sur enfant flex
+     quand le contenu vertical s'allonge (cf. fix card étirée 2.B-bis). */
   width: 100%;
   max-width: 460px;
+  margin: 0 auto;
+  flex-shrink: 0;
   min-height: 536px;
   background: white;
   border: 1.5px solid #E8EAF0;
