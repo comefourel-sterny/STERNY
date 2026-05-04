@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 6 chantier UNIFICATION-INSCRIPTION : DETTE #58 RÉSOLUE par commit d91b5d6 + DETTE #59 / #60 / #61 créées.
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 7 chantier UNIFICATION-INSCRIPTION : sous-commit 2/5 livré (commit 852846d). DETTE #59 reste active mais sans usage en E-1 (BottomAuthLinks absorbe le rôle Retour).
 
 ## Nomenclature des bugs
 
@@ -585,6 +585,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Origine** : audit lecture pure IR + CP en clôture conv 5 (4 mai 2026).
 
 ## DETTE #59 — Retrait de la flèche ← dans <BackLink>
+
+**Statut au 4 mai 2026 (post conv 7)** : DETTE encore active mais SANS usage en E-1. Le sous-commit 2/5 livré par 852846d a remplacé `<BackLink>` par `<BottomAuthLinks retourTo="/inscription" retourLabel="Retour" showSignInLink />` qui rend nativement "Retour · Déjà un compte ? Se connecter" sur une seule ligne, sans flèche. DETTE applicable uniquement aux autres pages utilisant encore `<BackLink>` (sandbox + écrans du wizard E-3 à E-7 à venir).
 
 **Statut au 4 mai 2026** : créée par retour Côme en conv 6 ("ça fait pas pro").
 

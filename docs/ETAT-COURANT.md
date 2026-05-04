@@ -2,7 +2,60 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 6 chantier UNIFICATION-INSCRIPTION : DETTE #58 résolue (commit d91b5d6), école 2 actée comme convention placeholder du wizard unifié, sous-commit 2/5 reporté à conv 7.
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 7 chantier UNIFICATION-INSCRIPTION : sous-commit 2/5 livré (commit 852846d) — écran E-1 méthode email du wizard unifié opérationnel, conventions placeholder école 2 et préservation de saisie utilisateur appliquées.
+
+---
+
+## 2026-05-04 ter — Clôture conv Claude.ai 7 : sous-commit 2/5 livré (commit 852846d)
+
+### Bloc 1 — Phases d'écriture E-1 méthode email
+
+Conv 7 a livré l'écran E-1 du wizard unifié sur la branche feat/unification-inscription, par 5 phases incrémentales :
+
+- **Phase 4a (lecture pure d'IR)** : restitution intégrale du JSX et CSS d'InscriptionRecherchePage (étape 2 identité, lignes 467-507) + analyse comparative IR vs E-1 cible. Découverte importante : zone identité IR contient 4 champs (Nom, Prénom, Email, Téléphone), pas 5 — le mot de passe IR est en étape 4 (hors scope E-1). Ordre IR à inverser pour E-1 (Prénom → Nom → Téléphone → Email).
+- **Phase 4a-bis (lecture pure working dir)** : 6 fiches API sur useInscriptionWizard.js, TextInput.jsx + .css, AuthErrorBanner.jsx + .css, AuthScreenContainer.css. 11 découvertes consignées dont 2 gaps d'API du hook (setGlobalError manquant, validateE1Email module-private) et le besoin de découpler hasError/error sur TextInput.
+- **Phase 4b (écriture)** : enrichissement du hook (export validateE1Email, ajout getE1InvalidFields, setGlobalError exposé), ajout prop hasError sur TextInput, écriture from-scratch de InscriptionAlternantPage.jsx + .css. Validation locale au submit, bordure rouge sur champs invalides, bannière AuthErrorBanner 3000ms (timer géré côté page), préservation de saisie. Build Vite OK 966ms.
+- **Phase 4d (ajustements UX post-test visuel)** : forwardRef sur TextInput + 4 refs sur les inputs (Entrée → champ suivant, Entrée sur Email → submit), Prénom + Nom côte à côte (.ial-form-row grid 2 colonnes desktop / 1 colonne mobile <480px), suppression BackLink, BottomAuthLinks unifié "Retour · Déjà un compte ? Se connecter".
+- **Phase 4e (stabilité layout vertical)** : margin-bottom titre 24 → 32px (anticipation WizardProgressBar), .ial-form flex: 1 + .ial-btn-continuer margin-top: auto (Continuer poussé en bas du form), .ial-placeholder-content + .ial-btn-precedent margin: auto auto 0 auto pour stabilité visuelle E-1 ↔ E-2 (pas de saut au changement d'étape).
+
+### Bloc 2 — Périmètre commit 852846d (11 fichiers, +545 / −75)
+
+7 modified + 4 nouveaux :
+- `sterny-react/src/hooks/useInscriptionWizard.js` (modified — exports validateE1Email/getE1InvalidFields + setGlobalError)
+- `sterny-react/src/components/auth-wizard/TextInput.jsx` (modified — prop hasError + forwardRef)
+- `sterny-react/src/components/auth-wizard/AuthScreenContainer.css` (modified — Fix B card défensif : margin 0 auto + flex-shrink 0)
+- `sterny-react/src/dev/AuthWizardSandbox.jsx` + `.css` (modified — Fix B section 17 démo composants)
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` + `.css` (modified — réécriture intégrale)
+- `sterny-react/src/components/auth-wizard/AuthErrorBanner.jsx` + `.css` (nouveau — bannière globale prop unique message, auto-hide géré par parent)
+- `sterny-react/src/components/auth-wizard/ErrorMessage.jsx` + `.css` (nouveau — composant erreur per-field générique, livré pour usages futurs du wizard, non utilisé en E-1)
+
+`CreerAnnoncePage.jsx` (bypass DEV) intact en working dir post-commit, comme attendu.
+
+### Bloc 3 — Conventions actées appliquées
+
+Issues du chantier UNIFICATION-INSCRIPTION § 3.5.1 amendement conv 6 :
+- **Placeholder école 2** (instruction tutoyée sans verbe) : "Ton prénom" / "Ton nom" / "Ton numéro de téléphone" / "Ton adresse email". Ne s'applique pas rétroactivement à `InscriptionRecherchePage.jsx` ni `CompleterProfilPage.jsx` (cf. DETTE #61).
+- **Préservation de saisie utilisateur** : aucune valeur ne disparaît en cas d'erreur de validation. La saisie reste dans le state global `useInscriptionWizard`, l'erreur se manifeste par bordure rouge sur le champ + bannière 3000 ms.
+
+### Bloc 4 — Prochaines étapes T2
+
+Sous-commits T2 restants :
+- **3/5 : E-2 type_user** (3 IntentCardRadio "cherche / propose / les deux"). Nouvelle conv recommandée — la lecture du composant `<IntentCardRadio>` existant (livré dans T1, commit a70d69b) est le préalable.
+- **4/5 : E-7 mot de passe** + signUp Supabase + INSERT initial users + envoi mail confirmation + écran "Vérifie ta boîte mail".
+- **5/5 : pattern de reprise** + persistance state (refresh page, navigation arrière depuis étape ultérieure, etc.).
+
+E-3 à E-6 (école / villes / dates / photo) probablement scindables en sous-commits supplémentaires selon complexité, à arbitrer en démarrage conv 8.
+
+### État final branche post-conv 7
+
+- `main` : 11f0e0f (prod sterny.co inchangée).
+- `feat/unification-inscription` : 852846d (HEAD) — sous-commit 2/5 livré sur origin.
+
+Working dir post-conv 7 :
+- 1 modified : `CreerAnnoncePage.jsx` (bypass DEV préexistant tracé en DETTE-TECHNIQUE.md).
+- 3 untracked : `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` + 2 fichiers spikes pdf-js (préexistants).
+
+Confirm email Supabase : laissé ON. Continuera à casser `/inscription/proprietaire` méthode email en prod jusqu'à livraison T4 (DETTE #55).
 
 ---
 
