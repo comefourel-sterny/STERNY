@@ -379,6 +379,18 @@ Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (aud
 
 #### 3.5.1 Méthode email (5 champs)
 
+> **⚠️ AMENDEMENT 4 mai 2026 (conv 5)** : la spec ci-dessous décrivait initialement 5 champs en E-1 (prenom, nom, telephone, email, password). Suite à l'audit IR/CP en clôture de conv 5 et à 5 décisions design actées, le pattern E-1 méthode email est REVU :
+>
+> - **4 champs en E-1** : Prénom, Nom, Téléphone, Email (le mot de passe sort de E-1)
+> - **Mot de passe placé en E-7** (dernière étape, juste avant le submit final)
+> - **Aucun signUp Supabase à E-1** — l'utilisateur n'a pas de session Auth pendant le wizard. Tout est stocké en mémoire React jusqu'à E-7.
+> - **À E-7** : signUp + INSERT initial users + UPDATE complet avec toutes les données du state + envoi mail confirmation + redirection écran "Vérifie ta boîte mail"
+> - **Layout strict IR** : labels 11px uppercase weight 700 letter-spacing 1px + placeholders dans inputs + pas d'astérisque
+> - **Pas de sous-titre "Tes informations de contact"** (aligné IR/CP)
+> - **OAuth Google reste sur écran 0** (ChoixInscriptionPage refondu en T3)
+>
+> Le pseudo-JSX et la table d'erreur ci-dessous sont conservés pour traçabilité historique mais doivent être lus à la lumière de cet amendement. Détails complets dans ETAT-COURANT.md section "2026-05-04".
+
 ```
 [Card]
 ├── <WizardTitle> "INSCRIPTION"
@@ -1491,6 +1503,8 @@ feat(auth-wizard): extract 17 shared components for inscription unification
 ```
 
 #### 7.3.2 T2 — Création `InscriptionAlternantPage.jsx` from-scratch
+
+> **⚠️ AMENDEMENT 4 mai 2026 (conv 5)** : le découpage des sous-commits T2 acté en conv 4 (sous-commits 2/5 = E-1 méthode email + écran Vérifie ta boîte mail + INSERT initial users post-confirmation) est CADUC suite à la décision D1 (mdp en E-7). Nouveau découpage à arbitrer en démarrage conv 6. Estimation durée T2 inchangée (longue, 4-5h Claude Code) mais répartition différente. Détails dans ETAT-COURANT.md section "2026-05-04".
 
 **Objectif** : créer la nouvelle page `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` avec la structure 7 étapes E-1 à E-7. E-5 reste placeholder (intégration RhythmManualBuilder en T8).
 

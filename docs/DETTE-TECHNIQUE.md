@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 4 chantier UNIFICATION-INSCRIPTION : DETTE #55 enrichie d'une précision empirique (Confirm email Supabase casse le parcours proprio email en prod) ; création DETTE #57 (template email de confirmation Supabase à customiser, distinct de DETTE #16 sur les emails Resend transactionnels).
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 5 chantier UNIFICATION-INSCRIPTION : DETTE #58 créée pour la modification du composant T1 <TextInput> à entreprendre en conv 6 (impact sandbox).
 
 ## Nomenclature des bugs
 
@@ -561,3 +561,23 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Effort estimé** : 1h-2h Claude Code (template HTML inline + tests sur dev avec inscription bidon, validation visuelle Côme).
 
 **Origine** : sous-commit 2 du chantier UNIFICATION-INSCRIPTION (3 mai 2026, conv 4).
+
+## DETTE #58 — Modification du composant T1 <TextInput> pour aligner sur le pattern IR/CP
+
+**Statut au 4 mai 2026** : créée par audit IR/CP en clôture de conv Claude.ai 5 du chantier UNIFICATION-INSCRIPTION.
+
+**Constat** : le composant partagé <TextInput> créé en T1 (sterny-react/src/components/auth-wizard/TextInput.jsx + .css) utilise un style label "doux" (13px weight 600 lowercase + indicateur * orange si required) qui diverge du pattern canonique IR/CP en prod (label 11px uppercase weight 700 letter-spacing 1px navy + placeholder dans input + pas d'astérisque). Cette divergence n'avait pas été identifiée à T1 parce que la sandbox était conçue isolément, sans comparaison directe à IR/CP.
+
+**Décision actée en conv 5 (D3)** : aligner strictement <TextInput> sur le pattern IR/CP.
+
+**Plan de résolution** :
+1. Modifier sterny-react/src/components/auth-wizard/TextInput.css : passer le label en 11px weight 700 letter-spacing 1px text-transform uppercase color #1E293B
+2. Modifier sterny-react/src/components/auth-wizard/TextInput.jsx : ajouter le support de la prop `placeholder` qui sera affichée dans l'input HTML natif
+3. Retirer l'affichage de l'astérisque * orange quand `required={true}` est passé. Soit retirer complètement (préférable), soit conditionner via une prop `showRequired` (default false). Aligner sur IR/CP qui n'utilisent pas d'astérisque visuel.
+4. Vérifier visuellement la sandbox /dev/auth-wizard-sandbox après modification : les 16 sections existantes vont changer d'apparence pour s'aligner sur le design canonique. C'est un changement positif (la sandbox devait refléter le design system Sterny qui est IR/CP).
+
+**Effort estimé** : 30 min Claude Code (modifications CSS + JSX + visual diff sandbox).
+
+**Bloquant pré-production** : non en soi (la sandbox est dev-only) mais bloquant pour la livraison du nouveau sous-commit 2/5 du chantier UNIFICATION-INSCRIPTION en conv 6 (qui ne peut pas commencer son rendu E-1 sans le <TextInput> aligné IR).
+
+**Origine** : audit lecture pure IR + CP en clôture conv 5 (4 mai 2026).

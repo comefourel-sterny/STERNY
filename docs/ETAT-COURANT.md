@@ -2,7 +2,82 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 3 mai 2026 — Clôture conv Claude.ai 4 chantier UNIFICATION-INSCRIPTION : T2 sub-commits 0/1/1-bis/1-ter livrés sur branche feat/unification-inscription (5 commits poussés sur origin), Confirm email Supabase activé puis désactivé en cours de conv suite au bug parcours proprio (DETTE #55 enrichie), DETTE #57 créée pour customisation template email Supabase.
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 5 chantier UNIFICATION-INSCRIPTION : T2 sous-commit 2/5 partiellement codé (Fix B livré, AuthErrorBanner créé, useInscriptionWizard refondu en globalError simplifié) puis pivot architectural acté suite à audit IR/CP — le code Fix B est conservé en working dir uncommitted, le sous-commit 2/5 sera repris from-scratch en conv 6 sur la base du JSX exact d'IR.
+
+---
+
+## 2026-05-04 — Clôture conv Claude.ai 5 : audit IR/CP + 5 décisions design + pivot mdp en E-7
+
+### Bloc 1 — 7 itérations sur sous-commit 2/5 avant pivot
+
+Itérations livrées en conv 5 (toutes uncommitted en fin de conv) :
+- 2.A : composant <ErrorMessage> partagé créé + démo sandbox section 17 (4 cellules d'usage)
+- 2.B : logique E-1 méthode email codée dans useInscriptionWizard.js (5 champs + signUp Supabase + mapping erreurs par-champ + écran 5 inputs verticaux dans InscriptionAlternantPage.jsx)
+- Fix card étirée (faux positif sur la largeur — la card faisait bien 460px depuis le début, c'était la longueur verticale qui posait question)
+- Fix A : compactage spacing (gap label↔input 6→8px, margin-bottom inter-groupes 14→12px)
+- Fix B : refonte modèle d'erreur frontend en bannière unique <AuthErrorBanner> remplaçant <BottomAuthLinks> 2s + Prénom/Nom côte à côte (.iap-row 1fr 1fr)
+
+Tous ces fichiers existent en working dir mais ne sont pas committés. Branche feat/unification-inscription reste à HEAD = 9a36d99 (clôture conv 4).
+
+### Bloc 2 — Audit lecture pure IR + CP (fin de conv 5)
+
+Constat : le code livré en 2.B + Fix B ne reproduit pas fidèlement le pattern IR/CP existant en prod. Audit lecture pure de InscriptionRecherchePage (625 lignes JSX, 637 lignes CSS) + CompleterProfilPage (1125 lignes JSX, 759 lignes CSS) conduit en fin de conv 5.
+
+Découvertes clés :
+- IR a 4 étapes (intent → identité → alternance → mot de passe), pas 1 étape de 5 champs comme spec UNIFICATION § 3.5.1
+- Le mot de passe vit en étape 4/4 finale, pas en E-1
+- Aucun sous-titre dans IR ni CP (CP a explicitement {/* subtitle removed */})
+- Labels 11px uppercase weight 700 letter-spacing 1px navy (style "petite caps"), pas 13px lowercase
+- Placeholders présents dans tous les inputs ("Dupont", "Marie", "marie@email.com", "06 12 34 56 78")
+- Aucun indicateur * sur les required, validation au submit avec message global
+- Pattern d'erreur IR/CP : message global remplace .ir-back / .cp-back pendant 3000ms (pas 2s), shake bouton synchrone — exactement le pattern Fix B mais avec 3s
+- Bouton OAuth Google IR : présent à étape 2 d'IR, après "Continuer" + séparateur "ou" — pattern legacy avant la décision Q5 d'écran 0 refondu
+
+### Bloc 3 — 5 décisions actées en conv 5
+
+D1 — Mot de passe en E-7 (dernière étape) : aligné IR. Le signUp Supabase + INSERT initial users + UPDATE complet se feront tous à E-7 en RPC atomique ou séquence client-side (à arbitrer en T7). Pendant E-1 à E-6 l'utilisateur n'a pas de session Auth ; tout est stocké en mémoire React. L'écran "Vérifie ta boîte mail" intervient après le submit final E-7, pas entre E-1 et E-2.
+
+D2 — Sous-titre "Tes informations de contact" supprimé : aligné IR/CP.
+
+D3 — Layout strict IR : labels 11px uppercase weight 700 letter-spacing 1px navy + placeholders dans inputs + pas d'astérisque. Implique modification du composant T1 <TextInput> partagé (impact sandbox AuthWizardSandbox.jsx — 16 sections existantes vont changer d'apparence pour s'aligner sur le design canonique IR/CP).
+
+D4 — Durée d'affichage erreur : 3000ms (aligné IR/CP). La constante GLOBAL_ERROR_DISPLAY_MS dans InscriptionAlternantPage.jsx passera de 2000 à 3000.
+
+D5 — OAuth Google reste sur écran 0 (/inscription, ChoixInscriptionPage refondu en T3). NE PAS reproduire le bouton Google de l'étape 2 d'IR dans InscriptionAlternantPage. Pattern IR sur ce point est legacy avant la décision Q5 + écran 0 refondu (cf. UNIFICATION § 3.4 et § 4.5.2).
+
+### Bloc 4 — Conséquences sur le découpage T2
+
+Le découpage des sous-commits T2 acté en conv 4 (sous-commits 2/5 = E-1 méthode email + écran Vérifie ta boîte mail + INSERT initial users post-confirmation) est CADUC.
+
+Nouveau découpage proposé pour conv 6 (à arbitrer définitivement en démarrage conv 6) :
+- Sous-commit 2/5 — E-1 méthode email refait from-scratch sur la base du JSX exact d'IR : 4 champs (Prénom, Nom, Téléphone, Email — pas de mdp), validation locale, navigation E-2 placeholder. Aucun signUp, aucun INSERT BDD, aucune session Auth créée.
+- Sous-commit 3/5 — E-2 (type_user) + E-3 à E-6 (placeholders ou contenu réel selon arbitrage)
+- Sous-commit 4/5 — E-7 = mdp + signUp + INSERT initial users + UPDATE complet avec toutes les données du state + envoi mail confirmation Supabase + redirection écran "Vérifie ta boîte mail"
+- Sous-commit 5/5 — Pattern de reprise (user revient après abandon, session Auth absente parce que pas encore créée — comportement à définir)
+
+### Bloc 5 — État du code en fin de conv 5 (working dir non committé)
+
+Fichiers créés (4) : ErrorMessage.jsx + ErrorMessage.css (2.A), AuthErrorBanner.jsx + AuthErrorBanner.css (Fix B).
+Fichiers modifiés (7) : AuthScreenContainer.css (fix card défensif), AuthWizardSandbox.jsx + .css (démo ErrorMessage section 17), useInscriptionWizard.js (refonte globalError + validateE1Email + mapSupabaseSignUpError + submitE1Email), InscriptionAlternantPage.jsx + .css (rendu E-1 méthode email avec Prénom/Nom côte à côte), TextInput.css (gap 6→8).
+
+Aucun de ces fichiers n'est committé. Branche feat/unification-inscription reste sur 9a36d99.
+
+Décision pour conv 6 :
+- Soit reverter intégralement ces modifs et repartir from-scratch sur la base du JSX d'IR
+- Soit conserver les fichiers réutilisables (ErrorMessage.jsx + AuthErrorBanner.jsx restent valides comme composants partagés ; useInscriptionWizard.js refondu globalError est valide ; AuthScreenContainer.css fix défensif est valide), et reverter uniquement le rendu JSX d'InscriptionAlternantPage.jsx + .css
+
+Recommandation : conserver les fichiers réutilisables (option 2). Les composants <ErrorMessage> et <AuthErrorBanner> sont alignés sur IR/CP dans leur fonctionnement, juste leur durée d'affichage et leur usage diffèrent. La refonte du hook en globalError est plus simple que l'ancien errors objet et reste pertinente. Seul le rendu JSX d'InscriptionAlternantPage doit être refait sur la base du code IR. Validation finale en démarrage conv 6.
+
+### État final du chantier UNIFICATION-INSCRIPTION fin conv 5
+
+Sprint 1 ouvert. T1 livrée (commit a70d69b sur main). T2 partiellement codée :
+- Sous-commits 0, 1, 1-bis, 1-ter ✅ (commits 52d6e79 / f0ec0b4 / 838f027 / 45777b9 / 9a36d99 sur branche feat/unification-inscription)
+- Sous-commit 2/5 codé en conv 5 mais NON COMMITTÉ et architecture invalidée par les 5 décisions acted — à reprendre en conv 6
+- Sous-commits 3, 4, 5 restants
+
+Aucun changement visible pour les utilisateurs de sterny.co (main reste sur 11f0e0f). La branche feature accumulera les nouveaux sous-commits T2 jusqu'à T7 avant merge en main.
+
+Confirm email Supabase : laissé ON (réactivé en début conv 5). Continuera à casser /inscription/proprietaire méthode email en prod (DETTE #55 enrichie) jusqu'à livraison T4. Acceptable parce que aucun proprio réel ne s'inscrit en prod.
 
 ---
 
