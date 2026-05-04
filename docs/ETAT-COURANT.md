@@ -2,7 +2,70 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 5 chantier UNIFICATION-INSCRIPTION : T2 sous-commit 2/5 partiellement codé (Fix B livré, AuthErrorBanner créé, useInscriptionWizard refondu en globalError simplifié) puis pivot architectural acté suite à audit IR/CP — le code Fix B est conservé en working dir uncommitted, le sous-commit 2/5 sera repris from-scratch en conv 6 sur la base du JSX exact d'IR.
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 6 chantier UNIFICATION-INSCRIPTION : DETTE #58 résolue (commit d91b5d6), école 2 actée comme convention placeholder du wizard unifié, sous-commit 2/5 reporté à conv 7.
+
+---
+
+## 2026-05-04 bis — Clôture conv Claude.ai 6 : DETTE #58 résolue + école 2 actée + sous-commit 2/5 reporté
+
+### Bloc 1 — Phase de mise en condition
+
+Reprise sur la base du brief de démarrage conv 6 (3 marqueurs validés en début de session : header ETAT-COURANT 2026-05-04, DETTE #58 dans DETTE-TECHNIQUE, 2 encarts amendement UNIFICATION-INSCRIPTION § 3.5.1 et § 7.3.2).
+
+Décisions préliminaires actées en début de conv :
+- Décision 1 : Option 2 avec 2 affinements sur le sort du Fix B uncommitted. Conserver fichiers réutilisables (ErrorMessage.jsx + .css, AuthErrorBanner.jsx + .css, useInscriptionWizard.js refondu globalError, AuthScreenContainer.css fix défensif, AuthWizardSandbox section 17). Reverter InscriptionAlternantPage.jsx + .css ET TextInput.css (2 affinements vs reco conv 5). Nettoyer chirurgicalement useInscriptionWizard.js des helpers obsolètes (mapSupabaseSignUpError + submitE1Email + branche password de validateE1Email + state submitting + reducer SET_SUBMITTING).
+- Décision 2 : Découpage T2 validé (2/5 E-1 méthode email from-scratch / 3/5 scindable en 3a/3b/3c selon écrans / 4/5 E-7 mdp + signUp + INSERT + UPDATE + mail / 5/5 pattern de reprise précédé de cadrage produit dédié).
+
+Prompt Claude Code n°1 livré — revert sélectif. 3 fichiers revertés à HEAD. useInscriptionWizard.js nettoyé chirurgicalement (-86 lignes, passe de 268 à 181 lignes). Build OK 1.02s. Aucun commit créé. Note : HEAD réel = 9a349b0, pas 9a36d99 comme indiqué dans le brief de démarrage conv 6 (9a349b0 = commit docs clôture conv 5 qui n'a touché que les .md, donc reverts équivalents).
+
+### Bloc 2 — DETTE #58 résolue (commit d91b5d6)
+
+Audit lecture pure phase 0 du composant <TextInput> et du pattern label IR canonique. Découverte importante : la prop placeholder était DÉJÀ supportée dans la signature actuelle ET déjà transmise à l'<input> natif (lignes 8 + 32 de TextInput.jsx). DETTE #58 effective réduite de 3 à 2 changements réels :
+- (a) Style label aligné IR : .aw-textinput-label passe de 13px/600/lowercase à 11px/700/uppercase + letter-spacing 1px (margin-bottom: 6px délibérément non ajouté car gap: 6px du parent .aw-textinput compense).
+- (b) Retrait du span.aw-textinput-required (astérisque visuelle * orange) en JSX + suppression du bloc CSS associé. Prop required conservée dans la signature et transmise à <input> natif (validation HTML).
+
+Sandbox section 4 ramenée à 3 instances cohérentes pattern IR (vide-avec-placeholder / rempli / en erreur) après plusieurs allers-retours sur le placeholder de l'instance 1 (Saisis ton prénom → Marie → Ton prénom). Itinéraire qui a fait émerger la décision école 2 (cf. bloc 3).
+
+Commit d91b5d6 sur origin/feat/unification-inscription. 3 fichiers / +6 / -9 lignes. Strictement atomique grâce à un add chirurgical sur AuthWizardSandbox.jsx (procédure backup → checkout HEAD → réapplique modif ciblée → add → restore) qui a permis de stager UNIQUEMENT le hunk DETTE #58 (1 ligne placeholder section 4) en laissant les 3 hunks Fix B (import ErrorMessage + hooks emShakeRef/emErrorVisible + section 17 entière) en working dir uncommitted.
+
+### Bloc 3 — Convention école 2 actée pour le wizard unifié
+
+Décision Côme conv 6 actée pendant la validation visuelle DETTE #58 :
+- Convention placeholder = "instruction tutoyée" (école 2). Exemples canoniques : "Ton prénom", "Ton nom", "Ton adresse email", "Ton numéro de téléphone", "Ta ville". Pas de verbe "saisis" / "entre" / "indique" — directement le complément avec "Ton" / "Ta" + nom du champ.
+- Justification Côme : exemples concrets (école 1 : "Marie", "Dupont") risquent de perturber utilisateurs avec ces noms réels et "Dupont" trop connoté placeholder cliché. École 2 cohérente avec le tutoiement déjà appliqué partout sur Sterny ("Trouve ton logement", navbar).
+- Périmètre acté : convention naît avec le wizard unifié. NE S'APPLIQUE PAS rétroactivement à InscriptionRecherchePage.jsx ni CompleterProfilPage.jsx qui restent en école 1 jusqu'à leur dépréciation. Justification : ces 2 pages sont vouées à être remplacées par le wizard dans T2-T7, modifier maintenant = double travail.
+- Le commit DETTE #58 (d91b5d6) a déjà appliqué l'école 2 dans la sandbox <TextInput> (placeholder "Ton prénom").
+- Convention "préservation de saisie utilisateur" actée en parallèle : à toute étape du wizard, la valeur saisie ne doit jamais être effacée par une erreur de validation. Erreur s'affiche en complément (bordure rouge sur le champ + bannière <AuthErrorBanner> 3000 ms remplaçant <BottomAuthLinks>).
+
+Audit IR/CP fait par Claude Code en début de prompt n°3 (12 placeholders école 1 identifiés sur 25 placeholders totaux) puis prompt annulé. Tableau d'audit conservé dans la conversation Claude.ai 6 si besoin de l'exploiter en DETTE #61 plus tard.
+
+### Bloc 4 — DETTE #59 + #60 + #61 créées (cf. DETTE-TECHNIQUE.md)
+
+Trois nouvelles DETTES tracées en clôture conv 6, issues des remarques de Côme pendant la validation visuelle de la sandbox /dev/auth-wizard-sandbox :
+- DETTE #59 — Retrait flèche ← dans <BackLink> ("ça fait pas pro").
+- DETTE #60 — Hiérarchie typographique IntentCardRadio (mettre en avant "cherche / propose / les deux").
+- DETTE #61 — Bascule placeholders IR/CP sur école 2 si IR/CP survivent au-delà du wizard unifié.
+
+### Bloc 5 — Sous-commit 2/5 reporté à conv 7
+
+Sous-commit 2/5 (E-1 méthode email from-scratch sur la base du JSX exact d'IR) NON entamé en conv 6. Reporté à conv 7 par décision Claude.ai en accord avec Côme. Justification : sujet trop important architecturalement pour être codé en bout de conv saturée. La conv 6 a déjà comporté 12+ phases (lecture 6 docs + revert + DETTE #58 phase 0/1/2 + corrections sandbox successives + commit chirurgical + audit IR/CP annulé). Le sous-commit 2/5 définit le pattern E-1 du wizard pour tout le reste du chantier T2-T7 — il mérite une conv 7 fraîche démarrant directement sur la phase de lecture exhaustive d'IR avec énergie cognitive intacte.
+
+### État final du chantier UNIFICATION-INSCRIPTION fin conv 6
+
+Sprint 1 ouvert. T1 livrée (commit a70d69b sur main). T2 partiellement codée :
+- Sous-commits 0, 1, 1-bis, 1-ter ✅ (commits 52d6e79 / f0ec0b4 / 838f027 / 45777b9 sur branche feat/unification-inscription)
+- Sous-commit DETTE #58 hors-T2 ✅ (commit d91b5d6 sur branche feat/unification-inscription)
+- Sous-commits 2/5, 3/5, 4/5, 5/5 restants
+
+main toujours sur 11f0e0f (prod sterny.co inchangée). La branche feat/unification-inscription accumule les sous-commits T2 + DETTE #58 jusqu'à T7 avant merge en main.
+
+État working dir fin conv 6 (préservé pour conv 7) :
+- 5 modified : AuthScreenContainer.css (Fix B), AuthWizardSandbox.css (Fix B section 17), AuthWizardSandbox.jsx (Fix B 3 hunks restants après add chirurgical DETTE #58), useInscriptionWizard.js (refonte globalError + nettoyage chirurgical), CreerAnnoncePage.jsx (bypass DEV préexistant intouché)
+- 7 untracked : 4 Fix B (ErrorMessage.jsx + .css, AuthErrorBanner.jsx + .css), 3 docs préexistants (audit + spike pdf-js)
+
+Ces 9 fichiers Fix B + le rendu E-1 from-scratch à venir formeront le périmètre du sous-commit 2/5 en conv 7 (cf. cadrage Q1 de Claude.ai conv 6 sur le périmètre du commit).
+
+Confirm email Supabase : laissé ON. Continuera à casser /inscription/proprietaire méthode email en prod jusqu'à livraison T4 (DETTE #55). Acceptable parce que aucun proprio réel ne s'inscrit en prod.
 
 ---
 

@@ -388,6 +388,8 @@ Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (aud
 > - **Layout strict IR** : labels 11px uppercase weight 700 letter-spacing 1px + placeholders dans inputs + pas d'astérisque
 > - **Pas de sous-titre "Tes informations de contact"** (aligné IR/CP)
 > - **OAuth Google reste sur écran 0** (ChoixInscriptionPage refondu en T3)
+> - **Convention placeholder = école 2 (instruction tutoyée, sans verbe)** (actée 4 mai 2026, conv 6). Exemples canoniques : "Ton prénom", "Ton nom", "Ton adresse email", "Ton numéro de téléphone", "Ta ville". Pas de verbe "saisis" / "entre" / "indique" — directement le complément avec "Ton" / "Ta" + nom du champ. Cette convention naît avec le wizard et ne s'applique pas rétroactivement à `InscriptionRecherchePage.jsx` ni `CompleterProfilPage.jsx` (cf. DETTE #61). Le commit d91b5d6 a appliqué la convention dans la sandbox `<TextInput>`.
+> - **Convention de préservation de saisie utilisateur** (actée 4 mai 2026, conv 6). À toute étape du wizard, la valeur saisie par l'utilisateur dans un champ ne doit jamais être effacée par l'apparition d'une erreur de validation. La saisie est conservée dans le state React, l'erreur s'affiche en complément (bordure rouge sur le champ + bannière `<AuthErrorBanner>` qui remplace `<BottomAuthLinks>` pendant 3000 ms).
 >
 > Le pseudo-JSX et la table d'erreur ci-dessous sont conservés pour traçabilité historique mais doivent être lus à la lumière de cet amendement. Détails complets dans ETAT-COURANT.md section "2026-05-04".
 

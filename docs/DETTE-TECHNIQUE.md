@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 5 chantier UNIFICATION-INSCRIPTION : DETTE #58 créée pour la modification du composant T1 <TextInput> à entreprendre en conv 6 (impact sandbox).
+**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 6 chantier UNIFICATION-INSCRIPTION : DETTE #58 RÉSOLUE par commit d91b5d6 + DETTE #59 / #60 / #61 créées.
 
 ## Nomenclature des bugs
 
@@ -564,6 +564,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #58 — Modification du composant T1 <TextInput> pour aligner sur le pattern IR/CP
 
+**Statut au 4 mai 2026 (clôture conv 6)** : RÉSOLUE par commit d91b5d6 sur origin/feat/unification-inscription. Périmètre couvert : composant <TextInput> aligné sur le pattern canonique IR/CP. Note importante : la prop placeholder s'est révélée déjà supportée en signature et transmise à <input> natif — DETTE #58 effective réduite à 2 changements (label aligné + retrait astérisque), pas 3 comme initialement anticipé.
+
 **Statut au 4 mai 2026** : créée par audit IR/CP en clôture de conv Claude.ai 5 du chantier UNIFICATION-INSCRIPTION.
 
 **Constat** : le composant partagé <TextInput> créé en T1 (sterny-react/src/components/auth-wizard/TextInput.jsx + .css) utilise un style label "doux" (13px weight 600 lowercase + indicateur * orange si required) qui diverge du pattern canonique IR/CP en prod (label 11px uppercase weight 700 letter-spacing 1px navy + placeholder dans input + pas d'astérisque). Cette divergence n'avait pas été identifiée à T1 parce que la sandbox était conçue isolément, sans comparaison directe à IR/CP.
@@ -581,3 +583,52 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Bloquant pré-production** : non en soi (la sandbox est dev-only) mais bloquant pour la livraison du nouveau sous-commit 2/5 du chantier UNIFICATION-INSCRIPTION en conv 6 (qui ne peut pas commencer son rendu E-1 sans le <TextInput> aligné IR).
 
 **Origine** : audit lecture pure IR + CP en clôture conv 5 (4 mai 2026).
+
+## DETTE #59 — Retrait de la flèche ← dans <BackLink>
+
+**Statut au 4 mai 2026** : créée par retour Côme en conv 6 ("ça fait pas pro").
+
+**Constat** : le composant <BackLink> partagé (sterny-react/src/components/auth-wizard/BackLink.jsx) affiche actuellement "← Retour" avec une flèche unicode dans le label. Décision Côme : retirer la flèche, garder uniquement le texte "Retour" pour un rendu plus pro et aligné design system Sterny.
+
+**Plan de résolution** :
+1. Localiser le rendu de la flèche dans BackLink.jsx (probablement dans le contenu textuel du composant, ex. {`← ${label}`} ou similaire).
+2. Retirer la flèche, conserver uniquement {label}.
+3. Vérifier visuellement la sandbox /dev/auth-wizard-sandbox (sections concernées : 9-bis ou 10 selon le composant exposant <BackLink>) et les pages IR/CP en mode dev local.
+4. Audit grep des autres usages de <BackLink> dans le repo pour confirmer aucun consommateur ne dépend de la flèche.
+
+**Effort estimé** : 15 min Claude Code.
+
+**Bloquant pré-production** : non. Cosmétique pur.
+
+**Origine** : retour Côme conv 6 sur la sandbox AuthWizardSandbox section 10 BackLink.
+
+## DETTE #60 — Hiérarchie typographique IntentCardRadio
+
+**Statut au 4 mai 2026** : créée par retour Côme en conv 6 ("on ne lit pas les mots clés cherche / propose / les deux").
+
+**Constat** : le composant <IntentCardRadio> (sterny-react/src/components/...) affiche 3 cartes "Je cherche un logement / Je propose mon logement / Les deux" avec un sous-titre descriptif sous chaque. Le mot-clé sémantique principal (cherche / propose / les deux) doit être plus saillant typographiquement pour permettre un scan rapide.
+
+**Plan de résolution** :
+1. Identifier le composant <IntentCardRadio> et son CSS associé.
+2. Mettre en avant les mots-clés "cherche / propose / les deux" : poids typographique plus fort, couleur orange accent, ou taille augmentée. À tester en majuscule (essai Côme).
+3. Audit visuel sandbox + écran réel.
+
+**Effort estimé** : 20-30 min Claude Code (un peu de design itératif).
+
+**Bloquant pré-production** : non. Cosmétique pur.
+
+**Origine** : retour Côme conv 6 sur la sandbox AuthWizardSandbox section 12.
+
+## DETTE #61 — Bascule placeholders IR/CP sur école 2 si IR/CP survivent au-delà du wizard unifié
+
+**Statut au 4 mai 2026** : créée par décision conv 6.
+
+**Constat** : InscriptionRecherchePage.jsx (IR) et CompleterProfilPage.jsx (CP) restent en école 1 (placeholders type "Marie", "Dupont", "marie@email.com", "06 12 34 56 78") tandis que le wizard unifié naît en école 2 (cf. UNIFICATION-INSCRIPTION § 3.5.1). Cohabitation transitoire acceptée tant que IR/CP sont vouées à être remplacées par le wizard.
+
+**Plan de résolution** : aucun travail à faire si IR/CP sont supprimées dans T7 comme prévu. Si pour une raison quelconque IR/CP sont conservées en parallèle du wizard, exécuter l'audit + bascule fait par Claude Code en conv 6 :
+- 12 placeholders école 1 identifiés à basculer : IR:473, 477, 482, 486 (identité Dupont/Marie/email/téléphone), IR:547, 559, 574, 585 (alternance + villes), CP:915, 973, 1025, 1046 (ville/rythme/études).
+- 6 cas hybrides à arbitrer en plus : IR:606 (mdp longueur min), IR:610 (confirm mdp déjà école 2), CP:848-852 (labels bruts), CP:858 (format date JJ/MM/AAAA), CP:1003 (école avec verbe "Recherche"), CP:1090 (textarea bio).
+
+**Bloquant pré-production** : non. La cohabitation école 1 (IR/CP) + école 2 (wizard) n'a aucun impact utilisateur tant que les 2 parcours ne se croisent pas dans la même session.
+
+**Origine** : décision arbitrage Côme conv 6 (4 mai 2026) — refus de modifier du code voué à disparaître.
