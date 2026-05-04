@@ -19,7 +19,7 @@ export default function TextInput({
     <div className={`aw-textinput ${error ? 'has-error' : ''}`}>
       {label && (
         <label className="aw-textinput-label" htmlFor={inputId}>
-          {label}{required && <span className="aw-textinput-required" aria-hidden="true">*</span>}
+          {label}
         </label>
       )}
       <input

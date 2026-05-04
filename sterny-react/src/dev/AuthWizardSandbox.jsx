@@ -92,7 +92,7 @@ export default function AuthWizardSandbox() {
             label="Prénom (vide)"
             value={textValue}
             onChange={(e) => setTextValue(e.target.value)}
-            placeholder="Saisis ton prénom"
+            placeholder="Ton prénom"
             required
           />
           <TextInput
