@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 7 chantier UNIFICATION-INSCRIPTION : sous-commit 2/5 livré (commit 852846d). DETTE #59 reste active mais sans usage en E-1 (BottomAuthLinks absorbe le rôle Retour).
+**Dernière mise à jour** : 5 mai 2026 — Clôture conv Claude.ai 8 chantier UNIFICATION-INSCRIPTION : sous-commit 3/5 livré (commit fb14252). DETTE #59 reste active mais sans usage en E-2 (BottomAuthLinks absorbe le rôle Retour). DETTE #60 contournée localement par .ial-card-keyword mais reste active pour autres usages du composant partagé. Nouvelles dettes ajoutées : #62 (autofill scoped à promouvoir au composant TextInput) et #63 (mini-dette icônes IntentCardRadio).
 
 ## Nomenclature des bugs
 
@@ -586,6 +586,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #59 — Retrait de la flèche ← dans <BackLink>
 
+**Statut au 5 mai 2026 (post conv 8)** : DETTE encore active mais SANS usage en E-2. Le sous-commit 3/5 (fb14252) utilise BottomAuthLinks (avec onRetour={goToPrevStep}) qui ne contient aucune flèche, jamais. La DETTE reste applicable au composant <BackLink> pour les usages futurs de la sandbox + autres écrans à venir (qui pourraient ne PAS utiliser BottomAuthLinks).
+
 **Statut au 4 mai 2026 (post conv 7)** : DETTE encore active mais SANS usage en E-1. Le sous-commit 2/5 livré par 852846d a remplacé `<BackLink>` par `<BottomAuthLinks retourTo="/inscription" retourLabel="Retour" showSignInLink />` qui rend nativement "Retour · Déjà un compte ? Se connecter" sur une seule ligne, sans flèche. DETTE applicable uniquement aux autres pages utilisant encore `<BackLink>` (sandbox + écrans du wizard E-3 à E-7 à venir).
 
 **Statut au 4 mai 2026** : créée par retour Côme en conv 6 ("ça fait pas pro").
@@ -605,6 +607,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Origine** : retour Côme conv 6 sur la sandbox AuthWizardSandbox section 10 BackLink.
 
 ## DETTE #60 — Hiérarchie typographique IntentCardRadio
+
+**Statut au 5 mai 2026 (post conv 8)** : contournée localement en E-2 par une classe .ial-card-keyword qui injecte le mot-clé en MAJUSCULE via JSX inline dans la prop label du composant. Le composant partagé <IntentCardRadio> lui-même n'a PAS été modifié pour cette hiérarchie typo — il garde sa typo standard 15px / 700 / slate-700. La DETTE reste donc active pour les autres consommateurs futurs du composant : si on veut promouvoir cette hiérarchie globalement, il faudra refondre le composant. Décision reportée à plus tard, le contournement local en E-2 est jugé suffisant pour le moment.
 
 **Statut au 4 mai 2026** : créée par retour Côme en conv 6 ("on ne lit pas les mots clés cherche / propose / les deux").
 
@@ -634,3 +638,39 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Bloquant pré-production** : non. La cohabitation école 1 (IR/CP) + école 2 (wizard) n'a aucun impact utilisateur tant que les 2 parcours ne se croisent pas dans la même session.
 
 **Origine** : décision arbitrage Côme conv 6 (4 mai 2026) — refus de modifier du code voué à disparaître.
+
+## DETTE #62 — Autofill Chrome neutralisation à promouvoir au composant TextInput
+
+**Statut au 5 mai 2026** : créée en conv 8 lors du sous-commit 3/5.
+
+**Constat** : la règle CSS qui neutralise le fond bleu autofill Chrome a été ajoutée dans `InscriptionAlternantPage.css` avec un sélecteur scopé `.ial-form input:-webkit-autofill`. Cohérent pour le sous-commit 3/5 (E-1 est le seul écran avec inputs pour l'instant), mais quand E-3+ auront leurs propres inputs (école, années, filière, villes, etc.), il faudra soit dupliquer la règle dans chaque page, soit la promouvoir dans le composant partagé `TextInput.css`.
+
+**Plan de résolution** :
+1. Déplacer le bloc CSS de `InscriptionAlternantPage.css` vers `TextInput.css`.
+2. Modifier le sélecteur de `.ial-form input:-webkit-autofill` à `.aw-textinput-input:-webkit-autofill` (la classe portée par l'`<input>` natif dans TextInput.jsx).
+3. Vérifier l'absence de régression visuelle en sandbox section 4 (TextInput) et IR (qui consomme `<TextInput>` sur 5 étapes).
+4. Décider du sort de la DETTE pour `InscriptionRecherchePage` : promouvoir aussi ou garder localement (cf. politique "ne s'applique pas rétroactivement à IR/CP", comme conv 6 école 2).
+
+**Effort estimé** : 20 min Claude Code.
+
+**Bloquant pré-production** : non. Cosmétique pur (uniquement visible si l'utilisateur a déjà une saisie auto-remplie par Chrome).
+
+**Origine** : conv 8 sous-commit 3/5, retour visuel Côme sur fond bleu Chrome jugé inesthétique.
+
+## DETTE #63 — Icônes IntentCardRadio absentes en E-2
+
+**Statut au 5 mai 2026** : créée en conv 8 lors du sous-commit 3/5.
+
+**Constat** : la spec UNIFICATION-INSCRIPTION § 7.3.2 prévoyait textuellement des icônes pour les 3 cartes E-2 (Icône maison + flèche, Icône maison avec clé sortante, Icône cycle / 2 flèches alternées). Aucune icône n'a été câblée en sous-commit 3/5 — alignement sur la démo sandbox section 12 qui n'en utilise pas. La prop `icon` du composant `<IntentCardRadio>` est optionnelle, donc l'ajout est trivial techniquement, mais demande d'arbitrer 3 SVG (loupe pour locataire, maison-clé pour hote, swap pour les_deux ; ou Material Symbols Rounded search / home_work / swap_horiz).
+
+**Plan de résolution** :
+1. Choisir la source : Material Symbols Rounded inline SVG (cohérent avec le check icon installé en conv 8) ou SVG custom dans le style IR.
+2. Ajouter les 3 SVG en const à l'intérieur de `InscriptionAlternantPage.jsx` (ou dans un fichier séparé `src/components/auth-wizard/IntentCardIcons.jsx` si on prévoit de les réutiliser).
+3. Câbler la prop `icon` sur les 3 IntentCardRadio E-2.
+4. Test visuel sandbox section 12 + écran E-2.
+
+**Effort estimé** : 30-45 min Claude Code (essentiellement choix design des 3 SVG).
+
+**Bloquant pré-production** : non. Cosmétique pur, absence d'icône reste lisible.
+
+**Origine** : conv 8 sous-commit 3/5, alignement pragmatique sur la sandbox plutôt que sur la spec § 7.3.2 pour livrer rapidement.

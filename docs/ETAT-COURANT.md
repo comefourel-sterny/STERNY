@@ -2,7 +2,70 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 4 mai 2026 — Clôture conv Claude.ai 7 chantier UNIFICATION-INSCRIPTION : sous-commit 2/5 livré (commit 852846d) — écran E-1 méthode email du wizard unifié opérationnel, conventions placeholder école 2 et préservation de saisie utilisateur appliquées.
+**Dernière mise à jour** : 5 mai 2026 — Clôture conv Claude.ai 8 chantier UNIFICATION-INSCRIPTION : sous-commit 3/5 livré (commit fb14252) — écran E-2 type_user opérationnel, polish visuel sur composant partagé IntentCardRadio (label slate-700, check icon Material Rounded weight 700), pattern fallback placeholder pour étapes E-3 à E-7 introduit, autofill Chrome neutralisé sur .ial-form.
+
+---
+
+## 2026-05-05 — Clôture conv Claude.ai 8 : sous-commit 3/5 livré (commit fb14252)
+
+### Bloc 1 — Phases d'écriture E-2 type_user
+
+Conv 8 a livré l'écran E-2 du wizard unifié sur la branche feat/unification-inscription, par 7 phases incrémentales étalées sur 1 session :
+
+- **Phase 1 (lecture pure IntentCardRadio)** : restitution intégrale du JSX (39 lignes) et CSS (91 lignes) du composant partagé livré en T1 (commit a70d69b), démo sandbox section 12 (lignes 205-242), et grep d'occurrence dans InscriptionRecherchePage. Découvertes clés : (a) le composant accepte une prop `label` typée ReactNode (pas seulement string), permettant d'injecter du JSX inline pour les mots-clés MAJUSCULE ; (b) IR n'utilise PAS IntentCardRadio mais une classe locale homonyme `.intent-card`, donc aucune dépendance à respecter.
+- **Phase 2 (lecture pure préalables)** : useInscriptionWizard.js (204 lignes), InscriptionAlternantPage.jsx + .css, et 6 composants Wizard (Title, ProgressBar, StepSubtitle, PrimaryButton, BottomAuthLinks, AuthScreenContainer). Découverte clé : `state.type_user` (snake_case BDD) déjà initialisé à `null` dans le hook (ligne 39), action `SET_FIELD` permettant directement l'écriture, aucun gap d'API à corriger.
+- **Phase 3 (écriture initiale E-2)** : 3 IntentCardRadio (locataire/hote/les_deux) avec textes alignés sur la sandbox de référence + spec § 7.3.2, bouton Continuer désactivé tant que `!state.type_user`, BottomAuthLinks avec `onRetour={goToPrevStep}` (cohérence E-1).
+- **Phase 4 (itérations visuelles)** : 7 ajustements successifs sur le rendu E-2 — suppression de la question "Tu cherches, tu proposes, ou les deux ?" jugée trop volumineuse, mots-clés CHERCHE/PROPOSE/DEUX en MAJUSCULE inline via `.ial-card-keyword`, test des couleurs (orange #E8622A → navy #1E293B → slate-700 #334155), test du poids (700 → 600 → 700), nettoyage final : MAJUSCULE + letter-spacing 1px + weight 700 hérité + couleur héritée (label slate-700).
+- **Phase 5 (check icon adouci)** : remplacement du caractère unicode `✓` par un SVG Material Symbols Rounded weight 700 inline (path d="M389-227..."), 14×14px dans le rond 22×22px, color: currentColor (hérite blanc quand sélectionné, transparent sinon).
+- **Phase 6 (autofill Chrome)** : neutralisation du fond bleu auto-fill via règle CSS `.ial-form input:-webkit-autofill` scopée à E-1 (box-shadow inset 1000px white + transition 9999s pour empêcher le retour du bleu au focus).
+- **Phase 7 (fix navigation)** : régression identifiée — clic Continuer sur E-2 ramenait à E-1 visuellement parce que le rendu E-1 était le `return` par défaut sans condition, donc capté par tous les `currentStep` autres que 2. Wrap E-1 dans `if (state.currentStep === 1)`, ajout d'un `return` final fallback "Étape N — À implémenter" pour les étapes 3 à 7 (toutes à venir), avec BottomAuthLinks `onRetour={goToPrevStep}`.
+
+### Bloc 2 — Périmètre commit fb14252 (4 fichiers, +130 / −84)
+
+4 modified, 0 nouveau :
+- `sterny-react/src/components/auth-wizard/IntentCardRadio.jsx` (modified — caractère ✓ remplacé par SVG Material Rounded inline)
+- `sterny-react/src/components/auth-wizard/IntentCardRadio.css` (modified — label color #1E293B → #334155 slate-700, cleanup font-size/weight sur le check devenus inutiles avec SVG)
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` (modified — branche `if (currentStep === 1)`, branche `if (currentStep === 2)` réécrite avec 3 IntentCardRadio + mots-clés inline, fallback E-3+ placeholder, retrait de `.ial-btn-precedent`)
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.css` (modified — ajout `.ial-cards-stack` flex 1, `.ial-card-keyword` MAJUSCULE letter-spacing, `.ial-placeholder-content` réutilisée pour fallback, bloc autofill webkit ; suppression `.ial-placeholder-text` et `.ial-btn-precedent` devenus inutiles)
+
+`CreerAnnoncePage.jsx` (bypass DEV) intact en working dir post-commit, comme attendu. 3 untracked docs préexistants intacts.
+
+### Bloc 3 — Conventions actées et décisions visuelles nouvelles
+
+Issues du chantier UNIFICATION-INSCRIPTION § 7.3.2 :
+- **Valeurs `type_user`** : exactement `"locataire"` / `"hote"` / `"les_deux"` (alignement contrainte CHECK BDD + démo sandbox).
+- **Préservation de saisie utilisateur** : `state.type_user` survit aux navigations Continuer/Retour à l'intérieur de la page car `useInscriptionWizard` instancié une seule fois au mount du composant. Refresh de page = perte (à corriger en 5/5 persistance state).
+- **Pas de WizardProgressBar en E-2** : aligné sur l'absence de WizardProgressBar en E-1 (décision globale wizard à prendre quand on l'introduira sur tous les écrans).
+- **Pas d'icône dans IntentCardRadio E-2** : aligné sur la démo sandbox section 12 qui n'en passe aucune. La prop `icon` reste optionnelle, ajout futur trivial (cf. nouvelle DETTE #63).
+
+Décisions visuelles nouvelles (conv 8) :
+- **Hiérarchie typo des cartes type_user** : mot-clé en MAJUSCULE + letter-spacing 1px, sans surcharge de couleur ni de poids supplémentaire (héritage parent). Cette décision contourne DETTE #60 par un patch local `.ial-card-keyword` plutôt qu'une refonte du composant partagé. DETTE #60 reste donc active pour les autres usages futurs de IntentCardRadio.
+- **Couleur des labels IntentCardRadio (composant partagé)** : passage de navy `#1E293B` (slate-900) à slate `#334155` (slate-700). Adoucit visuellement les cartes sans perdre la lisibilité. Impact sandbox section 12 (cohérent — c'est l'évolution voulue).
+- **Check icon IntentCardRadio (composant partagé)** : passage du caractère unicode `✓` à un SVG Material Symbols Rounded weight 700 inline. Plus rond, plus pro, sans pointes acérées. Couleur via `currentColor` pour préserver la logique CSS existante (transparent au repos, blanc quand sélectionné).
+- **Autofill Chrome neutralisé sur .ial-form** : règle scopée à E-1 pour l'instant, à promouvoir dans `TextInput.css` quand E-3+ auront leurs propres inputs (cf. nouvelle DETTE #62).
+
+### Bloc 4 — Pattern fallback placeholder pour étapes non implémentées
+
+Nouveau pattern introduit par la conv 8 dans `InscriptionAlternantPage.jsx` : la fonction de rendu commence par `if (state.currentStep === 1) { return E-1 }`, puis `if (state.currentStep === 2) { return E-2 }`, puis un `return` final fallback qui rend un placeholder générique "Étape N — À implémenter" avec un bouton Retour via `BottomAuthLinks onRetour={goToPrevStep}`. Le `currentStep` peut prendre n'importe quelle valeur entre 3 et 7 (clamp via `Math.min(TOTAL_STEPS=7, currentStep+1)` dans `goToNextStep`), le placeholder affiche dynamiquement le numéro d'étape via `{state.currentStep}`. Aucune perte de saisie ou sélection : tout reste dans le state du hook tant que la page n'est pas refreshée. Quand E-3 à E-7 seront implémentées (sous-commits 4/5+), elles s'ajouteront simplement comme nouvelles branches `if` avant le fallback.
+
+### Bloc 5 — Prochaines étapes T2
+
+Sous-commits T2 restants :
+- **4/5 : E-7 mot de passe + signUp Supabase** + INSERT initial users + UPDATE complet avec toutes les données du state + envoi mail confirmation + écran "Vérifie ta boîte mail". Conv dédiée recommandée vu la densité technique (auth, BDD, mail). Préalable : décider si on implémente E-3/E-4/E-5/E-6 avant E-7, ou si on saute directement à E-7 pour valider le flow auth bout-en-bout (reco : implémenter E-3 → E-7 dans l'ordre, sinon le placeholder fallback brouille le test du flow auth en E-7).
+- **5/5 : pattern de reprise + persistance state** (refresh page, navigation arrière depuis étape ultérieure, etc.).
+
+E-3 (école/année/filière), E-4 (villes/statuts), E-5 (calendrier RhythmManualBuilder), E-6 (date naissance/sexe/photo/bio) probablement scindables en sous-commits supplémentaires entre 3/5 et 4/5, à arbitrer en démarrage conv 9.
+
+### État final branche post-conv 8
+
+- `main` : 11f0e0f (prod sterny.co inchangée).
+- `feat/unification-inscription` : fb14252 (HEAD) — sous-commit 3/5 livré sur origin.
+
+Working dir post-conv 8 :
+- 1 modified : `CreerAnnoncePage.jsx` (bypass DEV préexistant tracé en DETTE-TECHNIQUE.md).
+- 3 untracked : `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` + 2 fichiers spikes pdf-js (préexistants).
+
+Confirm email Supabase : laissé ON. Continuera à casser `/inscription/proprietaire` méthode email en prod jusqu'à livraison T4 (DETTE #55).
 
 ---
 
