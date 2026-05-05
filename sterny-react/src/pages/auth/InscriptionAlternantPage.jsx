@@ -11,6 +11,7 @@ import AuthErrorBanner from '../../components/auth-wizard/AuthErrorBanner'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
 import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
+import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import { ECOLES, ANNEES_ETUDES, FILIERES } from '../../data/inscription-options'
 import './InscriptionAlternantPage.css'
 
@@ -108,6 +109,7 @@ export default function InscriptionAlternantPage() {
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={2/7} />
         <div className="ial-cards-stack">
           <IntentCardRadio
             name="type_user"
@@ -151,6 +153,7 @@ export default function InscriptionAlternantPage() {
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={1/7} />
         <form onSubmit={handleSubmit} className="ial-form" noValidate>
           <div className="ial-form-row">
             <TextInput
@@ -215,6 +218,7 @@ export default function InscriptionAlternantPage() {
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={3/7} />
         <div className="ial-form">
           <AutocompleteInput
             name="ecole"
