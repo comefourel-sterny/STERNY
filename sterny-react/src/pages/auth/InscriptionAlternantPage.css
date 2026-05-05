@@ -29,12 +29,26 @@
   gap: 12px;
 }
 
+.ial-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
 .ial-placeholder-content {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  color: #94A3B8;
+  font-size: 14px;
+  text-align: center;
+}
+
+.ial-card-keyword {
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .ial-btn-continuer {
@@ -64,26 +78,14 @@
   cursor: not-allowed;
 }
 
-.ial-placeholder-text {
-  text-align: center;
-  color: #64748B;
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif;
-  margin: 0;
-}
-
-.ial-btn-precedent {
-  display: block;
-  margin: auto auto 0 auto;
-  background: transparent;
-  border: 1.5px solid #E8EAF0;
-  color: #1E293B;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+.ial-form input:-webkit-autofill,
+.ial-form input:-webkit-autofill:hover,
+.ial-form input:-webkit-autofill:focus,
+.ial-form input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset;
+  -webkit-text-fill-color: #1E293B;
+  caret-color: #1E293B;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 @media (max-width: 480px) {
