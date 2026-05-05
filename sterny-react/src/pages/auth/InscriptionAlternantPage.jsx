@@ -3,12 +3,15 @@ import {
   useInscriptionWizard,
   validateE1Email,
   getE1InvalidFields,
+  validateE3,
 } from '../../hooks/useInscriptionWizard'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
 import TextInput from '../../components/auth-wizard/TextInput'
 import AuthErrorBanner from '../../components/auth-wizard/AuthErrorBanner'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
+import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
+import { ECOLES, ANNEES_ETUDES, FILIERES } from '../../data/inscription-options'
 import './InscriptionAlternantPage.css'
 
 // Helpers de transformation copiés depuis InscriptionRecherchePage pour ce
@@ -82,6 +85,22 @@ export default function InscriptionAlternantPage() {
       return
     }
     setInvalidFields(new Set())
+    goToNextStep()
+  }
+
+  const handleE3Change = (e) => {
+    setField(e.target.name, e.target.value)
+    if (state.globalError) clearError()
+  }
+
+  const handleE3Submit = () => {
+    const err = validateE3(state)
+    if (err) {
+      setGlobalError(err)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      errorTimerRef.current = setTimeout(() => clearError(), 3000)
+      return
+    }
     goToNextStep()
   }
 
@@ -188,6 +207,47 @@ export default function InscriptionAlternantPage() {
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />
           : <BottomAuthLinks retourTo="/inscription" retourLabel="Retour" showSignInLink />}
+      </AuthScreenContainer>
+    )
+  }
+
+  if (state.currentStep === 3) {
+    return (
+      <AuthScreenContainer>
+        <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <div className="ial-form">
+          <AutocompleteInput
+            name="ecole"
+            label="École"
+            value={state.ecole ?? ''}
+            onChange={handleE3Change}
+            suggestions={ECOLES}
+            placeholder="Tape les premières lettres"
+            required={false}
+          />
+          <AutocompleteInput
+            name="annee_etudes"
+            label="Année d'études"
+            value={state.annee_etudes ?? ''}
+            onChange={handleE3Change}
+            suggestions={ANNEES_ETUDES}
+            placeholder="Tape ton cursus"
+            required={false}
+          />
+          <AutocompleteInput
+            name="filiere"
+            label="Filière"
+            value={state.filiere ?? ''}
+            onChange={handleE3Change}
+            suggestions={FILIERES}
+            placeholder="Ex : Informatique, GEA, Marketing"
+            required={false}
+          />
+          <button type="button" className="ial-btn-continuer" onClick={handleE3Submit}>Continuer</button>
+        </div>
+        {state.globalError
+          ? <AuthErrorBanner message={state.globalError} />
+          : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
       </AuthScreenContainer>
     )
   }

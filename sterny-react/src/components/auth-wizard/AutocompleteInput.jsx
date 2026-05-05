@@ -22,10 +22,10 @@ export default function AutocompleteInput({
 
   const filtered = useMemo(() => {
     const q = (value ?? '').toLowerCase().trim()
-    if (!q) return suggestions.slice(0, 8)
+    if (!q) return suggestions.slice(0, 4)
     return suggestions
       .filter(s => s.toLowerCase().includes(q))
-      .slice(0, 8)
+      .slice(0, 4)
   }, [value, suggestions])
 
   useEffect(() => {

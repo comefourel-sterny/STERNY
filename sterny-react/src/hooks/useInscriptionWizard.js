@@ -150,6 +150,19 @@ export function getE1InvalidFields(state) {
   return invalid
 }
 
+// Validation frontend E-3 — école / année d'études / filière
+// Règles précisées dans UNIFICATION-INSCRIPTION § 3.7. 3 champs requis non vides.
+// Renvoie un message global (string) ou null si tout OK.
+export function validateE3(state) {
+  const ecole = (state.ecole ?? '').trim()
+  const annee = (state.annee_etudes ?? '').trim()
+  const filiere = (state.filiere ?? '').trim()
+  if (ecole.length === 0 || annee.length === 0 || filiere.length === 0) {
+    return 'Veuillez remplir tous les champs'
+  }
+  return null
+}
+
 export function useInscriptionWizard() {
   const [state, dispatch] = useReducer(reducer, initialState)
 
