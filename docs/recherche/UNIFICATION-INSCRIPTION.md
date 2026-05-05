@@ -482,6 +482,14 @@ Au clic "Continuer" : UPDATE `users.type_user` + navigation E-3.
 
 ### 3.7 Écran E-3 — Études
 
+> **⚠️ AMENDEMENT 5 mai 2026 (conv 9)** : la spec ci-dessous est révisée sur 5 points suite à l'implémentation E-3 du sous-commit 4/5. Détails complets dans ETAT-COURANT.md section "2026-05-05 (soir) — Clôture conv 9".
+>
+> 1. **Pas d'UPDATE BDD à E-3** — la ligne "Au clic Continuer : UPDATE `users.ecole + annee_etudes + filiere` + navigation E-4" est obsolète. Conformément à l'amendement § 3.5.1 (conv 5), tout reste en mémoire React jusqu'à E-7 où le signUp + INSERT + UPDATE complet ont lieu. Au clic Continuer en E-3 : `validateE3(state)` puis `goToNextStep` uniquement.
+> 2. **AutocompleteInput pour le champ année d'études** (au lieu de CustomSelect) — la liste fermée empêchait les cursus non listés (DCG, BBA, Mastère Spécialisé, etc.) et l'option "Autre" était un cul-de-sac BDD. AutocompleteInput permet la saisie libre si la suggestion ne match pas.
+> 3. **Liste ANNEES_ETUDES enrichie 11 → 38 cursus** : CAP 1/2, Bac Pro Seconde/Première/Terminale, BTS 1/2, BUT 1/2/3, DUT 1/2, Bachelor 1/2/3, BBA 1-4, DCG 1-3, Licence 1-3 + Pro, Cycle ingénieur 1-3, Master 1/2, DSCG 1/2, MBA, Mastère Spécialisé, Doctorat, Titre Professionnel, Année de césure. Sources : Onisep, AnAF, alternance-professionnelle.fr.
+> 4. **Pas de WizardStepSubtitle** — la mention "Ton cursus actuel" prévue est retirée pour cohérence avec E-1/E-2.
+> 5. **Convention AutocompleteInput partagée** : labels alignés sur le pattern TextInput E-1 (uppercase 11px / 700 / letter-spacing 1px) et dropdown limité à 4 suggestions au focus (au lieu de 8). Décision visuelle prise lors du sous-commit 4/5, applicable à tout usage futur du composant. Modification CSS du composant partagé, impacte aussi la sandbox section 7.
+
 **Périmètre** : école, année, filière.
 
 ```

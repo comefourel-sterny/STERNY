@@ -2,9 +2,81 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 5 mai 2026 — Clôture conv Claude.ai 8 chantier UNIFICATION-INSCRIPTION : sous-commit 3/5 livré (commit fb14252) — écran E-2 type_user opérationnel, polish visuel sur composant partagé IntentCardRadio (label slate-700, check icon Material Rounded weight 700), pattern fallback placeholder pour étapes E-3 à E-7 introduit, autofill Chrome neutralisé sur .ial-form.
+**Dernière mise à jour** : 5 mai 2026 (soir) — Clôture conv Claude.ai 9 chantier UNIFICATION-INSCRIPTION : sous-commit 4/5 livré — écran E-3 Études (école / année / filière) opérationnel, AutocompleteInput substitué à CustomSelect pour le champ année (saisie libre + liste enrichie 11→38 cursus), labels du composant partagé AutocompleteInput alignés sur le pattern TextInput E-1 (uppercase 11px / 700 / letter-spacing 1px), dropdown limité à 4 suggestions au focus.
 
 ---
+
+## 2026-05-05 (soir) — Clôture conv Claude.ai 9 : sous-commit 4/5 livré (E-3 Études)
+
+### Bloc 1 — Phases d'écriture E-3 école / année d'études / filière
+
+Conv 9 a livré l'écran E-3 du wizard unifié sur la branche feat/unification-inscription, par 4 phases incrémentales + 3 patches itératifs sur retours visuels Côme :
+
+- **Phase 0 (lecture pure préalable)** : restitution de InscriptionAlternantPage.jsx (204 lignes), useInscriptionWizard.js, composants partagés AutocompleteInput.jsx/css et CustomSelect.jsx/css déjà extraits dans auth-wizard/. Découverte : les 2 composants existent depuis avant T1 (47 fichiers dans auth-wizard/ vs 17 extraits T1) et n'étaient consommés QUE par la sandbox dev — réutilisation directe sans extraction préalable.
+- **Phase 1 (création données)** : nouveau fichier sterny-react/src/data/inscription-options.js avec 3 export const : ECOLES (30), ANNEES_ETUDES (initialement 11 puis enrichi à 38), FILIERES (30). ES modules pur, ordre figé.
+- **Phase 2 (validateE3 dans hook)** : ajout fonction exportée validateE3(state) après getE1InvalidFields. Logique : 3 champs requis non vides après trim → "Veuillez remplir tous les champs", sinon null.
+- **Phase 3 (câblage E-3 dans la page)** : 4 imports (AutocompleteInput, validateE3, données — CustomSelect importé puis retiré au patch suivant), 2 handlers (handleE3Change avec clearError on typing, handleE3Submit avec validation + setTimeout 3000ms réutilisant errorTimerRef partagé top-level), branche if (state.currentStep === 3) insérée juste avant le fallback. JSX : <AuthScreenContainer>, <h1 className="aw-screen-title">INSCRIPTION</h1>, container .ial-form avec 3 champs verticaux, bouton .ial-btn-continuer natif (cohérence E-1/E-2, pattern margin-top: auto), <AuthErrorBanner> conditionnel ou <BottomAuthLinks> sinon.
+- **Patch 3-bis (CustomSelect → AutocompleteInput pour année)** : retour visuel Côme — le CustomSelect avec option "Autre" était un cul-de-sac (string "Autre" stockée en BDD, pas de saisie libre). Bascule sur AutocompleteInput qui autorise la saisie libre. Liste ANNEES_ETUDES enrichie 11 → 38 cursus alternance France 2026 (recherche poussée Onisep, AnAF, alternance-professionnelle.fr). Suppression de "Autre" (escape hatch inutile avec un autocomplete qui accepte la saisie libre).
+- **Patch 3-ter (alignement labels uppercase)** : retour visuel Côme — labels E-1 sont uppercase 11px / 700 / letter-spacing 1px alors que .aw-autocomplete-label rendait en title case 13px / 600. Modification CSS du composant partagé (font-size 13→11, weight 600→700, ajout text-transform: uppercase + letter-spacing: 1px). Impact collatéral assumé : sandbox section 7. Aucune modif JSX requise (text-transform CSS).
+- **Patch 3-quater (dropdown 8 → 4 entrées)** : retour visuel Côme — le dropdown filière à 5 entrées dépassait encore le bord inférieur de la card. Réduction des 2 occurrences de slice(0, 5) à slice(0, 4) dans AutocompleteInput.jsx. 4 entrées au focus laissent ~34px de marge.
+
+### Bloc 2 — Périmètre commit feat (5 fichiers)
+
+4 modified, 1 nouveau :
+- sterny-react/src/hooks/useInscriptionWizard.js (modified — validateE3 ajoutée +13 lignes)
+- sterny-react/src/pages/auth/InscriptionAlternantPage.jsx (modified — 4 imports + 2 handlers + branche E-3, ~50 lignes)
+- sterny-react/src/components/auth-wizard/AutocompleteInput.jsx (modified — slice 8→4, 2 lignes modifiées)
+- sterny-react/src/components/auth-wizard/AutocompleteInput.css (modified — labels uppercase 11px / 700 / letter-spacing 1px, 5 lignes modifiées)
+- sterny-react/src/data/inscription-options.js (NEW — 3 constantes ECOLES (30) + ANNEES_ETUDES (38) + FILIERES (30))
+
+CreerAnnoncePage.jsx (bypass DEV) intact en working dir post-commit, comme attendu. 3 untracked docs préexistants intacts.
+
+### Bloc 3 — Décisions actées et conventions nouvelles
+
+Issues du chantier UNIFICATION-INSCRIPTION § 3.7 (cf. amendement conv 9 dans la spec elle-même) :
+- **Validation E-3** : 3 champs requis non vides après trim. Pas de regex.
+- **Pas d'UPDATE BDD à E-3** : tout en mémoire jusqu'à E-7 (alignement § 3.5.1). La spec § 3.7 ligne 505 mentionnait UPDATE intermédiaire — obsolète.
+- **Pas d'astérisque** : required={false} sur les 3 composants, validation 100% JS.
+- **Bouton Continuer toujours actif** : pattern E-1 (bannière 3000ms au submit invalide).
+- **Pas de WizardStepSubtitle** : aligné sur E-1/E-2.
+
+Décisions visuelles nouvelles (conv 9) appliquées au composant partagé AutocompleteInput :
+- **Labels uppercase 11px / 700 / letter-spacing 1px** (alignement TextInput E-1, modif CSS du composant partagé). Impact sandbox section 7 assumé.
+- **Dropdown limité à 4 suggestions au focus** : pragmatique pour ne pas dépasser le bord inférieur de la card.
+- **Bouton Continuer = `<button className="ial-btn-continuer">` natif** : cohérence E-1/E-2 (margin-top: auto). Le composant <PrimaryButton> partagé reste utilisé en sandbox dev mais pas en wizard production.
+
+Décision architecturale :
+- **AutocompleteInput pour année d'études** (au lieu de CustomSelect) : permet saisie libre, plus inclusif pour cursus rares.
+- **Fichier neuf data/inscription-options.js** : source unique réutilisable pour E-3 et potentiellement E-4 (villes), E-6 (sexe options).
+
+### Bloc 4 — Découvertes techniques
+
+- **Composants AutocompleteInput et CustomSelect existaient déjà** dans auth-wizard/ depuis avant T1. Aucun consommateur en production — seule la sandbox dev les utilisait.
+- **Homonymie function CustomSelect dans InscriptionRecherchePage.jsx ligne 49** : composant local IR avec API différente (props onOpenChange). Pas de risque de collision (imports explicites).
+- **SET_FIELD générique** dans le hook (ligne 67) : fonctionne pour n'importe quel field déclaré dans l'état initial. Câblage E-3 sans toucher au reducer.
+- **Ordre physique des branches if dans la page** : E-2 (88) → E-1 (131) → E-3 (insertion conv 9) → fallback. Convention transitoire jusqu'à T7 (refactor cosmétique de réorganisation logique).
+- **errorTimerRef partagé top-level** ligne 41 : accessible par tous les handlers. handleE3Submit le réutilise pour clearer un éventuel timer E-1 résiduel.
+
+### Bloc 5 — Prochaines étapes T2
+
+**Priorité tout début conv 10** : sous-commit `feat(auth-wizard): introduce WizardProgressBar on E-1, E-2, E-3 wizard screens` **AVANT** la livraison E-4. Décision conv 9 : la progress bar (composant déjà extrait T1, présent dans auth-wizard/WizardProgressBar.jsx) doit être réintroduite sur tous les écrans wizard implémentés. Spec § 3.5 / 3.6 / 3.7 la prévoyait initialement avec `progress={N/7} stepLabel="..." stepNumber={N}`. Conv 7 et 8 avaient reporté l'introduction ("décision globale wizard à prendre quand on l'introduira sur tous les écrans"). Conv 9 acte la réintroduction simultanée car elle "fait vivre le formulaire et sert de ligne conductrice" (retour Côme). E-4 sera ensuite câblée nativement avec `progress={4/7}`.
+
+Sous-commits T2 restants après progress bar :
+- **5/5 : pattern de reprise + persistance state** (refresh page, navigation arrière depuis étape ultérieure, etc.).
+
+Avant 5/5, livraisons E-4, E-5, E-6, E-7 attendues :
+- **E-4 villes / statuts_villes** (spec § 3.8) — UI conditionnelle selon type_user.
+- **E-5 calendrier RhythmManualBuilder** (spec § 3.9) — intégration du composant existant au wizard.
+- **E-6 profil personnel** (spec § 3.10) — date_naissance, sexe, photo_profil_url, bio.
+- **E-7 mot de passe + signUp Supabase** — INSERT users + UPDATE complet + envoi mail confirmation. Conv dédiée recommandée.
+
+### État final branche post-conv 9
+
+main : 11f0e0f (prod sterny.co inchangée). feat/unification-inscription : HEAD docs après HEAD feat — sous-commit 4/5 livré.
+
+Working dir post-conv 9 :
+- 1 modified : CreerAnnoncePage.jsx (bypass DEV préexistant tracé en DETTE-TECHNIQUE.md).
+- 3 untracked : docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md + 2 fichiers spikes pdf-js (préexistants).
 
 ## 2026-05-05 — Clôture conv Claude.ai 8 : sous-commit 3/5 livré (commit fb14252)
 

@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 5 mai 2026 — Clôture conv Claude.ai 8 chantier UNIFICATION-INSCRIPTION : sous-commit 3/5 livré (commit fb14252). DETTE #59 reste active mais sans usage en E-2 (BottomAuthLinks absorbe le rôle Retour). DETTE #60 contournée localement par .ial-card-keyword mais reste active pour autres usages du composant partagé. Nouvelles dettes ajoutées : #62 (autofill scoped à promouvoir au composant TextInput) et #63 (mini-dette icônes IntentCardRadio).
+**Dernière mise à jour** : 5 mai 2026 (soir) — Clôture conv Claude.ai 9 chantier UNIFICATION-INSCRIPTION : sous-commit 4/5 livré (E-3 école / année / filière). Aucune nouvelle dette technique introduite — les 5 dérives par rapport à la spec § 3.7 sont logguées en amendement de la spec elle-même (cf. UNIFICATION-INSCRIPTION § 3.7 amendement 5 mai 2026 conv 9). DETTE #59, #60, #62, #63 inchangées.
 
 ## Nomenclature des bugs
 
