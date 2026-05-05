@@ -2,7 +2,48 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 5 mai 2026 (soir) — Clôture conv Claude.ai 9 chantier UNIFICATION-INSCRIPTION : sous-commit 4/5 livré — écran E-3 Études (école / année / filière) opérationnel, AutocompleteInput substitué à CustomSelect pour le champ année (saisie libre + liste enrichie 11→38 cursus), labels du composant partagé AutocompleteInput alignés sur le pattern TextInput E-1 (uppercase 11px / 700 / letter-spacing 1px), dropdown limité à 4 suggestions au focus.
+**Dernière mise à jour** : 5 mai 2026 (suite) — Conv Claude.ai 10 chantier UNIFICATION-INSCRIPTION : sous-commit progress bar livré — composant `<WizardProgressBar>` introduit sur les 3 écrans wizard implémentés (E-1, E-2, E-3) avec `progress={N/7}`. `showLabel=false` (défaut composant), seule la barre orange 2px sous "INSCRIPTION" est visible, sans texte "Étape N — Nom".
+
+---
+
+## 2026-05-05 (suite) — Conv Claude.ai 10 : sous-commit progress bar livré
+
+### Bloc 1 — Phases d'écriture progress bar
+
+Conv 10 a livré le sous-commit `feat(auth-wizard): introduce WizardProgressBar on E-1, E-2, E-3 wizard screens` (commit bcbaf88) sur la branche feat/unification-inscription par 3 phases incrémentales :
+
+- **Phase 0 (lecture pure préalable)** : restitution de WizardProgressBar.jsx (32 lignes), WizardProgressBar.css (47 lignes), InscriptionAlternantPage.jsx post-conv 9 (264 lignes), et extrait spec UNIFICATION-INSCRIPTION § 3.5/3.6/3.7 (lignes 370-510). Découverte clé : le composant accepte la prop `showLabel` (défaut `false`) qui contrôle l'affichage du texte "Étape N — Nom" au-dessus de la barre. Les props `stepLabel` et `stepNumber` sont ignorées si `showLabel=false`.
+- **Phase 1 (vérification --accent)** : grep `--accent` dans `sterny-react/src/` confirme la définition au scope `:root` dans `index.css` ligne 29 (`--accent: #E8622A;`). Aucun risque de barre invisible. La couleur orange Sterny s'applique automatiquement via `var(--accent)` ligne 44 de WizardProgressBar.css.
+- **Phase 2 (édition)** : 4 modifs str_replace dans `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` — 1 import `WizardProgressBar` (ligne 14, dans le bloc d'imports auth-wizard) + 3 instances JSX `<WizardProgressBar progress={N/7} />` insérées juste après `<h1 className="aw-screen-title">INSCRIPTION</h1>` dans chacune des 3 branches `if (state.currentStep === N)` (E-2 ligne 112, E-1 ligne 156, E-3 ligne 221). Aucune modif du hook `useInscriptionWizard.js`, du CSS local `InscriptionAlternantPage.css`, ni du fallback (écrans E-4 à E-7 non encore implémentés). Build OK 996ms, +0.09 kB JS bundle.
+
+### Bloc 2 — Décision showLabel=false
+
+Décision actée en début de conv 10 sur retour Côme : `showLabel` laissé à `false` (défaut du composant). Donc seule la barre orange 2px sous "INSCRIPTION" est visible, sans texte "Étape N — Nom" au-dessus. Rendu minimaliste cohérent avec le design Sterny (navy + orange + DM Sans, peu d'éléments textuels parasites).
+
+Conséquence sur l'insertion : les props `stepLabel` et `stepNumber` sont retirées du JSX (code mort si `showLabel=false`). Si retour visuel ultérieur amène à les réintroduire, opération réversible en ~30 secondes (changer 3 instances).
+
+Cette décision dévie de l'intention implicite de la spec § 3.5/3.6/3.7 qui écrivait `<WizardProgressBar progress={N/7} stepLabel="..." stepNumber={N}>` avec valeurs précises. Elle est tracée comme amendement de la spec (cf. UNIFICATION-INSCRIPTION § 3.5 amendement 5 mai 2026 conv 10).
+
+### Bloc 3 — Validation visuelle
+
+Côme a validé visuellement les 3 écrans (E-1, E-2, E-3) via `npm run dev` après build local. La barre orange 2px apparaît bien centrée sous "INSCRIPTION", largeur de remplissage progressive (1/7 ≈ 14%, 2/7 ≈ 29%, 3/7 ≈ 43%), espacement vertical cohérent. Pas de patch correctif nécessaire.
+
+### Bloc 4 — Prochaines étapes T2
+
+Sous-commits T2 restants après progress bar :
+- **E-4 villes / statuts_villes** (spec § 3.8) — UI conditionnelle selon `type_user` (locataire / hote / les_deux). E-4 sera câblée nativement avec `<WizardProgressBar progress={4/7} />`. Effort estimé : ~1h Claude Code (densité moyenne, plus dense que E-3 à cause de la logique conditionnelle 3 cas).
+- **E-5 calendrier RhythmManualBuilder** (spec § 3.9) — intégration du composant existant au wizard.
+- **E-6 profil personnel** (spec § 3.10) — `date_naissance`, `sexe`, `photo_profil_url`, `bio`.
+- **E-7 mot de passe + signUp Supabase** — INSERT users + UPDATE complet + envoi mail confirmation. Conv dédiée recommandée.
+- **5/5 : pattern de reprise + persistance state** (refresh page, navigation arrière depuis étape ultérieure, etc.).
+
+### État final branche post-conv 10
+
+main : 11f0e0f (prod sterny.co inchangée). feat/unification-inscription : HEAD = bcbaf88 — sous-commit progress bar livré sur origin.
+
+Working dir post-conv 10 (avant commit docs) :
+- 1 modified : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV préexistant tracé en DETTE-TECHNIQUE.md).
+- 3 untracked : `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` + 2 fichiers spikes pdf-js (préexistants).
 
 ---
 

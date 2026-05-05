@@ -373,6 +373,15 @@ Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (aud
 
 ### 3.5 Écran E-1 — Identité
 
+> **⚠️ AMENDEMENT 5 mai 2026 (conv 10)** : la décision sur `<WizardProgressBar>` mentionnée dans les 3 sous-sections suivantes (§ 3.5, § 3.6, § 3.7) est précisée. Détails complets dans ETAT-COURANT.md section "2026-05-05 (suite) — Conv Claude.ai 10".
+>
+> - **`showLabel={false}` (défaut composant)** sur les 3 écrans implémentés. Seule la barre orange 2px sous le titre "INSCRIPTION" est visible, sans texte "Étape N — Nom" au-dessus. Rendu minimaliste cohérent avec le design Sterny.
+> - **Props simplifiées** : les 3 instances utilisent uniquement `<WizardProgressBar progress={N/7} />`. Les props `stepLabel` et `stepNumber` mentionnées dans les pseudo-JSX ci-dessous (§ 3.5, § 3.6, § 3.7) sont retirées (ignorées par le composant si `showLabel=false`). Code mort sinon.
+> - **Convention pour les futurs écrans** : E-4, E-5, E-6, E-7 seront câblés selon le même pattern minimaliste — `<WizardProgressBar progress={N/7} />` sans `stepLabel`/`stepNumber`. Si retour visuel ultérieur amène à activer le label, l'opération est réversible en quelques secondes.
+> - **Variable CSS `--accent`** : confirmée définie au scope `:root` dans `sterny-react/src/index.css` ligne 29 (`--accent: #E8622A;`). Le fill orange Sterny s'applique automatiquement.
+>
+> Les pseudo-JSX ci-dessous (3 sections) sont conservés pour traçabilité historique mais doivent être lus à la lumière de cet amendement.
+
 **Périmètre** : 1ère étape du wizard. Création/complétion de la session Auth + capture identité.
 
 **Branchement par méthode auth** (cf. audit `AUDIT-INSCRIPTION-2026-05-02.md` § 3 signatures Supabase Auth) :
