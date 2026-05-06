@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 5 mai 2026 (soir) — Clôture conv Claude.ai 9 chantier UNIFICATION-INSCRIPTION : sous-commit 4/5 livré (E-3 école / année / filière). Aucune nouvelle dette technique introduite — les 5 dérives par rapport à la spec § 3.7 sont logguées en amendement de la spec elle-même (cf. UNIFICATION-INSCRIPTION § 3.7 amendement 5 mai 2026 conv 9). DETTE #59, #60, #62, #63 inchangées.
+**Dernière mise à jour** : 6 mai 2026 — Clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION : sous-commit E-4 villes & statuts_villes livré fonctionnellement (commit 55475d4). Nouvelle DETTE #64 ajoutée — design UI toggle ville E-4 à finaliser dans une session dédiée avec brief de design enrichi côté Côme.
 
 ## Nomenclature des bugs
 
@@ -674,3 +674,15 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Bloquant pré-production** : non. Cosmétique pur, absence d'icône reste lisible.
 
 **Origine** : conv 8 sous-commit 3/5, alignement pragmatique sur la sandbox plutôt que sur la spec § 7.3.2 pour livrer rapidement.
+
+## DETTE #64 — Design UI E-4 toggle ville à finaliser pour standard "à la hauteur de Sterny"
+
+**Statut au 6 mai 2026** : créée par clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION sous-commit E-4.
+
+**Constat** : le sous-commit E-4 villes & statuts_villes (commit 55475d4) est livré fonctionnellement complet et accessible. Mais le design UI du toggle ville (cas locataire/hote) n'est pas considéré "à la hauteur de Sterny" par Côme. 5 itérations visuelles successives ont été tentées en conv 11 sans atteindre le standard recherché : (a) IntentCardRadio standard, (b) IntentCardRadio variante `.compact`, (c) segmented control gris façon iOS, (d) segmented control affiné avec affichage des noms de villes réels, (e) 2 cartes blanches indépendantes avec bordure orange au sélectionné. Aucune n'a satisfait Côme.
+
+**Diagnostic** : le sujet n'est pas un détail CSS mais un sujet de brief de design. Itérer en aveugle sans référence visuelle cible côté Côme n'est pas une méthode efficace.
+
+**Plan de résolution** : conv Claude.ai dédiée au design E-4 (conv 12 ou ultérieure), démarrée avec un brief enrichi côté Côme : 2-3 références visuelles d'apps qu'il considère "à la hauteur de Sterny" (Linear, Stripe, Notion, Cal.com, Apple, Arc Browser, etc.), description de ce qui lui plaît dans ces apps (typo, shadow, couleur d'accent, espacement, micro-animations), screenshot d'un toggle ou radio de référence si possible. Le design sera conçu en amont (mockup textuel + validation Côme) avant de coder. Pas l'inverse.
+
+**Bloquant pré-production** : non. Le E-4 fonctionnel marche, la logique métier est correcte (validation, navigation, accessibilité, table 1.3 couverte), seul le polish design reste à faire.

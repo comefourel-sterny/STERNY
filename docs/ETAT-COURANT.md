@@ -2,7 +2,58 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 5 mai 2026 (suite) — Conv Claude.ai 10 chantier UNIFICATION-INSCRIPTION : sous-commit progress bar livré — composant `<WizardProgressBar>` introduit sur les 3 écrans wizard implémentés (E-1, E-2, E-3) avec `progress={N/7}`. `showLabel=false` (défaut composant), seule la barre orange 2px sous "INSCRIPTION" est visible, sans texte "Étape N — Nom".
+**Dernière mise à jour** : 6 mai 2026 — Clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION : sous-commit E-4 villes & statuts_villes livré fonctionnellement (commit 55475d4). 4 phases d'écriture + 5 itérations visuelles sur le toggle ville. Design UI du toggle non finalisé — DETTE #64 tracée pour conv dédiée avec brief de design enrichi.
+
+---
+
+## 2026-05-06 — Conv Claude.ai 11 : sous-commit E-4 livré + dette design tracée
+
+### Bloc 1 — Phases d'écriture E-4
+
+Conv 11 a livré l'écran E-4 villes & statuts_villes du wizard unifié sur la branche feat/unification-inscription, par 4 phases incrémentales + 3 patches visuels itératifs sur retours Côme :
+
+- **Phase 0 (lecture pure préalable)** : restitution complète de `InscriptionAlternantPage.jsx` (268 lignes post-conv 10), `useInscriptionWizard.js` (217 lignes post-conv 9), composants partagés (`AutocompleteInput`, `CustomSelect`, `IntentCardRadio`, `WizardProgressBar`), `inscription-options.js`, `InscriptionAlternantPage.css`, table 1.3 § 1.3 UNIFICATION-INSCRIPTION, DETTE #50 couplage `statut_ville_*`. Discovery clé : aucun composant ville/Mapbox extrait dans `components/`, pas d'intégration Mapbox côté frontend Sterny — décision actée de partir sur liste statique de communes françaises (cohérence E-3 ECOLES/ANNEES_ETUDES/FILIERES).
+- **Phase 1 (validateE4)** : ajout de la fonction exportée `validateE4(state)` après `validateE3` dans `useInscriptionWizard.js` (+36 lignes). Logique : 2 villes toujours requises (NOT NULL), statuts conditionnels selon `type_user` — `locataire`/`hote` = exactement 1 statut activé, `les_deux` = 2 statuts activés. Tous les 8 cas table 1.3 couverts.
+- **Phase 2 (VILLES_FRANCE)** : nouvelle constante exportée dans `inscription-options.js`, 83 communes françaises ordre alphabétique Title Case (top 50 communes par population + villes alternance représentatives). Pattern parallèle à ECOLES/ANNEES_ETUDES/FILIERES.
+- **Phase 3 (câblage page + CSS)** : 5 sous-modifs dans `InscriptionAlternantPage.jsx` (3 imports + 3 handlers `handleE4Change`/`handleRadioVille`/`handleE4Submit` + branche `if state.currentStep === 4` avec UI conditionnelle 3 cas locataire/hote/les_deux) + ajout classes CSS `.ial-radio-section`, `.ial-radio-question`, `.ial-toggle`, `.ial-toggle-btn` dans `InscriptionAlternantPage.css`. Build local OK 994ms.
+- **3 patches visuels itératifs sur retours Côme** : (1) compactage `IntentCardRadio` via variante `.compact`, retiré ensuite — (2) bascule vers segmented control gris façon iOS, kill outline natif + focus orange propre — (3) refonte 2 cartes blanches indépendantes avec bordure orange au sélectionné + shadow orange douce. Affichage des noms de villes réels dans le toggle quand saisis (`state.ville_X.trim() || fallback générique`), `aria-label` fixe pour les lecteurs d'écran.
+
+### Bloc 2 — Périmètre commit feat (4 fichiers, +304 / −1)
+
+Commit feat E-4 livré : `55475d4` sur `feat/unification-inscription`.
+- `sterny-react/src/data/inscription-options.js` (modified — +85 lignes constante VILLES_FRANCE)
+- `sterny-react/src/hooks/useInscriptionWizard.js` (modified — +36 lignes `validateE4`)
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.css` (modified — +57 lignes classes E-4)
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` (modified — +125 / −1 imports + handlers + branche E-4)
+
+`CreerAnnoncePage.jsx` (bypass DEV) intact en working dir post-commit. 3 untracked préexistants intacts.
+
+### Bloc 3 — Dette design toggle ville tracée
+
+Le design UI du toggle ville (cas `locataire`/`hote`) n'a pas atteint le standard "à la hauteur de Sterny" par Côme malgré 5 itérations visuelles successives en conv 11. Sujet identifié comme un brief de design plutôt qu'un détail CSS. Tracé en DETTE #64 dans `DETTE-TECHNIQUE.md`. Plan de résolution : conv dédiée avec brief enrichi (références visuelles d'apps "à la hauteur" + description de ce qui plaît). Le E-4 reste fonctionnel et accessible — seul le polish design est à faire.
+
+### Bloc 4 — Conventions actées en conv 11
+
+- **Liste statique de villes françaises** : pattern figé pour la saisie de villes dans le wizard d'inscription. Source : `sterny-react/src/data/inscription-options.js` → `VILLES_FRANCE`. 83 communes au commit initial, enrichissable progressivement. Pas de fallback Mapbox côté frontend. **Périmètre géographique à confirmer** : intention stratégique de Côme évoquée en clôture conv 11 — lancement Sterny en Bretagne + Nantes en premier pour densifier offre/demande sur zone restreinte avant scaling national. La liste actuelle pourra être restreinte (sous-ensemble Grand Ouest) ou conservée selon la décision finale post-échanges avec parties prenantes (Pauline Leboissetier Initiative Rennes, Le Poool, etc.). Pas bloquant pour le sous-commit E-4 livré.
+- **Convention placeholder autocomplete** : "Tape les premières lettres" pour villes (cohérence avec école E-3, dérogation acceptée à la convention école 2 stricto sensu).
+- **Validation E-4** : 2 villes NOT NULL + cohérence `statut_ville_*` / `type_user` (cf. table 1.3). Pas de regex sur les villes (saisie libre acceptée).
+
+### Bloc 5 — Prochaines étapes T2
+
+Sous-commits T2 restants après E-4 :
+- **Conv 12 (ou ultérieure) — design UI E-4** : refonte du toggle ville à partir d'un brief de design enrichi (DETTE #64). Pas bloquant pour les sous-commits suivants.
+- **E-5 calendrier RhythmManualBuilder** (spec § 3.9) — intégration du composant existant au wizard. Prérequis bloquant : DETTE #54 refonte responsive RhythmManualBuilder pour intégration card 460px.
+- **E-6 profil personnel** (spec § 3.10) — date_naissance, sexe, photo_profil_url, bio.
+- **E-7 mot de passe + signUp Supabase** — INSERT users + UPDATE complet + envoi mail confirmation. Conv dédiée recommandée.
+- **5/5 : pattern de reprise + persistance state** (refresh page, navigation arrière depuis étape ultérieure).
+
+### État final branche post-conv 11 (avant docs commit)
+
+main : `11f0e0f` (prod sterny.co inchangée). `feat/unification-inscription` : HEAD = `55475d4` — sous-commit E-4 livré localement, pas encore poussé sur origin (au moment de l'écriture de ce bloc).
+
+Working dir post-commit feat (avant commit docs) :
+- 1 modified : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV préexistant tracé en DETTE-TECHNIQUE.md).
+- 3 untracked : `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` + 2 fichiers spikes pdf-js (préexistants).
 
 ---
 
