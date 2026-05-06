@@ -2,7 +2,49 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 mai 2026 — Clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION : sous-commit E-4 villes & statuts_villes livré fonctionnellement (commit 55475d4). 4 phases d'écriture + 5 itérations visuelles sur le toggle ville. Design UI du toggle non finalisé — DETTE #64 tracée pour conv dédiée avec brief de design enrichi.
+**Dernière mise à jour** : 6 mai 2026 (soir) — Clôture conv Claude.ai 12 chantier UNIFICATION-INSCRIPTION : DETTE #64 résolue par simplification produit (refonte E-4 villes mono-ville/bi-ville, commit feat `bea05cd`). Améliorations transverses `AutocompleteInput` (auto-capitalize première lettre, retrait cap suggestions, scroll containment). DETTE #65 créée pour propagation auto-capitalize aux autres types d'inputs texte.
+
+---
+
+## 2026-05-06 (soir) — Conv Claude.ai 12 : DETTE #64 résolue par simplification produit
+
+### Bloc 1 — Décision produit actée
+
+DETTE #64 (design UI E-4 toggle ville à finaliser) résolue par simplification produit plutôt que par polish design. Décision Côme en début de conv 12 : pour `locataire`/`hote`, une seule ville suffit (la ville où l'utilisateur cherche/propose un logement). Pour `les_deux`, deux villes avec labels explicites ("Ville où tu proposes" / "Ville où tu cherches"). Plus de toggle école/entreprise dans l'UX, plus de design à finaliser.
+
+Convention de stockage BDD associée (Option C, slot non sémantique) :
+- Mono-ville : `ville_entreprise` rempli + `statut_ville_entreprise = type_user`. Colonnes école NULL.
+- les_deux : `ville_entreprise` = ville propose (statut `hote`) + `ville_ecole` = ville cherche (statut `locataire`).
+
+VISION §3 et §6 mis à jour en conséquence.
+
+### Bloc 2 — Périmètre commit feat bea05cd (5 fichiers, +72 / −161)
+
+- `useInscriptionWizard.js` : `validateE4` simplifiée. Mono-ville : `ville_entreprise NOT NULL` → "Veuillez choisir une ville". les_deux : 2 villes NOT NULL → "Veuillez renseigner tes deux villes". Statuts dérivés à l'INSERT E-7, plus stockés dans le state.
+- `InscriptionAlternantPage.jsx` : branche E-4 réécrite (86 → 50 lignes), sous-titre `.ial-step-subtitle` aligné typographiquement sur les labels AutocompleteInput, retrait du handler `handleRadioVille` et de l'import `WizardStepSubtitle`.
+- `InscriptionAlternantPage.css` : suppression des classes obsolètes `.ial-radio-*` et `.ial-toggle-*` (~57 lignes). Ajout `.ial-step-subtitle` (uppercase 11px 700 Navy gauche) et `.ial-field-label` (14px 500 Navy pour les sous-labels du cas les_deux).
+- `AutocompleteInput.jsx` : auto-capitalize première lettre par défaut (prop `capitalizeFirst = true`, opt-out via `={false}` pour cas futurs). Retrait du cap `.slice(0, 4)` sur la liste filtrée.
+- `AutocompleteInput.css` : ajout `overscroll-behavior: contain`, `max-height` ajusté de 220px à 180px pour empêcher le dropdown de chevaucher le bouton Continuer.
+
+### Bloc 3 — Conventions actées en conv 12
+
+- **Pattern sous-titre wizard** : classe locale `.ial-step-subtitle` alignée typographiquement sur les labels d'inputs (uppercase 11px 700 Navy). Utilisée quand un écran a une question explicite portée par le sous-titre (E-4) plutôt que par les labels d'inputs (E-3 a des labels descriptifs auto-portés).
+- **Convention slot BDD pour villes** : non sémantique, documentée en VISION §3.
+- **Auto-capitalize** : composant-level pour AutocompleteInput, par défaut activé. Pour les autres types d'inputs texte (TextInput, textarea, inputs natifs), à propager — cf. nouvelle DETTE #65.
+
+### Bloc 4 — État final branche post-conv 12
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = `bea05cd` (commit feat conv 12), 3 commits ahead `origin` au moment de l'écriture de ce bloc.
+
+Working dir post-commit feat (avant commit docs) : 1 modified `CreerAnnoncePage.jsx` (bypass DEV intact) + 3 untracked préexistants intacts.
+
+### Bloc 5 — Prochaines étapes T2
+
+Sous-commits T2 restants après E-4 :
+- **E-5 calendrier RhythmManualBuilder** (spec § 3.9). Prérequis bloquant : DETTE #54 refonte responsive RhythmManualBuilder pour intégration card 460px.
+- **E-6 profil personnel** (spec § 3.10).
+- **E-7 mot de passe + signUp Supabase**. Conv dédiée recommandée.
+- **5/5 : pattern de reprise + persistance state**.
 
 ---
 

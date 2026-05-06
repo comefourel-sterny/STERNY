@@ -96,6 +96,13 @@ Une colonne `users.ville_recherche_secondaire` existe et a été observée par g
 
 **Origine** : grep d'usage des colonnes `ville_*` mené le 2 mai 2026 soir (audit `CompleterProfilPage.jsx`). Le modèle existait déjà et était utilisé par `InscriptionRecherchePage`, `ModifierProfilPage`, `ProfilPage`, `DashboardLocatairePage` — il n'avait juste pas été documenté en VISION.
 
+**Convention de remplissage post-conv 12 (6 mai 2026)** — Suite à la simplification produit du E-4 (suppression du toggle école/entreprise), la convention de remplissage des 4 colonnes par le parcours d'inscription unifié devient :
+
+- **Mono-ville** (`type_user` = `locataire` ou `hote`) : seul `ville_entreprise` est rempli, avec `statut_ville_entreprise = type_user`. Les colonnes `ville_ecole` / `statut_ville_ecole` restent NULL.
+- **Bi-ville** (`type_user` = `les_deux`) : `ville_entreprise` = ville où l'utilisateur propose son logement (statut `'hote'`), `ville_ecole` = ville où il cherche (statut `'locataire'`).
+
+Cette convention est purement de slot, non sémantique : la ville stockée dans `ville_entreprise` n'est pas forcément la ville d'entreprise au sens géographique. La sémantique école/entreprise n'est volontairement plus demandée à l'utilisateur (il pense en "ville où je cherche/propose", pas en "ville d'école/entreprise"). Un helper `getVillesUtilisateur(user)` à créer aplatira la lecture pour le matching et le dashboard. Une simplification BDD (colonne unique `ville_principale` ou équivalent) pourra être envisagée post-pilote.
+
 ### Fragilité possible des métadonnées document
 
 Les colonnes `parsed_groups->'document_meta'` (school_name, program_name, academic_year, detected_locale) sont extraites par le parser IA en parallèle de `groups`. Selon le format du document uploadé, certains de ces champs peuvent être `null` ou contenir des codes techniques au lieu de libellés humains. Exemples observés en avril 2026 : un planning Hyperplanning au format PDF a renvoyé `school_name: null` et `program_name: "R_CA_A3"` (code technique). Le LLM ne peut pas inventer ce qui n'est pas présent dans le document source.
@@ -313,6 +320,7 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 - Le sens canonique de `type_user` est aligné sur le choix utilisateur explicite : intent "partage" → `type_user = 'hote'` (plus jamais `'locataire'` + `a_logement=true` comme dans `InscriptionRecherchePage` actuel). Lié à DETTE #50.
 - Photo et bio profil restent **optionnelles** dans le parcours unifié, avec un message qui explique que les renseigner augmente la confiance des autres utilisateurs. Possibilité de les ajouter plus tard via `ModifierProfilPage`. La complétude du profil est définie par les champs structurants (type_user, villes, statuts villes, rhythm_calendar), pas par photo/bio.
 - Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
+- **Simplification mono-ville E-4 (acté conv 12 du 6 mai 2026 soir)** : suite à 5 itérations infructueuses de design sur le toggle école/entreprise du E-4 en conv 11 (DETTE #64), décision produit actée — pour `type_user = locataire` ou `type_user = hote`, on ne demande qu'une seule ville à l'utilisateur ; pour `type_user = les_deux`, deux villes avec labels explicites ("Ville où tu proposes" / "Ville où tu cherches"), sans introduire la notion école/entreprise dans l'UX. Le toggle disparaît du parcours. Convention de stockage BDD associée documentée en §3.
 
 **Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.
 

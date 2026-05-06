@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 6 mai 2026 — Clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION : sous-commit E-4 villes & statuts_villes livré fonctionnellement (commit 55475d4). Nouvelle DETTE #64 ajoutée — design UI toggle ville E-4 à finaliser dans une session dédiée avec brief de design enrichi côté Côme.
+**Dernière mise à jour** : 6 mai 2026 (soir) — Clôture conv Claude.ai 12 chantier UNIFICATION-INSCRIPTION : DETTE #64 résolue par simplification produit (commit feat `bea05cd`, refonte E-4 villes mono-ville/bi-ville). DETTE #50 mise à jour (transformée par convention slot). Nouvelle DETTE #65 créée — propagation auto-capitalize première lettre transverse aux autres types d'inputs texte.
 
 ## Nomenclature des bugs
 
@@ -458,6 +458,8 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 **Bloquant pré-production** : non, mais à fixer avant lancement opérationnel pour éviter des bugs de dashboard qui dégraderaient la confiance utilisateur dès la première utilisation.
 
+**Mise à jour conv 12 du 6 mai 2026** : le couplage `statut_ville_*` ↔ `type_user` devient déterministe par la convention slot actée en conv 12 (cf. VISION §3). Mono-ville : `statut_ville_entreprise = type_user`, l'autre statut NULL. les_deux : `statut_ville_entreprise = 'hote'` + `statut_ville_ecole = 'locataire'` toujours. La dette n'est pas résolue mais transformée — le nettoyage final (passage à une colonne `ville_principale` unique ou helper de lecture aplati) reste à faire post-pilote.
+
 ## DETTE #51 — Apple OAuth à implémenter dans le cadre du chantier unification inscription [RÉSOLUE — caduque]
 
 **Statut au 3 mai 2026** : **CADUQUE** suite au cadrage de la section 4 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
@@ -677,6 +679,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #64 — Design UI E-4 toggle ville à finaliser pour standard "à la hauteur de Sterny"
 
+**Statut au 6 mai 2026 (soir, conv 12)** : ✅ **RÉSOLUE PAR SIMPLIFICATION PRODUIT**. Décision Côme en conv 12 : suppression du toggle école/entreprise. Pour locataire/hote, une seule ville demandée. Pour les_deux, deux villes avec labels explicites ("Ville où tu proposes" / "Ville où tu cherches"). Commit feat `bea05cd`. Voir VISION §3 (convention slot), VISION §6 (paragraphe "Simplification mono-ville E-4") et ETAT-COURANT bloc "2026-05-06 (soir) — Conv Claude.ai 12".
+
 **Statut au 6 mai 2026** : créée par clôture conv Claude.ai 11 chantier UNIFICATION-INSCRIPTION sous-commit E-4.
 
 **Constat** : le sous-commit E-4 villes & statuts_villes (commit 55475d4) est livré fonctionnellement complet et accessible. Mais le design UI du toggle ville (cas locataire/hote) n'est pas considéré "à la hauteur de Sterny" par Côme. 5 itérations visuelles successives ont été tentées en conv 11 sans atteindre le standard recherché : (a) IntentCardRadio standard, (b) IntentCardRadio variante `.compact`, (c) segmented control gris façon iOS, (d) segmented control affiné avec affichage des noms de villes réels, (e) 2 cartes blanches indépendantes avec bordure orange au sélectionné. Aucune n'a satisfait Côme.
@@ -686,3 +690,21 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Plan de résolution** : conv Claude.ai dédiée au design E-4 (conv 12 ou ultérieure), démarrée avec un brief enrichi côté Côme : 2-3 références visuelles d'apps qu'il considère "à la hauteur de Sterny" (Linear, Stripe, Notion, Cal.com, Apple, Arc Browser, etc.), description de ce qui lui plaît dans ces apps (typo, shadow, couleur d'accent, espacement, micro-animations), screenshot d'un toggle ou radio de référence si possible. Le design sera conçu en amont (mockup textuel + validation Côme) avant de coder. Pas l'inverse.
 
 **Bloquant pré-production** : non. Le E-4 fonctionnel marche, la logique métier est correcte (validation, navigation, accessibilité, table 1.3 couverte), seul le polish design reste à faire.
+
+## DETTE #65 — Auto-capitalize première lettre transverse sur les autres types d'inputs texte
+
+**Statut au 6 mai 2026 (soir, conv 12)** : créée suite à l'amélioration `AutocompleteInput` conv 12.
+
+**Constat** : la prop `capitalizeFirst = true` (par défaut) a été ajoutée au composant `AutocompleteInput` en conv 12, ce qui couvre tous les écrans wizard utilisant ce composant (E-3 école/année/filière + E-4 villes + futurs écrans). Mais les autres types d'inputs texte de la plateforme (champs prénom, nom, bio, descriptions d'annonce, messages chat, etc.) ne bénéficient pas de cette correction. Côme a remonté en conv 12 que la majuscule en début de saisie devrait être un comportement transverse à toute la plateforme.
+
+**Plan de résolution** :
+1. Auditer les composants et inputs texte utilisés ailleurs (`<input type="text">` natifs, `<textarea>`, composants partagés type TextInput s'il en existe).
+2. Identifier les champs où la capitalisation est attendue (data humaine : prénom, nom, ville, école, titre d'annonce, etc.) vs ceux où elle ne l'est pas (email, mot de passe, URL, code, montant numérique).
+3. Soit modifier les composants pour accepter une prop `capitalizeFirst` cohérente avec celle d'`AutocompleteInput`, soit créer un helper utilitaire `capitalizeFirstLetter(str)` à appliquer dans les handlers concernés.
+4. Documenter la convention dans le design system.
+
+**Effort estimé** : 1-2h — propagation à plusieurs endroits, pas un chantier en soi.
+
+**Bloquant pré-production** : non, cosmétique pur, visible en UX.
+
+**Origine** : conv 12 du 6 mai 2026, lors de la refonte E-4 villes simplifiée.
