@@ -4,6 +4,7 @@ import {
   validateE1Email,
   getE1InvalidFields,
   validateE3,
+  validateE4,
 } from '../../hooks/useInscriptionWizard'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
 import TextInput from '../../components/auth-wizard/TextInput'
@@ -11,8 +12,9 @@ import AuthErrorBanner from '../../components/auth-wizard/AuthErrorBanner'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
 import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
+import CustomSelect from '../../components/auth-wizard/CustomSelect'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
-import { ECOLES, ANNEES_ETUDES, FILIERES } from '../../data/inscription-options'
+import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
 import './InscriptionAlternantPage.css'
 
 // Helpers de transformation copiés depuis InscriptionRecherchePage pour ce
@@ -96,6 +98,39 @@ export default function InscriptionAlternantPage() {
 
   const handleE3Submit = () => {
     const err = validateE3(state)
+    if (err) {
+      setGlobalError(err)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      errorTimerRef.current = setTimeout(() => clearError(), 3000)
+      return
+    }
+    goToNextStep()
+  }
+
+  // Handler générique E-4 : utilisé par AutocompleteInput (villes) et CustomSelect
+  // (statuts en cas les_deux). Les 2 composants émettent un event {target:{value,name}}.
+  const handleE4Change = (e) => {
+    setField(e.target.name, e.target.value)
+    if (state.globalError) clearError()
+  }
+
+  // Handler dédié au RadioGroup E-4 (cas locataire/hote).
+  // Mappe le choix de ville vers la paire (statut_ville_ecole, statut_ville_entreprise)
+  // selon type_user — cf. UNIFICATION-INSCRIPTION table 1.3.
+  const handleRadioVille = (option) => {
+    const statutValue = state.type_user === 'locataire' ? 'recherche' : 'hote'
+    if (option === 'ecole') {
+      setField('statut_ville_ecole', statutValue)
+      setField('statut_ville_entreprise', null)
+    } else {
+      setField('statut_ville_ecole', null)
+      setField('statut_ville_entreprise', statutValue)
+    }
+    if (state.globalError) clearError()
+  }
+
+  const handleE4Submit = () => {
+    const err = validateE4(state)
     if (err) {
       setGlobalError(err)
       if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
@@ -248,6 +283,94 @@ export default function InscriptionAlternantPage() {
             required={false}
           />
           <button type="button" className="ial-btn-continuer" onClick={handleE3Submit}>Continuer</button>
+        </div>
+        {state.globalError
+          ? <AuthErrorBanner message={state.globalError} />
+          : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
+      </AuthScreenContainer>
+    )
+  }
+
+  if (state.currentStep === 4) {
+    const isLesDeux = state.type_user === 'les_deux'
+    const radioQuestion = state.type_user === 'locataire'
+      ? 'Dans laquelle des deux cherches-tu un logement ?'
+      : 'Dans laquelle des deux proposes-tu ton logement ?'
+    const statutOptions = [
+      { value: 'recherche', label: 'cherche un logement' },
+      { value: 'hote', label: 'propose mon logement' },
+    ]
+    return (
+      <AuthScreenContainer>
+        <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={4/7} />
+        <div className="ial-form">
+          <AutocompleteInput
+            name="ville_ecole"
+            label="Ville de mon école"
+            value={state.ville_ecole ?? ''}
+            onChange={handleE4Change}
+            suggestions={VILLES_FRANCE}
+            placeholder="Tape les premières lettres"
+            required={false}
+          />
+          {isLesDeux && (
+            <CustomSelect
+              name="statut_ville_ecole"
+              label="Dans cette ville je..."
+              options={statutOptions}
+              value={state.statut_ville_ecole}
+              onChange={handleE4Change}
+              placeholder="Sélectionner"
+            />
+          )}
+          <AutocompleteInput
+            name="ville_entreprise"
+            label="Ville de mon entreprise"
+            value={state.ville_entreprise ?? ''}
+            onChange={handleE4Change}
+            suggestions={VILLES_FRANCE}
+            placeholder="Tape les premières lettres"
+            required={false}
+          />
+          {isLesDeux && (
+            <CustomSelect
+              name="statut_ville_entreprise"
+              label="Dans cette ville je..."
+              options={statutOptions}
+              value={state.statut_ville_entreprise}
+              onChange={handleE4Change}
+              placeholder="Sélectionner"
+            />
+          )}
+          {!isLesDeux && (
+            <div className="ial-radio-section">
+              <p className="ial-radio-question">{radioQuestion}</p>
+              <div className="ial-toggle" role="radiogroup">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={state.statut_ville_ecole !== null}
+                  aria-label="Ville de mon école"
+                  className={`ial-toggle-btn ${state.statut_ville_ecole !== null ? 'selected' : ''}`}
+                  onClick={() => handleRadioVille('ecole')}
+                >
+                  {state.ville_ecole.trim() || 'Ville de mon école'}
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={state.statut_ville_entreprise !== null}
+                  aria-label="Ville de mon entreprise"
+                  className={`ial-toggle-btn ${state.statut_ville_entreprise !== null ? 'selected' : ''}`}
+                  onClick={() => handleRadioVille('entreprise')}
+                >
+                  {state.ville_entreprise.trim() || 'Ville de mon entreprise'}
+                </button>
+              </div>
+            </div>
+          )}
+          <button type="button" className="ial-btn-continuer" onClick={handleE4Submit}>Continuer</button>
         </div>
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />
