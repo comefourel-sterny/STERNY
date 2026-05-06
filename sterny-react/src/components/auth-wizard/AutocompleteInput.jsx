@@ -12,6 +12,7 @@ export default function AutocompleteInput({
   disabled = false,
   name,
   id,
+  capitalizeFirst = true,
 }) {
   const [open, setOpen] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 })
@@ -22,10 +23,8 @@ export default function AutocompleteInput({
 
   const filtered = useMemo(() => {
     const q = (value ?? '').toLowerCase().trim()
-    if (!q) return suggestions.slice(0, 4)
-    return suggestions
-      .filter(s => s.toLowerCase().includes(q))
-      .slice(0, 4)
+    if (!q) return suggestions
+    return suggestions.filter(s => s.toLowerCase().includes(q))
   }, [value, suggestions])
 
   useEffect(() => {
@@ -83,7 +82,11 @@ export default function AutocompleteInput({
         type="text"
         value={value ?? ''}
         onChange={(e) => {
-          onChange?.(e)
+          const rawValue = e.target.value
+          const transformed = capitalizeFirst && rawValue.length > 0
+            ? rawValue.charAt(0).toUpperCase() + rawValue.slice(1)
+            : rawValue
+          onChange?.({ target: { value: transformed, name: e.target.name } })
           if (!open) setOpen(true)
           positionPortal()
         }}

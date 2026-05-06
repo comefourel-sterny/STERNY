@@ -163,40 +163,30 @@ export function validateE3(state) {
   return null
 }
 
-// Validation frontend E-4 — villes & statuts_villes (cf. UNIFICATION-INSCRIPTION § 3.8 + table 1.3)
-// 2 villes (école et entreprise) toujours requises. Statuts varient selon type_user :
-//   - locataire / hote : exactement 1 statut activé, l'autre NULL
-//   - les_deux : les 2 statuts activés (n'importe quelle combinaison de codes)
+// Validation frontend E-4 — villes (refonte conv 12, cf. UNIFICATION-INSCRIPTION § 3.8)
+// Mono-ville pour locataire/hote (state.ville_entreprise), bi-ville pour les_deux
+// (state.ville_entreprise = ville où il propose, state.ville_ecole = ville où il cherche).
+// Statuts dérivés de type_user au moment de l'INSERT (E-7), pas stockés dans le state ici.
 // Renvoie un message global (string) ou null si tout OK.
 export function validateE4(state) {
-  const villeEcole = (state.ville_ecole ?? '').trim()
   const villeEntreprise = (state.ville_entreprise ?? '').trim()
 
-  if (villeEcole.length === 0 || villeEntreprise.length === 0) {
-    return 'Veuillez remplir tous les champs'
-  }
-
-  const sEcole = state.statut_ville_ecole
-  const sEntreprise = state.statut_ville_entreprise
-
   if (state.type_user === 'locataire' || state.type_user === 'hote') {
-    const oneActivated =
-      (sEcole !== null && sEntreprise === null) ||
-      (sEcole === null && sEntreprise !== null)
-    if (!oneActivated) {
-      return 'Veuillez compléter ta sélection'
+    if (villeEntreprise.length === 0) {
+      return 'Veuillez choisir une ville'
     }
     return null
   }
 
   if (state.type_user === 'les_deux') {
-    if (sEcole === null || sEntreprise === null) {
-      return 'Veuillez compléter ta sélection'
+    const villeEcole = (state.ville_ecole ?? '').trim()
+    if (villeEntreprise.length === 0 || villeEcole.length === 0) {
+      return 'Veuillez renseigner tes deux villes'
     }
     return null
   }
 
-  return 'État incohérent — recommence depuis le début'
+  return null
 }
 
 export function useInscriptionWizard() {
