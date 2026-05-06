@@ -183,6 +183,16 @@ Pour garantir cohérence "tout ou rien" et profil_complet=true seulement quand t
 
 **Sauvegarde progressive** : à chaque clic "Continuer" entre étapes, UPDATE partiel des colonnes saisies à cette étape (sans toucher à `profil_complet`). Permet le pattern de reprise (VISION §6 "Périmètre élargi") : utilisateur abandonne, revient plus tard, reprend où il s'est arrêté.
 
+> **Amendement post-spec — 6 mai 2026 (conv Claude.ai 13)**
+>
+> Le paragraphe "Sauvegarde progressive" ci-dessus et l'intégralité de la sous-section §2.5 sont **annulés**. Décision actée : pas d'INSERT initial `users` à E-1, pas d'UPDATE partiels intermédiaires. Le state du wizard vit uniquement en mémoire React + miroir `sessionStorage` côté client. La RPC `complete_inscription_alternant` à E-7 reste la seule écriture BDD du parcours.
+>
+> Justification : (1) cohérence avec l'implémentation livrée des sous-commits E-1 à E-4 (conv 5 à 12), qui n'a jamais matérialisé la sauvegarde progressive prévue ; (2) atomicité conservée, une seule transaction BDD à raisonner ; (3) coût ~2-3h en T2 5/5 contre ~1-2 jours pour aligner rétroactivement E-1 à E-4 sur la spec d'origine.
+>
+> Limitation acceptée : `sessionStorage` est effaçable (vidage navigateur, navigation privée). Pas de continuité cross-device. Acceptable pour Sterny vu la durée d'inscription (~5 min).
+>
+> Conséquence pour T2 5/5 : conception du pattern de reprise via `sessionStorage` uniquement (pas de SELECT `users` au callback Auth puisqu'aucune ligne n'existe avant E-7). Si `sessionStorage` vide ou expiré → redémarrage à E-1, sans perte critique.
+
 ⚠️ Décision technique précise (RPC unique vs UPDATE incrémentaux + RPC finale légère) à arbitrer en section 7. Cette section pose le contrat de données, pas l'API.
 
 ---
@@ -257,6 +267,8 @@ Avant que l'utilisateur arrive à E-1, il a choisi sa méthode d'authentificatio
 6. Submit E-1 → INSERT `users` avec les 3 champs + `id` de la session Auth + flag `email_is_apple_relay` si email matche `*@privaterelay.appleid.com` (à signaler section 6 RGPD)
 
 ### 2.5 Persistance progressive et reprise
+
+> **⚠️ Section annulée par amendement post-spec — 6 mai 2026 (conv Claude.ai 13)**. Voir §1.5 encart d'amendement pour la décision en vigueur (report intégral à E-7 + sessionStorage côté client). Le contenu ci-dessous est conservé pour traçabilité historique mais ne reflète plus le comportement à implémenter.
 
 À chaque clic "Continuer", UPDATE partiel `users` avec les champs saisis à l'étape courante. `profil_complet` reste à `false` jusqu'au submit final E-7.
 

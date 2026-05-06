@@ -2,7 +2,29 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 mai 2026 (soir) — Clôture conv Claude.ai 12 chantier UNIFICATION-INSCRIPTION : DETTE #64 résolue par simplification produit (refonte E-4 villes mono-ville/bi-ville, commit feat `bea05cd`). Améliorations transverses `AutocompleteInput` (auto-capitalize première lettre, retrait cap suggestions, scroll containment). DETTE #65 créée pour propagation auto-capitalize aux autres types d'inputs texte.
+**Dernière mise à jour** : 6 mai 2026 (soir bis) — Clôture conv Claude.ai 13 chantier UNIFICATION-INSCRIPTION : amendement post-spec acté pour la persistance progressive (option b1 `sessionStorage`). Annule la spec UNIFICATION-INSCRIPTION §1.5 "Sauvegarde progressive" et §2.5 dans leur ensemble. Détails dans UNIFICATION-INSCRIPTION §1.5 (encart d'amendement) + VISION §6 (nouvelle sous-section). Aucune modification de code applicatif — T2 5/5 reste un sous-commit normal du chantier (pas une dette technique).
+
+---
+
+## 2026-05-06 (soir bis) — Conv Claude.ai 13 : amendement persistance progressive acté
+
+### Décision actée
+
+Option b1 retenue après arbitrage : report intégral des écritures BDD à E-7 + miroir `sessionStorage` côté client pour le pattern de reprise. Annule la spec UNIFICATION-INSCRIPTION §1.5 "Sauvegarde progressive" et §2.5 dans leur ensemble. Rationalisation : cohérence avec l'implémentation livrée E-1 à E-4 (qui n'a jamais matérialisé la sauvegarde progressive), atomicité de la RPC E-7 conservée, coût ~2-3h en T2 5/5 contre ~1-2 jours de refonte rétroactive sur 4 sous-commits déjà livrés.
+
+### Logs effectués
+
+- UNIFICATION-INSCRIPTION.md §1.5 : encart d'amendement après le paragraphe "Sauvegarde progressive".
+- UNIFICATION-INSCRIPTION.md §2.5 : note d'annulation en tête de section, contenu d'origine conservé pour traçabilité.
+- VISION-ARCHITECTURE.md §6 : nouvelle sous-section "Persistance progressive — amendement post-spec acté le 6 mai 2026" pointant vers UNIFICATION-INSCRIPTION §1.5.
+
+### Conséquence pour la suite T2
+
+T2 5/5 "pattern de reprise + persistance state" reste un sous-commit normal du chantier UNIFICATION-INSCRIPTION (pas une dette technique). Conception attendue : sérialisation/désérialisation du state du hook `useInscriptionWizard` via `sessionStorage`, lecture au mount, écriture à chaque transition d'étape, purge à l'aboutissement de la RPC E-7. Détail à arbitrer en conv dédiée.
+
+### État final branche post-conv 13
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = nouveau commit docs après commit `6cc8a72`. Working dir attendu post-commit docs : 1 modified `CreerAnnoncePage.jsx` (bypass DEV) + 3 untracked préexistants intacts.
 
 ---
 

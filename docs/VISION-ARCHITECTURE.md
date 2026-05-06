@@ -363,6 +363,12 @@ Un seul planning est actif à la fois, référencé par `users.rhythm_import_id`
 
 Quand un nouveau planning est détecté pour une période future, l'UI prévient explicitement : *"Nouveau planning détecté à partir de sept 2027. Ton planning actuel reste actif jusque-là."* L'alternant voit la transition venir et peut préparer son déménagement ou renégocier son bail.
 
+### Persistance progressive — amendement post-spec acté le 6 mai 2026
+
+La spec UNIFICATION-INSCRIPTION §1.5 et §2.5 prévoyait initialement un INSERT `users` à E-1 + UPDATE partiels à chaque "Continuer", pour permettre un pattern de reprise après abandon en cours de parcours. L'implémentation livrée des sous-commits E-1 à E-4 (conv 5 à 12) a dévié de cette spec : aucune écriture BDD avant la RPC finale E-7. Cette dérive a été formalisée en conv 13 du 6 mai 2026 (soir bis) comme amendement définitif : report intégral des écritures à E-7 + miroir `sessionStorage` côté client pour le pattern de reprise.
+
+Conséquence : la RPC `complete_inscription_alternant` à E-7 reste la seule transaction BDD du parcours. Le pattern de reprise vit uniquement côté client via `sessionStorage`. Détails et justification dans `docs/recherche/UNIFICATION-INSCRIPTION.md` §1.5 (encart d'amendement).
+
 ---
 
 ## 7. Dépendance critique à l'IA — analyse du risque
