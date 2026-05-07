@@ -2,7 +2,40 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard FERMÉE sur ses 2 objectifs initiaux : refonte E-2 (DETTE #67 + #63) + refonte E-6 (DETTE #66) livrées. Conv 16 ouvrira pour polish PhotoCropperModal + fix dropdown filière E-3 (régression). Écran 0 OAuth déplacé de conv 16 → conv 17.
+**Dernière mise à jour** : 7 mai 2026 (suite bis) — Conv Claude.ai 16 sujet 1 livré : polish PhotoCropperModal aligné sur grammaire wizard unifiée (commit df9184b) + harmonisation libellé sexe "Non précisé" sur wizard + legacy ModifierProfilPage (commit 4256d59). Conv 16 continue sur le sujet 2 : fix dropdown filière E-3 qui déborde.
+
+---
+
+## 2026-05-07 (suite bis) — Conv Claude.ai 16 sujet 1 : polish PhotoCropperModal + harmonisation libellé "Non précisé"
+
+### Décisions actées
+
+1. **Polish design `PhotoCropperModal` aligné sur grammaire wizard unifiée** (commit `df9184b`). Composant partagé `auth-wizard/PhotoCropperModal` (extrait T1 commit `a70d69b` conv 8). 4 modifs ciblées :
+   - Titre "RECADRER" promu de kicker gris discret (11px / weight 700 / `#94A3B8`) vers titre wizard orange centré (16px / weight 300 / letter-spacing 2px / `#E8622A`). Variante "tight space" du `.aw-screen-title` adaptée au modal 360px (au lieu du 18px / ls 3px de la version card 460px).
+   - Bouton X repositionné en `position: absolute; top: 12px; right: 12px;`. Wrapper `.aw-cropper-header` supprimé, `.aw-cropper-modal` reçoit `position: relative` pour ancrage.
+   - Slider zoom enfin labellisé : `<label className="aw-cropper-zoom-label">ZOOM</label>` ajouté au-dessus du slider, aligné sur la grammaire labels uppercase 11px / 700 / ls 1px / `#1E293B` / DM Sans, identique aux 4 composants `auth-wizard/` déjà alignés (TextInput, AutocompleteInput, CustomSelect, TextArea, conv 14). Wrapper `.aw-cropper-zoom` passé en flex column gap 8px.
+   - Slider `<input type="range">` reçoit `id="aw-cropper-zoom-input"` + `htmlFor` sur le label + `aria-label="Zoom"` (accessibilité pour lecteurs d'écran).
+   - Hors scope volontaire : bouton "Appliquer" (44px / 14px) inchangé. Pas un label, donc pas dans la grammaire labels uppercase. Si harmonisation 48px souhaitée plus tard avec `.ial-btn-continuer`, sujet à part.
+   - Impact : E-6 wizard prod (`InscriptionAlternantPage` branche `currentStep === 6`) + dev sandbox section 11. Pages legacy `CompleterProfilPage` et `ModifierProfilPage` ont leur propre cropper local (pas l'unifié `auth-wizard/PhotoCropperModal`) donc pas impactées par ce patch.
+
+2. **Harmonisation libellé UI "Non précisé" pour valeur BDD `non-precise`** (commit `4256d59`). Audit en cours de session a révélé 3 libellés UI différents pour la même valeur BDD :
+   - Wizard E-6 (`InscriptionAlternantPage` ligne 438) : "Préfère ne pas répondre" — trop long pour le dropdown CustomSelect, débordait visuellement.
+   - `ModifierProfilPage` ligne 570 : "Non precise" — accent manquant, typo legacy corrigée au passage.
+   - `CompleterProfilPage` ligne 870 : "Non précisé" — déjà correct, non touché.
+   
+   Wizard + ModifierProfilPage alignés sur "Non précisé". Valeur BDD `'non-precise'` inchangée partout (cohérent avec `validateE6` du hook `useInscriptionWizard.js` qui accepte `['homme', 'femme', 'autre', 'non-precise']`). Note legacy : `CompleterProfilPage` est destinée à disparaître en T7 du chantier UNIFICATION-INSCRIPTION, mais l'aligner aurait été cohérent en attendant — ici elle l'était déjà donc rien à faire.
+
+### Sujet restant conv 16
+
+- **Fix dropdown filière E-3 qui déborde de la card** : régression du fix conv 9 (limitation à 4 suggestions au focus). `AutocompleteInput` rend son dropdown en `position: absolute` sous l'input filière, qui déborde visuellement quand l'input est en bas de la card 536px. Vrai fix = smart positioning (mesurer place dispo, basculer au-dessus si pas la place en dessous). Composant partagé donc impact aussi E-4 villes. À traiter dans la suite de conv 16.
+
+### Sujet reporté en conv 17
+
+- **Écran 0 OAuth** : T4 chantier UNIFICATION-INSCRIPTION (cf. spec § 2.4 et § 4.5). Hors polish design. Reporté de conv 16 → conv 17 (rappel conv 15).
+
+### État final branche post sujet 1 conv 16
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = `4256d59` (commit fix wording sexe), 12 commits ahead `origin/main` (10 conv 13/14/15 + 2 conv 16). Working dir : 1 modified `CreerAnnoncePage.jsx` (bypass DEV intact, DETTE #1-4) + 3 untracked préexistants.
 
 ---
 
