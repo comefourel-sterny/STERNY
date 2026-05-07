@@ -49,10 +49,10 @@ const initialState = {
   statut_ville_entreprise: null,
   // E-5 Calendrier — placeholder T2, sera intégré en T8 (RhythmManualBuilder)
   // E-6 Profil personnel
+  // bio retirée d'E-6 (amendement VISION conv 15) — reportée à ModifierProfilPage post-inscription.
   date_naissance: '',
   sexe: '',
   photo_profil_url: null,
-  bio: '',
 }
 
 function reducer(state, action) {

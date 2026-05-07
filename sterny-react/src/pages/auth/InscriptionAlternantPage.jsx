@@ -14,7 +14,6 @@ import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
 import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
-import TextArea from '../../components/auth-wizard/TextArea'
 import PhotoCropperModal from '../../components/auth-wizard/PhotoCropperModal'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
@@ -136,8 +135,8 @@ export default function InscriptionAlternantPage() {
     goToNextStep()
   }
 
-  // Handler E-6 : CustomSelect (sexe) et TextArea (bio) émettent un event
-  // {target:{value,name}}. Le name correspond au champ state.
+  // Handler E-6 : CustomSelect (sexe) émet un event {target:{value,name}}.
+  // Le name correspond au champ state.
   const handleE6Change = (e) => {
     setField(e.target.name, e.target.value)
     if (state.globalError) clearError()
@@ -443,41 +442,40 @@ export default function InscriptionAlternantPage() {
         <h1 className="aw-screen-title">INSCRIPTION</h1>
         <WizardProgressBar progress={6/7} />
         <div className="ial-form">
-          <div className="ial-e6-grid">
-            <div className="ial-e6-photo-block">
-              <input
-                ref={photoFileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelected}
-                hidden
-              />
+          <div className="ial-e6-photo-block">
+            <input
+              ref={photoFileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelected}
+              hidden
+            />
+            <button
+              type="button"
+              className={`ial-e6-photo-circle ${state.photo_profil_url ? 'filled' : 'empty'}`}
+              onClick={handlePhotoClick}
+              disabled={photoUploading}
+              aria-label="Ajouter une photo de profil"
+            >
+              {state.photo_profil_url ? (
+                <img src={state.photo_profil_url} alt="Photo de profil" />
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              )}
+            </button>
+            <div className="ial-e6-photo-link-row">
               <button
                 type="button"
-                className={`ial-e6-photo-circle ${state.photo_profil_url ? 'filled' : 'empty'}`}
+                className="ial-e6-photo-link"
                 onClick={handlePhotoClick}
                 disabled={photoUploading}
-                aria-label="Ajouter une photo de profil"
               >
-                {state.photo_profil_url ? (
-                  <img src={state.photo_profil_url} alt="Photo de profil" />
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                    <circle cx="12" cy="13" r="4"/>
-                  </svg>
-                )}
-                <span className="ial-e6-photo-badge" aria-hidden="true">+</span>
+                {photoUploading ? 'Upload en cours…' : (state.photo_profil_url ? 'Modifier la photo' : 'Ajouter une photo')}
               </button>
-              <div className="ial-e6-photo-link-row">
-                <button
-                  type="button"
-                  className="ial-e6-photo-link"
-                  onClick={handlePhotoClick}
-                  disabled={photoUploading}
-                >
-                  {photoUploading ? 'Upload en cours…' : (state.photo_profil_url ? 'Modifier la photo' : 'Ajouter une photo')}
-                </button>
+              <div className="ial-e6-info-wrap">
                 <button
                   type="button"
                   className="ial-e6-info-btn"
@@ -486,41 +484,32 @@ export default function InscriptionAlternantPage() {
                 >
                   ⓘ
                 </button>
+                {infoTooltipOpen && (
+                  <span className="ial-e6-info-text" role="tooltip">Une photo aide les autres alternants à te faire confiance.</span>
+                )}
               </div>
-              {infoTooltipOpen && (
-                <p className="ial-e6-info-text">Une photo aide les autres alternants à te faire confiance.</p>
-              )}
-            </div>
-            <div className="ial-e6-fields-cell">
-              <TextInput
-                name="date_naissance"
-                label="Date de naissance"
-                placeholder="JJ/MM/AAAA"
-                inputMode="numeric"
-                maxLength={10}
-                value={state.date_naissance}
-                onChange={handleDateNaissanceChange}
-                autoComplete="bday"
-              />
-              <CustomSelect
-                name="sexe"
-                label="Sexe"
-                options={sexeOptions}
-                value={state.sexe}
-                onChange={handleE6Change}
-                placeholder="Sélectionner"
-              />
             </div>
           </div>
-          <TextArea
-            name="bio"
-            label="Quelques mots sur toi"
-            placeholder="Tes centres d'intérêt, ton mode de vie…"
-            maxLength={300}
-            rows={4}
-            value={state.bio}
-            onChange={handleE6Change}
-          />
+          <div className="ial-e6-row">
+            <TextInput
+              name="date_naissance"
+              label="Date de naissance"
+              placeholder="JJ/MM/AAAA"
+              inputMode="numeric"
+              maxLength={10}
+              value={state.date_naissance}
+              onChange={handleDateNaissanceChange}
+              autoComplete="bday"
+            />
+            <CustomSelect
+              name="sexe"
+              label="Sexe"
+              options={sexeOptions}
+              value={state.sexe}
+              onChange={handleE6Change}
+              placeholder="Sélectionner"
+            />
+          </div>
           <button type="button" className="ial-btn-continuer" onClick={handleE6Submit}>Continuer</button>
         </div>
         {state.globalError
