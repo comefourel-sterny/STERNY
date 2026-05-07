@@ -5,6 +5,7 @@ import {
   getE1InvalidFields,
   validateE3,
   validateE4,
+  validateE6,
 } from '../../hooks/useInscriptionWizard'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
 import TextInput from '../../components/auth-wizard/TextInput'
@@ -12,8 +13,13 @@ import AuthErrorBanner from '../../components/auth-wizard/AuthErrorBanner'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
 import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
+import CustomSelect from '../../components/auth-wizard/CustomSelect'
+import TextArea from '../../components/auth-wizard/TextArea'
+import PhotoCropperModal from '../../components/auth-wizard/PhotoCropperModal'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
+import { formatPartialDateInput } from '../../utils/dateHelpers.js'
+import { supabaseClient } from '../../config/supabase'
 import './InscriptionAlternantPage.css'
 
 // Helpers de transformation copiés depuis InscriptionRecherchePage pour ce
@@ -48,7 +54,13 @@ export default function InscriptionAlternantPage() {
   const nomRef = useRef(null)
   const telephoneRef = useRef(null)
   const emailRef = useRef(null)
+  const photoFileInputRef = useRef(null)
   const [invalidFields, setInvalidFields] = useState(() => new Set())
+  const [cropperOpen, setCropperOpen] = useState(false)
+  const [cropperImageFile, setCropperImageFile] = useState(null)
+  const [photoUploading, setPhotoUploading] = useState(false)
+  const [infoTooltipOpen, setInfoTooltipOpen] = useState(false)
+  const toggleInfoTooltip = () => setInfoTooltipOpen(v => !v)
 
   useEffect(() => () => {
     if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
@@ -122,6 +134,82 @@ export default function InscriptionAlternantPage() {
       return
     }
     goToNextStep()
+  }
+
+  // Handler E-6 : CustomSelect (sexe) et TextArea (bio) émettent un event
+  // {target:{value,name}}. Le name correspond au champ state.
+  const handleE6Change = (e) => {
+    setField(e.target.name, e.target.value)
+    if (state.globalError) clearError()
+  }
+
+  // Saisie progressive de date_naissance — applique formatPartialDateInput
+  // (insertion auto des "/", troncature à 8 chiffres) avant stockage en state.
+  // State stocké en JJ/MM/AAAA (Option A conv 14), conversion ISO différée à la RPC E-7.
+  const handleDateNaissanceChange = (e) => {
+    const formatted = formatPartialDateInput(e.target.value)
+    setField('date_naissance', formatted)
+    if (state.globalError) clearError()
+  }
+
+  const handleE6Submit = () => {
+    const err = validateE6(state)
+    if (err) {
+      setGlobalError(err)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      errorTimerRef.current = setTimeout(() => clearError(), 3000)
+      return
+    }
+    goToNextStep()
+  }
+
+  // Photo upload E-6 — bucket Storage 'profils', filename `${user.id}-${Date.now()}.jpg`
+  // (Blob JPEG fixe sortant de PhotoCropperModal). Pas de ligne public.users avant E-7
+  // (amendement conv 13) — la policy RLS profils_insert_own ne dépend que de auth.uid().
+  const handlePhotoClick = () => {
+    photoFileInputRef.current?.click()
+  }
+
+  const handleFileSelected = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCropperImageFile(file)
+    setCropperOpen(true)
+    e.target.value = ''
+  }
+
+  const handleCropConfirm = async (blob) => {
+    setPhotoUploading(true)
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser()
+      if (!user) {
+        setGlobalError('Session expirée — reconnecte-toi')
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+        errorTimerRef.current = setTimeout(() => clearError(), 3000)
+        return
+      }
+      const fileName = `${user.id}-${Date.now()}.jpg`
+      const { error: upErr } = await supabaseClient.storage
+        .from('profils')
+        .upload(fileName, blob, { cacheControl: '3600', upsert: true, contentType: 'image/jpeg' })
+      if (upErr) {
+        setGlobalError("Échec de l'upload de la photo. Réessaie.")
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+        errorTimerRef.current = setTimeout(() => clearError(), 3000)
+        return
+      }
+      const { data: urlData } = supabaseClient.storage
+        .from('profils')
+        .getPublicUrl(fileName)
+      setField('photo_profil_url', urlData.publicUrl)
+    } finally {
+      setPhotoUploading(false)
+    }
+  }
+
+  const handleCropClose = () => {
+    setCropperOpen(false)
+    setCropperImageFile(null)
   }
 
   if (state.currentStep === 2) {
@@ -328,12 +416,118 @@ export default function InscriptionAlternantPage() {
     )
   }
 
+  if (state.currentStep === 6) {
+    const sexeOptions = [
+      { value: 'homme', label: 'Homme' },
+      { value: 'femme', label: 'Femme' },
+      { value: 'autre', label: 'Autre' },
+      { value: 'non-precise', label: 'Préfère ne pas répondre' },
+    ]
+    return (
+      <AuthScreenContainer>
+        <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={6/7} />
+        <div className="ial-form">
+          <div className="ial-e6-grid">
+            <div className="ial-e6-photo-block">
+              <input
+                ref={photoFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelected}
+                hidden
+              />
+              <button
+                type="button"
+                className={`ial-e6-photo-circle ${state.photo_profil_url ? 'filled' : 'empty'}`}
+                onClick={handlePhotoClick}
+                disabled={photoUploading}
+                aria-label="Ajouter une photo de profil"
+              >
+                {state.photo_profil_url ? (
+                  <img src={state.photo_profil_url} alt="Photo de profil" />
+                ) : (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                )}
+                <span className="ial-e6-photo-badge" aria-hidden="true">+</span>
+              </button>
+              <div className="ial-e6-photo-link-row">
+                <button
+                  type="button"
+                  className="ial-e6-photo-link"
+                  onClick={handlePhotoClick}
+                  disabled={photoUploading}
+                >
+                  {photoUploading ? 'Upload en cours…' : (state.photo_profil_url ? 'Modifier la photo' : 'Ajouter une photo')}
+                </button>
+                <button
+                  type="button"
+                  className="ial-e6-info-btn"
+                  onClick={toggleInfoTooltip}
+                  aria-label="En savoir plus"
+                >
+                  ⓘ
+                </button>
+              </div>
+              {infoTooltipOpen && (
+                <p className="ial-e6-info-text">Une photo aide les autres alternants à te faire confiance.</p>
+              )}
+            </div>
+            <div className="ial-e6-fields-cell">
+              <TextInput
+                name="date_naissance"
+                label="Date de naissance"
+                placeholder="JJ/MM/AAAA"
+                inputMode="numeric"
+                maxLength={10}
+                value={state.date_naissance}
+                onChange={handleDateNaissanceChange}
+                autoComplete="bday"
+              />
+              <CustomSelect
+                name="sexe"
+                label="Sexe"
+                options={sexeOptions}
+                value={state.sexe}
+                onChange={handleE6Change}
+                placeholder="Sélectionner"
+              />
+            </div>
+          </div>
+          <TextArea
+            name="bio"
+            label="Quelques mots sur toi"
+            placeholder="Tes centres d'intérêt, ton mode de vie…"
+            maxLength={300}
+            rows={4}
+            value={state.bio}
+            onChange={handleE6Change}
+          />
+          <button type="button" className="ial-btn-continuer" onClick={handleE6Submit}>Continuer</button>
+        </div>
+        {state.globalError
+          ? <AuthErrorBanner message={state.globalError} />
+          : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
+        <PhotoCropperModal
+          open={cropperOpen}
+          onClose={handleCropClose}
+          onConfirm={handleCropConfirm}
+          imageFile={cropperImageFile}
+        />
+      </AuthScreenContainer>
+    )
+  }
+
   return (
     <AuthScreenContainer>
       <h1 className="aw-screen-title">INSCRIPTION</h1>
       <div className="ial-placeholder-content">
         Étape {state.currentStep} — À implémenter
       </div>
+      <button type="button" className="ial-btn-continuer" onClick={goToNextStep}>Continuer (placeholder)</button>
       <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />
     </AuthScreenContainer>
   )

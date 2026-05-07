@@ -17,6 +17,7 @@
 
 import { useReducer, useEffect, useCallback } from 'react'
 import { supabaseClient } from '../config/supabase'
+import { isValidDateFR } from '../utils/dateHelpers.js'
 
 const TOTAL_STEPS = 7
 
@@ -186,6 +187,30 @@ export function validateE4(state) {
     return null
   }
 
+  return null
+}
+
+// Validation frontend E-6 — profil personnel (cf. UNIFICATION-INSCRIPTION § 3.10)
+// date_naissance + sexe obligatoires, photo_profil_url + bio optionnels.
+// Pas de check âge ≥ 18 ans : en attente d'avis professionnel Q-AVO-001 + Q-DPO-002
+// (cf. CONTEXTE-PROJET §3 sur les mineurs alternants).
+// Renvoie un message global (string) ou null si tout OK.
+export function validateE6(state) {
+  const dateNaissance = (state.date_naissance ?? '').trim()
+  const sexe = state.sexe ?? ''
+
+  if (dateNaissance === '') {
+    return 'Veuillez renseigner ta date de naissance'
+  }
+  if (!isValidDateFR(dateNaissance)) {
+    return 'Date de naissance invalide (format attendu : JJ/MM/AAAA)'
+  }
+  if (sexe === '') {
+    return 'Veuillez renseigner ton sexe'
+  }
+  if (!['homme', 'femme', 'autre', 'non-precise'].includes(sexe)) {
+    return 'Valeur de sexe invalide'
+  }
   return null
 }
 
