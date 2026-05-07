@@ -318,9 +318,33 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 - `profil_complet = true` mis à la sortie du parcours unifié, en **1 seule passe**. Le modèle "inscription minimale puis complétion ultérieure via `/completer-profil`" est abandonné. Si un utilisateur abandonne en cours de parcours, le compte reste avec `profil_complet=false` et la prochaine connexion le ramène au parcours unifié à l'étape où il s'est arrêté (pattern de reprise à concevoir dans le doc de cadrage).
 - `users.a_logement` rejoint la liste des colonnes legacy à ne plus écrire (sémantique dérivable de `type_user IN ('hote', 'les_deux')` ou de `statut_ville_* = 'hote'`). Audit ciblé des lectures à mener avant suppression définitive (cohérent avec phase de gel VISION §9).
 - Le sens canonique de `type_user` est aligné sur le choix utilisateur explicite : intent "partage" → `type_user = 'hote'` (plus jamais `'locataire'` + `a_logement=true` comme dans `InscriptionRecherchePage` actuel). Lié à DETTE #50.
-- Photo et bio profil restent **optionnelles** dans le parcours unifié, avec un message qui explique que les renseigner augmente la confiance des autres utilisateurs. Possibilité de les ajouter plus tard via `ModifierProfilPage`. La complétude du profil est définie par les champs structurants (type_user, villes, statuts villes, rhythm_calendar), pas par photo/bio.
+- Photo et bio profil restent **optionnelles** dans le parcours unifié. Pour minimiser la friction d'inscription, **la bio est retirée de E-6** et reportée à `ModifierProfilPage` post-inscription (amendement spec § 3.10 acté conv 15). La photo reste proposée en E-6 mais sans pression visuelle (cercle compact, lien discret). La complétude du profil "public" est définie par les champs structurants (type_user, villes, statuts villes, rhythm_calendar), pas par photo/bio. **Principe d'incitation post-inscription** : pour ne pas que la plateforme se retrouve avec des profils vides, une mécanique post-inscription doit inciter l'utilisateur à compléter photo et bio (badge profil complet sur dashboard, notification douce 24-48h après inscription, score de visibilité dans les recherches). À implémenter dans une tranche dédiée post-T7 — pas urgent mais nécessaire pour la qualité de l'expérience à l'échelle. Logique généralisable à tout futur champ profil optionnel.
 - Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
 - **Simplification mono-ville E-4 (acté conv 12 du 6 mai 2026 soir)** : suite à 5 itérations infructueuses de design sur le toggle école/entreprise du E-4 en conv 11 (DETTE #64), décision produit actée — pour `type_user = locataire` ou `type_user = hote`, on ne demande qu'une seule ville à l'utilisateur ; pour `type_user = les_deux`, deux villes avec labels explicites ("Ville où tu proposes" / "Ville où tu cherches"), sans introduire la notion école/entreprise dans l'UX. Le toggle disparaît du parcours. Convention de stockage BDD associée documentée en §3.
+
+---
+
+**Pattern de candidature à profil incomplet — chantier autonome post-T7 (acté conv 15)** :
+
+Décision produit actée conv 15. Quand un alternant clique "Candidater" sur une annonce avec un profil incomplet, l'application **capture l'intention** au lieu de bloquer le clic. Deux niveaux à distinguer :
+
+- **Niveau cosmétique (photo + bio manquantes)** : la candidature est envoyée à l'hôte avec un badge "profil basique" et un message UX qui invite l'alternant à enrichir son profil pour maximiser ses chances. Pas de blocage produit, l'hôte voit la candidature et choisit.
+- **Niveau légal (pièce d'identité vérifiée + garant + justificatifs ALUR manquants)** : la candidature est enregistrée en BDD avec un statut `pending_documents` et n'est pas visible côté hôte. Un modal explique à l'alternant qu'il doit fournir ces éléments pour que la candidature soit transmise. Une fois les documents fournis et vérifiés, la candidature passe en statut `submitted` et apparaît côté hôte.
+
+**Architecture associée — page "Mes documents"** : un nouvel onglet accessible depuis le menu burger du dashboard fusionné (au même niveau que "Modifier mon profil", "Mes annonces", "Mes candidatures") permet à l'alternant de gérer son dossier administratif **indépendamment de toute candidature**. Sépare le profil public (photo, bio, ville, rythme — visible par les autres alternants) du dossier administratif privé. Statuts par document : à fournir / en cours de vérification / vérifié / refusé. Visibilité différenciée : l'alternant voit ses propres docs, l'admin Sterny les voit pour vérifier, l'hôte ne voit qu'un statut "vérifié" agrégé (pas les docs eux-mêmes — sinon problème RGPD majeur).
+
+**Justification UX** : le pattern résout le dilemme "bloquer le clic = friction et perte d'utilisateur" vs "laisser passer = mauvaise expérience pour l'hôte". Capture l'intention sans compromettre la qualité côté hôte.
+
+**Justification légale (Niveau 2)** : la France encadre strictement les pièces qu'un bailleur peut demander à un candidat locataire (loi ALUR, liste limitative). La nature exacte du contrat Sterny (location ? mise à disposition ? colocation tournante ?) détermine la liste applicable. La vérification d'identité protège Sterny en tant qu'intermédiaire et l'hôte contre la fraude. Le consentement explicite du garant tiers est requis (le garant n'est pas l'utilisateur du service mais ses données sont collectées).
+
+**Pré-requis avant implémentation** :
+- Consultation **avocat immobilier ou notaire** pour valider la nature du contrat Sterny et la liste des pièces légalement exigibles selon le régime applicable.
+- Consultation **DPO ou avocat RGPD** pour cadrer le traitement des données sensibles (pièce d'identité, justificatifs financiers, données du garant), durée de conservation, base légale, sous-traitance Stripe Identity.
+- Confirmation du mécanisme de consentement explicite du garant tiers.
+
+**Statut** : hors scope du chantier UNIFICATION-INSCRIPTION (T1-T7). Chantier autonome à ouvrir post-T7 ou en parallèle si le besoin métier devient bloquant. À ne pas démarrer avant la consultation des professionnels listés ci-dessus.
+
+---
 
 **Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.
 
