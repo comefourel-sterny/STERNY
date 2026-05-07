@@ -2,7 +2,31 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 (suite bis) — Conv Claude.ai 16 sujet 1 livré : polish PhotoCropperModal aligné sur grammaire wizard unifiée (commit df9184b) + harmonisation libellé sexe "Non précisé" sur wizard + legacy ModifierProfilPage (commit 4256d59). Conv 16 continue sur le sujet 2 : fix dropdown filière E-3 qui déborde.
+**Dernière mise à jour** : 7 mai 2026 (suite ter) — Conv Claude.ai 16 FERMÉE sur ses 2 sujets initiaux : polish PhotoCropperModal + harmonisation libellé sexe "Non précisé" (sujet 1, commits df9184b/4256d59) + fix dropdown AutocompleteInput clampé à la carte avec cap 3 options visibles (sujet 2, commit 3f8e4da). Conv 17 réservée à l'écran 0 OAuth (T4 chantier UNIFICATION-INSCRIPTION).
+
+---
+
+## 2026-05-07 (suite ter) — Conv Claude.ai 16 sujet 2 : fix dropdown AutocompleteInput dans card
+
+### Décision actée
+
+**Dropdown `AutocompleteInput` clampé à la card avec cap à 3 options visibles** (commit `3f8e4da`). Composant partagé `auth-wizard/AutocompleteInput`. Le dropdown reste rendu via `createPortal(document.body)` en `position: absolute`, mais sa `maxHeight` est désormais calculée dynamiquement au focus : mesure du parent `.aw-screen-card` via `inputRef.closest('.aw-screen-card')` (fallback `window.innerHeight` si hors-card), puis `maxHeight = min(140, max(0, cardBottom - inputBottom - 6))`. La constante 140 correspond à 3 options × ~44px + 8px de padding interne (alignement avec `option { padding: 11px 16px; font-size: 14px }` et `portal { padding: 4px 0 }`). CSS `max-height: 180px → 140px` harmonisée comme fallback.
+
+Comportement résultant : pour les inputs en haut de la card (École, Année), le dropdown prend ses 140px pleins en dessous. Pour les inputs en bas (Filière E-3, ville_ecole E-4 cas les_deux), il s'étend jusqu'au bord bas de la card et couvre visuellement le bouton Continuer + lien Retour pendant son ouverture — comportement souhaité (l'utilisateur est en train de choisir une option, le bouton ne lui sert à rien à ce moment-là, dès qu'il sélectionne une option le dropdown se ferme et le bouton réapparaît).
+
+### Démarche d'arbitrage
+
+5 approches testées avant convergence : smart positioning bascule au-dessus (refusé — masque les inputs du dessus), `maxHeight` avec marge fixe 100px en bas (laisse de l'espace blanc inutile), mesure du bouton Continuer avec arrêt 8px avant son bord haut (dropdown trop petit, 1-2 options visibles seulement), arrêt au bord bas du bouton (légèrement mieux mais 2-3 options tronquées), enfin arrêt au bord bas de la carte avec cap 140px (validé). Leçon : ne pas pré-jouer le smart positioning quand la vraie contrainte est de respecter les limites de la carte et d'accepter le recouvrement temporaire des éléments du bas pendant l'ouverture du dropdown.
+
+### Hors scope reporté
+
+- **`CustomSelect` a la même lacune théorique** (positionnement absolute toujours en dessous, `max-height` fixe 240px). Aucun bug utilisateur remonté à ce stade et après la refonte E-6 conv 15 le dropdown sexe n'est plus en bas de card. À porter le pattern de clamp si problème observé plus tard. Pas de DETTE créée pour l'instant.
+
+### État final branche post sujet 2 conv 16
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = `3f8e4da` (commit fix dropdown), 14 commits ahead `origin/main` (10 conv 13/14/15 + 4 conv 16 dont 1 docs sujet 1). Working dir : 1 modified `CreerAnnoncePage.jsx` (bypass DEV intact, DETTE #1-4) + 3 untracked préexistants.
+
+Conv 16 FERMÉE sur ses 2 sujets initiaux. Conv 17 réservée à l'écran 0 OAuth (T4 chantier UNIFICATION-INSCRIPTION cf. spec § 2.4 et § 4.5).
 
 ---
 
