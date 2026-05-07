@@ -154,19 +154,18 @@ export default function PhotoCropperModal({ open, onClose, onConfirm, imageFile 
   return createPortal(
     <div className="aw-cropper-overlay" role="dialog" aria-modal="true" aria-label="Recadrer la photo">
       <div className="aw-cropper-modal">
-        <div className="aw-cropper-header">
-          <span className="aw-cropper-title">RECADRER</span>
-          <button type="button" className="aw-cropper-close" onClick={onClose} aria-label="Annuler">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
+        <button type="button" className="aw-cropper-close" onClick={onClose} aria-label="Annuler">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+        <span className="aw-cropper-title">RECADRER</span>
         <div className="aw-cropper-area" onMouseDown={handleMouseDown} onTouchStart={handleTouchStart}>
           <img ref={imgRef} src={imageSrc} onLoad={handleImageLoad} alt="" draggable="false" />
         </div>
         <div className="aw-cropper-zoom">
-          <input type="range" min={zoomMin} max={zoomMax} value={zoom} onChange={handleZoom} />
+          <label htmlFor="aw-cropper-zoom-input" className="aw-cropper-zoom-label">ZOOM</label>
+          <input id="aw-cropper-zoom-input" type="range" min={zoomMin} max={zoomMax} value={zoom} onChange={handleZoom} aria-label="Zoom" />
         </div>
         <button type="button" className="aw-cropper-confirm" onClick={confirm}>Appliquer</button>
       </div>

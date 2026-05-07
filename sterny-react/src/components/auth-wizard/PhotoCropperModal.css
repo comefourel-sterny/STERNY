@@ -17,6 +17,7 @@
 }
 
 .aw-cropper-modal {
+  position: relative;
   background: white;
   border-radius: 20px;
   padding: 24px;
@@ -34,20 +35,21 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-.aw-cropper-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .aw-cropper-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #94A3B8;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #E8622A;
+  text-align: center;
+  margin: 0 0 8px 0;
 }
 
 .aw-cropper-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   background: none;
   border: none;
   color: #94A3B8;
@@ -58,6 +60,7 @@
   justify-content: center;
   border-radius: 8px;
   transition: background 0.15s, color 0.15s;
+  z-index: 1;
 }
 
 .aw-cropper-close:hover {
@@ -87,6 +90,21 @@
   user-select: none;
   max-width: none;
   max-height: none;
+}
+
+.aw-cropper-zoom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aw-cropper-zoom-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1E293B;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .aw-cropper-zoom input[type="range"] {
