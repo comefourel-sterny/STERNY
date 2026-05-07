@@ -435,7 +435,7 @@ export default function InscriptionAlternantPage() {
       { value: 'homme', label: 'Homme' },
       { value: 'femme', label: 'Femme' },
       { value: 'autre', label: 'Autre' },
-      { value: 'non-precise', label: 'Préfère ne pas répondre' },
+      { value: 'non-precise', label: 'Non précisé' },
     ]
     return (
       <AuthScreenContainer>

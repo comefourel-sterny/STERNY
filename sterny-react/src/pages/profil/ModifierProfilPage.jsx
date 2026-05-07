@@ -567,7 +567,7 @@ export default function ModifierProfilPage() {
                   <div className="form-group"><label>Date de naissance <span className="required">*</span></label><input type="text" value={dateNaissance} onChange={handleDateInput} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" /></div>
                   <div className="form-group"><label>Sexe <span className="required">*</span></label>
                     <select value={sexe} onChange={e => setSexe(e.target.value)} className={!sexe ? 'placeholder' : ''}>
-                      <option value="" disabled>Selectionner</option><option value="homme">Homme</option><option value="femme">Femme</option><option value="autre">Autre</option><option value="non-precise">Non precise</option>
+                      <option value="" disabled>Selectionner</option><option value="homme">Homme</option><option value="femme">Femme</option><option value="autre">Autre</option><option value="non-precise">Non précisé</option>
                     </select>
                   </div>
                 </div>
