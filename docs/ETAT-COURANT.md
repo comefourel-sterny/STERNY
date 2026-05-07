@@ -2,7 +2,34 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 — Clôture conv Claude.ai 14 chantier UNIFICATION-INSCRIPTION : refactor labels auth-wizard transverse + sous-commit T2 E-6 livré fonctionnel (design non validé visuellement, à reprendre conv 15 dédiée polish wizard). Amendements spec UNIFICATION §1.2.7 (4 valeurs sexe) et §3.10 (format date JJ/MM/AAAA texte). Pas de check âge ≥ 18 ans frontend (en attente Q-AVO-001 + Q-DPO-002). DETTE #66 et #67 créées.
+**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard : refonte E-2 sur pattern IR legacy livrée (DETTE #67 + DETTE #63 résolues). DETTE #66 (E-6) et audit OAuth restants dans la conv.
+
+---
+
+## 2026-05-07 (suite) — Conv Claude.ai 15 bloc 1 : refonte E-2 sur pattern IR legacy
+
+### Décisions actées
+
+1. **DETTE #67 RÉSOLUE** — Refonte `IntentCardRadio` sur pattern IR legacy compact (référence : `InscriptionRecherchePage.jsx` step 1 "intent"). Padding 12/16, border-radius 12, gap 12. Icône 36×36 disque gris #F4F5F7 + SVG #6B7280 qui s'orange-ifie léger en selected (rgba 0.1). Hover orange + translateY(-2px) + box-shadow douce. Suppression prop `description` et wrapper `.aw-intent-card-content`. Animation stagger via `@keyframes awIntentCardFadeIn` 0.4s, delays 0.16/0.24/0.32s passés inline côté E-2 et sandbox section 12.
+
+2. **DETTE #63 RÉSOLUE** — Les 3 SVG Material Symbols (loupe / maison / flèches bidirectionnelles, repris d'IR legacy step 1) sont injectés en prop `icon` sur les 3 IntentCardRadio d'E-2. Plus d'icône manquante.
+
+3. **Wording E-2 raccourci** : "un ou des logements" → "un logement", "d'alterner mon logement" → "mon logement". Suppression des descriptions sous-label parce que le contexte wizard alternant suffit.
+
+4. **Mot-clé typographié orange uppercase 14px** : nouvelle classe `.aw-intent-card-keyword` { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #E8622A; }. Itération validée après essai 11px label-style trouvé trop petit/déséquilibré sur la phrase autour. Suppression de l'ancienne classe `.ial-card-keyword` orpheline dans `InscriptionAlternantPage.css`.
+
+### Code livré
+
+- `sterny-react/src/components/auth-wizard/IntentCardRadio.jsx` — suppression prop `description` + wrapper `.aw-intent-card-content`.
+- `sterny-react/src/components/auth-wizard/IntentCardRadio.css` — refonte complète sur pattern IR legacy + nouvelle classe `.aw-intent-card-keyword`.
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` — branche E-2 : 3 SVG Material loupe/maison/flèches en prop `icon`, label raccourci, span keyword renommé `aw-intent-card-keyword`, animation delays inline.
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.css` — suppression `.ial-card-keyword`.
+- `sterny-react/src/dev/AuthWizardSandbox.jsx` — section 12 alignée sur la nouvelle API.
+
+### Sujets restants conv 15
+
+- **DETTE #66** : Polish design E-6 (carte étirée, photo + bio + date_naissance + sexe). À reprendre après l'audit OAuth.
+- **Audit écran 0 OAuth** (Google / Apple) : ouvert en milieu de conv 15. Lecture pure d'abord pour cartographier ce qui existe.
 
 ---
 

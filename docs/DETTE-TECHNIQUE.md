@@ -661,6 +661,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #63 — Icônes IntentCardRadio absentes en E-2
 
+**Statut au 7 mai 2026 (conv 15)** : ✅ **RÉSOLUE** au passage par injection des 3 SVG Material Symbols (loupe/maison/flèches) en prop `icon` lors de la refonte DETTE #67 (même commit). Voir ETAT-COURANT bloc "2026-05-07 (suite) — Conv Claude.ai 15 bloc 1".
+
 **Statut au 5 mai 2026** : créée en conv 8 lors du sous-commit 3/5.
 
 **Constat** : la spec UNIFICATION-INSCRIPTION § 7.3.2 prévoyait textuellement des icônes pour les 3 cartes E-2 (Icône maison + flèche, Icône maison avec clé sortante, Icône cycle / 2 flèches alternées). Aucune icône n'a été câblée en sous-commit 3/5 — alignement sur la démo sandbox section 12 qui n'en utilise pas. La prop `icon` du composant `<IntentCardRadio>` est optionnelle, donc l'ajout est trivial techniquement, mais demande d'arbitrer 3 SVG (loupe pour locataire, maison-clé pour hote, swap pour les_deux ; ou Material Symbols Rounded search / home_work / swap_horiz).
@@ -718,6 +720,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Référence** : `InscriptionAlternantPage.jsx` branche `if (state.currentStep === 6)` + `InscriptionAlternantPage.css` classes `.ial-e6-*`.
 
 ## DETTE #67 — Refonte E-2 sur pattern IR legacy
+
+**Statut au 7 mai 2026 (conv 15)** : ✅ **RÉSOLUE** par refonte `IntentCardRadio` sur pattern IR legacy compact (commit feat ci-dessus). Voir ETAT-COURANT bloc "2026-05-07 (suite) — Conv Claude.ai 15 bloc 1".
 
 **Statut** : créée conv 14 — détecté en fin de conv lors de la consultation `/inscription/recherche` IR legacy.
 
