@@ -1,25 +1,35 @@
 .aw-intent-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
+  gap: 12px;
+  padding: 12px 16px;
   border: 1.5px solid #E8EAF0;
-  border-radius: 14px;
+  border-radius: 12px;
   background: white;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
-  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
   width: 100%;
   position: relative;
+  animation: awIntentCardFadeIn 0.4s ease-out backwards;
+}
+
+@keyframes awIntentCardFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .aw-intent-card:hover {
-  border-color: #CBD5E1;
+  border-color: #E8622A;
+  background: rgba(232, 98, 42, 0.03);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 98, 42, 0.08);
 }
 
 .aw-intent-card.selected {
   border-color: #E8622A;
   background: rgba(232, 98, 42, 0.06);
+  box-shadow: 0 4px 12px rgba(232, 98, 42, 0.08);
 }
 
 .aw-intent-card-input {
@@ -37,36 +47,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFF1E8;
-  color: #E8622A;
-  border-radius: 10px;
+  background: #F4F5F7;
+  color: #6B7280;
+  border-radius: 12px;
+  transition: background 0.2s;
 }
 
 .aw-intent-card.selected .aw-intent-card-icon {
-  background: #E8622A;
-  color: white;
-}
-
-.aw-intent-card-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  background: rgba(232, 98, 42, 0.1);
 }
 
 .aw-intent-card-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #334155;
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
   line-height: 1.3;
+  min-width: 0;
 }
 
-.aw-intent-card-desc {
-  font-size: 13px;
-  font-weight: 400;
-  color: #64748B;
-  line-height: 1.3;
+.aw-intent-card.selected .aw-intent-card-label {
+  font-weight: 700;
+}
+
+.aw-intent-card-keyword {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #E8622A;
 }
 
 .aw-intent-card-check {

@@ -214,24 +214,39 @@ export default function AuthWizardSandbox() {
             value="locataire"
             checked={intent === 'locataire'}
             onChange={() => setIntent('locataire')}
-            label="Je cherche un logement"
-            description="Pour les semaines où je suis en cours"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor">
+                <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+              </svg>
+            }
+            label={<>Je <span className="aw-intent-card-keyword">recherche</span> un logement</>}
+            style={{ animationDelay: '0.16s' }}
           />
           <IntentCardRadio
             name="type_user"
             value="hote"
             checked={intent === 'hote'}
             onChange={() => setIntent('hote')}
-            label="Je propose mon logement"
-            description="Pour les semaines où je suis en entreprise"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor">
+                <path d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z"/>
+              </svg>
+            }
+            label={<>Je <span className="aw-intent-card-keyword">propose</span> mon logement</>}
+            style={{ animationDelay: '0.24s' }}
           />
           <IntentCardRadio
             name="type_user"
             value="les_deux"
             checked={intent === 'les_deux'}
             onChange={() => setIntent('les_deux')}
-            label="Les deux"
-            description="Je cherche dans une ville et je propose dans l'autre"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor">
+                <path d="M280-160 80-360l200-200 56 57-103 103h287v80H233l103 103-56 57Zm400-240-56-57 103-103H440v-80h287L624-743l56-57 200 200-200 200Z"/>
+              </svg>
+            }
+            label={<>Les <span className="aw-intent-card-keyword">deux</span></>}
+            style={{ animationDelay: '0.32s' }}
           />
         </div>
       </Section>
