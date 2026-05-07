@@ -2,7 +2,46 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 mai 2026 (soir bis) — Clôture conv Claude.ai 13 chantier UNIFICATION-INSCRIPTION : amendement post-spec acté pour la persistance progressive (option b1 `sessionStorage`). Annule la spec UNIFICATION-INSCRIPTION §1.5 "Sauvegarde progressive" et §2.5 dans leur ensemble. Détails dans UNIFICATION-INSCRIPTION §1.5 (encart d'amendement) + VISION §6 (nouvelle sous-section). Aucune modification de code applicatif — T2 5/5 reste un sous-commit normal du chantier (pas une dette technique).
+**Dernière mise à jour** : 7 mai 2026 — Clôture conv Claude.ai 14 chantier UNIFICATION-INSCRIPTION : refactor labels auth-wizard transverse + sous-commit T2 E-6 livré fonctionnel (design non validé visuellement, à reprendre conv 15 dédiée polish wizard). Amendements spec UNIFICATION §1.2.7 (4 valeurs sexe) et §3.10 (format date JJ/MM/AAAA texte). Pas de check âge ≥ 18 ans frontend (en attente Q-AVO-001 + Q-DPO-002). DETTE #66 et #67 créées.
+
+---
+
+## 2026-05-07 — Conv Claude.ai 14 : E-6 fonctionnel + refactor labels — design pas finalisé
+
+### Décisions actées
+
+1. **Amendement spec sexe — 4 valeurs** : `homme` / `femme` / `autre` / `non-precise`. Aligne le wizard sur le legacy ModifierProfilPage / CompleterProfilPage. Logué dans UNIFICATION-INSCRIPTION §1.2.7.
+
+2. **Amendement spec date_naissance — input texte JJ/MM/AAAA** : helpers extraits dans `utils/dateHelpers.js`, conversion ISO différée à la RPC E-7. Aligne sur le pattern legacy. Logué dans UNIFICATION-INSCRIPTION §3.10.
+
+3. **Pas de check d'âge ≥ 18 ans frontend** : en attente arbitrage professionnel Q-AVO-001 + Q-DPO-002 (existantes).
+
+4. **Refactor labels auth-wizard transverse** : CustomSelect.css + TextArea.css alignés sur le pattern TextInput / AutocompleteInput (uppercase 11px 700 letter-spacing 1px). Impact assumé sur IR legacy `/inscription/recherche` (labels en MAJUSCULES jusqu'à T7 retrait).
+
+5. **Nouvel ordre stratégique T2** : E-6 → E-7 → 5/5 → DETTE #54 + E-5 (clôture). Le `rhythm_calendar` (E-5) est le principe fondateur Sterny et mérite la clôture du chantier T2.
+
+### Code livré
+
+- `sterny-react/src/utils/dateHelpers.js` (nouveau, 142 lignes) — 4 helpers parse/format date FR ↔ ISO.
+- `sterny-react/src/hooks/useInscriptionWizard.js` — import isValidDateFR + validateE6 (date_naissance + sexe obligatoires, photo + bio optionnels).
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` — branche if (currentStep === 6) avec photo upload Storage + cropper modal + tooltip ⓘ + bouton placeholder dans le fallback (skip E-5 pour test).
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.css` — classes E-6 photo-block + photo-circle + photo-badge + photo-link + info-btn + info-text.
+- `sterny-react/src/components/auth-wizard/CustomSelect.css` — labels uppercase.
+- `sterny-react/src/components/auth-wizard/TextArea.css` — labels uppercase.
+
+### Sujets design ouverts (à reprendre conv 15 dédiée)
+
+- **DETTE #66** : Polish design E-6 (carte trop étirée). 6 itérations design tentées en conv 14 sans validation visuelle. Code fonctionnel, design non validé.
+- **DETTE #67** : Refonte E-2 sur pattern IR legacy (cartes radio plus pro que IntentCardRadio actuel). Détecté en fin conv 14 lors de la consultation `/inscription/recherche`.
+
+### Prochaines étapes
+
+- Conv 15 dédiée polish wizard (E-2 + E-6 a minima).
+- Une fois polish OK : reprise chantier T2 dans l'ordre stratégique acté (E-7 → 5/5 → DETTE #54 + E-5 clôture).
+
+### État final branche post-conv 14
+
+`feat/unification-inscription` : 3 nouveaux commits (refactor labels + feat E-6 + docs clôture). Total 4 commits ahead `origin/main` (avec `d681171` de la conv 13). Working dir attendu post-commits : 1 modified `CreerAnnoncePage.jsx` (bypass DEV intact) + 3 untracked préexistants intacts.
 
 ---
 

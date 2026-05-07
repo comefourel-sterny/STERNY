@@ -113,6 +113,12 @@ Décision Q13 : photo et bio optionnelles avec message expliquant que les rensei
 
 ⚠️ Champ `sexe` : finalité métier à clarifier section 6 RGPD. Si pas de finalité légitime documentée, le champ est retiré (principe de minimisation RGPD).
 
+> **Amendement post-spec — 7 mai 2026 (conv Claude.ai 14)**
+>
+> Le champ `sexe` accepte **4 valeurs** (`'homme'` / `'femme'` / `'autre'` / `'non-precise'`) au lieu des 3 valeurs initialement prévues. Aligne sur le pattern legacy `ModifierProfilPage` et `CompleterProfilPage` qui utilisent déjà ces 4 valeurs en production.
+>
+> Justification : la valeur `non-precise` permet à l'utilisateur de ne pas déclarer son sexe (donnée RGPD sensible) sans être forcé à un opt-in `autre` qui a une sémantique différente — affirmation d'identité non-binaire vs refus de répondre. Cohérent avec Q-DPO-003 (priorité haute) qui acte la conservation du champ tant que la finalité métier n'est pas validée par professionnel.
+
 #### 1.2.8 Statuts système (submit final E-7)
 
 | Colonne | Type | Valeur en sortie | Source |
@@ -643,6 +649,14 @@ Au clic "Continuer" (calendrier renseigné) : UPDATE `users.rhythm_calendar + rh
 ```
 
 Validation : date_naissance NOT NULL + âge ≥ 18 ans (calculé côté frontend), sexe NOT NULL. Photo et bio optionnelles : bouton "Continuer" cliquable même si vides.
+
+> **Amendement post-spec — 7 mai 2026 (conv Claude.ai 14)**
+>
+> Le champ `date_naissance` est saisi via un **input texte au format `JJ/MM/AAAA`** avec helpers de parsing extraits dans `sterny-react/src/utils/dateHelpers.js`, au lieu de l'input natif `<input type="date">` initialement prévu. Aligne sur le pattern legacy `ModifierProfilPage` et `CompleterProfilPage`.
+>
+> Raisons : (1) UX de l'input natif `<input type="date">` inégale sur mobile selon navigateur, (2) helpers de parse JJ/MM/AAAA ↔ ISO existants et éprouvés en prod, (3) cohérence avec ce que l'utilisateur reverra sur `ModifierProfilPage` post-inscription. Conversion ISO différée à la RPC E-7.
+>
+> **Pas de check d'âge ≥ 18 ans frontend** en attendant arbitrage professionnel Q-AVO-001 + Q-DPO-002 (cf. CONTEXTE-PROJET §3 sur les mineurs alternants).
 
 **Cropper** : `<PhotoCropperModal>` se déclenche au clic `<PhotoUploadButton>`. UX identique au cropper CP actuel (modal 360px overlay sombre, drag + zoom + bouton "Recadrer"). À la confirmation, l'image cropée est uploadée vers Supabase Storage et l'URL est stockée en state local React (pas encore en BDD : seulement à l'UPDATE qui suit le clic "Continuer").
 

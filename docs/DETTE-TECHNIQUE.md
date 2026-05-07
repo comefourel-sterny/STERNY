@@ -707,4 +707,26 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Bloquant pré-production** : non, cosmétique pur, visible en UX.
 
+## DETTE #66 — Polish design E-6 (carte trop étirée)
+
+**Statut** : créée conv 14 — code fonctionnel, design pas validé visuellement.
+
+**Contexte** : 6 itérations design tentées en conv 14 (subtitle, ial-form-row, refactor labels, grid 2 colonnes, photo centrée, photo-cell sans cadre) sans validation visuelle finale. Carte trop étirée verticalement, sensation de "brouillon" remontée par Côme. Le rendu actuel utilise un grid 2 colonnes (photo gauche + champs droite) avec cercle 72px + badge orange + lien "Ajouter une photo" + ⓘ tooltip — fonctionnel mais design non validé.
+
+**À traiter** : conv dédiée polish wizard (probable conv 15) avec approche méthodique 1 écran à la fois, référence design IR legacy (`/inscription/recherche`) à analyser comparativement, max 2-3 itérations par écran avant clôture.
+
+**Référence** : `InscriptionAlternantPage.jsx` branche `if (state.currentStep === 6)` + `InscriptionAlternantPage.css` classes `.ial-e6-*`.
+
+## DETTE #67 — Refonte E-2 sur pattern IR legacy
+
+**Statut** : créée conv 14 — détecté en fin de conv lors de la consultation `/inscription/recherche` IR legacy.
+
+**Contexte** : E-2 (Type de profil) du wizard unifié utilise actuellement le composant `IntentCardRadio` (cards radio horizontales 3 cartes) livré T1 conv 5. Le pattern legacy IR `/inscription/recherche` step 3 utilise des cartes "selectable" plus compactes : icône à gauche + texte à droite + bouton radio rond à l'extrémité droite, avec un look plus pro et plus économe en hauteur.
+
+**Sujet à arbitrer** : remplacer `IntentCardRadio` par un nouveau composant aligné sur le pattern IR legacy (à extraire en `auth-wizard/SelectableRadioCard` par exemple), ou conserver `IntentCardRadio` actuel.
+
+**À traiter** : conv 15 dédiée polish wizard, en parallèle de DETTE #66.
+
+**Référence** : `InscriptionAlternantPage.jsx` branche `if (state.currentStep === 2)` (utilise `IntentCardRadio`) + `InscriptionRecherchePage.jsx` step 3 (référence visuelle).
+
 **Origine** : conv 12 du 6 mai 2026, lors de la refonte E-4 villes simplifiée.
