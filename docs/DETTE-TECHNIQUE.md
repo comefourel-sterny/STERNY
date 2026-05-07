@@ -711,6 +711,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #66 — Polish design E-6 (carte trop étirée)
 
+**Statut au 7 mai 2026 (conv 15 bloc 3)** : ✅ **RÉSOLUE** par refonte design E-6 sur grammaire wizard unifiée (commit feat ci-dessus). Photo centrée 80×80 + ligne date+sexe en grille 2 cols + tooltip flottant absolute + bio supprimée. Contenu E-6 plafonné sous 464px → carte à 536px stricts comme les autres étapes. Voir ETAT-COURANT bloc "2026-05-07 (suite) — Conv Claude.ai 15 bloc 3".
+
 **Statut** : créée conv 14 — code fonctionnel, design pas validé visuellement.
 
 **Contexte** : 6 itérations design tentées en conv 14 (subtitle, ial-form-row, refactor labels, grid 2 colonnes, photo centrée, photo-cell sans cadre) sans validation visuelle finale. Carte trop étirée verticalement, sensation de "brouillon" remontée par Côme. Le rendu actuel utilise un grid 2 colonnes (photo gauche + champs droite) avec cercle 72px + badge orange + lien "Ajouter une photo" + ⓘ tooltip — fonctionnel mais design non validé.

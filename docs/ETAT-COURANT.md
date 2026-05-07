@@ -2,7 +2,36 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard : refonte E-2 livrée (DETTE #67 + DETTE #63 résolues), audit OAuth fait + écran 0 OAuth reporté en conv 16 (T4 chantier UNIFICATION). Suite conv 15 : DETTE #66 (E-6).
+**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard FERMÉE sur ses 2 objectifs initiaux : refonte E-2 (DETTE #67 + #63) + refonte E-6 (DETTE #66) livrées. Conv 16 ouvrira pour polish PhotoCropperModal + fix dropdown filière E-3 (régression). Écran 0 OAuth déplacé de conv 16 → conv 17.
+
+---
+
+## 2026-05-07 (suite) — Conv Claude.ai 15 bloc 3 : refonte E-6 (DETTE #66 RÉSOLUE) + clôture conv
+
+### Décisions actées
+
+1. **DETTE #66 RÉSOLUE** — Refonte design E-6 sur grammaire wizard unifiée. Suppression du grid 2 colonnes asymétrique (photo gauche / champs droite). Suppression du badge orange "+" sur le cercle photo. Photo centrée 80×80 en haut de la card avec lien "Ajouter une photo" + ⓘ tooltip centrés sous le cercle. Date de naissance et sexe placés côte à côte dans une grille 2 colonnes (`.ial-e6-row`) responsive (1 col en < 480px). Tooltip ⓘ basculé en bulle flottante `position: absolute` avec flèche pointant vers le bas, donc plus aucun impact sur la hauteur de carte à son ouverture/fermeture. Le contenu E-6 final rentre largement sous 464px de hauteur interne, donc la card reste plafonnée à `min-height: 536px` (référence `.aw-screen-card`) — strictement la même hauteur que les autres étapes.
+
+2. **Bio supprimée d'E-6** — Conformément à la décision produit actée bloc 2 (amendement VISION). La prop `bio` retirée du state initial de `useInscriptionWizard.js`. La bio reste éditable dans `ModifierProfilPage` post-inscription.
+
+### Code livré
+
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.jsx` — branche E-6 restructurée : photo centrée, wrapper `.ial-e6-row` grille 2 colonnes pour date+sexe, tooltip déplacé dans nouveau wrapper `.ial-e6-info-wrap` relative pour positionnement absolute du tooltip text.
+- `sterny-react/src/pages/auth/InscriptionAlternantPage.css` — suppression `.ial-e6-grid`, `.ial-e6-fields-cell`, `.ial-e6-photo-badge`. `.ial-e6-photo-block` repassée en flex-column align-items center. `.ial-e6-photo-circle` 64→80px. `.ial-e6-row` créée (grid 2 cols 1fr 1fr gap 14). `.ial-e6-info-wrap` créée (position relative inline-flex). `.ial-e6-info-text` réécrite intégralement en bulle absolute avec flèche bas via pseudo-éléments. Mobile responsive `.ial-e6-row` repasse 1 colonne sous 480px.
+- `sterny-react/src/hooks/useInscriptionWizard.js` — `bio: ''` retirée du state initial (commentaire de référence VISION ajouté).
+
+### Sujets reportés (à traiter en conv 16)
+
+- **Polish design `PhotoCropperModal`** : labels et typo du modal cropper photo à aligner sur la grammaire wizard unifié (uppercase 11px ls 1px pour le label slider zoom, titre `aw-screen-title` orange centré, etc.). Composant partagé donc impacte plusieurs consommateurs (E-6 wizard + legacy `CompleterProfilPage` + `ModifierProfilPage`).
+- **Fix dropdown filière E-3 qui déborde de la card** : régression d'un fix antérieur. `AutocompleteInput` dropdown s'affiche en `position: absolute` sous l'input filière (situé en bas dans la card 536px) → déborde visuellement. Vrai fix = "smart positioning" (afficher au-dessus si pas la place en dessous). Composant partagé donc impacte E-3 et E-4.
+
+### Sujet reporté en conv 17
+
+- **Écran 0 OAuth** : déplacé de conv 16 → conv 17. T4 chantier UNIFICATION-INSCRIPTION, hors polish design. Cf. bloc 2 conv 15.
+
+### Clôture conv 15
+
+Conv 15 fermée sur ses 2 objectifs initiaux : refonte E-2 (DETTE #67 + DETTE #63 résolues) + refonte E-6 (DETTE #66 résolue). DETTE-TECHNIQUE mise à jour. VISION enrichie de 3 décisions produit conv 15 : bio retirée d'E-6 + principe d'incitation post-inscription, pattern de candidature à profil incomplet (post-T7, requires legal consult), page "Mes documents" dans burger dashboard.
 
 ---
 
