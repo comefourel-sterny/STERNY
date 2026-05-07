@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard : refonte E-2 sur pattern IR legacy livrée (DETTE #67 + DETTE #63 résolues). DETTE #66 (E-6) et audit OAuth restants dans la conv.
+**Dernière mise à jour** : 7 mai 2026 — Conv Claude.ai 15 polish wizard : refonte E-2 livrée (DETTE #67 + DETTE #63 résolues), audit OAuth fait + écran 0 OAuth reporté en conv 16 (T4 chantier UNIFICATION). Suite conv 15 : DETTE #66 (E-6).
 
 ---
 
@@ -30,6 +30,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 - **DETTE #66** : Polish design E-6 (carte étirée, photo + bio + date_naissance + sexe). À reprendre après l'audit OAuth.
 - **Audit écran 0 OAuth** (Google / Apple) : ouvert en milieu de conv 15. Lecture pure d'abord pour cartographier ce qui existe.
+
+---
+
+## 2026-05-07 (suite) — Conv Claude.ai 15 bloc 2 : audit OAuth + cadrage écran 0 unifié reporté en conv 16
+
+### Constat de l'audit OAuth (lecture pure, non-commité)
+
+OAuth Google existe en prod sur 3 pages legacy : `/connexion` (`.cx-google`), `/inscription/recherche` step 2 (`.ir-google`), `/inscription/proprietaire` (`.ip-google`). Tous actifs avec `signInWithOAuth({ provider: 'google' })` et `redirectTo` vers `/dashboard` ou `/dashboard/proprietaire`. `GoogleAuthHandler.jsx` global (monté dans `App.jsx`) post-traite la session OAuth et route vers dashboard ou `/completer-profil` selon présence du profil.
+
+OAuth Apple : composants UI prêts dans `auth-wizard/` (`AppleSignInButton.jsx` + `OAuthButton.jsx` + `OAuthButton.css`) mais aucun handler `signInWithOAuth({ provider: 'apple' })` en prod. Provider Apple non configuré Supabase. Cohérent avec roadmap (non-urgent, validation 3 semaines).
+
+Wizard unifié `/inscription/alternant` : aucun OAuth, aucun écran 0 OAuth. Le bypass `HANDLER_BYPASS_ROUTES = ['/inscription/alternant']` dans `GoogleAuthHandler.jsx` est en place pour empêcher le handler global d'intercepter — confirme l'intention de gérer OAuth localement dans le wizard une fois branché.
+
+Composants `auth-wizard/` prêts mais consommés uniquement par le sandbox dev (`AuthWizardSandbox.jsx`) : `OAuthButton.jsx`, `GoogleSignInButton.jsx`, `AppleSignInButton.jsx`, `OrSeparator.jsx`, `OAuthButton.css`. Tout est aligné sur le pattern legacy 48px / border-radius 12 / hover orange #E8622A + translateY(-1px).
+
+### Décision actée
+
+L'écran 0 OAuth (Email / Google / Apple en amont du wizard `/inscription/alternant`) est la **tranche T4 du chantier UNIFICATION-INSCRIPTION** (cf. spec § 2.4 et § 4.5), pas du polish design. Reportée en **conv Claude.ai 16 dédiée**. Périmètre prévisible : (a) arbitrage routing — réécrire `ChoixInscriptionPage` vs nouvelle page intermédiaire vs E-0 dans le wizard, (b) refonte `GoogleAuthHandler` global en `OAuthHandler` générique non-intercepteur pour `/inscription/alternant`, (c) branchement provider Apple côté Supabase si décidé, (d) logique de pré-remplissage E-1 depuis `user_metadata` Google/Apple (full_name, email, photo).
+
+Suite conv 15 : enchaînement sur DETTE #66 (E-6 polish design) puis clôture.
 
 ---
 
