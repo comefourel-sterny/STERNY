@@ -15,7 +15,7 @@ export default function AutocompleteInput({
   capitalizeFirst = true,
 }) {
   const [open, setOpen] = useState(false)
-  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 })
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, maxHeight: 180 })
   const wrapperRef = useRef(null)
   const inputRef = useRef(null)
   const portalRef = useRef(null)
@@ -49,10 +49,19 @@ export default function AutocompleteInput({
   const positionPortal = () => {
     if (!inputRef.current) return
     const rect = inputRef.current.getBoundingClientRect()
+    const DROPDOWN_MAX_HEIGHT = 140
+    const OFFSET = 6
+    const boundary = inputRef.current.closest('.aw-screen-card')
+    const lowerBound = boundary
+      ? boundary.getBoundingClientRect().bottom
+      : window.innerHeight
+    const spaceBelow = lowerBound - rect.bottom - OFFSET
+    const maxHeight = Math.min(DROPDOWN_MAX_HEIGHT, Math.max(0, spaceBelow))
     setCoords({
-      top: rect.bottom + window.scrollY + 6,
+      top: rect.bottom + window.scrollY + OFFSET,
       left: rect.left + window.scrollX,
       width: rect.width,
+      maxHeight,
     })
   }
 
@@ -100,7 +109,7 @@ export default function AutocompleteInput({
         <div
           ref={portalRef}
           className="aw-autocomplete-portal"
-          style={{ top: coords.top, left: coords.left, width: coords.width }}
+          style={{ top: coords.top, left: coords.left, width: coords.width, maxHeight: coords.maxHeight }}
           role="listbox"
         >
           {filtered.map(s => (
