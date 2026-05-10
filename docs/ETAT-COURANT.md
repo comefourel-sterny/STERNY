@@ -2,7 +2,65 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 (suite quater) — Conv Claude.ai 17 FERMÉE après audit OAuth lecture pure + alignement spec UNIFICATION-INSCRIPTION + VISION-ARCHITECTURE sur les décisions T4 (commit 648e471). Aucun code livré dans cette conv. Conv 18 à ouvrir pour exécution T3 du chantier UNIFICATION-INSCRIPTION (refonte ChoixInscriptionPage layout 2 niveaux) suivant la spec § 7.3.3 mise à jour.
+**Dernière mise à jour** : 10 mai 2026 — Conv Claude.ai 18 FERMÉE après dérive sur T3 (7 itérations sans rendu satisfaisant). Revert intégral ChoixInscriptionPage, commit isolé pré-remplissage email E-1 (f0fe666). T3 from-scratch reportée en conv 19 avec cadrage mockup exhaustif préalable. main reste 11f0e0f.
+
+---
+
+## 2026-05-10 — Conv Claude.ai 18 : T3 reportée + pré-remplissage email livré (commit f0fe666)
+
+### Bloc 1 — Contexte d'ouverture conv 18
+
+Conv 18 ouverte pour la tranche T3 du chantier UNIFICATION-INSCRIPTION : refonte de `ChoixInscriptionPage` en layout 2 niveaux selon spec § 3.4 amendement conv 17 (2 cartes radio alternant/proprio + zones conditionnelles OAuth). Première session Claude Code de mise en œuvre concrète. Estimation initiale spec : "courte 1h" — refonte cosmétique + branchement.
+
+### Bloc 2 — Dérive UX successive en 7 itérations
+
+7 patches successifs sur `ChoixInscriptionPage.jsx` + `.css` au cours de la session, chaque retour visuel de Côme amenant une révision du pattern précédent :
+
+1. Patch 1 — Implémentation initiale spec § 3.4 amendement conv 17 (2 cartes radio + zones conditionnelles OAuth). Constat Côme : "page vide à l'arrivée, mauvaise affordance".
+2. Patch 2 — Suppression cartes radio, retour pattern spec § 3.4 originale (3 boutons OAuth alternant visibles + lien proprio gris en bas). Décision Claude.ai d'annuler l'amendement conv 17, validée par Côme.
+3. Patch 3 — Alignement design strict sur étape E-1 du wizard (titre `.aw-screen-title` local, wrapper `.cip-form` flex 1, lien proprio collé en bas via `margin-top: auto`).
+4. Patch 4 — Suite à constat Côme ("ça ne va pas, hors codes standards"), refonte vers pattern saisie email standard : input email + `<PrimaryButton>Continuer</PrimaryButton>` + OAuth row 50/50 + footer custom local "Propriétaire ? · Déjà un compte ? Se connecter" + pré-remplissage email E-1 via `location.state`.
+5. Patch 5 — Suite à constat Côme ("déséquilibre row 50/50 vs Continuer pleine largeur"), passage des OAuth en pleine largeur empilés verticalement (Google puis Apple) avec labels longs ("Continuer avec Google" / "Continuer avec Apple"). Suppression de la grid `.cip-oauth-row`.
+6. Patch 6 — Ajout placeholder "Ton adresse email" sur input + bouton Continuer collé en bas via `margin-top: auto` cohérent E-1.
+7. Constat final Côme : "il faut absolument d'abord demander si la personne est alternant ou propriétaire". Retour exigé sur le pattern à 2 cartes radio en premier (= amendement conv 17 que Claude.ai avait proposé d'annuler en début de conv).
+
+Diagnostic : approche "patch puis on ajuste si ça ne va pas" inefficace sur cet écran. Méthodologie correcte = mockup textuel exhaustif validé par Côme AVANT tout code, listant tous les détails visuels (spacing, traits, animations, hauteurs, états transitoires, etc.). Critique méthodologique formulée par Côme et acceptée par Claude.ai.
+
+### Bloc 3 — Décision de clôture sans livrer T3
+
+Décision Côme + Claude.ai à 22h05 : clôture conv 18 sans livrer T3. Revert intégral des 2 fichiers `ChoixInscriptionPage.jsx` + `ChoixInscriptionPage.css` à leur état HEAD pré-conv 18. T3 entièrement remise à zéro, à refaire en conv 19 avec cadrage propre.
+
+Conservation et commit isolé du pré-remplissage email côté `InscriptionAlternantPage.jsx` (12 lignes : import `useLocation` + `useEffect` qui lit `location.state?.email` au mount et appelle `setField('email', initialEmail)`). Modif neutre, indépendante du pattern futur de l'écran 0, utile dès qu'un écran 0 transmettra un email via state.
+
+Commit `f0fe666` `feat(auth): pré-remplissage email E-1 depuis location.state` — 1 fichier, 12 insertions.
+
+### Bloc 4 — État spec UNIFICATION-INSCRIPTION § 3.4
+
+Spec NON modifiée en conv 18. Le pseudo-code § 3.4 reflète encore l'amendement conv 17 (2 cartes radio + zones conditionnelles OAuth visibles à la sélection alternant). Décision Côme conv 18 confirme cette intention de base ("il faut d'abord demander alternant ou proprio") MAIS les détails du pattern (saisie email vs aiguillage, position OAuth row vs empilé, hauteur card, traits séparateurs, animations entre zones, gestion proprio dans footer ou ailleurs) restent à arbitrer en conv 19 sur la base d'un mockup exhaustif AVANT tout patch.
+
+### Bloc 5 — Mémoire des décisions UX successives prises conv 18 (utiles conv 19)
+
+Pour ne pas refaire les mêmes erreurs en conv 19, traces des décisions actées ce soir :
+
+- Pattern "saisie email direct sur l'écran 0" + bouton Continuer = sémantique cohérente Sterny (orange = action de validation, pas action de choix). Confirmé par Côme.
+- Pré-remplissage E-1 via `react-router state` est le bon canal (éphémère, cohérent Q5). Déjà commité, infrastructure en place.
+- OAuth row 50/50 ne fonctionne pas visuellement avec Continuer pleine largeur (déséquilibre). Si OAuth restent dans la card finale, les empiler en pleine largeur OU sortir l'un des deux providers (Apple non critique web-only).
+- Bouton Continuer doit être en bas de card (signature wizard E-1 stricte, `margin-top: auto`).
+- Convention placeholder "école 2" : "Ton adresse email" pour le champ email (tutoiement sans verbe).
+- Cas proprio : la position "lien gris en bas avec margin-top auto" et le footer custom local "Propriétaire ? · Déjà un compte ? Se connecter" ont tous deux été testés. Aucun n'a satisfait Côme. À arbitrer conv 19 sur mockup propre.
+- Trait de séparation gris sous le bouton Continuer : critique explicite Côme conv 18, à anticiper en conv 19 dans le mockup.
+- Cohérence titre : `WizardTitle` composant partagé (margin-bottom 16) diverge de `.aw-screen-title` classe locale wizard (margin-bottom 32). Le wizard utilise la classe locale. Pour cohérence stricte avec E-1, l'écran 0 devra aussi utiliser `.aw-screen-title` locale (ou aligner le composant partagé sur 32 — refactor transverse hors scope).
+
+### Bloc 6 — État final branche post-conv 18
+
+`main` : `11f0e0f` (prod sterny.co inchangée). `feat/unification-inscription` : HEAD = `f0fe666` (commit pré-remplissage email), 16 commits ahead `origin/main` (15 précédents + 1 conv 18). Push manuel par Côme attendu.
+
+Working dir post-conv 18 :
+- 1 modified : `sterny-react/src/pages/annonce/CreerAnnoncePage.jsx` (bypass DEV préexistant DETTE #1-4, intact).
+- 3 untracked : `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md` + 2 fichiers spikes pdf-js (préexistants).
+- `ChoixInscriptionPage.jsx` + `.css` revertés à HEAD, plus modified.
+
+Conv 18 FERMÉE. Conv 19 à ouvrir pour reprise T3 from-scratch après cadrage mockup exhaustif (étape de cadrage en début de conv 19 — pas de prompt Claude Code tant que mockup non validé par Côme).
 
 ---
 
