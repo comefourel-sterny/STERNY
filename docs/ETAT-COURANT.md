@@ -2,7 +2,64 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 mai 2026 (suite ter) — Conv Claude.ai 16 FERMÉE sur ses 2 sujets initiaux : polish PhotoCropperModal + harmonisation libellé sexe "Non précisé" (sujet 1, commits df9184b/4256d59) + fix dropdown AutocompleteInput clampé à la carte avec cap 3 options visibles (sujet 2, commit 3f8e4da). Conv 17 réservée à l'écran 0 OAuth (T4 chantier UNIFICATION-INSCRIPTION).
+**Dernière mise à jour** : 7 mai 2026 (suite quater) — Conv Claude.ai 17 FERMÉE après audit OAuth lecture pure + alignement spec UNIFICATION-INSCRIPTION + VISION-ARCHITECTURE sur les décisions T4 (commit 648e471). Aucun code livré dans cette conv. Conv 18 à ouvrir pour exécution T3 du chantier UNIFICATION-INSCRIPTION (refonte ChoixInscriptionPage layout 2 niveaux) suivant la spec § 7.3.3 mise à jour.
+
+---
+
+## 2026-05-07 (suite quater) — Conv Claude.ai 17 : audit OAuth + alignement docs T4
+
+### Contexte d'ouverture conv 17
+
+Conv 17 ouverte pour la tranche T4 du chantier UNIFICATION-INSCRIPTION : écran 0 OAuth + refonte `GoogleAuthHandler` → `OAuthHandler` générique non-intercepteur. Décision en début de conv : audit lecture pure de l'existant OAuth d'abord, puis arbitrages produit en discussion, puis alignement docs si nécessaire. Pas de patch de code dans la conv 17, exécution reportée en conv 18.
+
+### Audit OAuth lecture pure produit
+
+Rapport d'audit cartographique du flow OAuth existant (produit par Claude Code dans le terminal, non commité). Constats :
+
+- `GoogleAuthHandler` global monté à la racine d'`App.jsx` — composant invisible 128 lignes, 2 rôles couplés (routage + INSERT users avec `type_user` lu depuis `sessionStorage.signup_type`).
+- `HANDLER_BYPASS_ROUTES = ['/inscription/alternant']` — patch transitoire avant refonte T4.
+- 3 surfaces consommatrices de `signInWithOAuth` : `ConnexionPage`, `InscriptionRecherchePage` (legacy), `InscriptionProprietairePage`. Toutes provider `'google'`. Aucune ne fait sa propre détection de session, toutes dépendent du handler global.
+- Wizard `/inscription/alternant` aujourd'hui OAuth-blind : `useInscriptionWizard.js` fait `getSession()` au mount mais n'exploite pas le résultat pour pré-remplir E-1 depuis `user_metadata`.
+- Aucune route `/auth/callback` définie. Apple OAuth non branché en prod (composant `AppleSignInButton.jsx` existe T1 commit `a70d69b` mais consommé uniquement par `AuthWizardSandbox` dev).
+- DETTE #52 (5 bypass DEV `CompleterProfilPage`) : 1 seule occurrence trouvée au lieu des 5 mentionnées dans la dette. Caduque par suppression `CompleterProfilPage` en T7. À mettre à jour dans DETTE-TECHNIQUE quand calme (pas urgent).
+
+### Constat structurant ayant raccourci la conv
+
+Relecture spec UNIFICATION-INSCRIPTION § 2.4 + § 3.4 + § 4.5.2 + § 4.6 + § 7.3 a révélé que les arbitrages (a) point de départ OAuth, (b) refonte handler, et (d) pré-remplissage E-1 étaient déjà actés en cadrage conv 2 du 3 mai. Le seul vrai arbitrage encore ouvert en conv 17 portait sur (c) Apple maintenant ou différé, et sur le sort du CTA proprio sur `ChoixInscriptionPage` (désalignement entre VISION §6 paragraphe 2 mai soir bis qui supprimait le CTA et VISION §6 précision 3 mai qui mentionnait "la page d'arrivée sur /inscription").
+
+### Décisions actées
+
+1. **CTA proprio conservé sur `ChoixInscriptionPage`** (contrairement à la spec initiale qui le supprimait). Justification : porte d'entrée pour le proprio invité revenant sans son lien d'invitation. Sur clic Continuer carte proprio sans token → routage vers `/inscription/proprietaire` qui affiche message d'aide explicite sur la page elle-même (pas de redirection 301 silencieuse).
+
+2. **Layout 2 niveaux sur `ChoixInscriptionPage`** : niveau 1 = 2 cartes radio (alternant / proprio) toujours visibles, niveau 2 = 3 boutons OAuth conditionnels (Google/Apple/Email) qui n'apparaissent qu'après sélection carte alternant. Si carte proprio sélectionnée → 1 bouton "Continuer" simple qui route vers `/inscription/proprietaire`. Pas de boutons OAuth proprio sur `/inscription` — les boutons OAuth proprio (Google + Apple + email/password) vivent sur `/inscription/proprietaire` elle-même (cohérent avec le fait que le token `?r=` n'est jamais présent à l'arrivée sur `/inscription`).
+
+3. **Apple OAuth branché en T4** (pas différé). Bouton Apple ajouté à `ChoixInscriptionPage` en T3 (parcours alternant) et à `InscriptionProprietairePage` en commit 2/2 de T4 (parcours proprio). Configuration provider Apple côté Supabase Dashboard en action manuelle parallèle (credentials Apple Developer déjà actifs côté Côme). DETTE #51 (AppleAuthHandler dédié) résolue par construction par l'`OAuthHandler` générique de T4 — pas de composant Apple séparé à créer.
+
+### Alignement docs livré
+
+Commit `648e471` `docs(spec): align UNIFICATION + VISION on conv 17 T4 decisions` — 2 fichiers, 99 insertions / 65 deletions :
+
+- `docs/VISION-ARCHITECTURE.md` : §6 paragraphe 2 mai soir bis (ligne 316, retrait CTA → conservation CTA + message d'aide sur page) + §6 précision 3 mai point 1 (ligne 355, amendement conv 17 avec 2 chemins a/b et justification du maintien CTA).
+- `docs/recherche/UNIFICATION-INSCRIPTION.md` : §2.4 (phase auth amont, refonte complète layout 2 niveaux + 4 sous-sections de flow), §3.4 (écran 0 ChoixInscriptionPage, amendement conv 17 + nouveau pseudo-code Card 2 cartes + zones conditionnelles), §7.3.3 (commit msg T3 ajusté), §7.3.4 (T4 enrichi avec ajout Apple + action manuelle Supabase Dashboard), §7.3.5 (T5 garde proprio avec message sur page sans redirect 301).
+
+### Code à livrer (reporté en conv 18 et suivantes)
+
+- T3 : refonte `ChoixInscriptionPage` layout 2 niveaux + boutons OAuth conditionnels alternant + Apple. Première session Claude Code de mise en œuvre du chantier UNIFICATION-INSCRIPTION en cours. Suit le plan §7.3.3 mis à jour.
+- T4 commit 1/2 : refonte `GoogleAuthHandler.jsx` → `OAuthHandler.jsx` générique non-intercepteur, suppression INSERT users, exclusion route `/inscription/proprietaire`. Suit le plan §7.3.4 mis à jour.
+- T4 commit 2/2 : adaptation `InscriptionProprietairePage.jsx` (INSERT côté page DETTE #55 + ajout bouton Apple). Indissociable du commit 1/2, même session Claude Code.
+- T5 : garde durcie `/inscription/proprietaire` avec message d'aide affiché sur la page (pas de redirect 301) + suppression `InscriptionPartagerPage` (Q9). Suit le plan §7.3.5 mis à jour.
+
+Action manuelle Côme à faire en parallèle de T4 commit 1/2 : Supabase Dashboard → Auth → Providers → activer Apple → coller les credentials Apple Developer (Service ID, Team ID, Key ID, secret).
+
+### Limitations format docs
+
+4 endroits où les fences ` ``` ` ont disparu dans `UNIFICATION-INSCRIPTION.md` pendant les str_replace correctifs (limitation du wrapper 5-backticks utilisé dans le prompt) : §3.4 pseudo-code `[Card]`, §7.3.4 commit messages 1/2 et 2/2, §7.3.5 commit message. Lisibilité préservée, à réparer en cosmétique si nécessaire (pas bloquant pour l'exécution T3-T5).
+
+### État final branche post conv 17
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = `648e471` (commit alignement docs), 15 commits ahead `origin/main` (10 conv 13/14/15 + 4 conv 16 + 1 conv 17). Working dir : 1 modified `CreerAnnoncePage.jsx` (bypass DEV intact, DETTE #1-4) + 3 untracked préexistants.
+
+Conv 17 FERMÉE après audit OAuth lecture pure + alignement docs. Aucun code applicatif livré dans cette conv. Conv 18 à ouvrir pour exécution T3 (première session Claude Code concrète du chantier UNIFICATION-INSCRIPTION en cours).
 
 ---
 
