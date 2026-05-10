@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
   useInscriptionWizard,
   validateE1Email,
@@ -63,6 +64,17 @@ export default function InscriptionAlternantPage() {
 
   useEffect(() => () => {
     if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+  }, [])
+
+  // Pré-remplissage email depuis ChoixInscriptionPage via location.state.
+  // location.state ne survit pas au refresh — éphémère, cohérent Q5 (pas de sessionStorage).
+  const location = useLocation()
+  useEffect(() => {
+    const initialEmail = location.state?.email
+    if (initialEmail) {
+      setField('email', initialEmail)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleKeyDown = (nextRef) => (e) => {
