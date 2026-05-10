@@ -243,34 +243,43 @@ Branchements intra-étape :
 
 ### 2.4 Phase auth en amont
 
-Avant que l'utilisateur arrive à E-1, il a choisi sa méthode d'authentification sur la page `/inscription` (`ChoixInscriptionPage` refondue) :
+Avant que l'utilisateur arrive à E-1, il a choisi son type de profil puis sa méthode d'authentification sur la page `/inscription` (`ChoixInscriptionPage` refondue, amendement conv 17 du 7 mai 2026) :
 
-- 3 boutons OAuth en haut : "Continuer avec Google" / "Continuer avec Apple" / "Continuer avec mon email"
-- 1 lien en bas : "Déjà un compte ? Se connecter"
-- Plus aucun choix proprio (Q8 actée — proprio = parcours par invitation uniquement)
-- Plus aucun choix `type_user` à ce niveau (déplacé en E-2)
+**Layout en 2 niveaux** :
 
-#### Flow méthode email
+- **Niveau 1 — Choix du type de profil** : 2 cartes radio toujours visibles : "Je suis étudiant en alternance" et "Je suis propriétaire" (CTA proprio conservé, cf. précision VISION §6 du 3 mai et amendement conv 17 du 7 mai).
+- **Niveau 2 — Choix méthode auth (conditionnel)** :
+    - Si carte "alternant" sélectionnée → 3 boutons OAuth apparaissent en dessous : "Continuer avec Google" / "Continuer avec Apple" / "Continuer avec mon email" + lien "Déjà un compte ? Se connecter".
+    - Si carte "propriétaire" sélectionnée → 1 bouton "Continuer" simple en dessous, qui route vers `/inscription/proprietaire`. Pas de boutons OAuth proprio sur `/inscription` — les boutons OAuth proprio (Google + Apple + email/password) vivent sur `/inscription/proprietaire` elle-même (cohérent avec le fait que le token `?r=` n'est jamais présent à l'arrivée sur `/inscription` mais uniquement sur `/inscription/proprietaire?r=token` via le lien email).
 
-1. Clic "Continuer avec mon email" → arrivée sur E-1, formulaire prenom + nom + telephone + email + mdp
-2. Submit E-1 → `supabase.auth.signUp({email, password})` → session créée → enchaînement E-2
+**Décisions actées** :
+- Choix `type_user` final déplacé en E-2 du wizard (alternant : locataire / hote / les_deux). La carte proprio sur ChoixInscriptionPage est un aiguillage de parcours, pas une saisie BDD `type_user`.
+- Garde durcie sur `/inscription/proprietaire` (Q8) : sans `?r=token` valide, message d'aide affiché sur la page elle-même, pas de redirect 301.
 
-#### Flow méthode Google
+#### Flow méthode email (alternant)
 
-1. Clic "Continuer avec Google" → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`
-2. Callback Google → retour sur `/inscription/alternant`
-3. `GoogleAuthHandler` détecte la session, **ne crée plus de ligne `users`** (Q5 actée), redirige vers E-1 si `users` n'existe pas pour ce `auth.users.id`, ou vers `/dashboard` si `profil_complet=true`
-4. E-1 affichée avec prenom + nom pré-remplis depuis `user.user_metadata` (Google), telephone à saisir, pas d'email/mdp
-5. Submit E-1 → INSERT `users` avec les 3 champs + `id` de la session Auth
+1. Sélection carte alternant → clic "Continuer avec mon email" → arrivée sur E-1 du wizard `/inscription/alternant`, formulaire prenom + nom + telephone + email + mdp.
+2. Submit E-1 → `supabase.auth.signUp({email, password})` → session créée → enchaînement E-2.
 
-#### Flow méthode Apple (à concevoir, DETTE #51)
+#### Flow méthode Google (alternant)
 
-1. Clic "Continuer avec Apple" → `supabase.auth.signInWithOAuth({provider: 'apple', options: {redirectTo: '/inscription/alternant'}})`
-2. Callback Apple → retour sur `/inscription/alternant`
-3. `AppleAuthHandler` (à créer) détecte la session, **ne crée pas de ligne `users`**, redirige vers E-1
-4. ⚠️ Particularité Apple : `name` n'est fourni qu'à la 1ère connexion. Le handler doit lire `user.user_metadata` au callback initial et le passer à E-1 via state React. Si `name` absent, E-1 demande prenom + nom à saisir manuellement.
-5. E-1 avec prenom/nom pré-remplis si présents, telephone à saisir, pas d'email/mdp
-6. Submit E-1 → INSERT `users` avec les 3 champs + `id` de la session Auth + flag `email_is_apple_relay` si email matche `*@privaterelay.appleid.com` (à signaler section 6 RGPD)
+1. Sélection carte alternant → clic "Continuer avec Google" → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`.
+2. Callback Google → retour sur `/inscription/alternant`.
+3. `OAuthHandler` (refondu T4, cf. § 4.5.2) détecte la session, **ne crée plus de ligne `users`** (Q5 actée), redirige vers E-1 si `users` n'existe pas pour ce `auth.users.id`, ou vers `/dashboard` si `profil_complet=true`.
+4. E-1 affichée avec prenom + nom pré-remplis depuis `user.user_metadata.full_name` (Google), telephone à saisir, pas d'email/mdp.
+5. Submit E-1 → INSERT `users` avec les 3 champs + `id` de la session Auth.
+
+#### Flow méthode Apple (alternant)
+
+1. Sélection carte alternant → clic "Continuer avec Apple" → `supabase.auth.signInWithOAuth({provider: 'apple', options: {redirectTo: '/inscription/alternant', scopes: 'email name'}})`.
+2. Callback Apple → retour sur `/inscription/alternant`.
+3. `OAuthHandler` (générique, gère Apple comme Google sans logique provider-spécifique, cf. § 4.5.2) détecte la session, ne crée pas de ligne `users`, redirige vers E-1 si `users` absent.
+4. ⚠️ Particularité Apple : `name` (objet `{firstName, lastName}`) n'est fourni qu'à la 1ère connexion. E-1 lit `user.user_metadata.name` au montage. Si absent (connexion 2+ d'un utilisateur Apple qui n'a jamais terminé son inscription), inputs prenom/nom vides, saisie manuelle.
+5. Submit E-1 → INSERT `users` avec les 3 champs + `id` de la session Auth. Détection `email_is_apple_relay` si email matche `*@privaterelay.appleid.com` (state React local pour usage UI ultérieur, pas écrit en BDD à ce stade — cf. § 4.4.3).
+
+#### Flow méthode proprio (Google / Apple / email)
+
+Tous les flows proprio (Google, Apple, email/password) sont initiés depuis `/inscription/proprietaire` directement, pas depuis `/inscription`. Détail dans § 4.10. La page `/inscription/proprietaire` n'est accessible qu'avec un `?r=token` valide ou via le clic Continuer depuis ChoixInscriptionPage carte proprio (qui amène à la page sans token et déclenche l'affichage du message d'aide). Cette dichotomie est intentionnelle : le token n'est jamais présent à l'URL `/inscription`, donc proposer des boutons OAuth proprio sur `/inscription` créerait une fausse promesse (l'inscription serait toujours bloquée juste après).
 
 ### 2.5 Persistance progressive et reprise
 
@@ -358,34 +367,51 @@ Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (aud
 
 ### 3.4 Écran 0 — `/inscription` (ChoixInscriptionPage refondue)
 
-**Périmètre** : page d'entrée publique, choix de la méthode d'authentification. Pas de wizard — page simple d'arrivée.
+> **⚠️ AMENDEMENT 7 mai 2026 (conv 17)** : refonte du layout en 2 niveaux. Les 2 cartes radio (alternant/proprio) sont conservées de la version actuelle, contrairement à la spec initiale qui supprimait la carte proprio. Les 3 boutons OAuth (Google/Apple/Email) deviennent **conditionnels** à la sélection de la carte alternant. La carte proprio reste un aiguillage simple vers `/inscription/proprietaire` (qui porte ses propres boutons OAuth). Justification : préserver une porte d'entrée visible pour le proprio invité revenant sans son lien d'invitation, cf. VISION §6 précision 3 mai 2026 et amendement conv 17 du 7 mai 2026. Le bloc layout ci-dessous reflète cette décision.
+
+**Périmètre** : page d'entrée publique, choix du type de profil puis (conditionnel pour alternant) choix de la méthode d'authentification. Pas de wizard — page simple d'arrivée.
 
 **Layout** : `<AuthScreenContainer>` standard, card 460px.
 
 **Contenu** :
 
-```
 [Card]
 ├── <WizardTitle> "INSCRIPTION"
-├── <WizardStepSubtitle> "Crée ton compte alternant"
-├── <GoogleSignInButton>     "Continuer avec Google"
-├── <AppleSignInButton>      "Continuer avec Apple"
-├── <OrSeparator>            "ou"
-├── <PrimaryButton variant="email">  "Continuer avec mon email"
-└── <BackLink>               "Déjà un compte ? Se connecter"
-```
+├── <WizardStepSubtitle> "Crée ton compte"
+├── <IntentCardRadio> Carte "Je suis étudiant en alternance"
+├── <IntentCardRadio> Carte "Je suis propriétaire"
+│
+├── (zone conditionnelle 1 — affichée si carte "alternant" sélectionnée) :
+│     ├── <GoogleSignInButton>      "Continuer avec Google"
+│     ├── <AppleSignInButton>       "Continuer avec Apple"
+│     ├── <OrSeparator>             "ou"
+│     ├── <PrimaryButton variant="email">  "Continuer avec mon email"
+│     └── <BackLink>                "Déjà un compte ? Se connecter"
+│
+└── (zone conditionnelle 2 — affichée si carte "propriétaire" sélectionnée) :
+      ├── <PrimaryButton>           "Continuer"
+      └── <BackLink>                "Déjà un compte ? Se connecter"
 
 **Interactions** :
 
-- Clic Google → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`
-- Clic Apple → idem provider `'apple'`
-- Clic email → navigation route `/inscription/alternant` directe, E-1 affiche le formulaire 5 champs (prenom, nom, telephone, email, mdp)
+- Clic carte alternant → affiche zone 1, masque zone 2
+- Clic carte proprio → affiche zone 2, masque zone 1
+- (zone 1) Clic Google → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`
+- (zone 1) Clic Apple → `supabase.auth.signInWithOAuth({provider: 'apple', options: {redirectTo: '/inscription/alternant', scopes: 'email name'}})`
+- (zone 1) Clic email → navigation route `/inscription/alternant` directe, E-1 affiche le formulaire 5 champs (prenom, nom, telephone, email, mdp)
+- (zone 2) Clic Continuer → navigation route `/inscription/proprietaire` (la page filtre via la garde token, cf. § 4.10 et § 7.3.5)
 - Clic "Se connecter" → `/connexion`
 
-**Suppressions vs version actuelle** :
+**Conservations vs version actuelle** :
 
-- Plus de cartes choix `type_user` (déplacé en E-2)
-- Plus de bouton "Je suis propriétaire" (Q8 — proprio par invitation uniquement)
+- 2 cartes radio (alternant + proprio) conservées
+- Sémantique d'aiguillage (proprio → /inscription/proprietaire, alternant → wizard) conservée
+
+**Modifications vs version actuelle** :
+
+- Carte alternant route vers `/inscription/alternant` (wizard unifié) au lieu de `/inscription/recherche` (legacy IR), via OAuth Google/Apple/Email
+- Ajout des 3 boutons OAuth conditionnels à la sélection carte alternant
+- Plus aucun écrit `sessionStorage.signup_type` côté ChoixInscriptionPage (Q5 actée — INSERT users déplacé en E-1 du wizard)
 
 **Pas de `<WizardProgressBar>`** : pas une étape du wizard, pas de progression à afficher.
 
@@ -1625,44 +1651,54 @@ feat(auth-wizard): create InscriptionAlternantPage with 7 steps from-scratch
 
 **Commit message proposé** :
 ```
-refactor(auth): simplify ChoixInscriptionPage to auth method choice only
+refactor(auth): refactor ChoixInscriptionPage to 2-level layout (intent + auth method)
 
-- Remove type_user choice (moved to E-2 of new wizard)
-- Remove "Je suis propriétaire" CTA (Q8 - proprio via invitation only)
-- Remove all sessionStorage writes (Q5 - INSERT moved to wizard E-1)
+- Keep "Je suis propriétaire" + "Je suis étudiant en alternance" radio cards
+- Add 3 OAuth buttons (Google/Apple/Email) conditional on alternant card selection
+- Proprio card routes to /inscription/proprietaire (handles its own OAuth+email)
+- type_user choice removed for alternant (moved to E-2 of new wizard)
+- All sessionStorage writes removed (Q5 - INSERT moved to wizard E-1)
 - Use shared components from auth-wizard/ (T1)
-- redirectTo points to /inscription/alternant for OAuth flows
+- redirectTo points to /inscription/alternant for alternant OAuth flows
 ```
 
-#### 7.3.4 T4 — Refonte `OAuthHandler` + adaptation `InscriptionProprietairePage`
+#### 7.3.4 T4 — Refonte `OAuthHandler` + adaptation `InscriptionProprietairePage` + branchement Apple
 
-**Objectif (commit 1/2)** : renommer `GoogleAuthHandler.jsx` → `OAuthHandler.jsx`, supprimer la logique INSERT, ajouter l'exclusion route `/inscription/proprietaire`.
+> **⚠️ AMENDEMENT 7 mai 2026 (conv 17)** : Apple est branché en T4 (pas différé). Le bouton Apple est ajouté à `InscriptionProprietairePage` (parcours proprio) en commit 2/2 et à `ChoixInscriptionPage` en T3 (parcours alternant). Le branchement Apple inclut la configuration du provider Apple côté Supabase + push des credentials Apple Developer. Justification : (1) `OAuthHandler` est générique par construction et gère Apple sans surcoût, (2) le composant `AppleSignInButton.jsx` est déjà extrait depuis T1 (commit a70d69b), (3) différer Apple créerait une dette transitoire à brancher en 2 endroits ultérieurement.
 
-**Objectif (commit 2/2)** : adapter `InscriptionProprietairePage.jsx` pour qu'elle fasse son propre INSERT au callback OAuth (DETTE #55).
+**Objectif (commit 1/2)** : renommer `GoogleAuthHandler.jsx` → `OAuthHandler.jsx`, supprimer la logique INSERT, ajouter l'exclusion route `/inscription/proprietaire`. Le handler étant générique, aucune modif spécifique Apple n'est nécessaire dans ce commit côté composant — la configuration Apple côté Supabase Dashboard est faite en parallèle (action manuelle Côme).
 
-**Pourquoi 2 commits dans la même session** : commit 1 sans commit 2 casse le proprio Google en prod. Les deux doivent être poussés ensemble (window minimale, cf. § 4.10.5).
+**Objectif (commit 2/2)** : adapter `InscriptionProprietairePage.jsx` pour qu'elle fasse son propre INSERT au callback OAuth (DETTE #55). **Ajouter le bouton Apple OAuth** sur cette page (en plus du bouton Google qui existe déjà et de la méthode email/password qui existe déjà).
+
+**Pourquoi 2 commits dans la même session** : commit 1 sans commit 2 casse le proprio Google + Apple en prod. Les deux doivent être poussés ensemble (window minimale, cf. § 4.10.5).
 
 **Fichiers modifiés (commit 1)** :
 - `sterny-react/src/components/GoogleAuthHandler.jsx` → renommé `OAuthHandler.jsx`. Volume passe de ~128 lignes à ~70 lignes.
 - `App.jsx` : import et usage `OAuthHandler` au lieu de `GoogleAuthHandler`.
 - Suppression de toute lecture `sessionStorage.signup_type`, `referrer_id`, `referral_token`, `code_parrainage`.
 
+**Action manuelle Côme (entre commit 1 et commit 2 ou en parallèle)** :
+- Supabase Dashboard → Auth → Providers → activer Apple → coller les credentials Apple Developer (Service ID, Team ID, Key ID, secret).
+- Vérifier que les redirect URLs Apple incluent `https://sterny.co/auth/v1/callback` (production) et `http://localhost:5173/auth/v1/callback` si tests locaux.
+
 **Fichiers modifiés (commit 2)** :
-- `sterny-react/src/pages/auth/InscriptionProprietairePage.jsx` : ajout de la logique INSERT au callback OAuth (cf. § 4.10.2). Suppression du `sessionStorage.signup_type='proprietaire'` côté `signInWithOAuth`.
+- `sterny-react/src/pages/auth/InscriptionProprietairePage.jsx` : (a) ajout de la logique INSERT au callback OAuth (cf. § 4.10.2), (b) suppression du `sessionStorage.signup_type='proprietaire'` côté `signInWithOAuth`, (c) ajout du bouton Apple OAuth `<AppleSignInButton>` à côté du bouton Google existant, avec `signInWithOAuth({provider: 'apple', options: {redirectTo: '/inscription/proprietaire?r=<token>', scopes: 'email name'}})`.
 
 **Critères de succès** :
 - Test parcours alternant Google : callback redirige vers `/inscription/alternant`, wizard E-1 saisit telephone, INSERT initial OK, parcours complet jusqu'à `/dashboard`.
+- Test parcours alternant Apple : callback redirige vers `/inscription/alternant`, E-1 prenom/nom pré-remplis (1ère connexion) ou inputs vides (cas absent), parcours complet.
 - Test parcours proprio Google avec lien `?r=<token>` valide : callback redirige vers `/inscription/proprietaire?r=<token>`, INSERT au callback avec `type_user='proprietaire'` + `parrain_id` du token, wizard proprio existant fonctionne jusqu'à fin.
-- DETTE #51 marquée résolue (cf. commit groupé clôture conv 2).
+- Test parcours proprio Apple avec lien `?r=<token>` valide : idem que Google avec provider apple.
+- DETTE #51 (AppleAuthHandler dédié) marquée résolue par cette refonte (handler générique, pas de composant séparé Apple à créer).
 
-**Plan de rollback** : `git revert` des 2 commits ensemble. Si revert d'un seul, casse soit alternant soit proprio.
+**Plan de rollback** : `git revert` des 2 commits ensemble. Si revert d'un seul, casse soit alternant soit proprio. Note : si rollback nécessaire et que la config Apple Supabase est déjà active, désactiver le provider Apple dans Supabase Dashboard pour éviter qu'un utilisateur clique sur un bouton Apple qui ne fonctionne plus côté code.
 
-**Durée estimée** : moyenne 2-3h pour les 2 commits cumulés.
+**Durée estimée** : moyenne 2-3h pour les 2 commits cumulés + 30 min config Supabase Apple.
 
 **Commit messages proposés** :
-```
-refactor(auth): rename GoogleAuthHandler to OAuthHandler, remove INSERT logic (Q5)
 
+Commit 1/2 :
+refactor(auth): rename GoogleAuthHandler to OAuthHandler, remove INSERT logic (Q5)
 - Renamed src/components/GoogleAuthHandler.jsx → OAuthHandler.jsx
 - Generic handler for Google + Apple + future OAuth providers
 - Routing logic only: SELECT users + redirect based on profil_complet
@@ -1670,48 +1706,46 @@ refactor(auth): rename GoogleAuthHandler to OAuthHandler, remove INSERT logic (Q
 - Removed direct INSERT users (Q5 - moved to wizard E-1)
 - Excluded route /inscription/proprietaire (handled separately, cf. § 4.10)
 - DETTE #51 (AppleAuthHandler dedicated) becomes obsolete
+- Apple provider activation done manually via Supabase Dashboard
 - Volume: 128 lines → ~70 lines
 
-```
-```
-refactor(auth): InscriptionProprietairePage handles its own OAuth callback INSERT (DETTE #55)
-
+Commit 2/2 :
+refactor(auth): InscriptionProprietairePage handles own OAuth callback INSERT + add Apple (DETTE #55)
 - Page detects active session at mount, performs SELECT users
 - INSERT users with type_user='proprietaire' + parrain_id from token
 - Removes sessionStorage.signup_type='proprietaire' write
+- Adds Apple OAuth button alongside existing Google button
 - Required by Q5 - INSERT moved out of OAuthHandler
 - Pairs with previous commit (refactor OAuthHandler) - must be deployed together
-```
 
 #### 7.3.5 T5 — Nettoyage routes (Q8 + Q9)
 
-**Objectif** : supprimer `InscriptionPartagerPage` (Q9), corriger le lien `UserDropdown` qui pointait dessus, durcir la garde sur `/inscription/proprietaire` (Q8).
+> **⚠️ AMENDEMENT 7 mai 2026 (conv 17)** : la garde sur `/inscription/proprietaire` sans token n'effectue plus de redirection 301 vers `/inscription`. Elle affiche un message d'aide explicite **sur la page elle-même**, sans redirect silencieux. Justification : préserver le contexte d'arrivée du proprio invité (URL mémorisée, lien partagé, etc.) et lui donner directement l'instruction "vérifie ton email" sur la page où il s'attendait à pouvoir s'inscrire. Cohérent avec amendement VISION §6 du même jour et reformulation de la précision 3 mai 2026.
+
+**Objectif** : supprimer `InscriptionPartagerPage` (Q9), corriger le lien `UserDropdown` qui pointait dessus, durcir la garde sur `/inscription/proprietaire` (Q8) avec message d'aide affiché sur la page.
 
 **Fichiers supprimés** : `sterny-react/src/pages/auth/InscriptionPartagerPage.jsx` + son CSS.
 
 **Fichiers modifiés** :
 - `App.jsx` : suppression de la route `/inscription/partager`.
 - `UserDropdown.jsx` : remplacement du lien "Partager mon logement" par un nouveau CTA cohérent (à arbitrer côté Côme — peut-être "Devenir hôte" pointant vers une page d'explication post-MVP).
-- `InscriptionProprietairePage.jsx` : durcissement de la garde token — si `?r=<token>` absent ou non résolu en BDD, redirection 301 vers `/inscription` avec message explicatif (cf. paragraphe Q8 ajouté à VISION §6 en commit groupé clôture conv 2).
+- `InscriptionProprietairePage.jsx` : durcissement de la garde token — si `?r=<token>` absent ou non résolu en BDD, **affichage d'un message d'aide sur la page elle-même** (pas de redirection 301), wording placeholder : "Le parcours propriétaire requiert le lien d'invitation que ton locataire t'a envoyé. Tu l'as perdu ? Demande-lui de te le renvoyer." Le wording exact est à arbitrer en T5 (tutoiement cohérent avec le reste du parcours alternant unifié).
 
 **Critères de succès** :
 - Tentative d'accès à `/inscription/partager` → 404.
 - Clic "Partager mon logement" dans UserDropdown → redirection vers nouveau CTA.
-- Tentative d'accès à `/inscription/proprietaire` sans token → redirection `/inscription` avec message clair "Le parcours propriétaire requiert le lien d'invitation que votre locataire vous a envoyé".
+- Tentative d'accès à `/inscription/proprietaire` sans token → message d'aide affiché sur la page (pas de redirect), CTA secondaire vers `/inscription` ou `/connexion` selon arbitrage UX T5.
 
 **Plan de rollback** : `git revert <hash>`. Restaure les routes et la page.
 
 **Durée estimée** : courte 1h.
 
 **Commit message proposé** :
-```
 refactor(routes): remove InscriptionPartagerPage (Q9), harden /inscription/proprietaire (Q8)
-
 - Delete sterny-react/src/pages/auth/InscriptionPartagerPage.jsx + CSS
 - Remove /inscription/partager route from App.jsx
 - Update UserDropdown link to point to new "Devenir hôte" CTA
-- InscriptionProprietairePage: redirect /inscription with explicit message if no valid token
-```
+- InscriptionProprietairePage: display explicit help message if no valid token (no redirect)
 
 #### 7.3.6 T6 — Redirections 301
 
