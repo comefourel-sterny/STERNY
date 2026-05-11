@@ -285,6 +285,31 @@ Discipline anti-redondance : avant d'ajouter une nouvelle entrée dans DETTE-TEC
 
 ---
 
+## 8 ter. Règle pages d'auth et wizard
+
+Pages concernées : `/inscription`, `/connexion`, `/inscription/*`, et toutes les étapes du wizard (`InscriptionAlternantPage` E-1 à E-7, `InscriptionProprietairePage`). Plus généralement, toute page qui s'apparente à un parcours d'auth ou de wizard.
+
+**Avant tout patch sur ces pages**, Claude doit obligatoirement :
+
+1. Lister l'inventaire complet des composants partagés `sterny-react/src/components/auth-wizard/`.
+2. Lire au moins une page de référence existante similaire : `InscriptionAlternantPage.jsx` (référence wizard) ou `ConnexionPage.jsx`. Identifier précisément la grammaire visuelle appliquée (wrapper, classes, animations, espacements, footer, etc.).
+3. Comparer le rendu cible avec la grammaire effective des pages similaires. Ne jamais créer de wrapper, footer, classe CSS locale ou composant local qui duplique ou contourne un pattern partagé.
+4. Toute divergence par rapport au pattern partagé doit être explicitement validée par Côme comme divergence assumée AVANT patch.
+
+**Grammaire visuelle stricte des pages d'auth** (référence post-T3) :
+
+- **Wrapper page + card** : `<AuthScreenContainer>` qui rend `<section class="aw-screen"><div class="aw-screen-card">{children}</div></section>`.
+- **Card** : 460px / radius 16px / padding 36px / `min-height: 536px` / border `1.5px solid #E8EAF0` / box-shadow `0 6px 28px rgba(232,98,42,0.10)`.
+- **Titre** : `<h1 class="aw-screen-title">INSCRIPTION</h1>` — 18px / weight 300 / letter-spacing 3px / orange / center. Classe non disponible globalement, à dupliquer en local en attendant DETTE #66.
+- **Footer** : `<BottomAuthLinks showSignInLink />` (ou variante avec `retourTo` selon contexte).
+- **Cartes radio sélection** : `<IntentCardRadio>` partagé (T1).
+- **Bouton principal** : `<PrimaryButton>` partagé.
+- **Stack contenu central** : `display: flex; flex-direction: column; gap: 12px; flex: 1` pour pousser le footer en bas (pattern E-2 strict `.ial-cards-stack`).
+
+Origine : règle établie en clôture conv Claude.ai 19 (11 mai 2026) après 10+ itérations de patch sur ChoixInscriptionPage. Voir ETAT-COURANT bloc conv 19 Bloc 4.
+
+---
+
 ## 9. Prudence extrême sur les sujets non-techniques
 
 Comme indiqué en section 1, je suis parti de zéro sur l'ensemble des domaines non-techniques qui touchent Sterny : juridique, réglementaire, fiscal, assurance, protection des données, contrats, responsabilité. J'apprends au fur et à mesure mais je n'ai aucun filet de sécurité professionnel sur ces sujets.

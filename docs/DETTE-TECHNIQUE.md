@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 6 mai 2026 (soir) — Clôture conv Claude.ai 12 chantier UNIFICATION-INSCRIPTION : DETTE #64 résolue par simplification produit (commit feat `bea05cd`, refonte E-4 villes mono-ville/bi-ville). DETTE #50 mise à jour (transformée par convention slot). Nouvelle DETTE #65 créée — propagation auto-capitalize première lettre transverse aux autres types d'inputs texte.
+**Dernière mise à jour** : 11 mai 2026 — Clôture conv Claude.ai 19 chantier UNIFICATION-INSCRIPTION T3 : 2 nouvelles dettes mineures issues de la refonte ChoixInscriptionPage : DETTE #68 (`.aw-screen-title` à extraire en CSS partagé global) et DETTE #69 (`GoogleSignInButton.loading` non câblée visuellement). Pas de DETTE résolue en conv 19.
 
 ## Nomenclature des bugs
 
@@ -736,3 +736,25 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Référence** : `InscriptionAlternantPage.jsx` branche `if (state.currentStep === 2)` (utilise `IntentCardRadio`) + `InscriptionRecherchePage.jsx` step 3 (référence visuelle).
 
 **Origine** : conv 12 du 6 mai 2026, lors de la refonte E-4 villes simplifiée.
+
+## DETTE #68 — Extraction `.aw-screen-title` dans CSS partagé global
+
+**Statut au 11 mai 2026** : créée en clôture conv Claude.ai 19 T3.
+
+**Constat** : la classe `.aw-screen-title` (18px / weight 300 / letter-spacing 3px / orange / center) qui porte le titre "INSCRIPTION" des pages d'auth wizard n'est définie que dans des fichiers CSS locaux (`ChoixInscriptionPage.css` ligne 5 réplique locale, `InscriptionAlternantPage.css` lignes 7 et 263 mobile). Aucune définition globale partagée. Toute nouvelle page d'auth doit re-dupliquer cette classe en local pour ne pas tomber sur le style par défaut `<h1>` du navigateur.
+
+**Priorité** : faible. Pas de bug fonctionnel, juste duplication CSS. La grammaire métho établie en clôture conv 19 (CONTEXTE-PROJET section 8 ter) impose la duplication locale jusqu'à résolution.
+
+**Plan de résolution** : extraction dans un fichier partagé `sterny-react/src/components/auth-wizard/wizard-tokens.css` (ou équivalent) importé par chaque page concernée. À traiter en session T1 cleanup, hors urgence.
+
+**Note de collision** : numéros DETTE #66 et #67 étaient initialement prévus dans le brief conv 19 mais collision avec DETTE #66 (Polish design E-6) et #67 (Refonte E-2 pattern IR) déjà créées en conv 14 + résolues en conv 15. Numérotation décalée à #68 et #69.
+
+## DETTE #69 — `GoogleSignInButton` prop `loading` non câblée visuellement
+
+**Statut au 11 mai 2026** : créée en clôture conv Claude.ai 19 T3.
+
+**Constat** : le composant partagé `GoogleSignInButton` a une signature `({ onClick, label = 'Continuer avec Google', className, style, ...rest })`. Quand on lui passe une prop `loading={true}`, elle est transmise au `<button>` natif via `...rest`, ce qui produit un warning React (prop non-DOM) sans aucun effet visuel (pas de spinner, pas d'opacité, pas de désactivation).
+
+**Priorité** : faible. Pas de bug fonctionnel, juste un warning console et une prop sans effet. Pour l'usage actuel (la prop `loading` n'est plus utilisée par ChoixInscriptionPage suite à la refonte T3 v3 finale), la dette est purement préventive pour un usage futur.
+
+**Plan de résolution** : extension du composant pour câbler vraiment `loading` (spinner blanc remplaçant le label, opacité 0.7, `disabled={true}` sur le button natif). Filtrer la prop pour qu'elle ne soit pas transmise au DOM. À traiter en session T1 cleanup, hors urgence.

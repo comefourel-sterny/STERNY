@@ -367,53 +367,34 @@ Volume estimé d'extraction : ~600 lignes de duplication CSS+JS éliminées (aud
 
 ### 3.4 Écran 0 — `/inscription` (ChoixInscriptionPage refondue)
 
-> **⚠️ AMENDEMENT 7 mai 2026 (conv 17)** : refonte du layout en 2 niveaux. Les 2 cartes radio (alternant/proprio) sont conservées de la version actuelle, contrairement à la spec initiale qui supprimait la carte proprio. Les 3 boutons OAuth (Google/Apple/Email) deviennent **conditionnels** à la sélection de la carte alternant. La carte proprio reste un aiguillage simple vers `/inscription/proprietaire` (qui porte ses propres boutons OAuth). Justification : préserver une porte d'entrée visible pour le proprio invité revenant sans son lien d'invitation, cf. VISION §6 précision 3 mai 2026 et amendement conv 17 du 7 mai 2026. Le bloc layout ci-dessous reflète cette décision.
+> **⚠️ AMENDEMENT 11 mai 2026 (conv 19) — V3 FINAL** : refonte en aiguillage minimal pur. Suppression des zones conditionnelles (input email + Continuer + OR + Google pour alternant, Continuer pour proprio) au profit d'un click direct sur carte radio = navigation immédiate. Justification : la zone conditionnelle alternant faisait déborder le `min-height: 536px` de la card, créant une déformation verticale incohérente avec la grammaire wizard. Préservation dimensions card prioritaire sur saisie email anticipée. L'amendement conv 17 (zones conditionnelles OAuth) et l'amendement conv 19 v1 (input email écran 0) sont annulés.
 
-**Périmètre** : page d'entrée publique, choix du type de profil puis (conditionnel pour alternant) choix de la méthode d'authentification. Pas de wizard — page simple d'arrivée.
+**Périmètre** : page d'entrée publique, choix du type de profil par click direct. Aucune autre interaction.
 
-**Layout** : `<AuthScreenContainer>` standard, card 460px.
+**Layout** : `<AuthScreenContainer>` standard, card 460px / `min-height: 536px` (cohérent grammaire wizard).
 
 **Contenu** :
 
 [Card]
-├── <WizardTitle> "INSCRIPTION"
-├── <WizardStepSubtitle> "Crée ton compte"
-├── <IntentCardRadio> Carte "Je suis étudiant en alternance"
-├── <IntentCardRadio> Carte "Je suis propriétaire"
-│
-├── (zone conditionnelle 1 — affichée si carte "alternant" sélectionnée) :
-│     ├── <GoogleSignInButton>      "Continuer avec Google"
-│     ├── <AppleSignInButton>       "Continuer avec Apple"
-│     ├── <OrSeparator>             "ou"
-│     ├── <PrimaryButton variant="email">  "Continuer avec mon email"
-│     └── <BackLink>                "Déjà un compte ? Se connecter"
-│
-└── (zone conditionnelle 2 — affichée si carte "propriétaire" sélectionnée) :
-      ├── <PrimaryButton>           "Continuer"
-      └── <BackLink>                "Déjà un compte ? Se connecter"
+├── <h1 className="aw-screen-title">INSCRIPTION</h1>
+├── <div className="cip-cards-stack" flex:1>
+│     ├── <IntentCardRadio> "Je suis ÉTUDIANT en alternance" (icône school + keyword "étudiant" + stagger 0.16s)
+│     └── <IntentCardRadio> "Je suis PROPRIÉTAIRE" (icône add_home + keyword "propriétaire" + stagger 0.24s)
+└── <BottomAuthLinks showSignInLink />
 
 **Interactions** :
 
-- Clic carte alternant → affiche zone 1, masque zone 2
-- Clic carte proprio → affiche zone 2, masque zone 1
-- (zone 1) Clic Google → `supabase.auth.signInWithOAuth({provider: 'google', options: {redirectTo: '/inscription/alternant'}})`
-- (zone 1) Clic Apple → `supabase.auth.signInWithOAuth({provider: 'apple', options: {redirectTo: '/inscription/alternant', scopes: 'email name'}})`
-- (zone 1) Clic email → navigation route `/inscription/alternant` directe, E-1 affiche le formulaire 5 champs (prenom, nom, telephone, email, mdp)
-- (zone 2) Clic Continuer → navigation route `/inscription/proprietaire` (la page filtre via la garde token, cf. § 4.10 et § 7.3.5)
-- Clic "Se connecter" → `/connexion`
+- Click carte alternant → `setSelected('alternant')` + `navigate('/inscription/alternant')`
+- Click carte proprio → `setSelected('proprietaire')` + `navigate('/inscription/proprietaire')`
+- Click "Se connecter" du `BottomAuthLinks` → `/connexion` (via `<Link>` interne)
 
-**Conservations vs version actuelle** :
+**OAuth** : pas d'OAuth sur l'écran 0. Les boutons OAuth (Google, Apple) vivent désormais sur les étapes suivantes :
+- `/inscription/alternant` E-1 : ajout boutons OAuth Google/Apple en T4 (cf. § 4.5.2 et § 4.6).
+- `/inscription/proprietaire` : Google déjà câblé, Apple à ajouter en T4.
 
-- 2 cartes radio (alternant + proprio) conservées
-- Sémantique d'aiguillage (proprio → /inscription/proprietaire, alternant → wizard) conservée
+**Saisie email anticipée** : abandonnée. L'infrastructure pré-remplissage email côté `InscriptionAlternantPage.jsx` (commit f0fe666 conv 18) reste en place silencieuse, pourra resservir.
 
-**Modifications vs version actuelle** :
-
-- Carte alternant route vers `/inscription/alternant` (wizard unifié) au lieu de `/inscription/recherche` (legacy IR), via OAuth Google/Apple/Email
-- Ajout des 3 boutons OAuth conditionnels à la sélection carte alternant
-- Plus aucun écrit `sessionStorage.signup_type` côté ChoixInscriptionPage (Q5 actée — INSERT users déplacé en E-1 du wizard)
-
-**Pas de `<WizardProgressBar>`** : pas une étape du wizard, pas de progression à afficher.
+**Pas de `<WizardProgressBar>`** : pas une étape du wizard.
 
 ### 3.5 Écran E-1 — Identité
 

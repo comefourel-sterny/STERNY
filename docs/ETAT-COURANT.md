@@ -2,7 +2,45 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 10 mai 2026 — Conv Claude.ai 18 FERMÉE après dérive sur T3 (7 itérations sans rendu satisfaisant). Revert intégral ChoixInscriptionPage, commit isolé pré-remplissage email E-1 (f0fe666). T3 from-scratch reportée en conv 19 avec cadrage mockup exhaustif préalable. main reste 11f0e0f.
+**Dernière mise à jour** : 11 mai 2026 — Conv Claude.ai 19 FERMÉE : T3 livrée. ChoixInscriptionPage refondue en aiguillage minimal click direct (plus de zone conditionnelle, plus d'input email, plus d'OAuth — OAuth déplacé sur étapes suivantes T4). Extension IntentCardRadio subtitle (T1 mineure rétrocompatible). Règle métho pages d'auth ajoutée à CONTEXTE-PROJET §8 ter. DETTE #66 + #67 créées. Push manuel par Côme. main reste 11f0e0f.
+
+---
+
+## 2026-05-11 — Conv Claude.ai 19 : T3 livrée — ChoixInscriptionPage en aiguillage minimal click direct
+
+### Bloc 1 — Contexte ouverture conv 19
+
+Conv 19 ouverte pour reprise from-scratch de T3 après dérive conv 18 (7 itérations sans livraison). Méthode imposée : mockup textuel exhaustif validé avant tout patch.
+
+### Bloc 2 — Évolution UX du pattern écran 0 en 3 mockups successifs
+
+1. **Mockup v1** (validé en début de conv) : 2 cartes radio alternant/proprio + zones conditionnelles. Zone alternant = input email + Continuer + OrSeparator + Google. Zone proprio = Continuer. Apple sorti écran 0.
+2. **Mockup v2** (mi-conv) : suppression gros sous-titre 24px navy après audit IR/CP (la grammaire wizard ne l'utilise pas). Remplacement footer custom par `<BottomAuthLinks showSignInLink />` partagé.
+3. **Mockup v3 FINAL** : refonte en pur aiguillage. Click direct sur carte → navigate immédiat. Plus de zone conditionnelle, plus d'input email, plus d'OAuth. Justification : la zone conditionnelle alternant faisait déborder le min-height 536px de la card, créant une déformation verticale incohérente avec la grammaire wizard. Préservation dimensions card prioritaire.
+
+### Bloc 3 — Livraison effective
+
+- Refonte `ChoixInscriptionPage.jsx` (~73 → 58 lignes) : suppression state/handlers email/loading/loadingGoogle, suppression imports TextInput/PrimaryButton/OrSeparator/GoogleSignInButton/supabaseClient.
+- Réécriture `ChoixInscriptionPage.css` (~187 → 25 lignes) : suppression `.cip-screen`, `.cip-card`, zones conditionnelles. Conservation `.aw-screen-title` réplique locale + `.cip-cards-stack { flex: 1 }` (pattern E-2 strict).
+- Extension `IntentCardRadio.jsx` + `.css` : prop `subtitle` optionnelle rétrocompatible (modif T1 mineure, ajoutée pendant mockup v1 et conservée pour usages futurs même si pas utilisée par ChoixInscriptionPage final).
+- Pré-remplissage email InscriptionAlternantPage (commit f0fe666 conv 18) conservé silencieux.
+- Spec § 3.4 réécrite amendement conv 19 v3 final.
+
+### Bloc 4 — Leçons méthodologiques de conv 19
+
+10+ itérations de patch successif sur ChoixInscriptionPage avant convergence visuelle. Root cause méthodologique : Claude n'a pas vérifié systématiquement comment les pages similaires (E-1, E-2 wizard, ConnexionPage) appliquaient la grammaire visuelle avant de produire mockup et prompts. À chaque écart visuel soulevé par Côme, Claude découvrait un pattern partagé qu'il avait reproduit en local par erreur (wrapper page, classes card, footer, animation stagger, position bouton).
+
+Règle métho ajoutée à `CONTEXTE-PROJET.md` (nouvelle section 8 ter) : lire 1-2 pages similaires comme exemple AVANT tout patch sur une page d'auth ou de wizard, identifier la grammaire effective, ne jamais créer de wrapper/footer/classe locale qui duplique un pattern partagé sans validation explicite Côme.
+
+### Bloc 5 — Hors scope conv 19 — reporté T4 conv 20
+
+Côme a constaté en fin de conv 19 que `/inscription/alternant` E-1 et `/inscription/proprietaire` ne contiennent pas/plus les boutons OAuth Google et Apple attendus dans la nouvelle architecture (écran 0 = aiguillage pur). Ce sujet relève de la tranche T4 du chantier UNIFICATION-INSCRIPTION (refonte GoogleAuthHandler → OAuthHandler générique + ajout boutons OAuth en E-1 + adaptation InscriptionProprietairePage). T4 tracée spec § 4.5.2 / § 4.6 / § 7.3.4 et DETTE #55. Conv 20 à ouvrir avec cadrage spec préalable.
+
+### Bloc 6 — État branche post-conv 19
+
+`main` : `11f0e0f` (prod inchangée). `feat/unification-inscription` : HEAD = commit T3 (sha à confirmer post-commit ci-dessous), ~18 commits ahead `origin/main`. Working dir post-commit : 1 modified `CreerAnnoncePage.jsx` (bypass DEV DETTE #1-4 intact) + 3 untracked préexistants. Push manuel par Côme attendu.
+
+Conv 19 FERMÉE.
 
 ---
 

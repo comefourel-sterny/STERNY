@@ -6,6 +6,7 @@ export default function IntentCardRadio({
   checked = false,
   onChange,
   label,
+  subtitle,
   icon,
   className = '',
   style,
@@ -28,7 +29,14 @@ export default function IntentCardRadio({
         onChange={onChange}
       />
       {icon && <div className="aw-intent-card-icon">{icon}</div>}
-      <div className="aw-intent-card-label">{label}</div>
+      {subtitle ? (
+        <div className="aw-intent-card-content">
+          <div className="aw-intent-card-label">{label}</div>
+          <div className="aw-intent-card-subtitle">{subtitle}</div>
+        </div>
+      ) : (
+        <div className="aw-intent-card-label">{label}</div>
+      )}
       <div className="aw-intent-card-check" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 -960 960 960" fill="currentColor">
           <path d="M389-227 165-451l64-64 160 160 388-388 64 64-452 452Z"/>

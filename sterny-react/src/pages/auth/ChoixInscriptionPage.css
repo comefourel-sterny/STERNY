@@ -1,221 +1,25 @@
-/* ═══ PAGE ═══ */
-.ci-page {
-    min-height: calc(100vh - 70px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #F4F5F7;
-    padding: 40px 20px;
+/* ChoixInscriptionPage.css — refonte T3 conv 19 finale */
+/* Écran d'aiguillage minimal : 2 cartes radio click-to-navigate + footer. */
+/* Wrapper page + card fournis par AuthScreenContainer (réplique locale aw-screen-title car classe non disponible globalement). */
+
+.aw-screen-title {
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  color: #E8622A;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0;
 }
 
-/* ═══ CARD — identical to ConnexionPage ═══ */
-.ci-card {
-    max-width: 460px;
-    width: 100%;
-    background: white;
-    border-radius: 16px;
-    padding: 36px;
-    box-shadow: 0 6px 28px rgba(232,98,42,0.10);
-    border: 1.5px solid #E8EAF0;
-    display: flex;
-    flex-direction: column;
-    animation: ciFadeIn 0.4s ease;
+.cip-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+  flex: 1;
 }
 
-@keyframes ciFadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══ TITLE — matches ConnexionPage ═══ */
-.ci-title {
-    font-size: 18px;
-    font-weight: 300;
-    letter-spacing: 3px;
-    color: #E8622A;
-    text-transform: uppercase;
-    text-align: center;
-    margin: 0 0 32px 0;
-}
-
-/* ═══ PROFILE OPTIONS ═══ */
-.ci-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 32px;
-}
-
-.ci-profile {
-    position: relative;
-    border: 1.5px solid #E8EAF0;
-    border-radius: 12px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s, transform 0.2s;
-    background: white;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-decoration: none;
-}
-
-.ci-profile:hover {
-    border-color: #E8622A;
-    background: rgba(232,98,42,0.03);
-    transform: translateY(-2px);
-}
-
-.ci-profile input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.ci-profile.selected {
-    border-color: #E8622A;
-    background: rgba(232,98,42,0.06);
-    box-shadow: 0 4px 12px rgba(232,98,42,0.08);
-}
-
-/* Icon */
-.ci-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: #F4F5F7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.2s, color 0.2s;
-    color: #94A3B8;
-}
-
-.ci-profile.selected .ci-icon {
-    background: rgba(232,98,42,0.1);
-    color: #E8622A;
-}
-
-/* Content */
-.ci-content {
-    flex: 1;
-}
-
-.ci-card-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1E293B;
-    margin-bottom: 2px;
-}
-
-.ci-profile.selected .ci-card-title {
-    font-weight: 700;
-}
-
-.ci-card-desc {
-    font-size: 13px;
-    color: #94A3B8;
-    line-height: 1.4;
-}
-
-/* Check circle */
-.ci-check {
-    width: 22px;
-    height: 22px;
-    border: 1.5px solid #E8EAF0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    color: transparent;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-
-.ci-profile.selected .ci-check {
-    background: #E8622A;
-    border-color: #E8622A;
-    color: white;
-}
-
-/* ═══ BOTTOM — button + link ═══ */
-.ci-bottom {
-    margin-top: auto;
-}
-
-.ci-btn {
-    width: 100%;
-    height: 48px;
-    background: #E8622A;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    font-family: 'DM Sans', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ci-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
-    background-color: #D4571F;
-}
-
-.ci-btn:disabled {
-    background: #E8EAF0;
-    color: #94A3B8;
-    cursor: not-allowed;
-}
-
-/* Back link — with separator like ConnexionPage */
-.ci-back {
-    display: block;
-    text-align: center;
-    margin: 12px 0 0 0;
-    padding-top: 16px;
-    border-top: 1px solid #E8EAF0;
-    color: #94A3B8;
-    font-size: 14px;
-    font-weight: 400;
-}
-
-.ci-back a {
-    color: #E8622A;
-    text-decoration: none;
-    font-weight: 700;
-    transition: opacity 0.2s;
-}
-
-.ci-back a:hover {
-    opacity: 0.8;
-}
-
-/* ═══ STAGGER ANIMATION ═══ */
-.ci-stagger {
-    animation: ciStaggerIn 0.4s ease both;
-}
-
-@keyframes ciStaggerIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══ RESPONSIVE ═══ */
 @media (max-width: 480px) {
-    .ci-card {
-        padding: 28px 24px;
-        border-radius: 14px;
-    }
-
-    .ci-title {
-        font-size: 16px;
-        letter-spacing: 2px;
-    }
+  .cip-cards-stack { margin-top: 24px; }
 }

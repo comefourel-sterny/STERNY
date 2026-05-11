@@ -70,6 +70,25 @@
   font-weight: 700;
 }
 
+.aw-intent-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.aw-intent-card-content > .aw-intent-card-label {
+  flex: initial;
+}
+
+.aw-intent-card-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: #64748B;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
 .aw-intent-card-keyword {
   font-size: 14px;
   font-weight: 700;
