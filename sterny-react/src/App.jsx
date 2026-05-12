@@ -11,7 +11,7 @@ function ScrollToTop() {
 
 // Layouts & handlers
 import Layout from './components/layout/Layout'
-import GoogleAuthHandler from './components/GoogleAuthHandler'
+import OAuthHandler from './components/OAuthHandler'
 import DashboardLayout from './components/layout/DashboardLayout'
 
 // Public pages
@@ -95,7 +95,7 @@ export default function App() {
   return (
     <PasswordGate>
       <ScrollToTop />
-      <GoogleAuthHandler />
+      <OAuthHandler />
       <Routes>
         {/* Invitation — no layout */}
         <Route path="/invitation/:token" element={<InvitationPage />} />
