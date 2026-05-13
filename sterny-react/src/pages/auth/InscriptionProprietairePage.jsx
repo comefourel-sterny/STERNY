@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
+import GoogleSignInButton from '../../components/auth-wizard/GoogleSignInButton'
+import AppleSignInButton from '../../components/auth-wizard/AppleSignInButton'
+import OrSeparator from '../../components/auth-wizard/OrSeparator'
 import './InscriptionProprietairePage.css'
 
 function capitalizeWords(str) {
-  return str.replace(/(?:^|[\s-])([a-zA-Z\u00C0-\u00FF])/g, (match) => match.toUpperCase())
+  return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, (match) => match.toUpperCase())
 }
 
 export default function InscriptionProprietairePage() {
@@ -22,7 +25,11 @@ export default function InscriptionProprietairePage() {
   const [referrerName, setReferrerName] = useState('')
   const [showReferral, setShowReferral] = useState(false)
   const [parrainId, setParrainId] = useState(null)
+  const oauthCheckedRef = useRef(false)
 
+  // useEffect 1 — Décodage du token de parrainage ?r=<token>
+  // (logique existante, juste nettoyée du fallback sessionStorage referrer_id
+  // qui devient mort suite à T4-A — le handler ne set plus rien en sessionStorage).
   useEffect(() => {
     const token = searchParams.get('r')
     if (token) {
@@ -39,10 +46,104 @@ export default function InscriptionProprietairePage() {
           }
         })
     }
-
-    const sessionParrainId = sessionStorage.getItem('referrer_id')
-    if (sessionParrainId) setParrainId(sessionParrainId)
   }, [searchParams])
+
+  // useEffect 2 — Callback OAuth (NOUVEAU, Q5 + DETTE #55)
+  // Détecte une session OAuth active au mount. Si pas de ligne users,
+  // INSERT users avec type_user='proprietaire' + parrain_id du token +
+  // prenom/nom depuis user_metadata. Puis navigate vers /dashboard/proprietaire.
+  // Cf. UNIFICATION-INSCRIPTION § 4.10.2.
+  useEffect(() => {
+    if (oauthCheckedRef.current) return
+
+    const checkOAuthCallback = async () => {
+      oauthCheckedRef.current = true
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession()
+        if (!session) return // Cas D — pas de session : afficher le formulaire
+
+        const provider = session.user.app_metadata?.provider
+        // Méthode email : handleSubmit gère son propre INSERT (workaround DETTE #55).
+        // Seuls Google et Apple sont traités par ce useEffect.
+        if (provider !== 'google' && provider !== 'apple') return
+
+        // SELECT users
+        const { data: existingUser } = await supabaseClient
+          .from('users')
+          .select('id, profil_complet')
+          .eq('id', session.user.id)
+          .maybeSingle()
+
+        if (existingUser) {
+          // Reprise utilisateur déjà inscrit
+          navigate('/dashboard/proprietaire')
+          return
+        }
+
+        // Résolution locale du parrainId depuis le token (sans dépendance state async)
+        let resolvedParrainId = null
+        const token = searchParams.get('r')
+        if (token) {
+          const { data: parrain } = await supabaseClient
+            .from('users')
+            .select('id')
+            .eq('invitation_token', token)
+            .maybeSingle()
+          if (parrain) resolvedParrainId = parrain.id
+        }
+
+        // Extraction prenom/nom depuis user_metadata selon provider
+        const metadata = session.user.user_metadata || {}
+        let extractedPrenom = ''
+        let extractedNom = ''
+
+        if (provider === 'google') {
+          const fullName = metadata.full_name || metadata.name || ''
+          const parts = fullName.trim().split(/\s+/).filter(Boolean)
+          extractedPrenom = parts[0] || ''
+          extractedNom = parts.slice(1).join(' ') || ''
+        } else if (provider === 'apple') {
+          // Apple : user_metadata.name = { firstName, lastName } à la 1ère connexion,
+          // ou string, ou absent après la 1ère connexion (cf. UNIFICATION § 4.4.2).
+          const nameField = metadata.name
+          if (nameField && typeof nameField === 'object') {
+            extractedPrenom = nameField.firstName || ''
+            extractedNom = nameField.lastName || ''
+          } else if (typeof nameField === 'string') {
+            const parts = nameField.trim().split(/\s+/).filter(Boolean)
+            extractedPrenom = parts[0] || ''
+            extractedNom = parts.slice(1).join(' ') || ''
+          }
+        }
+
+        // INSERT users — colonnes NOT NULL prenom/nom remplies avec '' si absentes
+        // (cas Apple 2e connexion ou Hide My Email). Profil sera complété ultérieurement.
+        const { error: insertError } = await supabaseClient
+          .from('users')
+          .insert([{
+            id: session.user.id,
+            email: session.user.email,
+            prenom: extractedPrenom || '',
+            nom: extractedNom || '',
+            type_user: 'proprietaire',
+            parrain_id: resolvedParrainId,
+            profil_complet: false
+          }])
+
+        if (insertError) {
+          console.warn('InscriptionProprietairePage OAuth INSERT error:', insertError.message)
+          return
+        }
+
+        navigate('/dashboard/proprietaire')
+      } catch (err) {
+        console.warn('InscriptionProprietairePage OAuth callback:', err.message)
+      }
+    }
+
+    checkOAuthCallback()
+  }, [searchParams, navigate])
 
   const shakeButton = () => {
     const btn = btnRef.current
@@ -60,24 +161,40 @@ export default function InscriptionProprietairePage() {
     setTimeout(() => setMessage({ type: '', text: '' }), 3000)
   }
 
+  // handleGoogleSignup MODIFIÉ : suppression sessionStorage (Q5),
+  // redirectTo /inscription/proprietaire?r=<token> au lieu de /dashboard/proprietaire.
   const handleGoogleSignup = async () => {
-    if (parrainId) {
-      sessionStorage.setItem('referrer_id', parrainId)
-    }
     const token = searchParams.get('r')
-    if (token) {
-      sessionStorage.setItem('referral_token', token)
-    }
-    sessionStorage.setItem('signup_type', 'proprietaire')
+    const redirectPath = token
+      ? `/inscription/proprietaire?r=${token}`
+      : '/inscription/proprietaire'
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard/proprietaire'
+        redirectTo: window.location.origin + redirectPath
       }
     })
     if (error) showError(error.message)
   }
 
+  // handleAppleSignup NOUVEAU, symétrique de handleGoogleSignup
+  // scopes 'email name' requis pour récupérer le nom à la 1ère connexion.
+  const handleAppleSignup = async () => {
+    const token = searchParams.get('r')
+    const redirectPath = token
+      ? `/inscription/proprietaire?r=${token}`
+      : '/inscription/proprietaire'
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'apple',
+      options: {
+        redirectTo: window.location.origin + redirectPath,
+        scopes: 'email name'
+      }
+    })
+    if (error) showError(error.message)
+  }
+
+  // handleSubmit méthode email : INCHANGÉ (workaround DETTE #55).
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!prenom.trim() || !nom.trim() || !email.trim() || !password) {
@@ -199,19 +316,22 @@ export default function InscriptionProprietairePage() {
           </button>
         </form>
 
-        <div className="ip-separator ip-stagger" style={{ animationDelay: '0.4s' }}>
-          <span>ou</span>
+        <div className="ip-stagger" style={{ animationDelay: '0.4s' }}>
+          <OrSeparator />
         </div>
 
-        <button type="button" className="ip-google ip-stagger" style={{ animationDelay: '0.48s' }} onClick={handleGoogleSignup}>
-          <svg width="18" height="18" viewBox="0 0 18 18">
-            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-          </svg>
-          S'inscrire avec Google
-        </button>
+        <GoogleSignInButton
+          onClick={handleGoogleSignup}
+          label="S'inscrire avec Google"
+          className="ip-stagger"
+          style={{ animationDelay: '0.48s' }}
+        />
+        <AppleSignInButton
+          onClick={handleAppleSignup}
+          label="S'inscrire avec Apple"
+          className="ip-stagger"
+          style={{ animationDelay: '0.52s' }}
+        />
 
         <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
           {message.type === 'error' ? (
