@@ -9,6 +9,9 @@ import {
   validateE6,
 } from '../../hooks/useInscriptionWizard'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
+import GoogleSignInButton from '../../components/auth-wizard/GoogleSignInButton'
+import AppleSignInButton from '../../components/auth-wizard/AppleSignInButton'
+import OrSeparator from '../../components/auth-wizard/OrSeparator'
 import TextInput from '../../components/auth-wizard/TextInput'
 import AuthErrorBanner from '../../components/auth-wizard/AuthErrorBanner'
 import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
@@ -77,6 +80,48 @@ export default function InscriptionAlternantPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // useEffect 3 — Pré-remplissage prenom/nom/email depuis user_metadata
+  // si l'utilisateur arrive sur E-1 après callback OAuth (Google ou Apple).
+  // Logique symétrique à T4-B InscriptionProprietairePage useEffect 2 (cohérence cross-page).
+  // Non destructif : ne pas écraser une saisie utilisateur déjà présente.
+  useEffect(() => {
+    if (!state.initialized) return
+    if (state.authMethod !== 'google' && state.authMethod !== 'apple') return
+
+    ;(async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession()
+      if (!session) return
+
+      const metadata = session.user.user_metadata || {}
+      let extractedPrenom = ''
+      let extractedNom = ''
+
+      if (state.authMethod === 'google') {
+        const fullName = metadata.full_name || metadata.name || ''
+        const parts = fullName.trim().split(/\s+/).filter(Boolean)
+        extractedPrenom = parts[0] || ''
+        extractedNom = parts.slice(1).join(' ') || ''
+      } else if (state.authMethod === 'apple') {
+        // Apple : user_metadata.name = { firstName, lastName } à la 1ère connexion,
+        // ou string, ou absent après la 1ère connexion (cf. T4-B et UNIFICATION § 4.4.2).
+        const nameField = metadata.name
+        if (nameField && typeof nameField === 'object') {
+          extractedPrenom = nameField.firstName || ''
+          extractedNom = nameField.lastName || ''
+        } else if (typeof nameField === 'string') {
+          const parts = nameField.trim().split(/\s+/).filter(Boolean)
+          extractedPrenom = parts[0] || ''
+          extractedNom = parts.slice(1).join(' ') || ''
+        }
+      }
+
+      if (extractedPrenom && !state.prenom) setField('prenom', extractedPrenom)
+      if (extractedNom && !state.nom) setField('nom', extractedNom)
+      if (session.user.email && !state.email) setField('email', session.user.email)
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.initialized, state.authMethod])
+
   const handleKeyDown = (nextRef) => (e) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -111,6 +156,42 @@ export default function InscriptionAlternantPage() {
     }
     setInvalidFields(new Set())
     goToNextStep()
+  }
+
+  // handleGoogleSignup E-1 — lance le flux OAuth Google.
+  // redirectTo /inscription/alternant : l'utilisateur revient ici, useEffect 3
+  // détecte la session et pré-remplit prenom/nom/email depuis user_metadata.
+  const handleGoogleSignup = async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/inscription/alternant'
+      }
+    })
+    if (error) {
+      setGlobalError(error.message)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      errorTimerRef.current = setTimeout(() => clearError(), 3000)
+    }
+  }
+
+  // handleAppleSignup E-1 — symétrique à Google. Scopes 'email name' obligatoires :
+  // sans eux, Apple ne renvoie pas user_metadata.name à la 1ère connexion.
+  // Apple 2e connexion : Apple ne renvoie plus le name même avec les scopes,
+  // l'utilisateur devra saisir prenom/nom manuellement (cf. UNIFICATION § 4.4.2).
+  const handleAppleSignup = async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'apple',
+      options: {
+        redirectTo: window.location.origin + '/inscription/alternant',
+        scopes: 'email name'
+      }
+    })
+    if (error) {
+      setGlobalError(error.message)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+      errorTimerRef.current = setTimeout(() => clearError(), 3000)
+    }
   }
 
   const handleE3Change = (e) => {
@@ -171,6 +252,54 @@ export default function InscriptionAlternantPage() {
       errorTimerRef.current = setTimeout(() => clearError(), 3000)
       return
     }
+    goToNextStep()
+  }
+
+  // handleE2Continue — INSERT users à la transition E-2 → E-3 si session OAuth active.
+  // À E-1 OAuth, on a déjà state.userId du hook (set par INIT_DONE) + prenom/nom/telephone/email
+  // (pré-remplis par useEffect 3 et/ou saisie utilisateur). À E-2, on a aussi type_user choisi
+  // → INSERT atomique avec tous les champs requis (UNIFICATION-INSCRIPTION § 4.7).
+  // Méthode email : pas d'INSERT (différé à tranche email-confirm dédiée — DETTE #70).
+  const handleE2Continue = async () => {
+    if (state.authMethod === 'google' || state.authMethod === 'apple') {
+      if (!state.userId) {
+        setGlobalError('Session expirée — reconnecte-toi')
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+        errorTimerRef.current = setTimeout(() => clearError(), 3000)
+        return
+      }
+
+      // SELECT users — si la ligne existe déjà (reprise utilisateur), navigue sans INSERT
+      const { data: existingUser } = await supabaseClient
+        .from('users')
+        .select('id')
+        .eq('id', state.userId)
+        .maybeSingle()
+
+      if (!existingUser) {
+        const { error: insertError } = await supabaseClient
+          .from('users')
+          .insert([{
+            id: state.userId,
+            email: state.email,
+            prenom: state.prenom,
+            nom: state.nom,
+            telephone: state.telephone,
+            type_user: state.type_user,
+            parrain_id: null,
+            profil_complet: false
+          }])
+
+        if (insertError) {
+          setGlobalError("Échec de l'inscription. Réessaie.")
+          if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+          errorTimerRef.current = setTimeout(() => clearError(), 3000)
+          console.warn('InscriptionAlternantPage E-2 INSERT error:', insertError.message)
+          return
+        }
+      }
+    }
+
     goToNextStep()
   }
 
@@ -273,7 +402,7 @@ export default function InscriptionAlternantPage() {
           type="button"
           className="ial-btn-continuer"
           disabled={!state.type_user}
-          onClick={goToNextStep}
+          onClick={handleE2Continue}
         >
           Continuer
         </button>
@@ -340,6 +469,19 @@ export default function InscriptionAlternantPage() {
           />
           <button type="submit" className="ial-btn-continuer">Continuer</button>
         </form>
+        {state.initialized && state.authMethod === 'email' && (
+          <>
+            <OrSeparator />
+            <GoogleSignInButton
+              onClick={handleGoogleSignup}
+              label="S'inscrire avec Google"
+            />
+            <AppleSignInButton
+              onClick={handleAppleSignup}
+              label="S'inscrire avec Apple"
+            />
+          </>
+        )}
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />
           : <BottomAuthLinks retourTo="/inscription" retourLabel="Retour" showSignInLink />}
