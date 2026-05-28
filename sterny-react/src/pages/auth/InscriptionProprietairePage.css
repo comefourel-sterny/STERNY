@@ -313,6 +313,16 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+.ip-oauth-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ip-oauth-row .aw-oauth-button {
+  flex: 1;
+  min-width: 0;
+}
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 480px) {
     .ip-card {

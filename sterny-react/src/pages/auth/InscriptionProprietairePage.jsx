@@ -320,18 +320,16 @@ export default function InscriptionProprietairePage() {
           <OrSeparator />
         </div>
 
-        <GoogleSignInButton
-          onClick={handleGoogleSignup}
-          label="S'inscrire avec Google"
-          className="ip-stagger"
-          style={{ animationDelay: '0.48s' }}
-        />
-        <AppleSignInButton
-          onClick={handleAppleSignup}
-          label="S'inscrire avec Apple"
-          className="ip-stagger"
-          style={{ animationDelay: '0.52s' }}
-        />
+        <div className="ip-oauth-row ip-stagger" style={{ animationDelay: '0.48s' }}>
+          <GoogleSignInButton
+            onClick={handleGoogleSignup}
+            label="Google"
+          />
+          <AppleSignInButton
+            onClick={handleAppleSignup}
+            label="Apple"
+          />
+        </div>
 
         <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
           {message.type === 'error' ? (

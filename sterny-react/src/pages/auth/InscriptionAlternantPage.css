@@ -259,6 +259,16 @@
   transition: background-color 9999s ease-in-out 0s;
 }
 
+.ial-oauth-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ial-oauth-row .aw-oauth-button {
+  flex: 1;
+  min-width: 0;
+}
+
 @media (max-width: 480px) {
   .aw-screen-title {
     font-size: 16px;

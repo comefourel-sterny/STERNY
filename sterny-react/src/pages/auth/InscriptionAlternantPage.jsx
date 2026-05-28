@@ -472,14 +472,16 @@ export default function InscriptionAlternantPage() {
         {state.initialized && state.authMethod === 'email' && (
           <>
             <OrSeparator />
-            <GoogleSignInButton
-              onClick={handleGoogleSignup}
-              label="S'inscrire avec Google"
-            />
-            <AppleSignInButton
-              onClick={handleAppleSignup}
-              label="S'inscrire avec Apple"
-            />
+            <div className="ial-oauth-row">
+              <GoogleSignInButton
+                onClick={handleGoogleSignup}
+                label="Google"
+              />
+              <AppleSignInButton
+                onClick={handleAppleSignup}
+                label="Apple"
+              />
+            </div>
           </>
         )}
         {state.globalError
