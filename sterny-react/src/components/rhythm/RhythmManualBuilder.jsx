@@ -1,8 +1,11 @@
 // RhythmManualBuilder — composant v1 desktop-only (cf. DETTE #44).
 // Chemin 3 de la stratégie discriminante par format source (VISION §5).
 // Saisie manuelle assistée du calendrier d'alternance, autonome, indépendant
-// du parser LLM. Persistance via la RPC atomique confirm_rhythm_calendar_manual
-// (cf. supabase/migrations/20260502120000_*.sql, commit 0c953ff).
+// du parser LLM. Capture-only depuis conv 24 (31 mai 2026) : le composant
+// émet le calendrier matérialisé via onConfirm(materialized), sans aucune
+// écriture en base ; l'écriture (et le calcul des dates rhythm_start_date /
+// rhythm_end_date) est faite à E-7 par la RPC complete_inscription_alternant.
+// Voir docs/recherche/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
 //
 // Cadrage : ETAT-COURANT bloc 2026-04-30 soir bis (Q1-Q9) + bloc 2026-05-02
 // après-midi (Q10 sélecteur d'année, Q11 troncature dynamique).
@@ -22,7 +25,6 @@
 //     semaine non-école est company par défaut).
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { supabaseClient } from '../../config/supabase';
 import './RhythmManualBuilder.css';
 
 const TOTAL_WEEKS = 52;
@@ -200,8 +202,6 @@ export default function RhythmManualBuilder({
   });
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
 
   // Au changement d'année académique : reset des cases cliquées (la spec
   // simplifie ainsi la v1 — pas de confirmation, pas de tentative de
@@ -227,17 +227,14 @@ export default function RhythmManualBuilder({
   );
 
   const handleOpenModal = useCallback(() => {
-    setSubmitError(null);
     setModalOpen(true);
   }, []);
 
   const handleCloseModal = useCallback(() => {
-    if (submitting) return; // bloquer fermeture pendant l'appel RPC
     setModalOpen(false);
-    setSubmitError(null);
-  }, [submitting]);
+  }, []);
 
-  const handleConfirmModal = useCallback(async () => {
+  const handleConfirmModal = useCallback(() => {
     // Matérialiser les 52 semaines :
     //   - passée → 'company' systématiquement (VISION §3)
     //   - non-passée → sélection inverse selon villeRecherchee (Q8)
@@ -255,34 +252,10 @@ export default function RhythmManualBuilder({
       return { week_start: w.weekStart, status };
     });
 
-    setSubmitting(true);
-    setSubmitError(null);
-
-    const { error } = await supabaseClient.rpc(
-      'confirm_rhythm_calendar_manual',
-      { p_calendar: materialized }
-    );
-
-    setSubmitting(false);
-
-    if (error) {
-      // Les RAISE EXCEPTION PostgreSQL sont remontées par PostgREST avec
-      // error.code = SQLSTATE. Cf. migration 20260502120000.
-      let userMsg;
-      if (error.code === '28000') {
-        userMsg =
-          "Tu dois être connecté en tant qu'alternant pour enregistrer ton planning. Reconnecte-toi puis réessaie.";
-      } else if (error.code === '22023') {
-        userMsg =
-          'Le format du planning est invalide. Si le problème persiste, contacte le support.';
-      } else {
-        userMsg =
-          "Une erreur s'est produite lors de l'enregistrement. Réessaie dans quelques instants.";
-      }
-      setSubmitError(userMsg);
-      return;
-    }
-
+    // Capture-only (conv 24) : aucune écriture en base ici. Le builder émet le
+    // calendrier ; l'écriture one-pass (et le calcul des dates start/end) est
+    // faite à E-7 par la RPC complete_inscription_alternant.
+    // Voir docs/recherche/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
     setModalOpen(false);
     onConfirm(materialized);
   }, [allWeeks, clicked, pastWeekStarts, villeRecherchee, onConfirm]);
@@ -433,7 +406,6 @@ export default function RhythmManualBuilder({
                 type="button"
                 className="rmb-modal-btn-secondary"
                 onClick={handleCloseModal}
-                disabled={submitting}
               >
                 Revenir au calendrier
               </button>
@@ -441,16 +413,10 @@ export default function RhythmManualBuilder({
                 type="button"
                 className="rmb-modal-btn-primary"
                 onClick={handleConfirmModal}
-                disabled={submitting}
               >
-                {submitting ? 'Enregistrement…' : 'Confirmer mon planning'}
+                Confirmer mon planning
               </button>
             </div>
-            {submitError && (
-              <div className="rmb-modal-error" role="alert">
-                {submitError}
-              </div>
-            )}
           </div>
         </div>
       )}
