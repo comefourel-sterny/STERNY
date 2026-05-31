@@ -20,6 +20,8 @@ import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
 import PhotoCropperModal from '../../components/auth-wizard/PhotoCropperModal'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
+import RhythmManualBuilder from '../../components/rhythm/RhythmManualBuilder'
+import RhythmRequiredPopup from '../../components/auth-wizard/RhythmRequiredPopup'
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
 import { formatPartialDateInput } from '../../utils/dateHelpers.js'
 import { supabaseClient } from '../../config/supabase'
@@ -52,6 +54,7 @@ export default function InscriptionAlternantPage() {
     goToNextStep,
     goToPrevStep,
   } = useInscriptionWizard()
+  const [rhythmPopupOpen, setRhythmPopupOpen] = useState(false)
   const errorTimerRef = useRef(null)
   const prenomRef = useRef(null)
   const nomRef = useRef(null)
@@ -238,6 +241,16 @@ export default function InscriptionAlternantPage() {
       errorTimerRef.current = setTimeout(() => clearError(), 3000)
       return
     }
+    goToNextStep()
+  }
+
+  const handleE5Confirm = (materialized) => {
+    const hasSchoolWeek = materialized.some((w) => w.status === 'school')
+    if (!hasSchoolWeek) {
+      setRhythmPopupOpen(true)
+      return
+    }
+    setField('rhythm_calendar', materialized)
     goToNextStep()
   }
 
@@ -595,6 +608,29 @@ export default function InscriptionAlternantPage() {
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />
           : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
+      </AuthScreenContainer>
+    )
+  }
+
+  if (state.currentStep === 5) {
+    return (
+      <AuthScreenContainer>
+        <h1 className="aw-screen-title">INSCRIPTION</h1>
+        <WizardProgressBar progress={5/7} />
+        <p className="ial-step-subtitle">Renseigne ton rythme d'alternance, semaine par semaine</p>
+        <RhythmManualBuilder
+          villeRecherchee="ecole"
+          initialCalendar={state.rhythm_calendar || undefined}
+          onConfirm={handleE5Confirm}
+        />
+        {state.globalError
+          ? <AuthErrorBanner message={state.globalError} />
+          : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
+        <RhythmRequiredPopup
+          open={rhythmPopupOpen}
+          onClose={() => setRhythmPopupOpen(false)}
+          onConfirm={() => {}}
+        />
       </AuthScreenContainer>
     )
   }

@@ -47,7 +47,8 @@ const initialState = {
   ville_entreprise: '',
   statut_ville_ecole: null,
   statut_ville_entreprise: null,
-  // E-5 Calendrier — placeholder T2, sera intégré en T8 (RhythmManualBuilder)
+  // E-5 Calendrier d'alternance (capturé via RhythmManualBuilder, écrit one-pass à E-7)
+  rhythm_calendar: null, // [{week_start:'YYYY-MM-DD', status:'school'|'company'}] | null
   // E-6 Profil personnel
   // bio retirée d'E-6 (amendement VISION conv 15) — reportée à ModifierProfilPage post-inscription.
   date_naissance: '',
