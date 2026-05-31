@@ -792,3 +792,13 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : faible (donnée de test, pas un bug code).
 
 **Référence** : table `public.users`, id c2e5770e-65ca-4b15-acc0-95a3d21849c1.
+
+## DETTE #73 — Policy RLS INSERT sur `public.users` en `WITH CHECK (true)`
+
+**Statut au 31 mai 2026 (conv 24)** : créée (audit lecture seule).
+
+**Constat** : la policy INSERT « Users can insert own profile » est en `WITH CHECK (true)`, sans contrôle `auth.uid() = id` → tout rôle authentifié peut insérer une ligne `users` avec un `id` arbitraire. Seule la clé étrangère `users_id_fkey` vers `auth.users` freine. Faille de sécurité.
+
+**Plan** : restreindre le `WITH CHECK` à `auth.uid() = id` une fois le flux E-7 stabilisé (après vérification qu'aucun chemin légitime n'insère pour un autre `id`). À inscrire à la revue sécurité/RGPD professionnelle avant lancement.
+
+**Priorité** : moyenne. **Réf** : policies `public.users`, `remote_schema.sql`.

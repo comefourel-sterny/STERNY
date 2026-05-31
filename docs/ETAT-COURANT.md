@@ -2,9 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 31 mai 2026 — Conv Claude.ai 23 FERMÉE. Cluster T4 OAuth : boutons OAuth posés sur E-1 alternant + page proprio (OAuthHandler générique). Complétion/routage OAuth + welcome modal PARKÉS (checkpoint non testé). Mission recentrée : finir l'inscription email (E-5 capture rythme + E-7 écriture one-pass) AVANT de rebrancher l'OAuth. DETTE #70-72 créées. Rien poussé sur origin (voir git log).
+**Dernière mise à jour** : 31 mai 2026 — Conv Claude.ai 24 : modèle auth/écriture/vérification verrouillé (signUp à E-7, écriture one-pass, vérification email par code OTP 6 chiffres en ligne, RhythmManualBuilder en capture-only). Avant tout code. Rien poussé ; OAuth parqué (DETTE #70-72).
 
 ---
+
+## 2026-05-31 (suite) — Conv Claude.ai 24 : modèle auth/écriture/vérification verrouillé (avant tout code)
+
+- **signUp à E-7 (fin), pas avant.** Email saisi à E-1 (gardé en mémoire), utilisé au signUp E-7. Aucune écriture `users` avant E-7 ; écriture **one-pass** à E-7.
+- **Vérification email OBLIGATOIRE** (Confirm email reste ON) mais par **code OTP 6 chiffres saisi en ligne**, pas par lien. Implé : template email Supabase `{{ .ConfirmationURL }}` → `{{ .Token }}` ; `verifyOtp({type:'email'})` valide l'email ET ouvre la session (conserve le mot de passe).
+- **Flux E-7** : « Finaliser » → signUp → envoi code → saisie code sur place → verifyOtp → écriture fiche one-pass → `/dashboard`. La personne ne quitte jamais la page.
+- **E-5** : `RhythmManualBuilder` passe en **capture-only** — émet `rhythm_calendar` dans le state du wizard, n'appelle PLUS sa RPC `confirm_rhythm_calendar_manual` ; `rhythm_import_id = NULL`.
+- **Reprise** : aucune sauvegarde d'avancement ; abandon = recommencer. Tradeoff accepté (pas de relance des abandons). Réévaluable si la plateforme grossit.
+- **Constats audit (lecture seule)** : pas de miroir sessionStorage (mémoire React seule) ; aucun signUp dans `InscriptionAlternantPage` aujourd'hui ; le builder s'auto-persiste aujourd'hui (à changer) ; le parcours OAuth INSERT à E-2 via `handleE2Continue` (asymétrie à revoir au déparquage OAuth).
+- **Caveat implé** : le changement de template email est **global** au projet Supabase → impacte aussi le signUp email proprio (parqué). À gérer quand on touchera l'email.
+- **Ordre de travail** : E-5 capture (builder capture-only) → E-7 (signUp + code + verifyOtp + écriture one-pass + template) → polish (DETTE #54).
 
 ## 2026-05-31 — Conv Claude.ai 20→23 (cluster T4 OAuth) : boutons posés, complétion PARKÉE — recentrage sur fin inscription email
 

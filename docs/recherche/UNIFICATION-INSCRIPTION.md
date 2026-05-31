@@ -1,5 +1,7 @@
 # Unification du parcours d'inscription Sterny
 
+> **Amendement 31 mai 2026 (conv Claude.ai 24)** — Modèle auth/écriture/vérification arrêté : signUp à **E-7** (pas à E-1), aucune écriture `users` avant E-7, écriture **one-pass** à E-7. Vérification email obligatoire mais par **code OTP 6 chiffres en ligne** (template `{{ .Token }}` + `verifyOtp({type:'email'})` qui ouvre la session), **pas par lien** — supprime le round-trip qui faisait perdre le state du wizard. `RhythmManualBuilder` en **capture-only** à E-5 (n'appelle plus `confirm_rhythm_calendar_manual`). Remplace les hypothèses « lien de confirmation » et « signUp à E-1 » des §3.5 / §4.
+
 **Statut** : document de cadrage en cours de rédaction. Sections 1-2 finalisées le 2 mai 2026 nuit (conv Claude.ai 1). Sections 3-7 à produire en nouvelle conv Claude.ai 2 dédiée.
 
 **Décision parente** : Option A actée le 2 mai 2026 soir (VISION §6 sous-section "Parcours d'inscription unifié"), périmètre élargi le 2 mai soir bis après audit lecture-seule (Q8-Q15 actées).
