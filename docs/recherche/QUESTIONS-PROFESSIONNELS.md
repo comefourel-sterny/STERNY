@@ -21,6 +21,7 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 - Responsabilité de Sterny en cas de litige entre hôte et locataire
 - Conditions générales d'utilisation (CGU) et conditions générales de vente (CGV)
 - Clauses limitatives de responsabilité
+- Répercussion d'une révision de loyer en cours de contrat (indexation annuelle IRL ou hausse) dans le modèle de partage tournant Sterny
 
 ### 1.2 Questions précises à poser
 
@@ -48,6 +49,13 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **[Q-AVO-004]** Faut-il une CGU explicite acceptée à l'étape E-1 du parcours d'inscription (et pas seulement à E-7) pour couvrir la conservation des données partielles si l'utilisateur abandonne le parcours en cours de route ?
 > **Contexte** : pattern de reprise — un utilisateur qui abandonne en E-3 laisse en BDD une ligne `users` partielle avec `profil_complet=false`.
 > **Référence** : `UNIFICATION-INSCRIPTION.md` § 6.7.
+> **Statut** : à poser
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-005]** Quand le loyer du logement augmente en cours de contrat (révision annuelle indexée — par exemple l'IRL, Indice de Référence des Loyers publié par l'INSEE qui encadre la révision annuelle d'un bail — ou hausse négociée), comment cette hausse se répercute-t-elle dans le modèle Sterny où deux alternants occupent le logement en alternance et ne paient que leurs semaines occupées ? Le contrat de partage doit-il se mettre à jour automatiquement (hausse répartie au prorata des semaines de chaque occupant), ou le locataire principal titulaire du bail la supporte-t-il seul ? Quelle clause de révision prévoir dans le contrat de sous-location / mise à disposition ?
+> **Contexte** : déclencheur réel — loyer personnel du fondateur augmenté de ~3-4 €/mois en avril 2026. Sans gravité à titre individuel, mais révèle un cas non traité du modèle contractuel Sterny. Impact produit : l'échéancier de paiement (généré à la signature à partir de la date d'effet, cf. VISION §3) doit pouvoir être révisé en cours de contrat si la réponse est « mise à jour automatique ». À cadrer avant tout codage du flux contrat/paiement.
+> **Référence** : VISION-ARCHITECTURE.md §3 (échéancier de paiement, date d'effet) ; recouper avec §3.1 Notaire (modèle du sous-bail).
 > **Statut** : à poser
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
@@ -279,6 +287,7 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 | Q-AVO-002 | Responsabilité Apple Hide My Email | 1 | moyenne | à poser | — |
 | Q-AVO-003 | Fuite tokens OAuth + obligations CNIL | 1 | moyenne | à poser | — |
 | Q-AVO-004 | CGU à E-1 vs E-7 (données partielles) | 1 | basse | à poser | — |
+| Q-AVO-005 | Révision loyer en cours de contrat | 1 | moyenne | à poser | — |
 | Q-DPO-001 | Téléphone obligatoire — finalité | 2 | moyenne | à poser | — |
 | Q-DPO-002 | Date de naissance — minimisation | 2 | moyenne | à poser | — |
 | Q-DPO-003 | Champ sexe — finalité métier | 2 | **haute** | à poser | — |
