@@ -48,27 +48,21 @@ export default function InscriptionProprietairePage() {
     }
   }, [searchParams])
 
-  // useEffect 2 — Callback OAuth (NOUVEAU, Q5 + DETTE #55)
-  // Détecte une session OAuth active au mount. Si pas de ligne users,
-  // INSERT users avec type_user='proprietaire' + parrain_id du token +
-  // prenom/nom depuis user_metadata. Puis navigate vers /dashboard/proprietaire.
+  // useEffect 2 — Callback OAuth (Q5 + DETTE #55, fix timing conv 22)
+  // Combo getSession() + onAuthStateChange() pour gérer 2 cas :
+  // (a) session déjà active au mount (refresh page, reprise)
+  // (b) session établie après le mount (callback OAuth Supabase async)
+  // Sans ce combo, la session arrive après getSession() one-shot et le navigate
+  // ne se déclenche jamais (bug observé conv 22).
   // Cf. UNIFICATION-INSCRIPTION § 4.10.2.
   useEffect(() => {
-    if (oauthCheckedRef.current) return
-
-    const checkOAuthCallback = async () => {
-      oauthCheckedRef.current = true
+    const processOAuthSession = async (session) => {
+      if (oauthCheckedRef.current) return
+      if (!session) return
 
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession()
-        if (!session) return // Cas D — pas de session : afficher le formulaire
-
-        const provider = session.user.app_metadata?.provider
-        // Méthode email : handleSubmit gère son propre INSERT (workaround DETTE #55).
-        // Seuls Google et Apple sont traités par ce useEffect.
-        if (provider !== 'google' && provider !== 'apple') return
-
-        // SELECT users
+        // CHECK 1 : ligne users existe → redirect dashboard (peu importe le provider)
+        // Couvre les sessions email ET OAuth dont le user a déjà sa ligne en BDD.
         const { data: existingUser } = await supabaseClient
           .from('users')
           .select('id, profil_complet')
@@ -76,12 +70,20 @@ export default function InscriptionProprietairePage() {
           .maybeSingle()
 
         if (existingUser) {
-          // Reprise utilisateur déjà inscrit
-          navigate('/dashboard/proprietaire')
+          oauthCheckedRef.current = true
+          // User déjà inscrit → redirect immédiat avec state pour afficher modal welcome dashboard
+          navigate('/dashboard/proprietaire', { state: { showWelcomeModal: true } })
           return
         }
 
-        // Résolution locale du parrainId depuis le token (sans dépendance state async)
+        // CHECK 2 : pas de ligne users → seuls les providers Google/Apple peuvent INSERT ici.
+        // Méthode email : handleSubmit gère son propre signUp + INSERT (workaround DETTE #55).
+        const provider = session.user.app_metadata?.provider
+        if (provider !== 'google' && provider !== 'apple') return
+
+        oauthCheckedRef.current = true
+
+        // Résolution locale du parrainId depuis le token
         let resolvedParrainId = null
         const token = searchParams.get('r')
         if (token) {
@@ -104,8 +106,6 @@ export default function InscriptionProprietairePage() {
           extractedPrenom = parts[0] || ''
           extractedNom = parts.slice(1).join(' ') || ''
         } else if (provider === 'apple') {
-          // Apple : user_metadata.name = { firstName, lastName } à la 1ère connexion,
-          // ou string, ou absent après la 1ère connexion (cf. UNIFICATION § 4.4.2).
           const nameField = metadata.name
           if (nameField && typeof nameField === 'object') {
             extractedPrenom = nameField.firstName || ''
@@ -117,8 +117,7 @@ export default function InscriptionProprietairePage() {
           }
         }
 
-        // INSERT users — colonnes NOT NULL prenom/nom remplies avec '' si absentes
-        // (cas Apple 2e connexion ou Hide My Email). Profil sera complété ultérieurement.
+        // INSERT users
         const { error: insertError } = await supabaseClient
           .from('users')
           .insert([{
@@ -133,16 +132,30 @@ export default function InscriptionProprietairePage() {
 
         if (insertError) {
           console.warn('InscriptionProprietairePage OAuth INSERT error:', insertError.message)
+          oauthCheckedRef.current = false // permettre une retry
           return
         }
 
         navigate('/dashboard/proprietaire')
       } catch (err) {
         console.warn('InscriptionProprietairePage OAuth callback:', err.message)
+        oauthCheckedRef.current = false
       }
     }
 
-    checkOAuthCallback()
+    // Cas (a) — session déjà active au mount (refresh, reprise)
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) processOAuthSession(session)
+    })
+
+    // Cas (b) — session établie après le mount (callback OAuth Supabase async)
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        processOAuthSession(session)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [searchParams, navigate])
 
   const shakeButton = () => {

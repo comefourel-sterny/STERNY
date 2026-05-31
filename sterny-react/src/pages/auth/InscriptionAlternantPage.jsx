@@ -80,16 +80,17 @@ export default function InscriptionAlternantPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // useEffect 3 — Pré-remplissage prenom/nom/email depuis user_metadata
-  // si l'utilisateur arrive sur E-1 après callback OAuth (Google ou Apple).
-  // Logique symétrique à T4-B InscriptionProprietairePage useEffect 2 (cohérence cross-page).
+  // useEffect 3 — Pré-remplissage prenom/nom/email depuis user_metadata (fix timing conv 22)
+  // Combo getSession() + onAuthStateChange() pour gérer 2 cas :
+  // (a) session déjà active au mount
+  // (b) session établie après le mount (callback OAuth Supabase async)
   // Non destructif : ne pas écraser une saisie utilisateur déjà présente.
+  // Logique symétrique à T4-B InscriptionProprietairePage useEffect 2.
   useEffect(() => {
     if (!state.initialized) return
     if (state.authMethod !== 'google' && state.authMethod !== 'apple') return
 
-    ;(async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession()
+    const processSessionMetadata = (session) => {
       if (!session) return
 
       const metadata = session.user.user_metadata || {}
@@ -102,8 +103,6 @@ export default function InscriptionAlternantPage() {
         extractedPrenom = parts[0] || ''
         extractedNom = parts.slice(1).join(' ') || ''
       } else if (state.authMethod === 'apple') {
-        // Apple : user_metadata.name = { firstName, lastName } à la 1ère connexion,
-        // ou string, ou absent après la 1ère connexion (cf. T4-B et UNIFICATION § 4.4.2).
         const nameField = metadata.name
         if (nameField && typeof nameField === 'object') {
           extractedPrenom = nameField.firstName || ''
@@ -118,7 +117,21 @@ export default function InscriptionAlternantPage() {
       if (extractedPrenom && !state.prenom) setField('prenom', extractedPrenom)
       if (extractedNom && !state.nom) setField('nom', extractedNom)
       if (session.user.email && !state.email) setField('email', session.user.email)
-    })()
+    }
+
+    // Cas (a) — session déjà active au mount
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      processSessionMetadata(session)
+    })
+
+    // Cas (b) — session établie après le mount (callback OAuth Supabase async)
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        processSessionMetadata(session)
+      }
+    })
+
+    return () => subscription.unsubscribe()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.initialized, state.authMethod])
 

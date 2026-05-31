@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { getInitials } from '../../utils/formatters'
@@ -82,6 +82,9 @@ export default function DashboardProprietairePage() {
     setProfilScrolledToBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 8)
   }
 
+  const location = useLocation()
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+
   // Block body scroll when any overlay is open
   useEffect(() => {
     const anyOpen = showLocataireOverlay || showCandidatureOverlay || showApproveModal || showRejectModal || showDeleteAnnonceModal || showMessagesOverlay
@@ -95,6 +98,14 @@ export default function DashboardProprietairePage() {
       loadProfile()
     }
   }, [user])
+
+  useEffect(() => {
+    if (location.state?.showWelcomeModal) {
+      setShowWelcomeModal(true)
+      window.history.replaceState({}, document.title, location.pathname)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function loadProfile() {
     try {
@@ -987,6 +998,42 @@ export default function DashboardProprietairePage() {
           <div className="modal-delete-buttons">
             <button className="modal-delete-btn-cancel" onClick={() => { setShowDeleteAnnonceModal(false); setPendingDeleteAnnonceId(null) }}>Annuler</button>
             <button className="modal-delete-btn-delete" onClick={confirmDeleteAnnonce}>Supprimer</button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+
+    {showWelcomeModal && createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15,23,42,0.45)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+        onClick={() => setShowWelcomeModal(false)}
+      >
+        <div className="modal-delete-card" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-delete-icon" style={{ background: '#E8622A' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          </div>
+          <h3>Bienvenue !</h3>
+          <p>Tu as déjà un compte, tu es bien connecté à ton tableau de bord.</p>
+          <div className="modal-delete-buttons">
+            <button
+              className="modal-delete-btn-delete"
+              style={{ background: '#E8622A' }}
+              onClick={() => setShowWelcomeModal(false)}
+            >
+              Compris
+            </button>
           </div>
         </div>
       </div>,
