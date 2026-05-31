@@ -758,3 +758,37 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : faible. Pas de bug fonctionnel, juste un warning console et une prop sans effet. Pour l'usage actuel (la prop `loading` n'est plus utilisée par ChoixInscriptionPage suite à la refonte T3 v3 finale), la dette est purement préventive pour un usage futur.
 
 **Plan de résolution** : extension du composant pour câbler vraiment `loading` (spinner blanc remplaçant le label, opacité 0.7, `disabled={true}` sur le button natif). Filtrer la prop pour qu'elle ne soit pas transmise au DOM. À traiter en session T1 cleanup, hors urgence.
+
+## DETTE #70 — Routage OAuthHandler ne doit plus dépendre de `profil_complet`
+
+**Statut au 31 mai 2026 (conv 23)** : créée. Parkée jusqu'au retour sur l'OAuth (après E-7).
+
+**Constat** : `OAuthHandler` route tout utilisateur `profil_complet=false` vers `/inscription/alternant` sans tenir compte de `type_user` → un proprio incomplet est envoyé dans le wizard alternant. Cause profonde : avec l'unification inscription + compléter-profil, l'étape "compléter profil" disparaît. Une ligne `users` n'est créée qu'à la fin (INSERT unique E-7 alternant / INSERT direct proprio), donc `profil_complet=false` est un état qui ne devrait jamais exister dans le modèle cible. Le "Cas B" du handler est un vestige de l'ancienne persistance progressive (INSERT-à-E-1 + UPDATEs partiels) abandonnée.
+
+**Reco (à valider et loguer dans VISION-ARCHITECTURE au retour OAuth)** : router uniquement sur l'EXISTENCE de la ligne `users` (absente → laisser sur le parcours d'inscription ; présente → /dashboard), jamais sur `profil_complet`. Garder `profil_complet` comme garde-fou (toujours true dès qu'une ligne existe) ou la supprimer — à trancher. Prérequis : E-7 construit et définissant l'écriture complète.
+
+**Priorité** : moyenne — bloque la cohérence du retour OAuth, non urgente tant que E-7 n'existe pas.
+
+**Référence** : `OAuthHandler.jsx` (Cas A/B/C, L.44-59) ; `InscriptionProprietairePage.jsx` CHECK 1 (L.72-77) ; VISION-ARCHITECTURE §6 (one-pass E-7).
+
+## DETTE #71 — Service Agentation `localhost:4747` injoignable en local (ERR_CONNECTION_REFUSED)
+
+**Statut au 31 mai 2026 (conv 23)** : créée. Non bloquant.
+
+**Constat** : en local, la console affiche `POST localhost:4747/sessions` et `GET localhost:4747/health` → ERR_CONNECTION_REFUSED, plus `[Agentation] Failed to initialize session, using local storage: TypeError: Failed to fetch` (référencé App.jsx:188). Le service Agentation (port 4747) n'est pas lancé en local ; fallback gracieux vers le local storage. Aucun impact sur l'inscription.
+
+**Priorité** : faible. À investiguer ultérieurement (rôle d'Agentation, faut-il le lancer en dev ou le fallback suffit-il).
+
+**Référence** : `App.jsx:188`.
+
+## DETTE #72 — Ligne `users` CF périmée (données de test à nettoyer)
+
+**Statut au 31 mai 2026 (conv 23)** : créée.
+
+**Constat** : la ligne `users` de `comefourel@gmail.com` (id c2e5770e-…) est un reliquat de test : `type_user=proprietaire`, `profil_complet=false`, créée le 25 février 2026 avec parrainage de test. Cet état n'a plus de sens dans le modèle cible et fausse les tests de redirection (cf. DETTE #70).
+
+**Plan** : pour retester le flux alternant OAuth, utiliser un compte Google sans ligne `users` ou de type alternant — ou corriger/supprimer cette ligne. Ne pas tester le parcours alternant avec ce compte proprio.
+
+**Priorité** : faible (donnée de test, pas un bug code).
+
+**Référence** : table `public.users`, id c2e5770e-65ca-4b15-acc0-95a3d21849c1.

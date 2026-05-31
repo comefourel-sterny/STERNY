@@ -2,9 +2,31 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 11 mai 2026 — Conv Claude.ai 19 FERMÉE : T3 livrée. ChoixInscriptionPage refondue en aiguillage minimal click direct (plus de zone conditionnelle, plus d'input email, plus d'OAuth — OAuth déplacé sur étapes suivantes T4). Extension IntentCardRadio subtitle (T1 mineure rétrocompatible). Règle métho pages d'auth ajoutée à CONTEXTE-PROJET §8 ter. DETTE #66 + #67 créées. Push manuel par Côme. main reste 11f0e0f.
+**Dernière mise à jour** : 31 mai 2026 — Conv Claude.ai 23 FERMÉE. Cluster T4 OAuth : boutons OAuth posés sur E-1 alternant + page proprio (OAuthHandler générique). Complétion/routage OAuth + welcome modal PARKÉS (checkpoint non testé). Mission recentrée : finir l'inscription email (E-5 capture rythme + E-7 écriture one-pass) AVANT de rebrancher l'OAuth. DETTE #70-72 créées. Rien poussé sur origin (voir git log).
 
 ---
+
+## 2026-05-31 — Conv Claude.ai 20→23 (cluster T4 OAuth) : boutons posés, complétion PARKÉE — recentrage sur fin inscription email
+
+### Bloc 1 — Livré sur la branche (cluster T4, non poussé — voir git log pour l'état exact)
+
+- Refonte `GoogleAuthHandler` → `OAuthHandler` générique : routeur pur, plus aucun INSERT au callback. Monté global (App.jsx:98), agit sur '/', '/connexion', '/completer-profil' et tous les `/inscription/*` SAUF `/inscription/proprietaire` (HANDLER_BYPASS_ROUTES).
+- Boutons OAuth + callback sur `InscriptionProprietairePage` ; boutons OAuth en E-1 + INSERT users sur `InscriptionAlternantPage` ; fix layout boutons côte à côte.
+- Conv 23 : commit docs Q-AVO-005 (révision loyer en cours de contrat) ; checkpoint OAuth NON TESTÉ (timing callback combo getSession + onAuthStateChange, redirect user déjà inscrit, welcome modal proprio) — parké.
+
+### Bloc 2 — Décision stratégique (conv 23) : recentrage
+
+L'OAuth se branche sur le wizard et n'a pas de fin propre : ce qui définit "inscription terminée" est E-7 (écriture en base), pas encore construit. Débugger la complétion/redirection OAuth avant E-7 revient à définir la sortie d'un tunnel non percé. Décision actée : finir d'abord l'inscription email (E-5 capture rythme + E-7 écriture one-pass), PUIS rebrancher et débugger l'OAuth. Cluster complétion/routage OAuth entièrement parké.
+
+### Bloc 3 — Découverte d'archi à trancher : sémantique de `profil_complet`
+
+`OAuthHandler` route tout profil `profil_complet=false` vers `/inscription/alternant` sans regarder `type_user` → un proprio incomplet est jeté dans le wizard alternant. Cause profonde : avec l'unification inscription + compléter-profil, l'étape "compléter profil" disparaît ; une ligne `users` n'existe que quand l'inscription est finie → `profil_complet=false` ne devrait jamais exister, et le "Cas B" du handler est un vestige de l'ancienne persistance progressive. Reco (à valider et loguer dans VISION au retour OAuth) : router sur l'existence de la ligne, jamais sur `profil_complet`. Tracé DETTE #70.
+
+### Bloc 4 — État branche post-conv 23
+
+Branche `feat/unification-inscription`, jamais poussée sur origin (état exact : git log). `CreerAnnoncePage.jsx` bypass DEV toujours non commité (ne jamais stager). 3 fichiers untracked préexistants intacts.
+
+Conv 23 FERMÉE. Conv 24 à ouvrir sur E-5 (capture rythme) + E-7 (RPC écriture one-pass), avec les docs de référence.
 
 ## 2026-05-11 — Conv Claude.ai 19 : T3 livrée — ChoixInscriptionPage en aiguillage minimal click direct
 
