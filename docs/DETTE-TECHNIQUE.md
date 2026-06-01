@@ -502,7 +502,7 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Bloquant pré-production** : non.
 
-## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié
+## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié [LAYOUT RÉSOLU — finitions builder à suivre]
 
 **Statut au 3 mai 2026** : créée par cadrage section 3.9 et section 7.3.8 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
@@ -513,6 +513,14 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Plan de résolution** : session Claude Code dédiée à la refonte responsive avant T8 du plan d'implémentation UNIFICATION-INSCRIPTION. Options de layout à explorer en début de tranche : layout vertical avec sélecteur mois en haut, layout compact mois × semaines redimensionné, layout calendaire condensé. Validation visuelle desktop + mobile obligatoire. Cohérent avec DETTE #44 (UX mobile globale).
 
 **Bloquant pré-production** : oui — prérequis bloquant de la tranche T8 du chantier UNIFICATION-INSCRIPTION (intégration RhythmManualBuilder en E-5 du wizard).
+
+**Statut au 1er juin 2026 — partie layout RÉSOLUE par commit 995898f** : les 12 mois tiennent désormais dans la card 460px sans scroll horizontal. Cadre interne `.rmb-root` retiré (padding 0, sans fond/bordure/ombre/radius) ; `--rmb-cell-size: 24px` ; `--rmb-month-gap: 4px` ; `.rmb-grid` sans `overflow-x` ; `.rmb-month-column` en `flex: 1 1 0` + `min-width: 0` (les 12 colonnes partagent la largeur) ; `.rmb-cell` responsive (`width: 100%` + `aspect-ratio: 1` + `max-width: var(--rmb-cell-size)`). En-têtes de mois = initiale 1 lettre.
+
+**Finitions builder restantes (à traiter dans une session courte dédiée)** :
+- (a) **Noms de mois lisibles et compacts** — l'initiale seule est ambiguë (J×3 jan/juin/juil, M×2 mars/mai). Le 3-lettres empilé verticalement a été testé et rejeté (rendu pas propre). Pistes à explorer : 3 lettres pivotées à 90° (`writing-mode`) OU numéro du lundi affiché dans les cases (avec ou sans header de mois).
+- (b) **Déplacement du garde-fou `RhythmRequiredPopup`** : il doit se déclencher dès le 1er clic sur « Confirmer mon planning » à 0 semaine, au lieu d'apparaître après la modale d'avertissement interne du builder. Aujourd'hui `handleE5Confirm` ne reçoit `materialized` qu'après la modale, ce qui retarde le garde-fou d'un clic.
+
+**Bloquant pré-production** : non plus pour la partie layout (résolue). Les finitions ci-dessus sont du polish, non bloquantes pour les tests E-5.
 
 ## DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler (Q5)
 

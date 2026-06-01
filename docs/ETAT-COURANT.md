@@ -2,9 +2,18 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 31 mai 2026 — Conv Claude.ai 24 : modèle auth/écriture/vérification verrouillé (signUp à E-7, écriture one-pass, vérification email par code OTP 6 chiffres en ligne, RhythmManualBuilder en capture-only). Avant tout code. Rien poussé ; OAuth parqué (DETTE #70-72).
+**Dernière mise à jour** : 1er juin 2026 — Builder calendrier (RhythmManualBuilder) refondu visuellement (commit 995898f) : les 12 mois tiennent dans la card 460px sans scroll horizontal. DETTE #54 partie layout RÉSOLUE ; 3 finitions builder identifiées pour la prochaine session. E-5 maintenant branché et utilisable.
 
 ---
+
+## 2026-06-01 — Builder calendrier : refonte visuelle layout livrée + finitions identifiées
+
+- **Builder calendrier (RhythmManualBuilder) refondu visuellement (commit 995898f)** : les 12 mois tiennent dans la carte sans scroll horizontal. Cadre interne `.rmb-root` retiré (`padding: 0`, sans fond/bordure/ombre/radius) ; `--rmb-cell-size: 24px` ; `--rmb-month-gap: 4px` ; `.rmb-grid` sans `overflow-x` ; `.rmb-month-column` en `flex: 1 1 0` + `min-width: 0` (les 12 colonnes partagent la largeur) ; `.rmb-cell` responsive (`width: 100%` + `aspect-ratio: 1` + `max-width: var(--rmb-cell-size)`). En-têtes de mois = initiale 1 lettre.
+
+- **Reste ouvert sur le builder (prochaine session)** :
+  - (a) **Lisibilité des noms de mois** — l'initiale seule est ambiguë (J×3 jan/juin/juil, M×2 mars/mai) ; le 3-lettres empilé verticalement a été testé et REJETÉ (pas propre) ; pistes : 3 lettres pivotées à 90° (writing-mode) OU numéro du lundi affiché dans les cases.
+  - (b) **Garde-fou « calendrier indispensable »** à déplacer pour qu'il se déclenche dès le 1er clic sur « Confirmer mon planning » à 0 semaine, au lieu d'apparaître après la modale d'avertissement.
+  - (c) **Textes modale d'avertissement + pop-up trop longs** (→ DETTE #45).
 
 ## 2026-05-31 (suite) — Conv Claude.ai 24 : modèle auth/écriture/vérification verrouillé (avant tout code)
 
