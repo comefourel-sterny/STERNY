@@ -2,9 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er juin 2026 — Builder calendrier (RhythmManualBuilder) refondu visuellement (commit 995898f) : les 12 mois tiennent dans la card 460px sans scroll horizontal. DETTE #54 partie layout RÉSOLUE ; 3 finitions builder identifiées pour la prochaine session. E-5 maintenant branché et utilisable.
+**Dernière mise à jour** : 1er juin 2026 (soir) — finitions visuelles du builder terminées : noms de mois lisibles 3 lettres (c6f2eb4), garde-fou déclenché au 1er clic (096093d), semaines passées restylées contour+diagonale gris alignés DS (15b811c). DETTE #54 entièrement résolue. Reste : raccourcir les textes modale+pop-up (→ DETTE #45), puis E-7.
 
 ---
+
+## 2026-06-01 (soir) — finitions builder calendrier (a/b/d)
+
+- **(a) Header de mois** — initiale ambiguë (J×3, M×2) → 3 lettres horizontales, police 11px, `letter-spacing: 0` (commit c6f2eb4). Rendu compact lisible dans la colonne ~28px.
+- **(b) Garde-fou « calendrier indispensable »** — nouvelle prop `onEmptyConfirm` sur `RhythmManualBuilder` ; à 0 semaine cochée, le clic sur « Confirmer mon planning » déclenche directement `RhythmRequiredPopup` côté wizard (skip de la modale d'avertissement interne du builder) ; `handleE5Confirm` garde sa vérif défensive `hasSchoolWeek` (commit 096093d).
+- **(d) Semaines passées** — restyle aligné design system : fond clair `--rmb-bg-empty`, contour `border: 1.5px solid #94A3B8` + diagonale 1.5px `#94A3B8`, les deux en gris secondaire officiel de la plateforme, sans `opacity` (commit 15b811c). Variables `--rmb-past-bg` et `--rmb-past-border` devenues inutilisées (à nettoyer avec DETTE #56).
+- **Reste ouvert** : (c) textes modale d'avertissement interne du builder + `RhythmRequiredPopup` trop longs → raccourcir (suivi sous DETTE #45, wording en attente d'avis avocat). Puis E-7.
 
 ## 2026-06-01 — Builder calendrier : refonte visuelle layout livrée + finitions identifiées
 

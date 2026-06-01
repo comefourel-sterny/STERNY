@@ -502,7 +502,7 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Bloquant pré-production** : non.
 
-## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié [LAYOUT RÉSOLU — finitions builder à suivre]
+## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié [RÉSOLUE]
 
 **Statut au 3 mai 2026** : créée par cadrage section 3.9 et section 7.3.8 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
@@ -516,11 +516,16 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Statut au 1er juin 2026 — partie layout RÉSOLUE par commit 995898f** : les 12 mois tiennent désormais dans la card 460px sans scroll horizontal. Cadre interne `.rmb-root` retiré (padding 0, sans fond/bordure/ombre/radius) ; `--rmb-cell-size: 24px` ; `--rmb-month-gap: 4px` ; `.rmb-grid` sans `overflow-x` ; `.rmb-month-column` en `flex: 1 1 0` + `min-width: 0` (les 12 colonnes partagent la largeur) ; `.rmb-cell` responsive (`width: 100%` + `aspect-ratio: 1` + `max-width: var(--rmb-cell-size)`). En-têtes de mois = initiale 1 lettre.
 
-**Finitions builder restantes (à traiter dans une session courte dédiée)** :
-- (a) **Noms de mois lisibles et compacts** — l'initiale seule est ambiguë (J×3 jan/juin/juil, M×2 mars/mai). Le 3-lettres empilé verticalement a été testé et rejeté (rendu pas propre). Pistes à explorer : 3 lettres pivotées à 90° (`writing-mode`) OU numéro du lundi affiché dans les cases (avec ou sans header de mois).
-- (b) **Déplacement du garde-fou `RhythmRequiredPopup`** : il doit se déclencher dès le 1er clic sur « Confirmer mon planning » à 0 semaine, au lieu d'apparaître après la modale d'avertissement interne du builder. Aujourd'hui `handleE5Confirm` ne reçoit `materialized` qu'après la modale, ce qui retarde le garde-fou d'un clic.
+**Statut au 1er juin 2026 (soir) — DETTE entièrement RÉSOLUE** :
+- (a) **Noms de mois 3 lettres horizontales** (commit c6f2eb4) — l'initiale ambiguë (J×3 jan/juin/juil, M×2 mars/mai) est remplacée par 3 lettres horizontales en 11px, `letter-spacing: 0`. Le 3-lettres empilé verticalement avait été testé et rejeté.
+- (b) **Garde-fou au 1er clic via prop `onEmptyConfirm`** (commit 096093d) — nouvelle prop sur `RhythmManualBuilder` ; à 0 semaine cochée, le clic sur « Confirmer mon planning » déclenche directement `RhythmRequiredPopup` côté wizard (skip de la modale d'avertissement interne du builder). `handleE5Confirm` conserve sa vérif défensive `hasSchoolWeek`.
+- (d) **Semaines passées restylées aligné DS** (commit 15b811c) — fond clair `--rmb-bg-empty` + `border: 1.5px solid #94A3B8` + diagonale 1.5px `#94A3B8` (gris secondaire officiel de la plateforme), `opacity: 1`. Plus de dilution visuelle.
 
-**Bloquant pré-production** : non plus pour la partie layout (résolue). Les finitions ci-dessus sont du polish, non bloquantes pour les tests E-5.
+**Seul reliquat builder** : raccourcir les textes de la modale d'avertissement interne du builder + de `RhythmRequiredPopup`. Suivi sous **DETTE #45** (wording, en attente d'avis avocat).
+
+**Note de nettoyage** : les variables CSS `--rmb-past-bg` et `--rmb-past-border` sont devenues inutilisées après le restyle (d). À supprimer lors du nettoyage de tokenisation prévu sous **DETTE #56**.
+
+**Bloquant pré-production** : non — la DETTE est entièrement résolue.
 
 ## DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler (Q5)
 
