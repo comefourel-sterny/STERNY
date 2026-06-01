@@ -309,7 +309,7 @@ export default function RhythmManualBuilder({
       <div className="rmb-grid">
         {monthsLayout.map((month) => (
           <div key={month.key} className="rmb-month-column">
-            <div className="rmb-month-header">{month.label.charAt(0).toUpperCase()}</div>
+            <div className="rmb-month-header">{month.label.split(' ')[0].toUpperCase().slice(0, 3)}</div>
             {month.weeks.map((w) => {
               const isPast = pastWeekStarts.has(w.weekStart);
               const isClicked = clicked.has(w.weekStart);
