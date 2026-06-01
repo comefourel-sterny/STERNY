@@ -151,9 +151,10 @@
 
 /* Cellules passées (Q11 B) — sobre, réversible, non-cliquables */
 .rmb-cell-past {
-  background: var(--rmb-past-bg);
-  border-color: var(--rmb-past-border);
-  opacity: 0.5;
+  background-color: var(--rmb-bg-empty);
+  background-image: linear-gradient(to top right, transparent calc(50% - 0.75px), #94A3B8 calc(50% - 0.75px), #94A3B8 calc(50% + 0.75px), transparent calc(50% + 0.75px));
+  border: 1.5px solid #94A3B8;
+  opacity: 1;
   cursor: not-allowed;
 }
 
