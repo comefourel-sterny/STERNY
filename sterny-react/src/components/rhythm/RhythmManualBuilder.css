@@ -2,10 +2,10 @@
    Tokens design system Sterny appliqués (DM Sans, navy/orange, radius, shadow). */
 
 .rmb-root {
-  --rmb-cell-size: 28px;
+  --rmb-cell-size: 24px;
   --rmb-cell-radius: 6px;
   --rmb-cell-gap: 4px;
-  --rmb-month-gap: 18px;
+  --rmb-month-gap: 4px;
   --rmb-bg-empty: #F4F5F7;
   --rmb-border-subtle: #E8EAF0;
   --rmb-past-bg: #E8EAF0;
@@ -22,10 +22,9 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 24px;
-  background: #FFFFFF;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(30, 41, 59, 0.06);
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 /* Zone 0 — sélecteur d'année académique (Q10) */
@@ -88,7 +87,6 @@
 .rmb-grid {
   display: flex;
   gap: var(--rmb-month-gap);
-  overflow-x: auto;
   padding-bottom: 8px;
 }
 
@@ -96,7 +94,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--rmb-cell-gap);
-  flex-shrink: 0;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: center;
 }
 
@@ -110,10 +109,11 @@
   white-space: nowrap;
   text-align: center;
 }
-
 .rmb-cell {
-  width: var(--rmb-cell-size);
-  height: var(--rmb-cell-size);
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  max-width: var(--rmb-cell-size);
   border-radius: var(--rmb-cell-radius);
   border: 1px solid var(--rmb-border-subtle);
   background: var(--rmb-bg-empty);
