@@ -622,6 +622,7 @@ export default function InscriptionAlternantPage() {
           villeRecherchee="ecole"
           initialCalendar={state.rhythm_calendar || undefined}
           onConfirm={handleE5Confirm}
+          onEmptyConfirm={() => setRhythmPopupOpen(true)}
         />
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />

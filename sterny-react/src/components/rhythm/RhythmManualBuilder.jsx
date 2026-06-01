@@ -139,6 +139,7 @@ export default function RhythmManualBuilder({
   villeRecherchee,
   onConfirm,
   onCancel,
+  onEmptyConfirm,
 }) {
   if (villeRecherchee !== 'ecole' && villeRecherchee !== 'entreprise') {
     throw new Error(
@@ -227,8 +228,12 @@ export default function RhythmManualBuilder({
   );
 
   const handleOpenModal = useCallback(() => {
+    if (clicked.size === 0) {
+      onEmptyConfirm?.();
+      return;
+    }
     setModalOpen(true);
-  }, []);
+  }, [clicked, onEmptyConfirm]);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
