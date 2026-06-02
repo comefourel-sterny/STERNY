@@ -714,6 +714,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Bloquant pré-production** : non. Le E-4 fonctionnel marche, la logique métier est correcte (validation, navigation, accessibilité, table 1.3 couverte), seul le polish design reste à faire.
 
+**Mise à jour 2 juin 2026 (conv 29) — RÉOUVERTE.** La décision conv 12 (suppression du choix école/entreprise en E-4) est révisée. Motif : la nature de la ville est indispensable au matching (dispo dérivée du rhythm_calendar + nature de la ville) et non dérivable a posteriori. Contexte changé depuis conv 12 (écran E-4 épuré → 1 question claire). Réintroduit pour locataire/hote via CustomSelect (commit dc8eabe), pas via les cartes IntentCardRadio (re-rejetées). Polish visuel reporté à une phase design. Cas les_deux à traiter → DETTE #77.
+
 ## DETTE #65 — Auto-capitalize première lettre transverse sur les autres types d'inputs texte
 
 **Statut au 6 mai 2026 (soir, conv 12)** : créée suite à l'amélioration `AutocompleteInput` conv 12.
@@ -858,3 +860,28 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Piste** : mettre à jour la CLI Supabase, retenter `supabase start` complet ; si Studio reste unhealthy, investiguer via les logs docker.
 
 **Priorité** : basse. **Réf** : `supabase start -x studio,imgproxy`, CLI Supabase v2.90.0.
+
+## DETTE #76 — Incohérence des 4 colonnes ville/statut entre wizard, legacy et dashboard
+
+**Statut au 2 juin 2026 (conv 29)** : créée (surfacée par l'audit E-4).
+
+**Constat** : les 4 colonnes (ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise) sont utilisées de façon incohérente :
+- Wizard E-4 : ville unique (locataire/hote) → ville_entreprise ; les_deux par action (propose→ville_entreprise, cherche→ville_ecole) ; statuts laissés null.
+- Legacy InscriptionRecherchePage (l.354-369) : ville de recherche → ville_ecole + statuts remplis — convention opposée au wizard.
+- DashboardLocatairePage : détecte les_deux via (statut_ville_ecole='hote' && statut_ville_entreprise='recherche') — statuts jamais remplis par le nouveau parcours → détection KO (seul type_user='les_deux' la sauve) ; affiche ville_ecole→« Hote », ville_entreprise→« Recherche ».
+
+**Conséquence** : remplir correctement les 4 colonnes à E-7 (nature + statut) entrera en conflit avec le dashboard/legacy si une convention unique n'est pas figée et propagée.
+
+**Plan** : une fois E-7 + les_deux construits avec la capture de nature, figer UNE convention (colonne=nature, statut=action, VISION §65-86) et la propager (DashboardLocatairePage, ModifierProfilPage, sort du legacy à décider). Chantier dédié, distinct de E-7.
+
+**Priorité** : moyenne. **Réf** : InscriptionAlternantPage E-4, InscriptionRecherchePage l.354-369, DashboardLocatairePage l.104/338/391/580/620/627, VISION §65-86.
+
+## DETTE #77 — Capture de la nature ville pour le cas les_deux en E-4
+
+**Statut au 2 juin 2026 (conv 29)** : créée.
+
+**Constat** : la capture de la nature école/entreprise a été réintroduite en E-4 pour locataire/hote (mono-ville, commit dc8eabe, champ nature_ville + CustomSelect). La branche les_deux n'a PAS été traitée : elle capture ses 2 villes par action (« où tu proposes » → ville_entreprise, « où tu cherches » → ville_ecole), sans nature ni statuts.
+
+**Plan** : avant E-7, étendre la capture de nature au cas les_deux (nature de chacune des 2 villes + action de chacune) pour remplir ville_ecole/ville_entreprise par nature + statut_ville_* par action (VISION §65-86). Forme visuelle pilotée par Côme.
+
+**Priorité** : moyenne — prérequis à un E-7 qui écrit des données conformes pour un profil les_deux. **Réf** : InscriptionAlternantPage branche E-4 les_deux, useInscriptionWizard validateE4.

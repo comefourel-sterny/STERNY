@@ -2,9 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 28) — Retrait de la photo de profil du wizard soldé (E-6 = date_naissance + sexe, commit ca8d87c). DETTE #66 rouverte (équilibre carte E-6). Prochaine étape : écran client E-7 (signUp + OTP + RPC).
+**Dernière mise à jour** : 2 juin 2026 (conv 29) — Capture de la nature de la ville (école/entreprise) en E-4 pour locataire/hote (commit dc8eabe). Décision conv 12 révisée (DETTE #64 rouverte). Prochaine étape : cas les_deux puis écran E-7.
 
 ---
+
+## 2026-06-02 (conv 29) — Capture nature ville en E-4 + décision conv 12 révisée
+
+- **Découverte en cadrant E-7** : l'E-4 ne capturait pas la NATURE des villes (école/entreprise), info indispensable au matching (la dispo d'un logement se dérive du rhythm_calendar + de la nature de la ville). Non dérivable a posteriori (un locataire peut chercher dans sa ville d'école OU d'entreprise, CONTEXTE §3).
+- **Décision produit — conv 12 (DETTE #64) RÉVISÉE** : la suppression du choix école/entreprise est revenue sur. Écran E-4 épuré → une question claire suffit. Nature réintroduite en E-4. VISION inchangée (le code revient à la ligne §65-86).
+- **Livré (commit dc8eabe, non poussé)** : capture nature pour locataire/hote (mono-ville). Champ d'état `nature_ville` ('ecole'|'entreprise') ; CustomSelect sous le champ ville ; question dynamique reprenant la ville saisie (« Rennes, c'est ta ville d'école ou d'entreprise ? ») au style step-subtitle ; `validateE4` l'exige pour locataire/hote. CAPTURE SEULE : le remplissage des 4 colonnes ville/statut depuis (ville + nature_ville + type_user) se fera à l'assemblage E-7.
+- **Méthodo (itérations visuelles)** : IntentCardRadio rejeté (comme en conv 12), radios natifs « pas pro », retour au CustomSelect (cohérent avec le champ sexe E-6) = retenu. Leçon : ne pas itérer un style à l'aveugle par prompts ; polish bespoke reporté à une phase design.
+- **les_deux NON traité** (capture encore par action, sans nature ni statuts) → DETTE #77, à faire avant E-7.
+- **Cohérence 4 colonnes en aval encore KO** (dashboard lit à l'envers du wizard, statuts jamais remplis) → DETTE #76, chantier distinct de E-7.
+- **Ordre restant** : (a) les_deux (capture nature) → (b) écran E-7 (signUp + OTP + RPC qui assemble p_profile) → (c) config email locale + tests bout-en-bout. Puis cohérence dashboard (#76).
+- **Annexes confirmées** : miroir sessionStorage débloqué (note ligne 69 = handoff email seulement) ; supabase-js ^2.100.1 (type de verifyOtp à confirmer à l'écran code).
 
 ## 2026-06-02 (conv 28) — Retrait photo du wizard (E-6 = date + sexe)
 
