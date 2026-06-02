@@ -351,6 +351,14 @@ Côme a remonté en validation visuelle de l'étape C que le wording v1 de la mo
 
 **Localisation des wordings** : commentaire `// TODO validation avocat avant production` à poser au-dessus de chacun des 2 textes dans le code source — chercher cette chaîne pour les retrouver. Concerné en première intégration : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` (modale Q8) et le composant pop-up Q9 (nom à arrêter à l'étape 4, probablement `sterny-react/src/components/rhythm/RhythmRequiredPopup.jsx`).
 
+**Mise à jour 2 juin 2026 (conv 25)** : le wording Q9 archivé plus haut (titre « Complétez votre planning d'alternance », « vous », amorces variables par action, 2 boutons) est PÉRIMÉ. Le composant réel `RhythmRequiredPopup.jsx` a été refondu puis finalisé en conv 25. Texte courant (commit deb9f5f) :
+- Titre : « Complète ton calendrier »
+- Corps : « C'est ce qui permet à Sterny de te mettre en relation. Ça prend 2 minutes, tu pourras le modifier plus tard. »
+- Bouton unique : « Renseigner mon calendrier »
+Tutoiement « tu », texte statique (pas d'amorce variable), 1 seul bouton primaire. Travail de longueur/lisibilité uniquement — juridiquement léger (aucune clause contractuelle, paiement ni responsabilité), donc hors périmètre du gel avocat. Largeur du popup portée de 400px à 460px (`.aw-rrp-panel max-width`) pour matcher la carte du wizard et tenir chaque phrase sur une ligne — divergence assumée vs la spec §738.
+
+**Correction de localisation** : le composant vit dans `sterny-react/src/components/auth-wizard/RhythmRequiredPopup.jsx` (et non `components/rhythm/` comme indiqué en §352). Le `// TODO validation avocat avant production` n'est présent QUE sur la modale Q8 dans `RhythmManualBuilder.jsx`. La Q8 (127 mots, 5 paragraphes) reste INTACTE : sa longueur est du fond juridique gelé, compaction réservée à la consultation avocat. Aucune coupe faite sur la Q8 en conv 25.
+
 ## DETTE #46 — Modèle de données multi-années pour utilisateurs récurrents
 
 **Statut au 2 mai 2026 après-midi** : créée par l'arrêt du cadrage de l'étape C lorsque Côme a identifié que la décision de structure pour la saisie multi-années touche à un fondement architectural transversal (`rhythm_imports`, contrats, transitions entre années, matching année en cours).

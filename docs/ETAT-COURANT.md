@@ -2,9 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 1er juin 2026 (soir) — finitions visuelles du builder terminées : noms de mois lisibles 3 lettres (c6f2eb4), garde-fou déclenché au 1er clic (096093d), semaines passées restylées contour+diagonale gris alignés DS (15b811c). DETTE #54 entièrement résolue. Reste : raccourcir les textes modale+pop-up (→ DETTE #45), puis E-7.
+**Dernière mise à jour** : 2 juin 2026 (conv 25) — popup `RhythmRequiredPopup` finalisé (commit deb9f5f) : wording raccourci + largeur 460px pour matcher la carte du wizard. Sujet 1 (textes) CLOS. Modale Q8 du builder laissée intacte (fond juridique gelé, DETTE #45). Prochain : E-7 en attente de validation Côme.
 
 ---
+
+## 2026-06-02 (conv 25) — sujet 1 (textes) soldé : popup Q9 finalisé, Q8 gelée
+
+- **RhythmRequiredPopup (Q9)** finalisé (commit deb9f5f) : wording raccourci (« Complète ton calendrier » / « C'est ce qui permet à Sterny de te mettre en relation. Ça prend 2 minutes, tu pourras le modifier plus tard. ») + largeur portée à 460px pour matcher la carte du wizard. Longueur/lisibilité/layout uniquement. Composant localisé dans `components/auth-wizard/`.
+- **Modale Q8 du builder** laissée INTACTE : longueur = fond juridique gelé, compaction reportée à l'avocat (DETTE #45 complétée : drift Q9 + correction chemin).
+- **Piste design (non-dette)** : le popup « fait template SaaS IA » (icône pastille + centrage + bouton orange pleine largeur). À reprendre en phase design avec designer/DA, post-fonctionnel. Pas inscrit en dette (bruit).
+- **Sujet 1 CLOS.** Prochain : E-7 (écriture finale inscription) — cadrage déjà présenté conv 25, en attente de validation Côme avant tout code.
 
 ## 2026-06-01 (soir) — finitions builder calendrier (a/b/d)
 
