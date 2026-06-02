@@ -2,9 +2,18 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 26) — RPC E-7 écrite (non testée). Test local BLOQUÉ par environnement local non reproductible (DETTE #74). Détour env (disque/Docker/Claude Code) résolu. Prochaine conv : réparer l'infra locale (DETTE #74) puis tester E-7.
+**Dernière mise à jour** : 2 juin 2026 (conv 27) — DETTE #74 RÉSOLUE : environnement Supabase local reproductible (`supabase db reset` vert, 8 migrations rejouées depuis zéro). Prochaine étape : test fonctionnel de la RPC E-7 `complete_inscription_alternant` en local.
 
 ---
+
+## 2026-06-02 (conv 27) — DETTE #74 résolue : env Supabase local reproductible
+
+- **DETTE #74 RÉSOLUE.** `supabase db reset` rejoue les 8 migrations depuis zéro sans erreur. Fix : dump remote_schema.sql (1973 l.) intégré dans la migration initiale vide 20260421082830 ; migration 090000 rendue idempotente (2 index IF NOT EXISTS + DROP POLICY IF EXISTS sur 4 policies) ; supabase/seed.sql vide. Détail + caveat prod (migration list avant push) dans DETTE #74.
+- **Décision actée** : réutilisation du dump existant (~21-24 avril) comme baseline, sans régénérer depuis la prod (audit a confirmé un dump propre et rejouable). Variante "dump frais" écartée.
+- **DETTE #75 créée** : conteneur Studio local unhealthy → `supabase start` complet échoue ; contournement `supabase start -x studio,imgproxy` ; CLI Supabase obsolète (v2.90.0 → v2.104.0). Non bloquant.
+- **Consigne local** : ne pas insérer dans la table alertes en local (triggers HTTP non neutralisés tapent la prod). Voir note DETTE #74.
+- **RPC E-7 (20260602120000)** : s'applique sans erreur SQL au db reset (1er niveau de validation), MAIS reste untracked et non testée fonctionnellement → ne pas committer.
+- **Ordre restant** : (1) infra locale DETTE #74 OK → (2) test fonctionnel RPC E-7 (appel local + vérif INSERT) → (3) retrait photo E-6 → (4) écran client E-7 → (5) config email locale + tests.
 
 ## 2026-06-02 (conv 26) — Décision photo + audit E-7
 
