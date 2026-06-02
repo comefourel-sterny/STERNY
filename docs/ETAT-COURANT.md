@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 26) — Décision produit : photo de profil RETIRÉE du wizard (rejoint la bio en post-inscription). Cadrage E-7 confirmé par audit lecture seule. Prochain : retrait photo E-6 puis construction E-7.
+**Dernière mise à jour** : 2 juin 2026 (conv 26) — RPC E-7 écrite (non testée). Test local BLOQUÉ par environnement local non reproductible (DETTE #74). Détour env (disque/Docker/Claude Code) résolu. Prochaine conv : réparer l'infra locale (DETTE #74) puis tester E-7.
 
 ---
 
@@ -12,6 +12,10 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 - **Chantier code induit** : retirer PhotoCropperModal + photo_profil_url du state de useInscriptionWizard.js et de la branche E-6 d'InscriptionAlternantPage.jsx (à faire avant E-7).
 - **Audit E-7 (lecture seule) effectué** : aucun trigger auth→users (la RPC devra INSÉRER) ; RPC modèle confirm_rhythm_calendar_manual récupérée ; builder E-5 confirmé capture-only ; RecapBlock réutilisable ; password déclaré mais jamais saisi (à saisir à E-7) ; RLS INSERT users en WITH CHECK(true) — DETTE #73.
 - **Ordre de travail** : logs (ce commit) → retrait photo E-6 → RPC complete_inscription_alternant → écran E-7 → config email locale + tests.
+- **RPC E-7 écrite (non testée, NON commitée)** : `complete_inscription_alternant` + rollback dans `supabase/migrations/20260602120000_*` et `supabase/_rollback/` (UNTRACKED — ne pas committer tant que non testé). PK `users_pkey` confirmée → `ON CONFLICT (id)` OK. Pattern repris de `confirm_rhythm_calendar_manual` : INSERT one-pass, `rhythm_import_id` NULL, pas d'insert rhythm_imports, `p_rhythm_source` en paramètre, `date_naissance` sans contrôle d'âge (parqué).
+- **BLOCAGE** : `supabase start` échoue → DETTE #74 (env local non reproductible). Tests E-7 en pause tant que l'infra locale n'est pas réparée.
+- **Détour env résolu** : disque Mac plein (purge 16 Go caches Xcode), Docker redémarré, Claude Code réinstallé (binaire natif perdu pendant le disque plein).
+- **Ordre révisé** : (1) réparer infra locale DETTE #74 → (2) appliquer + tester RPC E-7 → (3) retrait photo E-6 → (4) écran client E-7 → (5) config email locale + tests.
 
 ## 2026-06-02 (conv 25) — sujet 1 (textes) soldé : popup Q9 finalisé, Q8 gelée
 

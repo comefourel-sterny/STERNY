@@ -823,3 +823,15 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Plan** : restreindre le `WITH CHECK` à `auth.uid() = id` une fois le flux E-7 stabilisé (après vérification qu'aucun chemin légitime n'insère pour un autre `id`). À inscrire à la revue sécurité/RGPD professionnelle avant lancement.
 
 **Priorité** : moyenne. **Réf** : policies `public.users`, `remote_schema.sql`.
+
+## DETTE #74 — Environnement Supabase local non reproductible (schéma absent des migrations)
+
+**Statut au 2 juin 2026 (conv 26)** : créée. BLOQUANTE pour les tests locaux.
+
+**Constat** : `supabase start` sur base fraîche échoue à l'application des migrations — `ERROR: function public.is_admin() does not exist (SQLSTATE 42883)` sur la migration `20260421090000_create_rhythm_imports_table.sql` (policy `admin_select_all` qui appelle `public.is_admin()`). Cause : la migration `20260421082830_remote_schema.sql` est VIDE ; le schéma réel (table `users`, fonction `public.is_admin()`, etc.) vit dans `supabase/remote_schema.sql` (hors dossier migrations/), rejoué par aucun mécanisme. Pas de `seed.sql` (config.toml `[db.seed]` pointe vers un fichier absent). La base locale était peuplée manuellement ; après redémarrage elle repart vide → migrations dépendantes plantent.
+
+**Conséquence** : impossible de démarrer une base locale propre pour tester E-7 (RPC + signUp/OTP).
+
+**Reco (chantier dédié, à cadrer et tester)** : intégrer le contenu de `supabase/remote_schema.sql` dans la migration initiale `20260421082830_remote_schema.sql` (vide) pour recréer le schéma complet avant les migrations dépendantes. Vérifier que le dump se rejoue proprement (rôles, extensions, ownership). À faire AVANT de reprendre les tests E-7.
+
+**Priorité** : haute. **Réf** : `supabase/migrations/20260421082830_remote_schema.sql`, `supabase/remote_schema.sql`, `config.toml [db.seed]`.
