@@ -53,7 +53,6 @@ const initialState = {
   // bio retirée d'E-6 (amendement VISION conv 15) — reportée à ModifierProfilPage post-inscription.
   date_naissance: '',
   sexe: '',
-  photo_profil_url: null,
 }
 
 function reducer(state, action) {
@@ -192,7 +191,7 @@ export function validateE4(state) {
 }
 
 // Validation frontend E-6 — profil personnel (cf. UNIFICATION-INSCRIPTION § 3.10)
-// date_naissance + sexe obligatoires, photo_profil_url + bio optionnels.
+// date_naissance + sexe obligatoires.
 // Pas de check âge ≥ 18 ans : en attente d'avis professionnel Q-AVO-001 + Q-DPO-002
 // (cf. CONTEXTE-PROJET §3 sur les mineurs alternants).
 // Renvoie un message global (string) ou null si tout OK.
