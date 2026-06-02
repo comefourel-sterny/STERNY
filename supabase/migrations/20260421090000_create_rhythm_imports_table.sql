@@ -54,25 +54,29 @@ CREATE TABLE IF NOT EXISTS public.rhythm_imports (
 );
 
 -- Index
-CREATE INDEX idx_rhythm_imports_user_id ON public.rhythm_imports(user_id);
-CREATE INDEX idx_rhythm_imports_created_at ON public.rhythm_imports(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_rhythm_imports_user_id ON public.rhythm_imports(user_id);
+CREATE INDEX IF NOT EXISTS idx_rhythm_imports_created_at ON public.rhythm_imports(created_at DESC);
 
 -- RLS
 ALTER TABLE public.rhythm_imports ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "rhythm_imports_select_own" ON public.rhythm_imports;
 CREATE POLICY "rhythm_imports_select_own"
   ON public.rhythm_imports FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "rhythm_imports_insert_own" ON public.rhythm_imports;
 CREATE POLICY "rhythm_imports_insert_own"
   ON public.rhythm_imports FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "rhythm_imports_update_own" ON public.rhythm_imports;
 CREATE POLICY "rhythm_imports_update_own"
   ON public.rhythm_imports FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "admin_select_all" ON public.rhythm_imports;
 CREATE POLICY "admin_select_all"
   ON public.rhythm_imports FOR SELECT
   USING (public.is_admin());
