@@ -2,9 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 27) — DETTE #74 RÉSOLUE (env local reproductible) + RPC E-7 `complete_inscription_alternant` testée fonctionnellement en local et commitée. Base de l'inscription E-7 posée et vérifiée. Prochaine étape : retrait photo E-6, puis écran client E-7.
+**Dernière mise à jour** : 2 juin 2026 (conv 28) — Retrait de la photo de profil du wizard soldé (E-6 = date_naissance + sexe, commit ca8d87c). DETTE #66 rouverte (équilibre carte E-6). Prochaine étape : écran client E-7 (signUp + OTP + RPC).
 
 ---
+
+## 2026-06-02 (conv 28) — Retrait photo du wizard (E-6 = date + sexe)
+
+- **Étape 3 du plan E-7 SOLDÉE.** Photo de profil retirée du wizard d'inscription (commit ca8d87c, branche feat/unification-inscription, non poussé). E-6 ne capture plus que date_naissance + sexe. Validé visuellement (E-1 → E-7, navigation OK). Retrait : photo_profil_url du state (useInscriptionWizard.js), import + states/refs + handlers + bloc JSX photo (InscriptionAlternantPage.jsx), sélecteurs .ial-e6-photo-* / .ial-e6-info-* (InscriptionAlternantPage.css). Aucun impact E-7 : la RPC ne consomme pas photo_profil_url.
+- **Décision actée — PhotoCropperModal CONSERVÉ.** Composant NON supprimé : utilisé par src/dev/AuthWizardSandbox.jsx + réutilisable en post-inscription (progressive profiling, photo redemandée sur dashboard / au clic Postuler, cf. VISION bloc photo conv 26). Retrait = sortir du wizard uniquement.
+- **Décision actée — PAS de fusion d'E-6 maintenant.** E-6 réduit à 2 champs reste une étape autonome. Fusion reportée (toucherait numérotation E-1…E-7, barre de progression, reducer, branchement E-7). À reconsidérer en passe dédiée une fois E-7 branché, si pertinent.
+- **DETTE #66 RÉOUVERTE** : le retrait de la photo crée un vide vertical dans la carte E-6 (2 champs en haut, bouton Continuer en bas, carte à 536px). Polish à arbitrer par Côme dans npm run dev, idéalement post-E-7. Voir DETTE-TECHNIQUE #66.
+- **Observé (hors-scope, à traiter ailleurs)** :
+  - Header affiche un avatar connecté (« CF ») sur /inscription/alternant pendant le parcours d'inscription. À diagnostiquer (session dev résiduelle vs ligne test founder DETTE #72) + définir le comportement attendu d'une session active sur le wizard. Rattaché à DETTE #70 + chantier E-7/OAuth.
+  - E-5 (builder calendrier) : mise au propre visuelle non finalisée (signalé par Côme). À préciser et finir plus tard.
+- **Ordre restant (plan E-7)** : (4) écran client E-7 — signUp + OTP email + appel RPC complete_inscription_alternant ; (5) config email locale + tests bout-en-bout. Push quand le lot est jugé prêt (état exact des commits à pousser : voir git log / git status).
 
 ## 2026-06-02 (conv 27) — DETTE #74 résolue + RPC E-7 testée et commitée
 

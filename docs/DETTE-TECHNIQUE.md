@@ -732,6 +732,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #66 — Polish design E-6 (carte trop étirée)
 
+**Statut au 2 juin 2026 (conv 28)** : 🔄 RÉOUVERTE. Le retrait de la photo du wizard (commit ca8d87c, décision conv 26 — progressive profiling) supprime l'élément haut sur lequel reposait l'équilibre vertical validé en conv 15. E-6 réduit à date_naissance + sexe → vide vertical entre les 2 champs (en haut) et le bouton Continuer (en bas) dans la carte à 536px. Polish à arbitrer par Côme directement dans npm run dev, idéalement une fois E-7 branché (vue d'ensemble du parcours). Aucune maquette imposée.
+
 **Statut au 7 mai 2026 (conv 15 bloc 3)** : ✅ **RÉSOLUE** par refonte design E-6 sur grammaire wizard unifiée (commit feat ci-dessus). Photo centrée 80×80 + ligne date+sexe en grille 2 cols + tooltip flottant absolute + bio supprimée. Contenu E-6 plafonné sous 464px → carte à 536px stricts comme les autres étapes. Voir ETAT-COURANT bloc "2026-05-07 (suite) — Conv Claude.ai 15 bloc 3".
 
 **Statut** : créée conv 14 — code fonctionnel, design pas validé visuellement.
@@ -791,6 +793,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : moyenne — bloque la cohérence du retour OAuth, non urgente tant que E-7 n'existe pas.
 
 **Référence** : `OAuthHandler.jsx` (Cas A/B/C, L.44-59) ; `InscriptionProprietairePage.jsx` CHECK 1 (L.72-77) ; VISION-ARCHITECTURE §6 (one-pass E-7).
+
+**Observé conv 28** : symptôme visible en local — le header affiche un avatar connecté (initiales « CF ») sur /inscription/alternant pendant le parcours d'inscription ; une session active n'a pas de garde de route sur le wizard. À diagnostiquer (origine de la session : dev résiduelle vs ligne test founder DETTE #72) et à traiter dans le même chantier E-7/OAuth que ce routage.
 
 ## DETTE #71 — Service Agentation `localhost:4747` injoignable en local (ERR_CONNECTION_REFUSED)
 
