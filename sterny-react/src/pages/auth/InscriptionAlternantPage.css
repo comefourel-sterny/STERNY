@@ -58,6 +58,14 @@
   line-height: 1.4;
 }
 
+/* E-4 question 2 (nature ville) : dans .ial-form (gap 16px). On descend le titre
+   vers le menu pour que l'écart titre→menu (6px) = l'écart question 1 → champ ville,
+   et on reporte l'espace retiré au-dessus pour que le menu ne bouge pas. */
+.ial-step-subtitle.ial-nature-question {
+  margin-top: 16px;
+  margin-bottom: -10px;
+}
+
 .ial-field-label {
   display: block;
   font-family: 'DM Sans', sans-serif;

@@ -509,6 +509,13 @@ export default function InscriptionAlternantPage() {
       : state.type_user === 'hote'
         ? 'Dans quelle ville proposes-tu ton logement ?'
         : 'Renseigne tes deux villes'
+    const natureQuestion = (state.ville_entreprise ?? '').trim()
+      ? `${state.ville_entreprise.trim()}, c'est ta ville d'école ou d'entreprise ?`
+      : "Cette ville, c'est ta ville d'école ou d'entreprise ?"
+    const natureVilleOptions = [
+      { value: 'ecole', label: 'Mon école' },
+      { value: 'entreprise', label: 'Mon entreprise' },
+    ]
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
@@ -516,14 +523,24 @@ export default function InscriptionAlternantPage() {
         <p className="ial-step-subtitle">{subtitleText}</p>
         <div className="ial-form">
           {(state.type_user === 'locataire' || state.type_user === 'hote') && (
-            <AutocompleteInput
-              name="ville_entreprise"
-              value={state.ville_entreprise ?? ''}
-              onChange={handleE4Change}
-              suggestions={VILLES_FRANCE}
-              placeholder="Tape les premières lettres"
-              required={false}
-            />
+            <>
+              <AutocompleteInput
+                name="ville_entreprise"
+                value={state.ville_entreprise ?? ''}
+                onChange={handleE4Change}
+                suggestions={VILLES_FRANCE}
+                placeholder="Tape les premières lettres"
+                required={false}
+              />
+              <p className="ial-step-subtitle ial-nature-question">{natureQuestion}</p>
+              <CustomSelect
+                name="nature_ville"
+                options={natureVilleOptions}
+                value={state.nature_ville}
+                onChange={handleE4Change}
+                placeholder="Sélectionner"
+              />
+            </>
           )}
           {state.type_user === 'les_deux' && (
             <>
