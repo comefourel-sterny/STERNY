@@ -2,9 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 25) — popup `RhythmRequiredPopup` finalisé (commit deb9f5f) : wording raccourci + largeur 460px pour matcher la carte du wizard. Sujet 1 (textes) CLOS. Modale Q8 du builder laissée intacte (fond juridique gelé, DETTE #45). Prochain : E-7 en attente de validation Côme.
+**Dernière mise à jour** : 2 juin 2026 (conv 26) — Décision produit : photo de profil RETIRÉE du wizard (rejoint la bio en post-inscription). Cadrage E-7 confirmé par audit lecture seule. Prochain : retrait photo E-6 puis construction E-7.
 
 ---
+
+## 2026-06-02 (conv 26) — Décision photo + audit E-7
+
+- **Décision produit** : photo de profil RETIRÉE du wizard, rejoint la bio en post-inscription (progressive profiling). E-6 réduit à date_naissance + sexe. VISION mise à jour (bloc photo/bio). Effet de bord à arbitrer plus tard : E-6 à 2 champs, fusion éventuelle.
+- **Chantier code induit** : retirer PhotoCropperModal + photo_profil_url du state de useInscriptionWizard.js et de la branche E-6 d'InscriptionAlternantPage.jsx (à faire avant E-7).
+- **Audit E-7 (lecture seule) effectué** : aucun trigger auth→users (la RPC devra INSÉRER) ; RPC modèle confirm_rhythm_calendar_manual récupérée ; builder E-5 confirmé capture-only ; RecapBlock réutilisable ; password déclaré mais jamais saisi (à saisir à E-7) ; RLS INSERT users en WITH CHECK(true) — DETTE #73.
+- **Ordre de travail** : logs (ce commit) → retrait photo E-6 → RPC complete_inscription_alternant → écran E-7 → config email locale + tests.
 
 ## 2026-06-02 (conv 25) — sujet 1 (textes) soldé : popup Q9 finalisé, Q8 gelée
 
