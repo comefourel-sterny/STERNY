@@ -878,6 +878,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #77 — Capture de la nature ville pour le cas les_deux en E-4
 
+**Statut au 3 juin 2026 (conv 30)** : ✅ RÉSOLUE (commit 022baba). les_deux réutilise la question de nature de la mono (« {ville}, c'est ta ville d'école ou d'entreprise ? ») posée sur la ville PROPOSE (slot ville_entreprise) ; la nature de la ville CHERCHE (slot ville_ecole) est DÉDUITE opposée. Champ unifié `nature_ville` pour mono ET les_deux ; `ecole_emplacement` (ajouté en cours de conv) abandonné. Garde-fou : question unique → état « deux écoles » non représentable. validateE4 les_deux exige nature_ville. Visuel aligné sur la mono (typo .ial-step-subtitle, sous-titre générique retiré, options « École / Entreprise », resserrage margin-top 10px). CAPTURE SEULE — dérivation des 4 colonnes/statuts déléguée à E-7 (propose→'hote', cherche→'recherche'). Combos cherche×2 / propose×2 hors périmètre : non capturables à l'inscription, à vérifier côté dashboard (le modèle n'a qu'un statut par colonne) — non acquis.
+
 **Statut au 2 juin 2026 (conv 29)** : créée.
 
 **Constat** : la capture de la nature école/entreprise a été réintroduite en E-4 pour locataire/hote (mono-ville, commit dc8eabe, champ nature_ville + CustomSelect). La branche les_deux n'a PAS été traitée : elle capture ses 2 villes par action (« où tu proposes » → ville_entreprise, « où tu cherches » → ville_ecole), sans nature ni statuts.
@@ -885,3 +887,17 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Plan** : avant E-7, étendre la capture de nature au cas les_deux (nature de chacune des 2 villes + action de chacune) pour remplir ville_ecole/ville_entreprise par nature + statut_ville_* par action (VISION §65-86). Forme visuelle pilotée par Côme.
 
 **Priorité** : moyenne — prérequis à un E-7 qui écrit des données conformes pour un profil les_deux. **Réf** : InscriptionAlternantPage branche E-4 les_deux, useInscriptionWizard validateE4.
+
+## DETTE #78 — Normalisation des villes (référentiel canonique) pour fiabiliser le matching
+
+**Statut au 3 juin 2026 (conv 30)** : créée.
+
+**Constat** : les champs ville du wizard (AutocompleteInput, E-4) acceptent du texte libre — une ville inexistante ou mal orthographiée passe. Or le matching croise la ville du logement avec les villes de l'utilisateur (VISION §112-131) : sans identité canonique (forme unique + identifiant), deux saisies de la même ville ne se comparent pas de façon fiable, et une ville hors référentiel ne peut pas être croisée. Risque : matching qui rate silencieusement.
+
+**Reco (à valider)** : résoudre la saisie vers une ville réelle canonique au moment de la saisie via Mapbox (déjà dans la stack) — proposer de vraies villes, exiger une sélection, stocker le résultat normalisé (nom officiel + coordonnées GPS + identifiant). Les coordonnées ouvrent un matching de proximité ultérieur (villes voisines). Ne PAS pré-charger une base de toutes les communes.
+
+**Première étape** : audit lecture seule de `AutocompleteInput` (Mapbox, liste statique, ou rien ?) avant toute décision.
+
+**Priorité** : moyenne — non bloquant pour E-7, mais à trancher AVANT de construire le matching. À inscrire à la revue (source canonique de villes).
+
+**Réf** : AutocompleteInput, InscriptionAlternantPage E-4, VISION §112-131.

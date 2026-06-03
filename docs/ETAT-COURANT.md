@@ -2,9 +2,19 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2 juin 2026 (conv 29) — Capture de la nature de la ville (école/entreprise) en E-4 pour locataire/hote (commit dc8eabe). Décision conv 12 révisée (DETTE #64 rouverte). Prochaine étape : cas les_deux puis écran E-7.
+**Dernière mise à jour** : 3 juin 2026 (conv 30) — DETTE #77 soldée (capture nature les_deux E-4, commit 022baba). Ouverture DETTE #78 (normalisation villes). Prochaine étape : écran client E-7 (signUp + OTP + RPC).
 
 ---
+
+## 2026-06-03 (conv 30) — DETTE #77 soldée (capture nature les_deux E-4) + ouverture sujet villes
+
+- **DETTE #77 RÉSOLUE (commit 022baba)** : capture de la nature pour le cas les_deux en E-4. Réutilisation de la question de nature de la mono posée sur la ville PROPOSE (slot ville_entreprise) ; nature de la ville CHERCHE (slot ville_ecole) DÉDUITE opposée. Champ unifié `nature_ville` (mono + les_deux) ; `ecole_emplacement` abandonné. Garde-fou : question unique → « deux écoles » non représentable. validateE4 les_deux exige nature_ville.
+- **Visuel acté** : 3 questions (pas affirmations), typo .ial-step-subtitle comme la mono, sous-titre générique « Renseigne tes deux villes » retiré, options « École / Entreprise » (valeurs 'ecole'/'entreprise' inchangées), resserrage .ial-nature-question margin-top 16→10px (partagé mono+les_deux).
+- **Sémantique pour E-7 / dérivation #76** : en les_deux, nature_ville = nature du slot ville_entreprise (= propose) ; ville_ecole (= cherche) = nature opposée ; statuts dérivés à E-7 (propose→'hote', cherche→'recherche').
+- **Scope acté — combos cherche×2 / propose×2** : non capturables à l'inscription (2 emplacements imposent 1 propose + 1 cherche). À vérifier côté dashboard, qui ne sait peut-être pas gérer 2 statuts identiques (le modèle n'a qu'un statut par colonne). Pas un repli acquis.
+- **Commits conv 30** : 06dcca4 (docs conv 29), 022baba (feat #77). Non poussés (état exact : git log).
+- **Nouveau sujet → DETTE #78** : villes en texte libre acceptées → normalisation canonique requise pour le matching (reco Mapbox). Non bloquant E-7. 1re étape = audit AutocompleteInput.
+- **Reste du plan E-7** : (a) écran client E-7 (signUp + OTP 6 chiffres + RPC complete_inscription_alternant → dashboard) ; (b) dérivation des 4 colonnes/statuts côté client (#76) ; (c) config email locale + tests bout-en-bout. Puis villes (#78).
 
 ## 2026-06-02 (conv 29) — Capture nature ville en E-4 + décision conv 12 révisée
 
