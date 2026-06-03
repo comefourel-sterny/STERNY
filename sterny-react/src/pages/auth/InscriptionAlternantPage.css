@@ -62,7 +62,7 @@
    vers le menu pour que l'écart titre→menu (6px) = l'écart question 1 → champ ville,
    et on reporte l'espace retiré au-dessus pour que le menu ne bouge pas. */
 .ial-step-subtitle.ial-nature-question {
-  margin-top: 16px;
+  margin-top: 10px;
   margin-bottom: -10px;
 }
 

@@ -47,7 +47,7 @@ const initialState = {
   ville_entreprise: '',
   statut_ville_ecole: null,
   statut_ville_entreprise: null,
-  nature_ville: '', // cas mono-ville (locataire/hote) : 'ecole' | 'entreprise' — nature de la ville unique saisie
+  nature_ville: '', // nature de la ville stockée dans ville_entreprise. Mono : la ville unique. les_deux : la ville où l'on PROPOSE ; l'autre ville (cherche) est de nature opposée (DETTE #77)
   // E-5 Calendrier d'alternance (capturé via RhythmManualBuilder, écrit one-pass à E-7)
   rhythm_calendar: null, // [{week_start:'YYYY-MM-DD', status:'school'|'company'}] | null
   // E-6 Profil personnel
@@ -187,6 +187,9 @@ export function validateE4(state) {
     const villeEcole = (state.ville_ecole ?? '').trim()
     if (villeEntreprise.length === 0 || villeEcole.length === 0) {
       return 'Veuillez renseigner tes deux villes'
+    }
+    if ((state.nature_ville ?? '') === '') {
+      return "Indique si c'est ta ville d'école ou d'entreprise"
     }
     return null
   }

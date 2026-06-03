@@ -508,19 +508,22 @@ export default function InscriptionAlternantPage() {
       ? 'Dans quelle ville cherches-tu un logement ?'
       : state.type_user === 'hote'
         ? 'Dans quelle ville proposes-tu ton logement ?'
-        : 'Renseigne tes deux villes'
+        : ''
     const natureQuestion = (state.ville_entreprise ?? '').trim()
       ? `${state.ville_entreprise.trim()}, c'est ta ville d'école ou d'entreprise ?`
       : "Cette ville, c'est ta ville d'école ou d'entreprise ?"
     const natureVilleOptions = [
-      { value: 'ecole', label: 'Mon école' },
-      { value: 'entreprise', label: 'Mon entreprise' },
+      { value: 'ecole', label: 'École' },
+      { value: 'entreprise', label: 'Entreprise' },
     ]
+    // les_deux : la question de nature n'apparaît qu'une fois les 2 villes saisies (DETTE #77)
+    const lesDeuxNatureReady =
+      (state.ville_entreprise ?? '').trim() !== '' && (state.ville_ecole ?? '').trim() !== ''
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
         <WizardProgressBar progress={4/7} />
-        <p className="ial-step-subtitle">{subtitleText}</p>
+        {subtitleText && <p className="ial-step-subtitle">{subtitleText}</p>}
         <div className="ial-form">
           {(state.type_user === 'locataire' || state.type_user === 'hote') && (
             <>
@@ -544,7 +547,7 @@ export default function InscriptionAlternantPage() {
           )}
           {state.type_user === 'les_deux' && (
             <>
-              <label className="ial-field-label">Ville où tu proposes ton logement</label>
+              <p className="ial-step-subtitle ial-nature-question">Dans quelle ville proposes-tu un logement ?</p>
               <AutocompleteInput
                 name="ville_entreprise"
                 value={state.ville_entreprise ?? ''}
@@ -553,7 +556,7 @@ export default function InscriptionAlternantPage() {
                 placeholder="Tape les premières lettres"
                 required={false}
               />
-              <label className="ial-field-label">Ville où tu cherches un logement</label>
+              <p className="ial-step-subtitle ial-nature-question">Dans quelle ville cherches-tu un logement ?</p>
               <AutocompleteInput
                 name="ville_ecole"
                 value={state.ville_ecole ?? ''}
@@ -562,6 +565,18 @@ export default function InscriptionAlternantPage() {
                 placeholder="Tape les premières lettres"
                 required={false}
               />
+              {lesDeuxNatureReady && (
+                <>
+                  <p className="ial-step-subtitle ial-nature-question">{natureQuestion}</p>
+                  <CustomSelect
+                    name="nature_ville"
+                    options={natureVilleOptions}
+                    value={state.nature_ville}
+                    onChange={handleE4Change}
+                    placeholder="Sélectionner"
+                  />
+                </>
+              )}
             </>
           )}
           <button type="button" className="ial-btn-continuer" onClick={handleE4Submit}>Continuer</button>
