@@ -2,9 +2,19 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 4 juin 2026 (conv 31) — Écran client E-7 livré (signUp + OTP email + RPC), validé visuellement, non poussé. Reste : livrable #2 (config email locale) + refonte design E-5.
+**Dernière mise à jour** : 4 juin 2026 (conv 32) — Livrable #2 bouclé : confirmation email locale par code OTP testée bout-en-bout (E-1→dashboard via Mailpit). Reste : refonte design E-5 (#80) + œil mot de passe.
 
 ---
+
+## 2026-06-04 (conv 32) — Livrable #2 : confirmation email locale (code OTP) testée bout-en-bout
+
+- **Livrable #2 BOUCLÉ.** Confirmation email locale activée par CODE 6 chiffres (pas lien magique) : `enable_confirmations = true` + nouveau template `supabase/templates/confirmation.html` (`{{ .Token }}`, couleurs Sterny) + déclaration `[auth.email.template.confirmation]` dans `config.toml`. Commit feat c5104b0.
+- **Test bout-en-bout VALIDÉ en local** (Mailpit :54324) : E-1 → E-7 → écran code « VÉRIFICATION » → saisie du code → `verifyOtp(type 'email')` → RPC `complete_inscription_alternant` → `/dashboard` (« Bonjour Côme »). signup 200 vers le local, ligne `users` créée (vérifié Network).
+- **Bascule de test (env local)** : `.env.local` (gitignoré) créé pour pointer le front vers le Supabase local — `VITE_SUPABASE_URL=http://127.0.0.1:54321` + clé anon locale (variable `VITE_SUPABASE_KEY`). ⚠️ Tant que ce fichier existe, `npm run dev` pointe LOCAL ; le supprimer pour repointer la prod du `.env`.
+- **Piège env confirmé** : `config.toml` n'est relu qu'au **redémarrage** de la stack (`supabase stop && supabase start -x studio,imgproxy`, cf. DETTE #75). `db reset` écarté (destructif, ne recharge pas la config auth).
+- **À FAIRE AU DÉPLOIEMENT (ne pas oublier)** : aligner la config email PROD (confirmation activée + template **code** côté Supabase prod / Resend) pour que le flux OTP de E-7 marche aussi en prod. Committer `enable_confirmations=true` dans le `config.toml` versionné implique qu'un futur push de config activerait la confirmation en prod — souhaitable, mais à valider au déploiement.
+- **Reste mission conv 32** : (2) refonte design E-5 + DETTE #80 (bloquer semaines passées + semaine en cours ; trancher défaut année — VISION §149 = année courante + suivante ; conservation descriptive → décision à loguer en VISION) ; (3) œil afficher/masquer mot de passe sur le TextInput partagé (commit séparé).
+- **Commits conv 32** : c5104b0 `feat(auth)` confirmation email locale + `docs` (état exact : git log). Antérieurs (E-7 feat+docs conv 31, 022baba…) toujours **non poussés**.
 
 ## 2026-06-04 (conv 31) — Écran client E-7 livré (signUp + OTP + RPC) + récap E-7
 

@@ -912,6 +912,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Plan** : traiter avec DETTE #70 au retour routage/OAuth (après E-7 bout-en-bout). Le miroir sessionStorage limite déjà le cas "refresh sur l'écran code". À inscrire à la revue sécurité/RGPD.
 
+**Scénario mobile (conv 32)** : si l'utilisateur quitte vers son appli mail puis revient, le retour sur l'écran code repose sur le miroir sessionStorage ; or sessionStorage peut être vidé si le navigateur mobile purge l'onglet de la mémoire → l'utilisateur retombe en arrière avec un compte auth déjà créé. Arbitrage sessionStorage vs localStorage à rouvrir avec le routage/OAuth.
+
 **Priorité** : moyenne. **Réf** : EtapeCreationCompte.jsx, DETTE #70, OAuthHandler.
 
 ## DETTE #80 — E-5 : semaines passées/en cours sélectionnables dans le builder de rythme
