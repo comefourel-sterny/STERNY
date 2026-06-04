@@ -24,6 +24,7 @@ import RhythmRequiredPopup from '../../components/auth-wizard/RhythmRequiredPopu
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
 import { formatPartialDateInput } from '../../utils/dateHelpers.js'
 import { supabaseClient } from '../../config/supabase'
+import EtapeCreationCompte from './EtapeCreationCompte'
 import './InscriptionAlternantPage.css'
 
 // Helpers de transformation copiés depuis InscriptionRecherchePage pour ce
@@ -651,6 +652,10 @@ export default function InscriptionAlternantPage() {
           : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}
       </AuthScreenContainer>
     )
+  }
+
+  if (state.currentStep === 7) {
+    return <EtapeCreationCompte state={state} onRetour={goToPrevStep} />
   }
 
   return (

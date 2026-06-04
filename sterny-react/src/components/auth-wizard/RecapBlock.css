@@ -48,3 +48,32 @@
   color: #1E293B;
   line-height: 1.5;
 }
+
+/* Paires libellé/valeur (récap E-7) : libellé à gauche, valeur à droite sur la même ligne. */
+.aw-recap-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.aw-recap-row:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.aw-recap-label {
+  flex: 0 0 80px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748B;
+}
+
+.aw-recap-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--primary);
+}
