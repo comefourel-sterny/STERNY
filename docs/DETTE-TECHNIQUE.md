@@ -901,3 +901,27 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : moyenne — non bloquant pour E-7, mais à trancher AVANT de construire le matching. À inscrire à la revue (source canonique de villes).
 
 **Réf** : AutocompleteInput, InscriptionAlternantPage E-4, VISION §112-131.
+
+## DETTE #79 — Comptes auth orphelins (signUp sans RPC complétée)
+
+**Statut au 4 juin 2026 (conv 31)** : créée.
+
+**Constat** : à E-7, le compte `auth.users` est créé par signUp AVANT l'appel RPC qui crée la ligne `public.users`. Si l'utilisateur abandonne entre les deux, il reste un compte auth sans ligne `public.users` — l'angle mort jumeau de DETTE #70 ("authentifié mais sans ligne users").
+
+**Conséquences** : (a) le routage post-auth doit gérer "session active + pas de ligne users" → renvoyer dans le wizard, jamais vers /dashboard ; (b) accumulation de comptes auth fantômes → stratégie de purge à définir.
+
+**Plan** : traiter avec DETTE #70 au retour routage/OAuth (après E-7 bout-en-bout). Le miroir sessionStorage limite déjà le cas "refresh sur l'écran code". À inscrire à la revue sécurité/RGPD.
+
+**Priorité** : moyenne. **Réf** : EtapeCreationCompte.jsx, DETTE #70, OAuthHandler.
+
+## DETTE #80 — E-5 : semaines passées/en cours sélectionnables dans le builder de rythme
+
+**Statut au 4 juin 2026 (conv 31)** : créée (surfacée en validant E-7).
+
+**Constat** : le builder E-5 laisse cliquer n'importe quelle semaine de l'année académique, y compris écoulées et la semaine ISO en cours. Incohérent avec le wording (« où tu SERAS à l'école » = futur) et VISION §137-149 (aucun matching/facturation sur semaines passées ; date d'effet ≥ semaine ISO en cours).
+
+**À trancher (chantier E-5, décision à loguer en VISION)** : bloquer visuellement toute semaine dont le lundi ISO ≤ lundi de la semaine en cours ; revoir le défaut du sélecteur d'année (en juin, 2025-2026 quasi finie ; VISION §147 propose année courante + suivante) ; statuer sur la conservation descriptive des semaines passées (VISION §139-141) vs capture du futur seulement.
+
+**Priorité** : moyenne (correctness matching/facturation). À traiter dans le chantier de refonte E-5, pas pendant E-7.
+
+**Réf** : RhythmManualBuilder / étape E-5, VISION §137-149 et §147.

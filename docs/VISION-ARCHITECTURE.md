@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 3 mai 2026 — Précision sur le parcours propriétaire ajoutée en §6 (UX proprio invité revenant sans le lien + réversibilité stratégique de la garde token). Issue de la conv Claude.ai 2 sur le chantier UNIFICATION-INSCRIPTION (clôture).
+**Dernière mise à jour** : 4 juin 2026 (conv 31) — §99-104 : convention de remplissage des 4 colonnes ville révisée (retour à la sémantique §65-86, abandon de la convention slot non-sémantique).
 
 ---
 
@@ -95,6 +95,8 @@ Une colonne `users.ville_recherche_secondaire` existe et a été observée par g
 **Règle pour Claude** : aucune nouvelle migration BDD ne doit être proposée pour stocker la "ville recherchée" — cette information est dérivable du modèle existant. Toute proposition d'ajouter une colonne `ville_recherchee` est un signal qu'on n'a pas pris connaissance de ce modèle.
 
 **Origine** : grep d'usage des colonnes `ville_*` mené le 2 mai 2026 soir (audit `CompleterProfilPage.jsx`). Le modèle existait déjà et était utilisé par `InscriptionRecherchePage`, `ModifierProfilPage`, `ProfilPage`, `DashboardLocatairePage` — il n'avait juste pas été documenté en VISION.
+
+> **Mise à jour 4 juin 2026 (conv 31) — convention RÉVISÉE.** La convention « slot non-sémantique » décrite ci-dessous est abandonnée. Depuis la réintroduction de la capture de nature en E-4 (DETTE #64 rouverte, #77 soldée) et l'implémentation de la dérivation côté client à E-7 (util `deriveVilleColonnes`), le remplissage des 4 colonnes redevient **sémantique** et suit strictement §65-86 : la ville va dans la colonne de sa nature (`nature_ville='ecole'` → `ville_ecole`), le statut encode l'action (`'recherche'`/`'hote'`). Le texte ci-dessous est conservé pour historique uniquement.
 
 **Convention de remplissage post-conv 12 (6 mai 2026)** — Suite à la simplification produit du E-4 (suppression du toggle école/entreprise), la convention de remplissage des 4 colonnes par le parcours d'inscription unifié devient :
 

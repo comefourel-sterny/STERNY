@@ -2,9 +2,23 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 3 juin 2026 (conv 30) — DETTE #77 soldée (capture nature les_deux E-4, commit 022baba). Ouverture DETTE #78 (normalisation villes). Prochaine étape : écran client E-7 (signUp + OTP + RPC).
+**Dernière mise à jour** : 4 juin 2026 (conv 31) — Écran client E-7 livré (signUp + OTP email + RPC), validé visuellement, non poussé. Reste : livrable #2 (config email locale) + refonte design E-5.
 
 ---
+
+## 2026-06-04 (conv 31) — Écran client E-7 livré (signUp + OTP + RPC) + récap E-7
+
+- **Écran E-7 construit et validé visuellement (NON poussé).** Composant co-localisé `EtapeCreationCompte.jsx` (E-6 inline, mais E-7 porte un state local + hooks → composant obligatoire), branché dans `InscriptionAlternantPage.jsx` sur `state.currentStep === 7`, avant le placeholder. Deux phases : 'form' (récap + mot de passe → signUp) et 'otp' (code 6 chiffres → verifyOtp → RPC).
+- **Flux** : signUp({email, password}) → si session immédiate (confirmation email désactivée) → RPC directe ; sinon écran code → verifyOtp({email, token, type:'email'}) → RPC `complete_inscription_alternant` → navigate('/dashboard'). Email déjà utilisé détecté via message 'already registered' ET `identities.length === 0` (obfuscation Supabase quand confirmation activée). verifyOtp type 'email' ('signup' déprécié).
+- **Garde-fou réessai** : état local `accountCreated` → après échec RPC sur le chemin confirmation-OFF, recliquer saute signUp et rappelle la RPC (idempotente ON CONFLICT id). Plus de blocage 'email déjà utilisé'.
+- **Miroir sessionStorage** (`sterny_e7_otp_pending`) : snapshot { email, p_profile, p_rhythm_calendar, p_rhythm_source } écrit au passage form→otp, relu au montage (reprise après refresh sur l'écran code), purgé à la réussite RPC. Jamais le mot de passe, jamais de token.
+- **Dérivation 4 colonnes côté client** : util `deriveVilleColonnes.js` (réutilisable dashboard #76), conforme VISION §65-86 (colonne = nature, statut = action). rhythm_source = 'manual' en dur ; date FR→ISO via parseDateFRtoISO.
+- **Récap (RecapBlock)** : paires libellé/valeur inline (NOM, EMAIL, SERVICE, VILLE/VILLES, RYTHME), 3 classes ajoutées dans RecapBlock.css ; titre "Récapitulatif" retiré (en-tête RecapBlock désormais conditionnel à title/editable) ; bouton ancré en bas via margin-top:auto (technique E-6).
+- **Confirmation email encore DÉSACTIVÉE en local** → écran code pas encore activable ; testé via le chemin direct (signUp → session → RPC → dashboard).
+- **Reste mission conv 31 → conv 32** : livrable #2 = enable_confirmations=true + template {{ .Token }} + test bout-en-bout E-1→dashboard via Mailpit (:54324). NON FAIT.
+- **Œil afficher/masquer mot de passe** : décidé (pas de champ confirmation), à implémenter sur le TextInput partagé — conv 32, commit séparé.
+- **Dettes ouvertes** : #79 (comptes auth orphelins), #80 (E-5 semaines passées/en cours sélectionnables). Refonte design E-5 (signalée conv 31, cf. conv 28) → chantier dédié conv 32.
+- **Commits conv 31** : feat E-7 + docs (état exact : git log). Antérieurs (022baba, 2174212…) toujours non poussés.
 
 ## 2026-06-03 (conv 30) — DETTE #77 soldée (capture nature les_deux E-4) + ouverture sujet villes
 
