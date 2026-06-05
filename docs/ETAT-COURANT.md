@@ -6,6 +6,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-06-05 (conv 32 — suite) — E-5 aligné sur la grammaire wizard (commit b3619e2)
+
+Chantier E-5 (étape calendrier de rythme du wizard d'inscription) commité :
+- RhythmManualBuilder rendu pilotable depuis la page (props renderYearSelector / year / onYearChange / renderActions / onChange ; forwardRef expose requestConfirm). La preview dev reste iso-comportement via les valeurs par défaut.
+- util partagé src/utils/academicYear.js (année académique par défaut + suivante).
+- E-5 rend le sélecteur d'année (CustomSelect) + le bouton Continuer côté page ; la modale de confirmation passe par un portal (plein écran).
+- Allègements texte : sous-titre retiré, consigne raccourcie, compteur sans /52, modale tutoyée.
+
+Deux chantiers ouverts à traiter en conv fraîche (DETTE #81 et #82 + note VISION) :
+1. Modale Q8 à aligner sur la grammaire des cartes wizard.
+2. Capture multi-années à l'inscription (décision produit + architecture data).
+
+Non traité dans ce lot : DETTE #80 (semaines passées/en cours non bloquées) reste ouverte — à reprendre avec le chantier multi-années (synergie).
+
 ## 2026-06-04 (conv 32) — Livrable #2 : confirmation email locale (code OTP) testée bout-en-bout
 
 - **Livrable #2 BOUCLÉ.** Confirmation email locale activée par CODE 6 chiffres (pas lien magique) : `enable_confirmations = true` + nouveau template `supabase/templates/confirmation.html` (`{{ .Token }}`, couleurs Sterny) + déclaration `[auth.email.template.confirmation]` dans `config.toml`. Commit feat c5104b0.

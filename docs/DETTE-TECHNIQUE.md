@@ -927,3 +927,11 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : moyenne (correctness matching/facturation). À traiter dans le chantier de refonte E-5, pas pendant E-7.
 
 **Réf** : RhythmManualBuilder / étape E-5, VISION §137-149 et §147.
+
+## DETTE #81 — Modale Q8 (confirmation du planning) à aligner sur la grammaire des cartes wizard
+
+Aujourd'hui la modale a sa propre forme (rmb-modal-*). À refaire pour reprendre : la forme de carte (.aw-screen-card — radius 16px, border #E8EAF0, shadow) ; « Confirmer mon planning » = bouton principal style carte (PrimaryButton / .ial-btn-continuer, orange pleine largeur) ; « Revenir au calendrier » = lien retour SOUS le bouton (comme BottomAuthLinks). Texte à raccourcir : (a) ne coche que tes semaines d'école ; (b) attention, une erreur a de grosses conséquences sur tes réservations. Lecture 8ter requise (PrimaryButton, BottomAuthLinks, .ial-btn-continuer, .aw-screen-card).
+
+## DETTE #82 — Capture multi-années dans le builder E-5 (mise en œuvre)
+
+Permettre de saisir plusieurs années académiques en une inscription (ex. fin de l'année courante + année suivante). Voir la décision d'architecture en VISION-ARCHITECTURE.md. Travaux : (1) navigation par flèches entre années plutôt que le seul déroulant ; (2) ANNULER le reset des cases au changement d'année introduit en b3619e2 — au contraire accumuler les sélections des deux années (les lundis sont des dates uniques, un seul ensemble suffit), compteur = total cumulé ; (3) la confirmation doit matérialiser les semaines des DEUX années, pas seulement l'année affichée — retravailler materialize + définir « le reste = entreprise » sur le périmètre des années visitées ; (4) écriture en ajout/upsert par (utilisateur, lundi), jamais de remplacement global ; (5) intégrer DETTE #80 (bloquer les semaines passées) — synergie : en juin l'année courante est surtout du passé grisé + quelques semaines futures. PRÉALABLE : lire le schéma réel de rhythm_calendar + ce qu'écrit le RPC complete_inscription_alternant avant toute conception.

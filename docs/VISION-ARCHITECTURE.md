@@ -152,6 +152,20 @@ Cette règle s'applique à tous les flux : création d'annonce (`disponibilites_
 
 **Origine** : décision actée le 2 mai 2026 après-midi pendant le cadrage de la troncature dynamique du composant `RhythmManualBuilder` (chemin 3 VISION §5). Tracée dans ETAT-COURANT bloc 2026-05-02 après-midi.
 
+### Capture et stockage du rythme sur plusieurs années (décision 2026-06-05, conv 32)
+
+Un alternant doit pouvoir saisir plusieurs années académiques : à l'inscription en cours d'année (fin de l'année courante + année suivante), et plus tard en ajoutant chaque nouvelle année à son rythme existant. Cela réinterroge la règle « une année à la fois » du builder (reset au changement d'année).
+
+Principe retenu : **stocker la semaine datée, dériver l'année.** L'unité de stockage est la semaine (identifiée par son lundi, date absolue) + son statut (école / entreprise). L'année académique se calcule depuis la date (septembre vers août) ; elle n'est pas une structure de stockage. Le rythme est une liste plate de semaines triée par date.
+
+Conséquences :
+- Continuité : ajouter une année = ajouter des semaines (ajout/upsert par (utilisateur, lundi)), jamais un enregistrement parallèle ni un remplacement. Historique préservé.
+- Dashboard « sans coupure » : une liste triée par date n'a pas de frontière entre années ; la distinction par année est une vue calculée à l'affichage.
+- Matching inchangé : compare des semaines datées.
+- Piège écarté : ne PAS stocker par année (bloc par année ou « année courante » écrasée) — source d'écrasement d'historique et de couture août/septembre.
+
+Modèle cible : statut à valeurs contraintes (extensible au-delà de école/entreprise). PRÉALABLE de mise en œuvre : vérifier le schéma actuel de rhythm_calendar — s'il stocke déjà une liste de semaines datées (probable), seul le builder + l'écriture évoluent ; sinon, faire évoluer le stockage. Mise en œuvre suivie en DETTE #82.
+
 ### Colonnes dépréciées
 
 Les colonnes suivantes existent dans la BDD mais n'ont plus vocation à être utilisées dans le matching. Elles restent en place pendant la phase de transition pour ne pas créer de régressions brutales, puis seront supprimées via une migration dédiée en fin de transition.
