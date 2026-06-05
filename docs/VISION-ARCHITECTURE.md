@@ -166,6 +166,8 @@ Conséquences :
 
 Modèle cible : statut à valeurs contraintes (extensible au-delà de école/entreprise). PRÉALABLE de mise en œuvre : vérifier le schéma actuel de rhythm_calendar — s'il stocke déjà une liste de semaines datées (probable), seul le builder + l'écriture évoluent ; sinon, faire évoluer le stockage. Mise en œuvre suivie en DETTE #82.
 
+**Préalable levé (2026-06-05, conv 33) — audit lecture seule.** Schéma confirmé : `rhythm_calendar` est une colonne `jsonb` sans contrainte de format (le format `[{ week_start, status }]` n'est porté que par un COMMENT), donc déjà une liste plate de semaines datées acceptant N semaines toutes années confondues. La RPC `complete_inscription_alternant` écrit ce format tel quel, le valide (lundi / status ∈ {school,company} / unicité) sans cap ni borne d'année, et le builder émet déjà ces mêmes clés. **Conclusion : ni migration de stockage ni évolution de la RPC pour l'inscription initiale ; le seul écart au multi-années est côté builder.** Réserve : la RPC remplace la colonne entière (`ON CONFLICT (id) DO UPDATE … = EXCLUDED`) ; correct à l'inscription (le client envoie l'union complète), mais l'ajout d'une année *après* inscription devra relire+fusionner côté client avant envoi, ou passer par une RPC d'ajout dédiée — à cadrer après audit dashboard. Détail en DETTE #82.
+
 ### Colonnes dépréciées
 
 Les colonnes suivantes existent dans la BDD mais n'ont plus vocation à être utilisées dans le matching. Elles restent en place pendant la phase de transition pour ne pas créer de régressions brutales, puis seront supprimées via une migration dédiée en fin de transition.
