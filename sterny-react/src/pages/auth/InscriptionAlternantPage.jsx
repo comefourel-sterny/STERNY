@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
   useInscriptionWizard,
@@ -20,6 +20,7 @@ import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import RhythmManualBuilder from '../../components/rhythm/RhythmManualBuilder'
+import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear'
 import RhythmRequiredPopup from '../../components/auth-wizard/RhythmRequiredPopup'
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
 import { formatPartialDateInput } from '../../utils/dateHelpers.js'
@@ -55,6 +56,11 @@ export default function InscriptionAlternantPage() {
     goToPrevStep,
   } = useInscriptionWizard()
   const [rhythmPopupOpen, setRhythmPopupOpen] = useState(false)
+  // E-5 : année académique pilotée par la page (défaut inchangé = année courante).
+  const e5DefaultYear = useMemo(() => computeDefaultAcademicYear(), [])
+  const e5NextYear = useMemo(() => nextAcademicYear(e5DefaultYear), [e5DefaultYear])
+  const [e5Year, setE5Year] = useState(e5DefaultYear)
+  const builderRef = useRef(null)
   const errorTimerRef = useRef(null)
   const prenomRef = useRef(null)
   const nomRef = useRef(null)
@@ -590,17 +596,36 @@ export default function InscriptionAlternantPage() {
   }
 
   if (state.currentStep === 5) {
+    const anneeOptions = [
+      { value: e5DefaultYear, label: e5DefaultYear },
+      { value: e5NextYear, label: e5NextYear },
+    ]
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
         <WizardProgressBar progress={5/7} />
-        <p className="ial-step-subtitle">Renseigne ton rythme d'alternance, semaine par semaine</p>
-        <RhythmManualBuilder
-          villeRecherchee="ecole"
-          initialCalendar={state.rhythm_calendar || undefined}
-          onConfirm={handleE5Confirm}
-          onEmptyConfirm={() => setRhythmPopupOpen(true)}
-        />
+        <div className="ial-form">
+          <CustomSelect
+            name="annee_academique"
+            label="Année académique"
+            options={anneeOptions}
+            value={e5Year}
+            onChange={(e) => setE5Year(e.target.value)}
+            placeholder="Sélectionner"
+          />
+          <RhythmManualBuilder
+            ref={builderRef}
+            villeRecherchee="ecole"
+            initialCalendar={state.rhythm_calendar || undefined}
+            onConfirm={handleE5Confirm}
+            onEmptyConfirm={() => setRhythmPopupOpen(true)}
+            year={e5Year}
+            onYearChange={setE5Year}
+            renderYearSelector={false}
+            renderActions={false}
+          />
+          <button type="button" className="ial-btn-continuer" onClick={() => builderRef.current?.requestConfirm()}>Continuer</button>
+        </div>
         {state.globalError
           ? <AuthErrorBanner message={state.globalError} />
           : <BottomAuthLinks onRetour={goToPrevStep} retourLabel="Retour" />}

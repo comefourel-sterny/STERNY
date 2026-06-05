@@ -1,7 +1,11 @@
 /* RhythmManualBuilder — préfixe rmb- (cf. INVENTAIRE §9.5).
    Tokens design system Sterny appliqués (DM Sans, navy/orange, radius, shadow). */
 
-.rmb-root {
+/* Variables --rmb-* : portées par .rmb-root ET .rmb-modal-overlay, pour que la
+   modale rendue via portal sur document.body (hors sous-arbre .rmb-root) hérite
+   bien des tokens (couleurs des boutons, etc.) sans recevoir le layout flex. */
+.rmb-root,
+.rmb-modal-overlay {
   --rmb-cell-size: 24px;
   --rmb-cell-radius: 6px;
   --rmb-cell-gap: 4px;
@@ -16,7 +20,9 @@
   --rmb-text-primary: #1E293B;
   --rmb-text-secondary: #94A3B8;
   --rmb-transition: all 0.2s;
+}
 
+.rmb-root {
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   color: var(--rmb-text-primary);
   display: flex;

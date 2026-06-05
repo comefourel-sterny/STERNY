@@ -24,28 +24,17 @@
 //     (VISION §3 alinéa « Pas de semaines vacances dans le modèle » — toute
 //     semaine non-école est company par défaut).
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import { createPortal } from 'react-dom';
+import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear';
 import './RhythmManualBuilder.css';
 
 const TOTAL_WEEKS = 52;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // ---------- Helpers année académique ----------
-
-// Année académique courante selon la date du jour réelle.
-// "YYYY-YYYY+1" couvre du 1er sept YYYY au 31 août YYYY+1.
-function computeDefaultAcademicYear() {
-  const now = new Date();
-  const Y = now.getUTCFullYear();
-  const M = now.getUTCMonth() + 1; // 1..12
-  if (M >= 9) return `${Y}-${Y + 1}`;
-  return `${Y - 1}-${Y}`;
-}
-
-function nextAcademicYear(yearStr) {
-  const [a, b] = yearStr.split('-').map((n) => parseInt(n, 10));
-  return `${a + 1}-${b + 1}`;
-}
+// computeDefaultAcademicYear / nextAcademicYear : importés depuis
+// ../../utils/academicYear (source unique partagée avec l'étape E-5).
 
 // Premier lundi du calendrier visuel de l'année académique : lundi de la
 // semaine qui contient le 1er septembre YYYY (peut tomber fin août).
@@ -134,13 +123,19 @@ function computeMondayCurrentISO() {
 
 // ---------- Composant ----------
 
-export default function RhythmManualBuilder({
+const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
   initialCalendar,
   villeRecherchee,
   onConfirm,
   onCancel,
   onEmptyConfirm,
-}) {
+  // Props de pilotage externe (défauts = comportement actuel autonome).
+  renderYearSelector = true, // false → la Zone 0 (sélecteur d'année) n'est pas rendue
+  year,                      // si fourni → année contrôlée par le parent (sinon state interne)
+  onYearChange,              // appelé au changement d'année (mode contrôlé)
+  renderActions = true,      // false → le bloc rmb-actions (boutons) n'est pas rendu
+  onChange,                  // appelé avec le calendrier matérialisé à chaque modif de semaine
+}, ref) {
   if (villeRecherchee !== 'ecole' && villeRecherchee !== 'entreprise') {
     throw new Error(
       "RhythmManualBuilder: prop villeRecherchee doit être 'ecole' ou 'entreprise'"
@@ -153,9 +148,12 @@ export default function RhythmManualBuilder({
 
   const [selectedYear, setSelectedYear] = useState(defaultYear);
 
+  // Mode contrôlé : si `year` est fourni, il fait foi ; sinon state interne.
+  const effectiveYear = year !== undefined ? year : selectedYear;
+
   const allWeeks = useMemo(
-    () => generateWeeks(firstMondayForAcademicYear(selectedYear)),
-    [selectedYear]
+    () => generateWeeks(firstMondayForAcademicYear(effectiveYear)),
+    [effectiveYear]
   );
   const monthsLayout = useMemo(() => groupByMonth(allWeeks), [allWeeks]);
 
@@ -204,27 +202,55 @@ export default function RhythmManualBuilder({
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Au changement d'année académique : reset des cases cliquées (la spec
-  // simplifie ainsi la v1 — pas de confirmation, pas de tentative de
-  // mappage entre les 2 années).
-  const handleYearChange = useCallback((newYear) => {
-    setSelectedYear(newYear);
+  // Reset des cases cliquées au changement d'année académique (la spec
+  // simplifie ainsi la v1 — pas de mappage entre les 2 années). Piloté par
+  // effectiveYear pour couvrir À LA FOIS le <select> interne (preview) ET la
+  // prop `year` contrôlée (E-5). On saute le tout premier rendu pour ne pas
+  // écraser l'hydratation initiale de `clicked` depuis initialCalendar.
+  const yearHydratedRef = useRef(false);
+  useEffect(() => {
+    if (!yearHydratedRef.current) {
+      yearHydratedRef.current = true;
+      return;
+    }
     setClicked(new Set());
-  }, []);
+  }, [effectiveYear]);
+
+  const handleYearChange = useCallback((newYear) => {
+    if (year === undefined) setSelectedYear(newYear); // non contrôlé : on gère le state interne
+    onYearChange?.(newYear);                          // contrôlé : on remonte au parent
+  }, [year, onYearChange]);
+
+  // Matérialise les 52 semaines depuis un Set de semaines cliquées.
+  // (passée → 'company' systématique ; non-passée → inverse selon villeRecherchee)
+  const materialize = useCallback(
+    (clickedSet) =>
+      allWeeks.map((w) => {
+        if (pastWeekStarts.has(w.weekStart)) {
+          return { week_start: w.weekStart, status: 'company' };
+        }
+        const isPresent = clickedSet.has(w.weekStart);
+        const status =
+          villeRecherchee === 'ecole'
+            ? (isPresent ? 'school' : 'company')
+            : (isPresent ? 'company' : 'school');
+        return { week_start: w.weekStart, status };
+      }),
+    [allWeeks, pastWeekStarts, villeRecherchee]
+  );
 
   const toggleWeek = useCallback(
     (weekStart) => {
       // Guard : les semaines passées sont non-cliquables (déjà bloquées
       // par disabled sur le bouton, garde redondante pour la lisibilité).
       if (pastWeekStarts.has(weekStart)) return;
-      setClicked((prev) => {
-        const next = new Set(prev);
-        if (next.has(weekStart)) next.delete(weekStart);
-        else next.add(weekStart);
-        return next;
-      });
+      const next = new Set(clicked);
+      if (next.has(weekStart)) next.delete(weekStart);
+      else next.add(weekStart);
+      setClicked(next);
+      onChange?.(materialize(next)); // suivi externe (mode sans bouton interne)
     },
-    [pastWeekStarts]
+    [clicked, pastWeekStarts, onChange, materialize]
   );
 
   const handleOpenModal = useCallback(() => {
@@ -235,27 +261,18 @@ export default function RhythmManualBuilder({
     setModalOpen(true);
   }, [clicked, onEmptyConfirm]);
 
+  // Déclenchement externe identique à l'ancien bouton interne (mode E-5 :
+  // bouton "Continuer" rendu par la page → builderRef.current.requestConfirm()).
+  useImperativeHandle(ref, () => ({ requestConfirm: handleOpenModal }), [handleOpenModal]);
+
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
   }, []);
 
   const handleConfirmModal = useCallback(() => {
-    // Matérialiser les 52 semaines :
-    //   - passée → 'company' systématiquement (VISION §3)
-    //   - non-passée → sélection inverse selon villeRecherchee (Q8)
-    const materialized = allWeeks.map((w) => {
-      if (pastWeekStarts.has(w.weekStart)) {
-        return { week_start: w.weekStart, status: 'company' };
-      }
-      const isPresent = clicked.has(w.weekStart);
-      let status;
-      if (villeRecherchee === 'ecole') {
-        status = isPresent ? 'school' : 'company';
-      } else {
-        status = isPresent ? 'company' : 'school';
-      }
-      return { week_start: w.weekStart, status };
-    });
+    // Matérialise les 52 semaines (passée → 'company' VISION §3 ; non-passée
+    // → inverse selon villeRecherchee Q8) via le helper partagé.
+    const materialized = materialize(clicked);
 
     // Capture-only (conv 24) : aucune écriture en base ici. Le builder émet le
     // calendrier ; l'écriture one-pass (et le calcul des dates start/end) est
@@ -263,7 +280,7 @@ export default function RhythmManualBuilder({
     // Voir docs/recherche/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
     setModalOpen(false);
     onConfirm(materialized);
-  }, [allWeeks, clicked, pastWeekStarts, villeRecherchee, onConfirm]);
+  }, [materialize, clicked, onConfirm]);
 
   // Touche Échap = équivalent strict de "Revenir au calendrier" (pas de
   // confirmation), sauf pendant l'appel RPC.
@@ -280,35 +297,31 @@ export default function RhythmManualBuilder({
 
   const consigne =
     villeRecherchee === 'ecole'
-      ? "Clique uniquement les semaines où tu seras à l'école. Sterny en déduira automatiquement les semaines opposées en entreprise."
-      : "Clique uniquement les semaines où tu seras en entreprise. Sterny en déduira automatiquement les semaines opposées à l'école.";
+      ? "Clique sur les semaines où tu seras à l'école."
+      : "Clique sur les semaines où tu seras en entreprise.";
 
   return (
     <div className={`rmb-root rmb-${villeRecherchee}`}>
       {/* Zone 0 — sélecteur d'année académique (Q10) */}
-      <div className="rmb-year-selector">
-        <label className="rmb-year-label" htmlFor="rmb-year-select">
-          Année académique :
-        </label>
-        <select
-          id="rmb-year-select"
-          className="rmb-year-select"
-          value={selectedYear}
-          onChange={(e) => handleYearChange(e.target.value)}
-        >
-          <option value={defaultYear}>{defaultYear}</option>
-          <option value={nextYear}>{nextYear}</option>
-        </select>
-      </div>
+      {renderYearSelector && (
+        <div className="rmb-year-selector">
+          <label className="rmb-year-label" htmlFor="rmb-year-select">
+            Année académique :
+          </label>
+          <select
+            id="rmb-year-select"
+            className="rmb-year-select"
+            value={effectiveYear}
+            onChange={(e) => handleYearChange(e.target.value)}
+          >
+            <option value={defaultYear}>{defaultYear}</option>
+            <option value={nextYear}>{nextYear}</option>
+          </select>
+        </div>
+      )}
 
       {/* Zone 1 — consigne dynamique selon villeRecherchee */}
       <p className="rmb-instructions">{consigne}</p>
-
-      {/* Zone 2 — compteur live unique (Q11 D) */}
-      <div className="rmb-counter-line">
-        <span className="rmb-counter-value">{presentCount}</span> / {TOTAL_WEEKS}{' '}
-        semaines sélectionnées
-      </div>
 
       {/* Grille 12 colonnes mensuelles */}
       <div className="rmb-grid">
@@ -346,24 +359,35 @@ export default function RhythmManualBuilder({
         ))}
       </div>
 
-      {/* Zone 3 — actions */}
-      <div className="rmb-actions">
-        {onCancel && (
-          <button type="button" className="rmb-cancel-btn" onClick={onCancel}>
-            Annuler
-          </button>
-        )}
-        <button
-          type="button"
-          className="rmb-confirm-btn"
-          onClick={handleOpenModal}
-        >
-          Confirmer mon planning
-        </button>
+      {/* Zone 2 — compteur live unique (Q11 D) */}
+      <div className="rmb-counter-line">
+        <span className="rmb-counter-value">{presentCount}</span>{' '}
+        {presentCount <= 1 ? 'semaine sélectionnée' : 'semaines sélectionnées'}
       </div>
 
-      {/* Modale Q8 — wording v1 archivé DETTE #45 */}
-      {modalOpen && (
+      {/* Zone 3 — actions */}
+      {renderActions && (
+        <div className="rmb-actions">
+          {onCancel && (
+            <button type="button" className="rmb-cancel-btn" onClick={onCancel}>
+              Annuler
+            </button>
+          )}
+          <button
+            type="button"
+            className="rmb-confirm-btn"
+            onClick={handleOpenModal}
+          >
+            Confirmer mon planning
+          </button>
+        </div>
+      )}
+
+      {/* Modale Q8 — wording v1 archivé DETTE #45.
+          Rendue via portal sur document.body : le transform résiduel de
+          .aw-screen-card (animation fadeIn) piégerait sinon le position:fixed
+          de l'overlay et clipperait la modale à la carte. */}
+      {modalOpen && createPortal(
         <div
           className="rmb-modal-overlay"
           onClick={handleCloseModal}
@@ -377,33 +401,14 @@ export default function RhythmManualBuilder({
           >
             {/* TODO validation avocat avant production — wording v1 archivé dans docs/DETTE-TECHNIQUE.md DETTE #45 */}
             <h3 id="rmb-modal-title-h" className="rmb-modal-title">
-              Avant de confirmer, vérifiez votre planning
+              Vérifie ton planning avant de confirmer
             </h3>
             <div className="rmb-modal-body">
               <p>
-                Ce calendrier indique les semaines où vous serez présent dans
-                le logement que vous cherchez. Sterny s'en sert pour vous
-                mettre en relation avec un autre alternant dont les semaines
-                de présence sont opposées aux vôtres — pour que vous
-                n'occupiez jamais le logement en même temps.
-              </p>
-              <p>
-                Deux types d'erreurs peuvent avoir des conséquences une fois
-                le bail signé :
-              </p>
-              <p>
-                — Si vous oubliez de cocher une semaine où vous serez
-                réellement présent, vous pouvez vous retrouver dans le
-                logement en même temps que l'autre alternant cette semaine-là.
-              </p>
-              <p>
-                — Si vous cochez une semaine où vous serez en réalité
-                ailleurs, vous paierez pour une semaine que vous n'occuperez
-                pas, et l'autre alternant croira le logement occupé.
-              </p>
-              <p>
-                Prenez un instant pour comparer ce calendrier à votre
-                planning officiel d'alternance avant de continuer.
+                Assure-toi d'avoir coché toutes les semaines où tu seras à
+                l'école, et seulement celles-là. Une erreur peut te faire
+                croiser l'autre alternant dans le logement, ou te faire payer
+                une semaine que tu n'occupes pas.
               </p>
             </div>
             <div className="rmb-modal-actions">
@@ -423,8 +428,13 @@ export default function RhythmManualBuilder({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
-}
+});
+
+RhythmManualBuilder.displayName = 'RhythmManualBuilder';
+
+export default RhythmManualBuilder;
