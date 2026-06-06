@@ -2,9 +2,19 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 juin 2026 (conv 34) — #82 lot 1 + flèches/consigne E-5 livrés et poussés. Prochain chantier : refonte du modal de confirmation Q8 (DETTE #81).
+**Dernière mise à jour** : 6 juin 2026 (conv 34) — DETTE #81 RÉSOLUE : modal de confirmation Q8 refondu (pattern popup RhythmRequiredPopup). Prochains chantiers : DETTE #80 (semaines passées) puis œil afficher/masquer mot de passe.
 
 ---
+
+## 2026-06-06 (conv 34) — DETTE #81 résolue : refonte du modal de confirmation Q8
+
+- **DETTE #81 RÉSOLUE** (commit feat 86e6cc7 ; docs : présent commit — vérifier git log). Modal Q8 « Vérifie ton planning » (RhythmManualBuilder.jsx + .css) refondu et poussé sur origin.
+- **Cible corrigée après audit des modales existantes** : le bon référent n'était PAS la « grammaire carte wizard » (.aw-screen-card) inscrite à l'origine dans #81, mais le **pattern popup maison RhythmRequiredPopup** (popup frère, même dossier auth-wizard, même builder, même rôle message + action). Décision actée.
+- **Forme (panel)** : radius 20, borderless, ombre sombre `0 24px 64px rgba(0,0,0,0.25)`, max-width 400, hauteur auto (épouse le message, plus de min-height), padding 32 ; titre + corps centrés.
+- **Disposition** : `PrimaryButton` importé (composant partagé auth-wizard, couplage assumé), pleine largeur, « Confirmer mon planning » ; lien « Revenir au calendrier » centré dessous (style `.aw-bottom-auth-link` recopié sur un `<button>`, sans border-top). Remplace les 2 anciens boutons côte à côte ; classes `.rmb-modal-btn-primary` / `.rmb-modal-btn-secondary` supprimées.
+- **Wording resserré** : titre « Vérifie ton planning » ; corps « Assure-toi d'avoir coché les bonnes semaines d'école. Une erreur peut te faire croiser l'autre alternant, ou payer une semaine que tu n'occupes pas. » (1re phrase = vérification, pas consigne). ⚠️ Toujours sous réserve validation avocat (DETTE #45, commentaire TODO conservé).
+- **Conservé** : portal createPortal(document.body), overlay (--rmb-*), handlers, .rmb-modal-error.
+- **Prochains chantiers** : DETTE #80 (semaines passées/en cours sur l'union + asymétrie hydratation/materialize) ; reste #82 (élargissement >2 ans, upsert post-inscription) ; œil afficher/masquer mot de passe sur TextInput partagé.
 
 ## 2026-06-05 (conv 33) — #82 lot 1 : accumulation multi-années dans le builder E-5
 
