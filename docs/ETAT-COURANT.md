@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 5 juin 2026 (conv 33) — #82 lot 1 livré : accumulation multi-années dans le builder E-5 (round-trip validé). Préalable #82 levé. En cours : flèches de navigation entre années (#82) puis design modal (#81).
+**Dernière mise à jour** : 6 juin 2026 (conv 34) — #82 lot 1 + flèches/consigne E-5 livrés et poussés. Prochain chantier : refonte du modal de confirmation Q8 (DETTE #81).
 
 ---
 
@@ -12,8 +12,9 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 - **Lot 1 livré (RhythmManualBuilder.jsx, commit feat bb1f354 — vérifier git log)** : reset au changement d'année supprimé (`useEffect([effectiveYear])` + `yearHydratedRef` + import `useRef` retirés) → les cases s'accumulent (Set keyé par lundi absolu). `materialize` réécrit sur l'union des années **renseignées** (décision (b) : ≥1 semaine cochée), dédup + tri ; inversion `villeRecherchee` préservée. Helper module `candidateAcademicYears()` = source unique partagée hydratation + materialize.
 - **Bug round-trip corrigé** : l'hydratation de `clicked` ne restaurait que l'année par défaut → l'année suivante vidée au Retour sur E-5. Étendue à l'union des années candidates. Validé visuellement (aller-retour E-5↔E-7, les 2 années survivent, compteur cumulé).
 - **Garde « semaines passées → company » retiré de `materialize` → renvoyé à #80** (sans impact transactionnel, VISION §141-143). Asymétrie hydratation (exclut le passé) / materialize (ne l'exclut plus) à résorber avec #80.
-- **Reste #82** : navigation par flèches entre années (prochaine étape — le déroulant actuel est jugé peu intuitif) + intégration #80.
-- **Puis** : DETTE #81 — design du modal de confirmation Q8 (« Vérifie ton planning ») à aligner sur la grammaire carte wizard.
+- **Flèches de navigation + consigne discrète E-5 : FAITES et poussées** (09db163 feat flèches côté page, a580970 style consigne builder). Déroulant d'année remplacé par « ‹ année › » (côté page, builder inchangé) ; consigne en hint gris centré.
+- **Reste #82** : intégration #80 (semaines passées sur l'union) + élargissement au-delà de 2 ans (nav hors domaine défaut/suivante) + écriture ajout/upsert post-inscription.
+- **Prochain chantier — DETTE #81 (NON commencé)** : refonte du modal de confirmation Q8 « Vérifie ton planning » dans la grammaire carte wizard.
 
 ## 2026-06-05 (conv 32 — suite) — E-5 aligné sur la grammaire wizard (commit b3619e2)
 
