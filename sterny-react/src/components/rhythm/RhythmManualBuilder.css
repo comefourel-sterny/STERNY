@@ -70,11 +70,13 @@
 
 /* Zone 1 — consigne dynamique */
 .rmb-instructions {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--rmb-text-primary);
+  margin: -8px auto 0 auto;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--rmb-text-secondary);
   max-width: 720px;
+  text-align: center;
 }
 
 /* Zone 2 — compteur live unique (Q11 D) */
