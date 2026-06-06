@@ -147,3 +147,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* E-5 — navigation d'année académique par flèches (remplace le déroulant). */
+.ial-year-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ial-year-nav-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1E293B;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ial-year-nav-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ial-year-nav-value {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  color: #1E293B;
+  min-width: 96px;
+  text-align: center;
+}
+
+.ial-year-nav-arrow {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  color: #94A3B8;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.ial-year-nav-arrow:hover:not(:disabled) {
+  color: #1E293B;
+}
+
+.ial-year-nav-arrow:disabled {
+  color: #CBD5E1;
+  cursor: default;
+}

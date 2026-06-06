@@ -596,23 +596,31 @@ export default function InscriptionAlternantPage() {
   }
 
   if (state.currentStep === 5) {
-    const anneeOptions = [
-      { value: e5DefaultYear, label: e5DefaultYear },
-      { value: e5NextYear, label: e5NextYear },
-    ]
     return (
       <AuthScreenContainer>
         <h1 className="aw-screen-title">INSCRIPTION</h1>
         <WizardProgressBar progress={5/7} />
         <div className="ial-form">
-          <CustomSelect
-            name="annee_academique"
-            label="Année académique"
-            options={anneeOptions}
-            value={e5Year}
-            onChange={(e) => setE5Year(e.target.value)}
-            placeholder="Sélectionner"
-          />
+          <div className="ial-year-nav">
+            <span className="ial-year-nav-label">Année académique</span>
+            <div className="ial-year-nav-control">
+              <button
+                type="button"
+                className="ial-year-nav-arrow"
+                onClick={() => setE5Year(e5DefaultYear)}
+                disabled={e5Year === e5DefaultYear}
+                aria-label="Année précédente"
+              >‹</button>
+              <span className="ial-year-nav-value">{e5Year}</span>
+              <button
+                type="button"
+                className="ial-year-nav-arrow"
+                onClick={() => setE5Year(e5NextYear)}
+                disabled={e5Year === e5NextYear}
+                aria-label="Année suivante"
+              >›</button>
+            </div>
+          </div>
           <RhythmManualBuilder
             ref={builderRef}
             villeRecherchee="ecole"
