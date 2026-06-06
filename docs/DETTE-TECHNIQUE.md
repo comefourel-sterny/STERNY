@@ -928,6 +928,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Réf** : RhythmManualBuilder / étape E-5, VISION §137-149 et §147.
 
+**Statut au 2026-06-06 (conv 35) — RÉSOLUE** (commit fix 5ea6964). RhythmManualBuilder.jsx : helper module unique `isWeekBlocked(week, mondayCurrentTs)` = `week.mondayTs <= mondayCurrentTs` (seuil lundi `<=` → bloque passé + semaine en cours, contre l'ancien seuil jeudi `<`). Partagé par `pastWeekStarts` (rendu grisé + garde `toggleWeek`), hydratation `initialPast`, et `materialize` (qui n'émet plus que du futur → asymétrie #82 lot 1 résorbée). Wording cellule bloquée → « passée ou en cours ». Défaut du sélecteur d'année **inchangé** (décision produit logée VISION). Validé visuellement. Réserve VISION §151 : vérifier qu'aucun code aval ne suppose un calendrier complet 52 semaines avant le chantier paiement/matching.
+
 ## DETTE #81 — Modale Q8 (confirmation du planning) à aligner sur la grammaire des cartes wizard
 
 Aujourd'hui la modale a sa propre forme (rmb-modal-*). À refaire pour reprendre : la forme de carte (.aw-screen-card — radius 16px, border #E8EAF0, shadow) ; « Confirmer mon planning » = bouton principal style carte (PrimaryButton / .ial-btn-continuer, orange pleine largeur) ; « Revenir au calendrier » = lien retour SOUS le bouton (comme BottomAuthLinks). Texte à raccourcir : (a) ne coche que tes semaines d'école ; (b) attention, une erreur a de grosses conséquences sur tes réservations. Lecture 8ter requise (PrimaryButton, BottomAuthLinks, .ial-btn-continuer, .aw-screen-card).

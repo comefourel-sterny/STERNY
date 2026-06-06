@@ -168,6 +168,18 @@ Modèle cible : statut à valeurs contraintes (extensible au-delà de école/ent
 
 **Préalable levé (2026-06-05, conv 33) — audit lecture seule.** Schéma confirmé : `rhythm_calendar` est une colonne `jsonb` sans contrainte de format (le format `[{ week_start, status }]` n'est porté que par un COMMENT), donc déjà une liste plate de semaines datées acceptant N semaines toutes années confondues. La RPC `complete_inscription_alternant` écrit ce format tel quel, le valide (lundi / status ∈ {school,company} / unicité) sans cap ni borne d'année, et le builder émet déjà ces mêmes clés. **Conclusion : ni migration de stockage ni évolution de la RPC pour l'inscription initiale ; le seul écart au multi-années est côté builder.** Réserve : la RPC remplace la colonne entière (`ON CONFLICT (id) DO UPDATE … = EXCLUDED`) ; correct à l'inscription (le client envoie l'union complète), mais l'ajout d'une année *après* inscription devra relire+fusionner côté client avant envoi, ou passer par une RPC d'ajout dédiée — à cadrer après audit dashboard. Détail en DETTE #82.
 
+### Builder de rythme à l'inscription : capture du futur uniquement (décision 2026-06-06, conv 35, DETTE #80)
+
+Le builder E-5 capture le rythme à venir (« où tu seras à l'école »). **Blocage** : toute semaine dont le lundi ISO est ≤ au lundi de la semaine ISO en cours est grisée et non-cliquable (passé + semaine en cours). La semaine en cours est exclue car le builder décrit un rythme prospectif ; le choix d'une semaine de début « semaine en cours autorisée » relève du flux de signature de contrat (§145), surface distincte.
+
+**Capture du futur uniquement** : `materialize` n'émet que des semaines dont le lundi > lundi courant. `rhythm_calendar` ne contient donc plus de semaines passées synthétiques générées à l'inscription (auparavant émises côté `'company'` par défaut). Cela résorbe l'asymétrie hydratation/`materialize` laissée par #82 lot 1 et aligne les trois chemins — rendu/clic, hydratation, `materialize` — sur une borne unique factorisée (`isWeekBlocked`, lundi courant via `computeMondayCurrentISO`).
+
+**Cohérence §141/§143** : ces sections autorisent mais n'imposent pas la présence de semaines passées dans `rhythm_calendar`. L'« historique » au sens §149 vise les plannings de contrats antérieurs consultés en lecture seule au dashboard (donnée réelle signée), pas des semaines `'company'` fabriquées par défaut à l'inscription. Aucun conflit.
+
+**Défaut du sélecteur d'année : inchangé.** Le défaut reste l'année académique courante (`computeDefaultAcademicYear`), même quand elle est majoritairement passée. Raison UX : un utilisateur qui s'inscrit en cours d'année voit ses semaines récentes grisées et comprend « cette année est finie, je passe à la suivante » via les flèches ; atterrir directement sur l'année suivante lui ferait croire qu'il ne peut pas venir maintenant.
+
+**Réserve (VISION §151)** : avant de fiabiliser tout flux contrat/paiement/matching, vérifier qu'aucun code aval ne suppose un `rhythm_calendar` complet sur 52 semaines (l'exclusion du passé rend les années partielles). Risque faible tant que le moteur n'est pas bâti.
+
 ### Colonnes dépréciées
 
 Les colonnes suivantes existent dans la BDD mais n'ont plus vocation à être utilisées dans le matching. Elles restent en place pendant la phase de transition pour ne pas créer de régressions brutales, puis seront supprimées via une migration dédiée en fin de transition.

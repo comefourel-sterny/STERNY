@@ -2,9 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 juin 2026 (conv 34) — DETTE #81 RÉSOLUE : modal de confirmation Q8 refondu (pattern popup RhythmRequiredPopup). Prochains chantiers : DETTE #80 (semaines passées) puis œil afficher/masquer mot de passe.
+**Dernière mise à jour** : 6 juin 2026 (conv 35) — DETTE #80 RÉSOLUE : builder E-5 bloque passé + semaine en cours, capture du futur uniquement. Prochains chantiers : reste DETTE #82 (nav >2 ans + upsert post-inscription) puis œil afficher/masquer mot de passe.
 
 ---
+
+## 2026-06-06 (conv 35) — DETTE #80 résolue : builder E-5 bloque passé + semaine en cours, capture du futur uniquement
+
+- **DETTE #80 RÉSOLUE** (commit fix 5ea6964 ; docs : présent commit — vérifier git log). RhythmManualBuilder.jsx uniquement.
+- **Blocage élargi** : helper module unique `isWeekBlocked(week, mondayCurrentTs)` = `week.mondayTs <= mondayCurrentTs` (seuil lundi `<=`) → bloque le passé **et la semaine ISO en cours** (avant : seuil jeudi `<` qui laissait la semaine en cours cliquable). Seule comparaison de date du fichier.
+- **3 chemins alignés** sur ce prédicat : `pastWeekStarts` (→ rendu grisé + `disabled`/`tabIndex`/`aria` + garde `toggleWeek`), hydratation `initialPast`, `materialize`.
+- **Capture du futur uniquement** : `materialize` skippe les semaines bloquées → `rhythm_calendar` ne contient plus de semaines passées/en cours synthétiques. **Asymétrie hydratation/materialize de #82 lot 1 résorbée.**
+- **Wording cellule bloquée** : « Semaine déjà passée » → « Semaine passée ou en cours » (title + aria-label).
+- **Défaut du sélecteur d'année : INCHANGÉ** (décision produit conv 35, logée VISION). On garde l'année courante par défaut même quasi passée ; gris + flèches signalent « passe à l'année suivante ».
+- **Validé visuellement** (npm run dev) : semaine en cours grisée/non-cliquable, tooltip OK, compteur sans passé/courant, round-trip E-5↔E-7 conservé.
+- **Réserve (VISION §151)** : avant de fiabiliser le flux paiement/matching, vérifier qu'aucun code aval ne suppose un `rhythm_calendar` complet 52 semaines. Risque faible aujourd'hui (moteur pas encore bâti).
+- **Prochains chantiers** : reste #82 (nav >2 ans + écriture ajout/upsert post-inscription) ; œil afficher/masquer mot de passe sur le TextInput partagé.
 
 ## 2026-06-06 (conv 34) — DETTE #81 résolue : refonte du modal de confirmation Q8
 
