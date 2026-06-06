@@ -130,6 +130,14 @@ function computeMondayCurrentISO() {
   return todayUTC - offsetDays * DAY_MS;
 }
 
+// Borne unique #80 : une semaine est bloquée (passée OU en cours) si son lundi
+// est <= au lundi de la semaine ISO en cours. Seule comparaison de date du
+// fichier — partagée par le rendu/garde (pastWeekStarts), l'hydratation et
+// materialize, pour rester cohérents. On n'enregistre que des semaines futures.
+function isWeekBlocked(week, mondayCurrentTs) {
+  return week.mondayTs <= mondayCurrentTs;
+}
+
 // ---------- Composant ----------
 
 const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
@@ -169,12 +177,12 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
   // Lundi de la semaine ISO en cours, calculé une seule fois au montage.
   const mondayCurrentISO = useMemo(() => computeMondayCurrentISO(), []);
 
-  // Semaines passées : jeudi strictement antérieur au lundi de la semaine
-  // ISO en cours. Recalculé à chaque changement d'année.
+  // Semaines bloquées (#80) : lundi <= lundi de la semaine ISO en cours
+  // (= passées + semaine en cours). Recalculé à chaque changement d'année.
   const pastWeekStarts = useMemo(() => {
     const past = new Set();
     for (const w of allWeeks) {
-      if (w.thursdayTs < mondayCurrentISO) past.add(w.weekStart);
+      if (isWeekBlocked(w, mondayCurrentISO)) past.add(w.weekStart);
     }
     return past;
   }, [allWeeks, mondayCurrentISO]);
@@ -189,9 +197,10 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
         villeRecherchee === 'ecole' ? 'school' : 'company';
       const years = candidateAcademicYears();
       const initialWeeks = years.flatMap((yr) => generateWeeks(firstMondayForAcademicYear(yr)));
+      const mondayCurrentTs = computeMondayCurrentISO();
       const initialPast = new Set();
       for (const w of initialWeeks) {
-        if (w.thursdayTs < computeMondayCurrentISO()) {
+        if (isWeekBlocked(w, mondayCurrentTs)) {
           initialPast.add(w.weekStart);
         }
       }
@@ -234,6 +243,7 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
       // Années candidates = celles proposées par le sélecteur (défaut + suivante).
       // Borné à 2 ans tant que la navigation par flèches n'est pas posée (#82 ultérieur).
       const candidateYears = candidateAcademicYears();
+      const mondayCurrentTs = computeMondayCurrentISO();
 
       const byWeekStart = new Map();
       for (const yr of candidateYears) {
@@ -241,6 +251,9 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
         // (b) : on n'inclut une année que si au moins une de ses semaines est cochée
         if (!weeks.some((w) => clickedSet.has(w.weekStart))) continue;
         for (const w of weeks) {
+          // #80 : on n'enregistre que les semaines futures (les bloquées sont
+          // exclues, jamais cliquables → cohérent avec rendu/hydratation).
+          if (isWeekBlocked(w, mondayCurrentTs)) continue;
           byWeekStart.set(w.weekStart, {
             week_start: w.weekStart,
             status:
@@ -359,10 +372,10 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
                   type="button"
                   className={cellClass}
                   onClick={() => toggleWeek(w.weekStart)}
-                  title={isPast ? 'Semaine déjà passée' : tooltip}
+                  title={isPast ? 'Semaine passée ou en cours' : tooltip}
                   aria-label={
                     isPast
-                      ? `Semaine du ${tooltip}, déjà passée`
+                      ? `Semaine du ${tooltip}, passée ou en cours`
                       : `Semaine du ${tooltip}, ${
                           isClicked ? 'sélectionnée' : 'non sélectionnée'
                         }`
