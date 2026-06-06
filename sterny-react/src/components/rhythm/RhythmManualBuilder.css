@@ -229,11 +229,11 @@
 
 .rmb-modal-panel {
   background: #FFFFFF;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 32px;
-  max-width: 520px;
+  max-width: 400px;
   width: 100%;
-  box-shadow: 0 12px 40px rgba(30, 41, 59, 0.18);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
   color: var(--rmb-text-primary);
 }
 
@@ -243,12 +243,14 @@
   font-weight: 700;
   color: var(--rmb-text-primary);
   line-height: 1.3;
+  text-align: center;
 }
 
 .rmb-modal-body {
   font-size: 14px;
   line-height: 1.6;
   color: var(--rmb-text-primary);
+  text-align: center;
 }
 
 .rmb-modal-body p {
@@ -261,51 +263,29 @@
 
 .rmb-modal-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   margin-top: 24px;
-  flex-wrap: wrap;
+  align-items: stretch;
 }
 
-.rmb-modal-btn-secondary {
-  padding: 12px 20px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: 1px solid var(--rmb-company);
-  background: #FFFFFF;
-  color: var(--rmb-company);
-  cursor: pointer;
-  transition: var(--rmb-transition);
-}
-
-.rmb-modal-btn-secondary:hover:not(:disabled) {
-  background: var(--rmb-bg-empty);
-}
-
-.rmb-modal-btn-primary {
-  padding: 12px 24px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 10px;
+/* Lien retour sous le bouton principal (recopie du style aw-bottom-auth-link,
+   reset bouton + centrage, sans border-top). */
+.rmb-modal-back-link {
+  align-self: center;
+  background: none;
   border: none;
-  background: var(--rmb-school);
-  color: #FFFFFF;
+  padding: 0;
   cursor: pointer;
-  transition: var(--rmb-transition);
-  min-width: 200px;
+  color: #E8622A;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.rmb-modal-btn-primary:hover:not(:disabled) {
-  background: var(--rmb-school-hover);
-}
-
-.rmb-modal-btn-primary:disabled,
-.rmb-modal-btn-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.rmb-modal-back-link:hover {
+  opacity: 0.8;
 }
 
 .rmb-modal-error {

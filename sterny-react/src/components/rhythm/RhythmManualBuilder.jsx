@@ -27,6 +27,7 @@
 import { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear';
+import PrimaryButton from '../auth-wizard/PrimaryButton';
 import './RhythmManualBuilder.css';
 
 const TOTAL_WEEKS = 52;
@@ -418,31 +419,18 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
           >
             {/* TODO validation avocat avant production — wording v1 archivé dans docs/DETTE-TECHNIQUE.md DETTE #45 */}
             <h3 id="rmb-modal-title-h" className="rmb-modal-title">
-              Vérifie ton planning avant de confirmer
+              Vérifie ton planning
             </h3>
             <div className="rmb-modal-body">
               <p>
-                Assure-toi d'avoir coché toutes les semaines où tu seras à
-                l'école, et seulement celles-là. Une erreur peut te faire
-                croiser l'autre alternant dans le logement, ou te faire payer
-                une semaine que tu n'occupes pas.
+                Assure-toi d'avoir coché les bonnes semaines d'école. Une
+                erreur peut te faire croiser l'autre alternant, ou payer une
+                semaine que tu n'occupes pas.
               </p>
             </div>
             <div className="rmb-modal-actions">
-              <button
-                type="button"
-                className="rmb-modal-btn-secondary"
-                onClick={handleCloseModal}
-              >
-                Revenir au calendrier
-              </button>
-              <button
-                type="button"
-                className="rmb-modal-btn-primary"
-                onClick={handleConfirmModal}
-              >
-                Confirmer mon planning
-              </button>
+              <PrimaryButton onClick={handleConfirmModal}>Confirmer mon planning</PrimaryButton>
+              <button type="button" className="rmb-modal-back-link" onClick={handleCloseModal}>Revenir au calendrier</button>
             </div>
           </div>
         </div>,
