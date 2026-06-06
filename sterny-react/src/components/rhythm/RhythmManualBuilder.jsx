@@ -24,7 +24,7 @@
 //     (VISION §3 alinéa « Pas de semaines vacances dans le modèle » — toute
 //     semaine non-école est company par défaut).
 
-import { useState, useMemo, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear';
 import './RhythmManualBuilder.css';
@@ -45,6 +45,14 @@ function firstMondayForAcademicYear(yearStr) {
   const isoDow = dow === 0 ? 7 : dow; // 1 lun .. 7 dim
   const offsetDays = isoDow - 1; // pas en arrière jusqu'au lundi
   return sept1Ts - offsetDays * DAY_MS;
+}
+
+// Années proposées par le sélecteur aujourd'hui (défaut + suivante).
+// Source unique partagée par l'hydratation ET materialize. Bornée à 2 ans
+// tant que la navigation par flèches (#82 ultérieur) n'est pas posée.
+function candidateAcademicYears() {
+  const y0 = computeDefaultAcademicYear();
+  return [y0, nextAcademicYear(y0)];
 }
 
 // ---------- Helpers calendrier ----------
@@ -178,7 +186,8 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
     if (Array.isArray(initialCalendar)) {
       const targetStatus =
         villeRecherchee === 'ecole' ? 'school' : 'company';
-      const initialWeeks = generateWeeks(firstMondayForAcademicYear(defaultYear));
+      const years = candidateAcademicYears();
+      const initialWeeks = years.flatMap((yr) => generateWeeks(firstMondayForAcademicYear(yr)));
       const initialPast = new Set();
       for (const w of initialWeeks) {
         if (w.thursdayTs < computeMondayCurrentISO()) {
@@ -202,41 +211,49 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Reset des cases cliquées au changement d'année académique (la spec
-  // simplifie ainsi la v1 — pas de mappage entre les 2 années). Piloté par
-  // effectiveYear pour couvrir À LA FOIS le <select> interne (preview) ET la
-  // prop `year` contrôlée (E-5). On saute le tout premier rendu pour ne pas
-  // écraser l'hydratation initiale de `clicked` depuis initialCalendar.
-  const yearHydratedRef = useRef(false);
-  useEffect(() => {
-    if (!yearHydratedRef.current) {
-      yearHydratedRef.current = true;
-      return;
-    }
-    setClicked(new Set());
-  }, [effectiveYear]);
+  // Multi-années (#82) : changer d'année ne vide PLUS les cases cliquées —
+  // les sélections s'accumulent (clicked est keyé par lundi absolu, sans
+  // collision entre années). L'hydratation initiale depuis initialCalendar
+  // reste portée par l'initializer du useState ci-dessus.
 
   const handleYearChange = useCallback((newYear) => {
     if (year === undefined) setSelectedYear(newYear); // non contrôlé : on gère le state interne
     onYearChange?.(newYear);                          // contrôlé : on remonte au parent
   }, [year, onYearChange]);
 
-  // Matérialise les 52 semaines depuis un Set de semaines cliquées.
-  // (passée → 'company' systématique ; non-passée → inverse selon villeRecherchee)
+  // Matérialise le calendrier sur l'UNION des années renseignées (#82).
+  // Décision (b) : une année n'entre dans le calendrier que si l'utilisateur y a
+  // coché au moins une semaine. Statut selon villeRecherchee (bidirectionnel) :
+  // école → semaine cochée = 'school', sinon 'company' ; entreprise → semaine
+  // cochée = 'company', sinon 'school'. Les semaines passées, non cliquables,
+  // retombent du côté non coché. Set keyé par lundi absolu → pas de collision
+  // entre années.
   const materialize = useCallback(
-    (clickedSet) =>
-      allWeeks.map((w) => {
-        if (pastWeekStarts.has(w.weekStart)) {
-          return { week_start: w.weekStart, status: 'company' };
+    (clickedSet) => {
+      // Années candidates = celles proposées par le sélecteur (défaut + suivante).
+      // Borné à 2 ans tant que la navigation par flèches n'est pas posée (#82 ultérieur).
+      const candidateYears = candidateAcademicYears();
+
+      const byWeekStart = new Map();
+      for (const yr of candidateYears) {
+        const weeks = generateWeeks(firstMondayForAcademicYear(yr));
+        // (b) : on n'inclut une année que si au moins une de ses semaines est cochée
+        if (!weeks.some((w) => clickedSet.has(w.weekStart))) continue;
+        for (const w of weeks) {
+          byWeekStart.set(w.weekStart, {
+            week_start: w.weekStart,
+            status:
+              villeRecherchee === 'ecole'
+                ? (clickedSet.has(w.weekStart) ? 'school' : 'company')
+                : (clickedSet.has(w.weekStart) ? 'company' : 'school'),
+          });
         }
-        const isPresent = clickedSet.has(w.weekStart);
-        const status =
-          villeRecherchee === 'ecole'
-            ? (isPresent ? 'school' : 'company')
-            : (isPresent ? 'company' : 'school');
-        return { week_start: w.weekStart, status };
-      }),
-    [allWeeks, pastWeekStarts, villeRecherchee]
+      }
+      return [...byWeekStart.values()].sort((a, b) =>
+        a.week_start < b.week_start ? -1 : a.week_start > b.week_start ? 1 : 0
+      );
+    },
+    [villeRecherchee]
   );
 
   const toggleWeek = useCallback(
