@@ -26,34 +26,28 @@
 
 import { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
-import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear';
+import { computeDefaultAcademicYear, nextAcademicYear, academicYearForMonday, firstMondayForAcademicYear } from '../../utils/academicYear';
 import PrimaryButton from '../auth-wizard/PrimaryButton';
 import './RhythmManualBuilder.css';
 
-const TOTAL_WEEKS = 52;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // ---------- Helpers année académique ----------
 // computeDefaultAcademicYear / nextAcademicYear : importés depuis
 // ../../utils/academicYear (source unique partagée avec l'étape E-5).
 
-// Premier lundi du calendrier visuel de l'année académique : lundi de la
-// semaine qui contient le 1er septembre YYYY (peut tomber fin août).
-function firstMondayForAcademicYear(yearStr) {
-  const Y = parseInt(yearStr.split('-')[0], 10);
-  const sept1Ts = Date.UTC(Y, 8, 1); // mois 8 = septembre (0-indexed)
-  const dow = new Date(sept1Ts).getUTCDay(); // 0 dim .. 6 sam
-  const isoDow = dow === 0 ? 7 : dow; // 1 lun .. 7 dim
-  const offsetDays = isoDow - 1; // pas en arrière jusqu'au lundi
-  return sept1Ts - offsetDays * DAY_MS;
-}
+// firstMondayForAcademicYear : importé depuis ../../utils/academicYear
+// (source unique, partagé avec academicYearForMonday pour une bascule août cohérente).
 
-// Années proposées par le sélecteur aujourd'hui (défaut + suivante).
-// Source unique partagée par l'hydratation ET materialize. Bornée à 2 ans
-// tant que la navigation par flèches (#82 ultérieur) n'est pas posée.
-function candidateAcademicYears() {
-  const y0 = computeDefaultAcademicYear();
-  return [y0, nextAcademicYear(y0)];
+// Années académiques distinctes présentes dans une liste de lundis 'YYYY-MM-DD'
+// (dérivé des données, pas de plafond d'années — #82 nav illimitée). Source
+// unique partagée par l'hydratation ET materialize.
+function candidateAcademicYears(mondayList) {
+  const years = new Set();
+  for (const m of mondayList || []) {
+    if (typeof m === 'string') years.add(academicYearForMonday(m));
+  }
+  return [...years];
 }
 
 // ---------- Helpers calendrier ----------
@@ -66,10 +60,14 @@ function formatISO(timestamp) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function generateWeeks(firstMondayUtc) {
+// Semaines d'une année académique (sept Y → août Y+1) : depuis son 1er lundi,
+// tant que la semaine appartient encore à cette année (classement par le mois du
+// jeudi via academicYearForMonday). Produit 52 ou 53 semaines selon le calendrier,
+// sans trou ni doublon (tuilage parfait entre années consécutives).
+function weeksForAcademicYear(yearStr) {
   const weeks = [];
-  for (let i = 0; i < TOTAL_WEEKS; i++) {
-    const mondayTs = firstMondayUtc + i * 7 * DAY_MS;
+  let mondayTs = firstMondayForAcademicYear(yearStr);
+  while (academicYearForMonday(formatISO(mondayTs)) === yearStr) {
     const sundayTs = mondayTs + 6 * DAY_MS;
     const thursdayTs = mondayTs + 3 * DAY_MS;
     weeks.push({
@@ -78,6 +76,7 @@ function generateWeeks(firstMondayUtc) {
       sundayTs,
       thursdayTs,
     });
+    mondayTs += 7 * DAY_MS;
   }
   return weeks;
 }
@@ -169,7 +168,7 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
   const effectiveYear = year !== undefined ? year : selectedYear;
 
   const allWeeks = useMemo(
-    () => generateWeeks(firstMondayForAcademicYear(effectiveYear)),
+    () => weeksForAcademicYear(effectiveYear),
     [effectiveYear]
   );
   const monthsLayout = useMemo(() => groupByMonth(allWeeks), [allWeeks]);
@@ -195,8 +194,8 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
     if (Array.isArray(initialCalendar)) {
       const targetStatus =
         villeRecherchee === 'ecole' ? 'school' : 'company';
-      const years = candidateAcademicYears();
-      const initialWeeks = years.flatMap((yr) => generateWeeks(firstMondayForAcademicYear(yr)));
+      const years = candidateAcademicYears(initialCalendar.map((e) => e?.week_start))
+      const initialWeeks = years.flatMap((yr) => weeksForAcademicYear(yr));
       const mondayCurrentTs = computeMondayCurrentISO();
       const initialPast = new Set();
       for (const w of initialWeeks) {
@@ -240,14 +239,14 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
   // entre années.
   const materialize = useCallback(
     (clickedSet) => {
-      // Années candidates = celles proposées par le sélecteur (défaut + suivante).
-      // Borné à 2 ans tant que la navigation par flèches n'est pas posée (#82 ultérieur).
-      const candidateYears = candidateAcademicYears();
+      // Années candidates = celles où l'utilisateur a coché ≥1 semaine (dérivées
+      // des lundis du Set, donc nav illimitée vers le futur — #82).
+      const candidateYears = candidateAcademicYears([...clickedSet]);
       const mondayCurrentTs = computeMondayCurrentISO();
 
       const byWeekStart = new Map();
       for (const yr of candidateYears) {
-        const weeks = generateWeeks(firstMondayForAcademicYear(yr));
+        const weeks = weeksForAcademicYear(yr);
         // (b) : on n'inclut une année que si au moins une de ses semaines est cochée
         if (!weeks.some((w) => clickedSet.has(w.weekStart))) continue;
         for (const w of weeks) {

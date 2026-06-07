@@ -20,7 +20,7 @@ import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import RhythmManualBuilder from '../../components/rhythm/RhythmManualBuilder'
-import { computeDefaultAcademicYear, nextAcademicYear } from '../../utils/academicYear'
+import { computeDefaultAcademicYear, nextAcademicYear, previousAcademicYear } from '../../utils/academicYear'
 import RhythmRequiredPopup from '../../components/auth-wizard/RhythmRequiredPopup'
 import { ECOLES, ANNEES_ETUDES, FILIERES, VILLES_FRANCE } from '../../data/inscription-options'
 import { formatPartialDateInput } from '../../utils/dateHelpers.js'
@@ -58,7 +58,6 @@ export default function InscriptionAlternantPage() {
   const [rhythmPopupOpen, setRhythmPopupOpen] = useState(false)
   // E-5 : année académique pilotée par la page (défaut inchangé = année courante).
   const e5DefaultYear = useMemo(() => computeDefaultAcademicYear(), [])
-  const e5NextYear = useMemo(() => nextAcademicYear(e5DefaultYear), [e5DefaultYear])
   const [e5Year, setE5Year] = useState(e5DefaultYear)
   const builderRef = useRef(null)
   const errorTimerRef = useRef(null)
@@ -607,7 +606,7 @@ export default function InscriptionAlternantPage() {
               <button
                 type="button"
                 className="ial-year-nav-arrow"
-                onClick={() => setE5Year(e5DefaultYear)}
+                onClick={() => setE5Year((prev) => previousAcademicYear(prev))}
                 disabled={e5Year === e5DefaultYear}
                 aria-label="Année précédente"
               >‹</button>
@@ -615,8 +614,7 @@ export default function InscriptionAlternantPage() {
               <button
                 type="button"
                 className="ial-year-nav-arrow"
-                onClick={() => setE5Year(e5NextYear)}
-                disabled={e5Year === e5NextYear}
+                onClick={() => setE5Year((prev) => nextAcademicYear(prev))}
                 aria-label="Année suivante"
               >›</button>
             </div>
