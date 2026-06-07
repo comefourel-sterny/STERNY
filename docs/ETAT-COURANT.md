@@ -2,9 +2,17 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 juin 2026 (conv 36) — Œil afficher/masquer mot de passe sur TextInput + récap E-7 en mots-résumés. Prochains chantiers : refonte modal « Complète ton calendrier » (grammaire #81) ; reste #82 ; généralisation œil #83.
+**Dernière mise à jour** : 7 juin 2026 (conv 36) — Œil afficher/masquer mot de passe (TextInput) + récap E-7 en mots-résumés + popups frères unifiés (RhythmRequiredPopup aligné sur Q8). Prochains chantiers : reste #82 (nav >2 ans + upsert post-inscription) ; généralisation œil #83.
 
 ---
+
+## 2026-06-07 (conv 36 — suite) — Popups frères unifiés : RhythmRequiredPopup aligné sur le modal Q8
+
+- **Découverte d'audit** : le popup « Complète ton calendrier » EST `RhythmRequiredPopup` (auth-wizard), pas un overlay distinct. C'était déjà le pattern de référence de conv 34 (#81). Côme préférant le rendu du modal Q8 « Vérifie ton planning » et voulant que les deux popups frères se ressemblent, on a aligné RhythmRequiredPopup SUR Q8 (et non l'inverse).
+- **⚠️ Nuance de convention** : conv 34 posait RhythmRequiredPopup comme référence ; cette session inverse le sens (Q8 fait foi visuellement). Les deux popups seront repris par des designers plus tard — ne pas re-inverser entre-temps.
+- **Changements RhythmRequiredPopup (commit feat — voir git log)** : overlay `rgba(15,20,35,0.85)` → `rgba(30,41,59,0.5)` (animation conservée) ; panel max-width 460 → 400 ; titre 18 → 20px ; corps gris `#4B5563` → navy `#1E293B` ; icône calendrier retirée + règle CSS `.aw-rrp-icon` supprimée. Action inchangée : 1 seul `PrimaryButton` (RRP a une seule issue, contrairement à Q8 bouton + lien — on aligne le design, pas le nombre d'actions).
+- **Copie resserrée** : corps → « Ça permet à Sterny de te mettre en relation. » + « Tu pourras le modifier plus tard. » (suppression de « C'est ce qui… » et de « Ça prend 2 minutes », infantilisant).
+- **Validé visuellement** (npm run dev, popup E-5 déclenché en confirmant sans semaine cochée).
 
 ## 2026-06-07 (conv 36) — Œil afficher/masquer mot de passe (TextInput) + récap E-7 en mots-résumés
 
