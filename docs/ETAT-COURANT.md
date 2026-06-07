@@ -2,7 +2,23 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 juin 2026 (conv 36) — Œil afficher/masquer mot de passe (TextInput) + récap E-7 en mots-résumés + popups frères unifiés (RhythmRequiredPopup aligné sur Q8). Prochains chantiers : reste #82 (nav >2 ans + upsert post-inscription) ; généralisation œil #83.
+**Dernière mise à jour** : 7 juin 2026 (conv 37) — DETTE #82 (a) : navigation d'année illimitée + année académique redéfinie septembre→août (par mois du jeudi, ISO). Audit dashboard → point (b) de #82 recadré et parqué. Prochains chantiers : #83 (œil champs natifs), #76, #78, #79, #75.
+
+---
+
+## 2026-06-07 (conv 37) — DETTE #82 (a) : navigation d'année illimitée + année académique septembre→août
+
+- **Audit dashboard (lecture seule)** : aucune surface de rythme au dashboard — `rhythm_calendar` n'est ni lu/affiché ni édité hors du wizard (`RhythmCalendarPreview` = dev-only ; `RhythmManualBuilder` importé seulement par E-5). Seul chemin d'écriture actif = E-7 via `complete_inscription_alternant` (remplacement total). Les RPC `confirm_rhythm_calendar` / `confirm_rhythm_calendar_manual` existent sans appelant front (vestiges parser). Aucun lecteur aval de `rhythm_calendar` (le matching lit `disponibilites_pattern`, saisi à la main). → **point (b) de #82 recadré et PARQUÉ** (détail DETTE #82).
+- **(a) navigation illimitée vers le futur LIVRÉE** (commit feat 7f3e782). Flèches E-5 (`InscriptionAlternantPage`) : interrupteur 2 positions → vrai pas-à-pas `previousAcademicYear` / `nextAcademicYear` ; plancher = année courante (flèche gauche désactivée au plancher), pas de plafond futur ; `e5NextYear` supprimé.
+- **`candidateAcademicYears` dérivé des données** (`RhythmManualBuilder`) : ne renvoie plus `[défaut, suivante]` en dur mais les années distinctes présentes dans une liste de lundis (via `academicYearForMonday`). Hydratation (lundis de `initialCalendar`) + materialize (lundis du Set `clicked`) couvrent toutes les années renseignées, sans plafond.
+- **Année académique redéfinie septembre → août** (décision produit conv 37, validée visuellement) :
+  - `academicYear.js` : `firstMondayForAcademicYear` = lundi de la 1ʳᵉ semaine dont le JEUDI est en septembre Y (et non la semaine contenant le 1er sept) ; `academicYearForMonday` classe par le mois du JEUDI (lundi + 3 j), bascule septembre → une semaine de fin août appartient à l'année dont elle est l'AOÛT DE FIN (= année précédente). Remplace le correctif d'août intermédiaire (sens inverse).
+  - `RhythmManualBuilder` : `generateWeeks` (52 fixe) → `weeksForAcademicYear` (52 ou 53 semaines, s'arrête à la frontière) ; tuilage parfait, sans trou ni doublon. `TOTAL_WEEKS` supprimée.
+  - Effet affichage : chaque année = 12 colonnes SEP→AOÛ identiques (plus de colonne d'août parasite en tête, plus de décalage inter-années).
+- **Aucun impact BDD** : `rhythm_calendar` stocke des lundis absolus, l'année est dérivée à l'affichage. Format, RPC, schéma inchangés ; aucune migration (cohérent VISION « stocker la semaine datée, dériver l'année »).
+- **Validé visuellement** (npm run dev) : structure SEP→AOÛ identique sur 2028-2029 et années « 1er sept = lundi » ; semaine de fin août en dernière colonne de l'année précédente ; round-trip E-5↔E-7 conservé.
+- **Note conv 37** : référentiels écoles/filières (E-4) très incomplets → consigné dans `idees-en-attente.md`.
+- **Reste #82** : (b) parqué (surface dashboard rythme). **Prochains chantiers** : #83 (œil champs password natifs + ConnexionPage), #76 (cohérence 4 colonnes dashboard), #78 (normalisation villes), #79 (comptes auth orphelins), #75 (Studio local).
 
 ---
 
