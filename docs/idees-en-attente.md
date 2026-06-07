@@ -12,3 +12,9 @@ Liste vivante des idées et tâches non priorisées, à reconsidérer plus tard.
 
 ## Référentiels écoles / filières incomplets (inscription E-4)
 Constat (conv 37, 7 juin 2026) : la liste des écoles (`ECOLES`, `data/inscription-options`) est très incomplète — l'autocomplétion ne propose qu'une poignée d'établissements (ex. taper « ENSA » ne renvoie que ENSAB, ENSAI). La filière est aujourd'hui un champ texte libre (placeholder « Ex : Informatique, GEA, Marketing »). À faire plus tard : enrichir le référentiel des écoles ; décider du référentiel filières (liste contrôlée vs texte libre) ; trancher autocomplétion stricte (sélection obligatoire) vs saisie libre tolérée, pour ne pas bloquer un alternant dont l'école n'est pas listée. Non bloquant pour la mécanique d'inscription ; impacte la qualité/complétude des données de profil.
+
+## 2026-06-07 (conv 39) — observations à traiter
+- **Refonte page profil** (Côme) : la page d'édition profil (/profil/modifier, ModifierProfilPage, « Étape 1 sur 6 ») est à refaire (design/structure). À préciser.
+- **Bug /parametres** : ParametresPage ne rend que le footer, contenu principal absent. À investiguer (hors #83).
+- **Bug /profil** : ProfilPage affiche alert « Utilisateur non spécifié » + chargement infini. À investiguer (hors #83).
+- **CSS mort** : .modal-pwd-group (et règles modale associées) dupliqué dans DashboardLocatairePage.css (~l.2527) sans JSX correspondant. Candidat au nettoyage.

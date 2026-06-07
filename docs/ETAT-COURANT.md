@@ -2,7 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 juin 2026 (conv 38, clôture) — #83 lot 0 livré+poussé (PasswordRevealButton + PasswordGate). Lots 1/3/4 patchés NON validés NON commités (working tree, voir git status). Lot 2 à faire. Approche actée : composant réutilisable contrôlé.
+**Dernière mise à jour** : 7 juin 2026 (conv 39, clôture) — #83 lots 1/4 poussés, lot 3 abandonné (IR legacy), lot 2 patché NON validé (bug /parametres) ; nouveau cap : bilan complétude MVP.
+
+---
+
+## 2026-06-07 (conv 39) — #83 lots 1 & 4 poussés, lot 3 abandonné, lot 2 en attente ; nouveau cap : bilan complétude MVP
+
+- **#83 lots 1 et 4 LIVRÉS + POUSSÉS** (9e3f802..7f2e795) : lot 1 (commit 70704d5, œil sur les 4 champs mdp des pages profil ModifierProfilPage + ModifierProfilProprietairePage) ; lot 4 (commit 7f2e795, œil sur ConnexionPage en remplacement du toggle texte .cx-toggle). Les deux validés visuellement.
+- **#83 lot 3 ABANDONNÉ** : InscriptionRecherchePage = page legacy vouée à suppression (unification Q3 redirection 301 + T6 ; principe anti-double-travail IR/CP, DETTE #61). Le wizard E-7 (parcours cible) a déjà l'œil via TextInput. Modifs IR restaurées (git restore), jamais commitées.
+- **#83 périmètre FIGÉ** (grep global type="password") : seuls les 4 champs du lot 2 restent (DashboardProprietairePage 831/835 + ParametresPage 135/139). EtapeCreationCompte = TextInput (déjà équipé). DashboardLocatairePage = CSS .modal-pwd-group résiduel SANS input password en JSX → rien à équiper.
+- **#83 lot 2 PATCHÉ (build vert) mais NON validé / NON commité** (working tree : DashboardProprietairePage .jsx/.css + ParametresPage .jsx/.css). Pattern : import PasswordRevealButton, 2 states de visibilité LOCAUX par page (sur Paramètres : locaux, jamais dans le hook useAccountActions), wrapper .pw-field, type dynamique, classe pw-has-reveal, règle CSS .modal-pwd-group input.pw-has-reveal { padding-right: 44px } (spécificité 0,2,1) dans le .css de chaque page.
+- **Validation lot 2 BLOQUÉE** par 2 bugs préexistants (hors #83) + pas de compte proprio de test : /parametres (ParametresPage) ne rend QUE le footer ; /profil (ProfilPage) affiche alert « Utilisateur non spécifié » + chargement infini.
+- **Auth local** : mdp du compte de test comefourel@gmail.com réinitialisé via SQL (crypt/bcrypt, auth.users, base locale 54322) ; le 400 connexion = mdp oublié (email bien confirmé). Valeur communiquée hors doc.
+- **NOUVEAU CAP** : avant toute nouvelle dette cosmétique, chantier prioritaire = bilan de complétude vers un MVP testable bout-en-bout (inscription → matching → contrat → paiement) : cartographier pages OK/cassées/manquantes × parcours, prioriser. Session dédiée, fondée sur AUDIT-FONCTIONNEL-2026-05-04 + INVENTAIRE-PLATEFORME + DETTE-TECHNIQUE.
+- **Reprise #83** : régler /parametres ou tester via Dashboard proprio → valider lot 2 → commit feat (git add 4 fichiers par chemin) → push → bouclé.
 
 ---
 
