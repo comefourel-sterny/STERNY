@@ -2,7 +2,17 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 juin 2026 (conv 37) — DETTE #82 (a) : navigation d'année illimitée + année académique redéfinie septembre→août (par mois du jeudi, ISO). Audit dashboard → point (b) de #82 recadré et parqué. Prochains chantiers : #83 (œil champs natifs), #76, #78, #79, #75.
+**Dernière mise à jour** : 7 juin 2026 (conv 38) — DETTE #83 lot 0 : composant partagé PasswordRevealButton (œil afficher/masquer pour inputs password natifs) appliqué à PasswordGate (pilote). Approche actée : composant réutilisable contrôlé (pas de migration vers TextInput). Lots 1-4 à suivre. Reste : #76, #78, #79, #75.
+
+---
+
+## 2026-06-07 (conv 38) — DETTE #83 lot 0 : composant PasswordRevealButton (œil) + PasswordGate
+
+- **Approche actée (b)** : composant réutilisable contrôlé pour les inputs password natifs, PAS migration vers TextInput (TextInput = composant auth-wizard à grammaire stricte ; 5/6 cibles hors auth → migration = refactor risqué pour gain cosmétique ; l'œil est déjà autonome donc extractible mécaniquement).
+- **Créé** : `components/PasswordRevealButton.jsx` + `.css` (dans components/ racine, réutilisable hors auth). Contrôlé (props `visible`/`onToggle`/`disabled`, la page tient l'état). SVG + CSS repris de l'œil TextInput, classes `pw-field`/`pw-reveal`/`pw-has-reveal`, a11y identique (type=button, aria-pressed, aria-label dynamique, focus-visible orange). Convention : masqué = œil ouvert, affiché = œil barré. `.pw-reveal` en inline-flex centré.
+- **PasswordGate (pilote)** : state `showPassword`, input dans `.pw-field`, `type` dynamique. Écran tout-inline → `padding-right` 44px posé EN INLINE (`.pw-has-reveal` neutralisée par l'inline → retirée) ; `marginBottom: 12px` déplacé de l'input vers `.pw-field` (sinon la marge gonfle la hauteur du conteneur côté bas → œil trop haut). Validé visuellement (œil aligné, bascule, hover orange, focus clavier, pas de chevauchement).
+- **Reste #83** : lot 1 (ModifierProfilPage + ModifierProfilProprietairePage) ; lot 2 (DashboardProprietairePage + ParametresPage) ; lot 3 (InscriptionRecherchePage, lecture 8ter renforcée) ; lot 4 (ConnexionPage : remplacer le toggle texte par l'œil, retirer `.cx-toggle`/`.cx-password`). 1 lot = 1 commit feat. Sur ces écrans (className, pas de padding inline) `.pw-has-reveal` jouera normalement ; vérifier au cas par cas le centrage vertical (marge à déplacer sur le wrapper si besoin).
+- **#62 (autofill) / #65 (capitalize)** restent OUVERTES, sans incidence sur #83.
 
 ---
 
