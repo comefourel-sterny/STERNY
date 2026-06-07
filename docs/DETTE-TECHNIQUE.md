@@ -943,3 +943,15 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 **Statut au 2026-06-05 (conv 33) — PRÉALABLE LEVÉ.** Socle data déjà conforme et multi-années-ready (colonne `jsonb` sans CHECK ; RPC valide lundi/status/unicité sans cap ni borne d'année et écrit tel quel ; builder émet les mêmes clés). **Aucune migration, aucune modif RPC pour l'inscription.** Scope réduit au builder : state `clicked` keyé lundi absolu sans reset au changement d'année + `materialize` = union des années visitées. Réserve ajout post-inscription : RPC en remplacement total → relire+fusionner côté client (ou RPC d'ajout dédiée), à cadrer après audit dashboard.
 
 **Statut au 2026-06-05 (conv 33) — LOT 1 LIVRÉ (accumulation).** RhythmManualBuilder.jsx : reset au changement d'année supprimé (les cases s'accumulent, Set keyé par lundi absolu) ; `materialize` réécrit sur l'union des années **renseignées** (décision (b) : une année n'entre que si ≥1 semaine y est cochée), dédup par lundi + tri ; inversion `villeRecherchee` préservée. Bug round-trip corrigé : l'hydratation de `clicked` couvre désormais l'union des années candidates (helper partagé `candidateAcademicYears()`) — avant, seule l'année par défaut était restaurée au retour sur E-5. Validé visuellement (aller-retour E-5↔E-7, 2 années conservées). **Précision (b)** : remplace « périmètre des années visitées » du point (3) par « années renseignées (≥1 clic) ». **Garde « semaines passées → company »** retiré de `materialize` et renvoyé à #80 (sans impact transactionnel, VISION §141-143) ; note : l'hydratation exclut toujours le passé → asymétrie sans effet sur les semaines futures, à résorber avec #80. **Reste #82** : intégration #80 (semaines passées sur l'union) + élargissement au-delà de 2 ans + écriture ajout/upsert post-inscription. **(1) navigation par flèches : LIVRÉE** (conv 33, 09db163 feat + a580970 style).
+
+## DETTE #83 — Généraliser l'œil afficher/masquer à tous les champs mot de passe
+
+**Statut au 2026-06-07 (conv 36)** : créée. L'œil a été ajouté au composant partagé TextInput (conv 36, commit 71c019b) mais ne couvre que les champs password rendus VIA TextInput — aujourd'hui seul E-7 (EtapeCreationCompte).
+
+**Constat** : la majorité des champs mot de passe de la plateforme sont des `<input type="password">` natifs hors TextInput, donc non couverts : ConnexionPage (toggle TEXTE maison « Afficher/Masquer », `.cx-password`), ModifierProfilPage, ModifierProfilProprietairePage, InscriptionRecherchePage, DashboardProprietairePage, ParametresPage, PasswordGate.
+
+**Plan (à arbitrer)** : (a) migrer ces champs vers le composant TextInput (réduit la duplication, mais refactor par écran), ou (b) extraire l'œil en hook/composant réutilisable pour les inputs natifs. ConnexionPage : remplacer le toggle texte par l'œil pour cohérence visuelle.
+
+**Bloquant pré-production** : non. Cohérence/cosmétique.
+
+**Origine** : audit conv 36 (œil TextInput).

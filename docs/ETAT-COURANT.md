@@ -2,9 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 6 juin 2026 (conv 35) — DETTE #80 RÉSOLUE : builder E-5 bloque passé + semaine en cours, capture du futur uniquement. Prochains chantiers : reste DETTE #82 (nav >2 ans + upsert post-inscription) puis œil afficher/masquer mot de passe.
+**Dernière mise à jour** : 7 juin 2026 (conv 36) — Œil afficher/masquer mot de passe sur TextInput + récap E-7 en mots-résumés. Prochains chantiers : refonte modal « Complète ton calendrier » (grammaire #81) ; reste #82 ; généralisation œil #83.
 
 ---
+
+## 2026-06-07 (conv 36) — Œil afficher/masquer mot de passe (TextInput) + récap E-7 en mots-résumés
+
+- **Œil livré** (commit feat 71c019b) sur le composant partagé `TextInput` (auth-wizard). Rendu UNIQUEMENT si `type === 'password'` ; autres usages (email, OTP, texte) strictement iso-comportement.
+- **Implémentation** : état local `isPasswordVisible` + `inputType` calculé ; `<input>` enveloppé dans `.aw-textinput-field` (relative) ; bouton `.aw-textinput-reveal` absolute à droite, 2 SVG inline ouvert/barré (trait 1.5px, gris `#94A3B8` → hover orange `#E8622A`). Convention : masqué = œil ouvert, affiché = œil barré.
+- **Accessibilité** : `type="button"`, `aria-label` dynamique, `aria-pressed`, `:focus-visible` orange, `disabled` propagé.
+- **#62 (autofill) / #65 (capitalize) non touchés**. Pas de nouvelle prop (E-7 passe déjà `type="password"`).
+- **Audit clé** : ConnexionPage n'utilise PAS TextInput (toggle TEXTE maison `.cx-password`) ; beaucoup de champs password sont des inputs natifs hors TextInput → non couverts → DETTE #83.
+- **Récap E-7 — libellés SERVICE en mots-résumés** (commit feat — voir git log) : map `TYPE_USER_LABELS` (EtapeCreationCompte.jsx) passée de phrases à mots-résumés : locataire → « Recherche », hote → « Propose », les_deux → « Recherche et propose ».
+- **Validé visuellement** (npm run dev, E-7).
+- **Prochains chantiers** : refonte du modal « Complète ton calendrier » (aligner sur la grammaire du modal #81 / RhythmRequiredPopup) ; reste #82 (nav >2 ans + upsert post-inscription) ; généralisation œil #83.
 
 ## 2026-06-06 (conv 35) — DETTE #80 résolue : builder E-5 bloque passé + semaine en cours, capture du futur uniquement
 
