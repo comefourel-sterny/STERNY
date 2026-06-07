@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
+import PasswordRevealButton from '../../components/PasswordRevealButton'
 import './ModifierProfilPage.css'
 
 // === SHARED DATA (same as CompleterProfilPage) ===
@@ -150,6 +151,8 @@ export default function ModifierProfilPage() {
   // Password
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState({ text: '', type: '' })
 
   // Delete
@@ -751,8 +754,8 @@ export default function ModifierProfilPage() {
         <div className="password-section">
           <div className="password-section-title">Changer mon mot de passe</div>
           <div className="password-section-text">Renseigne ton nouveau mot de passe (min. 6 caracteres).</div>
-          <div className="password-form-group"><label htmlFor="newPassword">Nouveau mot de passe</label><input type="password" id="newPassword" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Min. 6 caracteres" autoComplete="new-password" /></div>
-          <div className="password-form-group"><label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</label><input type="password" id="confirmPassword" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" /></div>
+          <div className="password-form-group"><label htmlFor="newPassword">Nouveau mot de passe</label><div className="pw-field"><input type={showNewPassword ? 'text' : 'password'} id="newPassword" className="pw-has-reveal" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Min. 6 caracteres" autoComplete="new-password" /><PasswordRevealButton visible={showNewPassword} onToggle={() => setShowNewPassword(v => !v)} /></div></div>
+          <div className="password-form-group"><label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</label><div className="pw-field"><input type={showConfirmPassword ? 'text' : 'password'} id="confirmPassword" className="pw-has-reveal" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" /><PasswordRevealButton visible={showConfirmPassword} onToggle={() => setShowConfirmPassword(v => !v)} /></div></div>
           <button className="btn-change-password" onClick={changerMotDePasse}>Modifier le mot de passe</button>
           {passwordMessage.text && <div className={`password-message ${passwordMessage.type}`}>{passwordMessage.text}</div>}
         </div>

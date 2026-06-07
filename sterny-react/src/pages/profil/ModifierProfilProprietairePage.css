@@ -163,6 +163,8 @@
     color: #1E293B;
 }
 
+.form-group-proprio input.pw-has-reveal { padding-right: 44px; }
+
 .form-group-proprio input::placeholder {
     color: #94A3B8;
 }

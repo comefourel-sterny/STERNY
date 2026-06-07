@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import Footer from '../../components/layout/Footer'
+import PasswordRevealButton from '../../components/PasswordRevealButton'
 import './ModifierProfilProprietairePage.css'
 
 function capitalizeWords(str) {
@@ -47,6 +48,8 @@ export default function ModifierProfilProprietairePage() {
   // Password
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordMsg, setPasswordMsg] = useState(null)
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [showEmails, setShowEmails] = useState(false)
@@ -414,11 +417,17 @@ export default function ModifierProfilProprietairePage() {
               <div className="form-row-proprio">
                 <div className="form-group-proprio">
                   <label htmlFor="newPasswordProprio">Nouveau</label>
-                  <input type="password" id="newPasswordProprio" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 6 caractères" autoComplete="new-password" />
+                  <div className="pw-field">
+                    <input type={showNewPassword ? 'text' : 'password'} id="newPasswordProprio" className="pw-has-reveal" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 6 caractères" autoComplete="new-password" />
+                    <PasswordRevealButton visible={showNewPassword} onToggle={() => setShowNewPassword(v => !v)} />
+                  </div>
                 </div>
                 <div className="form-group-proprio">
                   <label htmlFor="confirmPasswordProprio">Confirmer</label>
-                  <input type="password" id="confirmPasswordProprio" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" />
+                  <div className="pw-field">
+                    <input type={showConfirmPassword ? 'text' : 'password'} id="confirmPasswordProprio" className="pw-has-reveal" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Retape le mot de passe" autoComplete="new-password" />
+                    <PasswordRevealButton visible={showConfirmPassword} onToggle={() => setShowConfirmPassword(v => !v)} />
+                  </div>
                 </div>
               </div>
               <button className="btn-change-password-proprio" onClick={changerMotDePasse} disabled={passwordLoading}>

@@ -166,6 +166,7 @@
 .password-form-group { margin-bottom: 12px; }
 .password-form-group label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px; }
 .password-form-group input { width: 100%; padding: 10px 14px; border: 1.5px solid #E8EAF0; border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; }
+.password-form-group input.pw-has-reveal { padding-right: 44px; }
 .password-form-group input:focus { outline: none; border-color: #E8622A; box-shadow: 0 0 0 3px rgba(232,98,42,0.08); }
 .btn-change-password { padding: 12px 20px; background: #E8622A; color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 .btn-change-password:hover { background: #d4571f; }
