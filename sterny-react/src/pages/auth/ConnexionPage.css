@@ -111,27 +111,7 @@
 }
 
 .cx-password input {
-    padding-right: 85px;
-}
-
-.cx-toggle {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    color: #94A3B8;
-    font-weight: 600;
-    padding: 4px 8px;
-    transition: color 0.2s;
-    font-family: 'DM Sans', sans-serif;
-}
-
-.cx-toggle:hover {
-    color: #E8622A;
+    padding-right: 44px;
 }
 
 /* ═══ FORGOT PASSWORD ═══ */

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
+import PasswordRevealButton from '../../components/PasswordRevealButton'
 import './ConnexionPage.css'
 
 export default function ConnexionPage() {
@@ -112,13 +113,7 @@ export default function ConnexionPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Ton mot de passe"
               />
-              <button
-                type="button"
-                className="cx-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? 'Masquer' : 'Afficher'}
-              </button>
+              <PasswordRevealButton visible={showPassword} onToggle={() => setShowPassword(v => !v)} />
             </div>
           </div>
 
