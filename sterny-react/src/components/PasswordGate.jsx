@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { Agentation } from 'agentation'
 import { supabaseClient } from '../config/supabase'
+import PasswordRevealButton from './PasswordRevealButton'
 
 const PASSWORD_HASH = '2bdfc58e249f3f1a115f9182ff5a88bd6d4420a6ce1bd99ec06a71248b844b90'
 
@@ -17,6 +18,7 @@ export default function PasswordGate({ children }) {
   })
   const [view, setView] = useState('landing') // 'landing' or 'login'
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [shake, setShake] = useState(false)
@@ -81,17 +83,20 @@ export default function PasswordGate({ children }) {
         <img src="/Logo-Sterny-V1.svg" alt="STERNY" style={{ height: '32px', marginBottom: '24px' }} />
         <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', margin: '0 0 6px' }}>Connexion</h2>
         <p style={{ fontSize: '13px', color: '#94A3B8', margin: '0 0 24px' }}>Accès réservé à l&apos;équipe</p>
-        <input
-          type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mot de passe" autoFocus autoComplete="off"
-          style={{
-            width: '100%', padding: '12px 16px', border: `1.5px solid ${error ? '#EF4444' : '#E8EAF0'}`,
-            borderRadius: '12px', fontSize: '15px', fontFamily: 'inherit', color: '#1E293B',
-            outline: 'none', boxSizing: 'border-box', marginBottom: '12px', transition: 'border-color 0.2s'
-          }}
-          onFocus={(e) => { if (!error) e.target.style.borderColor = '#E8622A' }}
-          onBlur={(e) => { if (!error) e.target.style.borderColor = '#E8EAF0' }}
-        />
+        <div className="pw-field" style={{ marginBottom: '12px' }}>
+          <input
+            type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
+            placeholder="Mot de passe" autoFocus autoComplete="off"
+            style={{
+              width: '100%', padding: '12px 44px 12px 16px', border: `1.5px solid ${error ? '#EF4444' : '#E8EAF0'}`,
+              borderRadius: '12px', fontSize: '15px', fontFamily: 'inherit', color: '#1E293B',
+              outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => { if (!error) e.target.style.borderColor = '#E8622A' }}
+            onBlur={(e) => { if (!error) e.target.style.borderColor = '#E8EAF0' }}
+          />
+          <PasswordRevealButton visible={showPassword} onToggle={() => setShowPassword(v => !v)} />
+        </div>
         <button type="submit" disabled={loading} style={{
           width: '100%', padding: '12px', background: loading ? '#94A3B8' : '#E8622A', color: 'white',
           border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 600,
