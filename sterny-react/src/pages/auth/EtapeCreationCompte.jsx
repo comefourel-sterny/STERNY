@@ -29,9 +29,9 @@ import RecapBlock from '../../components/auth-wizard/RecapBlock'
 const OTP_STORAGE_KEY = 'sterny_e7_otp_pending'
 
 const TYPE_USER_LABELS = {
-  locataire: 'Je recherche un logement',
-  hote: 'Je propose mon logement',
-  les_deux: 'Les deux',
+  locataire: 'Recherche',
+  hote: 'Propose',
+  les_deux: 'Recherche et propose',
 }
 
 export default function EtapeCreationCompte({ state, onRetour }) {
