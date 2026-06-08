@@ -440,6 +440,11 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 **Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées post-Poool, livrant un document `docs/recherche/MATCHING-PARTIEL.md` qui couvre les 6 sous-problèmes ci-dessus avec scénarios, options, et tranches par grand bloc (algorithme, UX, copywriting, modèle contractuel multi-logements). À séquencer en priorité haute aux côtés de DETTE #46 (multi-années) et DETTE #47 (refonte barre recherche). Ces 3 dettes forment ensemble le "noyau produit pré-lancement" — aucune ne peut être skipée.
 
+**Pistes d'enrichissement (brainstorm conv 40, à approfondir post-MVP) :**
+1. **Complétion ciblée depuis le dashboard.** Un match couvrant ~80 % des semaines : l'utilisateur clique sur les semaines manquantes → lance une recherche pré-filtrée sur exactement cette période résiduelle.
+2. **Recherche par période façon Airbnb.** Heuristique : privilégier la plus longue période continue couverte par un même logement (limiter la fragmentation entre plusieurs logements).
+3. **Classement par probabilité d'acceptation de l'hôte.** Prioriser les hôtes ayant déjà ≥3 semaines contiguës comblées ; ne pas remonter en tête les annonces à 0 semaine comblée.
+
 ## DETTE #49 — Extraction des étapes de CompleterProfilPage en sous-composants
 
 **Statut au 2 mai 2026 soir** : créée par audit lecture-seule de `sterny-react/src/pages/auth/CompleterProfilPage.jsx` en préparation du chantier unification inscription (Option A actée en VISION §6).
@@ -963,3 +968,16 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 **MAJ clôture conv 38** : lot 0 livré+poussé. Lots 1 (profils, 4 champs), 3 (InscriptionRecherchePage), 4 (ConnexionPage : remplacement du toggle texte par l'œil) PATCHÉS mais NON validés visuellement et NON commités (working tree — voir git status). Lot 2 (DashboardProprietairePage + ParametresPage) non commencé. Reprise : valider + committer par lot (feat, git add par chemin), puis lot 2.
 
 **MAJ 2026-06-07 (conv 39)** : lots 1 (profils, 70704d5) et 4 (ConnexionPage, 7f2e795) livrés, validés et POUSSÉS (9e3f802..7f2e795). Lot 3 (InscriptionRecherchePage) ABANDONNÉ : page legacy vouée à suppression (unification Q3/T6) ; modifs restaurées. Périmètre figé par grep global type="password" : seuls les 4 champs du lot 2 (DashboardProprietairePage + ParametresPage) restent ; DashboardLocatairePage a du CSS .modal-pwd-group résiduel mais aucun input password en JSX. Lot 2 PATCHÉ (build vert) mais NON validé / NON commité (working tree) : validation bloquée par bug préexistant /parametres (rend seulement le footer) + pas de compte proprio de test. Reste : valider lot 2 → commit feat → push → #83 bouclé.
+
+## DETTE #84 — Providers OAuth Google/Apple non activés côté Supabase
+
+**Constat (conv 40).** Le code OAuth est complet et correct côté front (boutons Google + Apple sur ConnexionPage, InscriptionProprietairePage et le wizard alternant ; URL authorize bien formée). Mais le clic échoue en local avec : `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`.
+
+**Cause.** Config Supabase, pas un bug code : les providers Google et Apple ne sont pas activés dans le dashboard Supabase Auth, et les credentials OAuth ne sont pas créés.
+
+**À faire (config / setup, hors code) :**
+- Google : créer un OAuth client (Google Cloud Console), renseigner client ID + secret dans Supabase Auth, configurer les redirect URLs (local + préprod + prod).
+- Apple : créer un Service ID + clé (Apple Developer, compte payant requis), configurer dans Supabase.
+- Tester le retour OAuth bout-en-bout (création de session, garde CHECK 2 post-OAuth, redirection par rôle).
+
+**Priorité.** Prérequis au test des parcours OAuth. Ne bloque ni le login email/mdp ni l'inscription email/OTP. À traiter avant la mise en préprod des parcours sociaux.

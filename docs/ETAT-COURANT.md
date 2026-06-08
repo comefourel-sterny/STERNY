@@ -2,7 +2,36 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 7 juin 2026 (conv 39, clôture) — #83 lots 1/4 poussés, lot 3 abandonné (IR legacy), lot 2 patché NON validé (bug /parametres) ; nouveau cap : bilan complétude MVP.
+**Dernière mise à jour** : 2026-06-08 (conv 40) — #83 lots 1/4 poussés, lot 3 abandonné (IR legacy), lot 2 patché NON validé (bug /parametres) ; nouveau cap : bilan complétude MVP.
+
+---
+
+## 2026-06-08 (conv 40) — Bilan complétude MVP + refonte auth (connexion, navbar)
+
+**Nouveau cap.** Démarrage d'un bilan de complétude vers un MVP testable bout-en-bout (inscription → mise en relation → contrat → paiement, en local/préprod). Méthode : revue page-par-page « jusqu'à ce que ça bloque », visuel + fonctionnel ; on corrige au fil de l'eau et on ne passe à la suite que si tout marche. Ordre de construction retenu : (1) auth, (2) dashboards, (3) recherche + création annonce, (4) affichage annonces, (5) candidater + valider candidature, (6) match fonctionnel (contrat / signature / paiement).
+
+**Périmètre matching MVP — ACTÉ.** « Être matché » = deux profils compatibles mis en relation, compatibilité évaluée sur `disponibilites_pattern` (saisi à la main). Le matching automatique via `rhythm_calendar` est POST-MVP (voir DETTE #48), hors périmètre MVP.
+
+**Vérifications fondatrices (Claude Code, lecture seule) :**
+- Routing inscription SAIN : le wizard `InscriptionAlternantPage` est bien routé sur `/inscription/alternant` sous Layout public (pas de 404), tous les CTA pointent dessus. La route legacy `/inscription/recherche` est encore déclarée mais orpheline (nettoyage mineur, T6).
+- Contrat BDD inscription SOLIDE : la RPC `complete_inscription_alternant` écrit une fiche `users` complète (type_user, 4 colonnes ville/statut, rhythm_calendar, profil_complet, identité, école/année/filière, naissance/sexe), SECURITY INVOKER, idempotente (ON CONFLICT id DO UPDATE), versionnée en migration.
+- Audits d'avril (AUDIT-FONCTIONNEL 30/04, INVENTAIRE 25/04) PÉRIMÉS sur la partie inscription (ils décrivent la legacy, antérieurs au wizard conv 28-39) MAIS ENCORE FIDÈLES pour matching / contrat / paiement (ces zones n'ont pas bougé depuis avril — confirmé par les dates git).
+
+**Livré et poussé cette session :**
+- `af767fc` feat(auth): refonte ConnexionPage sur grammaire wizard + bouton Apple + animation d'entrée. Migration de la grammaire bespoke `cx-` vers les composants canoniques du wizard (AuthScreenContainer, TextInput avec œil intégré, PrimaryButton, OrSeparator, GoogleSignInButton + AppleSignInButton). Logique de login préservée. Validé visuellement + login email/mdp testé OK.
+- `04532f0` feat(nav): CTA auth contextuels selon la page. « Se connecter » masqué sur /connexion, « S'inscrire » masqué sur /inscription*, « S'inscrire » en style discret sur /connexion.
+
+**À faire (runtime / config) :**
+- Providers OAuth Google/Apple À ACTIVER côté Supabase : le clic OAuth échoue en local avec « Unsupported provider: provider is not enabled » — c'est de la CONFIG (activer les providers + créer les credentials Google Cloud / Apple Developer), PAS un bug code (URL authorize bien formée). Voir nouvelle DETTE #84. Prérequis au test OAuth réel.
+- Test runtime inscription E-1 → E-7 via Mailpit (chemin OTP) toujours NON FAIT (depuis conv 31).
+
+**Findings de bilan (trous bloquants, déjà tracés dans DETTE-TECHNIQUE) :**
+- DETTE #14 (P0) : le trigger `trg_notif_candidature` référence `annonces.proprietaire_id` (colonne inexistante) → tout INSERT candidature plante en rollback, ce qui bloque la chaîne aval (mise en relation → contrat → paiement). À re-confirmer dans le schéma courant.
+- Signature électronique (ContratLocationPage) = eIDAS niveau 1, sans PDF → P0 juridique, validation avocat requise.
+- Paiement : create-stripe-checkout + stripe-webhook déployées ; send-recu-paiement NON déployée ; chaîne jamais testée bout-en-bout.
+- /profil (chargement infini) et /parametres (rend que le footer) cassés ; descente `les_deux` non implémentée.
+
+**Working tree (rappel) :** lot 2 DETTE #83 (Dashboard proprio + Paramètres) patché non commité/non validé, bypass `CreerAnnoncePage.jsx`, 3 untracked `docs/` — ne jamais stager.
 
 ---
 
