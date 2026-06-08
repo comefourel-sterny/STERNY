@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
+import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
+import TextInput from '../../components/auth-wizard/TextInput'
+import PrimaryButton from '../../components/auth-wizard/PrimaryButton'
 import GoogleSignInButton from '../../components/auth-wizard/GoogleSignInButton'
 import AppleSignInButton from '../../components/auth-wizard/AppleSignInButton'
 import OrSeparator from '../../components/auth-wizard/OrSeparator'
+import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import './InscriptionProprietairePage.css'
 
 function capitalizeWords(str) {
@@ -261,97 +265,82 @@ export default function InscriptionProprietairePage() {
   }
 
   return (
-    <section className="ip-page">
-      <div className="ip-card" style={{ maxHeight: '536px' }}>
-        <h2 className="ip-title ip-stagger">INSCRIPTION</h2>
-        {message.type === 'success' && <p className={`ip-msg ${message.type}`}>{message.text}</p>}
-        {showReferral && !message.text && (
-          <p className="ip-referral"><span className="ip-referrer">{referrerName}</span> vous recommande STERNY</p>
-        )}
+    <AuthScreenContainer>
+      <h1 className="aw-screen-title ip-stagger">INSCRIPTION</h1>
+      {message.type === 'success' && <p className={`ip-msg ${message.type}`}>{message.text}</p>}
+      {showReferral && !message.text && (
+        <p className="ip-referral"><span className="ip-referrer">{referrerName}</span> vous recommande STERNY</p>
+      )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="ip-form-row ip-stagger" style={{ animationDelay: '0.08s' }}>
-            <div className="ip-group">
-              <label>Prénom</label>
-              <input
-                type="text"
-                value={prenom}
-                onChange={(e) => setPrenom(capitalizeWords(e.target.value))}
-                placeholder="Jean"
-              />
-            </div>
-            <div className="ip-group">
-              <label>Nom</label>
-              <input
-                type="text"
-                value={nom}
-                onChange={(e) => setNom(capitalizeWords(e.target.value))}
-                placeholder="Dupont"
-              />
-            </div>
-          </div>
-
-          <div className="ip-group ip-stagger" style={{ animationDelay: '0.16s' }}>
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="jean.dupont@email.com"
-            />
-          </div>
-
-          <div className="ip-group ip-stagger" style={{ animationDelay: '0.24s' }}>
-            <label>Mot de passe</label>
-            <div className="ip-password">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="6 caractères minimum"
-              />
-              <button
-                type="button"
-                className="ip-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? 'Masquer' : 'Afficher'}
-              </button>
-            </div>
-          </div>
-
-          <button ref={btnRef} type="submit" className="ip-submit ip-stagger" style={{ animationDelay: '0.32s' }} disabled={loading}>
-            {loading ? (
-              <svg className="ip-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
-              </svg>
-            ) : 'Créer mon compte'}
-          </button>
-        </form>
-
-        <div className="ip-stagger" style={{ animationDelay: '0.4s' }}>
-          <OrSeparator />
-        </div>
-
-        <div className="ip-oauth-row ip-stagger" style={{ animationDelay: '0.48s' }}>
-          <GoogleSignInButton
-            onClick={handleGoogleSignup}
-            label="Google"
+      <form onSubmit={handleSubmit} className="ip-form">
+        <div className="ip-form-row ip-stagger" style={{ animationDelay: '0.08s' }}>
+          <TextInput
+            label="Prénom"
+            type="text"
+            value={prenom}
+            onChange={(e) => setPrenom(capitalizeWords(e.target.value))}
+            placeholder="Ton prénom"
           />
-          <AppleSignInButton
-            onClick={handleAppleSignup}
-            label="Apple"
+          <TextInput
+            label="Nom"
+            type="text"
+            value={nom}
+            onChange={(e) => setNom(capitalizeWords(e.target.value))}
+            placeholder="Ton nom"
           />
         </div>
 
-        <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
-          {message.type === 'error' ? (
-            <span className="ip-error">{message.text}</span>
-          ) : (
-            <><Link to="/inscription">Retour</Link> · Déjà inscrit ? <Link to="/connexion">Se connecter</Link></>
-          )}
-        </p>
+        <div className="ip-stagger" style={{ animationDelay: '0.16s' }}>
+          <TextInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Ton adresse email"
+            autoComplete="email"
+          />
+        </div>
+
+        <div className="ip-stagger" style={{ animationDelay: '0.24s' }}>
+          <TextInput
+            label="Mot de passe"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="6 caractères minimum"
+            autoComplete="new-password"
+          />
+        </div>
+
+        <div className="ip-stagger" style={{ marginTop: 'auto', animationDelay: '0.32s' }}>
+          <PrimaryButton ref={btnRef} type="submit" loading={loading}>
+            Créer mon compte
+          </PrimaryButton>
+        </div>
+      </form>
+
+      <div className="ip-stagger" style={{ animationDelay: '0.4s' }}>
+        <OrSeparator />
       </div>
-    </section>
+
+      <div className="ip-oauth-row ip-stagger" style={{ animationDelay: '0.48s' }}>
+        <GoogleSignInButton
+          onClick={handleGoogleSignup}
+          label="Google"
+        />
+        <AppleSignInButton
+          onClick={handleAppleSignup}
+          label="Apple"
+        />
+      </div>
+
+      {message.type === 'error' ? (
+        <p className="ip-back ip-stagger" style={{ animationDelay: '0.56s' }}>
+          <span className="ip-error">{message.text}</span>
+        </p>
+      ) : (
+        <BottomAuthLinks retourTo="/inscription" showSignInLink className="ip-stagger" style={{ animationDelay: '0.56s' }} />
+      )}
+    </AuthScreenContainer>
   )
 }

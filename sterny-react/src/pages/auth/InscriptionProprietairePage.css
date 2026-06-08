@@ -1,318 +1,64 @@
-/* ═══ PAGE ═══ */
-.ip-page {
-    min-height: calc(100vh - 70px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #F4F5F7;
-    padding: 40px 20px;
+/* Styles propres à InscriptionProprietairePage. Wrapper page + card =
+   AuthScreenContainer.css ; champs (œil intégré) = TextInput.css ; séparateur =
+   OrSeparator.css ; bouton primaire = PrimaryButton.css ; boutons OAuth =
+   OAuthButton.css ; liens bas = BottomAuthLinks.css. Ce fichier ajoute seulement :
+   le titre (réplique locale aw-screen-title, classe non disponible globalement —
+   DETTE #68), le wrapper de form, la grille prénom/nom, la bannière parrainage,
+   la rangée OAuth, l'animation stagger, et l'affichage d'erreur local. */
+
+/* ═══ TITRE (réplique locale, DETTE #68) ═══ */
+.aw-screen-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #E8622A;
+  text-align: center;
+  margin: 0 0 32px 0;
 }
 
-/* ═══ CARD — identical to ConnexionPage ═══ */
-.ip-card {
-    max-width: 460px;
-    width: 100%;
-    background: white;
-    border-radius: 16px;
-    padding: 36px;
-    min-height: 536px;
-    box-shadow: 0 6px 28px rgba(232,98,42,0.10);
-    border: 1.5px solid #E8EAF0;
-    display: flex;
-    flex-direction: column;
-    animation: ipFadeIn 0.4s ease;
-}
-
-@keyframes ipFadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.ip-card form {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* ═══ TITLE — matches ConnexionPage ═══ */
-.ip-title {
-    font-size: 18px;
-    font-weight: 300;
-    letter-spacing: 3px;
-    color: #E8622A;
-    text-transform: uppercase;
-    text-align: center;
-    margin: 0 0 24px 0;
-}
-
-/* Messages */
+/* ═══ MESSAGE DE STATUT ═══ */
 .ip-msg {
-    text-align: center;
-    font-size: 15px;
-    font-weight: 600;
-    margin: -24px 0 24px 0;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .ip-msg.error { color: #EF4444; }
 .ip-msg.success { color: #10B981; }
 
+/* ═══ BANNIÈRE PARRAINAGE (spécifique, conservée) ═══ */
 .ip-referral {
-    text-align: center;
-    font-size: 13px;
-    color: #94A3B8;
-    margin: -24px 0 24px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 0 0 16px 0;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .ip-referrer {
-    font-weight: 700;
-    color: #1E293B;
+  font-weight: 700;
+  color: #1E293B;
 }
 
-/* ═══ FORM FIELDS — matches ConnexionPage ═══ */
+/* ═══ FORMULAIRE — espacement vertical régulier ═══ */
+.ip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
 .ip-form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.ip-group {
-    margin-bottom: 10px;
-}
-
-.ip-form-row .ip-group {
-    margin-bottom: 0;
-}
-
-.ip-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.ip-group input {
-    width: 100%;
-    height: 42px;
-    padding: 0 16px;
-    border: 1.5px solid #E8EAF0;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-    background: white;
-    color: #1E293B;
-}
-
-.ip-group input::placeholder {
-    color: #94A3B8;
-}
-
-.ip-group input:focus {
-    border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232,98,42,0.12);
-}
-
-.ip-group input:hover:not(:focus) {
-    border-color: #CBD5E1;
-}
-
-.ip-group input:-webkit-autofill,
-.ip-group input:-webkit-autofill:hover,
-.ip-group input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px white inset;
-    -webkit-text-fill-color: #1E293B;
-    border-color: #E8EAF0;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-/* ═══ PASSWORD ═══ */
-.ip-password {
-    position: relative;
-}
-
-.ip-password input {
-    padding-right: 85px;
-}
-
-.ip-toggle {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    color: #94A3B8;
-    font-weight: 600;
-    padding: 4px 8px;
-    transition: color 0.2s;
-    font-family: 'DM Sans', sans-serif;
-}
-
-.ip-toggle:hover {
-    color: #E8622A;
-}
-
-/* ═══ PARRAINAGE ═══ */
-.ip-parr-toggle {
-    text-align: center;
-    font-size: 13px;
-    color: #94A3B8;
-    cursor: pointer;
-    margin: 0 0 14px 0;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.ip-parr-toggle:hover {
-    color: #E8622A;
-}
-
-.ip-parrainage {
-    margin: 0 0 14px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ip-parrainage input {
-    flex: 1;
-    padding: 0 10px;
-    height: 20px;
-    border: none;
-    border-bottom: 1.5px solid #E8EAF0;
-    border-radius: 0;
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
-    background: transparent;
-    color: #1E293B;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: border-color 0.2s;
-}
-
-.ip-parrainage input:focus {
-    border-color: #E8622A;
-}
-
-.ip-parrainage input::placeholder {
-    text-transform: none;
-    letter-spacing: normal;
-    color: #C4C4C4;
-}
-
-.ip-parr-status {
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.ip-parr-status.valid { color: #10B981; }
-.ip-parr-status.invalid { color: #EF4444; }
-.ip-parr-status.checking { color: #94A3B8; }
-
-.ip-parr-validated {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin: 0 0 14px 0;
-    font-size: 13px;
-    font-weight: 600;
-    color: #10B981;
-    animation: ipStaggerIn 0.3s ease;
-}
-
-/* ═══ SUBMIT — matches ConnexionPage ═══ */
-.ip-submit {
-    width: 100%;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #E8622A;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    font-family: 'DM Sans', sans-serif;
-    margin-top: auto;
-}
-
-.ip-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
-    background-color: #D4571F;
-}
-
-.ip-submit:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(232,98,42,0.2);
-}
-
-.ip-submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-
-.ip-spinner {
-    animation: ipSpin 0.8s linear infinite;
-}
-
-@keyframes ipSpin {
-    to { transform: rotate(360deg); }
-}
-
-/* ═══ BACK LINK — matches ConnexionPage ═══ */
-.ip-back {
-    display: block;
-    text-align: center;
-    margin: 10px 0 0 0;
-    color: #94A3B8;
-    font-size: 14px;
-    font-weight: 400;
-}
-
-.ip-back a {
-    color: #E8622A;
-    text-decoration: none;
-    font-weight: 700;
-    transition: opacity 0.2s;
-}
-
-.ip-back a:hover {
-    opacity: 0.8;
-}
-
-.ip-error {
-    color: #EF4444;
-    font-weight: 600;
-}
-
-/* ═══ STAGGER ANIMATION ═══ */
-.ip-stagger {
-    animation: ipStaggerIn 0.4s ease both;
-}
-
-@keyframes ipStaggerIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* ═══ RANGÉE OAUTH (calquée sur le wizard) ═══ */
 .ip-oauth-row {
   display: flex;
   gap: 12px;
@@ -323,16 +69,35 @@
   min-width: 0;
 }
 
+/* ═══ BAS DE PAGE — branche erreur (liens normaux = BottomAuthLinks) ═══ */
+.ip-back {
+  display: block;
+  text-align: center;
+  margin: 12px 0 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.ip-error {
+  color: #EF4444;
+  font-weight: 600;
+}
+
+/* ═══ ANIMATION D'ENTRÉE — stagger local ═══ */
+.ip-stagger {
+  animation: ipStaggerIn 0.4s ease both;
+}
+
+@keyframes ipStaggerIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 480px) {
-    .ip-card {
-        padding: 28px 24px;
-        border-radius: 14px;
-        min-height: auto;
-    }
-
-    .ip-title {
-        font-size: 16px;
-        letter-spacing: 2px;
-    }
+  .aw-screen-title {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
 }
