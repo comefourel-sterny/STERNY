@@ -981,3 +981,17 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 - Tester le retour OAuth bout-en-bout (création de session, garde CHECK 2 post-OAuth, redirection par rôle).
 
 **Priorité.** Prérequis au test des parcours OAuth. Ne bloque ni le login email/mdp ni l'inscription email/OTP. À traiter avant la mise en préprod des parcours sociaux.
+
+## DETTE #85 — Incohérence de longueur minimale de mot de passe entre parcours d'inscription
+
+**Statut au 8 juin 2026 (conv 41)** : créée lors du re-skin InscriptionProprietairePage.
+
+**Constat** : les deux parcours d'inscription n'appliquent pas la même règle de longueur de mot de passe. Création de compte alternant (`EtapeCreationCompte.jsx:285`, écran E-7) affiche le placeholder « 8 caractères minimum ». Inscription proprio (`InscriptionProprietairePage.jsx`, `handleSubmit`) valide `password.length < 6` + placeholder « 6 caractères minimum ». Politique non homogène sur une même plateforme.
+
+**À vérifier avant d'harmoniser** : la validation EFFECTIVE des deux côtés, pas seulement les placeholders — la condition JS réelle de chaque page ET le réglage « Minimum password length » de Supabase Auth (défaut 6). Le « 8 » côté alternant est peut-être lui-même un placeholder non aligné sur sa vraie validation.
+
+**⚠️ Sécurité** : le choix de la longueur minimale (et d'éventuelles exigences de complexité) relève d'une décision produit/sécurité, à valider lors de la consultation sécurité/RGPD prévue comme étape obligatoire avant lancement (CONTEXTE §9, VISION §10). Ne pas trancher à l'aveugle.
+
+**Priorité** : basse, non bloquant. À traiter au durcissement de l'auth, avec #84 et #70.
+
+**Référence** : `EtapeCreationCompte.jsx:285`, `InscriptionProprietairePage.jsx` (handleSubmit).

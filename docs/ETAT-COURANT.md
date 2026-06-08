@@ -2,7 +2,33 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-08 (conv 40) — #83 lots 1/4 poussés, lot 3 abandonné (IR legacy), lot 2 patché NON validé (bug /parametres) ; nouveau cap : bilan complétude MVP.
+**Dernière mise à jour** : 2026-06-08 (conv 41) — re-skin InscriptionProprietairePage sur grammaire wizard ; DETTE #85 (incohérence longueur mdp). Suite bilan MVP (auth).
+
+---
+
+## 2026-06-08 (conv 41) — Re-skin InscriptionProprietairePage sur grammaire wizard
+
+**Re-skin proprio LIVRÉ** (commit feat — voir git log). `InscriptionProprietairePage.jsx` + `.css` migrés de la grammaire bespoke `ip-*` vers les composants canoniques du wizard, comme ConnexionPage (conv 40) :
+- `AuthScreenContainer` remplace `.ip-page`/`.ip-card` (+ suppression du `maxHeight:536px` inline qui plafonnait la carte ; on garde le min-height partagé pour laisser grandir).
+- `TextInput` (œil intégré) remplace les `<input>` maison `.ip-group` + le toggle TEXTE `.ip-toggle`.
+- `PrimaryButton` remplace `.ip-submit` + spinner maison.
+- `OrSeparator`, `GoogleSignInButton` + `AppleSignInButton` (rangée locale `.ip-oauth-row`, labels courts).
+- `BottomAuthLinks` pour le footer (branche normale) → « Retour · Déjà un compte ? Se connecter » (l'ancien « Déjà inscrit ? » devient « Déjà un compte ? »). Branche erreur conservée en local (`.ip-back`/`.ip-error`).
+- Titre = réplique locale `aw-screen-title` (DETTE #68), identique à ConnexionPage (marges vérifiées égales, pas de collision globale).
+
+**Espacements alignés sur le wizard alternant** (après audit comparatif) : gap formulaire 14→16px, gap grille Prénom/Nom 8→12px, ajout de `flex:1` sur `.ip-form` + `margin-top:auto` sur le wrapper du bouton (bouton plaqué en bas de la carte, comme `.ial-btn-continuer`). Champs eux-mêmes déjà identiques (même `TextInput` : radius 12px / height 44px).
+
+**Placeholders alignés** sur le tutoiement du wizard : « Ton prénom » / « Ton nom » / « Ton adresse email ». Mot de passe laissé en « 6 caractères minimum » (cohérent avec la validation proprio `< 6` — voir DETTE #85).
+
+**CSS mort supprimé** : bloc code parrainage `.ip-parr-*` (champ retiré de longue date) + toutes les classes `.ip-*` rendues mortes par le passage aux composants partagés (vérifié par grep classe-par-classe).
+
+**Logique INTOUCHÉE** (re-skin visuel pur) : décodage token `?r=`, callback OAuth (CHECK 1/2 + extraction nom Google/Apple + INSERT users), `handleGoogleSignup`/`handleAppleSignup` (`redirectTo` ?r=token), `handleSubmit` email (signUp + INSERT `parrain_id`), shake, states. Le re-skin NE résout PAS #55/#70/#84.
+
+**Validé visuellement** (npm run dev) : proprio raccord avec le wizard alternant (champs, espacements, position du bouton), titre /connexion non impacté.
+
+**Nouvelle DETTE #85** : incohérence longueur min mot de passe entre parcours (alternant « 8 » / proprio « 6 »).
+
+**Reste auth avant les dashboards (étape 2 du bilan MVP)** : activer providers OAuth Supabase (#84) + test OTP Mailpit (depuis conv 31).
 
 ---
 
