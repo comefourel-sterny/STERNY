@@ -1,273 +1,113 @@
-/* ═══ PAGE ═══ */
-.cx-page {
-    min-height: calc(100vh - 70px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #F4F5F7;
-    padding: 40px 20px;
+/* Styles propres à ConnexionPage. Wrapper page + card = AuthScreenContainer.css ;
+   champs (œil intégré) = TextInput.css ; séparateur = OrSeparator.css ; bouton
+   primaire = PrimaryButton.css ; boutons OAuth = OAuthButton.css. Ce fichier ajoute
+   seulement : le titre (réplique locale de aw-screen-title, classe non disponible
+   globalement — DETTE #68), le wrapper de form, la rangée OAuth, et les liens bas
+   propres à la connexion (BottomAuthLinks non compatible, cf. rapport). */
+
+/* ═══ TITRE (réplique locale, DETTE #68) ═══ */
+.aw-screen-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #E8622A;
+  text-align: center;
+  margin: 0 0 32px 0;
 }
 
-/* ═══ CARD — elevated, warm shadow ═══ */
-.cx-card {
-    max-width: 460px;
-    width: 100%;
-    background: white;
-    border-radius: 16px;
-    padding: 36px 36px 36px;
-    box-shadow: 0 6px 28px rgba(232,98,42,0.10);
-    border: 1.5px solid #E8EAF0;
-    display: flex;
-    flex-direction: column;
-    animation: cxFadeIn 0.4s ease;
+/* ═══ MESSAGE DE STATUT (succès) ═══ */
+.cx-msg {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  font-family: 'DM Sans', sans-serif;
 }
 
-@keyframes cxFadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+.cx-msg.success {
+  color: #10B981;
 }
 
-.cx-card form {
-    display: flex;
-    flex-direction: column;
+/* ═══ FORMULAIRE — espacement vertical régulier ═══ */
+.cx-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* ═══ HEADER — bold title, clear hierarchy ═══ */
-.cx-title {
-    font-size: 18px;
-    font-weight: 300;
-    letter-spacing: 3px;
-    color: #E8622A;
-    text-transform: uppercase;
-    text-align: center;
-    margin: 0 0 32px 0;
-}
-
-.cx-header .cx-msg.error {
-    color: #EF4444;
-    font-weight: 600;
-}
-
-.cx-header .cx-msg.success {
-    color: #10B981;
-    font-weight: 600;
-}
-
-/* ═══ FORM FIELDS — clean, focused ═══ */
-.cx-field {
-    margin-bottom: 14px;
-}
-
-.cx-field label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    color: #1E293B;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.cx-field input {
-    width: 100%;
-    height: 36px;
-    padding: 0 14px;
-    border: 1.5px solid #E8EAF0;
-    border-radius: 10px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-    background: white;
-    color: #1E293B;
-}
-
-.cx-field input::placeholder {
-    color: #94A3B8;
-}
-
-.cx-field input:focus {
-    border-color: #E8622A;
-    box-shadow: 0 0 0 3px rgba(232,98,42,0.12);
-}
-
-.cx-field input:hover:not(:focus) {
-    border-color: #CBD5E1;
-}
-
-.cx-field input:-webkit-autofill,
-.cx-field input:-webkit-autofill:hover,
-.cx-field input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px white inset;
-    -webkit-text-fill-color: #1E293B;
-    border-color: #E8EAF0;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-/* ═══ PASSWORD ═══ */
-.cx-password {
-    position: relative;
-}
-
-.cx-password input {
-    padding-right: 44px;
-}
-
-/* ═══ FORGOT PASSWORD ═══ */
+/* ═══ MOT DE PASSE OUBLIÉ ═══ */
 .cx-forgot {
-    text-align: right;
-    margin-top: -2px;
-    margin-bottom: 16px;
+  text-align: right;
+  margin-top: -4px;
 }
 
 .cx-forgot a {
-    color: #94A3B8;
-    font-size: 13px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
+  color: #94A3B8;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
 .cx-forgot a:hover {
-    color: #E8622A;
+  color: #E8622A;
 }
 
-/* ═══ SUBMIT — bold CTA, motion on hover ═══ */
-.cx-submit {
-    width: 100%;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #E8622A;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    font-family: 'DM Sans', sans-serif;
+/* ═══ RANGÉE OAUTH (calquée sur ial-oauth-row du wizard) ═══ */
+.cx-oauth-row {
+  display: flex;
+  gap: 12px;
 }
 
-.cx-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(232,98,42,0.3);
-    background-color: #D4571F;
+.cx-oauth-row .aw-oauth-button {
+  flex: 1;
+  min-width: 0;
 }
 
-.cx-submit:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(232,98,42,0.2);
-}
-
-.cx-submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-
-/* ═══ SEPARATOR ═══ */
-.cx-separator {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 12px 0;
-}
-
-.cx-separator::before,
-.cx-separator::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #E8EAF0;
-}
-
-.cx-separator span {
-    font-size: 12px;
-    color: #94A3B8;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* ═══ GOOGLE — secondary, subtle ═══ */
-.cx-google {
-    width: 100%;
-    height: 48px;
-    background: white;
-    color: #1E293B;
-    border: 1.5px solid #E8EAF0;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: border-color 0.2s, transform 0.2s ease;
-}
-
-.cx-google:hover {
-    border-color: #E8622A;
-    transform: translateY(-1px);
-}
-
-/* ═══ BACK LINK — with separator ═══ */
+/* ═══ LIEN BAS — pas de compte → inscription (ou message d'erreur) ═══ */
 .cx-back {
-    display: block;
-    text-align: center;
-    margin: 12px 0 0 0;
-    padding-top: 16px;
-    border-top: 1px solid #E8EAF0;
-    color: #94A3B8;
-    font-size: 14px;
-    font-weight: 400;
+  display: block;
+  text-align: center;
+  margin: 12px 0 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #E8EAF0;
+  color: #94A3B8;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .cx-back a {
-    color: #E8622A;
-    text-decoration: none;
-    font-weight: 700;
-    transition: opacity 0.2s;
+  color: #E8622A;
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s;
 }
 
 .cx-back a:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
-/* ═══ STAGGER ANIMATION ═══ */
+/* ═══ ANIMATION D'ENTRÉE — stagger local (esprit du wizard, scopé ConnexionPage) ═══ */
+/* Classe LOCALE uniquement : n'anime aucune classe partagée (aw-screen-card,
+   aw-textinput, aw-primary-button, aw-oauth-button). Les composants partagés à
+   effet hover-transform (PrimaryButton) sont enveloppés dans un conteneur .cx-stagger
+   pour ne pas figer leur transform au hover. */
 .cx-stagger {
-    animation: cxStaggerIn 0.4s ease both;
+  animation: cxStaggerIn 0.4s ease both;
 }
 
 @keyframes cxStaggerIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══ LOADING SPINNER ═══ */
-.cx-spinner {
-    animation: cxSpin 0.8s linear infinite;
-}
-
-@keyframes cxSpin {
-    to { transform: rotate(360deg); }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 480px) {
-    .cx-card {
-        padding: 28px 24px;
-        border-radius: 14px;
-    }
-
-    .cx-header h2 {
-        font-size: 26px;
-    }
+  .aw-screen-title {
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
 }
