@@ -2,7 +2,27 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 42) — bilan MVP étape 2 (dashboards) : /parametres réparée (rendu + modales) ; DETTE #86 (collision .modal-overlay) ; œil #83 moitié parametres livrée.
+**Dernière mise à jour** : 2026-06-09 (conv 43) — DashboardLocatairePage : refactor code mort email_proprietaire (5827005) + fix #86 modale ville (55c8a97, sur revue) ; découverte gate userData.ville (#76) cassant la bascule les_deux.
+
+---
+
+## 2026-06-09 (conv 43) — Bilan MVP étape 2 : DashboardLocatairePage (refactor email_proprietaire + fix #86 + découverte gate ville #76)
+
+**Audit lecture seule DashboardLocatairePage (/dashboard, sert les 3 types alternants).** Structure saine : route sous DashboardLayout (auth only, aucun filtre type_user) ; aucune sortie anticipée composant → pas de risque « page blanche » ; 0 champ password (hors #83) ; appels sortants = send-alert-email, delete-account, export-data, send-proprietaire-invitation.
+
+**Commit 5827005 — refactor(dashboard) : code mort email_proprietaire retiré.** `from('users').update({ email_proprietaire })` visait une colonne ABSENTE de users (n'existe que sur mises_en_relation) → no-op silencieux ; son unique lecteur (fallback « old hote users ») renvoyait toujours undefined → mort. Retirés en paire (23 suppressions). Envoi (invoke send-proprietaire-invitation) + persistance (insert mises_en_relation) inchangés. VALIDÉ runtime : /dashboard charge intégralement, 0 erreur/log `users`/`email_proprietaire` (filtre console).
+
+**Commit 55c8a97 — fix(dashboard) #86 instance n°2 : override scopé modale ville.** `.dashboard-container .modal-overlay { display:flex }` (spécificité > globale), pattern identique au fix /parametres (1898c81). Non-régressif. ⚠️ NON validé runtime : la modale reste inatteignable (voir gate ci-dessous) — commit sur revue, validation différée à la levée du gate #76.
+
+**Découverte (→ #76) : bascule les_deux + ajout de ville CASSÉS.** Le menu « + » (qui ouvre la modale ville ET « proposer mon logement » → bascule les_deux) est gaté l.610 par `userData.ville` (colonne dépréciée NON peuplée par le wizard actuel). Pour tout compte du nouveau parcours, ce champ est vide → le menu « + » ne se rend jamais → la montée locataire→les_deux et l'ajout d'une ville de recherche sont INACCESSIBLES (feature documentée « en place », CONTEXTE §3), et la modale #86 est inatteignable par ce chemin. Correctif = lire ville_ecole/ville_entreprise (chantier #76, après fige de convention).
+
+**Observations à arbitrer (chantier UX dashboards) :** (1) ordre invoke-avant-insert dans envoyerMiseEnRelation → si l'envoi Resend échoue, l'UI reste bloquée sur « Envoi en cours… » et aucune trace n'est gardée ; (2) la carte « Mon propriétaire » s'affiche côté recherche alors que c'est l'alternant qui PROPOSE qui a un proprio à parrainer — qui doit la voir ? ; (3) flux parrainage non testable bout-en-bout en local (send-proprietaire-invitation envoie toujours via Resend, jamais Mailpit).
+
+**Working tree (ne pas stager hors validation) :** Dashboard proprio lot 2 #83 (.jsx/.css), bypass CreerAnnoncePage.jsx, 3 untracked docs.
+
+**Parqués sur cette page :** détection les_deux fragile (statuts, l.104) + lecture userData.ville dépréciée → #76 ; CSS mort .modal-pwd-group → ménage CSS dédié ; accents manquants (« etre notifie », « Creer », « coeur », « candidate a un ») → polish copie groupé.
+
+**Suite étape 2 :** DashboardProprietairePage (débloquer #86 côté proprio, valider l'œil #83 moitié proprio, traiter bug /profil). Puis le gate ville #76 (débloque la bascule les_deux + permet de valider la modale #86).
 
 ---
 

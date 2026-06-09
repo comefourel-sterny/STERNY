@@ -881,6 +881,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Priorité** : moyenne. **Réf** : InscriptionAlternantPage E-4, InscriptionRecherchePage l.354-369, DashboardLocatairePage l.104/338/391/580/620/627, VISION §65-86.
 
+**MAJ 2026-06-09 (conv 43)** : nouvelle manifestation au dashboard locataire — le gate l.610 du bloc « ville de recherche + menu "+" » teste `userData.ville` (colonne dépréciée, NON peuplée par le wizard actuel). Pour tout compte du nouveau parcours, ce champ est vide → le menu "+" ne se rend jamais → (a) la bascule locataire→les_deux et l'ajout d'une ville de recherche sont INACCESSIBLES (feature pourtant documentée « en place », CONTEXTE §3) ; (b) la modale ville (#86) est inatteignable par ce chemin, donc le fix CSS #86 (commit 55c8a97) non validable runtime tant que ce gate n'est pas corrigé. Correctif = lire ville_ecole/ville_entreprise au lieu de ville, dans ce chantier après fige de convention.
+
 ## DETTE #77 — Capture de la nature ville pour le cas les_deux en E-4
 
 **Statut au 3 juin 2026 (conv 30)** : ✅ RÉSOLUE (commit 022baba). les_deux réutilise la question de nature de la mono (« {ville}, c'est ta ville d'école ou d'entreprise ? ») posée sur la ville PROPOSE (slot ville_entreprise) ; la nature de la ville CHERCHE (slot ville_ecole) est DÉDUITE opposée. Champ unifié `nature_ville` pour mono ET les_deux ; `ecole_emplacement` (ajouté en cours de conv) abandonné. Garde-fou : question unique → état « deux écoles » non représentable. validateE4 les_deux exige nature_ville. Visuel aligné sur la mono (typo .ial-step-subtitle, sous-titre générique retiré, options « École / Entreprise », resserrage margin-top 10px). CAPTURE SEULE — dérivation des 4 colonnes/statuts déléguée à E-7 (propose→'hote', cherche→'recherche'). Combos cherche×2 / propose×2 hors périmètre : non capturables à l'inscription, à vérifier côté dashboard (le modèle n'a qu'un statut par colonne) — non acquis.
@@ -1016,3 +1018,5 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 **Fix racine (chantier dédié)** : unifier UNE convention `.modal-overlay` + extraire en CSS partagé (ou composant Modal). ⚠️ Touche ContratLocationPage (signature, P0 juridique) → test complet sans régresser la signature. Auditer toutes les pages utilisant `.modal-overlay`.
 
 **Priorité** : haute (P1) — masque silencieusement des modales dans toute la zone authentifiée.
+
+**MAJ 2026-06-09 (conv 43)** : 2e instance traitée — modale « ville » de DashboardLocatairePage, override scopé `.dashboard-container .modal-overlay` (commit 55c8a97), même pattern que /parametres. ⚠️ NON validé runtime : la modale reste inatteignable car son point d'entrée (menu « + ») est masqué par le gate `userData.ville` (voir #76) → validation différée à la levée de ce gate. Couverture : /parametres ✅ + dashboard locataire (sur revue) ; reste la modale mdp du dashboard proprio (moitié #83) et le fix racine.
