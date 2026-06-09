@@ -474,6 +474,11 @@
     padding: 20px;
 }
 
+/* DETTE #86 : override scopé — la règle globale .modal-overlay perd face au display:none de ContratLocationPage (ordre de bundle). Re-force l'affichage des modales de cette page. */
+.dashboard-container .modal-overlay {
+  display: flex;
+}
+
 .modal-box {
     background: white;
     border-radius: 20px;
