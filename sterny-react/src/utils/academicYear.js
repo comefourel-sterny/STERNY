@@ -51,3 +51,17 @@ export function academicYearForMonday(mondayStr) {
   if (tm >= 9) return `${ty}-${ty + 1}`;
   return `${ty - 1}-${ty}`;
 }
+
+// Lundi de la semaine ISO en cours, au format "YYYY-MM-DD" (date seule, heure locale).
+// Sert à repérer la tuile centrale du carrousel rythme.
+export function currentMondayISO() {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  const dow = d.getDay() // 0=dimanche .. 6=samedi
+  const diff = dow === 0 ? -6 : 1 - dow
+  d.setDate(d.getDate() + diff)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}

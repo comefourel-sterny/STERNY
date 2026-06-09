@@ -1,0 +1,25 @@
+.rythme-card { display: flex; flex-direction: column; min-height: 204px; margin-bottom: 16px; background: #FFFFFF; border: .5px solid #E8EAF0; border-radius: 20px; padding: 18px 22px 16px; box-shadow: 0 1px 2px rgba(30,41,59,0.04), 0 10px 28px rgba(30,41,59,0.06); }
+.rythme-card.is-ecole { background: radial-gradient(170px 150px at 50% 62%, rgba(232,98,42,0.07), rgba(255,255,255,0) 72%), #FFFFFF; }
+.rythme-card.is-entreprise { background: radial-gradient(170px 150px at 50% 62%, rgba(37,55,84,0.08), rgba(255,255,255,0) 72%), #FFFFFF; }
+
+.rythme-title { font-size: 14px; font-weight: 300; letter-spacing: 2.5px; text-transform: uppercase; color: #E8622A; }
+.rythme-empty { font-size: 14px; color: #94A3B8; margin: 12px 0 0; }
+
+.rythme-row { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.rythme-tile { flex: 0 0 auto; border-radius: 12px; display: flex; align-items: flex-end; justify-content: center; }
+.rythme-tile span { font-size: 11px; color: rgba(255,255,255,0.92); padding-bottom: 9px; }
+.rythme-tile--sm { width: 56px; height: 56px; }
+.rythme-tile--md { width: 78px; height: 78px; border-radius: 14px; }
+.rythme-tile.is-ecole { background: linear-gradient(155deg,#F0743D,#D9551F); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22); }
+.rythme-tile.is-entreprise { background: linear-gradient(155deg,#2B3B54,#18222F); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); }
+.rythme-tile.is-past { background: linear-gradient(155deg,#EDF0F4,#E1E6EC); box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
+
+.rythme-center { flex: 0 0 auto; width: 116px; height: 116px; border-radius: 20px; padding: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; text-align: center; }
+.rythme-center.is-ecole { background: linear-gradient(158deg,#F0743D 0%,#D9551F 100%); box-shadow: 0 12px 26px rgba(216,85,31,0.32), inset 0 1px 0 rgba(255,255,255,0.28); }
+.rythme-center.is-entreprise { background: linear-gradient(158deg,#2B3B54 0%,#18222F 100%); box-shadow: 0 12px 26px rgba(24,34,47,0.32), inset 0 1px 0 rgba(255,255,255,0.16); }
+.rythme-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.7px; text-transform: uppercase; color: rgba(255,255,255,0.78); }
+.rythme-center.is-entreprise .rythme-eyebrow { color: rgba(255,255,255,0.62); }
+.rythme-statut { font-size: 16px; font-weight: 600; color: #fff; }
+.rythme-dates { font-size: 11.5px; color: rgba(255,255,255,0.85); }
+.rythme-center.is-entreprise .rythme-dates { color: rgba(255,255,255,0.78); }

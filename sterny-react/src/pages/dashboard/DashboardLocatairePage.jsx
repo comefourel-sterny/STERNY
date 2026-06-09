@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { getInitials } from '../../utils/formatters'
 import AgendaCard from '../../components/dashboard/AgendaCard'
+import RythmeCarousel from '../../components/rhythm/RythmeCarousel'
 import ChatComponent from '../../components/chat/ChatComponent'
 import './DashboardLocatairePage.css'
 
@@ -657,6 +658,8 @@ export default function DashboardLocatairePage() {
           </div>
         )}
       </div>
+
+      <RythmeCarousel weeks={userData.rhythm_calendar} />
 
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (
