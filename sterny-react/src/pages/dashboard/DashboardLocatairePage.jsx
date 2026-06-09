@@ -260,27 +260,6 @@ export default function DashboardLocatairePage() {
         }
         return
       }
-
-      // Fallback: check email_proprietaire field (old hote users)
-      const emailProprio = uData?.email_proprietaire
-      if (emailProprio) {
-        setRelationStatus('pending')
-        setPendingEmail(emailProprio)
-        try {
-          const { data: proprio } = await supabaseClient
-            .from('users')
-            .select('id, prenom, nom')
-            .eq('parrain_id', currentUserId)
-            .eq('type_user', 'proprietaire')
-            .limit(1)
-            .single()
-          if (proprio) {
-            setRelationStatus('validated')
-            setProprioData(proprio)
-            setProprioNom(proprio.prenom + ' ' + proprio.nom)
-          }
-        } catch (e) { /* proprio pas encore inscrit */ }
-      }
     } catch (error) {
       // pas de demande
     }
@@ -561,8 +540,6 @@ export default function DashboardLocatairePage() {
 
     setRelationStatus('sending')
     try {
-      await supabaseClient.from('users').update({ email_proprietaire: email }).eq('id', currentUserId)
-
       await supabaseClient.functions.invoke('send-proprietaire-invitation', {
         body: {
           proprietaire_email: email,
