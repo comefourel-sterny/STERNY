@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import useAccountActions from '../../hooks/useAccountActions'
 import { getInitials } from '../../utils/formatters'
+import PasswordRevealButton from '../../components/PasswordRevealButton'
 import './ParametresPage.css'
 
 export default function ParametresPage() {
@@ -24,6 +25,10 @@ export default function ParametresPage() {
     supprimerCompte,
     exporterDonnees
   } = useAccountActions()
+
+  // States de visibilité LOCAUX (hors hook) pour l'œil afficher/masquer
+  const [showPwdNew, setShowPwdNew] = useState(false)
+  const [showPwdConfirm, setShowPwdConfirm] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -132,11 +137,17 @@ export default function ParametresPage() {
             {pwdMsg.text && <div className={`modal-pwd-msg ${pwdMsg.type}`}>{pwdMsg.text}</div>}
             <div className="modal-pwd-group">
               <label>Nouveau mot de passe</label>
-              <input type="password" placeholder="Minimum 8 caracteres" minLength="8" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} />
+              <div className="pw-field">
+                <input type={showPwdNew ? 'text' : 'password'} className="pw-has-reveal" placeholder="Minimum 8 caracteres" minLength="8" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} />
+                <PasswordRevealButton visible={showPwdNew} onToggle={() => setShowPwdNew(v => !v)} />
+              </div>
             </div>
             <div className="modal-pwd-group">
               <label>Confirmer le nouveau mot de passe</label>
-              <input type="password" placeholder="Retape ton mot de passe" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} />
+              <div className="pw-field">
+                <input type={showPwdConfirm ? 'text' : 'password'} className="pw-has-reveal" placeholder="Retape ton mot de passe" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} />
+                <PasswordRevealButton visible={showPwdConfirm} onToggle={() => setShowPwdConfirm(v => !v)} />
+              </div>
             </div>
             <div className="modal-pwd-buttons">
               <button className="modal-pwd-btn-cancel" onClick={() => setShowPasswordModal(false)}>Annuler</button>

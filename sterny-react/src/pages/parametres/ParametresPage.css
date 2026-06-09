@@ -218,5 +218,10 @@
     }
 }
 
+/* Réserve d'espace pour l'œil afficher/masquer (DETTE #83 lot 2) — plus
+   spécifique que .modal-pwd-group input (définie globalement) pour ne pas
+   être neutralisée. La modale partage ses classes avec les dashboards. */
+.modal-pwd-group input.pw-has-reveal { padding-right: 44px; }
+
 /* DETTE #86 : override tactique — la règle globale .modal-overlay (display:none héritée de ContratLocationPage) fuit et masque les modales. À retirer quand la convention .modal-overlay sera unifiée. */
 .parametres-container .modal-overlay { display: flex; }
