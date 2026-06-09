@@ -3,6 +3,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { getInitials } from '../../utils/formatters'
+import { getVillesUtilisateur } from '../../utils/deriveVilleColonnes'
 import AgendaCard from '../../components/dashboard/AgendaCard'
 import RythmeCarousel from '../../components/rhythm/RythmeCarousel'
 import ChatComponent from '../../components/chat/ChatComponent'
@@ -368,7 +369,7 @@ export default function DashboardLocatairePage() {
   }
 
   async function creerAlerte() {
-    const ville = isLesDeux ? userData?.ville_entreprise : userData?.ville
+    const ville = isLesDeux ? userData?.ville_entreprise : getVillesUtilisateur(userData)[0]?.ville
     if (!ville) { setAlerteError('Renseigne ta ville dans ton profil'); return }
     if (!alerteSelectedDate) { setAlerteError('Selectionne ta premiere semaine d\'occupation'); return }
 
@@ -573,11 +574,14 @@ export default function DashboardLocatairePage() {
   // === COMPUTED ===
   const hasBailActif = contrats.length > 0
 
+  // Villes dérivées des 4 colonnes (remplace la colonne dépréciée userData.ville) — #76
+  const villesUser = getVillesUtilisateur(userData)
+
   // Ville suggestions
   const villeSuggestions = villeModalInput.trim()
     ? VILLES_DISPONIBLES.filter(v =>
         v.toLowerCase().startsWith(villeModalInput.trim().toLowerCase()) &&
-        v.toLowerCase() !== (userData?.ville || '').toLowerCase()
+        v.toLowerCase() !== (villesUser[0]?.ville || '').toLowerCase()
       )
     : []
 
@@ -608,11 +612,11 @@ export default function DashboardLocatairePage() {
         )}
 
         {/* Ville header for single-ville users */}
-        {!isLesDeux && userData?.ville && !hasBailActif && (
+        {!isLesDeux && villesUser.length > 0 && !hasBailActif && (
           <div className="ville-header-row">
             <div className="ville-header-badge">
               <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
-              <span>{userData.ville}</span>
+              <span>{villesUser[0]?.ville}</span>
             </div>
             {userData.ville_recherche_secondaire && (
               <div className="ville-header-secondaire">

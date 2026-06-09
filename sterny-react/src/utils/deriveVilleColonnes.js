@@ -40,3 +40,14 @@ export function deriveVilleColonnes({ type_user, nature_ville, ville_entreprise,
 
   return vide
 }
+
+// Lecture inverse : depuis une ligne `users` (4 colonnes peuplées), renvoie la
+// liste des villes saisies sous forme { ville, nature, action }. Sert au dashboard
+// (remplace la lecture de la colonne dépréciée `users.ville`). VISION §99-104.
+export function getVillesUtilisateur(user) {
+  if (!user) return []
+  const villes = []
+  if (user.ville_ecole) villes.push({ ville: user.ville_ecole, nature: 'ecole', action: user.statut_ville_ecole || null })
+  if (user.ville_entreprise) villes.push({ ville: user.ville_entreprise, nature: 'entreprise', action: user.statut_ville_entreprise || null })
+  return villes
+}
