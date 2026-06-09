@@ -2,7 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 45) — Fix régression bloquante /dashboard (page blanche carte rythme).
+**Dernière mise à jour** : 2026-06-09 (conv 45 suite) — #76 mono corrigé (bloc ville réapparu) + #86 locataire validé.
+
+---
+
+## 2026-06-09 (conv 45 suite) — #76 mono corrigé + #86 locataire validé
+
+**Origine :** en voulant aérer le dashboard locataire, Côme constate que le bloc « ville + bouton + » manque sous « Bonjour Côme » = symptôme de #76. Vérif base locale (locataire) : `ville_ecole='Rennes'` + `statut_ville_ecole='recherche'`, colonne dépréciée `ville` VIDE → wizard conforme, dashboard qui lit la mauvaise colonne. #76 = bug de lecture (note conv 43 démentie).
+
+**Livré (feat) :** helper `getVillesUtilisateur(user)` dans `utils/deriveVilleColonnes.js` ; branché sur le cas MONO (gate + affichage + flux recherche). Bloc « Rennes + bouton + » ré-affiché. Validé runtime.
+
+**#86 débloqué :** modale « Ajouter une ville de recherche » s'ouvre enfin (fix `55c8a97` validé). Couverture #86 : /parametres + dashboard locataire.
+
+**Reste / parqué :** (1) cas les_deux #76 (mapping figé à dériver de `statut_*`, non testable sans compte les_deux) ; (2) refonte visuelle hiérarchie du dashboard — objectif initial de la session, reporté après #76 : titres de sections incohérents (carte rythme style auth vs sections orange+icône), point d'entrée visuel, équilibre carte rythme. Séquencage technique-avant-esthétique conforme à l'ordre initial.
+
+**Working tree (ne jamais stager) :** DashboardProprietairePage lot 2 #83 (.jsx/.css), bypass CreerAnnoncePage, 3 untracked docs.
 
 ---
 
