@@ -659,7 +659,7 @@ export default function DashboardLocatairePage() {
         )}
       </div>
 
-      <RythmeCarousel weeks={userData.rhythm_calendar} />
+      <RythmeCarousel weeks={userData?.rhythm_calendar} />
 
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (
