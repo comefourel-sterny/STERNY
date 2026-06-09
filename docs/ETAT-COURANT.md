@@ -2,7 +2,27 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 45 suite) — #76 mono corrigé (bloc ville réapparu) + #86 locataire validé.
+**Dernière mise à jour** : 2026-06-09 (conv 46) — Refonte hiérarchie dashboard locataire : Lot 1 (titres typo sans icône + carte rythme + voix tutoiement).
+
+---
+
+## 2026-06-09 (conv 46) — Refonte hiérarchie dashboard locataire : Lot 1 (titres + carte rythme)
+
+**Objectif :** rendre /dashboard (locataire/fusionné) propre et hiérarchisé. Diagnostic conv 45 repris. Correction factuelle : le titre de la carte rythme n'était PAS gris/style auth (note conv 45 démentie) mais déjà orange uppercase — seule vraie différence avec les `.dp-card-title` = l'icône carrée.
+
+**Cible visuelle actée :** (1) carte rythme = carte « héros » / point d'entrée du dashboard (cohérent VISION §1, le rythme = cœur de Sterny), distinguée par son contenu (ruban coloré), pas par un style de carte différent ; (2) une seule grammaire de carte ; (3) titres purement typographiques, icônes déco retirées (cohérent design-rules : couleur de marque réservée aux éléments à fort impact) ; (4) voix tutoiement.
+
+**Livré (Lot 1, validé runtime + build vert) :**
+- DashboardLocatairePage.jsx : retrait des 7 icônes `.dp-card-icon`. Titres passés en tutoiement + accents (Tes locations actives, Tes favoris, Tes candidatures, Ton/Tes annonce(s), Ton propriétaire, Candidatures reçues, Tes candidatures envoyées).
+- RythmeCarousel.css : `.rythme-card` alignée sur `.dp-card` (radius 16, border 1px, padding 24, box-shadow `0 4px 20px rgba(30,41,59,0.06)`) ; `.rythme-title` alignée (15px, letter-spacing 2px). `min-height:204px` + `margin-bottom:16px` conservés (équilibre interne = Lot 3).
+
+**Décision copie loguée :** Sterny tutoie l'utilisateur sur le dashboard (cohérent avec « Bonjour X », « Clique… », « Active une alerte »). Libellés 1ʳᵉ personne (« Mes… ») abandonnés. Convention à tenir sur les futures pages.
+
+**Divergence assumée :** CSS partagé `.dp-card-icon`/`.dp-card-title` (dans DashboardProprietairePage.css) non touché → le dashboard proprio garde ses icônes. À résorber lors de la revue proprio parquée. État final cohérent.
+
+**Reste / parqué (refonte) :** Lot 2 = dégonfler les états vides (cercle 64px + texte + bouton, trop volumineux) ; Lot 3 = header/bloc ville + équilibre interne ruban rythme (ruban calé à gauche, vide à droite — mini-audit RythmeCarousel requis) ; polish copie hors titres (« cœur », « Créer », « être notifié », « proprietaire » du corps) = lot copie parqué.
+
+**Working tree (ne jamais stager) :** DashboardProprietairePage lot 2 #83 (.jsx/.css), bypass CreerAnnoncePage, 3 untracked docs.
 
 ---
 
