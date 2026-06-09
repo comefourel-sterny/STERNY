@@ -217,3 +217,6 @@
         margin-top: 8px;
     }
 }
+
+/* DETTE #86 : override tactique — la règle globale .modal-overlay (display:none héritée de ContratLocationPage) fuit et masque les modales. À retirer quand la convention .modal-overlay sera unifiée. */
+.parametres-container .modal-overlay { display: flex; }
