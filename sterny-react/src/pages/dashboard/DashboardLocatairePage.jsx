@@ -669,10 +669,7 @@ export default function DashboardLocatairePage() {
       {hasBailActif && (
         <div className="dp-card">
           <div className="dp-card-title">
-            <span className="dp-card-icon" style={{ background: '#1E293B' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-            </span>
-            Mes locations actives
+            Tes locations actives
           </div>
           {contrats.map(contrat => {
             const dateFin = new Date(contrat.date_fin)
@@ -753,10 +750,7 @@ export default function DashboardLocatairePage() {
           {/* FAVORIS */}
           <div className="dp-card">
             <div className="dp-card-title">
-              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-              </span>
-              Mes favoris
+              Tes favoris
               {favoris.length > 0 && <span className="favoris-count">{favoris.length}</span>}
             </div>
             {favoris.length === 0 ? (
@@ -805,10 +799,7 @@ export default function DashboardLocatairePage() {
           {/* CANDIDATURES */}
           <div className="dp-card">
             <div className="dp-card-title">
-              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
-              </span>
-              Mes candidatures
+              Tes candidatures
               {candidatures.length > 0 && <span className="favoris-count">{candidatures.length}</span>}
             </div>
             {candidatures.length === 0 ? (
@@ -861,10 +852,7 @@ export default function DashboardLocatairePage() {
           {/* MES ANNONCES */}
           <div className="dp-card">
             <div className="dp-card-title">
-              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-              </span>
-              {annonces.length <= 1 ? 'Mon annonce' : `Mes annonces (${annonces.length})`}
+              {annonces.length <= 1 ? 'Ton annonce' : `Tes annonces (${annonces.length})`}
             </div>
             {annonces.length === 0 ? (
               <div className="empty-state">
@@ -916,10 +904,7 @@ export default function DashboardLocatairePage() {
           {relationStatus !== 'validated' && (
             <div className="dp-card">
               <div className="dp-card-title">
-                <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                </span>
-                Mon proprietaire
+                Ton propriétaire
               </div>
               <div className="proprio-row">
                 <div className="proprio-col">
@@ -970,10 +955,7 @@ export default function DashboardLocatairePage() {
           {/* CANDIDATURES RECUES */}
           <div className="dp-card">
             <div className="dp-card-title">
-              <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
-              </span>
-              Candidatures recues
+              Candidatures reçues
               {candidaturesRecues.length > 0 && <span className="favoris-count">{candidaturesRecues.length}</span>}
             </div>
             {candidaturesRecues.length === 0 ? (
@@ -1010,10 +992,7 @@ export default function DashboardLocatairePage() {
           {candidaturesEnvoyeesHote.length > 0 && (
             <div className="dp-card">
               <div className="dp-card-title">
-                <span className="dp-card-icon" style={{ background: '#FFF1E8' }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
-                </span>
-                Mes candidatures envoyees
+                Tes candidatures envoyées
                 <span className="favoris-count">{candidaturesEnvoyeesHote.length}</span>
               </div>
               {candidaturesEnvoyeesHote.map(c => {
