@@ -29,7 +29,7 @@ export default function ParametresPage() {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, type_user, photo_url')
+      .select('prenom, nom, email, telephone, type_user, photo_profil_url')
       .eq('id', user.id)
       .single()
       .then(({ data }) => { if (data) setUserData(data) })
@@ -52,8 +52,8 @@ export default function ParametresPage() {
         </div>
         <div className="param-profil">
           <div className="param-avatar">
-            {userData.photo_url
-              ? <img src={userData.photo_url} alt="" />
+            {userData.photo_profil_url
+              ? <img src={userData.photo_profil_url} alt="" />
               : initials
             }
           </div>
