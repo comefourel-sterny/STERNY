@@ -2,7 +2,19 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 44) — Carte « Ton rythme » (carrousel) livrée sur DashboardLocatairePage ; observation hiérarchie dashboard logée (idees-en-attente).
+**Dernière mise à jour** : 2026-06-09 (conv 45) — Fix régression bloquante /dashboard (page blanche carte rythme).
+
+---
+
+## 2026-06-09 (conv 45) — Fix régression bloquante /dashboard (page blanche)
+
+**Régression P0 corrigée (commit df84781).** /dashboard (locataire/fusionné, sert les 3 profils alternants) rendait une page blanche : TypeError: Cannot read properties of null (reading 'rhythm_calendar') à DashboardLocatairePage.jsx:662. Cause = la carte rythme conv 44 (commit 83f1951) lisait userData.rhythm_calendar SANS chaînage optionnel, alors que tout le reste du fichier est en userData?. ; au 1er render userData est null → crash → React démonte l'arbre. Déjà poussé sur origin → /dashboard cassé pour tous les comptes (local + prépod).
+
+**Fix** : l.662 userData.rhythm_calendar → userData?.rhythm_calendar. Au 1er render weeks reçoit undefined, déjà géré par RythmeCarousel (état vide). Validé runtime + build vert.
+
+**Leçon** : la carte rythme conv 44 n'avait été validée qu'en maquette, pas runtime sur /dashboard avec un userData réel ; la réserve n°3 de sa création s'est matérialisée. Bruit console concomitant (Agentation :4747 ERR_CONNECTION_REFUSED) = DETTE #71, non lié.
+
+**Reprise étape 2 (dashboards)** : revue DashboardProprietairePage — fix #86 proprio prêt (override scopé .dashboard-proprio-container .modal-overlay { display:flex }), œil #83 lot 2 proprio patché non commité, bug /profil sans DETTE (à créer). Working tree à ne jamais stager : lot 2 #83 proprio (.jsx/.css), bypass CreerAnnoncePage, 3 untracked docs.
 
 ---
 
