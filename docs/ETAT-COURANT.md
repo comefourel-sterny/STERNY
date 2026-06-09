@@ -2,7 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 43) — DashboardLocatairePage : refactor code mort email_proprietaire (5827005) + fix #86 modale ville (55c8a97, sur revue) ; découverte gate userData.ville (#76) cassant la bascule les_deux.
+**Dernière mise à jour** : 2026-06-09 (conv 44) — Carte « Ton rythme » (carrousel) livrée sur DashboardLocatairePage ; observation hiérarchie dashboard logée (idees-en-attente).
+
+---
+
+## 2026-06-09 (conv 44) — Carte « Ton rythme » (carrousel) sur DashboardLocatairePage
+
+**Livré (voir git log pour l'état).** Carte rythme sur /dashboard, visible par les 3 profils alternants (insérée hors blocs conditionnels, entre header et LOCATIONS ACTIVES). Composant `components/rhythm/RythmeCarousel.jsx` (+ `.css`).
+
+**1er lecteur de `rhythm_calendar` en prod** (jusqu'ici « aucun lecteur aval », audit conv 37). Lit `userData.rhythm_calendar` déjà chargé via `select('*')`. Format confirmé : `{ week_start:"YYYY-MM-DD" lundi, status:'school'|'company' }`.
+
+**Logique** : centre = 1ʳᵉ semaine ≥ lundi courant (sinon dernière connue) ; fenêtre ±3 (`WINDOW`) ; slots hors bornes = placeholders gris → équilibre quand le passé est absent (capture futur-only #80). Helpers réutilisables ajoutés : `currentMondayISO` (academicYear.js), `formatWeekRangeFR(ws,{tight})` (formatters.js).
+
+**Design (validé en maquette)** : carte blanche dp-card-like (`margin-bottom:16px` aligné sur `.dp-card`), titre style auth, tuiles dégradées + filet de lumière (école orange / entreprise navy / passé gris), bloc central 116px coloré selon statut + halo radial de carte teinté. École et Entreprise = design identique. Pas de légende, pas d'icône interne. « Voir le détail » retiré (aucune surface rythme → lien mort évité, #82b).
+
+**À caler en live si besoin** : `WINDOW` si le ruban flotte sur carte large ; `padding`/`min-height` vertical ; `text-align` titre.
 
 ---
 

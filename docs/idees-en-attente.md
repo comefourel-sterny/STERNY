@@ -18,3 +18,6 @@ Constat (conv 37, 7 juin 2026) : la liste des écoles (`ECOLES`, `data/inscripti
 - **Bug /parametres** : ParametresPage ne rend que le footer, contenu principal absent. À investiguer (hors #83).
 - **Bug /profil** : ProfilPage affiche alert « Utilisateur non spécifié » + chargement infini. À investiguer (hors #83).
 - **CSS mort** : .modal-pwd-group (et règles modale associées) dupliqué dans DashboardLocatairePage.css (~l.2527) sans JSX correspondant. Candidat au nettoyage.
+
+## 2026-06-09 (conv 44) — Hiérarchie visuelle du dashboard locataire
+Observation (Côme) : /dashboard paraît "agressif / brouillon" — cartes de même poids visuel, orange répété (bandeau alerte, CTA, en-têtes), pas de hiérarchie qui guide l'œil, peu engageant à l'arrivée. Chantier dédié (pas une retouche) : définir un focal clair, hiérarchiser primaire/secondaire, calmer les accents orange, soigner les états vides. Distinct de la carte rythme (faite conv 44).
