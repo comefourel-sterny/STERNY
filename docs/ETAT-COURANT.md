@@ -2,7 +2,28 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-08 (conv 41) — re-skin InscriptionProprietairePage sur grammaire wizard ; DETTE #85 (incohérence longueur mdp). Suite bilan MVP (auth).
+**Dernière mise à jour** : 2026-06-09 (conv 42) — bilan MVP étape 2 (dashboards) : /parametres réparée (rendu + modales) ; DETTE #86 (collision .modal-overlay) ; œil #83 moitié parametres livrée.
+
+---
+
+## 2026-06-09 (conv 42) — Bilan MVP étape 2 (dashboards) : /parametres réparée + DETTE #86
+
+**Démarrage étape (2) DASHBOARDS** du bilan MVP (revue page-par-page, visuel + fonctionnel). Audit lecture seule : DashboardLocatairePage (fusionnée, /dashboard), DashboardProprietairePage (/dashboard/proprietaire), DashboardAdminPage ; garde commune DashboardLayout = auth only, aucun filtre type_user (tri par la donnée) ; grammaire `.dp-card` des deux côtés.
+
+**3 trous /parametres corrigés au fil de l'eau (3 commits) :**
+- `b56ce1f` fix : page ne rendant que navbar+footer → `.select('… photo_url')` visait une colonne inexistante (réelle = `photo_profil_url`) → échec silencieux → userData null → return null. Validé runtime (connecté).
+- `1898c81` fix : boutons « Changer mdp » / « Supprimer compte » semblaient morts → modales montées mais masquées par collision CSS globale `.modal-overlay` (DETTE #86). Override scopé `.parametres-container .modal-overlay { display:flex }`. Validé.
+- `6562990` feat : œil afficher/masquer sur les 2 champs de la modale mdp (lot 2 #83, **moitié parametres**). Validé visuellement.
+
+**DETTE #86 créée** (P1, systémique) : `.modal-overlay` redéfinie en conflit dans plusieurs CSS globaux ; le display:none de ContratLocationPage gagne la cascade → masque toute modale sans `.active` dans la zone authentifiée. Fix racine = unifier la convention (chantier dédié, touche ContratLocationPage P0 juridique).
+
+**Lot 2 #83 scindé** : moitié parametres livrée (6562990) ; **moitié Dashboard proprio NON commitée** (œil dans une modale .modal-overlay masquée par #86 sur cette page) → reportée à la revue du dashboard proprio.
+
+**Reste /parametres (non bloquant, tracé) :** accents manquants dans tous les libellés (« Parametres », « SECURITE », « Derniere », « DONNEES », « Deconnexion »…) → polish copie (commit séparé). Structure de page jugée saine MVP (profil, sécurité, export RGPD, suppression, déconnexion).
+
+**Working tree volontairement sale (rappel) :** moitié proprio lot 2 #83 (DashboardProprietairePage .jsx/.css), bypass CreerAnnoncePage.jsx, 3 untracked docs — ne jamais stager.
+
+**Suite étape 2 :** revue DashboardLocatairePage (/dashboard), puis DashboardProprietairePage (débloquer #86 + valider œil proprio + traiter /profil). Bug /profil ouvert (conçue pour profil tiers via ?user_id= ; lien nu cassé pour non-admin) → décision produit à prendre, vérifier d'abord s'il a déjà une DETTE.
 
 ---
 

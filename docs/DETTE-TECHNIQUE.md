@@ -969,6 +969,8 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 
 **MAJ 2026-06-07 (conv 39)** : lots 1 (profils, 70704d5) et 4 (ConnexionPage, 7f2e795) livrés, validés et POUSSÉS (9e3f802..7f2e795). Lot 3 (InscriptionRecherchePage) ABANDONNÉ : page legacy vouée à suppression (unification Q3/T6) ; modifs restaurées. Périmètre figé par grep global type="password" : seuls les 4 champs du lot 2 (DashboardProprietairePage + ParametresPage) restent ; DashboardLocatairePage a du CSS .modal-pwd-group résiduel mais aucun input password en JSX. Lot 2 PATCHÉ (build vert) mais NON validé / NON commité (working tree) : validation bloquée par bug préexistant /parametres (rend seulement le footer) + pas de compte proprio de test. Reste : valider lot 2 → commit feat → push → #83 bouclé.
 
+**MAJ 2026-06-08 (conv 42)** : moitié parametres du lot 2 LIVRÉE (commit 6562990 — œil sur les 2 champs de la modale mdp de ParametresPage). Prérequis levés d'abord : rendu de /parametres (commit b56ce1f, colonne photo_profil_url) + affichage des modales (commit 1898c81, DETTE #86). **Moitié Dashboard proprio TOUJOURS NON commitée** : sa modale mdp est masquée par la même collision .modal-overlay (DETTE #86), pas encore corrigée sur cette page → reportée à la revue du dashboard proprio. **#83 à moitié bouclé** : reste la moitié proprio (débloquer #86 côté dashboard proprio → valider l'œil → commit feat).
+
 ## DETTE #84 — Providers OAuth Google/Apple non activés côté Supabase
 
 **Constat (conv 40).** Le code OAuth est complet et correct côté front (boutons Google + Apple sur ConnexionPage, InscriptionProprietairePage et le wizard alternant ; URL authorize bien formée). Mais le clic échoue en local avec : `{"code":400,"error_code":"validation_failed","msg":"Unsupported provider: provider is not enabled"}`.
@@ -995,3 +997,22 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 **Priorité** : basse, non bloquant. À traiter au durcissement de l'auth, avec #84 et #70.
 
 **Référence** : `EtapeCreationCompte.jsx:285`, `InscriptionProprietairePage.jsx` (handleSubmit).
+
+## DETTE #86 — Collision CSS globale sur .modal-overlay (modales masquées dans la zone authentifiée)
+
+**Statut au 2026-06-08 (conv 42)** : créée lors du bilan MVP étape 2 (audit /parametres). **Fix tactique /parametres livré** (commit 1898c81).
+
+**Constat** : la classe `.modal-overlay` est redéfinie dans plusieurs CSS de pages, toutes globales (pas de scoping), avec des conventions incompatibles :
+- DashboardProprietairePage.css:1706 et DashboardLocatairePage.css:465 → `.modal-overlay { display: flex }` (visible par défaut ; visibilité pilotée par le rendu conditionnel en JSX).
+- ContratLocationPage.css:539 → `.modal-overlay { display: none }` + `.modal-overlay.active { display: flex }` (masquée par défaut ; visibilité pilotée par la classe `.active`).
+À spécificité égale (1 classe), l'ordre d'injection du bundle tranche. Dans App.jsx, ContratLocationPage est importée après les dashboards → sa règle `display:none` gagne la cascade → `.modal-overlay` calcule `display:none` globalement.
+
+**Conséquence** : toute modale rendue avec `.modal-overlay` SANS `.active` (ParametresPage mdp + suppression ; modale mdp Dashboard proprio ; probablement d'autres) est montée dans le DOM mais masquée → perçue comme bouton mort. JS sain (state à true, DOM monté) ; seul le CSS masque. Seules les modales de ContratLocationPage (qui ajoutent `.active`) s'affichent.
+
+**Impact lot 2 #83** : l'œil mdp est dans ces modales → validation bloquée tant que la modale ne s'affiche pas. Moitié parametres débloquée par le fix tactique ci-dessous ; moitié Dashboard proprio encore bloquée.
+
+**Fix tactique (conv 42, commit 1898c81)** : override scopé `.parametres-container .modal-overlay { display: flex }` (spécificité 0,2,0 > globale 0,1,0), sans toucher ContratLocationPage ni les dashboards. Débloque /parametres uniquement.
+
+**Fix racine (chantier dédié)** : unifier UNE convention `.modal-overlay` + extraire en CSS partagé (ou composant Modal). ⚠️ Touche ContratLocationPage (signature, P0 juridique) → test complet sans régresser la signature. Auditer toutes les pages utilisant `.modal-overlay`.
+
+**Priorité** : haute (P1) — masque silencieusement des modales dans toute la zone authentifiée.
