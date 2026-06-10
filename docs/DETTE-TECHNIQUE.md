@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 11 mai 2026 — Clôture conv Claude.ai 19 chantier UNIFICATION-INSCRIPTION T3 : 2 nouvelles dettes mineures issues de la refonte ChoixInscriptionPage : DETTE #68 (`.aw-screen-title` à extraire en CSS partagé global) et DETTE #69 (`GoogleSignInButton.loading` non câblée visuellement). Pas de DETTE résolue en conv 19.
+**Dernière mise à jour** : 2026-06-10 — DETTE #87 : collision globale .empty-icon (résolue côté locataire, proprio en attente).
 
 ## Nomenclature des bugs
 
@@ -1024,3 +1024,10 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 **MAJ 2026-06-09 (conv 43)** : 2e instance traitée — modale « ville » de DashboardLocatairePage, override scopé `.dashboard-container .modal-overlay` (commit 55c8a97), même pattern que /parametres. ⚠️ NON validé runtime : la modale reste inatteignable car son point d'entrée (menu « + ») est masqué par le gate `userData.ville` (voir #76) → validation différée à la levée de ce gate. Couverture : /parametres ✅ + dashboard locataire (sur revue) ; reste la modale mdp du dashboard proprio (moitié #83) et le fix racine.
 
 **MAJ 2026-06-09 (conv 45) — instance dashboard locataire VALIDÉE runtime.** La levée du gate #76 (correctif mono) rend la modale ville atteignable : clic « + » → « Rechercher un logement » → la modale « Ajouter une ville de recherche » s'affiche (fix scopé `55c8a97` enfin validé en live). Couverture #86 : /parametres + dashboard locataire. Reste : moitié mdp dashboard proprio (#83) + fix racine (unifier `.modal-overlay`, touche ContratLocationPage P0).
+
+## DETTE #87 — Collision CSS globale sur `.empty-icon` (états vides)
+
+Même famille que #86 :
+- `.empty-icon` était défini deux fois en global non scopé : `DashboardLocatairePage.css` (64px) et `DashboardProprietairePage.css` l.1138 (56px, radius 14). L'ordre du bundle décidait arbitrairement laquelle s'appliquait.
+- **Résolu côté locataire** (2026-06-10, commit c3f6620) : `.empty-icon`/`.empty-icon svg`/`.empty-text` du fichier locataire scopées sous `.dashboard-container` (spécificité 0,2,0 > 0,1,0 global) → gagnent toujours, indépendamment du bundle. Proprio non touché.
+- **Reste à faire** : le `.empty-icon` du proprio (l.1138) est toujours global non scopé — à scoper sous `.dashboard-proprio-container` lors de la revue proprio parquée, pour fermer la collision des deux côtés.

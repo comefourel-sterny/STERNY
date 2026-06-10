@@ -2,7 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-10 (conv 46 suite) — Ruban « Ton rythme » navigable (flèches + date début latérale).
+**Dernière mise à jour** : 2026-06-10 (conv 47) — Dashboard locataire Lot 2 : états vides dégonflés + scopés.
+
+---
+
+## 2026-06-10 (conv 47) — Refonte dashboard locataire Lot 2 : états vides dégonflés
+
+**Livré (validé runtime, build avant push) :** les 4 encarts état vide du dashboard locataire (Favoris, Candidatures, Tes annonces, Candidatures reçues) sont dégonflés.
+- `DashboardLocatairePage.css` : `.empty-icon`/`.empty-icon svg`/`.empty-text` scopés sous `.dashboard-container` + valeurs réduites (cercle 64->44px, icône 28->20px, marges 16->10 et 20->14). JSX inchangé (4 blocs dupliqués inline, pas de composant <EmptyState/>).
+- Effet double : dégonflage + neutralisation de la collision globale `.empty-icon` côté locataire (DETTE #87, même famille que #86).
+
+**Validé par Côme en npm run dev :** rendu compact OK, cercle conservé tel quel (44px).
+
+**Reste / parqué (refonte dashboard) :** bouton CTA orange des états vides (« Parcourir les annonces ») proportionnellement gros — classe probablement partagée `.btn-orange`, à auditer avant de toucher ; header/bloc ville ; mobile/responsive ruban rythme ; revue proprio (icônes titres + #86 proprio + scope `.empty-icon` proprio + œil #83 + /profil).
+
+**Working tree (ne jamais stager) :** DashboardProprietairePage lot 2 #83 (.jsx/.css), bypass CreerAnnoncePage, 3 untracked docs.
 
 ---
 
