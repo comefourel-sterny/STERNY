@@ -31,7 +31,7 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 ## Bugs préexistants ailleurs dans le code
 
-9. **Erreur 400 sur candidatures** : requête GET `/rest/v1/candidatures?select=*,annonces(...)` renvoie 400. Probable problème RLS sur la jointure. Dashboard candidatures potentiellement cassé.
+9. ✅ **DIAGNOSTIQUÉE 2026-06-10 (conv 48)** — **Erreur 400 sur candidatures** : ce n'est PAS un problème RLS (policies SELECT en USING(true) sur candidatures ET annonces, vérifié). Cause réelle : `loadCandidaturesEnvoyeesHote` (DashboardLocatairePage.jsx:306-315) filtre sur `.eq('user_id', userId)` alors que `candidatures.user_id` n'existe pas — la colonne est `locataire_id`. Fix nominal = remplacer `user_id` par `locataire_id` (1 ligne). Impact latéral seulement : try/catch isolé (l.314), n'empêche pas le chargement des candidatures reçues (M2a). NON corrigé.
 
 10. **URL suspecte** : le flow arrive sur `/annonce/creer?type=locataire` alors qu'un locataire n'est pas censé créer d'annonce. Cohérence du paramètre `type` à vérifier dans les CTA.
 
@@ -1046,3 +1046,14 @@ Même famille que #86 :
 **Problème** : `NotificationBell.jsx` (~l.89) fait `window.location.href = lien` (traite `lien` comme une URL absolue, recharge la page) ; `HamburgerMenu.jsx` (~l.110) fait `navigate(lien)` (route React Router, navigation SPA). Un chemin commençant par `/` fonctionne dans les deux ; toute autre forme casse l'un des deux.
 
 **Fix** : uniformiser sur `navigate(lien)` partout, et garantir côté producteur (fonctions/triggers SQL écrivant `lien`) une valeur toujours préfixée `/`.
+
+## DETTE #90 — Action accepter/refuser candidature absente côté hôte
+**Statut** : ouverte, P1 (bloque la fin de l'étape 5 MVP). Repérée 2026-06-10 (conv 48).
+**Problème** : le dashboard hôte fusionné (DashboardLocatairePage.jsx:955-989, section « Candidatures reçues ») affiche les candidatures mais n'offre aucun bouton accepter/refuser. La transition en_attente→acceptee/refusee n'existe que dans ContratLocationPage.jsx:305-315 (flux contrat), pas à la main de l'hôte depuis son dashboard.
+**À construire** : boutons accepter/refuser sur chaque candidature reçue + handler UPDATE candidatures.statut (respecter le CHECK en_attente|acceptee|refusee). Volet RGPD à cadrer séparément : ce que l'hôte voit du dossier locataire (VISION §361-372 : statut agrégé « vérifié », jamais les pièces) — consultation pro avant tout affichage de dossier.
+
+## DETTE #91 — Environnement de test local vide + confusion .env.local
+**Statut** : ouverte, bloque tout test runtime en local. Repérée 2026-06-10 (conv 48).
+**Contexte** : suite de DETTE #74 [RÉSOLUE conv 27] — le `supabase/seed.sql` vide créé à ce moment-là n'a jamais été peuplé. Ce seed est précisément ce que la session dédiée doit remplir.
+**Problème** : la base locale (54322) ne contient qu'1 compte (comefourel@gmail.com), 0 annonce, 0 candidature. Toutes les données de test sont sur le distant (rkffpmuhyvwwgfbdqmqr), où se fait de facto le dev. `.env` pointe distant, `.env.local` pointe 127.0.0.1:54321 et surcharge `.env` au `npm run dev` (priorité Vite) → confusion local/prod : pendant le test M2a, reset mdp / insert candidature / vérif trigger #14 ont été appliqués sur le distant via le Dashboard en ligne, alors que l'app lisait le local vide. Symptôme : connexion impossible en local (400, compte absent de 54322).
+**À traiter (session dédiée)** : monter un seed local reproductible (compte hôte + locataire + annonce + candidature) via supabase/seed.sql rechargé par `supabase db reset` (vérifier si un seed existe déjà) ; vérifier que le fix trigger #14 est appliqué en local ; clarifier la convention d'environnement (dev/test local seedé vs distant comme staging — décision à trancher, implications RGPD si vraies données un jour).

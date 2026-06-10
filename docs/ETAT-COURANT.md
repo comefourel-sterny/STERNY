@@ -2,7 +2,25 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-10 (conv 47 suite) — Bandeau alerte : accents + casse normale globale.
+**Dernière mise à jour** : 2026-06-10 (conv 48) — Audit candidature étape 5 + fix M2a non testé + découverte env local vide.
+
+---
+
+## 2026-06-10 (conv 48) — Étape 5 candidature : audit complet + fix M2a (non testé runtime) ; découverte env local vide
+
+**Audit flux candidature (lecture seule, 2 passes Claude Code) :**
+- M1 insertion (clic « Candidater ») : OK, débloqué par #14. LogementPage.jsx:727-735 (insert {annonce_id, locataire_id, message, statut:'en_attente'}).
+- M2a lecture candidatures reçues : DashboardLocatairePage.jsx:317-342. Filtre ville parasite `.eq('ville', userData.ville_ecole)` (l.319+321) qui masque les candidatures reçues quand l'annonce n'est pas dans la ville d'école. FIX appliqué (filtre supprimé, charge toutes les annonces de l'hôte par user_id), diff validé par revue, NON testé runtime.
+- M2b lecture candidatures envoyées hôte : l.306-315, 400 sur `candidatures.user_id` (colonne inexistante → doit être `locataire_id`) = DETTE #9 requalifiée. Latéral (try/catch isolé l.314, n'impacte pas M2a). NON corrigé.
+- M2-RLS : policies SELECT en USING(true) sur candidatures ET annonces → PAS la cause du 400. Note sécurité : toutes les candidatures lisibles par tout authentifié → à verser Catégorie B (conformité).
+- M3 rendu « Candidatures reçues » : DashboardLocatairePage.jsx:955-989, affichage seul (avatar/nom/école/badge statut), OK.
+- M4 accepter/refuser côté hôte : ABSENT du dashboard fusionné. Transition en_attente→acceptee/refusee n'existe que dans ContratLocationPage. = feature manquante (nouvelle dette).
+
+**Working tree (non commité, à ne pas perdre) :** patch M2a dans DashboardLocatairePage.jsx (suppression du filtre ville, l.319-323) — à TESTER en runtime puis committer une fois l'env local monté. + bypass CreerAnnoncePage, lot 2 #83, 3 untracked docs (ne jamais stager).
+
+**Découverte env (majeure) :** la base LOCALE (54322) ne contient qu'1 compte (comefourel@gmail.com), 0 annonce, 0 candidature. Toutes les données de test (12 comptes seed, annonce Rennes, come.fourel@rennes.archi.fr) sont sur la base DISTANTE (rkffpmuhyvwwgfbdqmqr). Le dev se fait de facto sur le distant. `.env` pointe distant, `.env.local` pointe local (127.0.0.1:54321) et surcharge `.env` au `npm run dev` → ~1h de confusion local/prod pendant le test (reset mdp, insert candidature, vérif trigger #14 appliqués sur le DISTANT, pas le local). AUCUN test runtime local n'est possible tant que le local n'est pas peuplé.
+
+**Prochaine session (dédiée) :** monter un environnement de test local propre (seed reproductible, vérifier trigger #14 en local, `supabase db reset`), PUIS valider M2a en runtime et reprendre la revue MVP étape 5 (puis construire M4).
 
 ---
 
