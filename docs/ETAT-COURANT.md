@@ -18,7 +18,7 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 **Working tree (ne jamais stager)** : bypass CreerAnnoncePage, lot 2 #83 proprio, 3 untracked docs.
 
-**Reste** : #9 (fix 1 ligne) ; #76 (pastille « 🔍 Nantes » affichée à tort pour l'hôte) ; M4/#90 (accepter/refuser côté hôte) ; suite revue MVP étape 5.
+**Reste** : #76 (pastille « 🔍 Nantes » affichée à tort pour l'hôte) ; M4/#90 (accepter/refuser côté hôte) ; suite revue MVP étape 5.
 
 ---
 
