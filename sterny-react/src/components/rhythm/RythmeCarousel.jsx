@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import { currentMondayISO } from '../../utils/academicYear'
-import { formatWeekRangeFR } from '../../utils/formatters'
+import { formatWeekRangeFR, formatWeekStartFR } from '../../utils/formatters'
 import './RythmeCarousel.css'
 
 const WINDOW = 3 // semaines de chaque côté du centre (lever pour remplir une carte large)
 
 export default function RythmeCarousel({ weeks }) {
+  const [offset, setOffset] = useState(0)
+
   const sorted = Array.isArray(weeks)
     ? [...weeks].filter(w => w && w.week_start).sort((a, b) => a.week_start.localeCompare(b.week_start))
     : []
@@ -19,17 +22,21 @@ export default function RythmeCarousel({ weeks }) {
   }
 
   const lundiCourant = currentMondayISO()
-  let centerIndex = sorted.findIndex(w => w.week_start >= lundiCourant)
-  if (centerIndex === -1) centerIndex = sorted.length - 1
+  let baseIndex = sorted.findIndex(w => w.week_start >= lundiCourant)
+  if (baseIndex === -1) baseIndex = sorted.length - 1
 
-  const center = sorted[centerIndex]
+  const effectiveCenter = Math.max(0, Math.min(sorted.length - 1, baseIndex + offset))
+  const center = sorted[effectiveCenter]
   const ecoleCentre = center.status === 'school'
   const estSemaineEnCours = center.week_start === lundiCourant
+  const showEyebrow = offset === 0
+  const canPrev = baseIndex + offset > 0
+  const canNext = baseIndex + offset < sorted.length - 1
 
   const slots = []
   for (let d = -WINDOW; d <= WINDOW; d++) {
     if (d === 0) { slots.push({ type: 'center' }); continue }
-    const idx = centerIndex + d
+    const idx = effectiveCenter + d
     if (idx >= 0 && idx < sorted.length) {
       slots.push({ type: 'week', week: sorted[idx], dist: Math.abs(d) })
     } else {
@@ -39,28 +46,37 @@ export default function RythmeCarousel({ weeks }) {
 
   return (
     <div className={`rythme-card ${ecoleCentre ? 'is-ecole' : 'is-entreprise'}`}>
-      <div className="rythme-title">Ton rythme</div>
-      <div className="rythme-row">
-        {slots.map((s, i) => {
-          if (s.type === 'center') {
+      <div className="rythme-head">
+        <div className="rythme-title">Ton rythme</div>
+        {offset !== 0 && (
+          <button type="button" className="rythme-today" onClick={() => setOffset(0)}>Aujourd'hui</button>
+        )}
+      </div>
+      <div className="rythme-nav">
+        <button type="button" className="rythme-arrow" onClick={() => canPrev && setOffset(o => o - 1)} disabled={!canPrev} aria-label="Semaines précédentes">‹</button>
+        <div className="rythme-row">
+          {slots.map((s, i) => {
+            if (s.type === 'center') {
+              return (
+                <div key="center" className={`rythme-center ${ecoleCentre ? 'is-ecole' : 'is-entreprise'}`}>
+                  {showEyebrow && <span className="rythme-eyebrow">{estSemaineEnCours ? 'Cette semaine' : 'Prochaine semaine'}</span>}
+                  <span className="rythme-statut">{ecoleCentre ? 'École' : 'Entreprise'}</span>
+                  <span className="rythme-dates">{formatWeekRangeFR(center.week_start)}</span>
+                </div>
+              )
+            }
+            if (s.type === 'placeholder') {
+              return <div key={`p${i}`} className={`rythme-tile is-past ${s.dist === 1 ? 'rythme-tile--md' : 'rythme-tile--sm'}`} />
+            }
+            const ecole = s.week.status === 'school'
             return (
-              <div key="center" className={`rythme-center ${ecoleCentre ? 'is-ecole' : 'is-entreprise'}`}>
-                <span className="rythme-eyebrow">{estSemaineEnCours ? 'Cette semaine' : 'Prochaine semaine'}</span>
-                <span className="rythme-statut">{ecoleCentre ? 'École' : 'Entreprise'}</span>
-                <span className="rythme-dates">{formatWeekRangeFR(center.week_start)}</span>
+              <div key={s.week.week_start} className={`rythme-tile ${s.dist === 1 ? 'rythme-tile--md' : 'rythme-tile--sm'} ${ecole ? 'is-ecole' : 'is-entreprise'}`}>
+                {s.dist === 1 && <span>{formatWeekStartFR(s.week.week_start)}</span>}
               </div>
             )
-          }
-          if (s.type === 'placeholder') {
-            return <div key={`p${i}`} className={`rythme-tile is-past ${s.dist === 1 ? 'rythme-tile--md' : 'rythme-tile--sm'}`} />
-          }
-          const ecole = s.week.status === 'school'
-          return (
-            <div key={s.week.week_start} className={`rythme-tile ${s.dist === 1 ? 'rythme-tile--md' : 'rythme-tile--sm'} ${ecole ? 'is-ecole' : 'is-entreprise'}`}>
-              {s.dist === 1 && <span>{formatWeekRangeFR(s.week.week_start, { tight: true })}</span>}
-            </div>
-          )
-        })}
+          })}
+        </div>
+        <button type="button" className="rythme-arrow" onClick={() => canNext && setOffset(o => o + 1)} disabled={!canNext} aria-label="Semaines suivantes">›</button>
       </div>
     </div>
   )

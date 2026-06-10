@@ -44,3 +44,10 @@ export function formatWeekRangeFR(weekStart, { tight = false } = {}) {
   }
   return `${lundi.getDate()} ${moisLundi}${sep}${dimanche.getDate()} ${moisDimanche}`
 }
+
+// Date de début seule (lundi) en français court, ex. « 8 juin ». Pour les tuiles latérales.
+export function formatWeekStartFR(weekStart) {
+  const [y, m, d] = weekStart.split('-').map(Number)
+  const lundi = new Date(y, m - 1, d)
+  return lundi.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
