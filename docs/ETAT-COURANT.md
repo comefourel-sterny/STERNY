@@ -2,7 +2,23 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-10 (conv 48) — Audit candidature étape 5 + fix M2a non testé + découverte env local vide.
+**Dernière mise à jour** : 2026-06-10 (conv 49) — Env local seedé (#91 résolue) + M2a validé runtime.
+
+---
+
+## 2026-06-10 (conv 49) — Env local seedé (#91 résolue) + M2a validé runtime
+
+**DETTE #91 RÉSOLUE.** `supabase/seed.sql` peuple un scénario de test étape 5 : 2 comptes auth (hote@/locataire@sterny.test, mdp `sterny-dev`, via crypt/gen_salt('bf') + auth.identities), leurs profils public.users, 1 annonce Rennes, 1 candidature en_attente. `supabase db reset` rejoue les 9 migrations (dont fix #14) puis le seed sans erreur. **Convention actée : le seed ne s'exécute QUE via `db reset`** (garantit #14 appliqué avant l'INSERT candidature).
+
+**Fix #14 reconfirmé sur base fraîche** : l'INSERT candidature du seed déclenche trg_notif_candidature → notif pour l'hôte (destinataire = annonces.user_id), lien=/dashboard.
+
+**M2a VALIDÉ RUNTIME** (connecté hote@sterny.test en local) : la candidature de Léa s'affiche dans « Candidatures reçues » (badge En attente) alors que l'annonce est à Rennes et la ville d'école de l'hôte = Nantes → le filtre ville parasite est bien retiré.
+
+**Console au test** : 2 dettes connues, non bloquantes — #71 (mur :4747/health ERR_CONNECTION_REFUSED, bruit Agentation) et #9 (2× 400 sur .../created_at.desc = candidatures lues par user_id au lieu de locataire_id, isolée par try/catch, n'empêche pas M2a). #9 désormais confirmée en runtime.
+
+**Working tree (ne jamais stager)** : bypass CreerAnnoncePage, lot 2 #83 proprio, 3 untracked docs.
+
+**Reste** : #9 (fix 1 ligne) ; #76 (pastille « 🔍 Nantes » affichée à tort pour l'hôte) ; M4/#90 (accepter/refuser côté hôte) ; suite revue MVP étape 5.
 
 ---
 
