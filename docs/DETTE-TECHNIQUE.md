@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-10 — DETTE #87 : collision globale .empty-icon (résolue côté locataire, proprio en attente).
+**Dernière mise à jour** : 2026-06-10 — DETTE #88 : fuite globale .btn (uppercase retiré ; taille à scoper).
 
 ## Nomenclature des bugs
 
@@ -1031,3 +1031,9 @@ Même famille que #86 :
 - `.empty-icon` était défini deux fois en global non scopé : `DashboardLocatairePage.css` (64px) et `DashboardProprietairePage.css` l.1138 (56px, radius 14). L'ordre du bundle décidait arbitrairement laquelle s'appliquait.
 - **Résolu côté locataire** (2026-06-10, commit c3f6620) : `.empty-icon`/`.empty-icon svg`/`.empty-text` du fichier locataire scopées sous `.dashboard-container` (spécificité 0,2,0 > 0,1,0 global) → gagnent toujours, indépendamment du bundle. Proprio non touché.
 - **Reste à faire** : le `.empty-icon` du proprio (l.1138) est toujours global non scopé — à scoper sous `.dashboard-proprio-container` lors de la revue proprio parquée, pour fermer la collision des deux côtés.
+
+## DETTE #88 — Fuite globale de la règle `.btn` (CreerAnnoncePage.css) — famille #86/#87
+
+- `CreerAnnoncePage.css:1593` définit `.btn` (nu, non scopé) avec une cascade de `!important` (padding/height/radius/font-weight...). Tout le CSS étant bundlé globalement, cette règle s'applique à TOUT `.btn` de l'app et écrase les définitions locales.
+- **Partiellement traité** (2026-06-10, commit fix(css)) : `text-transform:uppercase !important` + `letter-spacing:1px !important` retirés → la casse n'est plus forcée (boutons en casse normale partout).
+- **Reste à faire** : les autres `!important` (height 44px, padding 0 24px, radius 12px, font-weight 600) fuient toujours sur tous les `.btn` hors page annonce. Vrai nettoyage = scoper la règle. Audit 2026-06-10 : pas de wrapper racine unique (3 contextes `.user-type-screen` + `.create-container` + modale crop) ; le `.jsx` porte le bypass DEV → scoping à faire en CSS sur les 3 contextes (pas via wrapper JSX). À grouper avec le nettoyage collisions CSS (#87 proprio).

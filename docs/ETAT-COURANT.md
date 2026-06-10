@@ -2,7 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-10 (conv 47) — Dashboard locataire Lot 2 : états vides dégonflés + scopés.
+**Dernière mise à jour** : 2026-06-10 (conv 47 suite) — Bandeau alerte : accents + casse normale globale.
+
+---
+
+## 2026-06-10 (conv 47 suite) — Bandeau alerte locataire : accents + casse normale globale
+
+**Livré (validé runtime, build avant push) :**
+- `DashboardLocatairePage.jsx` : accents du bandeau alerte (l.725 "etre notifie des qu'" → accentué ; l.727 "Creer une alerte" → "Créer" accentué).
+- `CreerAnnoncePage.css` : retrait de `text-transform:uppercase !important` + `letter-spacing:1px !important` de la règle globale `.btn` (l.1593). Effet GLOBAL : tous les `.btn` de l'app repassent en casse normale (CTA dashboard, RecherchePage, MatchConfirmation, page Créer annonce). Validé par Côme.
+
+**Origine :** la fuite `.btn` !important de CreerAnnoncePage mettait les CTA en majuscules mais pas le bouton alerte (`.alerte-bandeau-btn`, sans `.btn`) → incohérence de casse repérée sur capture. Diagnostic + traçage : DETTE #88.
+
+**Décision casse :** casse normale partout (après allers-retours). Uppercase fuyant retiré ; le reste de la fuite (`.btn` taille !important) reste en DETTE #88.
+
+**Working tree (ne jamais stager) :** CreerAnnoncePage.jsx (bypass), DashboardProprietairePage lot 2 #83 (.jsx/.css), 3 untracked docs.
 
 ---
 
