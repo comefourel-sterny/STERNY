@@ -308,7 +308,7 @@ export default function DashboardLocatairePage() {
       const { data } = await supabaseClient
         .from('candidatures')
         .select('*, annonces(titre, ville, prix, user_id)')
-        .eq('user_id', userId)
+        .eq('locataire_id', userId)
         .order('created_at', { ascending: false })
       if (data) setCandidaturesEnvoyeesHote(data)
     } catch (error) { /* no candidatures */ }
