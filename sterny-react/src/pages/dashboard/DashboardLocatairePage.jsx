@@ -316,10 +316,10 @@ export default function DashboardLocatairePage() {
 
   async function loadCandidaturesRecues(userId) {
     try {
-      const villeHote = userData?.ville_ecole || null
-      let queryAnnonces = supabaseClient.from('annonces').select('id').eq('user_id', userId)
-      if (villeHote) queryAnnonces = queryAnnonces.eq('ville', villeHote)
-      const { data: mesAnnonces } = await queryAnnonces
+      const { data: mesAnnonces } = await supabaseClient
+        .from('annonces')
+        .select('id')
+        .eq('user_id', userId)
       if (!mesAnnonces || mesAnnonces.length === 0) return
 
       const annonceIds = mesAnnonces.map(a => a.id)
