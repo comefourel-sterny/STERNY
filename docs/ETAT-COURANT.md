@@ -2,7 +2,22 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-09 (conv 46) — Refonte hiérarchie dashboard locataire : Lot 1 (titres typo sans icône + carte rythme + voix tutoiement).
+**Dernière mise à jour** : 2026-06-10 (conv 46 suite) — Ruban « Ton rythme » navigable (flèches + date début latérale).
+
+---
+
+## 2026-06-10 (conv 46 suite) — Ruban « Ton rythme » navigable
+
+**Livré (validé runtime + build vert) :** la carte rythme passe de statique à navigable.
+- RythmeCarousel.jsx : état `offset` (décalage de la fenêtre vs semaine courante), flèches chevron ‹ ›, bouton « Aujourd'hui » (apparaît dès offset ≠ 0), bornes (flèches désactivées au début/fin du rythme connu). Badge « Cette semaine / Prochaine semaine » affiché uniquement à offset 0. Fenêtre fisheye (WINDOW=3, 7 tuiles, placeholders hors bornes) conservée.
+- Flèches = chevrons nus gris (sans cercle) pour s'accorder aux tuiles carrées ; bloc [‹ ruban ›] recentré dans la carte.
+- Tuiles latérales : date de début seule (« 8 juin ») via nouveau helper `formatWeekStartFR` (formatters.js) — évite le débordement des libellés au passage d'un mois à l'autre (« 29 juin–5 juillet »). Tuile centrale : garde la plage complète.
+
+**Décision design actée :** la version « fisheye avec relief » de Côme est conservée ; un bandeau plat uniforme a été proposé puis rejeté (« trop plat »). Marquage semaine courante = liseré/badge, pas un gros bloc.
+
+**Parqué (refonte dashboard) :** Lot 2 états vides ; header/bloc ville ; mobile/responsive du ruban (non-responsive, largeurs fixes — DETTE à créer quand on attaque le mobile) ; revue proprio (retirer aussi les icônes, #86, œil #83, /profil).
+
+**Idée loguée (idees-en-attente) :** indicateur de couverture logement sur les tuiles (rainure « planche à découper » vert/rouge) — dépend de la donnée match→contrat, bloquée par DETTE #14, à construire en session dédiée.
 
 ---
 

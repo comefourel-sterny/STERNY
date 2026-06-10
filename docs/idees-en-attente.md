@@ -21,3 +21,9 @@ Constat (conv 37, 7 juin 2026) : la liste des écoles (`ECOLES`, `data/inscripti
 
 ## 2026-06-09 (conv 44) — Hiérarchie visuelle du dashboard locataire
 Observation (Côme) : /dashboard paraît "agressif / brouillon" — cartes de même poids visuel, orange répété (bandeau alerte, CTA, en-têtes), pas de hiérarchie qui guide l'œil, peu engageant à l'arrivée. Chantier dédié (pas une retouche) : définir un focal clair, hiérarchiser primaire/secondaire, calmer les accents orange, soigner les états vides. Distinct de la carte rythme (faite conv 44).
+
+## Indicateur de couverture logement sur la carte rythme (rainure vert/rouge)
+Idée Côme (conv 46), avec référence visuelle « planche à découper » : une rainure/cadre intérieur subtil sur chaque tuile de semaine, même esprit que la gorge d'une planche à découper, pour apporter du relief ET porter une couleur de statut.
+Usage cible : vert = semaine couverte (logement trouvé), rouge = semaine découverte (pas encore). À harmoniser avec orange (école) / navy (entreprise) pour éviter l'effet criard, et NE PAS reposer uniquement sur vert/rouge (accessibilité daltonisme : ajouter icône/motif).
+Dépendance bloquante : nécessite une donnée fiable « semaine couverte/découverte » issue du flux match→contrat (mises_en_relation/contrats), aujourd'hui indisponible (candidatures bloquées par DETTE #14 P0). Ne pas construire avant.
+Périmètre à cadrer : n'afficher le statut que sur les semaines où l'alternant CHERCHE un logement (pas toutes), traitement visuel de la rainure, lisibilité.
