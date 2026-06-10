@@ -1596,8 +1596,6 @@ input[type="number"] {
     border-radius: 12px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
     cursor: pointer;
     transition: all 0.2s ease !important;
     border: none;
