@@ -721,9 +721,9 @@ export default function DashboardLocatairePage() {
                 <div className="alerte-bandeau-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
                 </div>
-                <span>Active une alerte pour etre notifie des qu'un logement correspond</span>
+                <span>Active une alerte pour être notifié dès qu'un logement correspond</span>
               </div>
-              <button className="alerte-bandeau-btn" onClick={() => ouvrirModalAlerte(false)}>Creer une alerte</button>
+              <button className="alerte-bandeau-btn" onClick={() => ouvrirModalAlerte(false)}>Créer une alerte</button>
             </div>
           ) : (
             <div>
