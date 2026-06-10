@@ -1660,20 +1660,20 @@
 /* EMPTY STATE */
 /* Empty state styling handled by DashboardProprietairePage.css dp-card system */
 
-.empty-icon {
-    width: 64px;
-    height: 64px;
+.dashboard-container .empty-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: #F3F4F6;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
+    margin: 0 auto 10px;
 }
 
-.empty-icon svg {
-    width: 28px;
-    height: 28px;
+.dashboard-container .empty-icon svg {
+    width: 20px;
+    height: 20px;
     stroke: #9CA3AF;
     fill: none;
     stroke-width: 2;
@@ -1681,10 +1681,10 @@
     stroke-linejoin: round;
 }
 
-.empty-text {
-    font-size: 15px;
+.dashboard-container .empty-text {
+    font-size: 14px;
     color: #64748B;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 /* FAVORIS */
