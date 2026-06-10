@@ -196,7 +196,7 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 - Test runtime inscription E-1 → E-7 via Mailpit (chemin OTP) toujours NON FAIT (depuis conv 31).
 
 **Findings de bilan (trous bloquants, déjà tracés dans DETTE-TECHNIQUE) :**
-- DETTE #14 (P0) : le trigger `trg_notif_candidature` référence `annonces.proprietaire_id` (colonne inexistante) → tout INSERT candidature plante en rollback, ce qui bloque la chaîne aval (mise en relation → contrat → paiement). À re-confirmer dans le schéma courant.
+- DETTE #14 (P0) ✅ RÉSOLUE 2026-06-10 : trigger `trg_notif_candidature` corrigé — la fonction lit désormais `annonces.user_id` (hôte) au lieu de `annonces.proprietaire_id` (inexistant). Les candidatures s'enregistrent à nouveau ; la chaîne aval (mise en relation → contrat → paiement) est débloquée. SQL appliqué en prod via Dashboard, conservé dans supabase/migrations/20260610181122_fix14_trigger_notif_candidature.sql. Détail dans DETTE-TECHNIQUE #14.
 - Signature électronique (ContratLocationPage) = eIDAS niveau 1, sans PDF → P0 juridique, validation avocat requise.
 - Paiement : create-stripe-checkout + stripe-webhook déployées ; send-recu-paiement NON déployée ; chaîne jamais testée bout-en-bout.
 - /profil (chargement infini) et /parametres (rend que le footer) cassés ; descente `les_deux` non implémentée.

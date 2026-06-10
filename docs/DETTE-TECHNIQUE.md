@@ -47,7 +47,7 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 ## Bugs backend confirmés par audit du schéma distant (23 avril 2026)
 
-14. **`annonces.proprietaire_id` absent en prod, référencé par trigger actif** — **CONFIRMÉE EMPIRIQUEMENT 2026-04-30** :
+14. ✅ **RÉSOLUE 2026-06-10** — **`annonces.proprietaire_id` absent en prod, référencé par trigger actif** (confirmée empiriquement 2026-04-30) :
     - Trigger : `trg_notif_candidature` (AFTER INSERT ON `public.candidatures`)
     - Fonction : `trigger_notif_candidature()` définie lignes 140-166 de `supabase/remote_schema.sql`
     - La fonction exécute `SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id`
@@ -56,6 +56,7 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
     - Conséquence attendue : chaque INSERT dans `candidatures` déclenche le trigger, qui plante avec "column a.proprietaire_id does not exist", ce qui fait rollback de toute la transaction
     - **Validation empirique faite le 30 avril 2026 soir** : INSERT test exécuté dans Supabase Dashboard SQL Editor avec ROLLBACK forcé. Message d'erreur capturé : `ERROR 42703: column a.proprietaire_id does not exist`, `QUERY: SELECT a.titre, a.proprietaire_id FROM public.annonces a WHERE a.id = NEW.annonce_id`, `CONTEXT: PL/pgSQL function trigger_notif_candidature() line 7 at SQL statement`. La transaction est rollbackée par PostgreSQL avant même que la ligne candidature soit créée. **Aucune candidature ne peut aboutir en production tant que la dette n'est pas résolue. Tout le parcours locataire en aval (suivi candidature, match, signature contrat, paiement) est bloqué structurellement.** Statut : P0 bloquant pour démo.
     - Fix à trancher entre (A) ajouter une colonne `proprietaire_id` à `annonces` et la remplir selon logique parrainage, ou (B) modifier la fonction pour lire `user_id` si ce dernier stocke bien le propriétaire. **Décision à prendre en session stratégique dédiée** — le choix A vs B touche au modèle de parrainage propriétaire, ne pas trancher dans le flux de l'audit fonctionnel.
+    - ✅ RÉSOLUE 2026-06-10 : fonction `trigger_notif_candidature()` corrigée — lit `annonces.user_id` (= hôte créateur de l'annonce) au lieu de `annonces.proprietaire_id` (inexistant) ; variable renommée `v_destinataire_id` ; lien notif `'/dashboard'` (dashboard alternant fusionné) au lieu de `'dashboard-proprietaire.html'`. Arbitrage A vs B tranché par audit 2026-06-10 : le propriétaire n'étant jamais rattaché à une annonce (parrainage = lien vers un user via invitation_token, intervention au stade contrat), l'option A n'avait aucune source de remplissage ; user_id = hôte = bon destinataire. SQL appliqué en prod via Dashboard SQL Editor, conservé dans supabase/migrations/20260610181122_fix14_trigger_notif_candidature.sql (non poussé via CLI, cf. DETTE #15). Test BEGIN/INSERT/ROLLBACK du 2026-06-10 : candidature insérée sans erreur, trigger OK.
 
 ## Dette de traçabilité des migrations
 
@@ -1037,3 +1038,11 @@ Même famille que #86 :
 - `CreerAnnoncePage.css:1593` définit `.btn` (nu, non scopé) avec une cascade de `!important` (padding/height/radius/font-weight...). Tout le CSS étant bundlé globalement, cette règle s'applique à TOUT `.btn` de l'app et écrase les définitions locales.
 - **Partiellement traité** (2026-06-10, commit fix(css)) : `text-transform:uppercase !important` + `letter-spacing:1px !important` retirés → la casse n'est plus forcée (boutons en casse normale partout).
 - **Reste à faire** : les autres `!important` (height 44px, padding 0 24px, radius 12px, font-weight 600) fuient toujours sur tous les `.btn` hors page annonce. Vrai nettoyage = scoper la règle. Audit 2026-06-10 : pas de wrapper racine unique (3 contextes `.user-type-screen` + `.create-container` + modale crop) ; le `.jsx` porte le bypass DEV → scoping à faire en CSS sur les 3 contextes (pas via wrapper JSX). À grouper avec le nettoyage collisions CSS (#87 proprio).
+
+## DETTE #89 — `notifications_in_app.lien` consommé de deux façons incompatibles
+
+**Statut** : ouverte, non bloquante. Repérée le 2026-06-10 pendant le fix DETTE #14.
+
+**Problème** : `NotificationBell.jsx` (~l.89) fait `window.location.href = lien` (traite `lien` comme une URL absolue, recharge la page) ; `HamburgerMenu.jsx` (~l.110) fait `navigate(lien)` (route React Router, navigation SPA). Un chemin commençant par `/` fonctionne dans les deux ; toute autre forme casse l'un des deux.
+
+**Fix** : uniformiser sur `navigate(lien)` partout, et garantir côté producteur (fonctions/triggers SQL écrivant `lien`) une valeur toujours préfixée `/`.
