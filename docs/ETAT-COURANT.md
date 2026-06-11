@@ -2,7 +2,13 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-11 (conv 51) — #92 partie simple livrée : message d'acceptation au locataire (re-route cloche → messagerie).
+**Dernière mise à jour** : 2026-06-11 (conv 52) — accents badges candidature corrigés côté locataire/hôte (Acceptée/Refusée).
+
+---
+
+## 2026-06-11 (conv 52) — Accents badges candidature côté locataire/hôte (cohérence conv 50)
+**Livré (commit 3800d51, à pousser)** : les libellés de badge de statut candidature qui affichaient « Acceptee »/« Refusee » sans accent sont corrigés en « Acceptée »/« Refusée » dans les 2 blocs restants du dashboard fusionné : « Tes candidatures » (envoyées par le locataire) et « Tes candidatures envoyées » (vue hôte). Aligne sur « Candidatures reçues » déjà corrigée en conv 50. Affichage uniquement (statutLabel) ; statutClass et la valeur DB ('acceptee'/'refusee') inchangés. Validé runtime côté locataire (db reset → accept hôte → badge « Acceptée »). Bloc 3 (hôte) non testable avec le seed actuel (aucune candidature envoyée par l'hôte), fix identique au bloc 1, couvert par revue de diff.
+**Reste** : #92 refus/annulation + motif (gated avocat immo + DPO) ; #76 (pastille ville les_deux) ; #93 (capacité §1 + verrou signature + drift paiement_ok) ; #94 (expéditeur système) ; suite revue MVP (création/affichage annonce → match → contrat → signature → paiement).
 
 ---
 
