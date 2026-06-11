@@ -37,6 +37,7 @@ export default function DashboardLocatairePage() {
   const [candidatures, setCandidatures] = useState([])
   const [candidaturesRecues, setCandidaturesRecues] = useState([])
   const [candidaturesEnvoyeesHote, setCandidaturesEnvoyeesHote] = useState([])
+  const [confirmCandidature, setConfirmCandidature] = useState(null)
   const [annonces, setAnnonces] = useState([])
   const [referralCode, setReferralCode] = useState('...')
   const [proprioData, setProprioData] = useState(null)
@@ -518,6 +519,37 @@ export default function DashboardLocatairePage() {
     }
   }
 
+  // === ACCEPTER / REFUSER CANDIDATURE (hôte) ===
+  async function handleAccepterCandidature(candidatureId) {
+    try {
+      const { error } = await supabaseClient.from('candidatures').update({ statut: 'acceptee' }).eq('id', candidatureId)
+      if (error) throw error
+      setCandidaturesRecues(prev => prev.map(item => item.id === candidatureId ? { ...item, statut: 'acceptee' } : item))
+    } catch (e) {
+      console.error('Erreur acceptation candidature:', e)
+    }
+  }
+
+  async function handleRefuserCandidature(candidatureId) {
+    try {
+      const { error } = await supabaseClient.from('candidatures').update({ statut: 'refusee' }).eq('id', candidatureId)
+      if (error) throw error
+      setCandidaturesRecues(prev => prev.map(item => item.id === candidatureId ? { ...item, statut: 'refusee' } : item))
+    } catch (e) {
+      console.error('Erreur refus candidature:', e)
+    }
+  }
+
+  async function handleAnnulerDecisionCandidature(candidatureId) {
+    try {
+      const { error } = await supabaseClient.from('candidatures').update({ statut: 'en_attente' }).eq('id', candidatureId)
+      if (error) throw error
+      setCandidaturesRecues(prev => prev.map(item => item.id === candidatureId ? { ...item, statut: 'en_attente' } : item))
+    } catch (e) {
+      console.error('Erreur annulation decision candidature:', e)
+    }
+  }
+
   // === RETIRER FAVORI ===
   async function retirerFavori(annonceId) {
     try {
@@ -971,8 +1003,8 @@ export default function DashboardLocatairePage() {
                 if (!u) return null
                 const initiales = ((u.prenom || '')[0] + (u.nom || '')[0]).toUpperCase()
                 let statutLabel = 'En attente', statutClass = 'en-attente'
-                if (c.statut === 'acceptee') { statutLabel = 'Acceptee'; statutClass = 'acceptee' }
-                else if (c.statut === 'refusee') { statutLabel = 'Refusee'; statutClass = 'refusee' }
+                if (c.statut === 'acceptee') { statutLabel = 'Acceptée'; statutClass = 'acceptee' }
+                else if (c.statut === 'refusee') { statutLabel = 'Refusée'; statutClass = 'refusee' }
 
                 return (
                   <div className="candidature-item" key={c.id}>
@@ -982,6 +1014,19 @@ export default function DashboardLocatairePage() {
                       <div className="candidature-ville">{[u.ecole, u.ville_entreprise].filter(Boolean).join(' - ') || u.email}</div>
                     </div>
                     <div className={`candidature-statut ${statutClass}`}>{statutLabel}</div>
+                    {c.statut === 'en_attente' && (
+                      <div className="candidature-actions">
+                        <button className="btn-retirer-candidature" onClick={() => setConfirmCandidature({ candidatureId: c.id, prenom: u.prenom, kind: 'refuse' })}>Refuser</button>
+                        <button className="btn-retirer-candidature btn-accept-green" onClick={() => setConfirmCandidature({ candidatureId: c.id, prenom: u.prenom, kind: 'accept' })}>Accepter</button>
+                      </div>
+                    )}
+                    {(c.statut === 'acceptee' || c.statut === 'refusee') && (
+                      <div className="candidature-actions">
+                        <button className="btn-retirer-candidature" onClick={() => setConfirmCandidature({ candidatureId: c.id, prenom: u.prenom, kind: 'undo', fromStatut: c.statut })}>
+                          {c.statut === 'acceptee' ? "Annuler l'acceptation" : "Annuler le refus"}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )
               })
@@ -1055,6 +1100,42 @@ export default function DashboardLocatairePage() {
           </div>
         </div>
       )}
+
+      {confirmCandidature && (() => {
+        const { kind, prenom, fromStatut, candidatureId } = confirmCandidature
+        let title, desc, btnLabel, btnVariant, onConfirm
+        if (kind === 'accept') {
+          title = 'Accepter cette candidature ?'
+          desc = "Es-tu sûr de vouloir accepter ?"
+          btnLabel = 'Accepter'
+          btnVariant = 'accept'
+          onConfirm = () => handleAccepterCandidature(candidatureId)
+        } else if (kind === 'refuse') {
+          title = 'Refuser cette candidature ?'
+          desc = "Es-tu sûr de vouloir refuser ?"
+          btnLabel = 'Refuser'
+          btnVariant = 'danger'
+          onConfirm = () => handleRefuserCandidature(candidatureId)
+        } else {
+          title = fromStatut === 'acceptee' ? "Annuler l'acceptation ?" : 'Annuler le refus ?'
+          desc = "La candidature repassera en attente."
+          btnLabel = fromStatut === 'acceptee' ? "Annuler l'acceptation" : 'Annuler le refus'
+          btnVariant = 'neutral'
+          onConfirm = () => handleAnnulerDecisionCandidature(candidatureId)
+        }
+        return (
+          <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setConfirmCandidature(null) }}>
+            <div className="modal-box-cand">
+              <h3 className="modal-title">{title}</h3>
+              <p className="modal-desc">{desc}</p>
+              <div className="modal-actions-col">
+                <button className={`modal-btn-primary ${btnVariant}`} onClick={() => { onConfirm(); setConfirmCandidature(null) }}>{btnLabel}</button>
+                <button className="modal-link-back" onClick={() => setConfirmCandidature(null)}>Retour</button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ALERTE MODAL */}
       {showAlerteModal && (

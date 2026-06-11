@@ -636,6 +636,87 @@
     box-shadow: 0 4px 12px rgba(255,107,53,0.4);
 }
 
+/* === Modale de confirmation CANDIDATURE (M4) — forme #81, classes dédiées scopées .dashboard-container.
+   Ne touche PAS .modal-box / .modal-actions / .modal-btn-* (modale ville partagée). === */
+.dashboard-container .modal-box-cand {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+    text-align: center;
+    animation: modalIn 0.25s ease;
+}
+
+.dashboard-container .modal-box-cand .modal-title {
+    font-size: 20px;
+    margin: 0 0 18px;
+}
+
+.dashboard-container .modal-box-cand .modal-desc {
+    line-height: 1.6;
+}
+
+.dashboard-container .modal-actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 24px;
+    align-items: stretch;
+}
+
+.dashboard-container .modal-btn-primary {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+}
+
+.dashboard-container .modal-btn-primary.accept {
+    background: #16A34A;
+}
+.dashboard-container .modal-btn-primary.accept:hover {
+    background: #15803D;
+}
+
+.dashboard-container .modal-btn-primary.danger {
+    background: #EF4444;
+}
+.dashboard-container .modal-btn-primary.danger:hover {
+    background: #DC2626;
+}
+
+.dashboard-container .modal-btn-primary.neutral {
+    background: #1E293B;
+}
+.dashboard-container .modal-btn-primary.neutral:hover {
+    background: #0F172A;
+}
+
+.dashboard-container .modal-link-back {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: color 0.2s;
+}
+.dashboard-container .modal-link-back:hover {
+    color: #374151;
+}
+
+
 /* MESSAGES OVERLAY */
 .messages-overlay {
     position: fixed;
@@ -1961,6 +2042,11 @@
 .btn-retirer-candidature:hover {
     border-color: #EF4444;
     color: #EF4444;
+}
+
+.btn-retirer-candidature.btn-accept-green:hover {
+    border-color: #16A34A;
+    color: #16A34A;
 }
 
 .candidature-avatar {
