@@ -522,9 +522,23 @@ export default function DashboardLocatairePage() {
   // === ACCEPTER / REFUSER CANDIDATURE (hôte) ===
   async function handleAccepterCandidature(candidatureId) {
     try {
-      const { error } = await supabaseClient.from('candidatures').update({ statut: 'acceptee' }).eq('id', candidatureId)
+      const { data, error } = await supabaseClient.from('candidatures').update({ statut: 'acceptee' }).eq('id', candidatureId).select('locataire_id, annonce_id').single()
       if (error) throw error
       setCandidaturesRecues(prev => prev.map(item => item.id === candidatureId ? { ...item, statut: 'acceptee' } : item))
+
+      // Message au locataire (best-effort : un échec ne remet jamais en cause l'acceptation ni l'UI)
+      try {
+        const prenom = candidaturesRecues.find(c => c.id === candidatureId)?.users?.prenom
+        const { error: msgError } = await supabaseClient.from('messages').insert([{
+          expediteur_id: currentUserId,
+          destinataire_id: data.locataire_id,
+          contenu: `Salut ${prenom} ! Bonne nouvelle, j'ai accepté ta candidature. N'hésite pas si tu as des questions.`,
+          annonce_id: data.annonce_id,
+        }])
+        if (msgError) console.error('Message acceptation locataire échoué :', msgError)
+      } catch (e) {
+        console.error('Message acceptation locataire échoué :', e)
+      }
     } catch (e) {
       console.error('Erreur acceptation candidature:', e)
     }
