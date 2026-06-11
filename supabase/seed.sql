@@ -50,7 +50,7 @@ BEGIN
   INSERT INTO public.users
     (id, email, prenom, nom, type_user, ville_ecole, statut_ville_ecole)
   VALUES
-    (v_tenant_id, 'locataire@sterny.test', 'Lea', 'Locataire', 'locataire', 'Rennes', 'recherche')
+    (v_tenant_id, 'locataire@sterny.test', 'Léa', 'Locataire', 'locataire', 'Rennes', 'recherche')
   ON CONFLICT (id) DO UPDATE SET
     email=EXCLUDED.email, prenom=EXCLUDED.prenom, nom=EXCLUDED.nom, type_user=EXCLUDED.type_user,
     ville_ecole=EXCLUDED.ville_ecole, statut_ville_ecole=EXCLUDED.statut_ville_ecole;
