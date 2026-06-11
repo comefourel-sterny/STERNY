@@ -864,8 +864,8 @@ export default function DashboardLocatairePage() {
                 if (!c.annonces) return null
                 const ann = c.annonces
                 let statutLabel = 'En attente', statutClass = 'en-attente'
-                if (c.statut === 'acceptee') { statutLabel = 'Acceptee'; statutClass = 'acceptee' }
-                else if (c.statut === 'refusee') { statutLabel = 'Refusee'; statutClass = 'refusee' }
+                if (c.statut === 'acceptee') { statutLabel = 'Acceptée'; statutClass = 'acceptee' }
+                else if (c.statut === 'refusee') { statutLabel = 'Refusée'; statutClass = 'refusee' }
 
                 return (
                   <Link to={`/logement?id=${ann.id}`} className="candidature-item" key={c.id}>
@@ -1056,8 +1056,8 @@ export default function DashboardLocatairePage() {
               </div>
               {candidaturesEnvoyeesHote.map(c => {
                 let statutLabel = 'En attente', statutClass = 'en-attente'
-                if (c.statut === 'acceptee') { statutLabel = 'Acceptee'; statutClass = 'acceptee' }
-                else if (c.statut === 'refusee') { statutLabel = 'Refusee'; statutClass = 'refusee' }
+                if (c.statut === 'acceptee') { statutLabel = 'Acceptée'; statutClass = 'acceptee' }
+                else if (c.statut === 'refusee') { statutLabel = 'Refusée'; statutClass = 'refusee' }
                 const initiales = (c.annonces?.titre || '??').substring(0, 2).toUpperCase()
                 const date = new Date(c.created_at).toLocaleDateString('fr-FR')
                 return (
