@@ -2,7 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-11 (conv 50) — M4 livré : accepter/refuser/annuler candidature côté hôte (#90 résolue).
+**Dernière mise à jour** : 2026-06-11 (conv 51) — #92 partie simple livrée : message d'acceptation au locataire (re-route cloche → messagerie).
+
+---
+
+## 2026-06-11 (conv 51) — #92 partie simple livrée : message d'acceptation au locataire (re-route cloche → messagerie)
+**Livré (commit fe46fd0, poussé)** : à l'acceptation d'une candidature, `handleAccepterCandidature` (DashboardLocatairePage.jsx) envoie automatiquement un message au locataire dans la messagerie (table `messages`), en best-effort (un échec n'altère ni l'acceptation ni l'UI). Texte personnalisé au prénom : « Salut {prénom} ! Bonne nouvelle, j'ai accepté ta candidature. N'hésite pas si tu as des questions. ». expediteur_id = hôte (imposé RLS), destinataire_id = locataire, annonce_id rattaché (prépare la future carte). Validé runtime (db reset + accept → message reçu dans /messages côté locataire).
+**Pivot de canal acté** : la cloche de notifications est ABANDONNÉE — NotificationBell + HamburgerMenu (seuls lecteurs de notifications_in_app) ne sont montés nulle part = code mort (→ DETTE #21). Les notifs candidature passent désormais par la messagerie. L'insert notifications_in_app du 1er essai a été retiré.
+**Limite actée** : pas d'expéditeur « système/Sterny » possible (RLS messages impose expediteur = auth.uid()) → le message vient de l'hôte (→ DETTE #94).
+**Périmètre #92** : SEULE l'acceptation est livrée. Refus + annulation + motif restent GATÉS (avocat immo + DPO).
+**Reste** : accent « Acceptée » côté locataire (badge Tes candidatures, NON fait) ; #92 refus/motif (gated) ; #76 (pastille ville les_deux) ; #93 (capacité §1) ; suite revue MVP.
 
 ---
 
