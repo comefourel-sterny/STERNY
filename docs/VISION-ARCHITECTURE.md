@@ -378,6 +378,8 @@ Décision produit actée conv 15. Quand un alternant clique "Candidater" sur une
 
 **Statut** : hors scope du chantier UNIFICATION-INSCRIPTION (T1-T7). Chantier autonome à ouvrir post-T7 ou en parallèle si le besoin métier devient bloquant. À ne pas démarrer avant la consultation des professionnels listés ci-dessus.
 
+**Non-exclusivité et réversibilité de la décision sur candidature (acté conv 50, 11 juin 2026)** : « accepter » une candidature n'exclut jamais les autres — le modèle fondateur (§1) paire deux alternants aux rythmes opposés sur le même logement, donc un hôte peut accepter plusieurs candidatures complémentaires sur une même annonce. Toute implémentation qui refuserait automatiquement les autres à l'acceptation est interdite. La décision (acceptée/refusée) est réversible tant qu'aucune étape aval (contrat) n'est engagée : l'hôte peut annuler et repasser la candidature en attente. La capacité réelle d'un logement (combien de locataires, semaines couvertes) reste un modèle de données à concevoir (DETTE #93), pas un effet de bord des boutons.
+
 ---
 
 **Origine** : décision actée le 2 mai 2026 soir pendant la session de cadrage de l'étape D du chantier `RhythmManualBuilder`. L'audit lecture-seule de `CompleterProfilPage` a révélé le désalignement entre `InscriptionRecherchePage` (qui écrit le modèle officiel) et `CompleterProfilPage` (qui écrit la colonne legacy). Le sujet a été élargi de l'étape D originelle à la refonte structurelle de l'inscription. Tracé en ETAT-COURANT bloc 2026-05-02 soir.

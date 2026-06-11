@@ -2,7 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-10 (conv 49) — Env local seedé (#91 résolue) + M2a validé runtime.
+**Dernière mise à jour** : 2026-06-11 (conv 50) — M4 livré : accepter/refuser/annuler candidature côté hôte (#90 résolue).
+
+---
+
+## 2026-06-11 (conv 50) — M4 livré : accepter/refuser/annuler candidature côté hôte (#90 résolue)
+**Livré (commit a6a7802, poussé)** : dashboard hôte — Accepter/Refuser (en_attente) + Annuler (acceptee/refusee → en_attente) par candidature reçue, via modale de confirmation (forme #81, Accepter vert / Refuser rouge / Annuler navy, lien Retour gris). Transition candidatures.statut conforme CHECK ; non-exclusif ; réversible ; maj UI locale sans reload ; RLS candidatures_update suffisante. Accents badges corrigés.
+**Étape 5 candidature bouclée côté hôte** (M1 candidater → M4 accepter/refuser/annuler).
+**Décisions loguées** : non-exclusivité + réversibilité (VISION) ; notifs locataire + justification → DETTE #92 (gated juridique).
+**Flags audit → dettes** : #93 (capacité §1 + verrou signature ; + notes paiement_ok drift et UPDATE USING(true)).
+**Reste** : #76 (pastille ville les_deux) ; notif locataire (#92) ; suite revue MVP (création/affichage annonce, match→contrat→signature→paiement). Rappel : le bloc conv 49 en tête mentionnait #9 comme encore présente — #9 est résolue (corrigé ici).
 
 ---
 
