@@ -2,7 +2,20 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-12 (conv 54) — DETTE #93 TRANCHE 1 livrée : fondation de données multi-locataires (migrations + seed), validée runtime.
+**Dernière mise à jour** : 2026-06-12 (conv 54 suite) — changement de cap : priorité à la recherche (cœur de la mise en relation) ; pause dashboard ; réordonnancement #93.
+
+---
+
+## 2026-06-12 (conv 54 suite) — CHANGEMENT DE CAP : priorité à la recherche (cœur de la mise en relation)
+
+**Décision (Côme).** Réordonner les chantiers. La recherche est le cœur de Sterny (proposer les bonnes annonces selon le rythme) ; construire la fin du parcours (candidature, contrat) avant elle = bâtir le toit avant les fondations.
+**Nouvel ordre de travail :** recherche/homepage (liées) → page logement (qui change avec le nouveau modèle) → candidature → (plus loin) contrat. Suit le parcours réel de l'utilisateur ET l'ordre des dépendances.
+**Pause actée :** les chantiers de refonte du dashboard (états vides, etc.) sont mis EN PAUSE.
+**Déclencheur :** la conception de l'auto-sélection des semaines à la candidature a révélé que la déduction des semaines (croisement rythme × ville × offre, règle posée cette session) EST la logique de matching/recherche. Impossible de bâtir la candidature proprement sans avoir d'abord posé la recherche. L'extraction WeekGrid tentée puis annulée était le symptôme du mauvais ordre.
+**Rien de perdu :** (1) la fondation de données #93 (candidatures.semaines_demandees + table semaines_reservees, TRANCHE 1 livrée) sert directement la recherche (couverture par semaine = offre moins registre) ; (2) la règle de déduction conçue se reprend telle quelle dans la recherche.
+**Réordonnancement #93 :** tranche C (couverture calculée + visibilité par semaine) migre dans le chantier recherche (#48) ; tranche A (capture candidature) passe en fin ; tranche B (verrou signature) plus loin (contrat, gated avocat).
+**Garde :** la recherche (#48) est un gros chantier (bloquant pré-prod, 6 sous-problèmes : scoring, présentation non-décourageante, composition multi-logements « jusqu'à tout combler », tension hôte/locataire, UX du parcours fragmenté, promesse produit). À DÉCOUPER en tranches, ne pas refaire d'un bloc.
+**Prochain pas :** démarrer la recherche par un audit lecture seule de l'existant, puis un premier petit morceau — pas tout d'un coup.
 
 ---
 
