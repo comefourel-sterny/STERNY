@@ -59,9 +59,9 @@ BEGIN
   INSERT INTO public.annonces
     (id, user_id, ville, titre, type_logement, prix, disponibilites_pattern)
   VALUES
-    (v_annonce_id, v_host_id, 'Rennes', 'Studio test Rennes', 'studio', 450, '[]'::jsonb);
+    (v_annonce_id, v_host_id, 'Rennes', 'Studio test Rennes', 'studio', 450, '["2026-09-07","2026-09-21","2026-10-05","2026-10-19"]'::jsonb);
 
   -- 5) Candidature du locataire sur l'annonce, en attente (exerce le trigger fix #14)
-  INSERT INTO public.candidatures (annonce_id, locataire_id, message, statut)
-  VALUES (v_annonce_id, v_tenant_id, 'Candidature de test (seed local).', 'en_attente');
+  INSERT INTO public.candidatures (annonce_id, locataire_id, message, statut, semaines_demandees)
+  VALUES (v_annonce_id, v_tenant_id, 'Candidature de test (seed local).', 'en_attente', '["2026-09-07","2026-10-05"]'::jsonb);
 END $$;
