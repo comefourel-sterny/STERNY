@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 4 juin 2026 (conv 31) — §99-104 : convention de remplissage des 4 colonnes ville révisée (retour à la sémantique §65-86, abandon de la convention slot non-sémantique).
+**Dernière mise à jour** : 11 juin 2026 (conv 52) — décision : conception du modèle multi-locataires engagée (principe « jamais de match parfait », réf Airbnb mécanique uniquement).
 
 ---
 
@@ -558,6 +558,14 @@ Pour vérifier qu'on tient bien la ligne, quelques critères observables :
 - Les utilisateurs `les_deux` doivent pouvoir gérer leurs deux villes (école et entreprise) sans friction, avec pré-remplissage correct des champs dans les deux contextes.
 
 Ces critères seront suivis dans `ETAT-COURANT.md` quand la plateforme sera en exploitation réelle.
+
+---
+
+## Modèle multi-locataires — conception engagée (décision conv 52, 11 juin 2026)
+Décision actée : le modèle multi-locataires (capacité d'un logement, semaines couvertes par locataire) se conçoit DÈS MAINTENANT, pas en post-MVP. Il découle du principe fondateur §1 et lève la dette #93 (verrou mono-locataire au stade signature).
+Principe directeur : IL N'Y AURA JAMAIS DE MATCH PARFAIT. Deux rythmes ne se complètent jamais à 100% — il y aura toujours des semaines non couvertes ou des chevauchements. Le modèle ne doit pas exiger une complémentarité parfaite : il gère explicitement la couverture partielle (semaines couvertes par A, par B, ou par personne) et la rend visible (cf. « planche à découper », idees-en-attente). Le matching cherche des compatibilités utiles, pas la paire idéale.
+Méthode : analyse poussée de la mécanique produit et du parcours d'Airbnb (inscription, calendrier de disponibilité, réservation, bien à occupants multiples sur périodes distinctes), principe analogue. LIMITE STRICTE : on s'inspire de la mécanique/UX, jamais du cadre juridique — Airbnb (meublé de tourisme) ≠ Sterny (sous-location/bail alternance, résidence principale). Le juridique de la sous-location multi-occupants reste gated avocat (bail, ALUR, assurance, responsabilité entre co-occupants).
+Conception détaillée : conversation dédiée.
 
 ---
 

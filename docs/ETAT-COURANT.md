@@ -2,7 +2,16 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-11 (conv 52) — accents badges candidature corrigés côté locataire/hôte (Acceptée/Refusée).
+**Dernière mise à jour** : 2026-06-11 (conv 52 suite) — audit maillon « acceptée → contrat » + décision : conception multi-locataires engagée.
+
+---
+
+## 2026-06-11 (conv 52 suite) — Audit maillon « acceptée → contrat » + décision conception multi-locataires
+**Audit lecture seule (cartographie) :** le maillon candidature acceptée → contrat a un TROU CENTRAL = le pont UI manque. Après acceptation, aucun bouton ne mène au contrat, ni côté hôte ni côté locataire (candidature acceptée orpheline dans le dashboard fusionné). MAIS la plomberie existe : /contrat-location?match_id=<candidature_id> (ContratLocationPage, src/pages/transaction/) fait find-or-create du contrat, gère la signature (réelle : hash + IP + signatures_audit), puis renvoie vers /paiement. État mort à brancher : locataireAccepte (calculé, jamais affiché). Seul tunnel existant vers le contrat = ancien DashboardProprietairePage (/match-confirmation), non raccordé au fusionné.
+**Prochain lot d'exécution identifié (mûr, indépendant de la décision multi) :** le PONT UI — bouton « acceptée → contrat » dans le dashboard fusionné (+ brancher locataireAccepte). Tester jusqu'à l'arrivée sur la page contrat, S'ARRÊTER avant la signature.
+**Décision produit actée (→ VISION) :** conception du modèle multi-locataires (#93) engagée DÈS MAINTENANT. Principe : « jamais de match parfait » (couverture partielle gérée explicitement). Méthode : analyse Airbnb (mécanique/UX uniquement, pas le juridique). Conception en conversation dédiée.
+**Gated juridique rappelés :** signature eIDAS niveau 1 sans PDF (P0, avocat) ; sous-location multi-occupants (avocat) ; paiement (non audité).
+**Reste :** pont UI (à construire) ; conv dédiée multi-locataires ; #76 ; #94 ; #92 refus (gated) ; lot copie UI (accents libellés statiques).
 
 ---
 
