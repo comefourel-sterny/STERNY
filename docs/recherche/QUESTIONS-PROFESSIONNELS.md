@@ -22,6 +22,7 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 - Conditions générales d'utilisation (CGU) et conditions générales de vente (CGV)
 - Clauses limitatives de responsabilité
 - Répercussion d'une révision de loyer en cours de contrat (indexation annuelle IRL ou hausse) dans le modèle de partage tournant Sterny
+- Modèle multi-locataires : un même logement occupé par plusieurs locataires sur des semaines distinctes qui se relaient (cf. Q-AVO-006 à 009)
 
 ### 1.2 Questions précises à poser
 
@@ -57,6 +58,38 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Contexte** : déclencheur réel — loyer personnel du fondateur augmenté de ~3-4 €/mois en avril 2026. Sans gravité à titre individuel, mais révèle un cas non traité du modèle contractuel Sterny. Impact produit : l'échéancier de paiement (généré à la signature à partir de la date d'effet, cf. VISION §3) doit pouvoir être révisé en cours de contrat si la réponse est « mise à jour automatique ». À cadrer avant tout codage du flux contrat/paiement.
 > **Référence** : VISION-ARCHITECTURE.md §3 (échéancier de paiement, date d'effet) ; recouper avec §3.1 Notaire (modèle du sous-bail).
 > **Statut** : à poser
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-006]** Quel est le régime juridique d'une sous-location où plusieurs alternants occupent successivement le même logement sur des semaines distinctes (modèle « occupants qui se relaient ») ? Conforme à la loi ALUR et au régime de la sous-location de résidence principale ? Quelles conditions (accord du propriétaire, plafond du loyer sous-loué, durée) ?
+> **Contexte** : modèle multi-locataires Sterny (DETTE #93). Un logement a des semaines libres ; plusieurs locataires en prennent chacun une partie, jamais la même semaine.
+> **Référence** : VISION-ARCHITECTURE.md section « Modèle multi-locataires » ; DETTE #93.
+> **Statut** : à poser
+> **Priorité** : **haute**
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-007]** Quand deux locataires se succèdent sur le même logement, comment se répartit la responsabilité (dégâts, état des lieux entre les deux, restitution de caution) ? Faut-il un état des lieux intermédiaire à chaque rotation ? Qui en est responsable ?
+> **Contexte** : équivalent du « temps de préparation » Airbnb, mais avec enjeu juridique de responsabilité entre co-occupants.
+> **Référence** : VISION-ARCHITECTURE.md section « Modèle multi-locataires » ; DETTE #93.
+> **Statut** : à poser
+> **Priorité** : **haute**
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-008]** Le contrat Sterny porte aujourd'hui une période continue (`contrats.date_debut`/`date_fin`), mais l'occupation réelle est faite de semaines éparpillées. Un contrat de sous-location portant sur des semaines non-continues est-il valide ? Quelle rédaction adopter (période-cadre + calendrier d'occupation annexé, ou autre) ?
+> **Contexte** : le modèle stocke les semaines occupées dans un registre (DETTE #93), distinctes de la période-cadre du bail.
+> **Référence** : VISION-ARCHITECTURE.md section « Modèle multi-locataires » ; DETTE #93.
+> **Statut** : à poser
+> **Priorité** : **haute**
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-009]** Deux locataires sur un même logement sur des semaines distinctes : faut-il deux contrats de sous-location séparés (un par locataire, en parallèle) ou un seul contrat multi-parties ? Le modèle technique suppose « 1 contrat = 1 locataire » (contrats parallèles sur une annonce). Est-ce le bon montage juridique ?
+> **Contexte** : `contrats` lie 1 candidature = 1 locataire ; le multi-locataires crée plusieurs contrats sur une même annonce.
+> **Référence** : VISION-ARCHITECTURE.md section « Modèle multi-locataires » ; DETTE #93.
+> **Statut** : à poser
+> **Priorité** : **haute**
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
 
@@ -288,6 +321,10 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 | Q-AVO-003 | Fuite tokens OAuth + obligations CNIL | 1 | moyenne | à poser | — |
 | Q-AVO-004 | CGU à E-1 vs E-7 (données partielles) | 1 | basse | à poser | — |
 | Q-AVO-005 | Révision loyer en cours de contrat | 1 | moyenne | à poser | — |
+| Q-AVO-006 | Régime sous-location multi-occupants (ALUR) | 1 | **haute** | à poser | — |
+| Q-AVO-007 | Responsabilité entre co-occupants successifs | 1 | **haute** | à poser | — |
+| Q-AVO-008 | Bail sur semaines non-continues | 1 | **haute** | à poser | — |
+| Q-AVO-009 | Un contrat par locataire vs multi-parties | 1 | **haute** | à poser | — |
 | Q-DPO-001 | Téléphone obligatoire — finalité | 2 | moyenne | à poser | — |
 | Q-DPO-002 | Date de naissance — minimisation | 2 | moyenne | à poser | — |
 | Q-DPO-003 | Champ sexe — finalité métier | 2 | **haute** | à poser | — |

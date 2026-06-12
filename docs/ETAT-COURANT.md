@@ -2,7 +2,24 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-11 (conv 52 suite) — audit maillon « acceptée → contrat » + décision : conception multi-locataires engagée.
+**Dernière mise à jour** : 2026-06-12 (conv 53) — conception du modèle multi-locataires (capacité/semaines) faite et loguée.
+
+---
+
+## 2026-06-12 (conv 53) — Conception du modèle multi-locataires (DETTE #93) : faite et loguée
+
+**Session de CONCEPTION (aucun code).** Trois livrables.
+- **(a) Analyse Airbnb (mécanique/UX seulement)** : candidature Sterny = « demande de réservation » Airbnb (hôte accepte, non-exclusif jusqu'au verrou). 3 calendriers à croiser (offre du logement + demande de chaque locataire, chacun un sous-ensemble de son hors-rythme). Conflit Sterny = au niveau de la semaine, pas de l'annonce.
+- **(b) Modèle de capacité — CONÇU, validé** (schéma réel audité) : (1) `candidatures.semaines_demandees` jsonb ; (2) table registre 1-ligne-par-semaine + UNIQUE(annonce_id, semaine) ; (3) couverture calculée, jamais stockée. Capacité = ensemble des semaines libres, pas un nombre. Verrou #93 reconçu : suppression disponible=false + auto-refus + paiement_ok ; remplacés par insertion au registre + visibilité par intersection de semaines. `annonces.disponible` déprécié.
+- **(c) Juridique parqué** : 4 points avocat → QUESTIONS-PROFESSIONNELS Q-AVO-006 à 009.
+
+**Audit schéma (lecture seule)** : annonces sans capacité, disponible binaire. candidatures sans semaines, CHECK = {en_attente,acceptee,refusee}, AUCUNE unicité. contrats = période globale sans semaine, 1 contrat = 1 locataire. Drift paiement_ok confirmé.
+
+**Décisions loguées** : VISION (section multi-locataires étoffée) ; DETTE #93 (« conçu ») ; idees-en-attente (recherche à la semaine) ; QUESTIONS-PROFESSIONNELS (Q-AVO-006 à 009).
+
+**Emboîtement** : #93 = offre (1 logement, N locataires) ; #48 = demande (1 locataire, N logements + score).
+
+**Reste (implémentation, sessions séparées)** : migration `semaines_demandees` + table registre + unicité ; refonte verrou signature ; couverture + visibilité filtrée par semaine ; UI semaines à la candidature. + pont UI « candidature acceptée → contrat » (lot mûr conv 52, distinct). Working tree inchangé (ne jamais stager : bypass CreerAnnoncePage, lot 2 #83, untracked docs).
 
 ---
 
