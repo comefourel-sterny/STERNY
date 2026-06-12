@@ -2,7 +2,21 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-12 (conv 53) — conception du modèle multi-locataires (capacité/semaines) faite et loguée.
+**Dernière mise à jour** : 2026-06-12 (conv 54) — DETTE #93 TRANCHE 1 livrée : fondation de données multi-locataires (migrations + seed), validée runtime.
+
+---
+
+## 2026-06-12 (conv 54) — DETTE #93 TRANCHE 1 livrée : fondation de données multi-locataires (validée runtime)
+
+**Périmètre : fondation de données seulement, additive, zéro changement de comportement.** Capture UI, refonte verrou signature, calcul couverture/visibilité = sessions séparées (non touchés).
+**Livré (commit feat sur feat/unification-inscription) :**
+- Migration 20260612130950 : colonne `candidatures.semaines_demandees` jsonb NOT NULL DEFAULT '[]' (la demande = lundis ISO). Backfill auto par le défaut, aucune semaine fabriquée pour les candidatures existantes ; insert LogementPage inchangé.
+- Migration 20260612130951 : table registre `semaines_reservees` (id uuid pk ; annonce_id NOT NULL FK annonces CASCADE ; semaine date ; contrat_id + locataire_id NULLABLES FK contrats/users CASCADE ; created_at). Contraintes : UNIQUE(annonce_id, semaine) = exclusion dans la base ; CHECK ISODOW=1 (refuse toute date non-lundi) ; RLS ENABLE sans policy (verrouillée côté API client, aucun code ne la lit/écrit en T1).
+- `seed.sql` : annonce test → disponibilites_pattern = 4 lundis (2026-09-07/09-21/10-05/10-19) ; candidature test → semaines_demandees = 2 lundis (09-07, 10-05). Registre seedé VIDE (aucun contrat signé = état correct).
+**Validé runtime (local 54322) :** db reset rejoue 11 migrations + seed sans erreur. Unicité : 2e insert (2026-09-07) rejeté sur semaines_reservees_annonce_semaine_key. Lundi : 2026-09-08 (mardi) rejeté sur semaines_reservees_semaine_is_monday. (psql absent du PATH hôte → tests via docker exec conteneur DB.)
+**Dette transitoire tracée (#93) :** contrat_id/locataire_id nullables en T1 → resserrer NOT NULL au lot signature.
+**Reste #93 (sessions séparées) :** (A) UI capture des semaines à la candidature ; (B) refonte verrou signature (supprimer disponible=false + auto-refus + paiement_ok → INSERT registre + NOT NULL + policies RLS registre) ; (C) couverture calculée + visibilité filtrée par semaine. + pont UI « candidature acceptée → contrat » (lot mûr conv 52, indépendant).
+**Working tree (ne jamais stager) :** bypass CreerAnnoncePage.jsx, lot 2 #83 DashboardProprietaire .jsx/.css, docs untracked.
 
 ---
 
