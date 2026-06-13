@@ -48,12 +48,14 @@ BEGIN
     statut_ville_entreprise=EXCLUDED.statut_ville_entreprise;
 
   INSERT INTO public.users
-    (id, email, prenom, nom, type_user, ville_ecole, statut_ville_ecole)
+    (id, email, prenom, nom, type_user, ville_ecole, statut_ville_ecole, rhythm_calendar)
   VALUES
-    (v_tenant_id, 'locataire@sterny.test', 'Léa', 'Locataire', 'locataire', 'Rennes', 'recherche')
+    (v_tenant_id, 'locataire@sterny.test', 'Léa', 'Locataire', 'locataire', 'Rennes', 'recherche',
+     '[{"week_start":"2026-09-07","status":"school"},{"week_start":"2026-09-14","status":"company"},{"week_start":"2026-09-21","status":"school"},{"week_start":"2026-09-28","status":"company"}]'::jsonb)
   ON CONFLICT (id) DO UPDATE SET
     email=EXCLUDED.email, prenom=EXCLUDED.prenom, nom=EXCLUDED.nom, type_user=EXCLUDED.type_user,
-    ville_ecole=EXCLUDED.ville_ecole, statut_ville_ecole=EXCLUDED.statut_ville_ecole;
+    ville_ecole=EXCLUDED.ville_ecole, statut_ville_ecole=EXCLUDED.statut_ville_ecole,
+    rhythm_calendar=EXCLUDED.rhythm_calendar;
 
   -- 4) Annonce de l'hôte, à Rennes (piège volontaire : ville_ecole de l'hôte = Nantes)
   INSERT INTO public.annonces

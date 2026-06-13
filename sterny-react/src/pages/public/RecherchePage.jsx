@@ -3,6 +3,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { RateLimiter } from '../../utils/rateLimiter'
+import { deduireRecherche } from '../../utils/deduireRecherche'
 import './RecherchePage.css'
 
 // ========== CONSTANTS ==========
@@ -259,6 +260,23 @@ export default function RecherchePage() {
   const [searchParams] = useSearchParams()
   const { user } = useAuth()
 
+  // 2a — charge le profil connecté et déduit ses villes/semaines cherchées (carburant du croisement 2b).
+  const [deductionRecherche, setDeductionRecherche] = useState([])
+  useEffect(() => {
+    if (!user) { setDeductionRecherche([]); return }
+    let annule = false
+    ;(async () => {
+      const { data } = await supabaseClient
+        .from('users')
+        .select('type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
+        .eq('id', user.id)
+        .single()
+      if (annule) return
+      setDeductionRecherche(data ? deduireRecherche(data) : [])
+    })()
+    return () => { annule = true }
+  }, [user])
+
   // Data state
   const [logements, setLogements] = useState([])
   const [logementsAffiches, setLogementsAffiches] = useState([])
@@ -287,6 +305,13 @@ export default function RecherchePage() {
   const [selectedRhythm, setSelectedRhythm] = useState(null)
   const [selectedOffWeeks, setSelectedOffWeeks] = useState(null)
   const [mesDisponibilites, setMesDisponibilites] = useState([])
+
+  // 2b — semaines effectives du croisement : saisie manuelle si présente, sinon déduction du profil
+  const semainesUtilisateur = useMemo(() => {
+    if (mesDisponibilites.length > 0) return mesDisponibilites
+    const entree = deductionRecherche.find(d => d.ville === villeSelectionnee) || deductionRecherche[0]
+    return entree ? entree.semaines : []
+  }, [mesDisponibilites, deductionRecherche, villeSelectionnee])
 
   // Calendar state
   const [showCalendar, setShowCalendar] = useState(false)
@@ -639,9 +664,9 @@ export default function RecherchePage() {
     }
 
     // Match scoring with user disponibilites (exclude past dates)
-    if (mesDisponibilites.length > 0) {
+    if (semainesUtilisateur.length > 0) {
       const todayStr = new Date().toISOString().slice(0, 10)
-      const futurUserDates = mesDisponibilites.filter(d => d >= todayStr)
+      const futurUserDates = semainesUtilisateur.filter(d => d >= todayStr)
       const userDatesSet = new Set(futurUserDates)
       resultats = resultats.filter(logement => {
         if (!logement.disponibilites_pattern || logement.disponibilites_pattern.length === 0) return false
@@ -665,7 +690,7 @@ export default function RecherchePage() {
     setLogementsAffiches(resultats)
   }, [logements, villeSelectionnee, villeSecondaire, typeAlternance, rythmePattern,
       typesLogement, budgetMax, surfaceMin, rythmesFilter, equipementsFilter,
-      dynamicEquipChecked, mesDisponibilites])
+      dynamicEquipChecked, semainesUtilisateur])
 
   // Run filter when dependencies change
   useEffect(() => {
