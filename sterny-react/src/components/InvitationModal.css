@@ -1,0 +1,117 @@
+/* InvitationModal — préfixe inv-, scopé (jamais .modal-overlay global #86).
+   Tokens design system Sterny : navy #1E293B, orange #E8622A, DM Sans, radius 20px. */
+
+.inv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: invFadeIn 0.2s ease;
+}
+
+@keyframes invFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.inv-panel {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  font-family: 'DM Sans', sans-serif;
+  animation: invPanelIn 0.25s ease;
+}
+
+@keyframes invPanelIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Croix de fermeture — style repris de .cal-close */
+.inv-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.inv-close:hover {
+  color: #1E293B;
+  background: #F4F5F7;
+}
+
+/* Titre — style EXACT de .aw-rrp-title (font-size 20 / 700 / navy / margin 0).
+   Sélecteur renforcé + text-transform/letter-spacing explicites pour neutraliser
+   la classe globale homonyme .inv-title (InvitationPage.css), sans !important. */
+.inv-overlay .inv-panel .inv-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+  text-transform: none;
+  letter-spacing: normal;
+  text-align: center;
+}
+
+/* Corps — style EXACT de .aw-rrp-body (font-size 14 / navy / line-height 1.5). */
+.inv-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1E293B;
+  text-align: center;
+}
+
+/* PrimaryButton (aw-primary-button) — comme .aw-rrp-panel > button. */
+.inv-panel .aw-primary-button {
+  margin-top: 8px;
+}
+
+/* Lien secondaire — style maison BottomAuthLinks : texte d'accompagnement gris
+   (.aw-bottom-auth : #94A3B8, weight 400) + mot-lien orange (.aw-bottom-auth-link). */
+.inv-link-secondary {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: #94A3B8;
+  text-align: center;
+  cursor: pointer;
+}
+
+.inv-link-cta {
+  color: #E8622A;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.inv-link-secondary:hover .inv-link-cta {
+  opacity: 0.8;
+}

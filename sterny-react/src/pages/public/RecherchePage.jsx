@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { RateLimiter } from '../../utils/rateLimiter'
 import { deduireRecherche } from '../../utils/deduireRecherche'
+import InvitationModal from '../../components/InvitationModal'
 import './RecherchePage.css'
 
 // ========== CONSTANTS ==========
@@ -259,6 +260,7 @@ export default function RecherchePage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { user } = useAuth()
+  const [inviteOpen, setInviteOpen] = useState(true)
 
   // 2a — charge le profil connecté et déduit ses villes/semaines cherchées (carburant du croisement 2b).
   const [deductionRecherche, setDeductionRecherche] = useState([])
@@ -2255,6 +2257,9 @@ export default function RecherchePage() {
           </div>
         </>
       )}
+
+      {/* Modal d'invitation visiteur non-connecté (conv 55) */}
+      {!user && inviteOpen && <InvitationModal open onClose={() => setInviteOpen(false)} />}
     </>
   )
 }
