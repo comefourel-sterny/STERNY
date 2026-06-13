@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 11 juin 2026 (conv 52) — décision : conception du modèle multi-locataires engagée (principe « jamais de match parfait », réf Airbnb mécanique uniquement).
+**Dernière mise à jour** : 13 juin 2026 (conv 55) — décision : recherche vitrine visiteur vs matching connecté (modal d'invitation, retrait filtres dépréciés).
 
 ---
 
@@ -581,6 +581,22 @@ Trois pièces :
 **Emboîtement avec DETTE #48 (matching partiel).** #93 traite l'offre (un logement, plusieurs locataires) ; #48 traite la demande (un locataire, plusieurs logements + score de compatibilité). Deux faces de la même fondation « semaines = lundis ISO croisés ». Le score reste défini par #48, non redéfini ici.
 
 **Points juridiques soulevés (parqués, gated avocat)** : régime de la sous-location à occupants multiples (ALUR) ; responsabilité/remise entre co-occupants successifs ; bail sur semaines non-continues vs période continue actuelle (`contrats.date_debut`/`date_fin`) ; un contrat par locataire (parallèles sur une annonce) vs contrat multi-parties. Tracés en QUESTIONS-PROFESSIONNELS Q-AVO-006 à 009.
+
+---
+
+## Recherche — vitrine visiteur, matching réservé au connecté (décision conv 55, 13 juin 2026)
+
+Un visiteur non-connecté n'a pas uploadé son emploi du temps : son rythme est inconnu, aucun matching par semaines n'est possible. Décision produit :
+
+- Le visiteur ne voit **jamais** de matching dégradé ni de champ rythme abstrait (cohérent §29 : le pattern abstrait est une fiction). Il accède à une **vitrine par ville** — les annonces de la ville, sans indicateur de compatibilité.
+- À l'arrivée sur `/recherche`, un **modal d'invitation à créer un compte** s'affiche par-dessus les résultats (fond flouté, fermable par une croix). Vitrine nette une fois le modal fermé. Invitation, pas mur.
+- Le **matching par semaines** (déduction `rhythm_calendar`, câblage « pièce 1 ») reste **exclusif au connecté**.
+
+Cette frontière fait de la promesse produit la carotte d'acquisition : le bon matching est la raison de s'inscrire.
+
+Conséquence d'exécution (déjà actée §557) : retrait des filtres dépréciés `type_alternance` (RecherchePage l.602-603) et `rythme_pattern` (l.612-616) du code actif.
+
+Raffinement câblé au code : modal affiché une fois par session, pas à chaque recherche.
 
 ---
 

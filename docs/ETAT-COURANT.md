@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-13 — socle recherche pièce 1 livrée.
+**Dernière mise à jour** : 2026-06-13 — décision recherche visiteur vs matching connecté (conv 55).
 
 ---
 
@@ -14,6 +14,20 @@ Reste du socle recherche :
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
 - (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
+
+---
+
+## 2026-06-13 (conv 55) — Décision recherche : vitrine visiteur vs matching connecté (fond tranché, pré-visuel)
+
+Décision produit actée (→ VISION). Le visiteur non-connecté ne reçoit pas de matching (rythme inconnu) : vitrine par ville, annonces sans compatibilité. À l'arrivée sur /recherche, modal d'invitation à créer un compte par-dessus les résultats (fond flouté, fermable par croix — invitation, pas mur). Matching par semaines exclusif au connecté. La promesse produit devient la carotte d'acquisition.
+
+Conséquence d'exécution (déjà VISION §557) : retrait des 2 filtres dépréciés de RecherchePage — type_alternance (l.602-603), rythme_pattern (l.612-616).
+
+Champ « Mon rythme » abstrait (symmetric/asymmetric/custom) : fiction au sens §29, à retirer de la barre. Saisie manuelle « MES DATES » (override déduction, l.311) : conservée côté connecté, à découpler du pattern abstrait (sort exact tranché au visuel).
+
+Audit barre (lecture seule, conv 55) : sterny-react/src/pages/public/RecherchePage.jsx = 4 champs (Ville, Type, Mon rythme conditionnel, Mes dates) + bouton. Câblage pièce 1 à préserver (l.6, 264-275, 310-314, 667-693). Barre identique connecté/visiteur aujourd'hui.
+
+Reste (pièce 5) : direction visuelle (Côme) → refonte barre visiteur → modal invitation → retrait filtres dépréciés. Une tranche à la fois.
 
 ---
 
