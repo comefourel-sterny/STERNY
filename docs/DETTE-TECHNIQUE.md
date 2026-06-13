@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-10 — DETTE #88 : fuite globale .btn (uppercase retiré ; taille à scoper).
+**Dernière mise à jour** : 2026-06-13 — DETTE #95/#96 : collisions CSS .search-bar/.inv-title + code mort barre homepage.
 
 ## Nomenclature des bugs
 
@@ -1087,3 +1087,19 @@ Même famille que #86 :
 **Constat** : la table messages n'a pas d'expéditeur système ; RLS INSERT impose auth.uid() = expediteur_id. Tout message automatique porte donc l'utilisateur connecté (l'hôte), jamais « Sterny ». OK pour #92 (ouvre le fil hôte↔locataire), mais bloque tout vrai message système.
 **À concevoir (si besoin)** : compte système + insertion via fonction SECURITY DEFINER (contourne RLS) ou WITH CHECK assoupli. Touche à la sécurité → prudence, cadrage avant implémentation.
 **Priorité** : basse. **Réf** : table messages (RLS messages_insert), ChatComponent.jsx.
+
+## DETTE #95 — Collisions CSS globales `.search-bar` et `.inv-title` (famille #86/#87/#88)
+**Statut** : ouverte. Repérée 2026-06-13 (conv 55). Symptômes contournés, fix racine non fait.
+**Constat** : mêmes mécaniques que #86/#87/#88 (classes globales non scopées dupliquées entre pages ; à spécificité égale, l'ordre du bundle tranche).
+- `.search-bar` : défini dans HomePage.css (999px) ET RecherchePage.css:108 + @media:1969 (14px). RecherchePage chargé après → écrasait la pilule homepage. Contourné (conv 55) en scopant HomePage en `.hero .search-bar` (0,2,0 > 0,1,0) ; RecherchePage non touché. ⚠️ Le @media homepage (HomePage.css l.850, `.search-bar` non scopé) reste à spécificité égale avec le @media RecherchePage → la pilule mobile peut encore sauter ; à scoper aussi en `.hero .search-bar` si constaté.
+- `.inv-title` : défini dans InvitationModal.css ET InvitationPage.css:217 (uppercase/orange). Contourné (conv 55) par spécificité renforcée `.inv-overlay .inv-panel .inv-title` (0,3,0). Préfixe `inv-` reste collision-prone (renommage `invmodal-*` évoqué, non fait).
+**Fix racine (chantier dédié, cf #86)** : scoper/renommer ces familles (ou CSS Modules). Auditer toutes les pages partageant `.search-bar`, `.search-field`, `.search-btn` (probablement dupliquées Home/Recherche → la barre homepage hérite peut-être d'autres propriétés de RecherchePage).
+**Priorité** : moyenne. Symptômes contournés ; le fond reste une source récurrente de bugs visuels.
+**Réf** : HomePage.css (`.hero .search-bar`), RecherchePage.css:108/1969, InvitationModal.css, InvitationPage.css:217.
+
+## DETTE #96 — Code mort homepage : champs Type d'alternance / Rythme / Dates
+**Statut** : ouverte, nettoyage chore. Repérée 2026-06-13 (conv 55).
+**Constat** : la refonte « ville seule » (conv 55) a retiré le JSX des champs Type d'alternance, Rythme et Dates, mais conservé volontairement leurs états/handlers/constantes (alternanceType, selectAlternance, selectRythme + son navigate autonome, ALTERNANCE_OPTIONS/RYTHME_OPTIONS, dateDebut/dateFin, datePickerRef…) = code mort. Vérif anti-crash faite (datePickerRef lu uniquement par un useEffect null-safe).
+**À faire** : commit chore supprimant ces états/handlers/constantes inutilisés dans HomePage.jsx, une fois la barre stabilisée.
+**Priorité** : basse, non bloquant.
+**Réf** : HomePage.jsx (section search-bar + states/handlers associés).

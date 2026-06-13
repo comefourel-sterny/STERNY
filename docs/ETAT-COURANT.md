@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-13 — décision recherche visiteur vs matching connecté (conv 55).
+**Dernière mise à jour** : 2026-06-13 (conv 55) — modal visiteur + barre homepage ville-seule (pilule).
 
 ---
 
@@ -28,6 +28,22 @@ Champ « Mon rythme » abstrait (symmetric/asymmetric/custom) : fiction au sens 
 Audit barre (lecture seule, conv 55) : sterny-react/src/pages/public/RecherchePage.jsx = 4 champs (Ville, Type, Mon rythme conditionnel, Mes dates) + bouton. Câblage pièce 1 à préserver (l.6, 264-275, 310-314, 667-693). Barre identique connecté/visiteur aujourd'hui.
 
 Reste (pièce 5) : direction visuelle (Côme) → refonte barre visiteur → modal invitation → retrait filtres dépréciés. Une tranche à la fois.
+
+---
+
+## 2026-06-13 (conv 55) — pièce 5 entamée : modal visiteur + barre homepage ville-seule
+
+**Contexte.** Pièce 5 du socle recherche = nettoyage des barres (la barre demandait encore un rythme désormais déduit) + cas visiteur non-connecté. Décision « vitrine visiteur » déjà loguée (VISION + commit docs 31c8c5c) : un visiteur sans EDT voit une vitrine par ville (pas de matching), avec un modal d'invitation à créer un compte.
+
+**Livré conv 55 :**
+- **Modal d'invitation visiteur** sur /recherche (commit feat d7cc0f1) : InvitationModal.jsx/.css, affiché si `!user` à l'arrivée, fond flouté + croix (invitation, pas mur). Grammaire calquée sur RhythmRequiredPopup (référent modales, DETTE #81).
+- **Barre homepage en « ville seule »** (commit feat de cette clôture) : ne demande plus que la ville pour lancer la recherche (retrait UI des champs Type d'alternance / Rythme / Dates — états/handlers conservés, nettoyage = DETTE #96). Style pilule (radius 999px) + bouton loupe rond orange. Pont ville homepage → /recherche?ville=X déjà câblé. Validé runtime desktop.
+
+**Bug CSS résolu en passant :** la pilule ne s'appliquait pas car `.search-bar` est une classe globale dupliquée — RecherchePage.css:108 (`border-radius:14px`) écrasait HomePage. Fix : scoper la règle homepage en `.hero .search-bar` (0,2,0). Tracé en DETTE #95.
+
+**Reste pièce 5 :**
+- Polish finesse de la barre homepage (ombre lourde, hauteur, finition mobile : bouton loupe pleine largeur en colonne) → à reprendre œil neuf.
+- Refonte de la barre de /recherche (retrait du champ « rythme » abstrait + retrait des filtres/colonnes dépréciés rythme_pattern et type_alternance).
 
 ---
 
