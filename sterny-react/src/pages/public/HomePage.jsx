@@ -399,20 +399,11 @@ export default function HomePage() {
   /* ── Search submit ── */
   const rechercher = useCallback(() => {
     setSearchError('')
-    const missing = []
 
+    // Conv 55 — la ville seule suffit à lancer la recherche (type/rythme optionnels).
     if (!villeSelectionnee) {
       highlightError(villeInputRef)
-      missing.push('ville')
-    }
-    if (!alternanceType) {
-      missing.push("type d'alternance")
-    }
-    if ((alternanceType === 'symmetric' || alternanceType === 'asymmetric') && !rythmeValue) {
-      missing.push('rythme')
-    }
-    if (missing.length > 0) {
-      setSearchError('Complète ta recherche avant de continuer')
+      setSearchError('Choisis une ville pour lancer ta recherche')
       setTimeout(() => setSearchError(''), 3000)
       return
     }
@@ -479,7 +470,6 @@ export default function HomePage() {
           <div className="search-bar hp-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville field */}
             <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
-              <label>Ville</label>
               <input
                 type="text"
                 ref={villeInputRef}
@@ -512,124 +502,12 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Alternance type field */}
-            <div
-              className="search-field custom-select-wrapper"
-              style={{ position: 'relative', cursor: 'pointer' }}
-              onClick={(e) => { e.stopPropagation(); setAlternanceOpen(!alternanceOpen); setRythmeOpen(false) }}
-            >
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.8px', color: '#1E293B', marginBottom: 4 }}>
-                {showDateField ? 'TYPE' : "TYPE D'ALTERNANCE"}
-              </label>
-              <div
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 15, color: alternanceType ? '#1E293B' : '#94A3B8', userSelect: 'none', height: 48 }}
-              >
-                <span>{alternanceLabel}</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" /></svg>
-              </div>
-              <div className={`custom-dropdown${alternanceOpen ? ' open' : ''}`}>
-                {ALTERNANCE_OPTIONS.map(opt => (
-                  <div
-                    key={opt.value}
-                    className={`custom-option alt-option${alternanceType === opt.value ? ' selected' : ''}`}
-                    style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px' }}
-                    onClick={(e) => { e.stopPropagation(); selectAlternance(opt) }}
-                  >
-                    <div style={{ fontWeight: 500, fontSize: 15, color: '#1E293B', lineHeight: 1.2 }}>{opt.label}</div>
-                    <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{opt.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Conv 55 — barre ville seule : champs TYPE D'ALTERNANCE + Rythme + Dates
+                retirés de l'UI (pattern abstrait = fiction, VISION §29). États/handlers
+                conservés volontairement (nettoyage = commit chore ultérieur). */}
 
-            {/* Rythme field (conditional) */}
-            {showRythmeField && (
-              <div
-                className="search-field custom-select-wrapper"
-                style={{ position: 'relative', cursor: 'pointer', display: 'flex' }}
-                onClick={(e) => { e.stopPropagation(); setRythmeOpen(!rythmeOpen); setAlternanceOpen(false) }}
-              >
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.8px', color: '#1E293B', marginBottom: 4 }}>
-                  MON RYTHME
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 15, color: rythmeValue ? '#1E293B' : '#94A3B8', userSelect: 'none', height: 48 }}>
-                  <span>{rythmeLabel}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" /></svg>
-                </div>
-                <div
-                  className={`custom-dropdown${rythmeOpen ? ' open' : ''}`}
-                  id="rythmeDropdown"
-                  style={{ left: 0, right: 0, width: '100%', maxHeight: 220, overflowY: 'auto' }}
-                >
-                  {currentRythmeOptions.map(opt => (
-                    <div
-                      key={opt.value}
-                      className={`custom-option${rythmeValue === opt.value ? ' selected' : ''}`}
-                      onClick={(e) => { e.stopPropagation(); selectRythme(opt) }}
-                    >
-                      {opt.label}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Dates field (appears after rythme selection) */}
-            {showDateField && (
-              <div
-                className="search-field"
-                ref={datePickerRef}
-                style={{ position: 'relative', cursor: 'pointer' }}
-                onClick={(e) => { e.stopPropagation(); setShowDatePicker(!showDatePicker) }}
-              >
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.8px', color: '#1E293B', marginBottom: 4 }}>
-                  MES DATES
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 15, color: dateDebut ? '#1E293B' : '#94A3B8', userSelect: 'none', height: 48 }}>
-                  <span>{dateDebut && dateFin ? `${new Date(dateDebut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} — ${new Date(dateFin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}` : 'Sélectionner'}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                </div>
-                {showDatePicker && (
-                  <div className="date-picker-dropdown" onClick={(e) => e.stopPropagation()} style={{
-                    position: 'absolute', top: 'calc(100% + 8px)', left: 0, background: 'white',
-                    borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #E8EAF0',
-                    zIndex: 100, padding: 16, minWidth: 280
-                  }}>
-                    <div style={{ marginBottom: 12 }}>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#1E293B', marginBottom: 6 }}>Date de début</label>
-                      <input
-                        type="date"
-                        value={dateDebut}
-                        onChange={(e) => setDateDebut(e.target.value)}
-                        style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E8EAF0', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#1E293B' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#1E293B', marginBottom: 6 }}>Date de fin</label>
-                      <input
-                        type="date"
-                        value={dateFin}
-                        min={dateDebut}
-                        onChange={(e) => setDateFin(e.target.value)}
-                        style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E8EAF0', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#1E293B' }}
-                      />
-                    </div>
-                    {dateDebut && dateFin && (
-                      <button
-                        onClick={() => setShowDatePicker(false)}
-                        style={{ marginTop: 12, width: '100%', padding: '10px', background: '#E8622A', color: 'white', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                      >
-                        Valider
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <button className="search-btn" onClick={rechercher}>
+            <button className="search-btn" onClick={rechercher} aria-label="Rechercher">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              Rechercher
             </button>
           </div>
 
