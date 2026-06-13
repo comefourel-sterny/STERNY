@@ -2,7 +2,18 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-12 (conv 54 suite) — changement de cap : priorité à la recherche (cœur de la mise en relation) ; pause dashboard ; réordonnancement #93.
+**Dernière mise à jour** : 2026-06-13 — socle recherche pièce 1 livrée.
+
+---
+
+Socle recherche — pièce 1 (déduction profil → filtrage) : livrée et validée runtime.
+Pour un alternant connecté, /recherche déduit ses semaines de présence depuis son rythme (rhythm_calendar) et propose les annonces compatibles avec un score de match, sans aucune re-saisie de ville ni de rythme. Source des semaines du croisement : saisie manuelle si présente, sinon déduction du profil (util deduireRecherche → semainesUtilisateur dans RecherchePage). Calcul du score existant inchangé.
+
+Reste du socle recherche :
+- (2) couverture explicite « X de tes Y semaines » au lieu d'un % abstrait
+- (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
+- (4) affichage de cette couverture sur les cartes
+- (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
 
 ---
 
