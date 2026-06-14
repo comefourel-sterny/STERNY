@@ -469,7 +469,7 @@ export default function HomePage() {
           {/* BARRE DE RECHERCHE */}
           <div className="search-bar hp-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville field */}
-            <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
+            <div className="search-field" style={{ overflow: 'visible', zIndex: 10 }}>
               <input
                 type="text"
                 ref={villeInputRef}
