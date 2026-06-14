@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-14 (conv 56) — barre homepage affinée + suggestions alignées sur la pilule (#95 volet homepage).
+**Dernière mise à jour** : 2026-06-14 (conv 57) — audit source villes + décision (homepage = villes de lancement, source unique).
 
 ---
 
@@ -14,6 +14,13 @@ Reste du socle recherche :
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
 - (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
+
+---
+
+## 2026-06-14 (conv 57) — audit source villes + décision (point 1 du reste conv 56)
+Audit lecture seule : homepage = liste de lancement en dur (10 bretonnes), dupliquée 6× ; inscription perso = VILLES_FRANCE (181) ; aucune notion de couverture en base.
+Décision : homepage suggère les villes de lancement, consolidées en source unique (pas la liste France-entière, pas une dérivation annonces différée). Détail → DETTE #78.
+Prochain pas : T2 — créer data/villes-lancement.js depuis les valeurs actuelles (zéro changement de valeur), brancher la homepage dessus, valider runtime. Migration des 5 autres consommateurs = T3 (chore #78).
 
 ---
 

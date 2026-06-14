@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-13 — DETTE #95/#96 : collisions CSS .search-bar/.inv-title + code mort barre homepage.
+**Dernière mise à jour** : 2026-06-14 — DETTE #78 : audit source villes + décision (homepage = villes de lancement, source unique).
 
 ## Nomenclature des bugs
 
@@ -912,6 +912,11 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Priorité** : moyenne — non bloquant pour E-7, mais à trancher AVANT de construire le matching. À inscrire à la revue (source canonique de villes).
 
 **Réf** : AutocompleteInput, InscriptionAlternantPage E-4, VISION §112-131.
+
+**MAJ 2026-06-14 (conv 57) — audit lecture seule + décision.**
+Constat : pas de source unique de villes. Deux listes en dur coexistent — VILLES_FRANCE (181, France entière, saisie ville perso via AutocompleteInput, valeur = string brute) et VILLES_DISPONIBLES (10 bretonnes, villes de lancement) dupliquée 6× (HomePage, RecherchePage +VILLES_COORDS, InscriptionPartagerPage, CompleterProfilPage, InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage). Aucune table/RPC de couverture ; annonces.ville en texte libre.
+Trois notions distinctes actées : (1) saisie all-France ; (2) villes de lancement (curé) ; (3) villes avec annonces (dérivable, non bâti).
+Décision : la barre homepage suggère les VILLES DE LANCEMENT (notion 2), pas (1), pas (3). On consolide (2) en une source unique (sterny-react/src/data/villes-lancement.js) importée par tous les consommateurs. Dérivation (3) différée (gros chantier : RPC + normalisation texte libre). La normalisation canonique pour le matching reste le cœur non-soldé de #78.
 
 ## DETTE #79 — Comptes auth orphelins (signUp sans RPC complétée)
 
