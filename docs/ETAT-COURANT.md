@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-14 (conv 56) — barre de recherche homepage affinée + collision #95 (volet homepage) réglée.
+**Dernière mise à jour** : 2026-06-14 (conv 56) — barre homepage affinée + suggestions alignées sur la pilule (#95 volet homepage).
 
 ---
 
@@ -14,6 +14,22 @@ Reste du socle recherche :
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
 - (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
+
+---
+
+## 2026-06-14 (conv 56 — suite) — suggestions de la barre homepage alignées sur la pilule
+
+**Commité (local, non poussé) :** 000a237 — fix(home): suggestions de villes alignées sur la pilule (suite #95). HomePage.css + HomePage.jsx.
+
+**Fait :** l'autocomplétion de villes de la barre homepage est alignée sur la barre :
+- Re-style pour matcher la pilule : panneau blanc, survol gris neutre (au lieu de pêche/orange), bords 999px, ombre alignée, écart respiré, espace sous la barre dans le hero (padding-bas 96px).
+- Largeur = barre entière (jusque sous la loupe). Fix collision #95 : `.search-field` était forcé en `position: relative` par la jumelle nue de RecherchePage.css → on force `.hero .search-field { position: static }` + `.hero .search-bar { position: relative }`, la boîte s'ancre sur la pilule. Retrait aussi du `position:relative` inline du champ (HomePage.jsx).
+- Texte des items aligné sous la saisie (padding-left 36px).
+
+**Reste (à reprendre en nouvelle conv) :**
+- **Point 1 — raccorder les suggestions à la vraie liste de villes disponibles** (même source qu'à l'inscription). Aujourd'hui la homepage a sa propre logique (Rennes + « STERNY arrive bientôt » sinon). Chantier fonctionnel/données, lié au référentiel villes DETTE #78. À auditer : source des villes à l'inscription vs homepage, puis brancher.
+- (b) Refonte barre /recherche (champ rythme abstrait + filtres dépréciés rythme_pattern/type_alternance).
+- Point 3 mobile homepage : différé au chantier mobile global (DETTE #44).
 
 ---
 
