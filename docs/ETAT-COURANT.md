@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-14 (conv 57) — audit source villes + décision (homepage = villes de lancement, source unique).
+**Dernière mise à jour** : 2026-06-14 (conv 57) — source villes : décision + T2 (homepage branchée sur la source unique).
 
 ---
 
@@ -20,7 +20,8 @@ Reste du socle recherche :
 ## 2026-06-14 (conv 57) — audit source villes + décision (point 1 du reste conv 56)
 Audit lecture seule : homepage = liste de lancement en dur (10 bretonnes), dupliquée 6× ; inscription perso = VILLES_FRANCE (181) ; aucune notion de couverture en base.
 Décision : homepage suggère les villes de lancement, consolidées en source unique (pas la liste France-entière, pas une dérivation annonces différée). Détail → DETTE #78.
-Prochain pas : T2 — créer data/villes-lancement.js depuis les valeurs actuelles (zéro changement de valeur), brancher la homepage dessus, valider runtime. Migration des 5 autres consommateurs = T3 (chore #78).
+T2 fait (commit 5f9b84c, validé runtime) : module sterny-react/src/data/villes-lancement.js créé (VILLES_DISPONIBLES verbatim + VILLES_COORDS pour T3) ; HomePage.jsx importe la source unique au lieu de sa constante locale. Zéro changement de comportement (« ren »→Rennes, « par »→« arrive bientôt » identiques).
+Prochain pas : T3 (chore #78) — migrer les 6 AUTRES consommateurs vers le module, un par un avec vérif d'équivalence avant chaque swap : RecherchePage (VILLES_DISPONIBLES_RECHERCHE + VILLES_COORDS), InscriptionPartagerPage, CompleterProfilPage (VILLES_LANCEMENT + VILLES_DISPONIBLES), InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage (VILLES_LANCEMENT + VILLES_DISPONIBLES). Cœur non soldé de #78 : normalisation canonique + dérivation villes-avec-annonces.
 
 ---
 

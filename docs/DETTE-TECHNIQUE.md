@@ -914,7 +914,7 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 **Réf** : AutocompleteInput, InscriptionAlternantPage E-4, VISION §112-131.
 
 **MAJ 2026-06-14 (conv 57) — audit lecture seule + décision.**
-Constat : pas de source unique de villes. Deux listes en dur coexistent — VILLES_FRANCE (181, France entière, saisie ville perso via AutocompleteInput, valeur = string brute) et VILLES_DISPONIBLES (10 bretonnes, villes de lancement) dupliquée 6× (HomePage, RecherchePage +VILLES_COORDS, InscriptionPartagerPage, CompleterProfilPage, InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage). Aucune table/RPC de couverture ; annonces.ville en texte libre.
+Constat : pas de source unique de villes. Deux listes en dur coexistent — VILLES_FRANCE (181, France entière, saisie ville perso via AutocompleteInput, valeur = string brute) et VILLES_DISPONIBLES (10 bretonnes, villes de lancement) présente dans 7 emplacements, homepage incluse (HomePage, RecherchePage +VILLES_COORDS, InscriptionPartagerPage, CompleterProfilPage, InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage). Aucune table/RPC de couverture ; annonces.ville en texte libre.
 Trois notions distinctes actées : (1) saisie all-France ; (2) villes de lancement (curé) ; (3) villes avec annonces (dérivable, non bâti).
 Décision : la barre homepage suggère les VILLES DE LANCEMENT (notion 2), pas (1), pas (3). On consolide (2) en une source unique (sterny-react/src/data/villes-lancement.js) importée par tous les consommateurs. Dérivation (3) différée (gros chantier : RPC + normalisation texte libre). La normalisation canonique pour le matching reste le cœur non-soldé de #78.
 
