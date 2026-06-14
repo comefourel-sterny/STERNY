@@ -477,7 +477,7 @@ export default function HomePage() {
                 onChange={handleVilleInput}
                 onBlur={handleVilleBlur}
                 onKeyPress={handleSearchKeyPress}
-                placeholder="Ex: Rennes, Nantes..."
+                placeholder="Dans quelle ville cherches-tu ?"
                 autoComplete="off"
               />
               {showSuggestions && villeSuggestions.length > 0 && (
