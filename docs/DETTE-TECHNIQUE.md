@@ -1089,13 +1089,14 @@ Même famille que #86 :
 **Priorité** : basse. **Réf** : table messages (RLS messages_insert), ChatComponent.jsx.
 
 ## DETTE #95 — Collisions CSS globales `.search-bar` et `.inv-title` (famille #86/#87/#88)
-**Statut** : ouverte. Repérée 2026-06-13 (conv 55). Symptômes contournés, fix racine non fait.
+**Statut** : partiellement réglée. Repérée 2026-06-13 (conv 55). Volet homepage scopé `.hero` le 2026-06-14 (conv 56, commit 68d221e). Reste : volet RecherchePage + `@media` mobile homepage non scopé.
 **Constat** : mêmes mécaniques que #86/#87/#88 (classes globales non scopées dupliquées entre pages ; à spécificité égale, l'ordre du bundle tranche).
 - `.search-bar` : défini dans HomePage.css (999px) ET RecherchePage.css:108 + @media:1969 (14px). RecherchePage chargé après → écrasait la pilule homepage. Contourné (conv 55) en scopant HomePage en `.hero .search-bar` (0,2,0 > 0,1,0) ; RecherchePage non touché. ⚠️ Le @media homepage (HomePage.css l.850, `.search-bar` non scopé) reste à spécificité égale avec le @media RecherchePage → la pilule mobile peut encore sauter ; à scoper aussi en `.hero .search-bar` si constaté.
 - `.inv-title` : défini dans InvitationModal.css ET InvitationPage.css:217 (uppercase/orange). Contourné (conv 55) par spécificité renforcée `.inv-overlay .inv-panel .inv-title` (0,3,0). Préfixe `inv-` reste collision-prone (renommage `invmodal-*` évoqué, non fait).
 **Fix racine (chantier dédié, cf #86)** : scoper/renommer ces familles (ou CSS Modules). Auditer toutes les pages partageant `.search-bar`, `.search-field`, `.search-btn` (probablement dupliquées Home/Recherche → la barre homepage hérite peut-être d'autres propriétés de RecherchePage).
 **Priorité** : moyenne. Symptômes contournés ; le fond reste une source récurrente de bugs visuels.
 **Réf** : HomePage.css (`.hero .search-bar`), RecherchePage.css:108/1969, InvitationModal.css, InvitationPage.css:217.
+**MAJ 2026-06-14 (conv 56)** : la vraie cause de la barre homepage trop haute était `.search-field` et `.search-field input` NON scopés dans HomePage.css (perdaient contre RecherchePage.css, chargé après : `input: 48px` + 8px de padding vertical forcés ; les réductions de hauteur restaient sans effet). Fix : les 14 sélecteurs `.search-field`/`.search-btn` de HomePage.css sont désormais scopés `.hero` (0,2,0 > 0,1,0) → HomePage gagne. Volet homepage réglé (commit 68d221e). Restent ouverts : le `@media (max-width:768px)` homepage toujours en `.search-bar`/`.search-field` nus (pilule mobile à vérifier — point 3 du polish), et tout le côté RecherchePage (fix racine global non fait).
 
 ## DETTE #96 — Code mort homepage : champs Type d'alternance / Rythme / Dates
 **Statut** : ouverte, nettoyage chore. Repérée 2026-06-13 (conv 55).

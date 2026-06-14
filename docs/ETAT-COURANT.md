@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-13 (conv 55) — modal visiteur + barre homepage ville-seule (pilule).
+**Dernière mise à jour** : 2026-06-14 (conv 56) — barre de recherche homepage affinée + collision #95 (volet homepage) réglée.
 
 ---
 
@@ -16,6 +16,22 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
 
 ---
+
+## 2026-06-14 (conv 56) — pièce 5 (a) : barre de recherche homepage affinée + collision #95 (volet homepage) réglée
+
+**Commité (local, non poussé) :** 68d221e — fix(home): barre de recherche affinée + collision CSS #95 (volet homepage). 2 fichiers (HomePage.css, HomePage.jsx).
+
+**Polish desktop de la barre (validé runtime) :**
+- Ombre adoucie : `0 8px 24px rgba(0,0,0,0.12)` (liseré blanc retiré, redondant avec le border).
+- Hauteur réduite : input/bouton 40px, padding barre 4px, marge bouton 3px → pilule ≈ 54px (finesse Google/Airbnb).
+- Placeholder « Ex: Rennes, Nantes... » → « Dans quelle ville cherches-tu ? » (tutoiement, oriente vers la ville).
+
+**Cause racine élucidée** (les réductions de taille ne prenaient pas) : `.search-field` et son `input` étaient NON scopés dans HomePage.css → même spécificité que leurs jumelles dans RecherchePage.css (chargé après) → RecherchePage gagnait et forçait `input: 48px` + 8px de padding vertical. Fix : scoping `.hero` sur les 14 sélecteurs `.search-field`/`.search-btn` de HomePage.css (0,2,0 > 0,1,0), aucune valeur changée, RecherchePage.css et `@media` mobile non touchés. → volet homepage de la DETTE #95 réglé.
+
+**Reste pièce 5 :**
+- (b) Refonte barre /recherche : retrait du champ « rythme » abstrait (déduit du profil) + retrait des filtres/colonnes dépréciés `rythme_pattern` et `type_alternance`.
+- Point 3 du polish homepage NON fait : bouton loupe pleine largeur en mobile (`@media ≤768px`, `align-items:stretch`, `.search-bar`/`.search-field` encore non scopés en mobile — cf. #95).
+- Dettes liées ouvertes : #95 (volet RecherchePage + @media mobile), #96 (code mort homepage).
 
 ## 2026-06-13 (conv 55) — Décision recherche : vitrine visiteur vs matching connecté (fond tranché, pré-visuel)
 
