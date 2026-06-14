@@ -1,20 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { VILLES_DISPONIBLES } from '../../data/villes-lancement'
 import './HomePage.css'
-
-/* ── Available cities ── */
-const VILLES_DISPONIBLES = {
-  'Rennes': 'rennes',
-  'Nantes': 'nantes',
-  'Brest': 'brest',
-  'Quimper': 'quimper',
-  'Lorient': 'lorient',
-  'Vannes': 'vannes',
-  'Saint-Malo': 'saint-malo',
-  'Saint-Brieuc': 'saint-brieuc',
-  'Fougères': 'fougeres',
-  'Vitré': 'vitre'
-}
 
 /* ── Alternance type options ── */
 const ALTERNANCE_OPTIONS = [
