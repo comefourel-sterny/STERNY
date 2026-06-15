@@ -105,31 +105,33 @@
 }
 
 /* ===== SEARCH BAR ===== */
-.search-bar {
+.recherche-hero .search-bar {
     background: white;
-    border-radius: 14px;
-    padding: 6px 6px 6px 0;
+    border-radius: 999px;
+    padding: 4px;
     max-width: 820px;
     margin: 0 auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08);
+    border: 1px solid #E8EAF0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
     overflow: visible;
+    position: relative;
 }
 
-.search-field {
+.recherche-hero .search-field {
     min-width: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: left;
-    padding: 4px 20px;
+    padding: 0 20px;
     position: relative;
 }
 
-.search-field:not(:last-of-type)::after {
+.recherche-hero .search-field:not(:last-of-type)::after {
     content: '';
     position: absolute;
     right: 0;
@@ -139,7 +141,7 @@
     background: #E8EAF0;
 }
 
-.search-field label {
+.recherche-hero .search-field label {
     display: block;
     font-size: 11px;
     font-weight: 600;
@@ -149,8 +151,8 @@
     letter-spacing: 0.8px;
 }
 
-.search-field select,
-.search-field input[type="text"] {
+.recherche-hero .search-field select,
+.recherche-hero .search-field input[type="text"] {
     padding: 0;
     border: none;
     border-radius: 0;
@@ -158,7 +160,7 @@
     font-family: inherit;
     outline: none;
     transition: none;
-    height: 48px;
+    height: 40px;
     box-sizing: border-box;
     color: #1E293B;
     background-color: transparent;
@@ -166,7 +168,7 @@
     width: 100%;
 }
 
-.search-field select {
+.recherche-hero .search-field select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -177,50 +179,48 @@
     background-color: transparent;
 }
 
-.search-field select:invalid,
-.search-field select option[value=""][disabled] {
+.recherche-hero .search-field select:invalid,
+.recherche-hero .search-field select option[value=""][disabled] {
     color: rgba(0,0,0,0.35);
 }
 
-.search-field select:focus,
-.search-field input:focus {
+.recherche-hero .search-field select:focus,
+.recherche-hero .search-field input:focus {
     outline: none;
 }
 
-.search-field input::placeholder {
+.recherche-hero .search-field input::placeholder {
     color: rgba(0,0,0,0.35);
 }
 
 .recherche-hero .search-btn {
-    height: 48px;
+    width: 40px;
+    height: 40px;
     box-sizing: border-box;
-    padding: 0 28px;
-    margin: 6px;
+    padding: 0;
+    margin: 3px;
     background: #E8622A;
     color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: 999px;
     cursor: pointer;
     transition: all 0.2s;
-    white-space: nowrap;
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
     font-family: inherit;
 }
 
-.search-btn:hover {
+.recherche-hero .search-btn:hover {
     background: #D4571F;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(232,98,42,0.35);
 }
 
-.search-btn svg {
-    width: 16px;
-    height: 16px;
+.recherche-hero .search-btn svg {
+    width: 18px;
+    height: 18px;
 }
 
 /* ===== CUSTOM DROPDOWN ALTERNANCE ===== */
@@ -1966,29 +1966,29 @@
         font-size: 17px;
     }
 
-    .search-bar {
+    .recherche-hero .search-bar {
         flex-direction: column;
         border-radius: 14px;
         padding: 6px;
         align-items: stretch;
     }
 
-    .search-field {
+    .recherche-hero .search-field {
         min-width: 100%;
         padding: 10px 16px;
         border-bottom: 1px solid #E8EAF0;
     }
 
-    .search-field:not(:last-of-type)::after {
+    .recherche-hero .search-field:not(:last-of-type)::after {
         display: none;
     }
 
-    .search-field select,
-    .search-field input {
+    .recherche-hero .search-field select,
+    .recherche-hero .search-field input {
         height: 26px;
     }
 
-    .search-btn {
+    .recherche-hero .search-btn {
         width: 100%;
         justify-content: center;
         border-radius: 10px;

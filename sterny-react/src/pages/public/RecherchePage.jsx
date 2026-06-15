@@ -1031,7 +1031,6 @@ export default function RecherchePage() {
           <div className="search-bar rch-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville */}
             <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
-              <label>VILLE</label>
               <input
                 type="text"
                 ref={villeInputRef}
@@ -1043,7 +1042,8 @@ export default function RecherchePage() {
                     setShowVilleSuggestions(false)
                   }
                 }}
-                placeholder="Ex: Rennes, Nantes..."
+                placeholder="Dans quelle ville cherches-tu ?"
+                aria-label="Ville"
                 autoComplete="off"
               />
               {showVilleSuggestions && villeSuggestions.length > 0 && (
@@ -1069,7 +1069,7 @@ export default function RecherchePage() {
             </div>
 
             {/* Search button */}
-            <button className="search-btn" onClick={() => {
+            <button className="search-btn" aria-label="Rechercher" onClick={() => {
               if (!villeSelectionnee) {
                 setSearchError('Complète ta recherche avant de continuer')
                 if (villeInputRef.current) {
@@ -1083,7 +1083,6 @@ export default function RecherchePage() {
               filtrerLogements()
             }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              Rechercher
             </button>
           </div>
           {searchError && (
