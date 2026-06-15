@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-14 (conv 58, clôturée) — villes (source unique) + Option B barre /recherche + polish homepage.
+**Dernière mise à jour** : 2026-06-15 (conv 59) — 5b-1 livré : barre /recherche réduite à Ville seule (Option B).
 
 ---
 
@@ -14,6 +14,22 @@ Reste du socle recherche :
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
 - (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
+
+---
+
+## 2026-06-15 (conv 59) — 5b-1 livré : barre /recherche = Ville seule (Option B)
+Chantier 5b-1 terminé sur feat/unification-inscription (5 commits locaux non poussés : 2b17c16, 95c5380, c7672d3, 1cda531, 9f46959). La barre /recherche ne demande plus que la ville ; tout le rythme abstrait a disparu de RecherchePage.jsx. Le matching connecté repose entièrement sur la déduction du profil (semainesUtilisateur ← deductionRecherche), conforme VISION (Option B, conv 58).
+Découpage exécuté, validé un à un en runtime :
+- 1/4 (2b17c16) : hasRythme branché sur semainesUtilisateur.length > 0.
+- 2/4 (95c5380) : retrait JSX des champs Type/Rythme/Dates + modal calendrier (209 lignes).
+- 3/4 (c7672d3) : retrait des filtres dépréciés type_alternance/rythme_pattern dans filtrerLogements + deps.
+- 4A (1cda531) : code vivant détaché (garde bouton, semainesUtilisateur, lien fiche, reinitialiserFiltres, activeFilterCount, envoyerAlerte→rythme null).
+- 4B (9f46959) : code mort supprimé (241 lignes : états, fonctions, useEffect, useMemo, constantes SYMMETRIC/ASYMMETRIC_OPTIONS/RYTHME_LABELS).
+Conséquences actées :
+- envoyerAlerte : critère « rythme » de l'alerte désormais toujours null. À rebrancher sur les vraies semaines → DETTE #97.
+- Tiroir « Filtres » à repenser (cohérence futur modèle semaines) → DETTE #98.
+- #95 (responsive barre /recherche) confirmé en runtime (affichage étroit bugué en DevTools ouverte), reste ouvert.
+Reste pièce 5b : (5b-2) porter le look pilule homepage dans RecherchePage.css scopé .recherche-hero (avance #95) ; (5b-3, différé) composant <SearchBar> partagé. Override manuel des semaines (retiré) à rebâtir plus tard en vrai sélecteur de semaines réelles (aligné #93 / recherche-à-la-semaine).
 
 ---
 

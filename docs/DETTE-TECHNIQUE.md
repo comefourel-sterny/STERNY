@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-14 — DETTE #78 : audit source villes + décision (homepage = villes de lancement, source unique).
+**Dernière mise à jour** : 2026-06-15 (conv 59) — DETTE #97 (alertes) + #98 (tiroir Filtres) ; 5b-1 livré.
 
 ## Nomenclature des bugs
 
@@ -1113,3 +1113,16 @@ Même famille que #86 :
 **À faire** : commit chore supprimant ces états/handlers/constantes inutilisés dans HomePage.jsx, une fois la barre stabilisée.
 **Priorité** : basse, non bloquant.
 **Réf** : HomePage.jsx (section search-bar + states/handlers associés).
+
+## DETTE #97 — Alertes (« Sois notifié ») à rebrancher sur les semaines réelles
+**Statut** : ouverte. Repérée conv 59 (15 juin 2026), chantier 5b-1.
+**Constat** : envoyerAlerte (RecherchePage) écrivait dans alertes.rythme un rythme abstrait issu du menu « Mon rythme » de la barre. Menu retiré en 5b-1 (fiction §29) → le champ part désormais toujours null. L'alerte ne porte plus aucun critère de rythme, elle ne filtre que sur la ville.
+**À faire** : reconstruire la notification sur les vraies semaines déduites (rhythm_calendar croisé avec disponibilites_pattern) au lieu d'un rythme abstrait. Aligné recherche-à-la-semaine + matching partiel (#48) + multi-locataires (#93). Touche : RecherchePage (envoyerAlerte), table alertes, Edge Function send-alert-email.
+**Décision Côme (conv 59)** : on garde le système d'alerte, rebranché plus tard sur les calendriers exacts.
+**Note BDD** : alertes.rythme écrit en dur à null (transitoire, déjà le cas en pratique). ⚠️ Ne pas INSÉRER dans alertes en local (triggers HTTP → prod).
+**Priorité** : basse, non bloquant.
+
+## DETTE #98 — Tiroir « Filtres » de la recherche à repenser
+**Statut** : ouverte, à revoir. Repérée conv 59 (15 juin 2026) après le retrait du rythme abstrait.
+**Constat** : le tiroir Filtres de /recherche (Proximité, Budget & Surface, Type de logement, Équipements, bouton « Tout effacer ») n'a pas été repensé depuis le retrait du rythme. Demande Côme : revoir cette partie, notamment pour cohérence avec le futur modèle par semaines réelles.
+**Priorité** : basse, non bloquant. **Réf** : RecherchePage.jsx (drawer Filtres, reinitialiserFiltres, activeFilterCount).
