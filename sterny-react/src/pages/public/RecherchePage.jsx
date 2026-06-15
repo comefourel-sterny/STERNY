@@ -1262,7 +1262,7 @@ export default function RecherchePage() {
     ? villeSelectionnee.charAt(0).toUpperCase() + villeSelectionnee.slice(1)
     : 'ta ville'
 
-  const hasRythme = !!rythmePattern
+  const hasRythme = semainesUtilisateur.length > 0
   const noResults = logementsAffiches.length === 0 && logements.length >= 0
 
   const villeText = villeSelectionnee
