@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-15 (conv 61) — décision produit : recherche = accompagnement guidé à la couverture (conception, aucun code).
+**Dernière mise à jour** : 2026-06-15 (conv 61) — décision recherche = accompagnement guidé à la couverture + moteur de couverture livré (0bc84e8).
 
 ---
 
@@ -22,7 +22,8 @@ Session de conception. La recherche connectée devient un parcours guidé d'aide
 **Principe acté** : le parcours propose le logement qui couvre le plus de semaines restantes, recalcule les trous, propose le suivant, jusqu'à couvrir au mieux (jamais garanti, §566). Avance au rythme des CANDIDATURES du locataire, pas des réponses des hôtes : candidater ne réserve rien (§381), une candidature abandonnée ne perd aucune semaine ; les réponses des hôtes ajustent la couverture après coup (refus = semaines rouvertes). « Retenir » dans le parcours = candidater.
 **Dénominateur acté (raffine #48/§429)** : le besoin = TOUTES les semaines cherchées du locataire pour la ville (Y), pas la fenêtre d'une annonce ; un logement en couvre un sous-ensemble (X). Corrige le « Match parfait » trompeur d'un logement à fenêtre étroite. Audit conv 61 : aujourd'hui le score est borné à la fenêtre de l'annonce (RecherchePage.jsx:432-451).
 **Fil conducteur** = calendrier des semaines cherchées qui se colore à chaque logement retenu (= « planche à découper », idees-en-attente).
-**Premier code à venir** = moteur de couverture : fonction pure retournant, pour un logement, la LISTE des semaines qu'il couvre (réutilisée par le calendrier ET le score). Écrite dès le départ sous forme finale « offre moins registre » appelée avec registre=[] (table semaines_reservees vide + RLS sans policy aujourd'hui, audit conv 61) → tranche ultérieure = brancher le registre sans réécrire le calcul.
+**Moteur de couverture LIVRÉ (commit 0bc84e8, validé 5/5 cas)** = `couvertureSemaines` dans sterny-react/src/utils/matching.js (remplace le code mort calculerCompatibilite). Fonction pure retournant, pour un logement, la LISTE des semaines qu'il couvre + les comptes { semainesCouvertes, couvertes, totalCherchees } (réutilisée par le calendrier ET le score). Forme finale « offre moins registre » appelée avec registre=[] aujourd'hui (table semaines_reservees vide + RLS sans policy) → brancher le registre plus tard sans réécrire le calcul. Cas 2 (semaine réservée retirée) validé → la tranche registre = données seulement, pas de réécriture.
+**Prochain pas (conv suivante)** : dessiner l'écran calendrier du parcours (« planche à découper » qui se colore), sur le DASHBOARD connecté — PAS /recherche (vitrine visiteur). Visuel piloté par Côme en npm run dev ; Claude.ai pose la logique de l'écran.
 **Surfaces distinctes** : parcours guidé = dashboard connecté ; /recherche publique = vitrine visiteur par ville (conv 55).
 **Audit conv 61 consigné (lecture seule)** : matching.js = code mort (calculerCompatibilite jamais importé) ; score inline RecherchePage.jsx:432-451 ; badge % l.1272-1279 ; semaines_reservees vide + RLS 0 policy ; fallback mort DETTE #12 l.444-445 dans le bloc score.
 **Reste à concevoir** : écrans détaillés du parcours ; doublons de candidatures (filet de sécurité) ; tension hôte/locataire (#48 sous-pb 4) ; juridique multi-contrats gated avocat.
