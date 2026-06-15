@@ -918,6 +918,8 @@ Constat : pas de source unique de villes. Deux listes en dur coexistent — VILL
 Trois notions distinctes actées : (1) saisie all-France ; (2) villes de lancement (curé) ; (3) villes avec annonces (dérivable, non bâti).
 Décision : la barre homepage suggère les VILLES DE LANCEMENT (notion 2), pas (1), pas (3). On consolide (2) en une source unique (sterny-react/src/data/villes-lancement.js) importée par tous les consommateurs. Dérivation (3) différée (gros chantier : RPC + normalisation texte libre). La normalisation canonique pour le matching reste le cœur non-soldé de #78.
 
+**MAJ 2026-06-14 (conv 58, clôture) — cohérence des villes à l'inscription (à traiter rapidement, après 5b-1).** Constat : les champs ville de l'inscription utilisent VILLES_FRANCE (181, all-France) ; un alternant peut s'inscrire avec une ville où Sterny n'opère pas → compte cul-de-sac. À contraindre, mais de façon ASYMÉTRIQUE (PAS un swap global) : la ville où l'utilisateur CHERCHE / PROPOSE sur Sterny → villes de lancement ; la ville COMPLÉMENTAIRE (son autre ville) → reste all-France, car nécessaire au calcul des disponibilités (VISION §114-133 : Sterny croise la ville du logement avec les 2 villes de l'utilisateur ; ex. étudie Paris / entreprise Quimper / propose Quimper → besoin de « Paris » pour le calcul). Avant patch : audit du parcours d'inscription unifié (identifier quel champ = usage Sterny vs complémentaire), puis règle 8ter (composants auth-wizard). Révise la position conv 57 (« saisie all-France »), qui devient asymétrique.
+
 ## DETTE #79 — Comptes auth orphelins (signUp sans RPC complétée)
 
 **Statut au 4 juin 2026 (conv 31)** : créée.
