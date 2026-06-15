@@ -285,10 +285,9 @@ export default function RecherchePage() {
 
   // 2b — semaines effectives du croisement : saisie manuelle si présente, sinon déduction du profil
   const semainesUtilisateur = useMemo(() => {
-    if (mesDisponibilites.length > 0) return mesDisponibilites
     const entree = deductionRecherche.find(d => d.ville === villeSelectionnee) || deductionRecherche[0]
     return entree ? entree.semaines : []
-  }, [mesDisponibilites, deductionRecherche, villeSelectionnee])
+  }, [deductionRecherche, villeSelectionnee])
 
   // Calendar state
   const [showCalendar, setShowCalendar] = useState(false)
@@ -846,7 +845,6 @@ export default function RecherchePage() {
 
   const reinitialiserFiltres = useCallback(() => {
     setTypesLogement({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
-    setRythmesFilter({ symmetric: false, asymmetric: false, custom: false })
     setEquipementsFilter({ 'Accessible PMR': false, WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false })
     setEquipSearchQuery('')
     setEquipSearchResults([])
@@ -856,10 +854,6 @@ export default function RecherchePage() {
     setVilleInput('')
     setVilleSelectionnee('')
     setVilleSecondaire('')
-    setTypeAlternance('')
-    setShowRythmeField(false)
-    setRythmePattern('')
-    setRythmeLabel('Mon rythme')
     setSortValue('')
     setProximityInput('')
     setProximityStatus('')
@@ -871,7 +865,6 @@ export default function RecherchePage() {
   const activeFilterCount = (() => {
     let count = 0
     Object.values(typesLogement).forEach(v => { if (v) count++ })
-    Object.values(rythmesFilter).forEach(v => { if (v) count++ })
     Object.values(equipementsFilter).forEach(v => { if (v) count++ })
     Object.values(dynamicEquipChecked).forEach(v => { if (v) count++ })
     if (budgetMax) count++
@@ -1171,7 +1164,7 @@ export default function RecherchePage() {
     if (setBtnDisabled) setBtnDisabled(true)
 
     const ville = villeSelectionnee || null
-    const rythme = selectedRhythm ? selectedRhythm + '-' + (selectedOffWeeks || selectedRhythm) : null
+    const rythme = null
 
     try {
       const { error } = await supabaseClient.from('alertes').insert({
@@ -1199,7 +1192,7 @@ export default function RecherchePage() {
 
     if (setBtnDisabled) setBtnDisabled(false)
     setTimeout(() => setMsg(''), 5000)
-  }, [villeSelectionnee, selectedRhythm, selectedOffWeeks])
+  }, [villeSelectionnee])
 
   // ========== MODAL PROFILS ==========
 
@@ -1317,7 +1310,7 @@ export default function RecherchePage() {
 
             {/* Search button */}
             <button className="search-btn" onClick={() => {
-              if (!villeSelectionnee && !typeAlternance) {
+              if (!villeSelectionnee) {
                 setSearchError('Complète ta recherche avant de continuer')
                 if (villeInputRef.current) {
                   villeInputRef.current.style.borderColor = '#ff6b6b'
@@ -1533,7 +1526,7 @@ export default function RecherchePage() {
                 return (
                   <Link
                     key={logement.id}
-                    to={`/logement?id=${logement.id}${mesDisponibilites.length > 0 ? '&dates=' + mesDisponibilites.join(',') : ''}`}
+                    to={`/logement?id=${logement.id}`}
                     className="rch-card"
                   >
                     <div
