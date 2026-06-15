@@ -204,31 +204,6 @@ function getDispoBadge(logement) {
   return { className: 'available', text: 'Disponible maintenant' }
 }
 
-// ========== SYMMETRIC / ASYMMETRIC OPTIONS ==========
-
-const SYMMETRIC_OPTIONS = [
-  { value: '1-1', label: '1 sem. / 1 sem.' },
-  { value: '2-2', label: '2 sem. / 2 sem.' },
-  { value: '3-3', label: '3 sem. / 3 sem.' },
-  { value: '4-4', label: '4 sem. / 4 sem.' },
-  { value: '5-5', label: '5 sem. / 5 sem.' },
-  { value: '6-6', label: '6 sem. / 6 sem.' },
-  { value: '8-8', label: '8 sem. / 8 sem.' },
-]
-
-const ASYMMETRIC_OPTIONS = [
-  { value: '2-1', label: '2 sem. / 1 sem.' },
-  { value: '1-2', label: '1 sem. / 2 sem.' },
-  { value: '3-1', label: '3 sem. / 1 sem.' },
-  { value: '1-3', label: '1 sem. / 3 sem.' },
-  { value: '4-2', label: '4 sem. / 2 sem.' },
-  { value: '2-4', label: '2 sem. / 4 sem.' },
-  { value: '3-2', label: '3 sem. / 2 sem.' },
-  { value: '2-3', label: '2 sem. / 3 sem.' },
-]
-
-const RYTHME_LABELS = { symmetric: 'Symétrique', asymmetric: 'Asymétrique', custom: 'Personnalisé' }
-
 // ========== COMPONENT ==========
 
 export default function RecherchePage() {
@@ -268,44 +243,17 @@ export default function RecherchePage() {
   const [villeSuggestionMsg, setVilleSuggestionMsg] = useState('')
   const [showNoMatch, setShowNoMatch] = useState(false)
 
-  // Alternance dropdown
-  const [typeAlternance, setTypeAlternance] = useState('')
-  const [alternanceDropdownOpen, setAlternanceDropdownOpen] = useState(false)
-
-  // Rythme dropdown
-  const [rythmePattern, setRythmePattern] = useState('')
-  const [rythmeLabel, setRythmeLabel] = useState('Mon rythme')
-  const [rythmeDropdownOpen, setRythmeDropdownOpen] = useState(false)
-  const [showRythmeField, setShowRythmeField] = useState(false)
-
-  // Rhythm matching state
-  const [selectedRhythm, setSelectedRhythm] = useState(null)
-  const [selectedOffWeeks, setSelectedOffWeeks] = useState(null)
-  const [mesDisponibilites, setMesDisponibilites] = useState([])
-
-  // 2b — semaines effectives du croisement : saisie manuelle si présente, sinon déduction du profil
+  // 2b — semaines de présence du croisement : déduites du profil de l'utilisateur connecté
   const semainesUtilisateur = useMemo(() => {
     const entree = deductionRecherche.find(d => d.ville === villeSelectionnee) || deductionRecherche[0]
     return entree ? entree.semaines : []
   }, [deductionRecherche, villeSelectionnee])
-
-  // Calendar state
-  const [showCalendar, setShowCalendar] = useState(false)
-  const [monthOffset, setMonthOffset] = useState(0)
-  const [selectedDatesRecherche, setSelectedDatesRecherche] = useState([])
-  const [calendarEndDate, setCalendarEndDate] = useState('')
-  const [endDateInput, setEndDateInput] = useState('')
-  const [editingEndDate, setEditingEndDate] = useState(true)
-  const [dateError, setDateError] = useState('')
-  const [calMsg, setCalMsg] = useState('')
-  const calendarRef = useRef(null)
 
   // Drawer filters
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [budgetMax, setBudgetMax] = useState('')
   const [surfaceMin, setSurfaceMin] = useState('')
   const [typesLogement, setTypesLogement] = useState({ studio: false, t1: false, t2: false, t3: false, 't4+': false })
-  const [rythmesFilter, setRythmesFilter] = useState({ symmetric: false, asymmetric: false, custom: false })
   const [equipementsFilter, setEquipementsFilter] = useState({
     'Accessible PMR': false, WiFi: false, 'Meublé': false, Parking: false, 'Cuisine équipée': false, 'Balcon/Terrasse': false
   })
@@ -373,129 +321,12 @@ export default function RecherchePage() {
     }
   }, [notification.redirectUrl, navigate])
 
-  // ========== CALENDAR UTILS ==========
-
-  const formatDateLocal = useCallback((d) => {
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
-  }, [])
-
-  const genererPatternCalendrier = useCallback((startDate, weeksOn, weeksOff) => {
-    const dates = []
-    const onDays = weeksOn * 7
-    const offDays = (weeksOff || weeksOn) * 7
-    const cycleDays = onDays + offDays
-    const cyclesBack = Math.ceil(60 / cycleDays)
-    const adjustedStart = new Date(startDate)
-    adjustedStart.setDate(adjustedStart.getDate() - (cyclesBack * cycleDays))
-    const totalDays = (cyclesBack * cycleDays) + 365
-    for (let i = 0; i < totalDays; i++) {
-      const positionInCycle = i % cycleDays
-      if (positionInCycle < onDays) {
-        const date = new Date(adjustedStart)
-        date.setDate(adjustedStart.getDate() + i)
-        dates.push(date)
-      }
-    }
-    return dates
-  }, [])
-
-  const handleCalendarDateClick = useCallback((clickedDate) => {
-    if (!selectedRhythm) return
-    const dayOfWeek = clickedDate.getDay()
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-    if (dayOfWeek !== 1) {
-      setCalMsg('STERNY fonctionne à la semaine — ton planning démarre au lundi')
-      setTimeout(() => setCalMsg(''), 3000)
-    }
-    const monday = new Date(clickedDate)
-    monday.setDate(clickedDate.getDate() + mondayOffset)
-    monday.setHours(0, 0, 0, 0)
-    const newDates = genererPatternCalendrier(monday, selectedRhythm, selectedOffWeeks)
-    setSelectedDatesRecherche(newDates)
-    setMesDisponibilites(newDates.map(d => formatDateLocal(d)))
-  }, [selectedRhythm, selectedOffWeeks, genererPatternCalendrier, formatDateLocal])
-
-  const handleEndDateInput = useCallback((e) => {
-    setDateError('')
-    // Extract only digits
-    const raw = e.target.value.replace(/\D/g, '').slice(0, 8)
-    // Format: add / after day and month
-    let formatted = ''
-    for (let i = 0; i < raw.length; i++) {
-      if (i === 2 || i === 4) formatted += '/'
-      formatted += raw[i]
-    }
-    setEndDateInput(formatted)
-    // Validation au fur et à mesure
-    const showErr = () => { setDateError('Date invalide'); setTimeout(() => setDateError(''), 3000) }
-    if (raw.length >= 2) {
-      const day = parseInt(raw.slice(0, 2))
-      if (day < 1 || day > 31) { showErr(); setCalendarEndDate(''); return }
-    }
-    if (raw.length >= 4) {
-      const month = parseInt(raw.slice(2, 4))
-      if (month < 1 || month > 12) { showErr(); setCalendarEndDate(''); return }
-      const day = parseInt(raw.slice(0, 2))
-      const daysInMonth = new Date(2026, month, 0).getDate()
-      if (day > daysInMonth) { showErr(); setCalendarEndDate(''); return }
-    }
-    if (raw.length === 8) {
-      const day = parseInt(raw.slice(0, 2))
-      const month = parseInt(raw.slice(2, 4))
-      const year = parseInt(raw.slice(4, 8))
-      const daysInMonth = new Date(year, month, 0).getDate()
-      const dateObj = new Date(year, month - 1, Math.min(day, daysInMonth))
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      if (day > daysInMonth || year < 2025 || year > 2035 || dateObj < today) {
-        showErr()
-        setCalendarEndDate('')
-        return
-      }
-      setCalendarEndDate(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`)
-      setEditingEndDate(false)
-    } else {
-      setCalendarEndDate('')
-    }
-  }, [])
-
-  // Calendar stats
-  const calendarStats = useMemo(() => {
-    if (selectedDatesRecherche.length === 0) return null
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const futureDates = selectedDatesRecherche.filter(d => d >= today)
-    const endLimit = calendarEndDate ? new Date(calendarEndDate + 'T00:00:00') : null
-    const activeDates = endLimit ? futureDates.filter(d => d <= endLimit) : futureDates
-    const nbSemaines = Math.ceil(activeDates.length / 7)
-    const nbJours = activeDates.length
-    const premierJour = activeDates.length > 0 ? activeDates[0] : null
-    const dernierJour = activeDates.length > 0 ? activeDates[activeDates.length - 1] : null
-    const joursRestants = dernierJour ? Math.ceil((dernierJour - today) / 86400000) : 0
-    return { nbSemaines, nbJours, premierJour, dernierJour, joursRestants }
-  }, [selectedDatesRecherche, calendarEndDate])
-
-  const selectedDatesSet = useMemo(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const endLimit = calendarEndDate ? new Date(calendarEndDate + 'T00:00:00') : null
-    return new Set(selectedDatesRecherche
-      .filter(d => {
-        if (endLimit && d > endLimit) return false
-        return true
-      })
-      .map(d => formatDateLocal(d))
-    )
-  }, [selectedDatesRecherche, formatDateLocal])
-
   // ========== LOAD DATA ==========
 
   // Load annonces
   useEffect(() => {
     const villeParam = searchParams.get('ville')
     const ville2Param = searchParams.get('ville2')
-    const typeParam = searchParams.get('type')
-    const patternParam = searchParams.get('pattern')
 
     // Set initial values from URL
     if (villeParam) {
@@ -509,27 +340,6 @@ export default function RecherchePage() {
     }
     if (ville2Param) {
       setVilleSecondaire(ville2Param)
-    }
-    if (typeParam) {
-      setTypeAlternance(typeParam)
-      if (typeParam === 'symmetric' || typeParam === 'asymmetric') {
-        setShowRythmeField(true)
-      }
-    }
-    if (patternParam) {
-      setRythmePattern(patternParam)
-      const parts = patternParam.split('-')
-      setSelectedRhythm(parseInt(parts[0]) || 1)
-      setSelectedOffWeeks(parseInt(parts[1]) || parseInt(parts[0]) || 1)
-      // Find matching label
-      const allOptions = [...SYMMETRIC_OPTIONS, ...ASYMMETRIC_OPTIONS]
-      const match = allOptions.find(o => o.value === patternParam)
-      if (match) setRythmeLabel(match.label)
-    }
-
-    // Open calendar if openDates=1 and pattern is set
-    if (searchParams.get('openDates') === '1' && patternParam) {
-      setShowCalendar(true)
     }
 
     async function loadData() {
@@ -654,13 +464,6 @@ export default function RecherchePage() {
       filtrerLogements()
     }
   }, [logements, filtrerLogements])
-
-  // Auto-focus calendar modal on open
-  useEffect(() => {
-    if (showCalendar && calendarRef.current) {
-      calendarRef.current.focus()
-    }
-  }, [showCalendar])
 
   // Update filter counts
   useEffect(() => {
@@ -787,49 +590,6 @@ export default function RecherchePage() {
       }
     }, 200)
   }, [villeInput, villeSelectionnee])
-
-  // ========== ALTERNANCE / RYTHME DROPDOWNS ==========
-
-  const handleAlternanceSelect = useCallback((value) => {
-    setTypeAlternance(value)
-    setAlternanceDropdownOpen(false)
-    setRythmePattern('')
-    setRythmeLabel('Mon rythme')
-    if (value === 'symmetric' || value === 'asymmetric') {
-      setShowRythmeField(true)
-    } else {
-      setShowRythmeField(false)
-    }
-  }, [])
-
-  const handleRythmeSelect = useCallback((value, label) => {
-    setRythmePattern(value)
-    setRythmeLabel(label)
-    setRythmeDropdownOpen(false)
-    const parts = value.split('-')
-    setSelectedRhythm(parseInt(parts[0]) || 1)
-    setSelectedOffWeeks(parseInt(parts[1]) || parseInt(parts[0]) || 1)
-    setShowCalendar(true)
-    setSelectedDatesRecherche([])
-    setMesDisponibilites([])
-    setMonthOffset(0)
-  }, [])
-
-  const getRythmeOptions = useCallback(() => {
-    if (typeAlternance === 'symmetric') return SYMMETRIC_OPTIONS
-    if (typeAlternance === 'asymmetric') return ASYMMETRIC_OPTIONS
-    return []
-  }, [typeAlternance])
-
-  // Close dropdowns on outside click
-  useEffect(() => {
-    const handler = (e) => {
-      setAlternanceDropdownOpen(false)
-      setRythmeDropdownOpen(false)
-    }
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [])
 
   // ========== DRAWER ==========
 
