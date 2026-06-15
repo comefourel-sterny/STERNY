@@ -482,7 +482,7 @@ export default function HomePage() {
               )}
               {showNoMatch && (
                 <div className="ville-suggestions" style={{ display: 'block' }}>
-                  <div style={{ padding: '12px 16px', color: '#E8622A', fontWeight: 600, fontSize: 14, cursor: 'default' }}>
+                  <div style={{ padding: '12px 16px 12px 36px', color: '#E8622A', fontWeight: 600, fontSize: 14, cursor: 'default' }}>
                     STERNY arrive bient&ocirc;t dans ta ville !
                   </div>
                 </div>
