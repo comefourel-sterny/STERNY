@@ -1,12 +1,28 @@
-export function calculerCompatibilite(datesA, datesB) {
-  if (!datesA || !datesB || datesA.length === 0 || datesB.length === 0) {
-    return 0
-  }
+/**
+ * Moteur de couverture des semaines (fonction pure).
+ * Pour UN logement : dit quelles semaines cherchées par le locataire ce logement couvre.
+ *
+ * @param {Object} args
+ * @param {string[]} args.semainesCherchees   - lundis ISO "YYYY-MM-DD" cherchés par le locataire (déjà filtrés futur en amont)
+ * @param {string[]} args.disponibilitesOffre - lundis ISO offerts par le logement (annonces.disponibilites_pattern)
+ * @param {string[]} [args.semainesReservees] - lundis ISO déjà réservés du logement (défaut [])
+ * @returns {{ semainesCouvertes: string[], couvertes: number, totalCherchees: number }}
+ */
+export function couvertureSemaines({ semainesCherchees, disponibilitesOffre, semainesReservees = [] }) {
+  // Dédoublonne les semaines cherchées pour fiabiliser le compte (le "Y")
+  const cherchees = [...new Set(Array.isArray(semainesCherchees) ? semainesCherchees : [])];
+  const offre = Array.isArray(disponibilitesOffre) ? disponibilitesOffre : [];
+  const reservees = new Set(Array.isArray(semainesReservees) ? semainesReservees : []);
 
-  const overlapDays = datesA.filter(dateA =>
-    datesB.some(dateB => dateA === dateB)
-  ).length
+  // Semaines réellement libres du logement = offre MOINS réservées
+  const libres = new Set(offre.filter((semaine) => !reservees.has(semaine)));
 
-  const maxPossibleOverlap = Math.min(datesA.length, datesB.length)
-  return maxPossibleOverlap > 0 ? 1 - (overlapDays / maxPossibleOverlap) : 0
+  // Semaines couvertes pour ce locataire = cherchées QUI SONT AUSSI libres
+  const semainesCouvertes = cherchees.filter((semaine) => libres.has(semaine)).sort();
+
+  return {
+    semainesCouvertes,
+    couvertes: semainesCouvertes.length,
+    totalCherchees: cherchees.length,
+  };
 }
