@@ -322,12 +322,18 @@ export default function HomePage() {
   }, [])
 
   const selectVille = useCallback((villeName) => {
+    const slug = VILLES_DISPONIBLES[villeName]
     setVilleInput(villeName)
-    setVilleSelectionnee(VILLES_DISPONIBLES[villeName])
+    setVilleSelectionnee(slug)
     setShowSuggestions(false)
     setShowNoMatch(false)
     setShowVilleMessage(false)
-  }, [])
+    // Clic sur une suggestion = lance la recherche directement (même navigation que la loupe).
+    // On navigue avec le slug cliqué, pas l'état villeSelectionnee (mise à jour asynchrone).
+    const params = new URLSearchParams()
+    params.set('ville', slug)
+    navigate(`/recherche?${params.toString()}`)
+  }, [navigate])
 
   const handleVilleBlur = useCallback(() => {
     setTimeout(() => {
