@@ -1107,6 +1107,8 @@ Même famille que #86 :
 
 **MAJ 2026-06-14 (conv 56, suite) — commit 000a237** : volet homepage encore avancé. `.ville-suggestions`/`.ville-suggestion-item` scopées `.hero`. Nouveau cas de la même collision : `.search-field` était forcé en `position: relative` par la jumelle nue de RecherchePage.css (l.129) → forcé `.hero .search-field { position: static }` (0,2,0 > 0,1,0) pour ancrer la boîte de suggestions sur la barre entière. Toute la famille `.search-*` / `.ville-suggestion*` de HomePage doit rester scopée `.hero` tant que le fix racine global (RecherchePage + CSS Modules) n'est pas fait.
 
+**MAJ 2026-06-15 (conv 60) — commits 3050611 + 2566f04** : volet RecherchePage DESKTOP refermé. Toutes les règles .search-bar/.search-field/.search-btn de RecherchePage.css scopées .recherche-hero (y compris @media) ; grep confirme plus aucune règle .search-* nue. Barre = clone pilule de la homepage + hero à la même hauteur. Reste ouvert : @media mobile (pilule mobile, #44) + fix racine global (CSS Modules/renommage).
+
 ## DETTE #96 — Code mort homepage : champs Type d'alternance / Rythme / Dates
 **Statut** : ouverte, nettoyage chore. Repérée 2026-06-13 (conv 55).
 **Constat** : la refonte « ville seule » (conv 55) a retiré le JSX des champs Type d'alternance, Rythme et Dates, mais conservé volontairement leurs états/handlers/constantes (alternanceType, selectAlternance, selectRythme + son navigate autonome, ALTERNANCE_OPTIONS/RYTHME_OPTIONS, dateDebut/dateFin, datePickerRef…) = code mort. Vérif anti-crash faite (datePickerRef lu uniquement par un useEffect null-safe).

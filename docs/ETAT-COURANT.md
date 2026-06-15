@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-15 (conv 59) — 5b-1 livré : barre /recherche réduite à Ville seule (Option B).
+**Dernière mise à jour** : 2026-06-15 (conv 60) — 5b-2 (barre pilule) + hero /recherche alignés sur la homepage.
 
 ---
 
@@ -13,7 +13,18 @@ Reste du socle recherche :
 - (2) couverture explicite « X de tes Y semaines » au lieu d'un % abstrait
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
-- (5) nettoyage UI recherche : la barre demande encore un rythme (« Choisis un rythme ») alors qu'il est désormais déduit → à refondre (visuel piloté par Côme) + retrait des colonnes dépréciées (rythme_pattern, type_alternance)
+- (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
+
+---
+
+## 2026-06-15 (conv 60) — 5b-2 livré : barre /recherche en pilule + hero aligné homepage
+Deux commits feat sur feat/unification-inscription (locaux non poussés) :
+- 3050611 : barre /recherche = clone visuel de la barre homepage. Pilule (radius 999px, ombre douce 0 8px 24px /.12, border 1px #E8EAF0, input 40px) + bouton loupe ronde seule (aligné .hero .search-btn) + label « VILLE » retiré (placeholder « Dans quelle ville cherches-tu ? » + aria-label).
+- 2566f04 : hauteur de la bande bleue (hero) alignée sur la homepage — padding-bas .recherche-hero 56→96px (top 60px et mobile 44px déjà identiques). Léger écart résiduel vs homepage dû au titre 1 ligne (vs 2), assumé.
+Validé runtime un essai à la fois : look pilule → hauteur (retrait label) → bouton loupe → hauteur hero.
+Toutes les règles .search-bar/.search-field/.search-btn de RecherchePage.css scopées .recherche-hero (y compris @media) → volet DESKTOP de la collision #95 refermé (grep : plus aucune règle .search-* nue). @media mobile scopé sans changer ses valeurs : responsive préservé, pilule mobile différée (#44).
+Reste pièce 5b : 5b-3 (composant <SearchBar> partagé) différé. Point (5) du socle recherche (nettoyage UI barre) soldé (5b-1 ville seule + 5b-2 pilule).
+Working tree (ne jamais stager) : bypass CreerAnnoncePage.jsx, lot 2 #83 DashboardProprietaire .jsx/.css, docs untracked.
 
 ---
 
