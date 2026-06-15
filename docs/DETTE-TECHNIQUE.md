@@ -447,6 +447,8 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 2. **Recherche par période façon Airbnb.** Heuristique : privilégier la plus longue période continue couverte par un même logement (limiter la fragmentation entre plusieurs logements).
 3. **Classement par probabilité d'acceptation de l'hôte.** Prioriser les hôtes ayant déjà ≥3 semaines contiguës comblées ; ne pas remonter en tête les annonces à 0 semaine comblée.
 
+**MAJ 2026-06-15 (conv 61) — DIRECTION actée : recherche = accompagnement guidé à la couverture.** Tranche les sous-pb 3 (composition multi-logements : « le plus couvrant d'abord » puis recalcul des trous), 5 (UX parcours fragmenté : candidatures parallèles non bloquantes, au rythme du locataire) et 6 (promesse : couverture maximisée, jamais garantie, §566). Dénominateur du score = total des semaines cherchées du locataire (Y), pas la fenêtre d'annonce. Sous-pb 4 (tension hôte/locataire) non tranché. Premier code = moteur de couverture (fonction pure → liste des semaines couvertes par logement). Audit conv 61 : score inline RecherchePage.jsx:432-451, matching.js code mort, semaines_reservees vide + RLS 0 policy. Détail : VISION « Recherche = accompagnement guidé à la couverture » + ETAT-COURANT bloc conv 61.
+
 ## DETTE #49 — Extraction des étapes de CompleterProfilPage en sous-composants
 
 **Statut au 2 mai 2026 soir** : créée par audit lecture-seule de `sterny-react/src/pages/auth/CompleterProfilPage.jsx` en préparation du chantier unification inscription (Option A actée en VISION §6).

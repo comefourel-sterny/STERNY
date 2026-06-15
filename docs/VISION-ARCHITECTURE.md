@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 13 juin 2026 (conv 55) — décision : recherche vitrine visiteur vs matching connecté (modal d'invitation, retrait filtres dépréciés).
+**Dernière mise à jour** : 15 juin 2026 (conv 61) — décision : recherche = accompagnement guidé à la couverture (parcours candidature, dénominateur du score).
 
 ---
 
@@ -601,5 +601,16 @@ Raffinement câblé au code : modal affiché une fois par session, pas à chaque
 **Précision conv 58 (14 juin 2026) — barre /recherche, retrait total du rythme abstrait.** L'audit de la barre /recherche a montré que le champ « Mes dates » n'est pas un sélecteur de semaines libre : c'est un générateur de pattern piloté par le rythme abstrait (« Mon rythme »), donc une matérialisation de la fiction §29. Décision (Option B) : retirer de la barre /recherche, en plus des filtres dépréciés (type_alternance, rythme_pattern), le champ « Mon rythme » ET le calendrier « Mes dates » et toute sa machinerie (selectedRhythm, genererPatternCalendrier). La barre tombe à Ville seule ; le matching connecté reste assuré par la déduction du profil (semainesUtilisateur, pièce 1). Révision de la position conv 55 (« Mes dates conservée, à découpler ») : le découplage propre étant impossible, l'override manuel des semaines est retiré maintenant et sera rebâti plus tard en vrai sélecteur de semaines réelles, aligné avec le sélecteur dont #93 (semaines_demandees) et la recherche à la semaine auront besoin.
 
 ---
+
+## Recherche = accompagnement guidé à la couverture (décision conv 61, raffine #48)
+Depuis le dashboard d'un alternant connecté, la recherche devient un parcours guidé qui l'aide à couvrir son planning. On propose d'abord le logement qui couvre le plus de ses semaines encore à découvert, on recalcule les semaines restantes, on propose le suivant, jusqu'à couvrir au mieux — jamais garanti à 100 % (cf §566).
+
+**Besoin de référence (le « Y »).** Le besoin = l'ensemble des semaines cherchées du locataire pour la ville (ses semaines de cours, futur), PAS la fenêtre de disponibilité d'une annonce. Un logement en couvre un sous-ensemble (le « X »). Le score d'une annonce = X / Y. Corrige le « match parfait » trompeur d'un logement à fenêtre étroite (un logement ouvert 2 mois qui couvre ses 12 semaines de cette fenêtre n'est pas un match parfait s'il en cherche 32).
+
+**Séquencement.** Le parcours avance au rythme des candidatures du locataire, pas des réponses des hôtes. Candidater ne réserve rien (non-exclusif §381 ; réservation seulement à la signature), donc « retenir » un logement dans le parcours = candidater, et une candidature abandonnée ne perd aucune semaine. Les réponses des hôtes ajustent la couverture réelle après coup : un refus rouvre les semaines concernées, qu'on peut recombler.
+
+**Fil conducteur UX.** Le calendrier des semaines cherchées (la « planche à découper », idees-en-attente) est affiché en permanence et se colore à chaque logement retenu — il rend visible le « quand » et le « combien reste-t-il », là où un pourcentage seul échouait.
+
+**Surfaces.** Parcours guidé = dashboard connecté (rythme requis). /recherche publique reste la vitrine visiteur par ville (conv 55).
 
 *Document stable. Si une décision contredit un principe exposé ici, soit la décision doit être révisée, soit ce document doit être mis à jour (avec traçage en tête : date et nature du changement).*
