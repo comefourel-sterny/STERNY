@@ -598,6 +598,8 @@ Conséquence d'exécution (déjà actée §557) : retrait des filtres dépréci�
 
 Raffinement câblé au code : modal affiché une fois par session, pas à chaque recherche.
 
+**Précision conv 58 (14 juin 2026) — barre /recherche, retrait total du rythme abstrait.** L'audit de la barre /recherche a montré que le champ « Mes dates » n'est pas un sélecteur de semaines libre : c'est un générateur de pattern piloté par le rythme abstrait (« Mon rythme »), donc une matérialisation de la fiction §29. Décision (Option B) : retirer de la barre /recherche, en plus des filtres dépréciés (type_alternance, rythme_pattern), le champ « Mon rythme » ET le calendrier « Mes dates » et toute sa machinerie (selectedRhythm, genererPatternCalendrier). La barre tombe à Ville seule ; le matching connecté reste assuré par la déduction du profil (semainesUtilisateur, pièce 1). Révision de la position conv 55 (« Mes dates conservée, à découpler ») : le découplage propre étant impossible, l'override manuel des semaines est retiré maintenant et sera rebâti plus tard en vrai sélecteur de semaines réelles, aligné avec le sélecteur dont #93 (semaines_demandees) et la recherche à la semaine auront besoin.
+
 ---
 
 *Document stable. Si une décision contredit un principe exposé ici, soit la décision doit être révisée, soit ce document doit être mis à jour (avec traçage en tête : date et nature du changement).*

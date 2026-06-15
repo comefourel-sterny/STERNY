@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-14 (conv 57) — source villes : décision + T2 (homepage branchée sur la source unique).
+**Dernière mise à jour** : 2026-06-14 (conv 58) — décision Option B : retrait du rythme abstrait de la barre /recherche (plan 5b).
 
 ---
 
@@ -21,7 +21,9 @@ Reste du socle recherche :
 Audit lecture seule : homepage = liste de lancement en dur (10 bretonnes), dupliquée 6× ; inscription perso = VILLES_FRANCE (181) ; aucune notion de couverture en base.
 Décision : homepage suggère les villes de lancement, consolidées en source unique (pas la liste France-entière, pas une dérivation annonces différée). Détail → DETTE #78.
 T2 fait (commit 5f9b84c, validé runtime) : module sterny-react/src/data/villes-lancement.js créé (VILLES_DISPONIBLES verbatim + VILLES_COORDS pour T3) ; HomePage.jsx importe la source unique au lieu de sa constante locale. Zéro changement de comportement (« ren »→Rennes, « par »→« arrive bientôt » identiques).
-Prochain pas : T3 (chore #78) — migrer les 6 AUTRES consommateurs vers le module, un par un avec vérif d'équivalence avant chaque swap : RecherchePage (VILLES_DISPONIBLES_RECHERCHE + VILLES_COORDS), InscriptionPartagerPage, CompleterProfilPage (VILLES_LANCEMENT + VILLES_DISPONIBLES), InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage (VILLES_LANCEMENT + VILLES_DISPONIBLES). Cœur non soldé de #78 : normalisation canonique + dérivation villes-avec-annonces.
+T3 entamé : HomePage (T2) + RecherchePage migrés sur le module (commits 5f9b84c, 0603966). T3 EN PAUSE ; 5 consommateurs restants (InscriptionPartagerPage, CompleterProfilPage, InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage), repris après la barre.
+Pivot (demande Côme) : refonte barre /recherche (pièce 5b). Audits faits (2 barres + zone de retrait). Plan acté — Option B : (5b-1) retirer de la barre le champ « Mon rythme » abstrait + filtre Type d'alternance + calendrier « Mes dates » (couplé au rythme abstrait, fiction §29) + filtres dépréciés type_alternance/rythme_pattern + machinerie calendrier (selectedRhythm, genererPatternCalendrier, useEffect seed, handleRythmeSelect/handleCalendarDateClick) ; re-câbler hasRythme sur semainesUtilisateur. Barre → Ville seule, matching conservé via déduction. (5b-2) porter le look pilule homepage dans RecherchePage.css scopé .recherche-hero → avance le fix racine #95. (5b-3, différé) composant <SearchBar> partagé plus tard.
+Override manuel des semaines : retiré maintenant, à rebâtir en vrai sélecteur de semaines réelles aligné #93 / recherche-à-la-semaine. Cœur non soldé de #78 : normalisation canonique + dérivation villes-avec-annonces.
 
 ---
 
