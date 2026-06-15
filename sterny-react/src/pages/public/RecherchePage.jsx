@@ -580,20 +580,6 @@ export default function RecherchePage() {
       )
     }
 
-    // Type alternance (hero bar)
-    if (typeAlternance) {
-      resultats = resultats.filter(l => l.type_alternance === typeAlternance)
-    }
-
-    // Rythme pattern (hero bar) — match inversé : utilisateur cherche A-B → logement a B-A
-    if (rythmePattern) {
-      const parts = rythmePattern.split('-')
-      const inversePattern = parts.length === 2 ? `${parts[1]}-${parts[0]}` : rythmePattern
-      resultats = resultats.filter(l =>
-        l.rythme_pattern === rythmePattern || l.rythme_pattern === inversePattern
-      )
-    }
-
     // Type logement checkboxes
     const selectedTypes = Object.entries(typesLogement).filter(([, v]) => v).map(([k]) => k)
     if (selectedTypes.length > 0) {
@@ -610,12 +596,6 @@ export default function RecherchePage() {
     const surface = parseFloat(surfaceMin)
     if (!isNaN(surface) && surface > 0) {
       resultats = resultats.filter(l => (l.surface || 0) >= surface)
-    }
-
-    // Rythme checkboxes (drawer)
-    const selectedRythmes = Object.entries(rythmesFilter).filter(([, v]) => v).map(([k]) => k)
-    if (selectedRythmes.length > 0) {
-      resultats = resultats.filter(l => selectedRythmes.includes(l.type_alternance))
     }
 
     // Equipment checkboxes (static)
@@ -665,8 +645,8 @@ export default function RecherchePage() {
     }
 
     setLogementsAffiches(resultats)
-  }, [logements, villeSelectionnee, villeSecondaire, typeAlternance, rythmePattern,
-      typesLogement, budgetMax, surfaceMin, rythmesFilter, equipementsFilter,
+  }, [logements, villeSelectionnee, villeSecondaire,
+      typesLogement, budgetMax, surfaceMin, equipementsFilter,
       dynamicEquipChecked, semainesUtilisateur])
 
   // Run filter when dependencies change
