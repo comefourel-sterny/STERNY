@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-16 (conv 64) — planche habillage mis en pause.
+**Dernière mise à jour** : 2026-06-17 (conv 64) — dropdown villes /recherche aligné sur homepage (#95 volet recherche fermé).
 
 ---
 
@@ -14,6 +14,13 @@ Reste du socle recherche :
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
 - (4) affichage de cette couverture sur les cartes
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
+
+---
+
+## 2026-06-17 (conv 64) — dropdown villes /recherche aligné sur homepage
+- Largeur : .search-field repassé en position:static (inline JSX + règle CSS), comme la homepage en 5b → le dropdown s'ancre sur .recherche-hero .search-bar = toute la barre, bouton inclus.
+- Style : règles dropdown (.ville-suggestions / .ville-suggestion-item) scopées sous .recherche-hero (0,1,0 → 0,2,0), miroir exact du bloc .hero de la homepage (radius 999px, item 13px 18px 13px 36px / 15px, hover gris #F4F5F7). Gagne désormais contre la copie globale d'index.css quel que soit l'ordre du bundle.
+- Volet /recherche de la dette #95 fermé. Copie globale dans index.css = cause racine, non touchée (voir DETTE #95).
 
 ---
 
