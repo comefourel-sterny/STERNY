@@ -1,0 +1,115 @@
+/* PlancheCouverture — affichage, composant NU (pas de fond/radius/ombre/titre :
+   posé dans une .dp-card parent). Grille COPIÉE de RhythmManualBuilder (préfixe rmb- →
+   plc-), en plus grand, avec les 3 couleurs de couverture au lieu d'école/entreprise.
+   Cellules statiques (<div> non cliquables, pas de hover qui soulève). */
+
+.plc-root {
+  --plc-cell-size: 36px;
+  --plc-cell-radius: 8px;
+  --plc-cell-gap: 5px;
+  --plc-month-gap: 6px;
+  --plc-border-subtle: #E8EAF0;
+
+  /* Couleurs d'état de couverture */
+  --plc-couvert: #86EFAC;        /* vert clair — HORS DS Sterny (Navy/Orange), token à confirmer */
+  --plc-a-decouvert: #FBBF24;    /* ambré « à trouver » — distinct de l'orange Sterny #E8622A, à affiner */
+
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Navigation entre années scolaires (flèches — divergence assumée : le builder
+   utilise un <select>, on a préféré des flèches pour l'affichage de la planche) */
+.plc-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.plc-arrow {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--plc-border-subtle);
+  background: #FFFFFF;
+  color: #1E293B;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.plc-arrow:hover {
+  background: #F4F5F7;
+  border-color: #CBD5E1;
+}
+
+.plc-year-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  min-width: 92px;
+  text-align: center;
+}
+
+/* ----- Grille (copiée de .rmb-grid / .rmb-month-column / .rmb-month-header) ----- */
+.plc-grid {
+  display: flex;
+  gap: var(--plc-month-gap);
+  padding-bottom: 8px;
+}
+
+.plc-month-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--plc-cell-gap);
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+}
+
+.plc-month-header {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #1E293B;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ----- Cellule de base (copiée de .rmb-cell, sans cursor/hover-clic) ----- */
+.plc-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  max-width: var(--plc-cell-size);
+  border-radius: var(--plc-cell-radius);
+  border: 1px solid var(--plc-border-subtle);
+  background: #FFFFFF;
+}
+
+/* 'couvert' → case pleine verte */
+.plc-cell.plc-couvert {
+  background: var(--plc-couvert);
+  border-color: var(--plc-couvert);
+}
+
+/* 'a-decouvert' → case pleine ambrée (« à trouver ») */
+.plc-cell.plc-a-decouvert {
+  background: var(--plc-a-decouvert);
+  border-color: var(--plc-a-decouvert);
+}
+
+/* 'hors-recherche' ET 'passee' → barre diagonale inerte (copiée de .rmb-cell-past) */
+.plc-cell.plc-hors-recherche,
+.plc-cell.plc-passee {
+  background-color: #F4F5F7;
+  background-image: linear-gradient(to top right, transparent calc(50% - 0.75px), #94A3B8 calc(50% - 0.75px), #94A3B8 calc(50% + 0.75px), transparent calc(50% + 0.75px));
+  border: 1.5px solid #94A3B8;
+}

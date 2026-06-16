@@ -86,6 +86,7 @@ import InvitationPage from './pages/invitation/InvitationPage'
 import RhythmCalendarPreview from './dev/RhythmCalendarPreview'
 import RhythmFileUploadPreview from './dev/RhythmFileUploadPreview'
 import RhythmManualBuilderPreview from './dev/RhythmManualBuilderPreview'
+import PlancheCouverturePreview from './dev/PlancheCouverturePreview' // DEV ONLY — à retirer (chantier planche à découper T1)
 import AuthWizardSandbox from './dev/AuthWizardSandbox'
 
 // Other
@@ -104,6 +105,7 @@ export default function App() {
         <Route path="/dev/rhythm-calendar-preview" element={<RhythmCalendarPreview />} />
         <Route path="/dev/rhythm-file-upload-preview" element={<RhythmFileUploadPreview />} />
         <Route path="/dev/rhythm-manual-builder-preview" element={<RhythmManualBuilderPreview />} />
+        <Route path="/dev/planche-couverture" element={<PlancheCouverturePreview />} /> {/* DEV ONLY — à retirer (chantier planche à découper T1) */}
         <Route path="/dev/auth-wizard-sandbox" element={<AuthWizardSandbox />} />
 
         {/* Temp: test */}
