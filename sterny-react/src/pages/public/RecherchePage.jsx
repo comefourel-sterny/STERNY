@@ -1030,7 +1030,7 @@ export default function RecherchePage() {
           {/* SEARCH BAR */}
           <div className="search-bar rch-stagger" style={{ animationDelay: '0.35s' }}>
             {/* Ville */}
-            <div className="search-field" style={{ position: 'relative', overflow: 'visible', zIndex: 10 }}>
+            <div className="search-field" style={{ overflow: 'visible', zIndex: 10 }}>
               <input
                 type="text"
                 ref={villeInputRef}
