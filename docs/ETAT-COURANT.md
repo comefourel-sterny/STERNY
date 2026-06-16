@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-15 (conv 61) — décision recherche = accompagnement guidé à la couverture + moteur de couverture livré (0bc84e8).
+**Dernière mise à jour** : 2026-06-16 (conv 62) — planche à découper T1.2 (structure livrée, design à finir).
 
 ---
 
@@ -16,6 +16,20 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-16 (conv 62) — planche à découper : T1.2 livré (structure), design à finir (session dédiée)
+Chantier : 1er écran du parcours de couverture = la « planche à découper », calendrier des semaines cherchées du locataire qui se coloreront au fil des logements retenus. Découpage T1→T4 ; on ne livre que T1 ; mono-ville (1ʳᵉ entrée 'recherche' de deduireRecherche ; cas 2 villes parqué).
+DÉCISIONS DE CONCEPTION :
+- RÈGLE Nº 1 (absolue, posée par Côme) : ne JAMAIS toucher au calendrier d'inscription (RhythmManualBuilder.jsx/.css) ni à academicYear.js. On COPIE son look, jamais on ne partage/modifie (partager = toucher l'inscription = interdit).
+- Composant d'affichage DÉDIÉ (pas d'adaptation de RhythmCalendar, pas de WeekGrid partagé). Cellules <div> NON cliquables (affichage pur).
+- Planche = PAGE DÉDIÉE, PAS dans le dashboard (qui a déjà RythmeCarousel, bande semaine par semaine). Accès (Étape B) : item « Mon calendrier » au burger + bouton « Trouver mes logements » sur le carrousel (noms provisoires, même destination). Carrousel touché UNIQUEMENT pour ajouter ce lien.
+- Calendrier = COPIE FIDÈLE de la grille d'inscription (CSS rmb- → plc-) : année sept→août, 12 colonnes mois, flèches de nav d'année, en PLUS GRAND (36px).
+- 3 couleurs : couvert = vert plein ; à découvert = AMBRÉ plein (« à trouver », distinct de l'orange Sterny #E8622A) ; hors-recherche + semaines passées = barré diagonale (look rmb-cell-past copié).
+LIVRÉ T1.2 (validé structurellement runtime, build OK) : PlancheCouverture.jsx/.css (props { etatsParSemaine, anneeScolaireInitiale?, className }), dev/PlancheCouverturePreview.jsx, App.jsx route DEV /dev/planche-couverture. Inscription JAMAIS touchée (git status vérifié à chaque tour).
+DESIGN PAS FINI (retour Côme) : rendu actuel « bas de gamme / pas confiance ». Causes : palette trop vive et hors-marque (ambré néon + vert menthe) ; barre diagonale majoritaire = bruit visuel ; pas de profondeur ni hiérarchie. → POLISH en SESSION DÉDIÉE (skill design). Direction cadrée : palette restreinte alignée Sterny ; hors-recherche en neutre plat discret au lieu de la diagonale ; profondeur (ombre/épaisseur cases pleines) + légende soignée + ligne de résumé + nav stylée ; corriger la légende de la preview.
+POINT POUR T1.3 : la planche doit s'ouvrir sur l'ANNÉE des semaines cherchées (pas computeDefaultAcademicYear), sinon planche grise. Données : deduireRecherche → 1ʳᵉ entrée 'recherche' → semaines (lundis ISO) ; garde mono-ville déjà gracieuse.
+RESTE T1 : (1) polish design (prochaine session) ; (2) Étape B = page dédiée + route + 2 accès + branchement vraies semaines.
+Working tree never-stage inchangé : CreerAnnoncePage.jsx, DashboardProprietaire .jsx/.css, 3 docs untracked.
 
 ## 2026-06-15 (conv 61) — décision produit : recherche = accompagnement guidé à la couverture (CONCEPTION, aucun code)
 Session de conception. La recherche connectée devient un parcours guidé d'aide à la couverture du planning, depuis le dashboard.
