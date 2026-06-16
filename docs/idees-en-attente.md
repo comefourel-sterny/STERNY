@@ -16,7 +16,7 @@ Constat (conv 37, 7 juin 2026) : la liste des écoles (`ECOLES`, `data/inscripti
 
 ## 2026-06-07 (conv 39) — observations à traiter
 - **Refonte page profil** (Côme) : la page d'édition profil (/profil/modifier, ModifierProfilPage, « Étape 1 sur 6 ») est à refaire (design/structure). À préciser.
-- **Bug /parametres** : ParametresPage ne rend que le footer, contenu principal absent. À investiguer (hors #83).
+- **/parametres — résidu mineur (conv 64)** : la page fonctionne une fois connecté ; le "footer seul" était une session déconnectée, pas un bug. Reste un défaut basse priorité : un visiteur DÉCONNECTÉ voit une page vide au lieu d'être redirigé vers /connexion. Garde-fou de redirection à ajouter (DashboardLayout ou ParametresPage) si on veut durcir.
 - **Bug /profil** : ProfilPage affiche alert « Utilisateur non spécifié » + chargement infini. À investiguer (hors #83).
 - **CSS mort** : .modal-pwd-group (et règles modale associées) dupliqué dans DashboardLocatairePage.css (~l.2527) sans JSX correspondant. Candidat au nettoyage.
 
