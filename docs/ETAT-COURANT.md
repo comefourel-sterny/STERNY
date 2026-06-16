@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-16 (conv 63) — planche : système couleur/motif/icône des calendriers validé (provisoire).
+**Dernière mise à jour** : 2026-06-16 (conv 64) — planche habillage mis en pause.
 
 ---
 
@@ -17,6 +17,16 @@ Reste du socle recherche :
 
 ---
 
+## 2026-06-16 (conv 64) — planche habillage : EN PAUSE, à revoir à tête reposée
+Plusieurs directions explorées EN MAQUETTE (jamais appliquées au code) : allègement icônes, coverage-first tout plat, premium gris, navy/orange, halo animé. AUCUNE validée par Côme → mise en pause volontaire.
+Apprentissages à NE PAS reperdre (ils ont coûté plusieurs tours) :
+- COULEUR = NATURE (orange = école, navy = entreprise), JAMAIS la couverture. Erreur récurrente du jour : couleur = couvert/à-couvrir → illisible. Règle conv 63 ré-affirmée.
+- La couverture (à couvrir / couvert) passe par un signal SECONDAIRE (halo, plein vs contour…), pas par la teinte.
+- Petites cases denses = élégant ; grosses cases = cheap.
+- Barre de qualité = le VRAI langage Sterny (navy/orange assumés, carte blanche radius 20 + ombre douce, titre hero navy + un mot orange, labels majuscules espacées). PAS un premium gris importé.
+- Garder le titre-résumé « il te reste X semaines à couvrir ».
+État repo : skeleton conv 63 + habillage (logé aplat, bords) + slice 1 coverage-first cumulés dans le WORKING TREE des 3 fichiers planche, non validés, non commités. Index vidé en clôture. Aucune maquette du jour dans le code.
+
 ## 2026-06-16 (conv 63) — planche : système couleur/motif/icône des calendriers VALIDÉ (provisoire), avant implémentation
 Audit lecture seule des 6 surfaces calendrier (RhythmManualBuilder, RhythmCalendar, RythmeCarousel, PlancheCouverture, CreerAnnoncePage .day-cell, LogementPage .calendar-day). Conventions existantes relevées : école = orange #E8622A (partout) ; entreprise = navy #1E293B (partout, 3 rendus) ; AUCUN bleu utilisé dans les calendriers ; vert « succès maison » = #10B981/#22C55E (la planche utilisait #86EFAC, hors design system).
 DÉCISION (validée Côme « on essaye comme ça, on revoit en détail après ») — code couleur/motif/icône de la planche, 3 axes orthogonaux :
@@ -26,6 +36,8 @@ DÉCISION (validée Côme « on essaye comme ça, on revoit en détail après »
 Conséquences : suppression du vert #86EFAC ET de l'ambré #FBBF24 de la planche (plus de vert du tout ; « logé » = icône check). Symétrique selon la ville cherchée (école-search → orange plein + icônes, entreprise en diagonale navy ; entreprise-search → l'inverse). Continuité totale avec l'inscription (orange/navy) ; RÈGLE Nº 1 respectée (inscription jamais modifiée, lecture seule).
 IMPLIQUE une refonte du MODÈLE D'ÉTAT de la case (pas un simple recolor) : la planche doit connaître, par semaine : nature école/entreprise (rhythm_calendar) + ville cherchée ou non + logé ou non. Forme actuelle de `etatsParSemaine` à revoir.
 RESTE : (1) implémentation système couleur + modèle d'état sur le vrai composant ; (2) qualité visuelle réelle (mise en page, profondeur, nav d'année, légende, ligne de résumé) jugée en npm run dev, barre de qualité = homepage ; (3) Étape B (page dédiée + route + 2 accès + branchement vraies semaines). À promouvoir dans CONTEXTE (design system) une fois stabilisé.
+
+MAJ (conv 63, implémentation) — système IMPLÉMENTÉ et validé runtime sur PlancheCouverture, NON poussé. .jsx : prop etatsParSemaine = { "YYYY-MM-DD": { nature:'ecole'|'entreprise', cherchee:bool, couvert:bool } } ; logique case : passé→gris diagonale, absente→neutre, cherchée→fond pâle couleur nature + icône (loupe à loger / check logé), non cherchée→diagonale couleur nature ; CelluleIcone = SVG inline (Material Symbols ABSENT du projet → convention SVG inline retenue). .css : ecole/entreprise-cherche = fond pâle (#FDEEE6/#EEF1F6) + bord 1.5px + icône en couleur vive (--plc-ecole #E8622A / --plc-entreprise #1E293B) ; passee/ecole-libre/entreprise-libre = diagonale look inscription ÉPAISSIE 1.25px (trait 2.5px) + bord 2px (divergence assumée : cases 36px vs 24px, pour égaler le poids visuel) ; neutre = aplat #EAECEF. Preview : démo via helpers academicYear + légende corrigée. RESTE conv 63 : (2) HABILLAGE PRO (simplifier + vrai design : conteneur, typo, nav d'année, ligne de résumé, poids des icônes, hiérarchie, espacement) = session dédiée ; (3) Étape B (page + route + 2 accès + vraies semaines via deduireRecherche). Inscription jamais touchée.
 
 ## 2026-06-16 (conv 62) — planche à découper : T1.2 livré (structure), design à finir (session dédiée)
 Chantier : 1er écran du parcours de couverture = la « planche à découper », calendrier des semaines cherchées du locataire qui se coloreront au fil des logements retenus. Découpage T1→T4 ; on ne livre que T1 ; mono-ville (1ʳᵉ entrée 'recherche' de deduireRecherche ; cas 2 villes parqué).
