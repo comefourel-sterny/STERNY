@@ -1130,3 +1130,12 @@ Même famille que #86 :
 **Statut** : ouverte, à revoir. Repérée conv 59 (15 juin 2026) après le retrait du rythme abstrait.
 **Constat** : le tiroir Filtres de /recherche (Proximité, Budget & Surface, Type de logement, Équipements, bouton « Tout effacer ») n'a pas été repensé depuis le retrait du rythme. Demande Côme : revoir cette partie, notamment pour cohérence avec le futur modèle par semaines réelles.
 **Priorité** : basse, non bloquant. **Réf** : RecherchePage.jsx (drawer Filtres, reinitialiserFiltres, activeFilterCount).
+
+## DETTE #99 — Code couleur des calendriers incohérent entre les 6 surfaces
+Audit conv 63 (lecture seule). 6 surfaces calendrier coexistent. Incohérences :
+1. Orange #E8622A surchargé : « école » (inscription, RhythmCalendar, carrousel) ET « sélection / dispo choisie » (CreerAnnoncePage .selected, LogementPage .user-selected).
+2. « Passé » rendu de 4 façons : diagonale grise #94A3B8 (RMB, Planche) ; dégradé gris (carrousel) ; texte gris clair #E2E8F0 (CreerAnnoncePage) ; opacité (LogementPage).
+3. Entreprise/navy #1E293B rendu de 3 façons : plein (RMB) ; 15 % diaphane (RhythmCalendar) ; dégradé navy (carrousel).
+4. Vert : planche #86EFAC (corrigé conv 63) vs vert succès maison #10B981/#22C55E ailleurs.
+5. Trois « neutres » distincts pour des idées proches (indispo / hors-recherche / passé).
+À unifier en chantier dédié (hors session planche). La planche conv 63 adopte déjà les bonnes conventions. Ne jamais toucher RhythmManualBuilder (RÈGLE Nº 1).

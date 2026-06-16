@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-16 (conv 62) — planche à découper T1.2 (structure livrée, design à finir).
+**Dernière mise à jour** : 2026-06-16 (conv 63) — planche : système couleur/motif/icône des calendriers validé (provisoire).
 
 ---
 
@@ -16,6 +16,16 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-16 (conv 63) — planche : système couleur/motif/icône des calendriers VALIDÉ (provisoire), avant implémentation
+Audit lecture seule des 6 surfaces calendrier (RhythmManualBuilder, RhythmCalendar, RythmeCarousel, PlancheCouverture, CreerAnnoncePage .day-cell, LogementPage .calendar-day). Conventions existantes relevées : école = orange #E8622A (partout) ; entreprise = navy #1E293B (partout, 3 rendus) ; AUCUN bleu utilisé dans les calendriers ; vert « succès maison » = #10B981/#22C55E (la planche utilisait #86EFAC, hors design system).
+DÉCISION (validée Côme « on essaye comme ça, on revoit en détail après ») — code couleur/motif/icône de la planche, 3 axes orthogonaux :
+- COULEUR = nature de la semaine : orange #E8622A = école · navy #1E293B = entreprise · gris #94A3B8 = passé (le temps prime sur la ville).
+- MOTIF = recherche ou non : plein = semaine de la ville où l'alternant CHERCHE · diagonale barrée (look rmb-cell-past copié) = il ne cherche pas (ville où il est DÉJÀ logé, OU passé). La diagonale prend la couleur de la semaine (orange/navy/gris).
+- ICÔNE (cases pleines uniquement) : loupe = reste à loger · check = logé.
+Conséquences : suppression du vert #86EFAC ET de l'ambré #FBBF24 de la planche (plus de vert du tout ; « logé » = icône check). Symétrique selon la ville cherchée (école-search → orange plein + icônes, entreprise en diagonale navy ; entreprise-search → l'inverse). Continuité totale avec l'inscription (orange/navy) ; RÈGLE Nº 1 respectée (inscription jamais modifiée, lecture seule).
+IMPLIQUE une refonte du MODÈLE D'ÉTAT de la case (pas un simple recolor) : la planche doit connaître, par semaine : nature école/entreprise (rhythm_calendar) + ville cherchée ou non + logé ou non. Forme actuelle de `etatsParSemaine` à revoir.
+RESTE : (1) implémentation système couleur + modèle d'état sur le vrai composant ; (2) qualité visuelle réelle (mise en page, profondeur, nav d'année, légende, ligne de résumé) jugée en npm run dev, barre de qualité = homepage ; (3) Étape B (page dédiée + route + 2 accès + branchement vraies semaines). À promouvoir dans CONTEXTE (design system) une fois stabilisé.
 
 ## 2026-06-16 (conv 62) — planche à découper : T1.2 livré (structure), design à finir (session dédiée)
 Chantier : 1er écran du parcours de couverture = la « planche à découper », calendrier des semaines cherchées du locataire qui se coloreront au fil des logements retenus. Découpage T1→T4 ; on ne livre que T1 ; mono-ville (1ʳᵉ entrée 'recherche' de deduireRecherche ; cas 2 villes parqué).

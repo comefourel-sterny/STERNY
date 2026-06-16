@@ -36,3 +36,5 @@ Repérée conv 51 (audit messagerie #92). Les cartes annonce (image + titre + vi
 Idée Côme (conv 53). Depuis le calendrier/dashboard, le locataire clique sur UNE seule semaine et cherche un logement pour celle-là uniquement, même si son rythme lui donne deux semaines libres d'affilée. Cas d'usage : il part en vacances la 2ᵉ semaine, ou veut la passer ailleurs.
 Gratuit côté modèle : le multi-locataires (DETTE #93) stocke la demande comme une liste de semaines individuelles (`candidatures.semaines_demandees`, lundis ISO), jamais un bloc continu — chercher une semaine = une recherche avec une liste d'une semaine. Pas de changement de structure : c'est une feature d'INTERFACE.
 À cadrer avec : refonte barre de recherche (DETTE #47) et matching partiel / score (DETTE #48). Périmètre UI : sélecteur de semaine(s) sur le calendrier, état « je cherche pour ces semaines-là », affichage des annonces dont les semaines à découvert croisent la sélection.
+
+- Recherche — aligner le design des cartes de logement de /recherche sur celui de la homepage (cohérence vitrine). Parqué, post-design planche (conv 63).
