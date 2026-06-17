@@ -13,9 +13,12 @@
 // Posé plus tard dans une .dp-card parent (cf. preview /dev/planche-couverture).
 //
 // Props :
-//   etatsParSemaine      : objet { "YYYY-MM-DD" (lundi ISO) : 'a-decouvert' | 'couvert' }
-//                          pour les semaines CHERCHÉES seulement. Toute semaine du
-//                          squelette absente de la map → 'hors-recherche' par défaut.
+//   etatsParSemaine      : objet { "YYYY-MM-DD" (lundi ISO) : { nature, cherchee, couvert } }
+//                          nature  : 'ecole' (orange) | 'entreprise' (navy) — la couleur
+//                          cherchee: true = ville cherchée | false = déjà logé (gris neutre)
+//                          couvert : true = aplat plein nature (couvert) | false = aplat pâle + contour (à couvrir)
+//                          Rendu en aplats : aucune diagonale, aucune icône.
+//                          Semaine absente → gris neutre. Passé → prime → gris neutre.
 //   anneeScolaireInitiale: "YYYY-YYYY+1" (optionnel) ; défaut = année contenant aujourd'hui.
 //   className            : classe optionnelle sur le conteneur racine.
 
@@ -111,17 +114,24 @@ export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireI
           <div key={m.key} className="plc-month-column">
             <div className="plc-month-header">{m.label}</div>
             {m.weeks.map((w) => {
-              // Passée (avant le lundi courant) → barrée/inerte, peu importe l'état.
-              // Sinon : couvert → vert ; a-decouvert → ambré ; sinon → barré (hors-recherche).
+              // Lecture "couverture d'abord" : couvert (aplat plein) / à couvrir (contour) /
+              // contexte (semaine où l'alternant ne cherche pas) / passé / neutre. Aucune icône.
               const passee = w.weekStart < lundiCourant;
-              const etatBrut = etatsParSemaine[w.weekStart];
-              const modificateur = passee
-                ? 'passee'
-                : etatBrut === 'couvert'
-                  ? 'couvert'
-                  : etatBrut === 'a-decouvert'
-                    ? 'a-decouvert'
-                    : 'hors-recherche';
+              const d = etatsParSemaine[w.weekStart];
+
+              let modificateur;
+              if (passee) {
+                modificateur = 'passee';
+              } else if (!d) {
+                modificateur = 'neutre';
+              } else if (d.cherchee) {
+                const nat = d.nature === 'entreprise' ? 'entreprise' : 'ecole';
+                modificateur = d.couvert ? `${nat}-loge` : `${nat}-cherche`;
+              } else {
+                // Ville où l'alternant est déjà logé → contexte gris (nature non distinguée).
+                modificateur = 'contexte';
+              }
+
               return (
                 <div
                   key={w.weekStart}
