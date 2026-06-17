@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-17 (conv 64) — dropdown villes /recherche aligné sur homepage (#95 volet recherche fermé).
+**Dernière mise à jour** : 2026-06-17 — planche : habillage validé (couleur = couverture, point optique flou).
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-17 — planche : habillage VALIDÉ (couleur = couverture, point optique flou)
+Direction validée à partir d'un croquis de Côme, après plusieurs pistes rejetées : grille régulière resserrée au **point optique** — semaines à combler / comblées **nettes**, hors-sujet **flouté** en retrait. Lisible sans légende (objectif de départ atteint).
+**Décision (revirement conv 63)** : sur la planche, la couleur encode la **couverture**, pas la nature. On a copié le *principe* de l'inscription (couleur = info n°1 de l'écran), pas ses couleurs : sur la planche l'info n°1 est la couverture, et en mono-ville la nature ne porte aucune info utile.
+**Système (PlancheCouverture.css, commit de94d30 sur base 2af7352)** : couvert = vert #57B98C + ombre douce ; à couvrir = blanc + loupe grise SVG (#B4BCC8, 18px) + contour 1.5px #B4BCC8 (gris tranché > orange pour la lisibilité ; l'orange de marque est porté par le titre) ; hors-sujet (contexte/passee/neutre unifiés) = gris #D9DEE6 + blur(1.7px) + opacity .45 ; densité assumée 40px / gap 3px / radius 10px.
+**Parent (PlancheCouverturePreview, composant NU)** : cadre verre dépoli (rgba blanc + backdrop-filter) ; en-tête une ligne = titre « Ton planning » (style exact `.dp-card-title` dashboard, copié en local) à gauche + résumé gris discret « Il te reste N semaines à couvrir » à droite.
+**Réserve** : le verre dépoli ne rend qu'avec un fond contrasté ; sur le fond plat du dashboard l'effet sera subtil, à rejuger au branchement.
+**Reste (Étape B)** : page dédiée + route + 2 accès (burger « Mon calendrier » + bouton carrousel) + branchement vraies données (deduireRecherche, ouvrir sur l'année des semaines cherchées). Mono-ville livré ; 2 villes parqué. Réf maquette : planche-flou-v4.html (output, non versionné).
 
 ## 2026-06-17 (conv 64) — dropdown villes /recherche aligné sur homepage
 - Largeur : .search-field repassé en position:static (inline JSX + règle CSS), comme la homepage en 5b → le dropdown s'ancre sur .recherche-hero .search-bar = toute la barre, bouton inclus.
