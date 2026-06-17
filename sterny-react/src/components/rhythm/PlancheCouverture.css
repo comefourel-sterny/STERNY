@@ -1,20 +1,15 @@
 /* PlancheCouverture — affichage, composant NU (pas de fond/radius/ombre/titre :
-   posé dans une .dp-card parent). Grille COPIÉE de RhythmManualBuilder (préfixe rmb- →
-   plc-), en plus grand. Lecture « couverture d'abord » en APLATS : couleur = nature
-   (orange = école, navy = entreprise) ; couvert = aplat plein nature ; à couvrir (cherchée
-   non couverte) = aplat pâle + contour nature ; déjà logé / passé / hors-rythme = gris neutre.
-   Aucune diagonale, aucune icône. Cellules statiques (<div> non cliquables). */
+   posé dans une .dp-card parent). Grille régulière au point optique (maquette planche-flou-v4).
+   La COULEUR encode la couverture (nature non distinguée) : couvert = vert plein ; à couvrir
+   (cherchée non couverte) = blanc + loupe + contour (creux NET à combler) ; hors-sujet (déjà
+   logé / passé / hors-rythme) = gris FLOUTÉ en retrait. Cellules statiques (<div> non cliquables). */
 
 .plc-root {
-  --plc-cell-size: 36px;
-  --plc-cell-radius: 8px;
-  --plc-cell-gap: 5px;
-  --plc-month-gap: 6px;
+  --plc-cell-size: 40px;
+  --plc-cell-radius: 10px;
+  --plc-cell-gap: 3px;
+  --plc-month-gap: 3px;
   --plc-border-subtle: #E8EAF0;
-
-  /* Couleur = nature de la semaine */
-  --plc-ecole: #E8622A;
-  --plc-entreprise: #1E293B;
 
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
 }
@@ -99,37 +94,29 @@
   justify-content: center;
 }
 
-/* Lecture "couverture d'abord" : aplats plats, aucune diagonale, aucune icône. */
+/* Maquette validée (planche-flou-v4) : grille régulière au point optique.
+   La couleur encode la COUVERTURE (nature non distinguée). NET = à combler/comblé, FLOU = hors-sujet. */
 
-/* Couvert (cherchée + logé) → aplat PLEIN de la couleur nature */
-.plc-cell.plc-ecole-loge {
-  background: var(--plc-ecole);
-}
+/* COUVERT (cherchée + logé) → vert plein, légère profondeur */
+.plc-cell.plc-ecole-loge,
 .plc-cell.plc-entreprise-loge {
-  background: var(--plc-entreprise);
+  background: #57B98C;
+  box-shadow: 0 1px 5px rgba(30,41,59,0.16);
 }
 
-/* À couvrir (cherchée, pas encore logé) → fond pâle + contour de la nature */
-.plc-cell.plc-ecole-cherche {
-  background: #FDEEE6;
-  border: 1.5px solid var(--plc-ecole);
-}
+/* À COUVRIR (cherchée, pas encore logé) → blanc + loupe + contour (creux net à combler) */
+.plc-cell.plc-ecole-cherche,
 .plc-cell.plc-entreprise-cherche {
-  background: #EEF1F6;
-  border: 1.5px solid var(--plc-entreprise);
+  background: #FFFFFF url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%3E%3Ccircle%20cx='10.5'%20cy='10.5'%20r='6.5'/%3E%3Cline%20x1='15.5'%20y1='15.5'%20x2='21'%20y2='21'/%3E%3C/svg%3E") center / 18px no-repeat;
+  border: 1.5px solid #B4BCC8;
+  box-shadow: 0 1px 4px rgba(30,41,59,0.08);
 }
 
-/* Contexte (ville où l'alternant est déjà logé) → aplat gris discret */
-.plc-cell.plc-contexte {
-  background: #E9EBEF;
-}
-
-/* Passé → aplat gris très discret (plus de diagonale) */
-.plc-cell.plc-passee {
-  background: #F0F1F4;
-}
-
-/* Hors rythme / bord d'année → aplat neutre */
+/* HORS-SUJET (déjà logé / passé / hors-rythme) → gris flouté, en retrait */
+.plc-cell.plc-contexte,
+.plc-cell.plc-passee,
 .plc-cell.plc-neutre {
-  background: #EAECEF;
+  background: #D9DEE6;
+  filter: blur(1.7px);
+  opacity: 0.45;
 }
