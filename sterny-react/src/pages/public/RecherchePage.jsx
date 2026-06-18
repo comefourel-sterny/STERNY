@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { RateLimiter } from '../../utils/rateLimiter'
 import { deduireRecherche } from '../../utils/deduireRecherche'
+import { couvertureSemaines } from '../../utils/matching'
 import InvitationModal from '../../components/InvitationModal'
 import { VILLES_DISPONIBLES as VILLES_DISPONIBLES_RECHERCHE, VILLES_COORDS } from '../../data/villes-lancement'
 import './RecherchePage.css'
@@ -439,16 +440,15 @@ export default function RecherchePage() {
         return logement.disponibilites_pattern.some(d => d >= todayStr && userDatesSet.has(d))
       })
       resultats = resultats.map(logement => {
-        const futureHostDates = logement.disponibilites_pattern.filter(d => d >= todayStr)
-        const hostDatesSet = new Set(futureHostDates)
-        const hostMin = futureHostDates[0] || logement.disponibilites_pattern[0]
-        const hostMax = futureHostDates[futureHostDates.length - 1] || logement.disponibilites_pattern[logement.disponibilites_pattern.length - 1]
-        const userDansPerioDeHote = futurUserDates.filter(d => d >= hostMin && d <= hostMax)
-        const intersection = userDansPerioDeHote.filter(d => hostDatesSet.has(d)).length
-        const total = userDansPerioDeHote.length || 1
-        return { ...logement, matchScore: intersection / total }
+        // Couverture : combien des semaines cherchées (Y) ce logement couvre (X).
+        // Dénominateur = TOUTES les semaines cherchées (pas la fenêtre de l'annonce). semainesReservees vide (registre non branché).
+        const { couvertes, totalCherchees, semainesCouvertes } = couvertureSemaines({
+          semainesCherchees: futurUserDates,
+          disponibilitesOffre: logement.disponibilites_pattern || [],
+        })
+        return { ...logement, couvertes, totalCherchees, semainesCouvertes }
       })
-      resultats.sort((a, b) => b.matchScore - a.matchScore)
+      resultats.sort((a, b) => b.couvertes - a.couvertes)
     } else {
       resultats.sort((a, b) => (a.prix || 0) - (b.prix || 0))
     }
@@ -1270,11 +1270,11 @@ export default function RecherchePage() {
                 const dispo = getDispoBadge(logement)
 
                 let matchBadge = null
-                if (logement.matchScore !== undefined) {
-                  if (logement.matchScore >= 0.95) {
-                    matchBadge = <span className="match-badge" style={{ background: '#10b981', color: 'white' }}>Match parfait !</span>
+                if (logement.totalCherchees > 0) {
+                  if (logement.couvertes === logement.totalCherchees) {
+                    matchBadge = <span className="match-badge" style={{ background: '#10b981', color: 'white' }}>✓ Couvert</span>
                   } else {
-                    matchBadge = <span className="match-badge" style={{ background: '#E8622A', color: 'white' }}>{Math.round(logement.matchScore * 20) * 5}%</span>
+                    matchBadge = <span className="match-badge" style={{ background: '#E8622A', color: 'white' }}>{logement.couvertes}/{logement.totalCherchees} sem.</span>
                   }
                 }
 
