@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 (conv 65) — socle recherche pièces 2+4 : moteur de couverture branché sur les cartes /recherche.
+**Dernière mise à jour** : 2026-06-18 (conv 66) — badge Dispo retiré des cartes /recherche.
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 (conv 66) — cartes /recherche : badge « Dispo dans X sem. » retiré (solde le TODO du bloc conv 65)
+Le badge dispo (bas de carte) est supprimé : obsolète depuis le matching au planning près. La pastille de couverture (✓ Couvert / X-Y sem., haut de carte) est désormais la SEULE info de dispo sur la carte. Les DEUX états du badge retirés, y compris « Disponible maintenant » (générique, non personnalisé, potentiellement contradictoire avec la pastille : une annonce pouvait afficher « Disponible maintenant » en couvrant 0 semaine cherchée).
+- RecherchePage.jsx : suppression de getDispoBadge (fonction), de la const dispo, du <span rch-card-badge>.
+- RecherchePage.css : suppression des 3 règles, toutes scopées au badge (.rch-card-badge, .rch-card-badge.available, .rch-card-badge.soon) → aucun risque collision #95 (pas de classe nue).
+- Intacts : disponibilites_pattern, moteur de couverture, filtre. npm run build vert, grep orphelins clean.
+- Commit refactor 9e9a649.
+RESTE socle recherche inchangé : pièce 3 (brancher le « restant » via signature / #93 tranche B) ; couverture sur la planche (vert « couvert » + état « en attente », modèle 3 états).
 
 ## 2026-06-18 (conv 65) — socle recherche pièces 2+4 livrées : moteur de couverture branché sur /recherche
 Fonction pure couvertureSemaines (utils/matching.js, créée conv 61, jamais branchée) désormais utilisée par RecherchePage. Commit feat b18484b.
