@@ -709,7 +709,10 @@ export default function DashboardLocatairePage() {
         )}
       </div>
 
-      <RythmeCarousel weeks={userData?.rhythm_calendar} />
+      <RythmeCarousel
+        weeks={userData?.rhythm_calendar}
+        lienCalendrier={(userData?.type_user === 'locataire' || userData?.type_user === 'les_deux') ? '/mon-calendrier' : null}
+      />
 
       {/* LOCATIONS ACTIVES */}
       {hasBailActif && (

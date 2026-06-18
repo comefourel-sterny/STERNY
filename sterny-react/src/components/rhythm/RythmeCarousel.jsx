@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { currentMondayISO } from '../../utils/academicYear'
 import { formatWeekRangeFR, formatWeekStartFR } from '../../utils/formatters'
 import './RythmeCarousel.css'
 
 const WINDOW = 3 // semaines de chaque côté du centre (lever pour remplir une carte large)
 
-export default function RythmeCarousel({ weeks }) {
+export default function RythmeCarousel({ weeks, lienCalendrier }) {
   const [offset, setOffset] = useState(0)
 
   const sorted = Array.isArray(weeks)
@@ -48,9 +49,13 @@ export default function RythmeCarousel({ weeks }) {
     <div className={`rythme-card ${ecoleCentre ? 'is-ecole' : 'is-entreprise'}`}>
       <div className="rythme-head">
         <div className="rythme-title">Ton rythme</div>
-        {offset !== 0 && (
+        {offset !== 0 ? (
           <button type="button" className="rythme-today" onClick={() => setOffset(0)}>Aujourd'hui</button>
-        )}
+        ) : lienCalendrier ? (
+          <Link to={lienCalendrier} className="rythme-today" style={{ color: '#64748B', textDecoration: 'none' }}>
+            Voir mon calendrier
+          </Link>
+        ) : null}
       </div>
       <div className="rythme-nav">
         <button type="button" className="rythme-arrow" onClick={() => canPrev && setOffset(o => o - 1)} disabled={!canPrev} aria-label="Semaines précédentes">‹</button>
