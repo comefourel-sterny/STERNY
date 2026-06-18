@@ -3,36 +3,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import { VILLES_DISPONIBLES } from '../../data/villes-lancement'
 import './HomePage.css'
 
-/* ── Alternance type options ── */
-const ALTERNANCE_OPTIONS = [
-  { value: 'symmetric', label: 'Symétrique', desc: 'Même durée entreprise et école' },
-  { value: 'asymmetric', label: 'Asymétrique', desc: 'Durées différentes entreprise / école' },
-  { value: 'custom', label: 'Personnalisé', desc: 'Rythme sur mesure' }
-]
-
-/* ── Rythme options per type ── */
-const RYTHME_OPTIONS = {
-  symmetric: [
-    { value: '1-1', label: '1 sem. / 1 sem.' },
-    { value: '2-2', label: '2 sem. / 2 sem.' },
-    { value: '3-3', label: '3 sem. / 3 sem.' },
-    { value: '4-4', label: '4 sem. / 4 sem.' },
-    { value: '5-5', label: '5 sem. / 5 sem.' },
-    { value: '6-6', label: '6 sem. / 6 sem.' },
-    { value: '8-8', label: '8 sem. / 8 sem.' }
-  ],
-  asymmetric: [
-    { value: '2-1', label: '2 sem. / 1 sem.' },
-    { value: '1-2', label: '1 sem. / 2 sem.' },
-    { value: '3-1', label: '3 sem. / 1 sem.' },
-    { value: '1-3', label: '1 sem. / 3 sem.' },
-    { value: '4-2', label: '4 sem. / 2 sem.' },
-    { value: '2-4', label: '2 sem. / 4 sem.' },
-    { value: '3-2', label: '3 sem. / 2 sem.' },
-    { value: '2-3', label: '2 sem. / 3 sem.' }
-  ]
-}
-
 /* ── Static test listings data ── */
 const CITY_LISTINGS = {
   rennes: {
@@ -261,30 +231,12 @@ export default function HomePage() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showNoMatch, setShowNoMatch] = useState(false)
 
-  const [alternanceType, setAlternanceType] = useState('')
-  const [alternanceLabel, setAlternanceLabel] = useState('Type d\'alternance')
-  const [alternanceOpen, setAlternanceOpen] = useState(false)
-
-  const [rythmeValue, setRythmeValue] = useState('')
-  const [rythmeLabel, setRythmeLabel] = useState('Mon rythme')
-  const [rythmeOpen, setRythmeOpen] = useState(false)
-
   const [villeMessage, setVilleMessage] = useState('')
   const [showVilleMessage, setShowVilleMessage] = useState(false)
   const [searchError, setSearchError] = useState('')
 
   /* Error highlight refs */
   const villeInputRef = useRef(null)
-
-  /* ── Close dropdowns on outside click ── */
-  useEffect(() => {
-    const handler = () => {
-      setAlternanceOpen(false)
-      setRythmeOpen(false)
-    }
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [])
 
   /* ── Ville autocomplete handler ── */
   const handleVilleInput = useCallback((e) => {
@@ -352,31 +304,6 @@ export default function HomePage() {
     }, 200)
   }, [villeInput, villeSelectionnee])
 
-  /* ── Select alternance type ── */
-  const selectAlternance = useCallback((opt) => {
-    setAlternanceType(opt.value)
-    setAlternanceLabel(opt.label)
-    setAlternanceOpen(false)
-    // Reset rythme when type changes
-    setRythmeValue('')
-    setRythmeLabel('Mon rythme')
-  }, [])
-
-  /* ── Select rythme ── */
-  const selectRythme = useCallback((opt) => {
-    setRythmeValue(opt.value)
-    setRythmeLabel(opt.label)
-    setRythmeOpen(false)
-
-    /* Navigate to recherche page once rythme is selected */
-    const params = new URLSearchParams()
-    if (villeSelectionnee) params.set('ville', villeSelectionnee)
-    if (alternanceType) params.set('type', alternanceType)
-    params.set('pattern', opt.value)
-    params.set('openDates', '1')
-    navigate(`/recherche?${params.toString()}`)
-  }, [villeSelectionnee, alternanceType, navigate])
-
   /* ── Highlight error ── */
   const highlightError = useCallback((ref) => {
     if (!ref?.current) return
@@ -403,13 +330,9 @@ export default function HomePage() {
 
     const params = new URLSearchParams()
     if (villeSelectionnee) params.set('ville', villeSelectionnee)
-    if (alternanceType) params.set('type', alternanceType)
-    if (rythmeValue) params.set('pattern', rythmeValue)
-    if (dateDebut) params.set('debut', dateDebut)
-    if (dateFin) params.set('fin', dateFin)
 
     navigate(`/recherche?${params.toString()}`)
-  }, [villeSelectionnee, alternanceType, rythmeValue, navigate, highlightError])
+  }, [villeSelectionnee, navigate, highlightError])
 
   /* ── Handle Enter key in search bar ── */
   const handleSearchKeyPress = useCallback((e) => {
@@ -418,30 +341,6 @@ export default function HomePage() {
       rechercher()
     }
   }, [rechercher])
-
-  /* ── Date picker state ── */
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [dateDebut, setDateDebut] = useState('')
-  const [dateFin, setDateFin] = useState('')
-  const datePickerRef = useRef(null)
-
-  /* Close date picker on outside click */
-  useEffect(() => {
-    const handler = (e) => {
-      if (datePickerRef.current && !datePickerRef.current.contains(e.target)) {
-        setShowDatePicker(false)
-      }
-    }
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [])
-
-  /* ── Whether to show rythme field ── */
-  const showRythmeField = alternanceType === 'symmetric' || alternanceType === 'asymmetric'
-  const currentRythmeOptions = RYTHME_OPTIONS[alternanceType] || []
-
-  /* Show date field after rythme is selected (or after custom type is selected) */
-  const showDateField = (showRythmeField && rythmeValue) || alternanceType === 'custom'
 
   return (
     <>
