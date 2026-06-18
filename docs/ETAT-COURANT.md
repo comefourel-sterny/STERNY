@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 — planche B3 : 2 accès vers /mon-calendrier (clôture Étape B).
+**Dernière mise à jour** : 2026-06-18 (conv 65) — socle recherche pièces 2+4 : moteur de couverture branché sur les cartes /recherche.
 
 ---
 
@@ -10,12 +10,22 @@ Socle recherche — pièce 1 (déduction profil → filtrage) : livrée et valid
 Pour un alternant connecté, /recherche déduit ses semaines de présence depuis son rythme (rhythm_calendar) et propose les annonces compatibles avec un score de match, sans aucune re-saisie de ville ni de rythme. Source des semaines du croisement : saisie manuelle si présente, sinon déduction du profil (util deduireRecherche → semainesUtilisateur dans RecherchePage). Calcul du score existant inchangé.
 
 Reste du socle recherche :
-- (2) couverture explicite « X de tes Y semaines » au lieu d'un % abstrait
+- (2) couverture explicite « X de tes Y semaines » : LIVRÉE (cartes /recherche, voir bloc 2026-06-18 ci-dessous)
 - (3) prise en compte des semaines déjà réservées (registre semaines_reservees)
-- (4) affichage de cette couverture sur les cartes
+- (4) affichage de cette couverture sur les cartes : LIVRÉE (idem)
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 (conv 65) — socle recherche pièces 2+4 livrées : moteur de couverture branché sur /recherche
+Fonction pure couvertureSemaines (utils/matching.js, créée conv 61, jamais branchée) désormais utilisée par RecherchePage. Commit feat b18484b.
+- Calcul : chaque annonce porte { couvertes (X), totalCherchees (Y), semainesCouvertes }. Y = TOUTES les semaines cherchées du locataire (futurUserDates), et NON plus la fenêtre de l'annonce → corrige le « match parfait » trompeur.
+- Tri : par couvertes décroissant (le plus couvrant d'abord, VISION §606).
+- Badge carte : plus de %. Pastille compacte — vert « ✓ Couvert » si X===Y>0 ; orange « X/Y sem. » sinon ; rien si Y===0 (visiteur/sans recherche). Validé runtime (locataire@sterny.test).
+- Code mort supprimé : ancien calcul fenêtre-annonce + fallback dette #12 + normaliseur dette #13 (les deux résolues).
+- DÉNOMINATEUR = total POUR L'INSTANT. Décision (voir VISION) : Y deviendra « semaines RESTANT à couvrir » (total moins semaines SIGNÉES du locataire) quand le registre semaines_reservees sera rempli à la signature (#93 / pièce 3). Aujourd'hui registre vide → restant = total → correct.
+- RESTE socle : pièce 3 (brancher le restant) ; couverture sur la planche (vert « couvert » + état « en attente », modèle 3 états). À FAIRE AUSSI : retirer le badge « Dispo dans X sem. » des cartes (obsolète depuis le matching au planning près — audit d'abord).
+NB : une 2e annonce Rennes « partielle » a été insérée en base LOCALE pour tester l'orange — donnée de test non versionnée, à supprimer ou balayée au prochain db reset.
 
 ## 2026-06-18 — planche Étape B3 livrée : 2 accès vers /mon-calendrier (clôture Étape B)
 B3 : 2 points d'entrée vers la planche, réservés aux profils qui cherchent.

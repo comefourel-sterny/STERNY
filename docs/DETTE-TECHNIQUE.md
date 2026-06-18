@@ -41,9 +41,9 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 
 ## Code smell à nettoyer
 
-12. **Fallback mort dans matchScore** (`RecherchePage.jsx` ligne ~653) : `futureHostDates[0] || logement.disponibilites_pattern[0]` est inatteignable après le filter ligne 647. À simplifier ou commenter.
+12. **Fallback mort dans matchScore** (`RecherchePage.jsx` ligne ~653) : `futureHostDates[0] || logement.disponibilites_pattern[0]` est inatteignable après le filter ligne 647. À simplifier ou commenter. — RÉSOLUE 2026-06-18 (commit feat b18484b) : tout l'ancien calcul inline matchScore est supprimé, remplacé par couvertureSemaines ; le fallback n'existe plus.
 
-13. **Logique normaliseur matchScore** : `userDansPerioDeHote.length || 1` à expliciter en JSDoc (partiellement traité en Phase 1d).
+13. **Logique normaliseur matchScore** : `userDansPerioDeHote.length || 1` à expliciter en JSDoc (partiellement traité en Phase 1d). — RÉSOLUE 2026-06-18 (commit feat b18484b) : le normaliseur || 1 a disparu avec l'ancien calcul (couvertureSemaines ne divise pas).
 
 ## Bugs backend confirmés par audit du schéma distant (23 avril 2026)
 
@@ -448,6 +448,7 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 3. **Classement par probabilité d'acceptation de l'hôte.** Prioriser les hôtes ayant déjà ≥3 semaines contiguës comblées ; ne pas remonter en tête les annonces à 0 semaine comblée.
 
 **MAJ 2026-06-15 (conv 61) — DIRECTION actée : recherche = accompagnement guidé à la couverture.** Tranche les sous-pb 3 (composition multi-logements : « le plus couvrant d'abord » puis recalcul des trous), 5 (UX parcours fragmenté : candidatures parallèles non bloquantes, au rythme du locataire) et 6 (promesse : couverture maximisée, jamais garantie, §566). Dénominateur du score = total des semaines cherchées du locataire (Y), pas la fenêtre d'annonce. Sous-pb 4 (tension hôte/locataire) non tranché. Premier code = moteur de couverture (fonction pure → liste des semaines couvertes par logement). Audit conv 61 : score inline RecherchePage.jsx:432-451, matching.js code mort, semaines_reservees vide + RLS 0 policy. Détail : VISION « Recherche = accompagnement guidé à la couverture » + ETAT-COURANT bloc conv 61.
+**MAJ 2026-06-18 (conv 65) — pièces 2+4 livrées (commit feat b18484b).** couvertureSemaines branché sur les cartes /recherche (badge « X de tes Y », pastille ✓ Couvert / X/Y sem., tri par couvertes décroissant, dénominateur = total cherché). Décision : le dénominateur deviendra « restant à couvrir » (total moins semaines SIGNÉES) — pièce 3, via le registre semaines_reservees (#93). Modèle 3 états acté (à couvrir / en attente=candidaté / couvert=signé) ; seule la signature retire une semaine. Détail : VISION + ETAT bloc 2026-06-18.
 
 ## DETTE #49 — Extraction des étapes de CompleterProfilPage en sous-composants
 
@@ -1141,3 +1142,9 @@ Audit conv 63 (lecture seule). 6 surfaces calendrier coexistent. Incohérences :
 4. Vert : planche #86EFAC (corrigé conv 63) vs vert succès maison #10B981/#22C55E ailleurs.
 5. Trois « neutres » distincts pour des idées proches (indispo / hors-recherche / passé).
 À unifier en chantier dédié (hors session planche). La planche conv 63 adopte déjà les bonnes conventions. Ne jamais toucher RhythmManualBuilder (RÈGLE Nº 1).
+
+## DETTE #100 — Token Mapbox `pk.` en dur dans RecherchePage.jsx
+**Statut** : ouverte, hygiène. Repérée 2026-06-18 (conv 65) au grep secrets pré-commit.
+**Constat** : RecherchePage.jsx (≈ l.14) contient `const MAPBOX_TOKEN = 'pk....'` en dur. Token **publishable/public** (préfixe `pk.`), déjà visible dans le bundle client par nature → PAS un secret serveur, présence dans le repo non aggravante. MAIS sans restriction de domaine, un tiers peut consommer le quota Mapbox.
+**À faire** (non bloquant) : (1) restreindre le token à tes domaines dans le dashboard Mapbox (Account → Tokens → URL restrictions) — la vraie protection ; (2) à terme, le passer en `import.meta.env.VITE_MAPBOX_TOKEN`. La rotation n'a de sens qu'AVEC la restriction.
+**Priorité** : basse. **Réf** : RecherchePage.jsx (MAPBOX_TOKEN).

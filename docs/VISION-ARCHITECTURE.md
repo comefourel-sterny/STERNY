@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 15 juin 2026 (conv 61) — décision : recherche = accompagnement guidé à la couverture (parcours candidature, dénominateur du score).
+**Dernière mise à jour** : 18 juin 2026 (conv 65) — dénominateur de couverture = semaines RESTANT à couvrir (pas le total) ; modèle 3 états de la semaine (à couvrir / en attente / couvert).
 
 ---
 
@@ -612,5 +612,17 @@ Depuis le dashboard d'un alternant connecté, la recherche devient un parcours g
 **Fil conducteur UX.** Le calendrier des semaines cherchées (la « planche à découper », idees-en-attente) est affiché en permanence et se colore à chaque logement retenu — il rend visible le « quand » et le « combien reste-t-il », là où un pourcentage seul échouait.
 
 **Surfaces.** Parcours guidé = dashboard connecté (rythme requis). /recherche publique reste la vitrine visiteur par ville (conv 55).
+
+### Dénominateur = semaines RESTANT à couvrir ; modèle 3 états (décision conv 65, 18 juin 2026, raffine #48 et §610-612)
+Le « Y » du badge (« couvre X de tes Y semaines ») n'est PAS figé au total des semaines cherchées : c'est le nombre de semaines **encore à couvrir**. Dès qu'une semaine est sécurisée par un contrat **signé** du locataire, elle quitte le calcul (retirée de X comme de Y). À qui il ne reste que 3 semaines, les annonces sont notées sur 3 (« Couvert » si les 3, « 1/3 » sinon), jamais ramenées au total d'origine. Cohérent §577 : une annonce dont toutes les semaines utiles au locataire sont signées cesse de lui être proposée.
+
+**Trois états d'une semaine** (raffine la planche §612) :
+- **À couvrir** : aucune action. Compte dans le restant. (blanc + loupe)
+- **En attente** : le locataire a **candidaté**, l'hôte n'a pas signé. Compte ENCORE dans le restant (candidater ne réserve rien §381 ; un refus rouvre la semaine §610). État visuel intermédiaire à définir (ni blanc, ni vert) — garde le parcours « vivant » sans mentir sur ce qui est gagné.
+- **Couvert** : contrat **signé**. Quitte le calcul. (vert)
+
+**Seule la signature** sécurise une semaine. Détection : semaine signée = ligne au registre `semaines_reservees` (rempli uniquement à la signature, #93) ; semaine en attente = présente dans une `candidature` mais pas au registre.
+
+**Cas de base actuel** : aucune signature, registre vide → restant = total → déjà le comportement du patch pièces 2/4 (conv 65). La soustraction des semaines signées se branchera avec la signature (#93 tranche B / pièce 3) ; `couvertureSemaines` est déjà prête (on lui passera « cherchées moins signées »).
 
 *Document stable. Si une décision contredit un principe exposé ici, soit la décision doit être révisée, soit ce document doit être mis à jour (avec traçage en tête : date et nature du changement).*
