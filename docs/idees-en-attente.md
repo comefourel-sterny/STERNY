@@ -16,8 +16,7 @@ Constat (conv 37, 7 juin 2026) : la liste des écoles (`ECOLES`, `data/inscripti
 
 ## 2026-06-07 (conv 39) — observations à traiter
 - **Refonte page profil** (Côme) : la page d'édition profil (/profil/modifier, ModifierProfilPage, « Étape 1 sur 6 ») est à refaire (design/structure). À préciser.
-- **/parametres — résidu mineur (conv 64)** : la page fonctionne une fois connecté ; le "footer seul" était une session déconnectée, pas un bug. Reste un défaut basse priorité : un visiteur DÉCONNECTÉ voit une page vide au lieu d'être redirigé vers /connexion. Garde-fou de redirection à ajouter (DashboardLayout ou ParametresPage) si on veut durcir.
-- **Bug /profil** : ProfilPage affiche alert « Utilisateur non spécifié » + chargement infini. À investiguer (hors #83).
+- **Guard-rails /parametres & /profil → promus en DETTE #101 (18 juin 2026).** Constat consolidé : non-bug en prod (DashboardLayout redirige déjà ; blanc/spinner seulement en DEV via le bypass) ; vrai sujet = /profil conçue pour un profil tiers, /profil nu déclenche une alerte « Utilisateur non spécifié » (atteignable via l'entrée « Mon profil » du menu). Détail : DETTE #101.
 - **CSS mort** : .modal-pwd-group (et règles modale associées) dupliqué dans DashboardLocatairePage.css (~l.2527) sans JSX correspondant. Candidat au nettoyage.
 
 ## 2026-06-09 (conv 44) — Hiérarchie visuelle du dashboard locataire
@@ -40,3 +39,29 @@ Gratuit côté modèle : le multi-locataires (DETTE #93) stocke la demande comme
 - Recherche — aligner le design des cartes de logement de /recherche sur celui de la homepage (cohérence vitrine). Parqué, post-design planche (conv 63).
 
 - Planche hôte (miroir de la planche locataire) : « semaines à compléter » (semaines libres du logement à remplir) au lieu de « semaines à couvrir ». Même composant/mécanique, sémantique inversée — face offre de #93 (disponibilites_pattern moins le registre). Pour après l'Étape B.
+
+### 2026-06-18 (conv 67) — Revoir la page Logement (/logement) : vestiges de l'ancien modèle « location continue »
+Constat (Côme, captures) : la page détail annonce porte plusieurs restes du modèle continu (façon Airbnb classique), incohérents avec le modèle Sterny « à la semaine » :
+- calendrier « Disponibilités » en JOUR PAR JOUR (vue mensuelle, légende Disponible/Occupé/Sélectionné, orange) → ancien calendrier, à passer en vue SEMAINES (lundis ISO) ;
+- « Disponible du … jusqu'au … » = fenêtre continue, alors que la vraie dispo = semaines éparses (disponibilites_pattern) ;
+- « Durée minimum 3 mois » = logique bail continu, à requestionner pour la location à la semaine.
+Liens : recoupe DETTE #99 (couleurs calendrier, dont LogementPage .user-selected orange) mais va plus loin (problème de MODÈLE jour vs semaine). La refonte du calendrier dépend du modèle par semaines (couverture, registre semaines_reservees #93) → à faire dans la foulée du chantier recherche/#48, pas isolément.
+
+### 2026-06-18 (conv 67) — Système de réputation (profils + avis + notes), façon Airbnb/BlaBlaCar
+Idée Côme : enrichir les profils + ajouter avis et notes comme socle de confiance et levier de civilité/respect entre membres.
+Rationnel : le modèle à la semaine implique une rotation élevée (passages courts ; un locataire enchaîne plusieurs logements ; un logement accueille plusieurs locataires sur l'année). Spécificité Sterny structurante : les utilisateurs sont des CO-OCCUPANTS SUCCESSIFS du même logement — ils ne se croisent jamais, mais l'état laissé par l'un conditionne l'expérience du suivant. Relation inédite (ni Airbnb ni BlaBlaCar) → modèle de réputation à concevoir, pas à copier.
+Liens : page /profil existe (cf. #101, profil d'autrui via ?user_id) + AvisPage déjà dans le code (embryon, à auditer) ; s'imbrique dans candidature→contrat→fin de séjour ; lié multi-locataires #93 et matching #48 ; recoupe « Refonte page profil ».
+⚠️ Drapeau (au moment de concevoir, pas avant) : avis/notes PUBLICS sur des personnes = zone réglementée (RGPD, diffamation, droit de réponse, modération). Certains alternants ont moins de 18 ans → réputation publique touchant des mineurs = sujet sensible. Passage par un professionnel requis le moment venu ; ne rien présumer.
+
+### 2026-06-18 (conv 67) — Remettre au propre la landing d'attente sterny.co (page bricolée en urgence)
+Contexte : la landing « Lancement prochainement » (sterny.co, fichier a-propos.html) a été faite en urgence (panne d'ordi) → à reprendre proprement. Trois volets :
+1. EMAIL : le mail reçu après « Me prévenir » serait (À CONFIRMER) le template de l'ALERTE D'ANNONCE, incohérent. Créer un vrai email « inscription liste d'attente ». Lien : chantier emails Resend (#16).
+2. LOGO/FAVICON : remettre le logo proprement + le favicon (absent dans les résultats Google).
+3. TITRE : remplacer la balise titre « À propos de STERNY » par un titre adapté à une page d'attente (impact onglet + résultats Google). Lien SEO.
+Note : mini-chantier borné qui touche la PROD VISIBLE (prospects) → sans doute le plus rentable des quatre. Connexe (plus large) : la marque « Sterny » est noyée dans des homonymes Google (remorque Sternytent, etc.) = sujet SEO/visibilité à part. ⚠️ Collecte d'emails = base légale RGPD (consentement + finalité) à cadrer le moment venu.
+
+### 2026-06-18 (conv 67) — Version mobile : landing d'attente + plateforme (priorité « vitrine »)
+Constat (Côme, capture mobile) : la landing sterny.co est cassée sur mobile (logo non responsive qui DÉBORDE de l'écran → effet amateur). Argument terrain fort : le premier réflexe des gens à qui Côme parle = sortir leur téléphone ; aujourd'hui il doit s'excuser de l'absence de version mobile.
+Lien : recoupe DETTE #44 (UX mobile globale non aboutie).
+Séquencement voulu par Côme : (a) d'abord stabiliser la plateforme en version PC ; (b) revoir la version mobile « sans trop tarder » ensuite ; (c) revoir la landing d'attente (PC + mobile) EN MÊME TEMPS que la plateforme PC, car c'est la vitrine montrée aux prospects → converge avec l'idée « landing d'attente » ci-dessus en un seul mini-chantier.
+PRÉALABLE avant tout fix : localiser le fichier de la landing (a-propos.html) + son mode de déploiement (prod). Ne pas toucher à l'aveugle.
