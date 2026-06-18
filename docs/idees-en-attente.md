@@ -38,3 +38,5 @@ Gratuit côté modèle : le multi-locataires (DETTE #93) stocke la demande comme
 À cadrer avec : refonte barre de recherche (DETTE #47) et matching partiel / score (DETTE #48). Périmètre UI : sélecteur de semaine(s) sur le calendrier, état « je cherche pour ces semaines-là », affichage des annonces dont les semaines à découvert croisent la sélection.
 
 - Recherche — aligner le design des cartes de logement de /recherche sur celui de la homepage (cohérence vitrine). Parqué, post-design planche (conv 63).
+
+- Planche hôte (miroir de la planche locataire) : « semaines à compléter » (semaines libres du logement à remplir) au lieu de « semaines à couvrir ». Même composant/mécanique, sémantique inversée — face offre de #93 (disponibilites_pattern moins le registre). Pour après l'Étape B.

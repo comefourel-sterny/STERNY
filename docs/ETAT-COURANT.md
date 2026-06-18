@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 — planche B2.1 : vraies semaines branchées sur /mon-calendrier.
+**Dernière mise à jour** : 2026-06-18 — planche B2.2 : état vide soigné de /mon-calendrier.
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 — planche Étape B2.2 livrée : état vide soigné de /mon-calendrier
+B2.2 : si aucune semaine cherchée (pas de rythme OU aucune ville en 'recherche' — ex. hôte pur ou proprio), la planche affichait une grille grise + un faux résumé « entièrement couvert ». Corrigé.
+- PlancheCouverturePage.jsx : 3 états de rendu — enChargement → « Chargement… » ; estVide (semaines.length===0) → message sobre « Aucune semaine de recherche à afficher pour le moment. » ; sinon planche + résumé. Résumé masqué en chargement ET en estVide. Titre « Ton planning » conservé dans les 3 cas.
+- Cas réels d'état vide : hôte pur (a un rythme mais ne cherche pas) ; proprio (pas de rythme). Locataire inscrit (rythme obligatoire) → ne devrait pas arriver dans le flux normal ; l'état vide est un FILET. La vraie protection « qui voit la page » se joue en B3 (lien réservé aux profils qui cherchent, tant que la planche hôte n'existe pas).
+- Commit feat local (non poussé) ; voir git log.
+RESTE Étape B : B3 = 2 accès (burger « Mon calendrier » + bouton RythmeCarousel), avec gating à cadrer (lien réservé aux profils qui cherchent).
 
 ## 2026-06-18 — planche Étape B2.1 livrée : vraies semaines branchées sur /mon-calendrier
 B2.1 : la planche affiche les VRAIES semaines cherchées du locataire connecté (fin des données de démo).
