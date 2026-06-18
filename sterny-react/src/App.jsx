@@ -44,6 +44,7 @@ import { Navigate } from 'react-router-dom'
 import DashboardLocatairePage from './pages/dashboard/DashboardLocatairePage'
 import DashboardProprietairePage from './pages/dashboard/DashboardProprietairePage'
 import DashboardAdminPage from './pages/dashboard/DashboardAdminPage'
+import PlancheCouverturePage from './pages/dashboard/PlancheCouverturePage'
 
 // Annonce pages
 import CreerAnnoncePage from './pages/annonce/CreerAnnoncePage'
@@ -161,6 +162,9 @@ export default function App() {
           {/* Annonce */}
           <Route path="/annonce/creer" element={<CreerAnnoncePage />} />
           <Route path="/annonce/modifier" element={<ModifierAnnoncePage />} />
+
+          {/* Planche de couverture */}
+          <Route path="/mon-calendrier" element={<PlancheCouverturePage />} />
 
           {/* Parametres */}
           <Route path="/parametres" element={<ParametresPage />} />
