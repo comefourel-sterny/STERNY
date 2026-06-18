@@ -1,51 +1,20 @@
-// PlancheCouverturePage — page réelle de la « planche à découper » (Étape B1).
-// Parent de habillage du composant NU PlancheCouverture : cadre verre dépoli + en-tête
+// PlancheCouverturePage — page réelle de la « planche à découper » (Étape B2).
+// Parent d'habillage du composant NU PlancheCouverture : cadre verre dépoli + en-tête
 // « Ton planning » + résumé. Habillage 100% INLINE (pas de classe .dp-card, aucun import
 // CSS dashboard → on évite le couplage DETTE #35). Tout le visible est porté ici.
 //
-// B1 : alimentée par des DONNÉES EN DUR (copiées de la preview dev). PAS de fetch, pas de
-// deduireRecherche — le branchement des vraies semaines viendra en B2 ; les accès
-// menu/carrousel viendront en B3. Posée sur le fond réel du dashboard (#F4F5F7), sans
-// fond artificiel : on teste ici si le verre dépoli rend sur ce fond plat.
+// B2 : alimentée par les VRAIES semaines cherchées du locataire connecté. Branchement
+// repris verbatim de RecherchePage : fetch de la row users → deduireRecherche → semaines
+// (lundis ISO, futur). Mono-ville (1ʳᵉ entrée 'recherche') ; cas 2 villes parqué.
+// La planche s'ouvre sur l'ANNÉE de la 1ʳᵉ semaine cherchée. `couvert` reste false partout :
+// la couverture réelle (semaines logées) dépend des contrats, pas encore branchée.
 
+import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../../hooks/useAuth.jsx';
+import { supabaseClient } from '../../config/supabase';
+import { deduireRecherche } from '../../utils/deduireRecherche';
+import { academicYearForMonday } from '../../utils/academicYear';
 import PlancheCouverture from '../../components/rhythm/PlancheCouverture';
-import {
-  firstMondayForAcademicYear,
-  academicYearForMonday,
-} from '../../utils/academicYear';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-const ANNEE_DEMO = '2026-2027';
-
-function formatISO(ts) {
-  const d = new Date(ts);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-}
-
-// Données en dur (B1), identiques à la preview : alternant qui cherche dans sa ville d'école.
-// Motif 12 semaines (hors 7 / couvert 3 / à-couvrir 2) sur toute l'année scolaire.
-function genererDemo(yearStr) {
-  const map = {};
-  const motif = ['hors', 'couvert', 'hors', 'acouvrir', 'hors', 'couvert', 'hors', 'hors', 'couvert', 'acouvrir', 'hors', 'hors'];
-  let mondayTs = firstMondayForAcademicYear(yearStr);
-  let i = 0;
-  while (academicYearForMonday(formatISO(mondayTs)) === yearStr) {
-    const iso = formatISO(mondayTs);
-    const t = motif[i % motif.length];
-    if (t === 'couvert') {
-      map[iso] = { nature: 'ecole', cherchee: true, couvert: true };
-    } else if (t === 'acouvrir') {
-      map[iso] = { nature: 'ecole', cherchee: true, couvert: false };
-    } else {
-      map[iso] = { nature: 'entreprise', cherchee: false };
-    }
-    mondayTs += 7 * DAY_MS;
-    i++;
-  }
-  return map;
-}
-
-const ETATS_DEMO = genererDemo(ANNEE_DEMO);
 
 // Wrapper de page minimal (inline) : centrage horizontal + marges de respiration.
 // Aucune classe dashboard, aucun fond artificiel → la page se pose sur le fond réel (#F4F5F7).
@@ -64,23 +33,66 @@ const CARTE_STYLE = {
   boxShadow: '0 12px 40px rgba(30,41,59,0.12)',
   padding: 28,
 };
+const CHARGEMENT_STYLE = { fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif", fontSize: 15, color: '#9AA3B2', margin: 0 };
 
 export default function PlancheCouverturePage() {
-  // N = semaines cherchées encore à couvrir (cherchee && !couvert).
-  const aCouvrir = Object.values(ETATS_DEMO).filter((e) => e.cherchee === true && e.couvert === false).length;
+  const { user, loading: authLoading } = useAuth();
+
+  // Profil connecté → villes/semaines cherchées (branchement repris verbatim de RecherchePage).
+  const [deductionRecherche, setDeductionRecherche] = useState([]);
+  const [chargement, setChargement] = useState(true);
+
+  useEffect(() => {
+    if (!user) { setDeductionRecherche([]); setChargement(false); return; }
+    let annule = false;
+    setChargement(true);
+    (async () => {
+      const { data } = await supabaseClient
+        .from('users')
+        .select('type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
+        .eq('id', user.id)
+        .single();
+      if (annule) return;
+      setDeductionRecherche(data ? deduireRecherche(data) : []);
+      setChargement(false);
+    })();
+    return () => { annule = true; };
+  }, [user]);
+
+  // Mono-ville : 1ʳᵉ entrée 'recherche'. Semaines = lundis ISO (futur, triés) déjà filtrés par deduireRecherche.
+  const entree = deductionRecherche[0];
+  const semaines = useMemo(() => entree?.semaines || [], [entree]);
+
+  // Chaque semaine cherchée → { nature, cherchee:true, couvert:false } (couvert viendra avec les contrats).
+  const etatsParSemaine = useMemo(() => {
+    const map = {};
+    for (const lundi of semaines) {
+      map[lundi] = { nature: entree.nature, cherchee: true, couvert: false };
+    }
+    return map;
+  }, [semaines, entree]);
+
+  // Ouvre sur l'année de la 1ʳᵉ semaine cherchée ; sinon undefined → le composant retombe sur son défaut.
+  const anneeScolaireInitiale = semaines.length ? academicYearForMonday(semaines[0]) : undefined;
+
+  const aCouvrir = Object.values(etatsParSemaine).filter((e) => e.cherchee === true && e.couvert === false).length;
 
   return (
     <div style={PAGE_STYLE}>
       <div style={CARTE_STYLE}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, marginBottom: 18 }}>
           <h3 style={TITRE_STYLE}>Ton planning</h3>
-          <p style={RESUME_STYLE}>
-            {aCouvrir === 0
-              ? 'Ton planning est entièrement couvert'
-              : <>Il te reste <strong style={{ fontWeight: 600, color: '#6B7280' }}>{aCouvrir} {aCouvrir === 1 ? 'semaine' : 'semaines'}</strong> à couvrir</>}
-          </p>
+          {!(authLoading || chargement) && (
+            <p style={RESUME_STYLE}>
+              {aCouvrir === 0
+                ? 'Ton planning est entièrement couvert'
+                : <>Il te reste <strong style={{ fontWeight: 600, color: '#6B7280' }}>{aCouvrir} {aCouvrir === 1 ? 'semaine' : 'semaines'}</strong> à couvrir</>}
+            </p>
+          )}
         </div>
-        <PlancheCouverture etatsParSemaine={ETATS_DEMO} anneeScolaireInitiale={ANNEE_DEMO} />
+        {(authLoading || chargement)
+          ? <p style={CHARGEMENT_STYLE}>Chargement…</p>
+          : <PlancheCouverture etatsParSemaine={etatsParSemaine} anneeScolaireInitiale={anneeScolaireInitiale} />}
       </div>
     </div>
   );
