@@ -13,11 +13,13 @@
 // Posé plus tard dans une .dp-card parent (cf. preview /dev/planche-couverture).
 //
 // Props :
-//   etatsParSemaine      : objet { "YYYY-MM-DD" (lundi ISO) : { nature, cherchee, couvert } }
+//   etatsParSemaine      : objet { "YYYY-MM-DD" (lundi ISO) : { nature, cherchee, couvert, enAttente } }
 //                          nature  : 'ecole' (orange) | 'entreprise' (navy) — la couleur
 //                          cherchee: true = ville cherchée | false = déjà logé (gris neutre)
-//                          couvert : true = aplat plein nature (couvert) | false = aplat pâle + contour (à couvrir)
-//                          Rendu en aplats : aucune diagonale, aucune icône.
+//                          couvert : true = vert plein + check blanc coin | false = blanc + loupe coin (à couvrir)
+//                          enAttente: true = candidaté sans contrat signé → aplat ardoise #64748B + sablier coin
+//                                     (précédence : couvert > enAttente > à couvrir).
+//                          Icônes (loupe / sablier / check) toutes en coin bas-droite, via background-image SVG.
 //                          Semaine absente → gris neutre. Passé → prime → gris neutre.
 //   anneeScolaireInitiale: "YYYY-YYYY+1" (optionnel) ; défaut = année contenant aujourd'hui.
 //   className            : classe optionnelle sur le conteneur racine.
@@ -126,7 +128,10 @@ export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireI
                 modificateur = 'neutre';
               } else if (d.cherchee) {
                 const nat = d.nature === 'entreprise' ? 'entreprise' : 'ecole';
-                modificateur = d.couvert ? `${nat}-loge` : `${nat}-cherche`;
+                // Précédence : couvert (signé) > en attente (candidaté) > à couvrir.
+                if (d.couvert) modificateur = `${nat}-loge`;
+                else if (d.enAttente) modificateur = `${nat}-attente`;
+                else modificateur = `${nat}-cherche`;
               } else {
                 // Ville où l'alternant est déjà logé → contexte gris (nature non distinguée).
                 modificateur = 'contexte';

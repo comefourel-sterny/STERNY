@@ -97,18 +97,26 @@
 /* Maquette validée (planche-flou-v4) : grille régulière au point optique.
    La couleur encode la COUVERTURE (nature non distinguée). NET = à combler/comblé, FLOU = hors-sujet. */
 
-/* COUVERT (cherchée + logé) → vert plein, légère profondeur */
+/* COUVERT (cherchée + logé) → vert plein + check blanc (coin bas-droite) */
 .plc-cell.plc-ecole-loge,
 .plc-cell.plc-entreprise-loge {
-  background: #57B98C;
+  background: #57B98C url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='white'%20stroke-width='2.5'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M5%2012l5%205L20%207'/%3E%3C/svg%3E") right 3px bottom 3px / 11px no-repeat;
   box-shadow: 0 1px 5px rgba(30,41,59,0.16);
 }
 
-/* À COUVRIR (cherchée, pas encore logé) → blanc + loupe + contour (creux net à combler) */
+/* À COUVRIR (cherchée, pas encore logé) → blanc + loupe (coin bas-droite) + contour */
 .plc-cell.plc-ecole-cherche,
 .plc-cell.plc-entreprise-cherche {
-  background: #FFFFFF url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%3E%3Ccircle%20cx='10.5'%20cy='10.5'%20r='6.5'/%3E%3Cline%20x1='15.5'%20y1='15.5'%20x2='21'%20y2='21'/%3E%3C/svg%3E") center / 18px no-repeat;
+  background: #FFFFFF url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%3E%3Ccircle%20cx='10.5'%20cy='10.5'%20r='6.5'/%3E%3Cline%20x1='15.5'%20y1='15.5'%20x2='21'%20y2='21'/%3E%3C/svg%3E") right 3px bottom 3px / 11px no-repeat;
   border: 1.5px solid #B4BCC8;
+  box-shadow: 0 1px 4px rgba(30,41,59,0.08);
+}
+
+/* EN ATTENTE (cherchée + candidaté, pas encore signé) → gris ardoise + sablier blanc (coin bas-droite). */
+.plc-cell.plc-ecole-attente,
+.plc-cell.plc-entreprise-attente {
+  background: #64748B url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%203h12M6%2021h12M8%203v3l4%204%204-4V3M8%2021v-3l4-4%204%204v3'/%3E%3C/svg%3E") right 3px bottom 3px / 11px no-repeat;
+  border: 1.5px solid #475569;
   box-shadow: 0 1px 4px rgba(30,41,59,0.08);
 }
 

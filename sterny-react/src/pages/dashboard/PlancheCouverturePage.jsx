@@ -40,20 +40,29 @@ export default function PlancheCouverturePage() {
 
   // Profil connecté → villes/semaines cherchées (branchement repris verbatim de RecherchePage).
   const [deductionRecherche, setDeductionRecherche] = useState([]);
+  // Candidatures du locataire → semaines « en attente » (candidaté, pas encore signé).
+  const [candidatures, setCandidatures] = useState([]);
   const [chargement, setChargement] = useState(true);
 
   useEffect(() => {
-    if (!user) { setDeductionRecherche([]); setChargement(false); return; }
+    if (!user) { setDeductionRecherche([]); setCandidatures([]); setChargement(false); return; }
     let annule = false;
     setChargement(true);
     (async () => {
-      const { data } = await supabaseClient
-        .from('users')
-        .select('type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
-        .eq('id', user.id)
-        .single();
+      const [{ data: userRow }, { data: candRows }] = await Promise.all([
+        supabaseClient
+          .from('users')
+          .select('type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
+          .eq('id', user.id)
+          .single(),
+        supabaseClient
+          .from('candidatures')
+          .select('semaines_demandees, statut, annonce_id, annonces(disponibilites_pattern)')
+          .eq('locataire_id', user.id),
+      ]);
       if (annule) return;
-      setDeductionRecherche(data ? deduireRecherche(data) : []);
+      setDeductionRecherche(userRow ? deduireRecherche(userRow) : []);
+      setCandidatures(candRows || []);
       setChargement(false);
     })();
     return () => { annule = true; };
@@ -63,14 +72,33 @@ export default function PlancheCouverturePage() {
   const entree = deductionRecherche[0];
   const semaines = useMemo(() => entree?.semaines || [], [entree]);
 
-  // Chaque semaine cherchée → { nature, cherchee:true, couvert:false } (couvert viendra avec les contrats).
+  // Semaines « en attente » = semaines cherchées sur lesquelles le locataire a candidaté
+  // sans contrat signé (candidater ne réserve rien — VISION §381/§621). Une candidature
+  // refusée rouvre la semaine (§610) → ignorée. Source prioritaire : candidatures.semaines_demandees ;
+  // repli sur disponibilites_pattern de l'annonce si la candidature est antérieure à cette
+  // colonne (vieille candidature → liste vide). annonces peut être null (annonce supprimée).
+  const semainesEnAttente = useMemo(() => {
+    const cherchees = new Set(semaines);
+    const enAttente = new Set();
+    for (const c of candidatures) {
+      if (c.statut === 'refusee') continue;
+      const demandees = Array.isArray(c.semaines_demandees) ? c.semaines_demandees : [];
+      const source = demandees.length > 0 ? demandees : (c.annonces?.disponibilites_pattern || []);
+      for (const lundi of source) {
+        if (cherchees.has(lundi)) enAttente.add(lundi);
+      }
+    }
+    return enAttente;
+  }, [candidatures, semaines]);
+
+  // Chaque semaine cherchée → { nature, cherchee:true, couvert:false, enAttente } (couvert viendra avec les contrats).
   const etatsParSemaine = useMemo(() => {
     const map = {};
     for (const lundi of semaines) {
-      map[lundi] = { nature: entree.nature, cherchee: true, couvert: false };
+      map[lundi] = { nature: entree.nature, cherchee: true, couvert: false, enAttente: semainesEnAttente.has(lundi) };
     }
     return map;
-  }, [semaines, entree]);
+  }, [semaines, entree, semainesEnAttente]);
 
   // Ouvre sur l'année de la 1ʳᵉ semaine cherchée ; sinon undefined → le composant retombe sur son défaut.
   const anneeScolaireInitiale = semaines.length ? academicYearForMonday(semaines[0]) : undefined;
