@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 (conv 66) — badge Dispo retiré des cartes /recherche.
+**Dernière mise à jour** : 2026-06-18 (conv 66) — planche : 3e état « en attente » branché.
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 (conv 66) — planche : 3e état « en attente » branché (modèle 3 états visible)
+La planche /mon-calendrier affiche le 2e des 3 états (VISION conv 65). « En attente » = semaine cherchée où le locataire a candidaté sans contrat signé (candidater ne réserve rien §381/§621 ; un refus rouvre la semaine §610).
+- Donnée (PlancheCouverturePage.jsx) : fetch candidatures du locataire (Promise.all avec le fetch users) ; Set semainesEnAttente = pour chaque candidature non 'refusee', candidatures.semaines_demandees EN PRIORITÉ, repli = semaines cherchées ∩ annonces.disponibilites_pattern si liste vide (vieille candidature) ; intersecté avec les semaines cherchées. etatsParSemaine enrichi de enAttente.
+- Affichage (PlancheCouverture.jsx) : précédence couvert > enAttente > à couvrir.
+- Résumé « Il te reste N à couvrir » inchangé : une semaine en attente reste comptée à couvrir (pas gagnée, §621).
+DÉCISION VISUELLE (logée) — icônes de la planche en COIN bas-droite (right 3px bottom 3px / 11px, background-image SVG) : à couvrir = blanc + loupe grise (déplacée du centre au coin) ; en attente = gris ardoise #64748B + bordure #475569 + sablier blanc ; couvert = vert #57B98C + check blanc (prêt, s'affichera quand couvert sera branché). Ardoise choisie après rejet de l'ambre (trop « jaune »/hors registre pro) et du slate clair #CBD5E1 (trop proche du gris hors-sujet #D9DEE6). Coin retenu vs centré (centré jugé « enfantin »). Cohérent VISION conv 63 (couleur = couverture) ; les icônes renforcent lisibilité sans légende + accessibilité daltonien.
+RESTE planche : « couvert » (vert) viendra avec la signature / registre semaines_reservees (#93 tranche B / pièce 3). Multi-villes et planche hôte parqués.
 
 ## 2026-06-18 (conv 66) — cartes /recherche : badge « Dispo dans X sem. » retiré (solde le TODO du bloc conv 65)
 Le badge dispo (bas de carte) est supprimé : obsolète depuis le matching au planning près. La pastille de couverture (✓ Couvert / X-Y sem., haut de carte) est désormais la SEULE info de dispo sur la carte. Les DEUX états du badge retirés, y compris « Disponible maintenant » (générique, non personnalisé, potentiellement contradictoire avec la pastille : une annonce pouvait afficher « Disponible maintenant » en couvrant 0 semaine cherchée).
