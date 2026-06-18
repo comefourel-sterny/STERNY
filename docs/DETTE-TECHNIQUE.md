@@ -1114,12 +1114,13 @@ Même famille que #86 :
 
 **MAJ 2026-06-17 (conv 64) — volet dropdown villes /recherche fermé (commit fd37739).** Les classes `.ville-suggestions` / `.ville-suggestion-item` existent en **4 copies** dans le CSS chargé : `index.css` (GLOBAL, bave sur toutes les pages), `HomePage.css` (scopé `.hero`), `RecherchePage.css` (désormais scopé `.recherche-hero`), `InscriptionPartagerPage.css` (nu). **Cause racine = la copie nue de `src/index.css`** (radius 12px, item 11px/14px, + `:first-child`/`:last-child` radius 12px) chargée partout → écrasait les pages à règles nues selon l'ordre du bundle. Contournement appliqué (homepage conv 56 + /recherche conv 64) : scoper sous `.hero` / `.recherche-hero` (0,1,0 → 0,2,0). Sur /recherche aussi : `.search-field` repassé en `position: static` (inline JSX + CSS) pour que le dropdown s'ancre sur `.recherche-hero .search-bar` (toute la barre). **Reste (chantier séparé, RISQUÉ car global)** : supprimer la copie nue d'`index.css` + factoriser un composant `<VilleAutocomplete>` partagé. Ne pas toucher `index.css` sans auditer les pages qui en dépendent (InscriptionPartager, ModifierProfil au singulier, etc.).
 
-## DETTE #96 — Code mort homepage : champs Type d'alternance / Rythme / Dates
+## DETTE #96 — Code mort homepage : champs Type d'alternance / Rythme / Dates [RÉSOLUE]
 **Statut** : ouverte, nettoyage chore. Repérée 2026-06-13 (conv 55).
 **Constat** : la refonte « ville seule » (conv 55) a retiré le JSX des champs Type d'alternance, Rythme et Dates, mais conservé volontairement leurs états/handlers/constantes (alternanceType, selectAlternance, selectRythme + son navigate autonome, ALTERNANCE_OPTIONS/RYTHME_OPTIONS, dateDebut/dateFin, datePickerRef…) = code mort. Vérif anti-crash faite (datePickerRef lu uniquement par un useEffect null-safe).
 **À faire** : commit chore supprimant ces états/handlers/constantes inutilisés dans HomePage.jsx, une fois la barre stabilisée.
 **Priorité** : basse, non bloquant.
 **Réf** : HomePage.jsx (section search-bar + states/handlers associés).
+**MAJ 2026-06-18 — RÉSOLUE (commit chore fd134b2).** Code mort retiré de HomePage.jsx après audit lecture seule (0 occurrence dans le JSX ; ALTERNANCE_OPTIONS/RYTHME_OPTIONS non partagées hors fichier). Retrait : 2 constantes, 10 états/ref (alternanceType/Label/Open, rythmeValue/Label/Open, showDatePicker, dateDebut, dateFin, datePickerRef), 2 useEffect morts (« close dropdowns » + « close date picker »), 2 handlers (selectAlternance, selectRythme + navigate), 3 dérivées (showRythmeField, currentRythmeOptions, showDateField). La fonction rechercher ne fabrique plus que le param ville (cohérent conv 55). Aucun changement de comportement (valeurs toujours vides). Build vert, 0 orphelin ; imports useEffect/useRef conservés.
 
 ## DETTE #97 — Alertes (« Sois notifié ») à rebrancher sur les semaines réelles
 **Statut** : ouverte. Repérée conv 59 (15 juin 2026), chantier 5b-1.
