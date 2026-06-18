@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 — planche Étape B1 livrée : page /mon-calendrier (habillage + route), données en dur.
+**Dernière mise à jour** : 2026-06-18 — planche B2.1 : vraies semaines branchées sur /mon-calendrier.
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 — planche Étape B2.1 livrée : vraies semaines branchées sur /mon-calendrier
+B2.1 : la planche affiche les VRAIES semaines cherchées du locataire connecté (fin des données de démo).
+- PlancheCouverturePage.jsx : ETATS_DEMO/genererDemo retirés. Branchement repris de RecherchePage : useAuth → fetch row users (type_user, ville_*/statut_ville_*, rhythm_calendar) → deduireRecherche → 1ʳᵉ entrée 'recherche' (mono-ville). etatsParSemaine = chaque lundi cherché → { nature, cherchee:true, couvert:false } (couvert false partout : le vert « couvert » viendra avec la donnée contrats/semaines_reservees, hors Étape B). anneeScolaireInitiale = academicYearForMonday(semaines[0]) → planche ouverte sur l'année des semaines cherchées (corrige le piège « planche grise » de computeDefaultAcademicYear). Garde-fou « Chargement… » pendant le fetch. academicYear/RhythmManualBuilder non touchés (import seul).
+- Validé runtime (locataire@sterny.test) : planche sur 2026-2027, 2 semaines école futures en « à couvrir » (blanc+loupe), résumé « Il te reste 2 semaines à couvrir ». NB : compte de test pauvre (4 semaines de rythme) → planche peu remplie, normal.
+- Commit feat local (non poussé) ; voir git log.
+RESTE Étape B : B2.2 = état vide soigné si aucune recherche/rythme (aujourd'hui : planche grise + faux résumé « entièrement couvert » dans ce cas). B3 = 2 accès (burger « Mon calendrier » + bouton RythmeCarousel).
 
 ## 2026-06-18 — planche Étape B1 livrée : page dédiée /mon-calendrier (habillage + route), données encore en dur
 B1 du branchement de la planche : elle sort du mode preview, validée runtime (Côme).
