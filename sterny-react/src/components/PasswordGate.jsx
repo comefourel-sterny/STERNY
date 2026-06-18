@@ -119,7 +119,7 @@ export default function PasswordGate({ children }) {
       background: '#1E293B', padding: '40px 20px', fontFamily: font, position: 'relative'
     }}>
       {/* Logo en grand */}
-      <img src="/Logo-Sterny-V1-white.svg" alt="STERNY" style={{ height: '180px', marginBottom: '40px' }} />
+      <img src="/Logo-Sterny-V1-white.svg" alt="STERNY" style={{ maxHeight: '180px', maxWidth: '85vw', height: 'auto', width: 'auto', marginBottom: '40px' }} />
 
       {/* Lancement */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
