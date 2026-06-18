@@ -88,6 +88,8 @@ export default function UserDropdown() {
 
   const locataireItems = [
     { icon: <IconUser />, label: 'Mon profil', to: '/profil' },
+    // Réservé aux profils qui cherchent (locataire + les_deux via la branche else) ; pas de planche hôte pour l'instant (B3).
+    { icon: <IconCalendar />, label: 'Mon calendrier', to: '/mon-calendrier' },
     { icon: <IconSettings />, label: 'Parametres du compte', to: '/parametres' },
     { icon: <IconHelp />, label: 'Besoin d\'aide ?', to: '/faq' },
     'separator',
