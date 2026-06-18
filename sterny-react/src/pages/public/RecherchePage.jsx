@@ -192,19 +192,6 @@ function getQuartier(adresse, ville) {
   return 'Centre-ville'
 }
 
-function getDispoBadge(logement) {
-  if (logement.disponibilites_pattern && logement.disponibilites_pattern.length > 0) {
-    const premiereDispo = new Date(logement.disponibilites_pattern[0])
-    const maintenant = new Date()
-    const diffJours = Math.ceil((premiereDispo - maintenant) / (1000 * 60 * 60 * 24))
-    if (diffJours <= 0) {
-      return { className: 'available', text: 'Disponible maintenant' }
-    }
-    return { className: 'soon', text: `Dispo dans ${Math.ceil(diffJours / 7)} sem.` }
-  }
-  return { className: 'available', text: 'Disponible maintenant' }
-}
-
 // ========== COMPONENT ==========
 
 export default function RecherchePage() {
@@ -1267,7 +1254,6 @@ export default function RecherchePage() {
                 const hasPhoto = logement.photos && logement.photos.length > 0
                 const villeFormatee = getQuartier(logement.adresse, logement.ville)
                 const surfaceText = logement.surface ? ` \u00B7 ${logement.surface} m\u00B2` : ''
-                const dispo = getDispoBadge(logement)
 
                 let matchBadge = null
                 if (logement.totalCherchees > 0) {
@@ -1306,7 +1292,6 @@ export default function RecherchePage() {
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                         {villeFormatee}{surfaceText}
                       </div>
-                      <span className={`rch-card-badge ${dispo.className}`}>{dispo.text}</span>
                     </div>
                   </Link>
                 )
