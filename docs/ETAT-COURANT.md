@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 — planche B2.2 : état vide soigné de /mon-calendrier.
+**Dernière mise à jour** : 2026-06-18 — planche B3 : 2 accès vers /mon-calendrier (clôture Étape B).
 
 ---
 
@@ -16,6 +16,18 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 — planche Étape B3 livrée : 2 accès vers /mon-calendrier (clôture Étape B)
+B3 : 2 points d'entrée vers la planche, réservés aux profils qui cherchent.
+- B3.1 (menu) : item « Mon calendrier » → /mon-calendrier dans UserDropdown (le menu réellement monté ; HamburgerMenu = code mort #21/#103, non touché). Placé dans locataireItems (2e, sous « Mon profil »). Gate NATUREL : locataireItems = branche else couvrant locataire ET les_deux ; hote/proprietaire ont leurs propres tableaux → exclus sans condition ajoutée. IconCalendar préexistait (réutilisée).
+- B3.2 (carte TON RYTHME) : lien « Voir mon calendrier » → /mon-calendrier dans l'en-tête du RythmeCarousel (haut-droite). /dashboard sert les 3 types alternants → gate EXPLICITE : DashboardLocatairePage passe lienCalendrier = /mon-calendrier si type_user ∈ {locataire, les_deux}, sinon null ; RythmeCarousel (bête) rend le lien si la prop est là. Gris #64748B, typo alignée sur « Aujourd'hui » (classe .rythme-today + override couleur).
+- Toggle en-tête carrousel : un seul emplacement haut-droite qui bascule — semaine courante → « Voir mon calendrier » ; navigué (offset≠0) → bouton « Aujourd'hui ». Corrige le « Aujourd'hui » qui flottait au centre quand les deux coexistaient.
+- Validé runtime : locataire voit les 2 accès ; hote n'en voit aucun.
+- 2 commits feat (B3.1, puis B3.2 amendé pour folder toggle + typo) ; voir git log.
+
+DÉCISION PRODUIT — gate de la planche : les accès à /mon-calendrier sont réservés aux profils qui CHERCHENT (type_user 'locataire' ou 'les_deux'). Exclus : 'hote' pur et 'proprietaire'. Raison : la planche ne gère aujourd'hui que le côté locataire (« semaines à couvrir »). La version HÔTE miroir (« semaines à compléter ») est parquée (idees-en-attente). L'état vide soigné B2.2 reste le filet si un les_deux sans recherche atteint l'URL en direct. Gate exprimé via la structure (locataireItems) côté menu, via une prop côté carrousel — même set de profils des deux côtés.
+
+ÉTAPE B TERMINÉE (planche sortie de preview : page+route B1, vraies semaines B2.1, état vide B2.2, 2 accès B3). RESTE planche (hors Étape B) : vert « couvert » viendra avec la donnée contrats/semaines_reservees ; multi-villes parqué ; planche hôte parquée.
 
 ## 2026-06-18 — planche Étape B2.2 livrée : état vide soigné de /mon-calendrier
 B2.2 : si aucune semaine cherchée (pas de rythme OU aucune ville en 'recherche' — ex. hôte pur ou proprio), la planche affichait une grille grise + un faux résumé « entièrement couvert ». Corrigé.
