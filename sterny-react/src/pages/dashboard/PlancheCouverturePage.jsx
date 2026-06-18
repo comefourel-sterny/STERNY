@@ -77,12 +77,16 @@ export default function PlancheCouverturePage() {
 
   const aCouvrir = Object.values(etatsParSemaine).filter((e) => e.cherchee === true && e.couvert === false).length;
 
+  // États de rendu : chargement → estVide (aucune semaine cherchée) → rempli.
+  const enChargement = authLoading || chargement;
+  const estVide = !enChargement && semaines.length === 0;
+
   return (
     <div style={PAGE_STYLE}>
       <div style={CARTE_STYLE}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, marginBottom: 18 }}>
           <h3 style={TITRE_STYLE}>Ton planning</h3>
-          {!(authLoading || chargement) && (
+          {!enChargement && !estVide && (
             <p style={RESUME_STYLE}>
               {aCouvrir === 0
                 ? 'Ton planning est entièrement couvert'
@@ -90,9 +94,11 @@ export default function PlancheCouverturePage() {
             </p>
           )}
         </div>
-        {(authLoading || chargement)
+        {enChargement
           ? <p style={CHARGEMENT_STYLE}>Chargement…</p>
-          : <PlancheCouverture etatsParSemaine={etatsParSemaine} anneeScolaireInitiale={anneeScolaireInitiale} />}
+          : estVide
+            ? <p style={CHARGEMENT_STYLE}>Aucune semaine de recherche à afficher pour le moment.</p>
+            : <PlancheCouverture etatsParSemaine={etatsParSemaine} anneeScolaireInitiale={anneeScolaireInitiale} />}
       </div>
     </div>
   );
