@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-17 — planche : habillage validé (couleur = couverture, point optique flou).
+**Dernière mise à jour** : 2026-06-18 — planche Étape B1 livrée : page /mon-calendrier (habillage + route), données en dur.
 
 ---
 
@@ -16,6 +16,15 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-18 — planche Étape B1 livrée : page dédiée /mon-calendrier (habillage + route), données encore en dur
+B1 du branchement de la planche : elle sort du mode preview, validée runtime (Côme).
+- Créé sterny-react/src/pages/dashboard/PlancheCouverturePage.jsx (vrai parent). Habillage 100% INLINE porté depuis la preview : cadre verre dépoli (rgba(255,255,255,0.72) + backdrop-filter blur 14 saturate 140), en-tête « Ton planning » (valeurs de .dp-card-title copiées en local), résumé gris « Il te reste N semaines à couvrir » (N dérivé des états). PAS de className dp-card, AUCUN import CSS dashboard → couplage DETTE #35 évité. Composant NU PlancheCouverture alimenté par ETATS_DEMO (données EN DUR copiées de la preview).
+- Route /mon-calendrier ajoutée sous <DashboardLayout/> (App.jsx) ; preview DEV /dev/planche-couverture laissée intacte.
+- Hauteur : PAGE_STYLE.minHeight = calc(100vh - 85px). DashboardLayout = fragment nu Navbar+Outlet+Footer (aucun flex/min-height) → c'est la page qui pousse le footer ; navbar = 85px (.nav-grid, dans le flux, border-box global, pas de padding-top body/#root). Divergence ASSUMÉE vs voisines (qui gardent 100vh brut) : sur cette page courte, footer pile sous le bord, visible au 1er scroll.
+- Verre dépoli VALIDÉ sur fond gris #F4F5F7 : la réserve « rend peu sur fond plat » est levée (carte détachée par ombre + bord clair).
+- Commit feat local (non poussé) ; voir git log.
+RESTE Étape B : B2 = brancher les VRAIES semaines (deduireRecherche → 1ʳᵉ entrée 'recherche' → lundis ISO ; ouvrir sur l'ANNÉE des semaines cherchées, pas computeDefaultAcademicYear ; mono-ville livré, cas 2 villes parqué). B3 = 2 accès (item burger « Mon calendrier » + bouton sur RythmeCarousel, même destination ; carrousel touché UNIQUEMENT pour ce lien).
 
 ## 2026-06-17 — planche : habillage VALIDÉ (couleur = couverture, point optique flou)
 Direction validée à partir d'un croquis de Côme, après plusieurs pistes rejetées : grille régulière resserrée au **point optique** — semaines à combler / comblées **nettes**, hors-sujet **flouté** en retrait. Lisible sans légende (objectif de départ atteint).
