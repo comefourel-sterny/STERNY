@@ -101,3 +101,6 @@ RESTE :
 - EMAIL : prod appelle toujours send-alert-email (mauvais template) au lieu de
   send-landing-email. Trancher table alertes vs dédiée + RGPD. Session dédiée.
 - SEO : <meta robots noindex,nofollow> toujours en place → décision à prendre (indexer ou non).
+
+## 2026-06-19 (conv 70) — Page « À propos » : revoir titre + description
+Titre actuel « À propos de STERNY » → /a-propos.html. ⚠️ a-propos.html = .html statique probablement MORT en prod (SPA Vercel). Description « Découvrez l'histoire de STERNY, la plateforme née du constat qu'aucune solution de logement n'était adaptée aux étudiants en alternance. » = lourde, à reformuler. AVANT de retoucher : localiser où vit ce texte (fichier mort ? route React ? meta SEO/OG ?) + vérifier si la page est servie.
