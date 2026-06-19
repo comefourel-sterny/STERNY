@@ -124,17 +124,20 @@ export default function PasswordGate({ children }) {
       background: '#1E293B', padding: '40px 20px', fontFamily: font, position: 'relative'
     }}>
       {/* Logo en grand */}
-      <img src="/Logo-Sterny-V1-white.svg" alt="STERNY" style={{ maxHeight: '180px', maxWidth: '85vw', height: 'auto', width: 'auto', marginBottom: '40px' }} />
+      <img src="/Logo-Sterny-V1-white.svg" alt="STERNY" style={{ maxHeight: '180px', maxWidth: '85vw', height: 'auto', width: 'auto', marginBottom: '26px' }} />
 
       {/* Lancement */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
         <span style={{
-          display: 'inline-block', padding: '6px 18px', background: 'rgba(232, 98, 42, 0.15)',
-          border: '1px solid rgba(232, 98, 42, 0.3)', borderRadius: '50px',
-          fontSize: '14px', fontWeight: 600, color: '#E8622A', letterSpacing: '0.3px', marginBottom: '14px'
+          display: 'inline-block', padding: '7px 17px', background: 'transparent',
+          border: '1px solid rgba(232,98,42,0.45)', borderRadius: '999px',
+          fontSize: '13px', fontWeight: 500, color: '#E8622A', letterSpacing: '0.3px', marginBottom: '22px'
         }}>Lancement prochainement</span>
-        <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.5 }}>
-          La plateforme de mise en relation entre étudiants en alternance pour trouver leur logement à leur rythme.
+        <p style={{ maxWidth: '320px', textAlign: 'center', color: '#CBD5E1', fontSize: '16px', fontWeight: 500, lineHeight: 1.4, margin: '0 0 6px', textWrap: 'balance' }}>
+          La plateforme pour tous les alternants
+        </p>
+        <p style={{ maxWidth: '320px', textAlign: 'center', color: '#94A3B8', fontSize: '14px', lineHeight: 1.5, margin: 0, textWrap: 'balance' }}>
+          Propose ou trouve ton logement à la semaine.
         </p>
       </div>
 
@@ -144,7 +147,7 @@ export default function PasswordGate({ children }) {
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="ton@email.com"
           style={{
-            flex: 1, padding: '13px 18px', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px',
+            flex: 1, height: '44px', padding: '0 16px', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px',
             fontSize: '14px', fontFamily: 'inherit', color: 'white', outline: 'none', background: 'rgba(255,255,255,0.08)',
             boxSizing: 'border-box', transition: 'border-color 0.2s', minWidth: 0
           }}
@@ -152,9 +155,9 @@ export default function PasswordGate({ children }) {
           onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.15)'}
         />
         <button type="submit" style={{
-          padding: '13px 24px', background: '#E8622A', color: 'white', border: 'none',
+          height: '44px', padding: '0 16px', background: '#E8622A', color: 'white', border: 'none',
           borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
-          fontFamily: 'inherit', whiteSpace: 'nowrap', transition: 'background 0.2s'
+          fontFamily: 'inherit', whiteSpace: 'nowrap', boxSizing: 'border-box', transition: 'background 0.2s'
         }}>Me prévenir</button>
       </form>
       {msgText && (
