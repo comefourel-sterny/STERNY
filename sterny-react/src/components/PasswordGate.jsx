@@ -180,7 +180,7 @@ export default function PasswordGate({ children }) {
       {/* Lien connexion tout en bas */}
       <button onClick={() => setView('login')} style={{
         background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: '12px',
-        position: 'absolute', bottom: '24px', cursor: 'pointer', fontFamily: font, transition: 'color 0.2s',
+        position: 'absolute', bottom: 'calc(24px + env(safe-area-inset-bottom))', cursor: 'pointer', fontFamily: font, transition: 'color 0.2s',
         display: 'flex', alignItems: 'center'
       }}
         onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
