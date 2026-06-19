@@ -1157,3 +1157,15 @@ Audit conv 63 (lecture seule). 6 surfaces calendrier coexistent. Incohérences :
 **Repli gracieux (optionnel).** Modèle PlancheCouverturePage (coupe le chargement + écran de repli quand user=null, PlancheCouverturePage.jsx:46), réutilisable sur /parametres et /profil pour éviter blanc/spinner même en DEV.
 **Priorité** : basse, non bloquant.
 **Réf** : DashboardLayout.jsx:24, ParametresPage.jsx:43, ProfilPage.jsx:67, UserDropdown.jsx:90/107, AvisPage.jsx:261, PlancheCouverturePage.jsx:46.
+
+## DETTE #102 — Lien « Connexion » de la landing sans safe-area iOS
+**Statut** : ouverte, à corriger (priorité relevée depuis que viewport-fit=cover est live en prod). Repérée conv 68, contexte conv 69.
+**Constat** : dans PasswordGate (vue landing), le lien « Connexion » est en `position:absolute, bottom:'24px'` (PasswordGate.jsx ~l.170) **sans** `env(safe-area-inset-bottom)`. Sur iOS Safari, la barre d'outils basse recouvre la zone ~bottom 0→80px → le lien passe dessous. Aggravé maintenant que **viewport-fit=cover est LIVE** (index.html) : le contenu s'étend sous les barres, donc le `bottom:24px` est mesuré jusqu'au bord physique → lien potentiellement trop bas/masqué.
+**À faire** : `bottom: 'calc(24px + env(safe-area-inset-bottom))'` sur le bouton Connexion. Patch isolé, 1 ligne.
+**Priorité** : moyenne. **Réf** : PasswordGate.jsx (bouton Connexion, ~l.170).
+
+## DETTE #103 — viewport-fit=cover global → dashboards potentiellement sous l'encoche iOS
+**Statut** : ouverte, à surveiller. Introduite conv 69 (commit 6a6df63, prod 49b7626).
+**Constat** : `viewport-fit=cover` (index.html, meta viewport) est **GLOBAL** à toute l'app React, pas seulement la landing. Effet voulu sur la landing (fond étendu sous les barres iOS). Risque collatéral : sur les autres surfaces (dashboards équipe, en-têtes fixes), le contenu peut désormais passer **sous l'encoche / la barre de statut** (zones safe-area non compensées) → éléments hauts collés ou masqués.
+**À faire** : tester les dashboards sur iPhone ; si collision, ajouter un `padding`/`padding-top: env(safe-area-inset-top)` (et `-bottom` au besoin) sur les en-têtes/conteneurs concernés. Ne PAS retirer viewport-fit=cover (nécessaire à la landing).
+**Priorité** : basse à surveiller. **Réf** : index.html (meta viewport), surfaces dashboard.

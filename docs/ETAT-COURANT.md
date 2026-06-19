@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-18 (conv 66) — planche : 3e état « en attente » branché.
+**Dernière mise à jour** : 2026-06-19 (conv 69) — landing PasswordGate LIVE en prod (bords iOS réglés).
 
 ---
 
@@ -16,6 +16,11 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-19 (conv 69) — Landing PasswordGate LIVE en prod (bords iOS réglés)
+La page d'attente publique (PasswordGate, sterny.co) est **déployée en prod** : `origin/main = 49b7626`. Refonte composition (logo responsive 180px, badge contour orange, accroche 2 lignes « La plateforme pour tous les alternants » / « Propose ou trouve ton logement à la semaine. », champ long + bouton compact) + **bords iOS réglés** par 3 leviers : theme-color #1E293B, useEffect scopé (fond html+body navy seulement quand le gate public est affiché, restauré au déverrouillage → dashboards intacts), viewport-fit=cover (global). Validé iPhone.
+- **Déploiement** : la prod Vercel déploie depuis `main`, PAS feat (feat ~215 commits devant). La landing a été mise en prod via worktree `../sterny-landing-prod` (branche fix/landing-prod depuis origin/main) + cherry-pick des commits landing + `git push origin fix/landing-prod:main` (fast-forward). NE PAS merger feat → main.
+- **Reste à faire** (cf. DETTE #102/#103 + idees-en-attente conv 69) : P3 lien « Connexion » sans `env(safe-area-inset-bottom)` (à corriger maintenant que viewport-fit=cover est live) ; surveiller dashboards sous l'encoche (viewport-fit global) ; EMAIL prod appelle encore `send-alert-email` (mauvais template) au lieu de `send-landing-email` (session dédiée + RGPD) ; SEO `noindex,nofollow` toujours posé (décision à prendre).
 
 ## 2026-06-18 (conv 66) — planche : 3e état « en attente » branché (modèle 3 états visible)
 La planche /mon-calendrier affiche le 2e des 3 états (VISION conv 65). « En attente » = semaine cherchée où le locataire a candidaté sans contrat signé (candidater ne réserve rien §381/§621 ; un refus rouvre la semaine §610).
