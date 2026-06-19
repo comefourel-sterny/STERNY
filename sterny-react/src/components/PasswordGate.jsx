@@ -135,7 +135,7 @@ export default function PasswordGate({ children }) {
 
   return (
     <div style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       background: '#1E293B', padding: '40px 20px', fontFamily: font, position: 'relative'
     }}>
       {/* Logo en grand */}
