@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 69) — landing PasswordGate LIVE en prod (bords iOS réglés).
+**Dernière mise à jour** : 2026-06-19 (conv 70) — landing : email de bienvenue en prod + 3 bugs mobiles corrigés.
 
 ---
 
@@ -16,6 +16,12 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-19 (conv 70) — Landing : email de bienvenue en prod + 3 bugs mobiles corrigés (tout validé)
+EMAIL : send-landing-email DÉPLOYÉE en prod (n'y était pas, DETTE #17) + vérifiée (curl 200 + mail reçu). PasswordGate : swap send-alert-email -> send-landing-email (body { email }) ; insert `alertes` inchangé (commit feat 0eda4bf). Mail de bienvenue CONFIRMÉ reçu en prod. NB : un test précoce avait fait croire à un non-envoi (délai de livraison / alias « Masquer mon e-mail » Apple) = fausse alerte, la prod envoie bien.
+MOBILE (3 fixes, validés iPhone en prod) : (1) champ email 14->16px = plus de zoom iOS (cf2f7f8) ; (2) message succès/erreur toujours monté + minHeight 18px + bascule opacité = ne décale plus la page (b89e19a) ; (3) wrapper vue d'attente 100vh->100dvh = plus de scroll parasite + bouton Connexion au-dessus de la barre Safari (e355073, complète #102). Vue login (l.93) garde 100vh (latent, non touché).
+PROD : origin/main 49b7626 -> 7386c7b (worktree + cherry-pick fast-forward). feat = e355073, poussé sur origin/feat en clôture.
+Reste landing : table waitlist + RGPD = Piste B (gated pro, Q-DPO-008..013) ; SEO noindex (décision) ; #103 viewport-fit dashboards.
 
 ## 2026-06-19 (conv 69) — Landing PasswordGate LIVE en prod (bords iOS réglés)
 La page d'attente publique (PasswordGate, sterny.co) est **déployée en prod** : `origin/main = 49b7626`. Refonte composition (logo responsive 180px, badge contour orange, accroche 2 lignes « La plateforme pour tous les alternants » / « Propose ou trouve ton logement à la semaine. », champ long + bouton compact) + **bords iOS réglés** par 3 leviers : theme-color #1E293B, useEffect scopé (fond html+body navy seulement quand le gate public est affiché, restauré au déverrouillage → dashboards intacts), viewport-fit=cover (global). Validé iPhone.

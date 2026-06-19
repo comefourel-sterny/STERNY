@@ -159,6 +159,15 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
 
+### 2.4 Collecte email liste d'attente (landing)
+
+> [Q-DPO-008] Base légale de la collecte d'emails via la landing (« Me prévenir au lancement ») : le consentement par saisie + clic suffit-il, ou faut-il une case à cocher / formulation dédiée ?
+> [Q-DPO-009] Mention d'information minimale à afficher au point de collecte (responsable de traitement = entité Sterny, finalité, durée, droits, contact) ? Lien vers politique de confidentialité suffisant ou mention in-situ ?
+> [Q-DPO-010] Durée de conservation d'un email de liste d'attente non converti ? Purge automatique ? Suppression à la création de compte (déduplication) ?
+> [Q-DPO-011] Finalité strictement « prévenir du lancement », ou réutilisation marketing possible ? Consentement distinct par finalité ?
+> [Q-DPO-012] Désinscription / retrait du consentement (lien dans l'email) + suppression complète y compris chez le sous-traitant Resend ?
+> [Q-DPO-013] Régularisation du stock d'emails déjà collectés (possiblement sans mention conforme) : information a posteriori, base légale, ou suppression ? Faut-il suspendre/ajuster la collecte en attendant ?
+
 ---
 
 ## 3. Notaire — baux et formalités logement
