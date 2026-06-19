@@ -54,7 +54,7 @@ export default function PasswordGate({ children }) {
       } else {
         setEmailMsg('success:Merci ! Tu seras prévenu au lancement.')
         try {
-          await supabaseClient.functions.invoke('send-alert-email', { body: { email: email.trim(), ville: null, rythme: null } })
+          await supabaseClient.functions.invoke('send-landing-email', { body: { email: email.trim() } })
         } catch (emailErr) {
           console.warn('Email de bienvenue non envoyé:', emailErr)
         }
