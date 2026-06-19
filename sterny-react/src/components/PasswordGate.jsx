@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Agentation } from 'agentation'
 import { supabaseClient } from '../config/supabase'
 
@@ -66,6 +66,21 @@ export default function PasswordGate({ children }) {
     }
     setTimeout(() => setEmailMsg(''), 5000)
   }, [email])
+
+  // Fond navy plein écran (html + body) tant que le gate public est affiché : supprime
+  // les bords clairs iOS (barre haute, flou bas). Restauré dès le déverrouillage / démontage
+  // → les dashboards clairs ne sont jamais affectés.
+  useEffect(() => {
+    if (unlocked) return
+    const prevHtmlBg = document.documentElement.style.background
+    const prevBodyBg = document.body.style.background
+    document.documentElement.style.background = '#1E293B'
+    document.body.style.background = '#1E293B'
+    return () => {
+      document.documentElement.style.background = prevHtmlBg
+      document.body.style.background = prevBodyBg
+    }
+  }, [unlocked])
 
   if (unlocked) return children
 
