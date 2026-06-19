@@ -28,43 +28,40 @@ serve(async (req) => {
 
     const htmlEmail = `
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
 </head>
-<body style="margin: 0; padding: 0; background-color: #F1F5F9; font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #F1F5F9; padding: 40px 20px;">
+<body style="margin:0; padding:0; background-color:#F4F5F7; font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F4F5F7; padding:40px 20px;">
     <tr>
       <td align="center">
-        <table width="480" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
+        <table role="presentation" width="460" cellpadding="0" cellspacing="0" style="width:460px; max-width:460px; background-color:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
           <tr>
-            <td style="padding: 32px 32px 16px; text-align: center;">
-              <img src="https://rkffpmuhyvwwgfbdqmqr.supabase.co/storage/v1/object/public/public-assets/Logo-Sterny-V1.png" alt="STERNY" style="height: 48px; width: auto;" />
+            <td align="center" style="background-color:#1E293B; padding:34px 32px 30px;">
+              <img src="https://rkffpmuhyvwwgfbdqmqr.supabase.co/storage/v1/object/public/public-assets/Logo-Sterny-V1-white.png" alt="STERNY" width="134" height="44" style="display:block; width:134px; height:44px; border:0; outline:none; text-decoration:none;" />
+              <div style="width:32px; height:3px; background-color:#E8622A; border-radius:2px; margin:13px auto 0;"></div>
             </td>
           </tr>
           <tr>
-            <td style="padding: 36px 32px 32px;">
-              <h2 style="margin: 0 0 16px; font-size: 20px; font-weight: 700; color: #1E293B;">Bienvenue sur STERNY !</h2>
-              <p style="font-size: 15px; line-height: 1.6; color: #475569; margin: 0 0 24px;">
-                Merci pour ton inscription ! Tu fais partie des premiers à découvrir STERNY, la plateforme de mise en relation entre étudiants en alternance pour trouver leur logement à leur rythme.
-              </p>
-              <div style="background: #F8FAFC; border-radius: 8px; padding: 16px; margin: 0 0 24px; border-left: 3px solid #FF6B35;">
-                <p style="font-size: 14px; color: #64748B; margin: 0;">Tu seras <strong style="color: #1E293B;">prévenu en avant-première</strong> dès le lancement de la plateforme.</p>
-              </div>
-              <p style="font-size: 15px; line-height: 1.6; color: #475569; margin: 0 0 24px;">
-                En attendant, on prépare tout pour te proposer la meilleure expérience possible. Reste connecté !
-              </p>
-              <p style="font-size: 13px; line-height: 1.5; color: #CBD5E1; margin: 0; text-align: center;">
-                Tu n'as pas demandé à être prévenu ? Ignore simplement cet email.
-              </p>
+            <td align="center" style="padding:36px 30px 32px; text-align:center;">
+              <h1 style="margin:0 0 18px; font-size:21px; font-weight:700; color:#1E293B;">Bienvenue !</h1>
+              <p style="margin:0 0 8px; font-size:15px; line-height:1.6; color:#475569;">Merci pour ton inscription !</p>
+              <p style="margin:0; font-size:15px; line-height:1.6; color:#E8622A; font-weight:500;">On te préviendra dès le lancement de STERNY.</p>
             </td>
           </tr>
           <tr>
-            <td style="padding: 20px 32px; border-top: 1px solid #F1F5F9;">
-              <p style="margin: 0; font-size: 12px; color: #94A3B8; text-align: center;">
-                STERNY — Le logement pensé pour les alternants
-              </p>
+            <td align="center" style="padding:18px 30px; border-top:1px solid #EEF1F5; text-align:center;">
+              <p style="margin:0; font-size:12px; color:#94A3B8;">STERNY — Le logement pensé pour les alternants</p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" width="460" cellpadding="0" cellspacing="0" style="width:460px; max-width:460px;">
+          <tr>
+            <td align="center" style="padding:22px 16px 6px; text-align:center;">
+              <p style="margin:0; font-size:13px; line-height:1.5; color:#94A3B8;">Tu n'as pas demandé à être prévenu ? Ignore simplement cet email.</p>
             </td>
           </tr>
         </table>
@@ -83,7 +80,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "STERNY <noreply@sterny.co>",
         to: [email],
-        subject: "Bienvenue sur STERNY — Tu seras prévenu au lancement !",
+        subject: "Merci ! On te prévient dès le lancement de STERNY",
         html: htmlEmail,
       }),
     });
