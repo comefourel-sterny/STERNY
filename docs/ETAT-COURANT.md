@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 70) — landing : email de bienvenue en prod + 3 bugs mobiles corrigés.
+**Dernière mise à jour** : 2026-06-19 (conv 71) — mail de bienvenue redesigné + déployé.
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-19 (conv 71) — Landing : mail de bienvenue redesigné (design + message) + déployé
+Refonte du template send-landing-email (supabase/functions/send-landing-email/index.ts), déployé en prod et validé par envoi réel (rendu Gmail OK).
+- DESIGN : bandeau navy #1E293B + logo BLANC (nouveau Logo-Sterny-V1-white.png uploadé dans bucket public-assets ; l'ancien template pointait le logo sombre) + fin trait orange #E8622A ; corps blanc centré aéré ; carte 460px radius 16px ; fond #F4F5F7 ; footer marque dans la carte ; mention « ignore cet email » SOUS la carte. Email-safe (tables + inline + color-scheme light only). Suppression de l'encadré à filet #FF6B35 et de la soupe de gris.
+- MESSAGE : sujet « Merci ! On te prévient dès le lancement de STERNY » ; titre « Bienvenue ! » ; corps 2 lignes (« Merci pour ton inscription ! » + « On te préviendra dès le lancement de STERNY. » orange). Retrait des formulations creuses et de l'ancien « mise en relation entre étudiants ».
+- DÉCISION (logée DETTE #16) : ce mail = GABARIT DE RÉFÉRENCE pour la refonte des 5 autres templates email.
+- Git : commit feat sur feat/unification-inscription.
 
 ## 2026-06-19 (conv 70) — Landing : email de bienvenue en prod + 3 bugs mobiles corrigés (tout validé)
 EMAIL : send-landing-email DÉPLOYÉE en prod (n'y était pas, DETTE #17) + vérifiée (curl 200 + mail reçu). PasswordGate : swap send-alert-email -> send-landing-email (body { email }) ; insert `alertes` inchangé (commit feat 0eda4bf). Mail de bienvenue CONFIRMÉ reçu en prod. NB : un test précoce avait fait croire à un non-envoi (délai de livraison / alias « Masquer mon e-mail » Apple) = fausse alerte, la prod envoie bien.

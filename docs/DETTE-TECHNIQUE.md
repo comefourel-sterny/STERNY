@@ -69,6 +69,7 @@ Les codes B1, B2, M2, M3, m1 viennent de l'audit initial du matching Sterny
 ## Design des emails transactionnels à refaire
 
 16. **Design des templates email Resend à refondre** : les 6 Edge Functions d'envoi d'email (`send-alert-email`, `send-landing-email`, `send-proprietaire-invitation`, `send-recu-paiement`, `send-fin-bail-email`, `send-relance-impaye-email`) contiennent chacune un template HTML inline dans `supabase/functions/<nom>/index.ts`. Les designs actuels ne sont pas au niveau du design system Sterny (Navy `#1E293B`, Orange `#E8622A`, DM Sans, `border-radius: 20px`). Constat fait le 24 avril après réception du test de `send-alert-email`. À traiter une fois tous les aspects techniques opérationnels, en dernière priorité. Scope : uniformisation visuelle sur les 6 templates, cohérence avec la charte sterny.co, responsive mobile, respect des contraintes email (tables, inline styles, fonts système en fallback).
+   **MAJ 2026-06-19 (conv 71)** : `send-landing-email` refait + déployé → sert de GABARIT DE RÉFÉRENCE pour les 5 autres templates. Grammaire validée : bandeau navy #1E293B + logo blanc (Logo-Sterny-V1-white.png, bucket public-assets), accent orange #E8622A, corps blanc centré aéré, carte 460px radius 16px, fond #F4F5F7, mention légale hors carte, email-safe (tables + inline + color-scheme light only). Reproduire cette grammaire sur les 5 restants plutôt que re-concevoir.
 
 ## Désynchro code local ↔ prod sur Edge Functions
 
