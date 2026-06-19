@@ -163,7 +163,7 @@ export default function PasswordGate({ children }) {
           placeholder="ton@email.com"
           style={{
             flex: 1, height: '44px', padding: '0 16px', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px',
-            fontSize: '14px', fontFamily: 'inherit', color: 'white', outline: 'none', background: 'rgba(255,255,255,0.08)',
+            fontSize: '16px', fontFamily: 'inherit', color: 'white', outline: 'none', background: 'rgba(255,255,255,0.08)',
             boxSizing: 'border-box', transition: 'border-color 0.2s', minWidth: 0
           }}
           onFocus={(e) => e.target.style.borderColor = '#E8622A'}
