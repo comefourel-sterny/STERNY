@@ -72,3 +72,32 @@ Constat (Côme, capture mobile) : la landing sterny.co est cassée sur mobile (l
 Lien : recoupe DETTE #44 (UX mobile globale non aboutie).
 Séquencement voulu par Côme : (a) d'abord stabiliser la plateforme en version PC ; (b) revoir la version mobile « sans trop tarder » ensuite ; (c) revoir la landing d'attente (PC + mobile) EN MÊME TEMPS que la plateforme PC, car c'est la vitrine montrée aux prospects → converge avec l'idée « landing d'attente » ci-dessus en un seul mini-chantier.
 PRÉALABLE avant tout fix : localiser le fichier de la landing (a-propos.html) + son mode de déploiement (prod). Ne pas toucher à l'aveugle.
+
+## AVANCEMENT 2026-06-19 (conv 69) — Landing LIVE en prod + bords iOS réglés
+
+DÉPLOIEMENT (apprentissage clé, réutilisable) :
+- La prod Vercel (sterny.co + sterny.vercel.app) déploie depuis `main`, PAS depuis feat.
+- feat est ~215 commits devant main → merger feat publierait tout le chantier. NE PAS le faire.
+- Déployer UNIQUEMENT la landing : worktree `../sterny-landing-prod` (branche fix/landing-prod
+  depuis origin/main) + cherry-pick des commits landing depuis feat + `git push origin
+  fix/landing-prod:main` (fast-forward propre).
+
+LANDING (PasswordGate.jsx + index.html) — en prod, validée iPhone :
+- Refonte composition : logo responsive 180px, badge contour orange, accroche 2 lignes
+  (« La plateforme pour tous les alternants » / « Propose ou trouve ton logement à la semaine. »),
+  champ long + bouton « Me prévenir » compact.
+- Bords iOS réglés par 3 leviers : (1) theme-color #1E293B index.html ; (2) useEffect scopé
+  dans PasswordGate (fond html+body navy SEULEMENT quand le gate public est affiché, restauré
+  au déverrouillage) ; (3) viewport-fit=cover index.html (GLOBAL). Ce sont (2)+(3) qui ont
+  supprimé les bandes blanches ; theme-color seul ne suffisait pas sur l'iOS de Côme.
+
+ÉTAT GIT : origin/main = 49b7626 (PROD). feat poussée à 6a6df63 (mêmes fixes + chantier).
+
+RESTE :
+- P3 : lien « Connexion » (PasswordGate, bottom:24px sans env()). viewport-fit=cover désormais
+  live → il peut être trop bas. Fix = bottom: calc(24px + env(safe-area-inset-bottom)).
+- viewport-fit=cover est GLOBAL : surveiller que les dashboards équipe ne soient pas collés
+  sous l'encoche ; si oui, padding safe-area sur leurs en-têtes.
+- EMAIL : prod appelle toujours send-alert-email (mauvais template) au lieu de
+  send-landing-email. Trancher table alertes vs dédiée + RGPD. Session dédiée.
+- SEO : <meta robots noindex,nofollow> toujours en place → décision à prendre (indexer ou non).
