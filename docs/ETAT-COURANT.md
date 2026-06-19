@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 71) — mail de bienvenue redesigné + landing SEO (indexable + titre/description).
+**Dernière mise à jour** : 2026-06-19 (conv 71) — mail de bienvenue + SEO en prod ; décision table waitlist dédiée (à faire en session dédiée).
 
 ---
 
@@ -24,6 +24,7 @@ Refonte du template send-landing-email (supabase/functions/send-landing-email/in
 - DÉCISION (logée DETTE #16) : ce mail = GABARIT DE RÉFÉRENCE pour la refonte des 5 autres templates email.
 - Git : commit feat sur feat/unification-inscription.
 - SEO LANDING : robots noindex→index,follow + nouveau titre « Sterny — La plateforme de logement pour les alternants » + description/OG/twitter alignés sur le doc Le Poool. Déployé en prod (main 2e06b75, worktree + cherry-pick FF, jamais de merge feat→main). Vérif clé : le « À propos de STERNY » vu dans Google était un VIEUX CACHE (tout le site était noindex), PAS une page statique vivante — la page statique est bien morte. RESTE : (a) www vs non-www (sterny.co redirige 307 vers www mais canonical = non-www → aligner côté Vercel) ; (b) og-image.png à vérifier/créer ; (c) Google Search Console à configurer. Re-indexation Google = jours/semaines, pas immédiat.
+- DÉCISION : table WAITLIST DÉDIÉE (tranche la Piste B « table alertes vs dédiée »). Détail + périmètre dans idees-en-attente. Notif d'inscription (email admin) scopée mais NON construite → intégrée à ce chantier. À faire en session dédiée.
 
 ## 2026-06-19 (conv 70) — Landing : email de bienvenue en prod + 3 bugs mobiles corrigés (tout validé)
 EMAIL : send-landing-email DÉPLOYÉE en prod (n'y était pas, DETTE #17) + vérifiée (curl 200 + mail reçu). PasswordGate : swap send-alert-email -> send-landing-email (body { email }) ; insert `alertes` inchangé (commit feat 0eda4bf). Mail de bienvenue CONFIRMÉ reçu en prod. NB : un test précoce avait fait croire à un non-envoi (délai de livraison / alias « Masquer mon e-mail » Apple) = fausse alerte, la prod envoie bien.
