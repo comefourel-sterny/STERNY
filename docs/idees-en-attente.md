@@ -4,6 +4,7 @@ Liste vivante des idées et tâches non priorisées, à reconsidérer plus tard.
 
 ## Liste
 
+- 2026-06-19 (conv 71) — SEO landing : décision « indexer » ACTÉE (noindex retiré, en prod). Suites : (a) www vs non-www — sterny.co redirige 307 vers www alors que canonical = sterny.co → choisir le domaine principal (reco : sterny.co) puis aligner redirection Vercel + canonical ; (b) og-image.png (aperçu au partage) à vérifier/créer ; (c) Google Search Console (vérif domaine via DNS + demander l'indexation de la home) pour accélérer le re-crawl et remplacer le vieux cache « À propos ».
 - 2026-06-19 (conv 71) — Incohérence orange de marque : le logo Sterny utilise #FF6B35 (vu dans Logo-Sterny-V1-white.svg), la charte dit #E8622A. À trancher un jour (aligner logo sur charte, ou l'inverse). Sans impact email actuel.
 - 2026-04-30 — Améliorer la signature email Gmail : ajouter une photo de profil professionnelle de Côme + un sigle Sterny carré (160x160 PNG, fond navy intégré, version remplie pas en trait fin pour rester lisible à 80px). Brief logo carré à inclure dans la prochaine itération de l'identité visuelle.
 - 2026-04-30 — Créer un fichier docs/templates-mails.md regroupant les templates d'emails standardisés à utiliser : prise de contact incubateur, demande RDV expert-comptable, demande autorisation responsable alternance école, sollicitation alternant pour entretien recherche utilisateur, relance J+5 sans réponse.
