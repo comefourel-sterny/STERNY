@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 72) — RLS `alertes` durcie (lecture + DELETE) ; triggers prod confirmés absents ; chantier waitlist en cours.
+**Dernière mise à jour** : 2026-06-19 (conv 73) — table waitlist dédiée créée en prod (étape 1/5).
 
 ---
 
@@ -16,6 +16,15 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-19 (conv 73) — Waitlist : table dédiée `waitlist` créée en prod (étape 1/5)
+Étape 1 du chantier waitlist (ordre figé conv 71/72) livrée. Table `public.waitlist` créée en PROD via éditeur SQL (pattern conv 72 : db push impossible depuis feat ≠ main). Transaction begin/commit, entièrement réversible (rollback = DROP TABLE). Migration `20260619204938_create_waitlist_table.sql` au repo (commit feat 8c7bdca sur feat/unification-inscription). Ledger migration prod non marqué (assumé, pattern conv 72).
+- SCHÉMA (minimal, email seul — fin du mélange waitlist/alerte-produit) : `id` uuid PK gen_random_uuid() · `email` text NOT NULL UNIQUE · `created_at` timestamptz NOT NULL default now() · `consentement_at` timestamptz NULLABLE sans default.
+- DÉCOUVERTE : `alertes` n'a AUCUNE contrainte UNIQUE sur email (snapshot 20260421082830, PK sur id seulement) → la branche « doublon » de PasswordGate (error.message.includes('duplicate')) ne se déclenchait probablement jamais sur alertes (doublons empilés). `waitlist.email UNIQUE` rend cette détection fonctionnelle après repoint (étape 2).
+- DÉCISION RGPD (gated DPO) : `consentement_at` JAMAIS stampé à l'insert (saisir un email sans case + finalité ≠ consentement valide RGPD). Colonne anticipée, reste NULL jusqu'à une UX de consentement validée DPO (Q-DPO-008→013). Fondation technique seulement.
+- RLS (leçons #105, aucune erreur d'alertes reproduite) : RLS activé ; INSERT public anon+authenticated (1 seule policy `waitlist_insert_public`, with_check true) ; SELECT admin-only `waitlist_select_admin` is_admin() ; DELETE admin-only `waitlist_delete_admin` is_admin() ; aucune policy UPDATE ; grants explicites. Emails jamais lisibles via clé anon (fuite #105 impossible by design). Vérifié en prod (pg_policies = 3 lignes conformes).
+- SANS AUCUN TRIGGER (VISION §533 + #106 : ne pas répliquer le trigger d'alertes).
+RESTE chantier (ordre figé) : (2) repoint PasswordGate.handleEmail → écrit dans waitlist (plus alertes), garder la détection doublon ; (3) migrer les 22 candidates d'alertes (user_id/ville/rythme null) vers waitlist en PRÉSERVANT created_at + ON CONFLICT DO NOTHING (alertes peut contenir des doublons, pas de contrainte unique) ; (4) notif NOTIFY_EMAIL (2e fetch Resend non bloquant dans send-landing-email) ; (5) compteur/courbe inscrits. Annexe : SEO landing + page À propos.
 
 ## 2026-06-19 (conv 72) — Sécurité : fuite de lecture sur `alertes` colmatée (chantier waitlist en cours)
 Audit RLS de `alertes` (préalable au chantier table waitlist dédiée). Trouvaille majeure : 2 policies `SELECT … USING (true)` (`Lecture publique alertes` anon+auth ; `alertes_select` auth) exposaient TOUS les emails collectés via la clé anon publique. CORRIGÉ en prod (SQL editor, 2 DROP POLICY) → restent `alertes_select_own` + `admin_select_all` (vérifié). Migration `20260619201252_harden_alertes_rls.sql` enregistrée au repo (feat). NB : appliqué via SQL editor, PAS `db push` (feat ≠ main) → prod corrigée, ledger de migration prod non marqué (assumé pour un hotfix policy).
