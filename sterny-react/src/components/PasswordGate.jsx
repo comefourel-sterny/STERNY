@@ -44,7 +44,7 @@ export default function PasswordGate({ children }) {
     e.preventDefault()
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailMsg('error:Merci de vérifier ton adresse email'); setTimeout(() => setEmailMsg(''), 3000); return }
     try {
-      const { error } = await supabaseClient.from('alertes').insert({ email: email.trim(), ville: null, rythme: null })
+      const { error } = await supabaseClient.from('waitlist').insert({ email: email.trim() })
       if (error) {
         if (error.message && error.message.includes('duplicate')) {
           setEmailMsg('success:Tu es déjà inscrit ! On te préviendra au lancement.')
