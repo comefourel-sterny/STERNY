@@ -175,12 +175,12 @@ export default function PasswordGate({ children }) {
           fontFamily: 'inherit', whiteSpace: 'nowrap', boxSizing: 'border-box', transition: 'background 0.2s'
         }}>Me prévenir</button>
       </form>
-      {msgText && (
-        <p style={{
-          fontSize: '13px', margin: '8px 0 0', fontWeight: 500, textAlign: 'center', maxWidth: '400px', width: '100%',
-          color: msgType === 'error' ? '#EF4444' : 'rgba(16, 185, 129, 0.8)'
-        }}>{msgText}</p>
-      )}
+      <p style={{
+        fontSize: '13px', margin: '8px 0 0', fontWeight: 500, textAlign: 'center',
+        maxWidth: '400px', width: '100%', minHeight: '18px',
+        color: msgType === 'error' ? '#EF4444' : 'rgba(16,185,129,0.8)',
+        opacity: msgText ? 1 : 0, transition: 'opacity 0.15s'
+      }}>{msgText || ' '}</p>
 
       {/* Lien connexion tout en bas */}
       <button onClick={() => setView('login')} style={{
