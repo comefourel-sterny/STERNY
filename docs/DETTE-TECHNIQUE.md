@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-15 (conv 59) — DETTE #97 (alertes) + #98 (tiroir Filtres) ; 5b-1 livré.
+**Dernière mise à jour** : 2026-06-15 (conv 59) — DETTE #97 (alertes) + #98 (tiroir Filtres) ; 5b-1 livré ; #105/#106 (RLS+triggers alertes).
 
 ## Nomenclature des bugs
 
@@ -1173,3 +1173,13 @@ Audit conv 63 (lecture seule). 6 surfaces calendrier coexistent. Incohérences :
 
 ## DETTE #104 — Clés Supabase legacy en voie de dépréciation (frontend à migrer)
 Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOCAL (VITE_SUPABASE_KEY) est une clé legacy, rejetée par la gateway Functions (UNAUTHORIZED_LEGACY_JWT au curl ; 500 sur fonctions en local). La PROD fonctionne (mail reçu) -> PAS un blocage prod actuel, mais à terme les legacy seront coupées. À faire (basse priorité) : vérifier la clé utilisée par la prod Vercel ; migrer VITE_SUPABASE_KEY (local + Vercel) vers sb_publishable_ ; vérifier tous les appels de fonctions. NB test manuel d'une Edge Function : clé publishable sb_publishable_ en header apikey + Authorization.
+
+## DETTE #105 — RLS de `alertes` trop permissive (fuite lecture corrigée ; DELETE-any + inserts redondants ouverts)
+**Constat (audit conv 72, 19 juin 2026)** : policies trop larges sur `alertes`.
+- 🔴 Lecture (CORRIGÉ le 19/06) : 2 policies `SELECT … USING (true)` — `Lecture publique alertes` (anon+authenticated) et `alertes_select` (authenticated) — laissaient lire tous les emails via la clé anon publique. Supprimées en prod + migration `…_harden_alertes_rls.sql`. Restent `alertes_select_own` + `admin_select_all` (vérifié).
+- 🟠 DELETE-any (OUVERT) : `alertes_delete` (authenticated, USING true) laisse tout user connecté supprimer n'importe quelle ligne. À retirer après vérif que le dashboard supprime bien par user_id (couvert par `alertes_delete_own`).
+- 🟡 Inserts redondants (bruit) : 3 policies INSERT se recouvrent (`Permettre insertion anonyme`, `Anyone can insert alerts`, `alertes_insert`). Insert public voulu mais doublonné ; nettoyage non urgent.
+⚠️ RGPD : si des emails réels ont été exposés en prod, la question « incident à notifier (CNIL) » relève du DPO — ne pas présumer, à poser au pro.
+
+## DETTE #106 — Triggers `alertes` (`send-alert-on-insert`) : double-envoi potentiel + à ne pas répliquer sur waitlist
+**Constat (audit conv 72)** : `alertes` porte `send-alert-on-insert` (`supabase_functions.http_request → send-alert-email`) + `on_new_alerte → handle_new_alerte()` (migration 20260421082830), malgré la « suppression » notée DETTE #18. Tout INSERT peut déclencher `send-alert-email` EN PLUS de l'appel front → l'inscription landing enverrait « Bienvenue » (front) + « Ton alerte est activée » (trigger). Statut prod à confirmer (`tgenabled`). Conséquences : (1) vérifier/neutraliser en prod ; (2) la future table `waitlist` ne doit PAS porter ce trigger.

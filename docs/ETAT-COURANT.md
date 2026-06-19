@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 71) — mail de bienvenue + SEO en prod ; décision table waitlist dédiée (à faire en session dédiée).
+**Dernière mise à jour** : 2026-06-19 (conv 72) — fuite RLS lecture sur `alertes` colmatée ; chantier waitlist en cours.
 
 ---
 
@@ -16,6 +16,12 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-19 (conv 72) — Sécurité : fuite de lecture sur `alertes` colmatée (chantier waitlist en cours)
+Audit RLS de `alertes` (préalable au chantier table waitlist dédiée). Trouvaille majeure : 2 policies `SELECT … USING (true)` (`Lecture publique alertes` anon+auth ; `alertes_select` auth) exposaient TOUS les emails collectés via la clé anon publique. CORRIGÉ en prod (SQL editor, 2 DROP POLICY) → restent `alertes_select_own` + `admin_select_all` (vérifié). Migration `20260619201252_harden_alertes_rls.sql` enregistrée au repo (feat). NB : appliqué via SQL editor, PAS `db push` (feat ≠ main) → prod corrigée, ledger de migration prod non marqué (assumé pour un hotfix policy).
+Loggé DETTE #105 (RLS alertes : DELETE-any `alertes_delete` + inserts redondants encore ouverts) et #106 (triggers `send-alert-on-insert` double-envoi, statut prod à confirmer).
+Volumétrie `alertes` : 43 lignes = 1 alerte dashboard (user_id rempli) + 20 alertes RecherchePage avec ville + 22 candidates waitlist (user_id/ville/rythme null). Les 22 = cible de migration vers la future table waitlist (sans risque : une alerte sans ville ne filtre rien).
+RESTE chantier waitlist (ordre figé) : (0bis) trou DELETE `alertes_delete` ; (1) table `waitlist` dédiée (réversible, `consentement_at` anticipé, RLS insert public/lecture admin, SANS trigger) ; (2) repoint PasswordGate ; (3) migration des 22 lignes ; (4) notif NOTIFY_EMAIL ; (5) compteur/courbe. RGPD gated DPO (Q-DPO-008→013). SEO landing + page À propos = annexe.
 
 ## 2026-06-19 (conv 71) — Landing : mail de bienvenue redesigné (design + message) + déployé
 Refonte du template send-landing-email (supabase/functions/send-landing-email/index.ts), déployé en prod et validé par envoi réel (rendu Gmail OK).
