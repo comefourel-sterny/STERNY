@@ -95,6 +95,23 @@ serve(async (req) => {
       });
     }
 
+    // --- Notification admin (non bloquante) : ping Discord. N'affecte jamais l'inscription ni le mail de bienvenue. ---
+    const discordWebhookUrl = Deno.env.get("DISCORD_WEBHOOK_URL");
+    if (discordWebhookUrl) {
+      try {
+        await fetch(discordWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: "🎉 Nouvelle inscription sur la waitlist Sterny",
+          }),
+        });
+      } catch (notifError) {
+        console.error("Notif Discord échouée (ignorée) :", notifError);
+      }
+    }
+    // --- fin notification admin ---
+
     return new Response(JSON.stringify({ success: true, id: resendData.id }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
