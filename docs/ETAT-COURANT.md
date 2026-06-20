@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-19 (conv 73) — table waitlist dédiée créée en prod (étape 1/5).
+**Dernière mise à jour** : 2026-06-20 (conv 74) — chantier prod waitlist complet (étape 2 déployée + étape 3 migrée + index dédup casse).
 
 ---
 
@@ -16,6 +16,17 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-20 (conv 74) — Waitlist : étape 2 déployée en prod + étape 3 (migration anciens + dédup casse). Chantier prod waitlist complet.
+Le chantier waitlist passe en production : la landing prod écrit désormais dans `waitlist` (plus dans `alertes`), et les inscrits historiques y sont migrés.
+ÉTAPE 2 DÉPLOYÉE (origin/main 2e06b75 → 74d7c98) : repoint PasswordGate `from('alertes')` → `from('waitlist').insert({ email })` (commit feat 56f1eb8) porté sur main via le pattern landing (worktree `../sterny-deploy-waitlist-e2` depuis origin/main + cherry-pick → 74d7c98 + push fast-forward ; JAMAIS de merge feat→main). Vercel a redéployé. VÉRIFIÉ EN PROD : inscription `test-waitlist@sterny.test` → atterrit dans `waitlist` (consentement_at NULL), `alertes` inchangée (43).
+PROTOCOLE TEST PROD (acté, à réutiliser) : email marqueur `test-waitlist@sterny.test` (TLD `.test` non livrable → aucun mail réel, seule l'écriture en base est vérifiée ; livraison mail déjà prouvée conv 70/71) ; DELETE ciblé de la ligne test AVANT migration ; `count(*)` avant/après chaque mutation. Ledger waitlist : 0 → 1 (test) → 0 (delete) → 5 (migration).
+ÉTAPE 3 MIGRÉE : 22 candidates d'`alertes` (user_id/ville/rythme NULL) → 5 emails distincts vers `waitlist` (DISTINCT ON lower(email), date la plus ancienne conservée : 2026-02-19 → 2026-06-19), consentement_at NULL. Appliqué prod via SQL editor (pattern conv 72, ledger prod non marqué) PUIS tracé repo : migration `…0824_migrate_alertes_to_waitlist.sql` (feat c8a980a) + index `…0825_waitlist_email_lower_unique_index.sql` (feat 8a4a9f3, origin/feat = 8a4a9f3).
+ÉTAT BASE PROD : `waitlist` = 5 lignes · 3 index (pkey, email_key, **email_lower_unique** insensible casse) · prod écrit dans waitlist.
+SOUS-DÉCISIONS TRANCHÉES (conv 74) :
+- (i) suppression des 22 lignes d'`alertes` post-migration : PARQUÉE, gated DPO (voir QUESTIONS-PROFESSIONNELS). Les 22 restent (filet + minimisation RGPD à valider par un pro). Aucune urgence : `alertes` plus écrite, fuite lecture colmatée (conv 72), ne pollue pas le compteur.
+- (ii) dédup insensible casse : index unique `lower(email)` FAIT (prod + repo). `toLowerCase()` dans PasswordGate PARQUÉ → DETTE #107.
+RESTE chantier waitlist : (4) notif NOTIFY_EMAIL (2e fetch Resend non bloquant dans send-landing-email) ; (5) compteur/courbe inscrits (pitch investisseurs). Annexe : SEO landing + page À propos (NB : `sterny.co/a-propos.html` sert la landing via fallback SPA Vercel — la vieille page statique est bien morte). Worktree `../sterny-deploy-waitlist-e2` + branche `deploy/waitlist-etape2` à nettoyer.
 
 ## 2026-06-19 (conv 73) — Waitlist : table dédiée `waitlist` créée en prod (étape 1/5)
 Étape 1 du chantier waitlist (ordre figé conv 71/72) livrée. Table `public.waitlist` créée en PROD via éditeur SQL (pattern conv 72 : db push impossible depuis feat ≠ main). Transaction begin/commit, entièrement réversible (rollback = DROP TABLE). Migration `20260619204938_create_waitlist_table.sql` au repo (commit feat 8c7bdca sur feat/unification-inscription). Ledger migration prod non marqué (assumé, pattern conv 72).

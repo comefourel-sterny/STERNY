@@ -1184,3 +1184,9 @@ Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOC
 ## DETTE #106 — Triggers `alertes` (`send-alert-on-insert`) : double-envoi potentiel + à ne pas répliquer sur waitlist
 **Constat (audit conv 72)** : `alertes` porte `send-alert-on-insert` (`supabase_functions.http_request → send-alert-email`) + `on_new_alerte → handle_new_alerte()` (migration 20260421082830), malgré la « suppression » notée DETTE #18. Tout INSERT peut déclencher `send-alert-email` EN PLUS de l'appel front → l'inscription landing enverrait « Bienvenue » (front) + « Ton alerte est activée » (trigger). Statut prod à confirmer (`tgenabled`). Conséquences : (1) vérifier/neutraliser en prod ; (2) la future table `waitlist` ne doit PAS porter ce trigger.
 **MAJ conv 72** : statut prod CONFIRMÉ → `pg_trigger` sur `alertes` = 0 ligne : AUCUN trigger en prod, donc PAS de double-envoi (DETTE #18 confirmée). Résidu : le snapshot 20260421082830 les recrée en LOCAL → `DROP TRIGGER IF EXISTS` ajouté à `…_harden_alertes_part2.sql` pour aligner. Rien à faire en prod ; ne pas répliquer sur waitlist.
+
+## DETTE #107 — `toLowerCase()` manquant dans PasswordGate (normalisation email waitlist)
+**Statut** : ouverte, basse priorité. Décidée conv 74.
+**Constat** : la landing insère l'email tel quel (`from('waitlist').insert({ email: email.trim() })`). L'intégrité contre les doublons de casse est déjà assurée côté base par l'index unique `lower(email)` (conv 74 → un doublon de casse est rejeté, 409 « déjà inscrit »). Reste que l'email est stocké avec sa casse d'origine (`Jean@x` plutôt que `jean@x`) : « pas propre », pas un bug d'intégrité.
+**À faire** : ajouter `.toLowerCase()` après `.trim()` dans PasswordGate avant l'insert, au prochain passage sur le code landing. Patch 1 ligne, à déployer via le pattern worktree.
+**Priorité** : basse. **Réf** : PasswordGate.jsx (handleEmail, l.~49).

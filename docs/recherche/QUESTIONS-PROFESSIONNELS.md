@@ -168,6 +168,11 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > [Q-DPO-012] Désinscription / retrait du consentement (lien dans l'email) + suppression complète y compris chez le sous-traitant Resend ?
 > [Q-DPO-013] Régularisation du stock d'emails déjà collectés (possiblement sans mention conforme) : information a posteriori, base légale, ou suppression ? Faut-il suspendre/ajuster la collecte en attendant ?
 
+> [Q-DPO-014] Suppression / conservation des inscriptions waitlist historiques dans `alertes` après migration.
+> **Contexte** : les 22 lignes waitlist d'`alertes` (5 distinctes + 17 doublons) ont été migrées vers `waitlist` (conv 74). Les 22 originales restent dans `alertes`.
+> **Question** : faut-il les supprimer au titre de la minimisation RGPD (données dupliquées sans finalité propre), et sous quelles conditions (durée de conservation, registre des traitements, traçabilité) ? Décision gated DPO — ne pas présumer.
+> **Statut** : ouverte, parquée. Aucune urgence technique.
+
 ---
 
 ## 3. Notaire — baux et formalités logement
