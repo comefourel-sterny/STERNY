@@ -26,7 +26,7 @@ export default function DashboardAdminPage() {
   // Stats
   const [stats, setStats] = useState({
     users: '\u2014', locataires: '\u2014', annonces: '\u2014',
-    contrats: '\u2014', messages: '\u2014', signalements: '\u2014'
+    contrats: '\u2014', messages: '\u2014', signalements: '\u2014', waitlist: 0
   })
   const [badgeSignalements, setBadgeSignalements] = useState(0)
   const [badgeLitiges, setBadgeLitiges] = useState(0)
@@ -94,12 +94,13 @@ export default function DashboardAdminPage() {
 
   async function chargerStats() {
     try {
-      const [u, l, a, c, m] = await Promise.all([
+      const [u, l, a, c, m, w] = await Promise.all([
         supabaseClient.from('users').select('*', { count: 'exact', head: true }),
         supabaseClient.from('users').select('*', { count: 'exact', head: true }).eq('type_user', 'locataire'),
         supabaseClient.from('annonces').select('*', { count: 'exact', head: true }),
         supabaseClient.from('contrats').select('*', { count: 'exact', head: true }),
         supabaseClient.from('messages').select('*', { count: 'exact', head: true }),
+        supabaseClient.from('waitlist').select('*', { count: 'exact', head: true }),
       ])
 
       setStats({
@@ -108,7 +109,8 @@ export default function DashboardAdminPage() {
         annonces: a.count || 0,
         contrats: c.count || 0,
         messages: m.count || 0,
-        signalements: '\u2014'
+        signalements: '\u2014',
+        waitlist: w.count || 0
       })
 
       // Signalements ouverts
@@ -367,6 +369,7 @@ export default function DashboardAdminPage() {
                 <div className="stat-card"><div className="stat-card-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg></div><div className="stat-value">{stats.messages}</div><div className="stat-label">Messages echanges</div></div>
                 <div className="stat-card"><div className="stat-card-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /></svg></div><div className="stat-value">{stats.locataires}</div><div className="stat-label">Locataires</div></div>
                 <div className="stat-card"><div className="stat-card-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" /></svg></div><div className="stat-value">{stats.signalements}</div><div className="stat-label">Signalements ouverts</div></div>
+                <div className="stat-card"><div className="stat-card-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2" /></svg></div><div className="stat-value">{stats.waitlist}</div><div className="stat-label">Inscrits waitlist</div></div>
               </div>
 
               <div className="admin-table-container">
