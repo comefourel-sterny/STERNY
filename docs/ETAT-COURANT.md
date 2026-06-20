@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-20 (conv 75) — notif d'inscription Discord livrée en prod (pivot email→Discord) + rotation clé Resend.
+**Dernière mise à jour** : 2026-06-20 (conv 76) — compteur d'inscrits waitlist livré sur le dashboard admin (objectif 5, volet compteur) ; courbe reportée.
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-20 (conv 76) — Waitlist objectif (5) : compteur d'inscrits livré (dashboard admin)
+Volet COMPTEUR de l'objectif (5) livré sur feat (commit b104416, NON déployé prod). Carte « Inscrits waitlist » sur /dashboard/admin (DashboardAdminPage) affichant le total d'inscrits.
+DÉCISION (surface + mécanisme, actée) : compteur PRIVÉ (admin, pour le pitch — PAS de compteur public sur la landing). Surface = greffe sur DashboardAdminPage existante (déjà protégée par verifierAdmin lisant users.is_admin). Mécanisme = lecture admin DIRECTE via SDK, from('waitlist').select('*', { count:'exact', head:true }) ajouté au Promise.all de chargerStats (même pattern que les 6 stats existantes), sous la RLS waitlist_select_admin (conv 73). head:true ⇒ ramène le NOMBRE seul, jamais d'email (zéro donnée perso). Pas de RPC ni Edge Function : l'infra admin existante suffit. Carte = 7e stat-card, couleur amber (doublon assumé avec Locataires, rangées différentes, dashboard interne).
+COURBE (volet 2) : REPORTÉE. À 5 inscrits étalés sur ~4 mois, une courbe est peu parlante (et à contre-emploi d'un pitch sobre). Fondation connue (waitlist.created_at) → à brancher quand le volume racontera une histoire. Objectif (5) atteint en pratique au compteur.
+DÉPLOIEMENT : sur feat uniquement (page React → Vercel/main). À déployer via worktree + cherry-pick b104416 + FF quand utile (pas de démo datée → non urgent, idéalement groupé).
+DÉBLOCAGE ADMIN LOCAL (incident) : plus aucun compte admin en local (seed hote@/locataire@sterny.test = is_admin false). Débloqué par UPDATE ponctuel public.users.is_admin=true sur locataire@sterny.test (base locale 127.0.0.1:54322) — réversible, perdu au prochain db reset, prod jamais touchée. NB clé : le front local tape le Supabase LOCAL (.env.local=127.0.0.1 prioritaire sur .env=prod) → les emails Auth locaux (reset mdp) partent dans la boîte de test locale, jamais dans un vrai Gmail.
+RESTE : déployer le compteur prod (quand utile) ; courbe différée ; #107, Q-DPO-008→015 ; annexes SEO landing (www vs non-www, og-image, Search Console) + page À-propos ; compte admin local persistant (seed) à ajouter ; nettoyage worktree conv 74 (../sterny-deploy-waitlist-e2).
 
 ## 2026-06-20 (conv 75) — Waitlist objectif (4) : notif d'inscription LIVRÉE en prod (pivot email→Discord), vérifiée bout en bout + rotation clé Resend (incident).
 OBJECTIF (4) LIVRÉ + déployé + testé en réel : à chaque inscription waitlist, l'admin est prévenu par un ping Discord sur son téléphone (inscription → mail de bienvenue + ping Discord + notif tél = OK).

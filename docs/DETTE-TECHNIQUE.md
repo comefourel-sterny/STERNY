@@ -1190,3 +1190,9 @@ Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOC
 **Constat** : la landing insère l'email tel quel (`from('waitlist').insert({ email: email.trim() })`). L'intégrité contre les doublons de casse est déjà assurée côté base par l'index unique `lower(email)` (conv 74 → un doublon de casse est rejeté, 409 « déjà inscrit »). Reste que l'email est stocké avec sa casse d'origine (`Jean@x` plutôt que `jean@x`) : « pas propre », pas un bug d'intégrité.
 **À faire** : ajouter `.toLowerCase()` après `.trim()` dans PasswordGate avant l'insert, au prochain passage sur le code landing. Patch 1 ligne, à déployer via le pattern worktree.
 **Priorité** : basse. **Réf** : PasswordGate.jsx (handleEmail, l.~49).
+
+## DETTE #108 — Page « mot de passe oublié » : message de succès à tort + spinner infini
+**Constat (conv 76, 20 juin 2026, observé en LOCAL)** : sur /mot-de-passe-oublie, après soumission, la page affiche « Lien envoyé ! Vérifie ta boîte mail. » (vert) ALORS QUE le bouton garde son spinner. États incohérents : succès annoncé sans que l'action soit finie. (En local, l'email de reset part dans la boîte de test locale Inbucket/Mailpit, jamais dans un vrai Gmail — normal, distinct du bug d'affichage.)
+**Hypothèses** : (a) message de succès affiché de façon optimiste avant résolution de l'appel ; (b) setLoading(false) manquant dans une branche → spinner jamais relâché. À confirmer en lisant le composant.
+**Impact** : confusion UX, pas un bug de sécurité, non bloquant.
+**À faire** : auditer le composant /mot-de-passe-oublie (état loading + ordre d'affichage du message), n'afficher le succès qu'après confirmation et relâcher loading dans tous les cas. **Priorité : basse.**
