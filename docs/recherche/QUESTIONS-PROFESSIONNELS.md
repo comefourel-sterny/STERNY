@@ -173,6 +173,11 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Question** : faut-il les supprimer au titre de la minimisation RGPD (données dupliquées sans finalité propre), et sous quelles conditions (durée de conservation, registre des traitements, traçabilité) ? Décision gated DPO — ne pas présumer.
 > **Statut** : ouverte, parquée. Aucune urgence technique.
 
+> [Q-DPO-015] Notification admin interne d'inscription waitlist (ping Discord) — traitement à documenter ?
+> **Contexte** : à chaque inscription, l'admin est prévenu par un ping Discord (conv 75). Par conception, le message ne contient AUCUNE donnée perso (texte fixe, pas d'email) → Discord ne reçoit rien d'identifiable. Finalité : notification opérationnelle interne. Base légale présumée : intérêt légitime.
+> **Question** : un signal interne « inscription à l'instant T » sans PII constitue-t-il un traitement à documenter (mention d'information / registre des traitements) ? Sans PII le concern paraît minime — mais ne pas présumer la conformité.
+> **Statut** : ouverte, parquée. Priorité basse.
+
 ---
 
 ## 3. Notaire — baux et formalités logement

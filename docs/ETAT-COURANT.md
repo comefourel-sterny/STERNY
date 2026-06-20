@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-20 (conv 74) — chantier prod waitlist complet (étape 2 déployée + étape 3 migrée + index dédup casse).
+**Dernière mise à jour** : 2026-06-20 (conv 75) — notif d'inscription Discord livrée en prod (pivot email→Discord) + rotation clé Resend.
 
 ---
 
@@ -16,6 +16,16 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-20 (conv 75) — Waitlist objectif (4) : notif d'inscription LIVRÉE en prod (pivot email→Discord), vérifiée bout en bout + rotation clé Resend (incident).
+OBJECTIF (4) LIVRÉ + déployé + testé en réel : à chaque inscription waitlist, l'admin est prévenu par un ping Discord sur son téléphone (inscription → mail de bienvenue + ping Discord + notif tél = OK).
+PIVOT email→Discord : la notif admin ne passe PAS par email (garder l'inbox propre) mais par un webhook Discord vers un salon dédié `#inscriptions`. NB Discord mobile : NE PAS créer de 2e compte — Discord ne push QUE le compte actif (un 2e compte ferait rater les pings) → serveur dédié « Sterny » sur le compte existant, réglé « Tous les messages » + push on (un webhook = message normal sans @mention, sinon non notifié). Le push tél ne sonne que si Discord n'est pas actif (par design).
+ARCHI : 2e `fetch` NON BLOQUANT dans `send-landing-email/index.ts`, juste avant le return succès (après l'envoi du mail de bienvenue). Webhook lu via secret `DISCORD_WEBHOOK_URL` ; garde `if (url)` (secret absent → ping sauté, aucune erreur) ; isolé dans son try/catch (erreur → console.error). Message = TEXTE FIXE « 🎉 Nouvelle inscription sur la waitlist Sterny », ZÉRO donnée perso (pas d'email ; Discord horodate seul). Non-bloquant prouvé en réel (pendant le debug, le ping ratait, l'inscription + le mail passaient). Commit feat `d91431a` → `origin/feat = d91431a`. Secret posé + `functions deploy send-landing-email` (déploiement indépendant du frontend).
+INCIDENT CLÉ RESEND (résolu) : ancienne clé `re_…` aperçue dans une capture (fenêtre Notes ouverte derrière) → RÉVOQUÉE immédiatement → nouvelle clé « Onboarding » (Sending access, domaine restreint `sterny.co`) → secret `RESEND_API_KEY` mis à jour → mail de bienvenue re-validé en réel. Exposition limitée à la conversation (pas de fuite publique, pas de commit) ; donnée exposée = clé API, pas une donnée perso. Leçon : fermer toute fenêtre affichant un secret avant une capture.
+LEÇON PROCESS : la saisie masquée (`stty -echo; read`) collée dans un bloc multi-lignes a rangé 2× une valeur de secret abîmée → ping muet. Diagnostic : `curl` direct du webhook (HTTP 204 = URL OK) isole « secret cassé » vs « URL cassée ». Pour poser un secret CLI de façon fiable : valeur en clair (placeholder visible), pas la saisie masquée fragile.
+NETTOYAGE : 3 lignes de test du jour (`come+notiftest`/`2`/`3`, 2026-06-20) supprimées par email exact (pas par date, pour ne pas risquer une vraie inscription du même jour) + ledger `count` 8→5. waitlist = 5 vrais inscrits, compteur investisseurs propre.
+RGPD : la notif ne transporte AUCUNE donnée perso → Discord ne reçoit rien d'identifiable → concern très léger. Tracé sans présumer → Q-DPO-015.
+RESTE chantier waitlist : (5) compteur/courbe d'inscrits (pitch investisseurs) — surface à définir (dashboard admin ? page dédiée ?). DETTE #107 (toLowerCase PasswordGate, parquée). Q-DPO-008→015. Annexe SEO landing (www vs non-www, og-image, Search Console) + page À propos. NB : CLI Supabase v2.90.0 → v2.107.0 dispo (MAJ non urgente).
 
 ## 2026-06-20 (conv 74) — Waitlist : étape 2 déployée en prod + étape 3 (migration anciens + dédup casse). Chantier prod waitlist complet.
 Le chantier waitlist passe en production : la landing prod écrit désormais dans `waitlist` (plus dans `alertes`), et les inscrits historiques y sont migrés.
