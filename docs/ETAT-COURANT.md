@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-20 (conv 76) — compteur d'inscrits waitlist livré sur le dashboard admin (objectif 5, volet compteur) ; courbe reportée.
+**Dernière mise à jour** : 2026-06-21 (conv 77) — fix #108 (page /mot-de-passe-oublie) livré sur feat ; clarification modèle feat/prod ; mail reset prod parqué.
 
 ---
 
@@ -16,6 +16,15 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-21 (conv 77) — DETTE #108 résolue (page /mot-de-passe-oublie) + clarification modèle feat/prod
+Fix #108 livré sur feat (commit 30dff1b, poussé origin/feat). Page /mot-de-passe-oublie : le spinner restait figé après un envoi réussi alors que le message vert « Lien envoyé » s'affichait — deux états incohérents simultanés.
+CAUSE : setLoading(false) présent uniquement dans le bloc catch (chemin erreur), absent du chemin succès → loading jamais relâché en succès → spinner infini.
+FIX (2 changements, MotDePasseOubliePage.jsx) : (a) setLoading(false) déplacé du catch vers un bloc finally → relâché dans TOUS les cas (succès et erreur), robuste anti-régression ; (b) libellé bouton conditionnel `emailDisabled ? 'Lien envoyé' : 'Envoyer le lien'` (le bouton reste grisé après succès via emailDisabled, mais affiche un libellé cohérent). Validé runtime local : spinner stoppé + bouton « Lien envoyé » grisé + champ désactivé + message vert.
+CLARIFICATION MODÈLE feat/prod (actée, à ne plus reconfondre) : le bug #108 est TOUJOURS visible en PROD (sterny.co/mot-de-passe-oublie, spinner figé) car le fix vit sur feat et n'est PAS déployé. 3 niveaux distincts : (1) commit local ; (2) push origin/feat = « en ligne » sur GitHub (travail sauvegardé) ; (3) déployé prod = main uniquement, cherry-pick sélectif, JAMAIS merge feat→main. Sterny en pré-lancement → prod publique = landing waitlist seule ; l'app complète (dashboards, inscription, recherche, reset) vit sur feat, pas ouverte au public. Décalage feat/prod = VOULU (protection), pas un bug.
+DÉPLOIEMENT #108 EN PROD : non urgent (page reset non utilisée en pré-lancement, aucun user avec compte en prod). À grouper avec un futur passage prod landing (#107 toLowerCase + annexes SEO) via worktree + cherry-pick + FF.
+SUJET OUVERT PARQUÉ (séparé de #108) : « le mail de reset arrive-t-il réellement en prod ? » NON tranché. En local, l'email de reset part dans la boîte de test Supabase (Inbucket/Mailpit, http://127.0.0.1:54324), jamais dans un vrai Gmail = normal. En prod, les mails Auth (reset) passent par Supabase Auth — circuit DISTINCT de send-landing-email/Resend (waitlist). Suspect si non-réception prod confirmée : config SMTP des mails Auth (SMTP par défaut Supabase limité/filtré spam vs SMTP custom). À investiguer en session dédiée si confirmé comme problème prod réel.
+RESTE (inchangé conv 76) : déployer compteur prod (groupé) ; #107 ; annexes SEO + page À-propos ; compte admin local persistant (seed) ; ménage branches claude/* ; Q-DPO-008→015.
 
 ## 2026-06-20 (conv 76) — Waitlist objectif (5) : compteur d'inscrits livré (dashboard admin)
 Volet COMPTEUR de l'objectif (5) livré sur feat (commit b104416, NON déployé prod). Carte « Inscrits waitlist » sur /dashboard/admin (DashboardAdminPage) affichant le total d'inscrits.

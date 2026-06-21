@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-15 (conv 59) — DETTE #97 (alertes) + #98 (tiroir Filtres) ; 5b-1 livré ; #105/#106 (RLS+triggers alertes).
+**Dernière mise à jour** : 2026-06-21 (conv 77) — DETTE #108 résolue (fix /mot-de-passe-oublie sur feat, non déployé prod).
 
 ## Nomenclature des bugs
 
@@ -1192,6 +1192,7 @@ Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOC
 **Priorité** : basse. **Réf** : PasswordGate.jsx (handleEmail, l.~49).
 
 ## DETTE #108 — Page « mot de passe oublié » : message de succès à tort + spinner infini
+**Statut : RÉSOLUE (conv 77, 21 juin 2026 — commit 30dff1b sur feat).** Fix : `setLoading(false)` déplacé du `catch` vers un bloc `finally` (relâché succès ET erreur) + libellé bouton conditionnel (`emailDisabled ? 'Lien envoyé' : 'Envoyer le lien'`). Validé runtime local. ⚠️ NON déployé en prod (vit sur feat) → page reste buggée sur sterny.co jusqu'à un déploiement groupé (avec #107 + SEO).
 **Constat (conv 76, 20 juin 2026, observé en LOCAL)** : sur /mot-de-passe-oublie, après soumission, la page affiche « Lien envoyé ! Vérifie ta boîte mail. » (vert) ALORS QUE le bouton garde son spinner. États incohérents : succès annoncé sans que l'action soit finie. (En local, l'email de reset part dans la boîte de test locale Inbucket/Mailpit, jamais dans un vrai Gmail — normal, distinct du bug d'affichage.)
 **Hypothèses** : (a) message de succès affiché de façon optimiste avant résolution de l'appel ; (b) setLoading(false) manquant dans une branche → spinner jamais relâché. À confirmer en lisant le composant.
 **Impact** : confusion UX, pas un bug de sécurité, non bloquant.
