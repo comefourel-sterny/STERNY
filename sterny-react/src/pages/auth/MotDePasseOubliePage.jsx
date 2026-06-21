@@ -52,6 +52,7 @@ export default function MotDePasseOubliePage() {
       setMessage({ type: 'error', text: 'Une erreur est survenue. Réessaie.' })
       shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
+    } finally {
       setLoading(false)
     }
   }
@@ -82,7 +83,7 @@ export default function MotDePasseOubliePage() {
                 <svg className="mdp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
                 </svg>
-              ) : 'Envoyer le lien'}
+              ) : (emailDisabled ? 'Lien envoyé' : 'Envoyer le lien')}
             </button>
 
             <p className="mdp-back mdp-stagger" style={{ animationDelay: '0.32s' }}>
