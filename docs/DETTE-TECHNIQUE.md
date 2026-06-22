@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause www allow-list, fix Dashboard) ; DETTE #110 ouverte (ResetPasswordPage rebascule après 3 s).
+**Dernière mise à jour** : 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (getSession au montage, validé runtime Mailpit local).
 
 ## Nomenclature des bugs
 
@@ -1207,8 +1207,11 @@ SUITE : sur /reset-password, un 2e bug distinct rebascule vers /mot-de-passe-oub
 DÉCISION GATED : cause profonde = double domaine www/non-www non canonicalisé (annexe SEO). Choisir un domaine canonique + 301 l'autre + aligner la Site URL = décision dédiée.
 
 ## DETTE #110 — /reset-password rebascule vers /mot-de-passe-oublie après 3 s (session recovery non captée)
-**Statut : OUVERTE (découverte conv 79, 22 juin 2026, juste après résolution #109).** Une fois le lien recovery arrivé sur /reset-password (#109 résolu), la page de saisie du nouveau mot de passe s'affiche ~3 s puis redirige vers /mot-de-passe-oublie.
-CAUSE PROBABLE (à confirmer en lecture du code) : ResetPasswordPage attend l'événement PASSWORD_RECOVERY (onAuthStateChange) pour passer sessionReady=true, avec un timer de secours 3 s qui redirige vers /mot-de-passe-oublie si la session n'est pas prête et que le hash ne contient plus access_token. Or detectSessionInUrl:true (défaut client) consomme ET nettoie le hash très tôt au chargement, avant que le listener de la page ne soit abonné → événement raté + hash vidé → le timer bascule.
-FIX PRESSENTI (à valider après lecture) : dans ResetPasswordPage, vérifier la session AU MONTAGE via supabase.auth.getSession() (ne pas dépendre uniquement de la capture en temps réel de l'événement). Si session présente → sessionReady=true. Garder onAuthStateChange en secours. Le timer ne redirige que si aucune session ET aucun param recovery.
-SENSIBLE : code auth + flux mot de passe → session fraîche, fix sur feat + test local Mailpit avant prod.
-LIEN : suite directe de #109. #109 = redirection (config, résolu) ; #110 = reconnaissance de session sur /reset-password (code).
+**Statut : RÉSOLUE (conv 80, 22 juin 2026).** Une fois le lien recovery arrivé sur /reset-password (#109 résolu), la page de saisie du nouveau mot de passe s'affichait ~3 s puis redirigeait vers /mot-de-passe-oublie.
+CAUSE CONFIRMÉE (par la lecture du code) : ResetPasswordPage n'attendait QUE l'événement PASSWORD_RECOVERY (onAuthStateChange), or detectSessionInUrl:true (défaut du client, config/supabase.js sans options) consomme ET nettoie le hash AVANT que le listener ne soit abonné → événement raté + hash vidé → le timer de secours 3 s redirigeait.
+FIX APPLIQUÉ (commit b4e8628, branche feat) : getSession() au montage lit la session déjà posée par detectSessionInUrl, sans dépendre de la capture temps-réel. onAuthStateChange élargi en secours (PASSWORD_RECOVERY OU session non-nulle). Le timer relit la vraie session avant de décider, ne redirige que si AUCUNE session après 3 s. Bouton submit désactivé tant que !sessionReady. Fix 100% local à la page — config/supabase.js (detectSessionInUrl global) NON touché → OTP / proprio / OAuth intacts.
+VALIDÉ RUNTIME (Mailpit local, conv 80) : lien recovery → /reset-password sans rebascule → changement de mdp → redirection /connexion → reconnexion OK.
+PARENTHÈSE CONFIG LOCALE (commit ca5d068) : le test a révélé que config.toml pointait encore sur le défaut Supabase (127.0.0.1:3000) au lieu du port Vite. Aligné sur localhost:5173 (+ allow-list /**). Config locale uniquement, sans impact prod.
+COMPORTEMENT ASSUMÉ (signalé, non corrigé) : le fix accepte toute session active sur /reset-password (un utilisateur déjà connecté pourrait changer son mdp courant). Cohérent avec Supabase (une session recovery EST une session). Distinguer type=recovery serait fragile (l'info vit dans le hash consommé). Hors périmètre #110 ; à rouvrir en décision produit si une réauthentification avant changement de mdp est un jour exigée.
+RESTE AVANT PROD : déploiement de b4e8628 (frontend) gated par la décision domaine canonique www vs non-www (cause profonde #109, voir DECISION GATED de l'entrée #109).
+LIEN : suite directe de #109. #109 était la redirection (config, résolu) ; #110 était la reconnaissance de session sur /reset-password (code, résolu).

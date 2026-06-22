@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause = domaine www absent de l'allow-list Auth, prouvé par la requête /auth/v1/recover ; fix Dashboard www) ; nouveau bug #110 (ResetPasswordPage rebascule après 3 s).
+**Dernière mise à jour** : 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (getSession au montage, validé runtime Mailpit local) ; config.toml local aligné sur le port Vite 5173.
 
 ---
 
@@ -16,6 +16,15 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (ResetPasswordPage reconnaît la session recovery au montage) + config.toml local aligné sur port Vite 5173
+Suite directe de conv 79. #110 = la page /reset-password affichait le formulaire ~3 s puis rebasculait vers /mot-de-passe-oublie. CAUSE (confirmée par lecture code) : ResetPasswordPage n'écoutait QUE l'événement PASSWORD_RECOVERY, or detectSessionInUrl:true (défaut du client, config/supabase.js sans options) consomme+nettoie le hash AVANT l'abonnement du listener → événement raté + hash vidé → timer de secours 3 s redirigeait.
+FIX (commit b4e8628, feat) : getSession() au montage lit la session déjà posée par detectSessionInUrl, sans dépendre de la capture temps-réel. onAuthStateChange élargi en secours (PASSWORD_RECOVERY OU session non-nulle). Timer relit la vraie session avant de décider. Bouton submit désactivé tant que !sessionReady. Fix 100% local à la page, config/supabase.js NON touché → OTP/proprio/OAuth intacts.
+VALIDÉ RUNTIME (Mailpit local) : lien recovery → /reset-password sans rebascule → changement de mdp → /connexion → reconnexion OK. Chaîne complète.
+CONFIG LOCALE (commit ca5d068) : le test a révélé que config.toml pointait encore sur le défaut Supabase (127.0.0.1:3000). Aligné sur localhost:5173 (+ allow-list /**). Local uniquement, sans impact prod (prod pilotée par le Dashboard).
+OUTILLAGE (non commité, pour mémoire) : le stack local refusait de démarrer (conteneur studio unhealthy). Contourné par `supabase start -x studio` (studio facultatif ; db/auth/mailpit sains). Mise à jour CLI Supabase (2.90 → 2.107) proposée mais REPORTÉE (cascade Node 26 + 17 deps jugée disproportionnée en cours de test). À traiter comme tâche d'environnement dédiée si studio reste récalcitrant.
+RESTE AVANT PROD POUR #110 : déploiement de b4e8628 (frontend) via worktree + cherry-pick + FF vers main — GATED par la décision domaine canonique www vs non-www (cause profonde #109). Tant que ce point n'est pas tranché, on ne déploie pas #110. ca5d068 est local-only, ne part jamais en prod.
+RESTE (inchangé depuis conv 79) : décision domaine canonique www/non-www (désormais prioritaire, bloque le déploiement #110) ; #108 + compteur waitlist toujours non déployés en prod ; durcir OAuthHandler pour ne pas avaler une session type=recovery (filet optionnel) ; Q-DPO-008→015.
 
 ## 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause www allow-list, prouvée par la requête réseau) ; nouveau bug #110 (ResetPasswordPage rebascule)
 Diagnostic de bout en bout du lien recovery prod, 100% lecture jusqu'à la cause. CAUSE RACINE #109 PROUVÉE : l'app est servie sur www.sterny.co (Chrome masque le "www." dans la barre d'adresse → illusion de non-www). window.location.origin = https://www.sterny.co → le code envoie redirectTo = https://www.sterny.co/reset-password. Or la Redirect Allow List ne contenait que https://sterny.co/** (non-www) → Supabase rejette le redirect_to www → fallback sur la Site URL nue (https://sterny.co) → atterrissage racine → PasswordGate + OAuthHandler avalent la session → /dashboard, jamais /reset-password. PREUVE DÉCISIVE : la requête /auth/v1/recover montrait redirect_to=https%3A%2F%2Fwww.sterny.co%2Freset-password.
