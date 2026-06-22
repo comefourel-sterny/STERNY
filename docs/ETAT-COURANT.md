@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-21 (conv 77) — fix #108 (page /mot-de-passe-oublie) livré sur feat ; clarification modèle feat/prod ; mail reset prod confirmé OK ; design template reset à refaire (session dédiée).
+**Dernière mise à jour** : 2026-06-22 (conv 78) — template email reset (recovery) refondu (grammaire conv 71), versionné repo + déployé Dashboard prod (validé Gmail) ; bug redirection reset prod découvert → DETTE #109 (chantier séparé).
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-22 (conv 78) — Template email reset (recovery) : design refondu (grammaire conv 71) + déployé Dashboard prod ; bug redirection découvert (#109)
+DESIGN LIVRÉ ET VALIDÉ (navigateur + rendu Gmail réel OK). Refonte du template email de réinitialisation de mot de passe (recovery = mail Auth Supabase, DISTINCT du circuit Resend/send-landing-email).
+LOCALISATION (tranchée conv 78) : le template recovery vivait UNIQUEMENT dans le Dashboard Supabase (Auth → Email Templates → Reset Password), non versionné — config.toml ne déclarait que confirmation. Décision : on VERSIONNE le HTML au repo (trace + rendu local brandé) MAIS la prod se met à jour À LA MAIN dans le Dashboard (collage HTML), JAMAIS via supabase config push (écraserait d'autres réglages Auth, dont le SMTP custom).
+DESIGN (calqué pixel sur le mail de bienvenue conv 71) : fond #F4F5F7 ; carte 460/radius 16 SANS bordure + ombre douce ; bandeau navy #1E293B + logo blanc (Logo-Sterny-V1-white.png 134×44) + filet orange #E8622A ; corps centré, texte sur 2 lignes (retour ligne après le 1er point ; 2e ligne raccourcie pour tenir sur une ligne), PAS de titre h1 (doublon avec le bouton, retiré) ; bouton orange #E8622A portant {{ .ConfirmationURL }} (variable Auth préservée) ; footer marque dans la carte + mention « ignore cet email » sous la carte. Police = stack système (-apple-system…), PAS DM Sans (comme le mail de bienvenue). Email-safe : tables + inline + meta charset utf-8 (a corrigé un mojibake d'accents en aperçu) + color-scheme light only.
+VERSIONNÉ : supabase/templates/recovery.html (source HTML) + [auth.email.template.recovery] dans config.toml (subject + content_path ; pilote le LOCAL) — commit feat a03933b. PROD = HTML collé dans le Dashboard (Subject inchangé), validé self-send Gmail.
+BUG DÉCOUVERT — DETTE #109 (NON causé par la refonte) : en prod, cliquer le bouton recovery → passage PasswordGate → auto-login → /dashboard, jamais /reset-password. Le lien {{ .ConfirmationURL }} est INCHANGÉ vs l'ancien template → bug PRÉ-EXISTANT, révélé par le 1er test end-to-end prod (conv 77 n'avait validé que local Mailpit + arrivée du mail prod). Chantier SÉPARÉ : config Auth (Site URL / Redirect URLs) + routage type=recovery + interaction PasswordGate. Sensible (auth) → session fraîche. = PROCHAINE SESSION PRIORITAIRE.
+RESTE (inchangé) : déployer #108 + compteur waitlist prod (groupé worktree+cherry-pick) ; #107 toLowerCase ; SEO annexes (www/non-www, og-image, Search Console) + page À-propos ; Q-DPO-008→015.
 
 ## 2026-06-21 (conv 77) — DETTE #108 résolue (page /mot-de-passe-oublie) + clarification modèle feat/prod
 Fix #108 livré sur feat (commit 30dff1b, poussé origin/feat). Page /mot-de-passe-oublie : le spinner restait figé après un envoi réussi alors que le message vert « Lien envoyé » s'affichait — deux états incohérents simultanés.

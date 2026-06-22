@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-21 (conv 77) — DETTE #108 résolue (fix /mot-de-passe-oublie sur feat, non déployé prod).
+**Dernière mise à jour** : 2026-06-22 (conv 78) — DETTE #109 ouverte (lien recovery prod ne mène pas à /reset-password, découvert par self-send ; non causé par la refonte du template).
 
 ## Nomenclature des bugs
 
@@ -1197,3 +1197,11 @@ Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOC
 **Hypothèses** : (a) message de succès affiché de façon optimiste avant résolution de l'appel ; (b) setLoading(false) manquant dans une branche → spinner jamais relâché. À confirmer en lisant le composant.
 **Impact** : confusion UX, pas un bug de sécurité, non bloquant.
 **À faire** : auditer le composant /mot-de-passe-oublie (état loading + ordre d'affichage du message), n'afficher le succès qu'après confirmation et relâcher loading dans tous les cas. **Priorité : basse.**
+
+## DETTE #109 — Lien recovery (reset mot de passe) en prod ne mène pas à `/reset-password`
+**Statut : OUVERTE (découverte conv 78, 22 juin 2026).** En prod, cliquer le bouton « Réinitialiser mon mot de passe » du mail recovery ne mène PAS à la page de définition d'un nouveau mot de passe. Constat (self-send prod, conv 78) : clic du lien → passage par la PasswordGate (page d'attente publique) → l'utilisateur se retrouve auto-connecté et redirigé vers `/dashboard/proprietaire`, jamais sur `/reset-password`.
+**PAS causé par la refonte du template (conv 78)** : seul le design du corps a changé ; le lien `{{ .ConfirmationURL }}` est identique à l'ancien template. Bug PRÉ-EXISTANT, révélé par le 1er test end-to-end du lien prod (conv 77 n'avait validé que le flux local Mailpit → `/reset-password` OK, + l'arrivée du mail prod, mais PAS le clic prod de bout en bout).
+**Pistes à VÉRIFIER (non présumées), session dédiée** : (a) Supabase Auth → URL Configuration : Site URL + Redirect URLs (le recovery redirige probablement vers la racine `sterny.co` = PasswordGate au lieu de `/reset-password`) ; (b) le `redirect_to` passé à `resetPasswordForEmail` côté app ; (c) le routage qui doit détecter `type=recovery` dans le hash de l'URL et router vers `/reset-password` ; (d) interaction PasswordGate ↔ session recovery entrante (la gate avale la session, d'où l'auto-login).
+**Sensible** : touche la config Auth prod + le flux mot de passe (sécurité). Ne pas bricoler à chaud — session fraîche, prudence.
+**Sévérité** : bloque le reset mot de passe en prod, mais pré-lancement (aucun user réel ; la page `/mot-de-passe-oublie`, fix #108, n'est elle-même pas encore déployée en prod).
+**Lien** : voisin de #108 mais distinct — #108 = spinner UI résolu ; #109 = redirection post-clic du lien email.
