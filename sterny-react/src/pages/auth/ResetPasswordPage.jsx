@@ -29,27 +29,41 @@ export default function ResetPasswordPage() {
   const [strength, setStrength] = useState({ width: '0%', color: '#E8EAF0', label: '' })
 
   useEffect(() => {
-    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setSessionReady(true)
-      }
+    let active = true
+
+    // 1) La session peut deja etre posee par le client (detectSessionInUrl lit le hash au chargement).
+    //    On la lit directement, sans dependre de la capture en temps reel de l'evenement.
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (active && session) setSessionReady(true)
     })
 
-    const timer = setTimeout(() => {
-      if (!sessionReady) {
-        if (window.location.hash && window.location.hash.includes('access_token')) {
-          setShowError(true)
-        } else {
-          navigate('/mot-de-passe-oublie')
-        }
+    // 2) Secours : si la session arrive juste apres le montage, on la capte ici.
+    //    On accepte PASSWORD_RECOVERY OU toute session non-nulle (INITIAL_SESSION / SIGNED_IN).
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (!active) return
+      if (event === 'PASSWORD_RECOVERY' || session) setSessionReady(true)
+    })
+
+    // 3) Filet 3 s : on relit la VRAIE session avant de decider.
+    //    On ne redirige que si, apres 3 s, il n'y a toujours aucune session.
+    const timer = setTimeout(async () => {
+      if (!active) return
+      const { data: { session } } = await supabaseClient.auth.getSession()
+      if (!active) return
+      if (session) { setSessionReady(true); return }
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        setShowError(true)
+      } else {
+        navigate('/mot-de-passe-oublie')
       }
     }, 3000)
 
     return () => {
+      active = false
       subscription.unsubscribe()
       clearTimeout(timer)
     }
-  }, [sessionReady, navigate])
+  }, [navigate])
 
   const checkStrength = (pwd) => {
     let score = 0
@@ -181,7 +195,7 @@ export default function ResetPasswordPage() {
         </form>
 
         <div className="rp-bottom">
-          <button ref={btnRef} type="submit" form="rp-form" className="rp-btn rp-stagger" style={{ animationDelay: '0.32s' }} disabled={loading || fieldsDisabled}>
+          <button ref={btnRef} type="submit" form="rp-form" className="rp-btn rp-stagger" style={{ animationDelay: '0.32s' }} disabled={loading || fieldsDisabled || !sessionReady}>
             {loading ? (
               <svg className="rp-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="10" />
