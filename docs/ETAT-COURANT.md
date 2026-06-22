@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (getSession au montage, validé runtime Mailpit local) ; config.toml local aligné sur le port Vite 5173.
+**Dernière mise à jour** : 2026-06-22 (conv 81) — Domaine canonique tranché = sterny.co (non-www), appliqué côté Vercel (redirection 308) ; cause profonde #109 éliminée ; #110 débloqué.
 
 ---
 
@@ -16,6 +16,12 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-22 (conv 81) — Domaine canonique tranché = `sterny.co` (non-www) + appliqué côté Vercel/SEO ; #110 débloqué
+Décision : domaine canonique = **`sterny.co`** (sans www), choisi pour une marque épurée (révise la reco initiale www, qui n'était motivée que par le moindre effort — écarté au profit du bon choix). Inventaire factuel d'abord (Vercel, Supabase Auth, SEO, liens publiés) : seul Vercel servait le www ; Supabase Site URL + canonical/og:url étaient DÉJÀ en non-www.
+APPLIQUÉ ET VALIDÉ EN RÉEL (aucune modif de code) : (1) Vercel — `sterny.co` promu Production servi en direct ; `www.sterny.co` basculé en redirection **308 (permanente)** vers `sterny.co`. Vérifié curl : `sterny.co` = 200, `www` = 308 → `sterny.co`. (2) Canonical/og:url confirmés non-www sur le domaine servi (curl). (3) Supabase Site URL inchangée (déjà `https://sterny.co`), allow-list conserve les 2 entrées (non-www + www) par sécurité.
+CAUSE PROFONDE #109 ÉLIMINÉE : le filet Auth (Site URL) pointe désormais vers le domaine réellement servi. Le code n'a pas été touché (URLs construites via `location.origin`, qui suit le domaine servi).
+RESTE : déployer #110 (commit b4e8628) via worktree + cherry-pick + FF → main (désormais débloqué). Annexe : Google Search Console (propriété à vérifier/configurer en « Domaine » ou sur `sterny.co`). #108 + compteur waitlist toujours non déployés prod. Q-DPO-008→015.
 
 ## 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (ResetPasswordPage reconnaît la session recovery au montage) + config.toml local aligné sur port Vite 5173
 Suite directe de conv 79. #110 = la page /reset-password affichait le formulaire ~3 s puis rebasculait vers /mot-de-passe-oublie. CAUSE (confirmée par lecture code) : ResetPasswordPage n'écoutait QUE l'événement PASSWORD_RECOVERY, or detectSessionInUrl:true (défaut du client, config/supabase.js sans options) consomme+nettoie le hash AVANT l'abonnement du listener → événement raté + hash vidé → timer de secours 3 s redirigeait.
