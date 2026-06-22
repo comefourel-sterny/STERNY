@@ -226,6 +226,10 @@ otp_expiry = 3600
 subject = "Ton code de confirmation Sterny"
 content_path = "./supabase/templates/confirmation.html"
 
+[auth.email.template.recovery]
+subject = "Réinitialise ton mot de passe Sterny"
+content_path = "./supabase/templates/recovery.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
