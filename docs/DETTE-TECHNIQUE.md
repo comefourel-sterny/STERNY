@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-22 (conv 80) — DETTE #110 RÉSOLUE (getSession au montage, validé runtime Mailpit local).
+**Dernière mise à jour** : 2026-06-22 (conv 81) — DETTE #110 DÉPLOYÉE EN PROD (56289dc) + validée end-to-end sur sterny.co ; #109 confirmé clos ; nouvelle dette #111 (message d'erreur reset).
 
 ## Nomenclature des bugs
 
@@ -1204,7 +1204,7 @@ CAUSE RACINE PROUVÉE (via la requête réseau /auth/v1/recover) : l'app est ser
 PISTES ÉCARTÉES (toutes vérifiées) : route /reset-password absente du build prod (présente) ; redirectTo manquant côté code (présent dans le commit déployé 74d7c98) ; bundle Vercel périmé (Production = 74d7c98) ; Site URL incorrecte (OK) ; joker allow-list ne couvrant pas les chemins (il les couvre — l'OAuth fonctionne).
 FIX APPLIQUÉ (Dashboard, config prod, PAS de commit) : ajout de https://www.sterny.co/** aux Redirect URLs. Additif (Site URL inchangée, rien retiré → OTP/proprio non affectés). VALIDÉ : le lien atterrit bien sur /reset-password.
 SUITE : sur /reset-password, un 2e bug distinct rebascule vers /mot-de-passe-oublie après 3 s → DETTE #110.
-DÉCISION GATED : cause profonde = double domaine www/non-www non canonicalisé (annexe SEO). Choisir un domaine canonique + 301 l'autre + aligner la Site URL = décision dédiée.
+DÉCISION GATED — TRANCHÉE (conv 81) : domaine canonique = sterny.co (non-www). Vercel reconfiguré (sterny.co servi en direct, www.sterny.co en redirection 308 permanente). Cause profonde éliminée. CLOS EN PROD : validé end-to-end sur sterny.co (conv 81).
 
 ## DETTE #110 — /reset-password rebascule vers /mot-de-passe-oublie après 3 s (session recovery non captée)
 **Statut : RÉSOLUE (conv 80, 22 juin 2026).** Une fois le lien recovery arrivé sur /reset-password (#109 résolu), la page de saisie du nouveau mot de passe s'affichait ~3 s puis redirigeait vers /mot-de-passe-oublie.
@@ -1213,5 +1213,10 @@ FIX APPLIQUÉ (commit b4e8628, branche feat) : getSession() au montage lit la se
 VALIDÉ RUNTIME (Mailpit local, conv 80) : lien recovery → /reset-password sans rebascule → changement de mdp → redirection /connexion → reconnexion OK.
 PARENTHÈSE CONFIG LOCALE (commit ca5d068) : le test a révélé que config.toml pointait encore sur le défaut Supabase (127.0.0.1:3000) au lieu du port Vite. Aligné sur localhost:5173 (+ allow-list /**). Config locale uniquement, sans impact prod.
 COMPORTEMENT ASSUMÉ (signalé, non corrigé) : le fix accepte toute session active sur /reset-password (un utilisateur déjà connecté pourrait changer son mdp courant). Cohérent avec Supabase (une session recovery EST une session). Distinguer type=recovery serait fragile (l'info vit dans le hash consommé). Hors périmètre #110 ; à rouvrir en décision produit si une réauthentification avant changement de mdp est un jour exigée.
-RESTE AVANT PROD : déploiement de b4e8628 (frontend) gated par la décision domaine canonique www vs non-www (cause profonde #109, voir DECISION GATED de l'entrée #109).
+DÉPLOYÉ EN PROD (conv 81) : après la décision domaine canonique = sterny.co, b4e8628 a été re-piqué (56289dc) sur origin/main via worktree + cherry-pick + fast-forward. Validé end-to-end sur sterny.co réel : lien recovery → /reset-password sans rebascule → changement de mdp → reconnexion OK. #109 + #110 CLOS EN PROD.
 LIEN : suite directe de #109. #109 était la redirection (config, résolu) ; #110 était la reconnaissance de session sur /reset-password (code, résolu).
+
+## DETTE #111 — Message d'erreur générique sur /reset-password quand le nouveau mot de passe est identique à l'ancien
+**Statut : OUVERTE (constatée conv 81, NON traitée).** Sur /reset-password en prod, soumettre comme nouveau mot de passe un mot de passe identique à l'ancien affiche un message générique « erreur survenue » au lieu d'un message clair type « choisis un mot de passe différent de l'ancien » (standard sur la plupart des sites).
+IMPACT : UX dégradée, pas de blocage fonctionnel. L'utilisateur ne comprend pas pourquoi ça échoue.
+À VÉRIFIER AVANT FIX (ne pas présumer) : déterminer si Supabase renvoie une erreur DISTINGUABLE pour ce cas (ex. code/message « same_password » ou équivalent) qu'on pourrait intercepter pour afficher un message dédié, OU si l'info n'est pas distinguable côté client. Lecture du code de ResetPasswordPage (gestion d'erreur du submit) + de la réponse réelle de l'API Supabase requise. Session dédiée, distinct de #109/#110 (qui portaient sur la session recovery, pas la gestion d'erreur du formulaire).
