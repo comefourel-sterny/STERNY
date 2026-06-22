@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-22 (conv 78) — template email reset (recovery) refondu (grammaire conv 71), versionné repo + déployé Dashboard prod (validé Gmail) ; bug redirection reset prod découvert → DETTE #109 (chantier séparé).
+**Dernière mise à jour** : 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause = domaine www absent de l'allow-list Auth, prouvé par la requête /auth/v1/recover ; fix Dashboard www) ; nouveau bug #110 (ResetPasswordPage rebascule après 3 s).
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause www allow-list, prouvée par la requête réseau) ; nouveau bug #110 (ResetPasswordPage rebascule)
+Diagnostic de bout en bout du lien recovery prod, 100% lecture jusqu'à la cause. CAUSE RACINE #109 PROUVÉE : l'app est servie sur www.sterny.co (Chrome masque le "www." dans la barre d'adresse → illusion de non-www). window.location.origin = https://www.sterny.co → le code envoie redirectTo = https://www.sterny.co/reset-password. Or la Redirect Allow List ne contenait que https://sterny.co/** (non-www) → Supabase rejette le redirect_to www → fallback sur la Site URL nue (https://sterny.co) → atterrissage racine → PasswordGate + OAuthHandler avalent la session → /dashboard, jamais /reset-password. PREUVE DÉCISIVE : la requête /auth/v1/recover montrait redirect_to=https%3A%2F%2Fwww.sterny.co%2Freset-password.
+ÉCARTÉ EN CHEMIN (tout vérifié, jamais présumé) : route /reset-password absente du build prod (présente, App.jsx) ; redirectTo manquant côté code (présent dans le commit déployé 74d7c98, lu via git show) ; bundle Vercel périmé (Production = 74d7c98, à jour) ; Site URL mal réglée (OK) ; allow-list non-www défaillante (le joker sterny.co/** couvre bien /reset-password — prouvé par l'OAuth qui fonctionne).
+FIX #109 APPLIQUÉ (Dashboard, config PROD uniquement — PAS de commit) : ajout de https://www.sterny.co/** aux Redirect URLs (Authentication → URL Configuration). Additif : Site URL inchangée, aucune entrée retirée → flux OTP/proprio non affectés. Répare aussi les autres flux auth servis en www (OAuth, OTP). VALIDÉ : le lien recovery atterrit désormais sur /reset-password.
+NOUVEAU BUG #110 (ouvert) : une fois sur /reset-password, la page nouveau-mot-de-passe s'affiche ~3 s puis rebascule vers /mot-de-passe-oublie. Cause probable : detectSessionInUrl consomme+nettoie le hash avant que ResetPasswordPage ne capte PASSWORD_RECOVERY → timer de secours 3 s → navigate('/mot-de-passe-oublie'). Fix pressenti : getSession() au montage. CODE AUTH → session fraîche.
+RESTE : fix #110 (feat + test Mailpit + déploiement) ; décision domaine canonique www vs non-www (annexe SEO, désormais prioritaire car touche l'auth) ; durcir OAuthHandler pour ne pas avaler une session type=recovery (filet, optionnel) ; #108 + compteur waitlist toujours non déployés en prod ; Q-DPO-008→015.
 
 ## 2026-06-22 (conv 78) — Template email reset (recovery) : design refondu (grammaire conv 71) + déployé Dashboard prod ; bug redirection découvert (#109)
 DESIGN LIVRÉ ET VALIDÉ (navigateur + rendu Gmail réel OK). Refonte du template email de réinitialisation de mot de passe (recovery = mail Auth Supabase, DISTINCT du circuit Resend/send-landing-email).

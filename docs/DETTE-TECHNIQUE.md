@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-22 (conv 78) — DETTE #109 ouverte (lien recovery prod ne mène pas à /reset-password, découvert par self-send ; non causé par la refonte du template).
+**Dernière mise à jour** : 2026-06-22 (conv 79) — DETTE #109 RÉSOLUE (cause www allow-list, fix Dashboard) ; DETTE #110 ouverte (ResetPasswordPage rebascule après 3 s).
 
 ## Nomenclature des bugs
 
@@ -1198,10 +1198,17 @@ Supabase déprécie les clés legacy (eyJ...). Constat conv 70 : le frontend LOC
 **Impact** : confusion UX, pas un bug de sécurité, non bloquant.
 **À faire** : auditer le composant /mot-de-passe-oublie (état loading + ordre d'affichage du message), n'afficher le succès qu'après confirmation et relâcher loading dans tous les cas. **Priorité : basse.**
 
-## DETTE #109 — Lien recovery (reset mot de passe) en prod ne mène pas à `/reset-password`
-**Statut : OUVERTE (découverte conv 78, 22 juin 2026).** En prod, cliquer le bouton « Réinitialiser mon mot de passe » du mail recovery ne mène PAS à la page de définition d'un nouveau mot de passe. Constat (self-send prod, conv 78) : clic du lien → passage par la PasswordGate (page d'attente publique) → l'utilisateur se retrouve auto-connecté et redirigé vers `/dashboard/proprietaire`, jamais sur `/reset-password`.
-**PAS causé par la refonte du template (conv 78)** : seul le design du corps a changé ; le lien `{{ .ConfirmationURL }}` est identique à l'ancien template. Bug PRÉ-EXISTANT, révélé par le 1er test end-to-end du lien prod (conv 77 n'avait validé que le flux local Mailpit → `/reset-password` OK, + l'arrivée du mail prod, mais PAS le clic prod de bout en bout).
-**Pistes à VÉRIFIER (non présumées), session dédiée** : (a) Supabase Auth → URL Configuration : Site URL + Redirect URLs (le recovery redirige probablement vers la racine `sterny.co` = PasswordGate au lieu de `/reset-password`) ; (b) le `redirect_to` passé à `resetPasswordForEmail` côté app ; (c) le routage qui doit détecter `type=recovery` dans le hash de l'URL et router vers `/reset-password` ; (d) interaction PasswordGate ↔ session recovery entrante (la gate avale la session, d'où l'auto-login).
-**Sensible** : touche la config Auth prod + le flux mot de passe (sécurité). Ne pas bricoler à chaud — session fraîche, prudence.
-**Sévérité** : bloque le reset mot de passe en prod, mais pré-lancement (aucun user réel ; la page `/mot-de-passe-oublie`, fix #108, n'est elle-même pas encore déployée en prod).
-**Lien** : voisin de #108 mais distinct — #108 = spinner UI résolu ; #109 = redirection post-clic du lien email.
+## DETTE #109 — Lien recovery (reset mot de passe) en prod ne menait pas à /reset-password
+**Statut : RÉSOLUE (conv 79, 22 juin 2026).**
+CAUSE RACINE PROUVÉE (via la requête réseau /auth/v1/recover) : l'app est servie sur www.sterny.co (Chrome masque le "www." dans la barre d'adresse, d'où l'illusion d'un non-www). window.location.origin = https://www.sterny.co → le code envoie redirectTo = https://www.sterny.co/reset-password. Or la Redirect Allow List ne contenait que https://sterny.co/** (non-www) → Supabase rejetait le redirect_to www → fallback sur la Site URL nue (https://sterny.co) → atterrissage racine → PasswordGate + OAuthHandler avalaient la session → /dashboard, jamais /reset-password.
+PISTES ÉCARTÉES (toutes vérifiées) : route /reset-password absente du build prod (présente) ; redirectTo manquant côté code (présent dans le commit déployé 74d7c98) ; bundle Vercel périmé (Production = 74d7c98) ; Site URL incorrecte (OK) ; joker allow-list ne couvrant pas les chemins (il les couvre — l'OAuth fonctionne).
+FIX APPLIQUÉ (Dashboard, config prod, PAS de commit) : ajout de https://www.sterny.co/** aux Redirect URLs. Additif (Site URL inchangée, rien retiré → OTP/proprio non affectés). VALIDÉ : le lien atterrit bien sur /reset-password.
+SUITE : sur /reset-password, un 2e bug distinct rebascule vers /mot-de-passe-oublie après 3 s → DETTE #110.
+DÉCISION GATED : cause profonde = double domaine www/non-www non canonicalisé (annexe SEO). Choisir un domaine canonique + 301 l'autre + aligner la Site URL = décision dédiée.
+
+## DETTE #110 — /reset-password rebascule vers /mot-de-passe-oublie après 3 s (session recovery non captée)
+**Statut : OUVERTE (découverte conv 79, 22 juin 2026, juste après résolution #109).** Une fois le lien recovery arrivé sur /reset-password (#109 résolu), la page de saisie du nouveau mot de passe s'affiche ~3 s puis redirige vers /mot-de-passe-oublie.
+CAUSE PROBABLE (à confirmer en lecture du code) : ResetPasswordPage attend l'événement PASSWORD_RECOVERY (onAuthStateChange) pour passer sessionReady=true, avec un timer de secours 3 s qui redirige vers /mot-de-passe-oublie si la session n'est pas prête et que le hash ne contient plus access_token. Or detectSessionInUrl:true (défaut client) consomme ET nettoie le hash très tôt au chargement, avant que le listener de la page ne soit abonné → événement raté + hash vidé → le timer bascule.
+FIX PRESSENTI (à valider après lecture) : dans ResetPasswordPage, vérifier la session AU MONTAGE via supabase.auth.getSession() (ne pas dépendre uniquement de la capture en temps réel de l'événement). Si session présente → sessionReady=true. Garder onAuthStateChange en secours. Le timer ne redirige que si aucune session ET aucun param recovery.
+SENSIBLE : code auth + flux mot de passe → session fraîche, fix sur feat + test local Mailpit avant prod.
+LIEN : suite directe de #109. #109 = redirection (config, résolu) ; #110 = reconnaissance de session sur /reset-password (code).
