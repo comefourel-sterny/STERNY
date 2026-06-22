@@ -107,3 +107,11 @@ RESTE :
 
 ## 2026-06-19 (conv 70) — Page « À propos » : revoir titre + description
 Titre actuel « À propos de STERNY » → /a-propos.html. ⚠️ a-propos.html = .html statique probablement MORT en prod (SPA Vercel). Description « Découvrez l'histoire de STERNY, la plateforme née du constat qu'aucune solution de logement n'était adaptée aux étudiants en alternance. » = lourde, à reformuler. AVANT de retoucher : localiser où vit ce texte (fichier mort ? route React ? meta SEO/OG ?) + vérifier si la page est servie.
+
+### 2026-06-22 (conv 82) — Référencer ou non la landing waitlist sur Google (décision stratégique, gated tête fraîche)
+Constat (audit Search Console conv 82) : propriété « Domaine » sc-domain:sterny.co en place et saine ; 3 pages indexées / 4 « bloquées par robots.txt » + 2 « indexées malgré le blocage ». Cause unique = le robots.txt de prod : « # STERNY — En développement, pas d'indexation / User-agent: * / Disallow: / » (blocage total, VOLONTAIRE, posture pré-lancement). Aucune anomalie à réparer : l'état actuel est cohérent.
+Rappel technique : Disallow: / empêche l'EXPLORATION, pas l'indexation d'une URL déjà connue par un lien externe (d'où les 2 « indexées malgré tout », sans gravité). Pour vraiment exclure une page, c'est la balise noindex dans le HTML — PAS le robots.txt ; et si robots.txt bloque l'exploration, Google ne peut pas lire le noindex (les deux se neutralisent).
+DÉCISION À TRANCHER (tête fraîche) : veut-on que la landing sterny.co soit trouvable sur Google pour capter des inscrits waitlist via la recherche, OU rester invisible (cohérent « en développement ») ?
+- Rester invisible → ne rien toucher, état correct.
+- Référencer la landing → modifier le robots.txt (autoriser l'exploration de la landing, garder le reste bloqué) = modif de code EN PROD + décision d'acquisition. Implique un déploiement prod (worktree + cherry-pick + FF). À cadrer avec le reste des annexes SEO si on y va.
+Note : sujet d'acquisition, non urgent, aucune échéance.
