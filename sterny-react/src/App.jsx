@@ -89,6 +89,7 @@ import RhythmFileUploadPreview from './dev/RhythmFileUploadPreview'
 import RhythmManualBuilderPreview from './dev/RhythmManualBuilderPreview'
 import PlancheCouverturePreview from './dev/PlancheCouverturePreview' // DEV ONLY — à retirer (chantier planche à découper T1)
 import AuthWizardSandbox from './dev/AuthWizardSandbox'
+import ParcoursPropositionPreview from './pages/dev/ParcoursPropositionPreview' // DEV ONLY — conception parcours couverture
 
 // Other
 import NotFoundPage from './pages/NotFoundPage'
@@ -108,6 +109,7 @@ export default function App() {
         <Route path="/dev/rhythm-manual-builder-preview" element={<RhythmManualBuilderPreview />} />
         <Route path="/dev/planche-couverture" element={<PlancheCouverturePreview />} /> {/* DEV ONLY — à retirer (chantier planche à découper T1) */}
         <Route path="/dev/auth-wizard-sandbox" element={<AuthWizardSandbox />} />
+        <Route path="/dev/parcours-proposition" element={<ParcoursPropositionPreview />} /> {/* DEV ONLY — conception parcours couverture */}
 
         {/* Temp: test */}
         <Route element={<Layout />}>
