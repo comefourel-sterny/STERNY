@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-22 (conv 81) — Domaine canonique tranché = sterny.co (non-www), appliqué côté Vercel (redirection 308) ; cause profonde #109 éliminée ; #110 débloqué.
+**Dernière mise à jour** : 2026-06-22 (conv 82) — Parcours guidé de couverture : écran Proposition conçu (décisions candidater/cible actées) puis re-mis en pause (surbrillance → session fraîche) ; preview DEV posée.
 
 ---
 
@@ -16,6 +16,18 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-22 (conv 82) — Parcours guidé de couverture : conception reprise puis re-mise en pause (écran Proposition) + preview DEV
+Reprise du chantier calendrier <-> dashboard à l'endroit exact d'arrêt (Étape B planche terminée le 18 juin ; rien bougé depuis, conv 71-81 sur d'autres sujets). Chantier = parcours guidé d'aide à la couverture (conv 61, tranche #48). Aucun code de prod touché.
+SQUELETTE acté : entrée depuis la planche /mon-calendrier (CTA « m'aider à couvrir »), parcours séquentiel 4 écrans (hub -> proposition -> recalcul -> fin), UN logement à la fois (le plus couvrant des trous restants).
+2 DÉCISIONS PRODUIT actées (à remonter en VISION §605 en session fraîche) :
+- (A) « Candidater » dans le parcours RENVOIE vers /logement (réutilise le flux candidature existant : pop-up planning Q9 + niveau légal pièces/garant §366) au lieu de le doublonner ; retour -> recalcul. v2 : candidater-en-1-clic rapatriable si le flux se simplifie.
+- (B) le parcours PROPOSE le plus couvrant des semaines « blanches » (ni signées ni candidatées) pour ne pas tourner en rond ; mais le RESTANT AFFICHÉ garde les « en attente » (un refus rouvre la semaine, modèle 3 états conv 65). Les « en attente » sont dérivables des candidatures existantes (candidature -> annonce -> disponibilites_pattern inter cherchées), SANS attendre candidatures.semaines_demandees (#93).
+AUDIT lecture seule (RecherchePage connecté) : couvertureSemaines / deduireRecherche / semainesCouvertes / tri « plus couvrant » réutilisables tels quels ; semainesCouvertes (lundis couverts) déjà attaché à chaque logement -> mini-planche sans recalcul ; carte = Link /logement (pas de bouton candidater sur la carte) ; mono-ville. DETTE #14 (candidatures) confirmée RÉSOLUE -> flux candidater exploitable.
+PREVIEW DEV posée (commit feat) : src/pages/dev/ParcoursPropositionPreview.jsx + route DEV /dev/parcours-proposition. 100% mocké, réutilise <PlancheCouverture>, build vert. Layout : titre restant -> carte annonce + badge « couvre X de tes Y » -> mini-planche -> 3 boutons (Candidater/Voir/Passer) -> ligne progression.
+EN PAUSE (fatigue, discipline « décision visuelle = session fraîche ») : rendu de la SURBRILLANCE des semaines comblées sur la mini-planche — cœur de l'écran, et touche le composant PARTAGÉ PlancheCouverture. La donnée proposee:true est DÉJÀ passée par la preview mais IGNORÉE par PlancheCouverture (il ne lit que nature/cherchee/couvert/enAttente) -> les 12 cases sont identiques pour l'instant.
+À REPRENDRE EN SESSION FRAÎCHE : trancher le rendu surbrillance (piste : comblées = plein/contour orange net, non-comblées = blanc+loupe en retrait) ; l'implémenter en AJOUT PUREMENT ADDITIF dans PlancheCouverture (lu seulement si clé proposee présente -> /mon-calendrier strictement intacte, zéro régression).
+RESTE inchangé : Google Search Console (sterny.co) ; #108 + compteur waitlist non déployés prod ; #111 (message erreur reset) ; Q-DPO-008->015 / Q-AVO-006->009.
 
 ## 2026-06-22 (conv 81) — Domaine canonique tranché = `sterny.co` (non-www) + appliqué côté Vercel/SEO ; #110 débloqué
 Décision : domaine canonique = **`sterny.co`** (sans www), choisi pour une marque épurée (révise la reco initiale www, qui n'était motivée que par le moindre effort — écarté au profit du bon choix). Inventaire factuel d'abord (Vercel, Supabase Auth, SEO, liens publiés) : seul Vercel servait le www ; Supabase Site URL + canonical/og:url étaient DÉJÀ en non-www.
