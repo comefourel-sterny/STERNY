@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-23 (conv 83) — Parcours guidé ABANDONNÉ comme surface séparée (8 itérations design, ré-emballait /recherche sans valeur ; décision logée VISION). Couverture progressive → /recherche (déjà livré). Carte profil hôte → /logement (en attente, idees-en-attente). Preview DEV archivée, non branchée.
+**Dernière mise à jour** : 2026-06-23 (conv 83 suite) — Investigation /logement → CONSTAT MAJEUR : base sans rythme exploitable (9 locataires, 0 avec rhythm_calendar ; comptes seed *@sterny.test absents de public.users). Code couverture étape 1a en place sur LogementPage.jsx (build vert, NON commité). Voir DETTE #112. Prochaine session : vérifier Auth vs public.users (option b).
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-23 (conv 83 suite) — Fiche /logement : début d'alignement + découverte d'un trou de données
+OBJECTIF initial : aligner /logement (fiche annonce) sur le nouvel écosystème couverture (la page affichait un calendrier jour-par-jour ignorant le rythme du visiteur ; sélection de semaines décorative qui n'alimente PAS la candidature ; bloc prix dates codé en dur). DÉCISION PRODUIT actée : la fiche affiche la couverture en LECTURE SEULE (planche colorée croisant le rythme du visiteur avec disponibilites_pattern), elle ne sert plus à sélectionner des semaines ; la sélection éventuelle relèvera du flux Postuler (§366, gelé légal). À promouvoir en VISION à la prochaine session.
+FRONTIÈRE LÉGALE tenue : aucune touche à la modale Postuler / au flux candidature. selectedWeeks confirmé décoratif (n'alimente pas Postuler).
+ÉTAPE 1a FAITE (code en place, build vert, NON commité) : ajout dans LogementPage.jsx du chargement du rhythm_calendar du visiteur connecté + dérivation deduireRecherche/couvertureSemaines + console.log [1a]. Aucun changement visuel.
+RÉSULTAT DU TEST 1a : couverture renvoie "0 de tes 0" → remonté à un CONSTAT MAJEUR (DETTE #112) : aucun rythme en base, comptes seed absents. Le code est sain ; il n'y a juste rien à matcher. Étape 1b (affichage planche+badge) reportée tant qu'on n'a pas de données de test.
+PROCHAINE SESSION (cap unique) : option (b) — vérifier si *@sterny.test existent dans Auth mais pas public.users (bug d'inscription ?). Selon résultat : corriger le bug, ou recréer des comptes de test via inscription normale. PUIS reprendre 1a→1b sur données réelles.
 
 ## 2026-06-23 (conv 83) — Parcours guidé abandonné, réabsorbé dans surfaces existantes
 8 itérations de refonte de l'écran Proposition (/dev/parcours-proposition) ont montré que le parcours guidé ré-emballait la mécanique DÉJÀ livrée dans /recherche (tri plus-couvrant + couverture X/Y pièce 2/4) sans valeur ajoutée, et résistait à un rendu pro. DÉCISION (logée VISION §tête) : abandon du parcours comme surface séparée. Couverture progressive = /recherche (candidater → recalcul après SIGNATURE, dépend registre semaines_reservees #93 gelé). Réaffectations : « X semaines à couvrir » → /mon-calendrier ; planche → /mon-calendrier ; carte « avec qui tu partages » (hôte) → /logement (modif en attente, idees-en-attente). AUCUN code touché cette session : le fichier DEV src/pages/dev/ParcoursPropositionPreview.jsx reste tel quel (mock de boucle + layout « une carte une décision » 900px), conservé comme exploration archivée NON branchée. La surbrillance `proposee` livrée conv 82 (commit ff7a87d) reste valide et utile à /mon-calendrier indépendamment.
