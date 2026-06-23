@@ -120,6 +120,25 @@
   box-shadow: 0 1px 4px rgba(30,41,59,0.08);
 }
 
+/* PROPOSÉE (mode parcours guidé) — semaine que le logement en cours comblerait : surbrillance
+   orange (wash + anneau + halo) + "+" coin. Projection, PAS un état réel (le plein est réservé
+   au couvert vert / en attente ardoise) → anneau, pas aplat. */
+.plc-cell.plc-ecole-propose,
+.plc-cell.plc-entreprise-propose {
+  background: #FFF4EE url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23E8622A'%20stroke-width='2.6'%20stroke-linecap='round'%3E%3Cline%20x1='12'%20y1='6'%20x2='12'%20y2='18'/%3E%3Cline%20x1='6'%20y1='12'%20x2='18'%20y2='12'/%3E%3C/svg%3E") right 3px bottom 3px / 11px no-repeat;
+  border: 2px solid #E8622A;
+  box-shadow: 0 2px 8px rgba(232,98,42,0.25);
+}
+
+/* À COUVRIR ATTÉNUÉE (mode parcours) — semaine à couvrir que ce logement NE comble PAS :
+   même look que .plc-*-cherche mais en retrait, pour faire ressortir les proposées. */
+.plc-cell.plc-ecole-cherche-attenue,
+.plc-cell.plc-entreprise-cherche-attenue {
+  background: #FFFFFF url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%3E%3Ccircle%20cx='10.5'%20cy='10.5'%20r='6.5'/%3E%3Cline%20x1='15.5'%20y1='15.5'%20x2='21'%20y2='21'/%3E%3C/svg%3E") right 3px bottom 3px / 11px no-repeat;
+  border: 1.5px solid #B4BCC8;
+  opacity: 0.55;
+}
+
 /* HORS-SUJET (déjà logé / passé / hors-rythme) → gris flouté, en retrait */
 .plc-cell.plc-contexte,
 .plc-cell.plc-passee,

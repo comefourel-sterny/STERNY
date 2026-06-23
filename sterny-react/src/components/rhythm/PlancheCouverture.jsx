@@ -19,6 +19,9 @@
 //                          couvert : true = vert plein + check blanc coin | false = blanc + loupe coin (à couvrir)
 //                          enAttente: true = candidaté sans contrat signé → aplat ardoise #64748B + sablier coin
 //                                     (précédence : couvert > enAttente > à couvrir).
+//   proposee (optionnel, mode parcours guidé) : true = semaine que le logement proposé
+//   comblerait → surbrillance orange ; false = à couvrir NON comblée par ce logement → atténuée.
+//   Clé ABSENTE (/mon-calendrier) → rendu à-couvrir normal, strictement inchangé.
 //                          Icônes (loupe / sablier / check) toutes en coin bas-droite, via background-image SVG.
 //                          Semaine absente → gris neutre. Passé → prime → gris neutre.
 //   anneeScolaireInitiale: "YYYY-YYYY+1" (optionnel) ; défaut = année contenant aujourd'hui.
@@ -131,6 +134,8 @@ export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireI
                 // Précédence : couvert (signé) > en attente (candidaté) > à couvrir.
                 if (d.couvert) modificateur = `${nat}-loge`;
                 else if (d.enAttente) modificateur = `${nat}-attente`;
+                else if (d.proposee === true) modificateur = `${nat}-propose`;
+                else if (d.proposee === false) modificateur = `${nat}-cherche-attenue`;
                 else modificateur = `${nat}-cherche`;
               } else {
                 // Ville où l'alternant est déjà logé → contexte gris (nature non distinguée).
