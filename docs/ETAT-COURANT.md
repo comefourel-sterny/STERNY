@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-23 (conv 82 suite) — Surbrillance des semaines proposées LIVRÉE (clé `proposee` additive dans PlancheCouverture, commit ff7a87d, validée runtime). Reste du parcours guidé (hub/recalcul/fin + câblage réel + flux candidater) parqué.
+**Dernière mise à jour** : 2026-06-23 (conv 83) — Parcours guidé ABANDONNÉ comme surface séparée (8 itérations design, ré-emballait /recherche sans valeur ; décision logée VISION). Couverture progressive → /recherche (déjà livré). Carte profil hôte → /logement (en attente, idees-en-attente). Preview DEV archivée, non branchée.
 
 ---
 
@@ -16,6 +16,9 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-23 (conv 83) — Parcours guidé abandonné, réabsorbé dans surfaces existantes
+8 itérations de refonte de l'écran Proposition (/dev/parcours-proposition) ont montré que le parcours guidé ré-emballait la mécanique DÉJÀ livrée dans /recherche (tri plus-couvrant + couverture X/Y pièce 2/4) sans valeur ajoutée, et résistait à un rendu pro. DÉCISION (logée VISION §tête) : abandon du parcours comme surface séparée. Couverture progressive = /recherche (candidater → recalcul après SIGNATURE, dépend registre semaines_reservees #93 gelé). Réaffectations : « X semaines à couvrir » → /mon-calendrier ; planche → /mon-calendrier ; carte « avec qui tu partages » (hôte) → /logement (modif en attente, idees-en-attente). AUCUN code touché cette session : le fichier DEV src/pages/dev/ParcoursPropositionPreview.jsx reste tel quel (mock de boucle + layout « une carte une décision » 900px), conservé comme exploration archivée NON branchée. La surbrillance `proposee` livrée conv 82 (commit ff7a87d) reste valide et utile à /mon-calendrier indépendamment.
 
 ## 2026-06-22 (conv 82) — Parcours guidé de couverture : conception reprise puis re-mise en pause (écran Proposition) + preview DEV
 Reprise du chantier calendrier <-> dashboard à l'endroit exact d'arrêt (Étape B planche terminée le 18 juin ; rien bougé depuis, conv 71-81 sur d'autres sujets). Chantier = parcours guidé d'aide à la couverture (conv 61, tranche #48). Aucun code de prod touché.
