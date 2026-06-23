@@ -115,3 +115,10 @@ DÉCISION À TRANCHER (tête fraîche) : veut-on que la landing sterny.co soit t
 - Rester invisible → ne rien toucher, état correct.
 - Référencer la landing → modifier le robots.txt (autoriser l'exploration de la landing, garder le reste bloqué) = modif de code EN PROD + décision d'acquisition. Implique un déploiement prod (worktree + cherry-pick + FF). À cadrer avec le reste des annexes SEO si on y va.
 Note : sujet d'acquisition, non urgent, aucune échéance.
+
+## Parcours guidé de couverture — reste à construire (parqué conv 82, 23 juin 2026)
+L'écran Proposition (preview DEV /dev/parcours-proposition) est conçu et sa surbrillance est livrée (commit ff7a87d). Décisions produit A/B logées en VISION. Reste, pour une (ou plusieurs) session(s) fraîche(s) dédiée(s) :
+- **Les 3 autres écrans du parcours** : hub d'entrée (CTA « m'aider à couvrir » depuis /mon-calendrier) → recalcul après chaque candidature → écran de fin. Aujourd'hui seul l'écran Proposition existe (mocké).
+- **Câblage vers le réel** : remplacer le mock par les vraies données — réutiliser couvertureSemaines + deduireRecherche + fetch annonces (audit conv 82 : tout est réutilisable tel quel, semainesCouvertes déjà attaché à chaque logement, mono-ville). 
+- **Flux candidater → /logement** : brancher le bouton sur le flux candidature existant (touche le légal pièces/garant §366 — prudence, gated par ce qui dépend de l'avocat).
+- **Refonte de la carte logement de l'écran Proposition** : au runtime du 23 juin, la carte (photo navy vide + mise en page) est jugée « pas bonne » par Côme. Point DISTINCT de la surbrillance (qui, elle, est validée). À retravailler avec une vraie direction design (réf qualité = homepage / cartes /recherche), en session dédiée.

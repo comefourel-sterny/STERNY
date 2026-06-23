@@ -613,6 +613,12 @@ Depuis le dashboard d'un alternant connecté, la recherche devient un parcours g
 
 **Surfaces.** Parcours guidé = dashboard connecté (rythme requis). /recherche publique reste la vitrine visiteur par ville (conv 55).
 
+### Parcours guidé — écran Proposition : candidater et cible (décision conv 82, 22-23 juin 2026)
+Quand le parcours propose un logement, deux choix sont actés :
+- **(A) « Candidater » réutilise le flux existant, ne le doublonne pas.** Le bouton Candidater de l'écran Proposition renvoie vers la page `/logement` (qui porte déjà le pop-up planning Q9 et le niveau légal pièces/garant §366), puis retour au recalcul. Raison : un flux candidature unique, une seule source de vérité légale, zéro duplication à maintenir. Évolution possible (v2) : un « candidater en 1 clic » rapatriable dans le parcours si et seulement si le flux candidature se simplifie d'abord.
+- **(B) On propose sur les semaines « blanches », on affiche le restant complet.** Le logement proposé est le plus couvrant des semaines ni signées ni candidatées (les « blanches ») — pour ne pas reproposer ce qui est déjà en cours et tourner en rond. MAIS le compteur de restant affiché continue d'inclure les semaines « en attente » (candidatées non signées), car un refus d'hôte rouvre la semaine (modèle 3 états, décision conv 65). Cohérence : on guide vers le neuf sans mentir sur ce qui est réellement gagné (seule la signature retire une semaine).
+- **Rendu visuel acté (conv 82 suite)** : sur la mini-planche, les semaines que le logement comblerait sont en **surbrillance orange** (anneau + « + »), PAS en aplat plein — l'aplat plein reste réservé aux états réels (vert = signé, ardoise = candidaté). La surbrillance est une projection (« ce que tu gagnerais »), pas un état acquis. Implémentée en ajout additif (clé `proposee`) sur le composant partagé PlancheCouverture, sans impact sur /mon-calendrier.
+
 ### Dénominateur = semaines RESTANT à couvrir ; modèle 3 états (décision conv 65, 18 juin 2026, raffine #48 et §610-612)
 Le « Y » du badge (« couvre X de tes Y semaines ») n'est PAS figé au total des semaines cherchées : c'est le nombre de semaines **encore à couvrir**. Dès qu'une semaine est sécurisée par un contrat **signé** du locataire, elle quitte le calcul (retirée de X comme de Y). À qui il ne reste que 3 semaines, les annonces sont notées sur 3 (« Couvert » si les 3, « 1/3 » sinon), jamais ramenées au total d'origine. Cohérent §577 : une annonce dont toutes les semaines utiles au locataire sont signées cesse de lui être proposée.
 
