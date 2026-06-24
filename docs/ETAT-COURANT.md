@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-23 (conv 83 suite) — Investigation /logement → CONSTAT MAJEUR : base sans rythme exploitable (9 locataires, 0 avec rhythm_calendar ; comptes seed *@sterny.test absents de public.users). Code couverture étape 1a en place sur LogementPage.jsx (build vert, NON commité). Voir DETTE #112. Prochaine session : vérifier Auth vs public.users (option b).
+**Dernière mise à jour** : 2026-06-24 (conv 83) — RDV individuel Le Poool : étude de terrain = priorité débloquante ; étude élargie à l'offre (proprios + agences) ; incubation Emergys reportée (pas enterrée).
 
 ---
 
@@ -26,6 +26,13 @@ PROCHAINE SESSION (cap unique) : option (b) — vérifier si *@sterny.test exist
 
 ## 2026-06-23 (conv 83) — Parcours guidé abandonné, réabsorbé dans surfaces existantes
 8 itérations de refonte de l'écran Proposition (/dev/parcours-proposition) ont montré que le parcours guidé ré-emballait la mécanique DÉJÀ livrée dans /recherche (tri plus-couvrant + couverture X/Y pièce 2/4) sans valeur ajoutée, et résistait à un rendu pro. DÉCISION (logée VISION §tête) : abandon du parcours comme surface séparée. Couverture progressive = /recherche (candidater → recalcul après SIGNATURE, dépend registre semaines_reservees #93 gelé). Réaffectations : « X semaines à couvrir » → /mon-calendrier ; planche → /mon-calendrier ; carte « avec qui tu partages » (hôte) → /logement (modif en attente, idees-en-attente). AUCUN code touché cette session : le fichier DEV src/pages/dev/ParcoursPropositionPreview.jsx reste tel quel (mock de boucle + layout « une carte une décision » 900px), conservé comme exploration archivée NON branchée. La surbrillance `proposee` livrée conv 82 (commit ff7a87d) reste valide et utile à /mon-calendrier indépendamment.
+
+## 2026-06-24 (conv 83) — RDV individuel Le Poool : étude de terrain priorité débloquante, étude élargie à l'offre, incubation Emergys reportée
+RDV individuel Le Poool (Alexis Roussel), positif, aucune réserve de fond. Confirme la lecture d'Initiative Rennes (Pauline, 30 avril) : pas un "non" sur l'incubation Emergys, mais Sterny pas assez mûr (terrain + financier) pour être incubé maintenant — Emergys vise des projets plus avancés, prêts à se lancer. Consigne Le Poool : continuer à avancer (étude de terrain, site, problème propriétaire), revenir quand mûr. Le 1er octobre (fenêtre Emergys) n'est donc PAS une deadline ferme mais une cible conditionnée à la maturité.
+DÉCISION STRUCTURANTE — l'étude de terrain devient à DEUX FACES : (1) DEMANDE = alternants, instrument existant (Tally Gx5lbo), à finir ; (2) OFFRE = propriétaires + agences immobilières, instrument à CRÉER (entretiens directs / questions ciblées, format à définir, probablement plus léger qu'un Tally). Objectif offre : valider l'intérêt proprios/agences et le "problème propriétaire". Même prudence données perso que pour la demande (déjà tracé Q-DPO).
+À INTÉGRER au Tally demande : la question "si l'alternant avait eu une autre opportunité, l'aurait-il choisie ? la distance le bloque-t-elle ?" — teste si le problème logement/distance est assez fort pour modifier un comportement (validation du besoin).
+PISTE à creuser : France Pépites (mentionné par Le Poool, lié à l'adaptation du rythme école selon l'entreprise). Côme attend un mail Le Poool avec les contacts. Nature exacte à clarifier.
+RESTE inchangé côté code : #108 + compteur waitlist non déployés prod ; #111 ; Q-DPO-008→015 / Q-AVO-006→009 ; audit logique conditionnelle Tally (Hide blocks + 2 conditionnels imbriqués). (Parcours guidé = abandonné conv 83, cf bloc 23/06, plus un reste.)
 
 ## 2026-06-22 (conv 82) — Parcours guidé de couverture : conception reprise puis re-mise en pause (écran Proposition) + preview DEV
 Reprise du chantier calendrier <-> dashboard à l'endroit exact d'arrêt (Étape B planche terminée le 18 juin ; rien bougé depuis, conv 71-81 sur d'autres sujets). Chantier = parcours guidé d'aide à la couverture (conv 61, tranche #48). Aucun code de prod touché.
