@@ -32,17 +32,21 @@ export function getCountdown(dateFin) {
 // Plage d'une semaine en français à partir du lundi ISO "YYYY-MM-DD".
 // Ex : "8 – 14 juin" ; si la semaine chevauche 2 mois : "30 juin – 6 juillet".
 // Option tight : séparateur compact "–" (sans espaces) pour les petites tuiles.
-export function formatWeekRangeFR(weekStart, { tight = false } = {}) {
+// Option withYear : ajoute l'année civile de la FIN de semaine (dimanche),
+//   ex. "7 – 13 septembre 2026" ; semaine à cheval déc/janv → année du dimanche de fin.
+//   Défaut false → comportement strictement inchangé pour les appelants existants.
+export function formatWeekRangeFR(weekStart, { tight = false, withYear = false } = {}) {
   const [y, m, d] = weekStart.split('-').map(Number)
   const lundi = new Date(y, m - 1, d)
   const dimanche = new Date(y, m - 1, d + 6)
   const sep = tight ? '–' : ' – '
   const moisLundi = lundi.toLocaleDateString('fr-FR', { month: 'long' })
   const moisDimanche = dimanche.toLocaleDateString('fr-FR', { month: 'long' })
+  const suffixeAnnee = withYear ? ` ${dimanche.getFullYear()}` : ''
   if (lundi.getMonth() === dimanche.getMonth()) {
-    return `${lundi.getDate()}${sep}${dimanche.getDate()} ${moisDimanche}`
+    return `${lundi.getDate()}${sep}${dimanche.getDate()} ${moisDimanche}${suffixeAnnee}`
   }
-  return `${lundi.getDate()} ${moisLundi}${sep}${dimanche.getDate()} ${moisDimanche}`
+  return `${lundi.getDate()} ${moisLundi}${sep}${dimanche.getDate()} ${moisDimanche}${suffixeAnnee}`
 }
 
 // Date de début seule (lundi) en français court, ex. « 8 juin ». Pour les tuiles latérales.

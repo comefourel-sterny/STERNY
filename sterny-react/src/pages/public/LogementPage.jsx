@@ -4,6 +4,7 @@ import { supabaseClient } from '../../config/supabase';
 import { useAuth } from '../../hooks/useAuth.jsx';
 import { deduireRecherche } from '../../utils/deduireRecherche';
 import { couvertureSemaines } from '../../utils/matching';
+import { formatWeekRangeFR } from '../../utils/formatters';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './LogementPage.css';
@@ -1570,6 +1571,28 @@ export default function LogementPage() {
               <div style={{ fontSize: '14px', fontWeight: 600, color: '#1E293B', marginBottom: '12px' }}>Couverture de tes semaines</div>
               <div style={{ fontSize: '14px', color: '#475569' }}>
                 couvre <strong style={{ color: '#E8622A', fontWeight: 700 }}>{couvertureVisiteur.couvertes}</strong> de tes {couvertureVisiteur.totalCherchees} semaines
+              </div>
+              <div style={{ marginTop: '16px' }}>
+                {couvertureVisiteur.semainesCouvertes.length === 0 ? (
+                  <div style={{ fontSize: '13px', color: '#94A3B8' }}>Aucune de tes semaines pour le moment</div>
+                ) : (
+                  <>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Semaines comblées :</div>
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {couvertureVisiteur.semainesCouvertes.slice(0, 6).map((lundi) => (
+                        <li key={lundi} style={{ fontSize: '13px', color: '#475569', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E8622A', flex: '0 0 auto' }} />
+                          {formatWeekRangeFR(lundi, { withYear: true })}
+                        </li>
+                      ))}
+                    </ul>
+                    {couvertureVisiteur.semainesCouvertes.length > 6 && (
+                      <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '6px' }}>
+                        … et {couvertureVisiteur.semainesCouvertes.length - 6} autres
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
