@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-22 (conv 81) — DETTE #110 DÉPLOYÉE EN PROD (56289dc) + validée end-to-end sur sterny.co ; #109 confirmé clos ; nouvelle dette #111 (message d'erreur reset).
+**Dernière mise à jour** : 2026-06-24 (conv 84) — DETTE #112 LEVÉE (pas une dette de code : l'inscription écrit bien le rythme, prouvé par test de bout en bout en local). #111 toujours ouverte.
 
 ## Nomenclature des bugs
 
@@ -1222,6 +1222,7 @@ IMPACT : UX dégradée, pas de blocage fonctionnel. L'utilisateur ne comprend pa
 À VÉRIFIER AVANT FIX (ne pas présumer) : déterminer si Supabase renvoie une erreur DISTINGUABLE pour ce cas (ex. code/message « same_password » ou équivalent) qu'on pourrait intercepter pour afficher un message dédié, OU si l'info n'est pas distinguable côté client. Lecture du code de ResetPasswordPage (gestion d'erreur du submit) + de la réponse réelle de l'API Supabase requise. Session dédiée, distinct de #109/#110 (qui portaient sur la session recovery, pas la gestion d'erreur du formulaire).
 
 ## DETTE #112 — Base sans données de rythme exploitables + comptes seed absents (constat conv 83, 23 juin 2026)
+**Statut : LEVÉE 2026-06-24 (conv 84) — ce n'était PAS une dette de code.** Le parcours d'inscription actuel écrit bien le rythme (preuve ci-dessous). Le constat initial reflétait juste une base sans données fraîches (comptes d'amis créés avant la refonte calendrier + seed absents), pas un bug. Détail de la levée en fin d'entrée.
 CONSTAT (vérifié par requêtes SQL lecture seule sur la base PRODUCTION) :
 - Aucun compte locataire n'a de rhythm_calendar rempli : `select type_user, count(*), count(*) filter (where rhythm_calendar is not null and jsonb_array_length(rhythm_calendar) > 0)` → locataire 9 / 0 avec rythme ; proprietaire 3 / 0. Aucun compte hote ni les_deux présent.
 - Les comptes seed `locataire@sterny.test` et `hote@sterny.test` n'existent PAS dans public.users (0 row sur `where email in (...)`).
@@ -1229,3 +1230,9 @@ CONSÉQUENCE : impossible de tester /recherche, /logement, le matching ou la cou
 HYPOTHÈSE À VÉRIFIER EN PRIORITÉ (prochaine session, option b) : les comptes `*@sterny.test` existent-ils dans Supabase Auth (auth.users) mais SANS ligne profil dans public.users ? Si oui = bug d'inscription (compte Auth créé sans profil), qui expliquerait l'état partiel de la base. Requête de départ : comparer auth.users (par email) vs public.users.
 SI au contraire les comptes sont juste absents (base resettée / seed non rejoué) : recréer un jeu de comptes de test propres (locataire + hote avec rythme) via le PARCOURS D'INSCRIPTION normal (qui écrit le rythme via la RPC), pas par UPDATE SQL en prod.
 NE PAS faire d'UPDATE/INSERT sauvage en production pour "redonner un rythme" : passer par le flux d'inscription ou un seed maîtrisé.
+
+**✅ LEVÉE 2026-06-24 (conv 84).** Recadrage : la vraie question n'était pas « y a-t-il des rythmes en prod » (les 9 locataires sont des comptes d'amis créés AVANT la refonte du parcours calendrier → rythme vide = historique mort, pas un bug) mais « le parcours d'inscription ACTUEL sait-il écrire un rythme ». Or ce parcours unifié (E-1→E-7) vit uniquement sur la branche feat/unification-inscription, donc en LOCAL, pas en prod — d'où l'absence de rythmes côté prod.
+MÉTHODE : test de bout en bout en local (`npm run dev` → stack locale 127.0.0.1:54321 via .env.local), création d'UN compte locataire neuf avec saisie réelle du rythme en E-5.
+PREUVE (SELECT lecture seule sur la base locale, psql 127.0.0.1:54322) : compte locataire neuf, `jsonb_array_length(rhythm_calendar)` = 61, première semaine `{"status":"school","week_start":"2026-06-29"}` (format VISION {week_start, status}, lundi ISO) ; dashboard affichait l'encart « TON RYTHME » peuplé.
+CONCLUSIONS : (1) chemin E-5 → RPC `complete_inscription_alternant` → colonne `rhythm_calendar` SAIN, l'inscription écrit bien le rythme. (2) Hypothèse « compte Auth sans ligne public.users » (option b) ÉCARTÉE : le compte neuf a une ligne public.users complète (profil + type_user + rythme) en un seul passage. (3) Le « 0 de tes 0 » de l'étape 1a (conv 83) n'était NI un bug de code NI un bug d'inscription — juste une base sans données fraîches. (4) ACTION : une seule création de compte de test via le parcours normal ; AUCUN fix, AUCUN UPDATE/INSERT SQL, AUCUNE modif de repo.
+RESTE (non bloquant) : créer aussi un compte HÔTE avec rythme (pour avoir une annonce à matcher), puis reprendre 1a→1b sur /logement sur données réelles, puis committer l'étape 1a restée dans le working tree depuis conv 83.
