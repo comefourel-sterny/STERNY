@@ -4,7 +4,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 18 juin 2026 (conv 65) — dénominateur de couverture = semaines RESTANT à couvrir (pas le total) ; modèle 3 états de la semaine (à couvrir / en attente / couvert).
+**Dernière mise à jour** : 2026-06-24 (conv 88) — Correction §652 : ancrage profil = NATURE du logement (côté école/entreprise), PAS sa ville (saisie librement ; Bruz≠Rennes). Contrôle de distance (Marseille vs Rennes) reconnu utile mais différé (chantier séparé).
 
 ---
 
@@ -660,5 +660,11 @@ La page actuelle raisonne avec une taxonomie périmée « propriétaire / locata
 ### Refonte CreerAnnoncePage — parcours cible step 4 + bascule format (décision conv 87, 24 juin 2026)
 Le step 4 « Disponibilités » est refondu : au lieu d'un rythme abstrait re-saisi (cycle X-Y), la dispo est DÉRIVÉE automatiquement via deduireOffre(profil hôte) (rhythm_calendar × ville de l'annonce) et affichée pré-cochée, ajustable À LA SEMAINE (lundi) par l'hôte (§137). selectedDates bascule de "jours ISO" à "lundis ISO" — bascule COORDONNÉE avec ses 4 consommateurs (validateStep ≥1 au lieu de ≥7 ; getSelectedWeeksCount .length au lieu de /7 ; récap période lundi→lundi+6 ; payload = lundis sans colonnes dépréciées), sinon compteur/validation/prix faussés. Le prix hebdomadaire (annonces.prix) est robuste à la bascule (ne lit pas selectedDates). PIÈGE de nommage acté : dans cette page userType='locataire' désigne l'alternant-hôte (= l'auteur) ; les gardes prix/bail accrochées à ='locataire' sont PRÉSERVÉES (pas supprimées). Le retrait de la taxonomie se fait en 2 temps : suppression du proprio en gardant la valeur 'locataire'=hôte (conv 87) ; renommage 'locataire'→'hote' différé à la refonte globale.
 DÉCISION ARCHI : briques partagées, PAS fusion create/edit. La duplication dangereuse est la LOGIQUE (dérivation/format/colonnes), centralisée dans deduireOffre + briques à extraire (ajustement semaine, sélecteur ville, constructeur payload). Les 2 shells (Creer/Modifier) appellent les mêmes briques. Fusion en un composant unique = différée à la refonte globale (DETTE #6).
+
+### Ancrage = NATURE du logement, pas sa ville ; contrôle de distance différé (correction §652, décision conv 88, 24 juin 2026)
+Le §652 (« la ville de l'annonce doit être l'une des villes hôte du profil ») est trop littéral : un hôte rattaché à Rennes (école) peut proposer un logement à Bruz (20 min) — ce n'est PAS Rennes mais c'est « côté école ». La dérivation de dispo n'a PAS besoin de la ville exacte, seulement de la NATURE du logement (côté école / côté entreprise), portée par le profil (pôle statut_ville_*='hote'), indépendamment de la ville saisie. Correction actée :
+(1) VILLE + adresse + GPS du logement = SAISIES LIBREMENT (villeDetectee / code postal / api-adresse) = la vraie localisation. On NE remplace PAS annonces.ville par la ville du profil.
+(2) Seule la NATURE est dérivée du profil via deduireOffre(hostProfile) (entrée action='hote') ; c'est elle qui alimente semainesLibresLogement. Cas courant 1 pôle hôte → nature non ambiguë, aucune question posée. Cas les_deux 2 pôles hôte (§91/§653) → demander à quel pôle le logement se rattache, différé.
+(3) CONTRÔLE DE COHÉRENCE GÉOGRAPHIQUE (ex. profil Rennes mais bail vers Marseille = suspect) = reconnu comme utile mais explicitement DIFFÉRÉ (décision conv 88) : chantier séparé, pas dans la refonte annonce. Lié au sujet « recherche par ville exacte vs rayon de proximité » (un logement à Bruz ne ressort pas sur une recherche « Rennes » sans rayon). Aucune action 3a/3b/3c là-dessus.
 
 *Document stable. Si une décision contredit un principe exposé ici, soit la décision doit être révisée, soit ce document doit être mis à jour (avec traçage en tête : date et nature du changement).*
