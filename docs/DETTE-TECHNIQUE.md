@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-24 (conv 84) — DETTE #112 LEVÉE (pas une dette de code : l'inscription écrit bien le rythme, prouvé par test de bout en bout en local). #111 toujours ouverte.
+**Dernière mise à jour** : 2026-06-24 (conv 84 suite) — DETTE #113 ouverte (CreerAnnoncePage pré-calendrier : disponibilites_pattern non conforme VISION). #112 levée ; #111 toujours ouverte.
 
 ## Nomenclature des bugs
 
@@ -1236,3 +1236,15 @@ MÉTHODE : test de bout en bout en local (`npm run dev` → stack locale 127.0.0
 PREUVE (SELECT lecture seule sur la base locale, psql 127.0.0.1:54322) : compte locataire neuf, `jsonb_array_length(rhythm_calendar)` = 61, première semaine `{"status":"school","week_start":"2026-06-29"}` (format VISION {week_start, status}, lundi ISO) ; dashboard affichait l'encart « TON RYTHME » peuplé.
 CONCLUSIONS : (1) chemin E-5 → RPC `complete_inscription_alternant` → colonne `rhythm_calendar` SAIN, l'inscription écrit bien le rythme. (2) Hypothèse « compte Auth sans ligne public.users » (option b) ÉCARTÉE : le compte neuf a une ligne public.users complète (profil + type_user + rythme) en un seul passage. (3) Le « 0 de tes 0 » de l'étape 1a (conv 83) n'était NI un bug de code NI un bug d'inscription — juste une base sans données fraîches. (4) ACTION : une seule création de compte de test via le parcours normal ; AUCUN fix, AUCUN UPDATE/INSERT SQL, AUCUNE modif de repo.
 RESTE (non bloquant) : créer aussi un compte HÔTE avec rythme (pour avoir une annonce à matcher), puis reprendre 1a→1b sur /logement sur données réelles, puis committer l'étape 1a restée dans le working tree depuis conv 83.
+
+## DETTE #113 — CreerAnnoncePage est pré-calendrier : disponibilites_pattern non conforme VISION (source dépréciée + format jours)
+**Statut : OUVERTE (audit conv 84, 24 juin 2026). IMPORTANTE — page centrale (création de l'offre), à refondre.**
+CONSTAT (audit lecture seule, CreerAnnoncePage.jsx 2699 l.) : la page écrit annonces.disponibilites_pattern mais dans un format et depuis une source incompatibles avec le système calendrier connecté (rhythm_calendar / lundis ISO).
+- SOURCE : saisie manuelle (dates de bail) + cycle abstrait "X-Y" (generateRhythmDatesFromAnchor l.1244), piloté par les colonnes DÉPRÉCIÉES type_alternance/rythme_alternance (l.617-618). rhythm_calendar JAMAIS lu (0 occurrence dans le fichier).
+- FORMAT : tableau de TOUTES les dates journalières (~7 par semaine dispo, l.1217-1220 mode clic et l.1265-1271 mode cycle), via toLocalISODate. PAS un tableau de lundis ISO comme l'exige la VISION.
+- COLONNES DÉPRÉCIÉES ÉCRITES : type_alternance + rythme_pattern (l.1699-1700) — interdites par la VISION.
+- VILLE : jamais croisée avec le rythme (aucune logique rythme×ville).
+PIÈGE : le lundi de chaque semaine étant inclus parmi les 7 jours, couvertureSemaines (qui intersecte des lundis) peut renvoyer un compte non-nul PAR ACCIDENT → la couverture « s'afficherait » tout en étant fausse/gonflée/bruitée. Ne pas se fier à un affichage non-nul comme preuve.
+IMPACT : /logement (couverture dérivée du rhythm_calendar, lundis) ne peut pas s'appuyer sur les annonces produites par cette page. Bloque le test 1a→1b sur données réelles via la page.
+CONTOURNEMENT TEST (court terme) : seed maîtrisé d'une annonce avec disponibilites_pattern = lundis dérivés du rythme hôte, APRÈS lecture de couvertureSemaines/deduireRecherche (ne pas présumer le format). Jamais d'INSERT à la main sans avoir lu la règle.
+FIX RÉEL (chantier refonte annonce, ULTÉRIEUR) : réécrire le calcul de disponibilites_pattern pour qu'il dérive du rhythm_calendar de l'hôte croisé avec la ville du logement, au format lundis ISO, et cesser d'écrire les colonnes dépréciées. Fait partie de la refonte globale de CreerAnnoncePage (cf DETTE #1-8 : 2600+ lignes, bypass DEV, bugs cropper/re-render). Page TRÈS IMPORTANTE à reprendre proprement.
