@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-24 (conv 85) — Couverture /logement livree : badge « couvre X de tes Y semaines » + liste compacte des semaines comblees dans l'aside (planche annuelle ecartee de la fiche, illisible en colonne etroite). Commits a6f4707 + ee355e9.
+**Dernière mise à jour** : 2026-06-24 (conv 87) — Refonte CreerAnnoncePage : donnée de test (annonce témoin format VISION) + Lots 1-2 (charger profil hôte, retrait taxonomie proprio, parcours unique 0→5) faits en working tree non commité (never-stage). Brique de dérivation conv 86 loguée. Cap : Lot 3 (dérivation dispo step 4).
 
 ---
 
@@ -26,6 +26,21 @@ PROCHAINE SESSION (cap unique) : option (b) — vérifier si *@sterny.test exist
 
 ## 2026-06-23 (conv 83) — Parcours guidé abandonné, réabsorbé dans surfaces existantes
 8 itérations de refonte de l'écran Proposition (/dev/parcours-proposition) ont montré que le parcours guidé ré-emballait la mécanique DÉJÀ livrée dans /recherche (tri plus-couvrant + couverture X/Y pièce 2/4) sans valeur ajoutée, et résistait à un rendu pro. DÉCISION (logée VISION §tête) : abandon du parcours comme surface séparée. Couverture progressive = /recherche (candidater → recalcul après SIGNATURE, dépend registre semaines_reservees #93 gelé). Réaffectations : « X semaines à couvrir » → /mon-calendrier ; planche → /mon-calendrier ; carte « avec qui tu partages » (hôte) → /logement (modif en attente, idees-en-attente). AUCUN code touché cette session : le fichier DEV src/pages/dev/ParcoursPropositionPreview.jsx reste tel quel (mock de boucle + layout « une carte une décision » 900px), conservé comme exploration archivée NON branchée. La surbrillance `proposee` livrée conv 82 (commit ff7a87d) reste valide et utile à /mon-calendrier indépendamment.
+
+## 2026-06-24 (conv 87) — Refonte CreerAnnoncePage : données de test + Lots 1-2 (working tree, non commité)
+DONNÉE DE TEST (local 54322) : créé une annonce témoin au format VISION (id aaaaaaaa-…, auteur come.fourel hôte, ville Rennes, disponibilites_pattern = lundis school dérivés, zéro colonne dépréciée). Rythme hôte ajusté (2 semaines 2026-08-17/08-24 passées school) pour un recoupement non nul avec le locataire comefourel@gmail.com, PASSÉ PAR LA VRAIE DÉRIVATION (pas un mock). Validé runtime sur /logement?id=aaaa… : « couvre 2 de tes 28 », liste 17-23 + 24-30 août. → l'écosystème couverture conv 85 validé de bout en bout sur donnée conforme.
+DÉCOUPAGE refonte en 6 lots (acté) : 0 donnée test [FAIT] · 1 charger+persister profil hôte [FAIT] · 2 retrait taxonomie proprio [FAIT] · 3 dérivation dispo step 4 + bascule selectedDates jours→lundis + 4 consommateurs + retrait cycle abstrait/colonnes dépréciées [À FAIRE, cœur] · 4 réparer consommateurs selectedDates · 5 nettoyer payload · 6 miroir sur ModifierAnnoncePage.
+FAIT cette session (working tree, NON commité, CreerAnnoncePage never-stage) :
+- Lot 1a : state hostProfile + select profil élargi (ville_*, statut_ville_*, rhythm_calendar) + persistance. Validé runtime (log [Lot1a]).
+- Lot 2a : checkUserType route l'alternant-hôte (hote/les_deux/locataire) direct au wizard, userType forcé 'locataire' ; cas non reconnu → écran de choix (puis supprimé 2b).
+- Lot 2b : retrait du code mort écran de choix (états showUserTypeScreen/selectedUserType, handler handleConfirmUserType, bloc JSX) ; cas non reconnu → navigate('/dashboard').
+- Lot 2c : parcours unique 0→1→2→3→4→5, retrait de tous les sauts/branches proprio (nextStep/prevStep/visibleSteps/stepNumber5Text + 2 classes hidden-for-user-type). grep proprio actif = 0.
+Tout validé runtime (build vert à chaque lot, navigation 1↔6 sans saut). DETTE #5 (boucle re-render) confirmée empiriquement (log ×6) — à neutraliser au Lot 3.
+DÉCISION NOMMAGE (à respecter) : userType garde la valeur 'locataire' (= l'hôte alternant dans cette page) ; le renommage 'locataire'→'hote' est différé à la refonte globale (DETTE #6). Dette de nommage assumée + commentée dans le code.
+CAP PROCHAINE SESSION : Lot 3 (le cœur). D'abord décider commit Lots 1+2 (check-list secrets, vérifier qu'aucun bypass DEV n'est embarqué). Puis brancher deduireOffre(hostProfile) au step 4.
+
+## 2026-06-24 (conv 86) — Brique pure de dérivation dispo livrée
+Livré + testé + poussé (origin/feat, commits cef1415 + e197475 + 55c7e41) : semainesLibresLogement(rhythmCalendarHote, natureVilleLogement) et deduireOffre(user) dans sterny-react/src/utils/deduireRecherche.js. Miroir de deduireRecherche côté offre. Règle (VISION §651) : logement libre = semaines de présence de l'hôte dans la nature OPPOSÉE à la ville du logement. Réutilise semainesDePresence. Testé runtime sur come.fourel@rennes.archi.fr → 4 lundis school. Audit lecture seule des 2 pages annonce (Creer + Modifier) : même logique défectueuse confirmée (cf DETTE #113). Décisions de modèle actées en VISION (bloc conv 86).
 
 ## 2026-06-24 (conv 85) — Couverture /logement livree : badge + liste compacte (planche ecartee de la fiche)
 LIVRE et commite (a6f4707 puis ee355e9, branche feat, non pousse au moment de l'ecriture) : la fiche /logement affiche, pour un visiteur connecte avec rythme, la couverture de l'annonce contre ses semaines cherchees. Deux briques : (1a+1b-i, a6f4707) chargement du rhythm_calendar visiteur + derivation deduireRecherche/couvertureSemaines + badge texte « couvre X de tes Y semaines » dans une carte de l'aside ; (1b-iii+iv, ee355e9) la couverture detaillee s'affiche en LISTE COMPACTE des semaines comblees (puces orange, formatWeekRangeFR avec annee, max 6 puis « … et N autres »), PAS en planche annuelle. Lecture seule, hors flux candidature, calendrier jour-par-jour intact.
