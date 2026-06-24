@@ -49,3 +49,35 @@ export function deduireRecherche(user) {
       semaines: semainesDePresence(user.rhythm_calendar, v.nature),
     }));
 }
+
+/**
+ * Semaines où un logement est libre, dérivées du rythme de l'hôte.
+ * Le logement est libre quand l'hôte n'y est pas : il est alors dans sa ville
+ * de nature OPPOSÉE. Miroir de la dérivation côté demande (VISION conv 86).
+ * @param {Array} rhythmCalendarHote - rhythm_calendar de l'hôte
+ * @param {'ecole'|'entreprise'} natureVilleLogement - nature de la ville du logement
+ * @returns {string[]} lundis ISO "YYYY-MM-DD", futurs, triés (hérités de semainesDePresence)
+ */
+export function semainesLibresLogement(rhythmCalendarHote, natureVilleLogement) {
+  if (natureVilleLogement !== 'ecole' && natureVilleLogement !== 'entreprise') return [];
+  const opposee = natureVilleLogement === 'ecole' ? 'entreprise' : 'ecole';
+  return semainesDePresence(rhythmCalendarHote, opposee);
+}
+
+/**
+ * Miroir de deduireRecherche, côté OFFRE.
+ * Pour chaque ville où l'utilisateur est hôte, calcule les semaines libres du logement.
+ * @param {Object} user - utilisateur (colonnes ville_* + rhythm_calendar)
+ * @returns {Array<{ville:string, nature:'ecole'|'entreprise', semaines:string[]}>}
+ */
+export function deduireOffre(user) {
+  if (!user) return [];
+  const rythme = user.rhythm_calendar;
+  return getVillesUtilisateur(user)
+    .filter((v) => v.action === 'hote')
+    .map((v) => ({
+      ville: v.ville,
+      nature: v.nature,
+      semaines: semainesLibresLogement(rythme, v.nature),
+    }));
+}
