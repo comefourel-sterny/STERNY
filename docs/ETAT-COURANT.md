@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-25 (conv 91) — CreerAnnoncePage : grappes 1-2 du nettoyage mort retirées (grille jour-par-jour + nav, working tree never-stage, build vert). Découverte : le step 4 affiche encore le sélecteur de rythme abstrait (viole charte invariants 5/6) → retrait grappes 3/4/5 (JSX vestige + moteur cycle + réécriture bailInfo).
+**Dernière mise à jour** : 2026-06-25 (conv 91 suite) — CreerAnnoncePage : nettoyage moteur de cycle + bail vestige TERMINÉ (grappes 3/5/3bis/4, never-stage, build vert, validé runtime). DETTE #5 (boucle re-render) RÉSOLUE. Reste : « Réinitialiser », passe finale cosmétique, grappe étape 0 Bail (import PDF à préserver), ModifierAnnoncePage.
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-25 (conv 91 suite) — CreerAnnoncePage : nettoyage moteur de cycle + bail vestige TERMINÉ (never-stage, build vert)
+RETIRÉ (working tree, never-stage, build vert, validé runtime come.fourel) — grappes 3+5 (JSX bail/rythme du step 4 + réécriture bail_info : objet conservé comme marqueur ModifierAnnoncePage, dates→null §145), 3bis (encadré « plage continue » DÉBUT→FIN + ligne « Période » modale), 4 (moteur de cycle complet : generateRhythmDatesFromAnchor/processRhythmDates/finalizeBailDates/enterCycleSelectionMode/resetToCycleSelection/choisirDimanche/handleGenerateClick/handleBail* + 2 useEffect + 10 states cycle, ~178 l.). DETTE #5 (boucle re-render) RÉSOLUE — vérifiée console (filtre « Calendar debug » = 0).
+PRÉSERVÉS : planche (useEffect auto-show l.616 intact), selectedDates, toggleSemaineDispo, nbSemaines, bail_info, garde userType==='locataire'(=hôte), clearAllDates (pour futur « Réinitialiser »), bypass DEV.
+MAPPING WIZARD confirmé (lu l.1576) : currentStep 0=Bail · 1=Infos · 2=Détails · 3=Photos · 4=Disponibilités(planche) · 5=Prix. Décalage code/écran : « step 4 » code = « étape 5 » écran.
+ZONE IMPORT ÉTAPE 0 BAIL = À PRÉSERVER (consigne Côme : sert au fonctionnement + vérification des annonces). Les 8 states write-only restants y sont rattachés → grappe « étape 0 Bail » dédiée (décision produit sur le sort de l'import PDF bail + prefill qui viole invariant 5).
+RESTE : (1) « Réinitialiser » (transformer ex-Tout effacer) ; (2) passe finale (header « Disponibilités & Bail » périmé→« Disponibilités », imports morts, CSS orphelines .calendar-month*/.weekdays*, joursNoms, logs DEV) ; (3) grappe « étape 0 Bail » ; (4) ModifierAnnoncePage (Lot 6). Gros commit atomique de la refonte en Phase 0bis. Sauvegardes : ~/sterny-backups/sterny-refonte-annonce-{avant-grappe3,avant-grappe4,apres-grappe4}.patch.
 
 ## 2026-06-25 (conv 91) — CreerAnnoncePage : grappes 1-2 du nettoyage mort retirées (non commitées, never-stage)
 RETIRÉ (working tree, build vert, never-stage — la refonte se commitera en bloc en Phase 0bis) :
