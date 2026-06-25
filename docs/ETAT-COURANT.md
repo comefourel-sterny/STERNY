@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-25 (conv 90) — Refonte CreerAnnoncePage : planche-semaines cliquable BRANCHÉE à l'étape 4 (remplace la grille jour-par-jour) + validée runtime (come.fourel, 5 semaines proposées, toggle OK). Brique clic de PlancheCouverture commitée + poussée (5eed513). Reste : nettoyage moteur de cycle + bloc bail vestige, puis ModifierAnnoncePage.
+**Dernière mise à jour** : 2026-06-25 (conv 91) — CreerAnnoncePage : grappes 1-2 du nettoyage mort retirées (grille jour-par-jour + nav, working tree never-stage, build vert). Découverte : le step 4 affiche encore le sélecteur de rythme abstrait (viole charte invariants 5/6) → retrait grappes 3/4/5 (JSX vestige + moteur cycle + réécriture bailInfo).
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-25 (conv 91) — CreerAnnoncePage : grappes 1-2 du nettoyage mort retirées (non commitées, never-stage)
+RETIRÉ (working tree, build vert, never-stage — la refonte se commitera en bloc en Phase 0bis) :
+- Grappe 1 : grille jour-par-jour morte = renderMonthGrid + getWeekCells + isSelected + selectDate (fonction entière : son seul appelant était le day-cell de renderMonthGrid ; la planche utilise toggleSemaineDispo, PAS selectDate → le « piège branche normale » de conv 88 était caduc) + CSS .day-cell* (6 règles). ~110 l JSX + 40 l CSS.
+- Grappe 2 : habillage nav mort = shiftMonths + calendarPeriodText + calcul endMonthIdx/endYr. ~13 l. startMonthIndex/startYear CONSERVÉS (encore écrits par le useEffect du moteur de cycle → tombent en grappe 4).
+DÉCOUVERTE D'AUDIT (à traiter grappes 3/4/5) : le step 4 affiche ENCORE l'ancien ET le nouveau système empilés — saisies de bail + SÉLECTEUR DE RYTHME ABSTRAIT (rhythmType/rhythmPattern « 4-2 » + « Générer mon calendrier ») VISIBLES en permanence (non gated), au-dessus de la planche. Le sélecteur de rythme sur une page secondaire VIOLE l'invariant 6 de la charte (le rythme ne se modifie pas hors inscription) + l'invariant 5 (cycles abstraits interdits) → retrait non négociable. bailInfo à RÉÉCRIRE (pas préserver) : date_debut/date_fin/duree_mois dépendent des saisies bail supprimées ; nb_semaines_presence/prix_total_sejour déjà alignés semaines. Modale Dimanche bien gated (showDimancheModal) → retirable proprement.
+CSS sœurs désormais orphelines (laissées pour passe CSS finale, inoffensives) : .calendar-months-grid, .calendar-month(+::after), .month-header, .weekdays, .weekday, .days-grid.
+RESTE : grappes 3 (JSX vestige step 4) → 4 (states + moteur de cycle + 2 useEffect dont boucle DETTE #5) → 5 (réécriture bailInfo), coordonnées ; puis passe CSS finale ; puis ModifierAnnoncePage (Lot 6).
 
 ## 2026-06-25 (conv 90) — CreerAnnoncePage : planche-semaines cliquable branchée + validée runtime
 LIVRÉ et VALIDÉ AU RUNTIME (come.fourel@rennes.archi.fr, étape 4 création annonce) : la planche-semaines unique (PlancheCouverture) remplace la grille jour-par-jour (renderMonthGrid/day-cell). Mode clic optionnel ajouté au composant partagé (prop onSemaineClick, AJOUT PUR, design figé invariant 7) — COMMITÉ + POUSSÉ : 5eed513. Branchement côté page (etatsDispoAnnonce via useMemo, anneeDispoInitiale, handler toggleSemaineDispo, en-tête « TES SEMAINES À PROPOSER » + compteur + consigne, largeur bornée .planche-annonce 704px) : working tree, CreerAnnoncePage.jsx + .css = never-stage, NON commités.
