@@ -1253,3 +1253,28 @@ MAJ conv 86 (clôture) : audit lecture seule a révélé une incohérence de mod
 MAJ conv 87 (24 juin 2026) : audit prix (step 5) + chantier entamé. PRIX : le prix hebdomadaire stocké (annonces.prix = loyer/2 /4.33 ×1.15) ne dépend PAS de selectedDates → robuste à la bascule lundis. SEUL point de casse prix = getSelectedWeeksCount (/7) → devient .length quand selectedDates = lundis ; propage à prixTotalSejour + bail_info.nb_semaines_presence/prix_total_sejour (écrits en base). Gardes prixTotalSejour/bailInfo accrochées à userType==='locataire' = l'HÔTE (à préserver, pas supprimer). FAIT (working tree, non commité) : Lots 1a (hostProfile chargé+persisté), 2a/2b/2c (retrait complet taxonomie proprio + parcours unique 0→5). RESTE : Lot 3 (dérivation step 4 + bascule selectedDates + retrait cycle abstrait/colonnes dépréciées), puis Lots 4-5 (consommateurs, payload), puis Lot 6 (miroir ModifierAnnoncePage). Changements de comportement à tracer : /annonce/creer?type= n'est plus lu (DETTE #10 : un CTA passe encore ?type=locataire, à vérifier) ; cas non reconnu → navigate('/dashboard').
 MAJ conv 88 (24 juin 2026) : audit Lot 3 complet (3 passes lecture seule, AUCUN code touché). Le step 4 dispo = moteur de cycle abstrait ~250 l. intriqué avec cadrage de dates de bail (generateRhythmDatesFromAnchor ; processRhythmDates/finalizeBailDates/modale Dimanche ; enterCycleSelectionMode ; 2 useEffect dont la boucle DETTE #5 ; selectDate mode cycle + states cycle). selectedDates = jour-par-jour, 5 consommateurs (le rendu grille isSelected est le 5ᵉ, en plus des 4 connus). Décisions figées : ville←deduireOffre(hostProfile) (VISION §652) ; bail à la création supprimé (cohérent §145, bail_info conservé alimenté par selectedDates.length) ; exécution 3a (ancrage ville) → 3b (dérivation + bascule 5 consommateurs + grille semaine + retrait colonnes dépréciées) → 3c (retrait moteur + saisies bail/modale Dimanche). Page toujours never-stage (bypass DEV présents).
 MAJ conv 88 (correction) : ancrage profil = NATURE du logement, PAS sa ville. La dérivation a besoin de côté-école/côté-entreprise (= pôle statut_ville_*='hote' via deduireOffre), pas de la ville exacte ; ville/adresse/GPS restent saisis librement (logement à Bruz = pas Rennes mais nature école). 3a NE remplace PAS annonces.ville, il AJOUTE seulement la lecture de la nature. Contrôle de cohérence géographique (profil Rennes vs bail Marseille) reconnu utile mais DIFFÉRÉ — chantier séparé (lié recherche par rayon), hors refonte annonce. Corrige le §652 trop littéral (logé VISION conv 88).
+
+## QUESTIONS OUVERTES — Calendrier / présence / couleurs (NON TRANCHÉES, 25 juin 2026)
+
+A. "PRÉSENCE RÉELLE" distincte du rythme scolaire.
+Un hôte peut être ABSENT de son logement une semaine SANS que son rythme change (vacances,
+séminaire, déplacement…). Sa semaine reste 'school'/'company' au rythme, mais sa présence
+réelle diffère → logement libre cette semaine-là. Distinction à préserver : RYTHME
+(rhythm_calendar, stable) vs PRÉSENCE réelle (variable). NON TRANCHÉ : où stocker la présence,
+comment elle se combine au rhythm_calendar pour les dispos, comment l'UI l'exprime (ex.
+mention « absent cette semaine exceptionnellement »). Ne présumer d'aucun mécanisme : décision
+produit + données à cadrer avant tout code. Lié à la planche cliquable des annonces (le clic
+ajuste aujourd'hui la sélection de l'annonce ; toute remontée en base attend cette décision).
+
+B. CODAGE COULEUR DU CALENDRIER, dépendant de la surface.
+Le codage couleur n'est PAS universel : il dépend de la page concernée (couleurs de
+/mon-calendrier vs couleurs de la page inscription, etc.). De plus, la distinction visuelle
+école/entreprise est SOUHAITÉE mais NON implémentée aujourd'hui (le CSS de PlancheCouverture
+ne distingue pas la nature : les classes plc-ecole-* et plc-entreprise-* partagent le même
+style). NON TRANCHÉ : à chaque nouveau calendrier sur une nouvelle surface, RÉFLÉCHIR au
+moment voulu et POSER LA QUESTION CLAIREMENT À CÔME (quelle page de référence pour les
+couleurs ? distingue-t-on la nature ici ?). Ne pas figer un codage couleur par défaut.
+
+C. LÉGENDE DES COULEURS.
+Aucune légende n'explique aujourd'hui le sens des couleurs à l'utilisateur (ni planche, ni
+page calendrier). À décider lors de la reprise de la page calendrier (actuellement en pause).

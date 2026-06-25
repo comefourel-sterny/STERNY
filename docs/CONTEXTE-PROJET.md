@@ -4,6 +4,30 @@ Document de référence statique. Lu par tout Claude (Claude.ai ou Claude Code) 
 
 ---
 
+### Routine de démarrage OBLIGATOIRE de toute session Claude.ai
+
+1. Lire les 4 docs de référence dans l'ordre (CONTEXTE, VISION, ETAT-COURANT, DETTE).
+2. AVANT toute action ou proposition, reformuler à Côme EN UNE PHRASE le principe
+   fondateur de Sterny (le rythme déclaré à l'inscription est la source de vérité unique ;
+   toute la plateforme raisonne en semaines-lundis autour ; le calendrier unique est la
+   planche-semaines), en s'appuyant sur la Charte Fondatrice en tête de VISION-ARCHITECTURE.md.
+3. Si la session ne sait pas reformuler ce principe, elle n'a PAS compris le projet et ne
+   doit rien proposer tant qu'elle ne l'a pas relu.
+
+### Cadrage de sujet (mots simples, au DÉBUT de chaque sujet — pas avant chaque prompt)
+
+Au lancement de chaque nouveau sujet/chantier, Claude explique d'abord en mots simples :
+ce qu'on va faire, ce qui va être touché, à quoi Côme saura que c'est réussi. Côme valide
+ou redirige À CE MOMENT-LÀ. Ensuite on enchaîne les prompts sans re-cérémonie.
+
+### Visuel = lire, jamais présumer
+
+Toute étape touchant un rendu visuel (calendrier, grille, composant d'affichage) impose de
+FAIRE LIRE le composant réel et d'en montrer le fonctionnement/design à Côme AVANT de
+proposer une modification. Ne jamais raisonner sur un visuel de mémoire.
+
+---
+
 ## 1. Qui je suis
 
 Je suis **Côme Fourel**, solo founder de Sterny, basé à Rennes (Bretagne).

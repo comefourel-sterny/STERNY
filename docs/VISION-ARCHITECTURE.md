@@ -1,3 +1,51 @@
+# ⚓ CHARTE FONDATRICE DE STERNY — À LIRE EN PREMIER, AVANT TOUT LE RESTE
+
+Le cœur de Sterny tient en une phrase : un alternant déclare son RYTHME RÉEL à
+l'inscription, et TOUTE la plateforme raisonne ensuite autour de ce rythme.
+
+Le rythme (rhythm_calendar) est la SOURCE DE VÉRITÉ UNIQUE. En dérivent, sans
+re-saisie : la recherche, le dashboard, la création et la modification d'annonce,
+le matching, la couverture des semaines, et à terme le contrat. Une erreur sur ce
+socle casse tout l'écosystème.
+
+INVARIANTS NON-NÉGOCIABLES :
+1. L'unité est la SEMAINE, identifiée par la date de son LUNDI au format ISO
+   "AAAA-MM-JJ" (ISO = écriture standardisée des dates). Jamais un jour isolé,
+   jamais un numéro de semaine, jamais une plage continue.
+2. Source unique = rhythm_calendar : liste d'objets { week_start (lundi ISO),
+   status: 'school' | 'company' }. Renseigné à l'inscription.
+3. Demande et offre sont symétriques, dérivées du même rythme :
+   - locataire (deduireRecherche, villes action='recherche') = semaines de PRÉSENCE.
+   - hôte (deduireOffre, villes action='hote') = semaines LIBRES = présence dans la
+     nature OPPOSÉE à la ville du logement (loge côté entreprise → libre quand à l'école).
+   Les deux passent par semainesDePresence : futur-filtrées (≥ lundi courant) + triées.
+4. Le CALENDRIER UNIQUE de Sterny est la PLANCHE-SEMAINES (composant PlancheCouverture,
+   une case = une semaine). Tout rendu JOUR-PAR-JOUR est un VESTIGE à supprimer, où qu'il
+   subsiste. Son design est figé par l'invariant 7.
+5. INTERDIT partout : raisonnement en jours, cycles abstraits ("4-2", rythme re-saisi),
+   et colonnes dépréciées type_alternance / rythme_pattern.
+6. Le rythme scolaire NE SE MODIFIE PAS depuis les pages secondaires (ex. création
+   d'annonce). Il se déclare à l'inscription et s'édite dans sa surface dédiée.
+7. DESIGN UNIQUE DU CALENDRIER : toute surface affichant un calendrier réutilise le
+   design acté de la page de référence concernée (planche-semaines de /mon-calendrier,
+   ou le calendrier de la page inscription selon la surface). Aucune variante visuelle
+   inventée localement. Le codage couleur (notamment la distinction école/entreprise)
+   DÉPEND DE LA SURFACE et n'est PAS universel : il se tranche explicitement au cas par
+   cas (voir question ouverte en DETTE). Une planche cliquable n'AJOUTE qu'un comportement
+   de clic, jamais une réécriture du design.
+
+Toute session lit ce bloc en premier et doit pouvoir le reformuler avant d'agir
+(cf. CONTEXTE-PROJET.md, routine de démarrage). Ce bloc est VIVANT : voir la règle
+d'entretien plus bas.
+
+### Entretien de la Charte Fondatrice (règle vivante)
+
+La Charte Fondatrice ci-dessus est un document VIVANT et prioritaire. Toute décision
+qui touche le cœur du projet (le système rythme/semaines, ou ce qui en dérive : recherche,
+dashboard, annonces, matching, couverture, contrat) impose de METTRE À JOUR la charte dans
+le MÊME commit que la décision. La charte ne doit jamais devenir périmée : un cœur de projet
+à jour dans la doc est ce qui permet à chaque session de démarrer juste.
+
 # Vision architecture Sterny
 
 Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas comment on y va au quotidien (c'est le rôle d'`ETAT-COURANT.md`) ni les règles projet (c'est `CONTEXTE-PROJET.md`).
@@ -668,3 +716,35 @@ Le §652 (« la ville de l'annonce doit être l'une des villes hôte du profil �
 (3) CONTRÔLE DE COHÉRENCE GÉOGRAPHIQUE (ex. profil Rennes mais bail vers Marseille = suspect) = reconnu comme utile mais explicitement DIFFÉRÉ (décision conv 88) : chantier séparé, pas dans la refonte annonce. Lié au sujet « recherche par ville exacte vs rayon de proximité » (un logement à Bruz ne ressort pas sur une recherche « Rennes » sans rayon). Aucune action 3a/3b/3c là-dessus.
 
 *Document stable. Si une décision contredit un principe exposé ici, soit la décision doit être révisée, soit ce document doit être mis à jour (avec traçage en tête : date et nature du changement).*
+
+### Design acté de la planche-semaines (référence, lu le 25 juin 2026)
+Composant : components/rhythm/PlancheCouverture.jsx + PlancheCouverture.css.
+- Cases carrées, radius 10px, grille par colonnes-mois (12 mois, année scolaire sept→août),
+  gap 3px, police DM Sans.
+- Palette d'états figée : couvert (signé) = vert plein #57B98C + check ; à couvrir = blanc +
+  loupe #B4BCC8 + contour 1.5px ; en attente (candidaté) = ardoise #64748B + sablier ;
+  proposée (parcours guidé) = wash orange #FFF4EE + anneau #E8622A + « + » ; atténuée =
+  blanc opacity 0.55 ; hors-sujet (déjà logé / passé / hors-rythme) = gris #D9DEE6, flou,
+  opacity 0.45.
+- Sémantique visuelle : NET = à combler/comblé, FLOU = hors-sujet ; aplat plein = état réel,
+  anneau = projection.
+- Habillage page calendrier (/mon-calendrier) : carte « verre dépoli »
+  rgba(255,255,255,0.72), radius 26, ombre douce 0 12px 40px rgba(30,41,59,0.12) ; titre
+  orange « Ton planning » (weight 300, uppercase) + résumé « il te reste N semaine(s) ».
+- État actuel : composant d'AFFICHAGE pur, NON cliquable (seule interaction = flèches
+  d'année). Le mode édition (clic) est à ajouter pour les pages annonce (voir décision
+  ci-dessous), SANS toucher au design.
+
+### Calendrier de saisie des annonces = planche-semaines cliquable (décision 25 juin 2026)
+Les 2 pages d'annonce (CreerAnnoncePage, ModifierAnnoncePage) sont les SEULES surfaces
+encore en rendu jour-par-jour (day-cell / renderMonthGrid). Décision : les aligner sur la
+planche-semaines, calendrier unique de Sterny (charte invariant 4 + design invariant 7).
+CHOIX D'ARCHITECTURE : Option A — UN SEUL composant planche partout. PlancheCouverture
+(aujourd'hui purement affichage) sera enrichi d'un MODE ÉDITION OPTIONNEL : lecture seule
+par défaut (/mon-calendrier), cliquable seulement quand demandé (pages annonce). On ne crée
+PAS de 2e grille de saisie (refus de l'Option B, qui dupliquerait le calendrier = dette).
+Le design reste celui de l'invariant 7 ; on n'ajoute QUE le comportement de clic.
+PORTÉE DU CLIC, à ce stade : cocher/décocher une semaine ajuste la SÉLECTION DE DISPONIBILITÉ
+de l'annonce. Cela NE modifie PAS le rhythm_calendar (charte invariant 6).
+ORDRE : finir CreerAnnoncePage (brancher la planche cliquable + retirer le jour-par-jour =
+ex-Lot 3c), PUIS ModifierAnnoncePage (Lot 6). Une page à la fois.
