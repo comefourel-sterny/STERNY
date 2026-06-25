@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-24 (conv 88) — Refonte CreerAnnoncePage : audit Lot 3 + plan 3a/3b/3c figé, PUIS correction ancrage = NATURE pas ville (Bruz≠Rennes, corrige §652) + contrôle distance différé. Aucun code touché. Cap : 3a→3c en conv fraîche.
+**Dernière mise à jour** : 2026-06-25 (conv 89) — Refonte CreerAnnoncePage : édition 3a (lecture de la NATURE du logement via deduireOffre) appliquée + validée runtime (natureLogement 'entreprise'), NON commitée (never-stage). Reste 3b → 3c.
 
 ---
 
@@ -16,6 +16,13 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-25 (conv 89) — Refonte CreerAnnoncePage : édition 3a appliquée + validée runtime (non commitée, never-stage)
+Édition 3a = AJOUT de la lecture de la NATURE du logement depuis le profil hôte, conforme à la correction NATURE conv 88 (ne touche NI ville NI adresse NI GPS — la ville de l'annonce reste villeDetectee/CP/adresse). Voie A retenue : deduireOffre(hostProfile) (brique testée, commit e197475) renvoie [{ ville, nature, semaines }] par pôle hôte ; on lit .nature, JAMAIS .ville. 3 ajouts additifs dans CreerAnnoncePage.jsx : (1) useMemo ajouté à l'import React ; (2) import { deduireOffre } from '../../utils/deduireRecherche' ; (3) bloc [Lot3a] juste après le state hostProfile (≈ l.485-495) : offreHote = useMemo(hostProfile ? deduireOffre(hostProfile) : [], [hostProfile]) + natureLogement = offreHote.length===1 ? offreHote[0].nature : null (défensif : 0 ou >1 pôle → null ; cas les_deux 2 pôles différé conv 88) + console.log [Lot3a].
+VALIDATION RUNTIME (compte hôte Rennes = ville_entreprise) : après chargement asynchrone du profil, offreHote = Array(1), natureLogement = 'entreprise'. Les 'null' avant chargement de hostProfile = état transitoire normal (le useMemo recalcule au chargement). Build vert (vite ✓ built). Ville/adresse intactes.
+NON COMMITÉE : CreerAnnoncePage.jsx reste never-stage (bypass DEV présents). Le console.log [Lot3a] sera retiré au nettoyage atomique final. offreHote est conservé pour 3b (qui lira .semaines).
+RESTE : 3b (selectedDates jours→lundis via deduireOffre + bascule des 5 consommateurs + grille toggle-à-la-semaine + retrait colonnes dépréciées du payload) puis 3c (retrait physique moteur de cycle + states + 2 useEffect + saisies bail/modale Dimanche ; la boucle re-render DETTE #5 disparaît alors). Aucun commit pendant 3b/3c.
+NOTE bruit console (non lié à 3a) : erreurs port 4747 [Agentation] = externe à Sterny (ni 5173 ni Supabase 54321). Logs [Lot3a]/[DEBUG RENDER] répétés = boucle re-render DETTE #5, inoffensive, part en 3c.
 
 ## 2026-06-23 (conv 83 suite) — Fiche /logement : début d'alignement + découverte d'un trou de données
 OBJECTIF initial : aligner /logement (fiche annonce) sur le nouvel écosystème couverture (la page affichait un calendrier jour-par-jour ignorant le rythme du visiteur ; sélection de semaines décorative qui n'alimente PAS la candidature ; bloc prix dates codé en dur). DÉCISION PRODUIT actée : la fiche affiche la couverture en LECTURE SEULE (planche colorée croisant le rythme du visiteur avec disponibilites_pattern), elle ne sert plus à sélectionner des semaines ; la sélection éventuelle relèvera du flux Postuler (§366, gelé légal). À promouvoir en VISION à la prochaine session.
