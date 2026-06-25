@@ -136,3 +136,5 @@ PISTE CÔME pour la ville d'entreprise : champ entreprise OPTIONNEL à l'inscrip
 
 ## Carte « avec qui tu partages » (profil hôte) sur la fiche /logement (idée née conv 83, 23 juin 2026)
 Au moment de candidater sur /logement, afficher le profil de l'hôte avec qui le locataire alternerait : prénom, école, et une phrase de complémentarité (« vous ne vous croisez pas : l'hôte occupe le logement les semaines où tu es en entreprise »). Seule trouvaille à conserver de l'exploration du parcours guidé (conv 83). Statut : modification en attente sur /logement. RGPD : afficher la donnée personnelle d'un tiers avant tout contrat → champs exacts (prénom ? école ? photo ?) et base de consentement à valider avec un professionnel avant branchement réel (cohérent CONTEXTE §9). Mock de référence visuel : src/pages/dev/ParcoursPropositionPreview.jsx (bloc hôte intégré).
+
+- [DETTE #114] Création d'annonce vidée au changement d'onglet/fenêtre — session dédiée après refonte annonce. Auditer la cause (reload / onAuthStateChange focus / état non persisté) avant de coder. Probable besoin de persister le brouillon du wizard.

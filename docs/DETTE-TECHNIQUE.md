@@ -1256,6 +1256,13 @@ MAJ conv 88 (correction) : ancrage profil = NATURE du logement, PAS sa ville. La
 
 MAJ conv 91 (25 juin 2026) : grappes 1-2 du retrait mort sorties (working tree, never-stage, build vert) — grille jour-par-jour (renderMonthGrid/getWeekCells/isSelected/selectDate) + nav (shiftMonths/calendarPeriodText) + CSS day-cell. Le « piège selectDate branche normale » (conv 88) était caduc : selectDate était mort en entier (la planche utilise toggleSemaineDispo). AUDIT : le step 4 rend ENCORE le sélecteur de rythme abstrait (rhythmType/rhythmPattern) NON GATED → viole invariant 6 (rythme hors inscription) + invariant 5 (cycle abstrait) ; retrait en grappes 3/4/5. bailInfo à réécrire (date_debut/date_fin/duree_mois dépendent du bail supprimé §145). DETTE #5 (boucle re-render) tombe en grappe 4 avec les 2 useEffect cycle.
 
+## DETTE #114 — CreerAnnoncePage : perte totale de la saisie au changement d'onglet/fenêtre
+**Statut : OUVERTE (remonté conv 91, 25 juin 2026). UX bloquante — à traiter en session dédiée.**
+SYMPTÔME (constat Côme runtime) : pendant la création d'annonce (parcours multi-étapes 0→5), changer d'onglet ou de fenêtre puis revenir VIDE toute la saisie — l'utilisateur doit tout refaire. Insupportable sur un formulaire long.
+CAUSE NON DIAGNOSTIQUÉE (ne rien présumer — audit lecture seule requis avant tout code) : pistes à départager : (1) rechargement réel de la page (window.location.reload, ou effet redéclenché au focus) ; (2) onAuthStateChange Supabase qui réémet un événement au retour de focus de l'onglet et déclenche un rechargement/reset des données ; (3) état du formulaire purement en mémoire (useState non persisté) remonté à vide au moindre re-render/remount. Les 3 causes ont des fix différents → diagnostiquer d'abord.
+PISTE DE FIX (à confirmer après diagnostic, PAS à présumer) : selon la cause — neutraliser le reset au focus, OU persister l'état du wizard (brouillon local : sessionStorage/localStorage, ou table brouillon BDD) pour le restaurer au retour. Décision produit à prendre (où vit le brouillon, durée de vie, RGPD si BDD).
+LIEN : indépendant de la refonte annonce (DETTE #113) mais même fichier — à traiter APRÈS la refonte pour ne pas empiler deux chantiers sur un fichier never-stage.
+
 ## QUESTIONS OUVERTES — Calendrier / présence / couleurs (NON TRANCHÉES, 25 juin 2026)
 
 A. "PRÉSENCE RÉELLE" distincte du rythme scolaire.
