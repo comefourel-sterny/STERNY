@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-24 (conv 88) — DETTE #113 : plan 3a/3b/3c figé + correction ancrage = NATURE pas ville (Bruz≠Rennes) + contrôle distance différé.
+**Dernière mise à jour** : 2026-06-25 (conv 90) — Ajout DETTE #113-D : lisibilité de la semaine libre décochée sur la planche cliquable de saisie d'annonce (indistincte du gris hors-rythme), à trancher en refonte visuelle.
 
 ## Nomenclature des bugs
 
@@ -1278,3 +1278,16 @@ couleurs ? distingue-t-on la nature ici ?). Ne pas figer un codage couleur par d
 C. LÉGENDE DES COULEURS.
 Aucune légende n'explique aujourd'hui le sens des couleurs à l'utilisateur (ni planche, ni
 page calendrier). À décider lors de la reprise de la page calendrier (actuellement en pause).
+
+D. LISIBILITÉ — semaine libre DÉCOCHÉE indistincte du gris hors-rythme (remonté conv 90).
+Sur la planche cliquable de saisie de dispo (CreerAnnoncePage étape 4), une semaine libre
+DÉCOCHÉE (retirée de l'offre) s'affiche en blanc + loupe, trop proche visuellement du gris
+« hors-rythme » non cliquable → l'hôte ne retrouve pas les semaines qu'il a retirées pour les
+recocher (constat Côme au runtime : « j'en ai enlevé une et je ne savais plus où cliquer pour
+la remettre »). La MÉCANIQUE est saine (le toggle fonctionne, la trace est conservée dans
+selectedDates, la case reste affichée) — c'est un problème de LISIBILITÉ, pas de logique, et
+le rhythm_calendar n'est jamais touché (invariant 6). BESOIN : un état visuel DISTINCT pour
+« semaine libre mais non proposée » (piste évoquée : contour pointillé orange, registre
+« proposable » — NON figé). À trancher lors de la refonte visuelle de la page (décidée par
+Côme conv 90), avec les autres états, en cohérence avec B (codage couleur par surface) et C
+(légende). Ne pas figer la couleur sans validation Côme.

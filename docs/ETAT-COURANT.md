@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-25 (conv 89) — Refonte CreerAnnoncePage : édition 3a (lecture de la NATURE du logement via deduireOffre) appliquée + validée runtime (natureLogement 'entreprise'), NON commitée (never-stage). Reste 3b → 3c.
+**Dernière mise à jour** : 2026-06-25 (conv 90) — Refonte CreerAnnoncePage : planche-semaines cliquable BRANCHÉE à l'étape 4 (remplace la grille jour-par-jour) + validée runtime (come.fourel, 5 semaines proposées, toggle OK). Brique clic de PlancheCouverture commitée + poussée (5eed513). Reste : nettoyage moteur de cycle + bloc bail vestige, puis ModifierAnnoncePage.
 
 ---
 
@@ -16,6 +16,14 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-25 (conv 90) — CreerAnnoncePage : planche-semaines cliquable branchée + validée runtime
+LIVRÉ et VALIDÉ AU RUNTIME (come.fourel@rennes.archi.fr, étape 4 création annonce) : la planche-semaines unique (PlancheCouverture) remplace la grille jour-par-jour (renderMonthGrid/day-cell). Mode clic optionnel ajouté au composant partagé (prop onSemaineClick, AJOUT PUR, design figé invariant 7) — COMMITÉ + POUSSÉ : 5eed513. Branchement côté page (etatsDispoAnnonce via useMemo, anneeDispoInitiale, handler toggleSemaineDispo, en-tête « TES SEMAINES À PROPOSER » + compteur + consigne, largeur bornée .planche-annonce 704px) : working tree, CreerAnnoncePage.jsx + .css = never-stage, NON commités.
+ÉTAT VISUEL des semaines = clé `proposee` (rendu existant orange+« + » ↔ atténué) : proposee:true = proposée, false = gardée (« semaine supérieure » = l'hôte reste/occupe). couvert TOUJOURS false (vert = signé, réservé). Le clic n'ajuste QUE selectedDates (dispo de l'annonce), JAMAIS le rhythm_calendar (invariant 6).
+VALIDATION : 5 cases orange pré-cochées (semaines school futures = libres car logement côté entreprise → nature opposée), compteur juste, toggle vérifié dans les 2 sens (case décochée = blanc/loupe, recochable). /mon-calendrier non régressé (ne passe pas onSemaineClick).
+FAUSSE PISTE écartée : le « tout gris » initial venait du compte hote@sterny.test (rhythm_calendar vide) — PAS d'un bug. Lecture BDD : come.fourel a 6 semaines school futures = 6 libres ; hote@sterny.test = 0. Format rythme confirmé { week_start:"AAAA-MM-JJ", status:'school'|'company' }.
+CORRECTION D'INCOHÉRENCE (repérée début conv 90) : la fin de 3b n'avait PAS été loguée conv 89 (l.5 et l.24 disaient encore « Reste 3b »). En réalité 3b était FAIT, working tree. État réel : Lots 1-2 + 3a + 3b + ex-3c planche, tous never-stage.
+RESTE (tracé) : (1) nettoyage moteur de cycle MORT — renderMonthGrid, getWeekCells, isSelected, states cycle, branche cycle_selection de selectDate, + le BLOC BAIL VESTIGE (encadré « DÉBUT/FIN/N semaines » affichant une plage continue, contraire aux semaines-discontinues) ; (2) ModifierAnnoncePage (miroir, Lot 6) ; (3) lisibilité semaine décochée = DETTE #113-D ; (4) « semaine en moins » hors-rythme = DETTE #113-A parquée. Gros commit atomique de la refonte annonce prévu en phase de nettoyage finale.
 
 ## 2026-06-25 (conv 89) — Refonte CreerAnnoncePage : édition 3a appliquée + validée runtime (non commitée, never-stage)
 Édition 3a = AJOUT de la lecture de la NATURE du logement depuis le profil hôte, conforme à la correction NATURE conv 88 (ne touche NI ville NI adresse NI GPS — la ville de l'annonce reste villeDetectee/CP/adresse). Voie A retenue : deduireOffre(hostProfile) (brique testée, commit e197475) renvoie [{ ville, nature, semaines }] par pôle hôte ; on lit .nature, JAMAIS .ville. 3 ajouts additifs dans CreerAnnoncePage.jsx : (1) useMemo ajouté à l'import React ; (2) import { deduireOffre } from '../../utils/deduireRecherche' ; (3) bloc [Lot3a] juste après le state hostProfile (≈ l.485-495) : offreHote = useMemo(hostProfile ? deduireOffre(hostProfile) : [], [hostProfile]) + natureLogement = offreHote.length===1 ? offreHote[0].nature : null (défensif : 0 ou >1 pôle → null ; cas les_deux 2 pôles différé conv 88) + console.log [Lot3a].
