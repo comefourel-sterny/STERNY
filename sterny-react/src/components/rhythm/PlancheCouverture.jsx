@@ -78,7 +78,7 @@ function groupByMonth(weeks) {
   return months;
 }
 
-export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireInitiale, className = '' }) {
+export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireInitiale, className = '', onSemaineClick }) {
   const [annee, setAnnee] = useState(anneeScolaireInitiale || computeDefaultAcademicYear());
 
   // Resync si la prop d'année initiale arrive/change après le 1er rendu (robustesse).
@@ -142,11 +142,29 @@ export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireI
                 modificateur = 'contexte';
               }
 
+              // Cliquable UNIQUEMENT si un parent fournit onSemaineClick, que la semaine a un
+              // état connu (d) et n'est pas passée. Sinon : rendu strictement inchangé (affichage).
+              const cliquable = typeof onSemaineClick === 'function' && Boolean(d) && !passee;
+
               return (
                 <div
                   key={w.weekStart}
                   className={`plc-cell plc-${modificateur}`}
                   title={`Semaine du ${w.weekStart}`}
+                  {...(cliquable
+                    ? {
+                        onClick: () => onSemaineClick(w.weekStart),
+                        style: { cursor: 'pointer' },
+                        role: 'button',
+                        tabIndex: 0,
+                        onKeyDown: (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSemaineClick(w.weekStart);
+                          }
+                        },
+                      }
+                    : {})}
                 />
               );
             })}
