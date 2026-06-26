@@ -93,6 +93,14 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
 
+> **[Q-AVO-010]** Quand un hôte modifie le planning de son annonce et tente de RETIRER une semaine déjà réservée/signée par un locataire : que devient cette réservation ? Le retrait est-il interdit, possible avec préavis, possible avec dédommagement ? Quelles obligations côté plateforme ? (Lié DETTE #115 + registre semaines_reservees #93, Q-AVO-006→009.) Étudier aussi la mécanique des plateformes comparables (Airbnb : blocage d'une date déjà réservée), sans transposer leur juridique.
+> **Contexte** : ModifierAnnoncePage permet de retirer une semaine du planning ; aucun garde-fou ne vérifie aujourd'hui si elle est réservée. Registre semaines_reservees non branché.
+> **Référence** : DETTE #115 ; registre semaines_reservees #93 ; Q-AVO-006→009.
+> **Statut** : à poser
+> **Priorité** : **haute**
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
 ---
 
 ## 2. Avocat / DPO — RGPD et données personnelles
@@ -344,6 +352,7 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 | Q-AVO-007 | Responsabilité entre co-occupants successifs | 1 | **haute** | à poser | — |
 | Q-AVO-008 | Bail sur semaines non-continues | 1 | **haute** | à poser | — |
 | Q-AVO-009 | Un contrat par locataire vs multi-parties | 1 | **haute** | à poser | — |
+| Q-AVO-010 | Retrait d'une semaine déjà réservée (modif planning annonce) | 1 | **haute** | à poser | — |
 | Q-DPO-001 | Téléphone obligatoire — finalité | 2 | moyenne | à poser | — |
 | Q-DPO-002 | Date de naissance — minimisation | 2 | moyenne | à poser | — |
 | Q-DPO-003 | Champ sexe — finalité métier | 2 | **haute** | à poser | — |

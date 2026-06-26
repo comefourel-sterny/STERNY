@@ -1303,3 +1303,11 @@ le rhythm_calendar n'est jamais touché (invariant 6). BESOIN : un état visuel 
 « proposable » — NON figé). À trancher lors de la refonte visuelle de la page (décidée par
 Côme conv 90), avec les autres états, en cohérence avec B (codage couleur par surface) et C
 (légende). Ne pas figer la couleur sans validation Côme.
+
+## DETTE #115 — Modifier le planning d'une annonce peut impacter des réservations existantes (garde-fou à concevoir, gated métier + avocat)
+**Statut : OUVERTE (soulevé conv 93, 26 juin 2026). BLOQUANT avant mise en production de la modif de planning d'annonce.**
+RISQUE : retirer une semaine déjà réservée / signée d'une annonce (depuis ModifierAnnoncePage) a des conséquences RÉELLES — logement (engagement retiré), paiement (semaine facturée/encaissée), contrat (modification unilatérale d'un bail signé). À NE PAS traiter à la légère ni présumer d'un comportement.
+AVANT d'ouvrir la modif de planning au public : (a) consulter un professionnel (avocat + personne du métier) sur ce que devient une semaine réservée qu'un hôte tente de retirer ; (b) étudier comment les plateformes similaires (Airbnb, etc.) gèrent le retrait d'une date déjà réservée — MÉCANIQUE/UX uniquement, jamais le cadre juridique (rappel VISION : Airbnb = meublé tourisme ≠ Sterny = sous-location alternance).
+DÉPENDANCE : registre semaines_reservees (#93, déjà gelé avocat, Q-AVO-006→009) — c'est lui qui dira « cette semaine est prise ». Rien n'est branché aujourd'hui.
+SANS IMPACT sur le Lot 6 (refonte mécanique du calendrier de ModifierAnnoncePage, 26 juin 2026) : le Lot 6 ne crée aucune réservation et ne touche aucun paiement. Ce garde-fou concerne le CHANTIER DESIGN/MISE EN PROD ultérieur de la page, pas le portage technique du calendrier.
+À REPRENDRE : au chantier design de ModifierAnnoncePage (refonte visuelle calquée sur CreerAnnoncePage), ne pas se limiter au visuel — traiter ce garde-fou avant toute ouverture publique.
