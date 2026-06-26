@@ -1311,3 +1311,11 @@ AVANT d'ouvrir la modif de planning au public : (a) consulter un professionnel (
 DÉPENDANCE : registre semaines_reservees (#93, déjà gelé avocat, Q-AVO-006→009) — c'est lui qui dira « cette semaine est prise ». Rien n'est branché aujourd'hui.
 SANS IMPACT sur le Lot 6 (refonte mécanique du calendrier de ModifierAnnoncePage, 26 juin 2026) : le Lot 6 ne crée aucune réservation et ne touche aucun paiement. Ce garde-fou concerne le CHANTIER DESIGN/MISE EN PROD ultérieur de la page, pas le portage technique du calendrier.
 À REPRENDRE : au chantier design de ModifierAnnoncePage (refonte visuelle calquée sur CreerAnnoncePage), ne pas se limiter au visuel — traiter ce garde-fou avant toute ouverture publique.
+
+## DETTE #116 — Avertir l'hôte que modifier son rythme de cours impacte ses annonces actives (modal produit)
+**Statut : OUVERTE (soulevé conv 93, 26 juin 2026). Décision produit + dépend de #115/#93.**
+PRINCIPE (charte invariant 6) : le planning de cours (rhythm_calendar) et le planning d'annonce (disponibilites_pattern, semaines proposées) sont INDÉPENDANTS — modifier l'un ne doit jamais altérer l'autre en silence. MAIS les deux sont liés par dérivation : les semaines proposables d'une annonce = les semaines libres dérivées du rythme. Si l'hôte change son rythme de cours, certaines semaines qu'il proposait peuvent ne plus être « libres ».
+BESOIN : quand un hôte modifie son rhythm_calendar (page rythme / dashboard, PAS la page annonce), afficher un MODAL d'avertissement clair : « Ce changement peut impacter les semaines que tu proposes dans tes annonces actives. Tout changement sera/doit être acté dans ton annonce. » Wording exact, emplacement, et déclenchement = à cadrer (décision produit).
+PÉRIMÈTRE : concerne la SURFACE rythme (où le rythme se modifie), pas ModifierAnnoncePage. Distinct du Lot 6 (refonte mécanique du calendrier d'annonce).
+LIEN CRITIQUE #115 : si une semaine impactée est déjà RÉSERVÉE / sous CONTRAT SIGNÉ, on retombe sur le mur juridique de #115 (conséquences réelles logement/paiement/contrat, gated avocat + métier, Q-AVO-010). Le modal d'avertissement ne suffit pas dans ce cas — il faut le garde-fou #115. Les deux dettes se traitent ensemble avant ouverture publique.
+DÉPENDANCE : registre semaines_reservees (#93, gelé avocat) pour savoir si une semaine impactée est réservée. Rien branché aujourd'hui.

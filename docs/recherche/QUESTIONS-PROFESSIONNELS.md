@@ -95,6 +95,7 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 
 > **[Q-AVO-010]** Quand un hôte modifie le planning de son annonce et tente de RETIRER une semaine déjà réservée/signée par un locataire : que devient cette réservation ? Le retrait est-il interdit, possible avec préavis, possible avec dédommagement ? Quelles obligations côté plateforme ? (Lié DETTE #115 + registre semaines_reservees #93, Q-AVO-006→009.) Étudier aussi la mécanique des plateformes comparables (Airbnb : blocage d'une date déjà réservée), sans transposer leur juridique.
 > **Contexte** : ModifierAnnoncePage permet de retirer une semaine du planning ; aucun garde-fou ne vérifie aujourd'hui si elle est réservée. Registre semaines_reservees non branché.
+> **Deux portes d'entrée** : (a) l'hôte décoche une semaine sur ModifierAnnoncePage ; (b) l'hôte modifie son rythme de cours (rhythm_calendar), ce qui retire une semaine des « libres » dérivées. Même conséquence si la semaine est réservée/signée. Le cas (b) est aussi tracé en DETTE #116 (modal d'avertissement produit) — distinct du garde-fou juridique.
 > **Référence** : DETTE #115 ; registre semaines_reservees #93 ; Q-AVO-006→009.
 > **Statut** : à poser
 > **Priorité** : **haute**
