@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-25 (conv 91 suite) — CreerAnnoncePage : nettoyage moteur de cycle + bail vestige TERMINÉ (grappes 3/5/3bis/4, never-stage, build vert, validé runtime). DETTE #5 (boucle re-render) RÉSOLUE. Reste : « Réinitialiser », passe finale cosmétique, grappe étape 0 Bail (import PDF à préserver), ModifierAnnoncePage.
+**Dernière mise à jour** : 2026-06-26 (conv 93) — ModifierAnnoncePage Lot 6 (a+a-bis+b) livré et commité (a36f8f0) : planche-semaines cliquable + alignement charte conv 86 (retrait branche propriétaire). Reste 6c (extraire import bail en step 0 + vider le step 4).
 
 ---
 
@@ -16,6 +16,23 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-26 (conv 93) — ModifierAnnoncePage : Lot 6 (a + a-bis + b) livré, commité, validé runtime
+COMMITS DE LA SESSION (branche feat, NON poussés — feat ahead de 5) :
+- a0047ca docs : DETTE #115 + Q-AVO-010 (retrait semaine réservée = conséquences logement/paiement/contrat, gated avocat).
+- 9b71197 docs : DETTE #116 (modal d'avertissement quand l'hôte change son rythme → impact annonces) + complète #115/Q-AVO-010 (2 portes d'entrée).
+- 3cba2c6 feat 6a : ModifierAnnoncePage charge le profil hôte (select élargi ville_*/statut_ville_*/rhythm_calendar) + dérive deduireOffre (offreHote/natureLogement/semainesLibres). Validé runtime (nature=entreprise, 6 semaines libres).
+- a36f8f0 feat Lot 6 (a-bis + b + bypass #117) : (a-bis) retrait branche 'propriétaire' (charte conv 86 §705) → toute annonce = 5 étapes dont Disponibilités, userType='locataire'=hôte conservé ; (b) PlancheCouverture remplace la grille jour-par-jour. Pré-coché = disponibilites_pattern de l'annonce ; cliquable = union(semainesLibres, selectedDates) pour garder les semaines orphelines retirables ; Réinitialiser = retour à l'état d'ouverture ; CSS planche recopié. Bypass DEV #117 (import.meta.env.DEV, auto-désactivé prod, page reste commitable).
+VALIDÉ RUNTIME (come.fourel@rennes.archi.fr, annonce id aaaa…) : 5 étapes affichées, planche centrée, 6 semaines proposées cochées, toggle OK, Réinitialiser OK, label « Locataire » (=hôte).
+SAUVEGARDES fraîches (hors-git) : ~/sterny-backups/sterny-refonte-annonce-2026-06-26-avant-lot6.patch + sterny-working-tree-complet-2026-06-26.patch (couvrent les 5 never-stage).
+RESTE — 6c (le plus délicat, à faire en session fraîche, miroir grappes 3/4 + step 0 de Creer) :
+- 6c-1 : créer un STEP 0 « Bail » dans Modifier (miroir Creer) + Y DÉPLACER la zone import bail actuellement noyée dans le step 4. Recopier le bloc step 0 + classes ca-bail-* de Creer. ZONE BAIL À PRÉSERVER (consigne Côme) : lire EXHAUSTIVEMENT tout ce qui est attaché (states bail, extraction PDF, ce que ça alimente : pricing/dpe/propertyInfo lus) AVANT toute découpe.
+- 6c-2 : vider le step 4 de tout sauf la planche — retirer dates de bail + durée + sélecteur de rythme abstrait (mort, viole invariants 5/6) + moteur de cycle (renderMonthGrid/selectDate/getWeekCells/shiftMonths/calendarPeriodText/generateRhythmDatesFromAnchor/processRhythmDates/finalizeBailDates/modale Dimanche + states cycle + 2 useEffect).
+- 6c-3 : recâbler la numérotation du stepper 0→5 + label « Bail » (miroir Creer l.1571).
+- PAYLOAD à nettoyer (vu audit) : ModifierAnnoncePage écrit encore type_alternance/rythme_pattern (colonnes dépréciées, l.~1517-1518) → à retirer avec le moteur de cycle.
+- Commentaire mort « (locataires only) » au-dessus du step 4 → à retirer en 6c.
+- À RETIRER en fin de Lot 6 : bypass DEV #117 (grep import.meta.env.DEV dans ModifierAnnoncePage.jsx).
+NOTÉ pour plus tard (hors Lot 6) : les URL de redirection /dashboard/proprietaire (l.434/442/457/1430/1602) renvoient l'hôte vers un dashboard « proprietaire » — incohérent avec l'alternant-hôte, à revoir (non bloquant).
 
 ## 2026-06-25 (conv 92) — CreerAnnoncePage : bouton « Réinitialiser » livré + validé runtime (never-stage)
 LIVRÉ et VALIDÉ RUNTIME (come.fourel, étape Disponibilités création annonce, 6 semaines libres) : bouton « Réinitialiser » sous la planche restaure le pré-cochage par défaut (semaines libres de l'hôte). clearAllDates (confirm + setSelectedDates([])) → reinitialiserDispo (setSelectedDates(semainesLibres), non destructif, sans confirm). Bouton RECRÉÉ (pas « transformé » : l'ancien « Tout effacer » avait disparu avec l'encadré récap retiré grappe 3bis) via la classe CSS .clear-dates-btn préexistante (zéro CSS ajouté). Build vert. NON commité, never-stage (rejoint le commit atomique Phase 0bis). Message de commit préparé, en attente.
@@ -1215,7 +1232,7 @@ Conv 16 FERMÉE sur ses 2 sujets initiaux. Conv 17 réservée à l'écran 0 OAut
    - Wizard E-6 (`InscriptionAlternantPage` ligne 438) : "Préfère ne pas répondre" — trop long pour le dropdown CustomSelect, débordait visuellement.
    - `ModifierProfilPage` ligne 570 : "Non precise" — accent manquant, typo legacy corrigée au passage.
    - `CompleterProfilPage` ligne 870 : "Non précisé" — déjà correct, non touché.
-   
+
    Wizard + ModifierProfilPage alignés sur "Non précisé". Valeur BDD `'non-precise'` inchangée partout (cohérent avec `validateE6` du hook `useInscriptionWizard.js` qui accepte `['homme', 'femme', 'autre', 'non-precise']`). Note legacy : `CompleterProfilPage` est destinée à disparaître en T7 du chantier UNIFICATION-INSCRIPTION, mais l'aligner aurait été cohérent en attendant — ici elle l'était déjà donc rien à faire.
 
 ### Sujet restant conv 16
