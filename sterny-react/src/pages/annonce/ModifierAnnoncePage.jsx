@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { validateAddress } from '../../utils/addressVerification'
+import { deduireOffre } from '../../utils/deduireRecherche'
 import Cropper from 'cropperjs'
 import './ModifierAnnoncePage.css'
 
@@ -284,6 +285,18 @@ export default function ModifierAnnoncePage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [userType, setUserType] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
+
+  // --- Lot 6a — Profil de l'hôte-auteur (chargé au montage, consommé par la dérivation dispo) ---
+  // Miroir de CreerAnnoncePage : deduireOffre renvoie [{ ville, nature, semaines }] par pôle hôte.
+  const [hostProfile, setHostProfile] = useState(null)
+  const offreHote = useMemo(() => (hostProfile ? deduireOffre(hostProfile) : []), [hostProfile])
+  const natureLogement = offreHote.length === 1 ? offreHote[0].nature : null
+  const semainesLibres = offreHote.length === 1 ? offreHote[0].semaines : []
+  // [6a] Trace temporaire (retirée au nettoyage final).
+  useEffect(() => {
+    if (hostProfile) console.log('[6a] nature:', natureLogement, '| semaines libres:', semainesLibres.length)
+  }, [hostProfile, natureLogement, semainesLibres])
+
   const [showMainForm, setShowMainForm] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -388,8 +401,10 @@ export default function ModifierAnnoncePage() {
 
   async function checkUserAndLoadAnnonce() {
     try {
-      const { data: adminCheck } = await supabaseClient.from('users').select('is_admin').eq('id', user.id).single()
-      setIsAdmin(adminCheck?.is_admin === true)
+      const { data: userData } = await supabaseClient.from('users').select('type_user, is_admin, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar').eq('id', user.id).single()
+      setIsAdmin(userData?.is_admin === true)
+      setHostProfile(userData)
+      console.log('[6a] hostProfile chargé', userData)
 
       const annonceId = searchParams.get('id')
       if (!annonceId) {
