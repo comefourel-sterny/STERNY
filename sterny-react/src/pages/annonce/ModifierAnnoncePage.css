@@ -1707,3 +1707,21 @@ input[type="number"] {
         padding: 24px;
     }
 }
+
+/* --- Lot 6b — planche-semaines (recopié de CreerAnnoncePage.css, largeur testable) --- */
+.calendar-container {
+    background: white;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 6px 28px rgba(232, 98, 42, 0.08);
+    margin-top: 4px;
+}
+
+/* Lot 3c — borne la largeur de la planche sur la page annonce pour retrouver
+   les dimensions carrées de /mon-calendrier (les colonnes flex:1 s'étalent sinon).
+   ~704px = largeur utile de la carte sur /mon-calendrier (maxWidth 760 - 2x28 padding). */
+.planche-annonce {
+    max-width: 704px;
+    margin: 0 auto;
+}

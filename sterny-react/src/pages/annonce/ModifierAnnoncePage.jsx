@@ -4,6 +4,8 @@ import { supabaseClient } from '../../config/supabase'
 import { useAuth } from '../../hooks/useAuth.jsx'
 import { validateAddress } from '../../utils/addressVerification'
 import { deduireOffre } from '../../utils/deduireRecherche'
+import PlancheCouverture from '../../components/rhythm/PlancheCouverture'
+import { academicYearForMonday } from '../../utils/academicYear'
 import Cropper from 'cropperjs'
 import './ModifierAnnoncePage.css'
 
@@ -352,6 +354,26 @@ export default function ModifierAnnoncePage() {
   const [dimancheData, setDimancheData] = useState({ jour: '', precedent: null, suivant: null, bailStart: null, bailEnd: null })
   const dimancheChoixFaitRef = useRef(false)
 
+  // --- Lot 6b — Planche-semaines cliquable (calendrier unique, charte invariant 4/7) ---
+  // Union : semaines libres de l'hôte + semaines déjà proposées dans l'annonce (orphelines incluses),
+  // pour que toute semaine cochée reste cliquable-pour-retirer même si le rythme a changé depuis la création.
+  const etatsDispoAnnonce = useMemo(() => {
+    const map = {}
+    const union = new Set([...semainesLibres, ...selectedDates])
+    for (const lundi of union) {
+      map[lundi] = { nature: natureLogement, cherchee: true, couvert: false, proposee: selectedDates.includes(lundi) }
+    }
+    return map
+  }, [semainesLibres, selectedDates, natureLogement])
+  const anneeDispoInitiale = (semainesLibres[0] || selectedDates[0]) ? academicYearForMonday(semainesLibres[0] || [...selectedDates].sort()[0]) : undefined
+  const toggleSemaineDispo = useCallback((weekStart) =>
+    setSelectedDates(prev => prev.includes(weekStart) ? prev.filter(d => d !== weekStart) : [...prev, weekStart].sort()), [])
+  // Réinitialiser = revenir à l'état d'ouverture de l'annonce (les semaines enregistrées), PAS le défaut rythme.
+  const ouvertureDispoRef = useRef(null)
+  const reinitialiserDispo = useCallback(() => {
+    if (ouvertureDispoRef.current) setSelectedDates([...ouvertureDispoRef.current])
+  }, [])
+
   // --- Bail file ---
   const [bailFileData, setBailFileData] = useState(null)
   const [bailFileName, setBailFileName] = useState('')
@@ -436,7 +458,9 @@ export default function ModifierAnnoncePage() {
         return
       }
 
-      const detectedType = annonce.bail_info ? 'locataire' : 'proprietaire'
+      // Charte conv 86 : l'auteur d'une annonce est TOUJOURS l'alternant-hôte.
+      // userType='locataire' = l'hôte (nommage hérité ; renommage→'hote' différé DETTE #6).
+      const detectedType = 'locataire'
       setUserType(detectedType)
       setShowMainForm(true)
       setLoading(false)
@@ -561,6 +585,7 @@ export default function ModifierAnnoncePage() {
     if (annonce.disponibilites_pattern && Array.isArray(annonce.disponibilites_pattern)) {
       const dates = [...annonce.disponibilites_pattern].sort()
       setSelectedDates(dates)
+      ouvertureDispoRef.current = dates
       if (dates.length > 0) {
         const [y, m] = dates[0].split('-').map(Number)
         setStartMonthIndex(m - 1)
@@ -1342,6 +1367,10 @@ export default function ModifierAnnoncePage() {
 
   function validateStep(step) {
     if (isAdmin) return true
+    // ⚠️ BYPASS DEV (#117) — désactive la validation des champs en LOCAL uniquement.
+    // import.meta.env.DEV = true via `npm run dev`, false au build prod → la validation
+    // revient automatiquement en production. À garder jusqu'à la fin de la refonte design (Lot 6).
+    if (import.meta.env.DEV) return true
     setErrors({})
 
     if (step === 1) {
@@ -1388,7 +1417,6 @@ export default function ModifierAnnoncePage() {
     const maxStep = 5
     if (currentStep < maxStep) {
       let next = currentStep + 1
-      if (userType === 'proprietaire' && currentStep === 3) next = 5
       setCurrentStep(next)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       if (next === 5 && bailDatesAutoExtracted) {
@@ -1401,19 +1429,13 @@ export default function ModifierAnnoncePage() {
   function prevStep() {
     if (currentStep === 1) { navigate('/dashboard/proprietaire'); return }
     let prev = currentStep - 1
-    if (userType === 'proprietaire' && currentStep === 5) prev = 3
     setCurrentStep(prev)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function getProgressWidth() {
-    const totalSteps = userType === 'proprietaire' ? 4 : 5
-    let stepPosition
-    if (userType === 'proprietaire') {
-      stepPosition = currentStep <= 3 ? currentStep - 1 : 3
-    } else {
-      stepPosition = currentStep - 1
-    }
+    const totalSteps = 5
+    const stepPosition = currentStep - 1
     return (stepPosition / (totalSteps - 1)) * 100
   }
 
@@ -1749,9 +1771,9 @@ export default function ModifierAnnoncePage() {
     return <div className="create-container"><div className="page-header"><h1>Chargement...</h1></div></div>
   }
 
-  const totalSteps = userType === 'proprietaire' ? 4 : 5
-  const progressGridCols = userType === 'proprietaire' ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)'
-  const stepNumber5Text = userType === 'proprietaire' ? '4' : '5'
+  const totalSteps = 5
+  const progressGridCols = 'repeat(5, 1fr)'
+  const stepNumber5Text = '5'
 
   return (
     <>
@@ -1761,7 +1783,7 @@ export default function ModifierAnnoncePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center', marginBottom: '8px' }}>
             <h1 style={{ margin: 0 }}>Modifier mon annonce</h1>
             <span style={{ display: 'inline-block', background: '#F3F4F6', color: '#6B7280', padding: '4px 12px', borderRadius: '20px', fontSize: '13px', fontWeight: 600 }}>
-              {userType === 'proprietaire' ? 'Propriétaire' : 'Locataire'}
+              {'Locataire'}
             </span>
           </div>
           <p>Modifie les informations de ton annonce</p>
@@ -1770,12 +1792,12 @@ export default function ModifierAnnoncePage() {
         {/* PROGRESS BAR */}
         <div className="progress-container">
           <div className="progress-steps" style={{ gridTemplateColumns: progressGridCols }}>
-            {[1, 2, 3, 4, 5].filter(s => !(userType === 'proprietaire' && s === 4)).map(s => {
+            {[1, 2, 3, 4, 5].map(s => {
               let cls = 'progress-step'
               if (s < currentStep) cls += ' completed'
               else if (s === currentStep) cls += ' active'
               const label = s === 1 ? 'Informations' : s === 2 ? 'Détails' : s === 3 ? 'Photos' : s === 4 ? 'Disponibilités' : 'Prix'
-              const num = userType === 'proprietaire' && s === 5 ? '4' : String(s)
+              const num = String(s)
               return (
                 <div key={s} className={cls} data-step={s}>
                   <div className="step-number">{num}</div>
@@ -1985,7 +2007,7 @@ export default function ModifierAnnoncePage() {
         </div>
 
         {/* STEP 4: Bail & Calendar (locataires only) */}
-        <div className={`form-section ${currentStep === 4 ? 'active' : ''} ${userType === 'proprietaire' ? 'hidden-for-user-type' : ''}`}>
+        <div className={`form-section ${currentStep === 4 ? 'active' : ''}`}>
           <div className="section-header">
             <div className="section-title"><span className="section-number">4</span>Disponibilités & Bail</div>
             <div className="section-description">Indique ton rythme d'alternance et les dates de ton bail</div>
@@ -2079,60 +2101,22 @@ export default function ModifierAnnoncePage() {
           )}
 
           {showEditCalendar && (
-            <div style={{ borderTop: '1.5px solid #E8EAF0', paddingTop: '24px', marginTop: '24px' }}>
-              <div style={{ background: calendarMode === 'cycle_selection' ? '#FFF4ED' : '#F1F5F9', borderLeft: `4px solid ${calendarMode === 'cycle_selection' ? '#E8622A' : '#1E293B'}`, padding: '16px 20px', borderRadius: '12px', marginBottom: '20px' }}>
-                {calendarMode === 'cycle_selection' ? (
-                  <><strong style={{ color: '#1E293B' }}>Où commence ton cycle ?</strong><br /><span style={{ color: '#C2410C', fontSize: '14px' }}>Clique sur la semaine où tu seras présent(e).</span></>
-                ) : (
-                  <><strong style={{ color: '#1E293B' }}>Modifie ton calendrier</strong><br /><span style={{ color: '#6B7280', fontSize: '14px' }}>Clique sur un jour pour sélectionner ou retirer la semaine entière.</span><br /><a href="#" onClick={e => { e.preventDefault(); resetToCycleSelection() }} style={{ color: '#E8622A', fontSize: '13px', marginTop: '8px', display: 'inline-block' }}>Changer le début de cycle</a></>
-                )}
+            <div className="calendar-container">
+              <div style={{ marginBottom: '16px' }}>
+                <h3 style={{ margin: '0 0 4px' }}>Tes semaines à proposer</h3>
+                <p style={{ margin: 0, color: '#64748B', fontSize: '14px' }}>
+                  {selectedDates.length} semaine{selectedDates.length > 1 ? 's' : ''} proposée{selectedDates.length > 1 ? 's' : ''}. Clique sur une semaine pour la retirer ou la remettre.
+                </p>
               </div>
-              <div className="calendar-header">
-                <button className="calendar-nav-btn" onClick={() => shiftMonths(-3)}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-                <div className="calendar-period">{calendarPeriodText}</div>
-                <button className="calendar-nav-btn" onClick={() => shiftMonths(3)}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                </button>
-              </div>
-              <div className="calendar-months-grid">
-                {[0, 1, 2].map(i => {
-                  const mi = (startMonthIndex + i) % 12
-                  const yr = startYear + Math.floor((startMonthIndex + i) / 12)
-                  return renderMonthGrid(mi, yr)
-                })}
-              </div>
-            </div>
-          )}
-
-          {selectedDates.length > 0 && (
-            <div style={{ marginTop: '16px' }}>
-              <div style={{ background: 'linear-gradient(135deg, #FFF7F3 0%, #FFFFFF 100%)', border: '2px solid #FFD4BF', borderRadius: '16px', padding: '28px', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(232, 98, 42, 0.08)' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', background: 'linear-gradient(90deg, #E8622A 0%, #1E293B 100%)', borderRadius: '16px 16px 0 0' }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingTop: '8px' }}>
-                  <div style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Début</div>
-                    <div style={{ fontSize: '20px', fontWeight: 700, color: '#E8622A' }}>{summaryDebut}</div>
-                    <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{summaryDebutJour}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0, minWidth: '100px' }}>
-                    <div style={{ background: '#1E293B', color: 'white', borderRadius: '20px', padding: '5px 14px', fontSize: '12px', fontWeight: 600 }}>{nbSemaines} semaine{nbSemaines > 1 ? 's' : ''}</div>
-                    <div style={{ width: '100px', height: '3px', background: 'linear-gradient(90deg, #E8622A, #94A3B8, #1E293B)', position: 'relative', borderRadius: '2px' }}>
-                      <div style={{ position: 'absolute', left: '-5px', top: '-4px', width: '10px', height: '10px', background: '#E8622A', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }} />
-                      <div style={{ position: 'absolute', right: '-5px', top: '-4px', width: '10px', height: '10px', background: '#1E293B', borderRadius: '50%', border: '2px solid white', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }} />
-                    </div>
-                  </div>
-                  <div style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Fin</div>
-                    <div style={{ fontSize: '20px', fontWeight: 700, color: '#1E293B' }}>{summaryFin}</div>
-                    <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{summaryFinJour}</div>
-                  </div>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right', marginTop: '8px' }}>
-                <button className="clear-dates-btn" onClick={clearAllDates} style={{ fontSize: '12px' }}>Tout effacer</button>
-              </div>
+              <PlancheCouverture
+                etatsParSemaine={etatsDispoAnnonce}
+                anneeScolaireInitiale={anneeDispoInitiale}
+                onSemaineClick={toggleSemaineDispo}
+                className="planche-annonce"
+              />
+              <button type="button" className="clear-dates-btn" onClick={reinitialiserDispo} style={{ marginTop: '16px' }}>
+                Réinitialiser
+              </button>
             </div>
           )}
 

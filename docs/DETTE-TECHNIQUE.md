@@ -1319,3 +1319,9 @@ BESOIN : quand un hôte modifie son rhythm_calendar (page rythme / dashboard, PA
 PÉRIMÈTRE : concerne la SURFACE rythme (où le rythme se modifie), pas ModifierAnnoncePage. Distinct du Lot 6 (refonte mécanique du calendrier d'annonce).
 LIEN CRITIQUE #115 : si une semaine impactée est déjà RÉSERVÉE / sous CONTRAT SIGNÉ, on retombe sur le mur juridique de #115 (conséquences réelles logement/paiement/contrat, gated avocat + métier, Q-AVO-010). Le modal d'avertissement ne suffit pas dans ce cas — il faut le garde-fou #115. Les deux dettes se traitent ensemble avant ouverture publique.
 DÉPENDANCE : registre semaines_reservees (#93, gelé avocat) pour savoir si une semaine impactée est réservée. Rien branché aujourd'hui.
+
+## DETTE #117 — Bypass DEV validateStep dans ModifierAnnoncePage (auto-sécurisé import.meta.env.DEV)
+**Statut : OUVERTE (ajouté conv 93, 26 juin 2026). Auto-désactivé en prod, à retirer en fin de refonte annonce.**
+Pour développer/tester la planche (Lot 6) sans remplir tous les champs obligatoires du wizard, validateStep retourne true en LOCAL via `if (import.meta.env.DEV) return true`. Contrairement aux bypass DEV de CreerAnnoncePage (return true inconditionnel → never-stage), celui-ci est conditionné à import.meta.env.DEV : false automatiquement au build prod (npm run build), donc la validation des champs revient seule en production et la page RESTE commitable.
+À RETIRER quand la refonte de ModifierAnnoncePage (Lot 6 + design) est terminée et qu'on veut re-tester la validation complète des champs. Grep de contrôle : `grep -n "import.meta.env.DEV" sterny-react/src/pages/annonce/ModifierAnnoncePage.jsx`.
+NOTE : ne PAS confondre avec les bypass DEV inconditionnels de CreerAnnoncePage (#1-4) qui imposent le never-stage. Celui-ci est sûr en prod.
