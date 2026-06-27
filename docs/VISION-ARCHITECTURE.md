@@ -52,7 +52,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-06-24 (conv 88) — Correction §652 : ancrage profil = NATURE du logement (côté école/entreprise), PAS sa ville (saisie librement ; Bruz≠Rennes). Contrôle de distance (Marseille vs Rennes) reconnu utile mais différé (chantier séparé).
+**Dernière mise à jour** : 2026-06-27 (conv 94) — Ajout principe « import bail = double garde-fou de confiance » (intention produit non câblée, pilote le Cap B).
 
 ---
 
@@ -748,3 +748,8 @@ PORTÉE DU CLIC, à ce stade : cocher/décocher une semaine ajuste la SÉLECTION
 de l'annonce. Cela NE modifie PAS le rhythm_calendar (charte invariant 6).
 ORDRE : finir CreerAnnoncePage (brancher la planche cliquable + retirer le jour-par-jour =
 ex-Lot 3c), PUIS ModifierAnnoncePage (Lot 6). Une page à la fois.
+
+### Import du bail = double garde-fou de confiance (intention produit, NON câblée à ce jour) (décision conv 94, 27 juin 2026)
+Vision produit : l'import du document de bail à la création/modification d'annonce remplit deux fonctions structurelles de confiance — (1) ANTI-FAUSSE-ANNONCE : le bail atteste de l'existence réelle du logement et du droit d'en disposer ; (2) ANTI-GONFLAGE DE PRIX : le loyer affiché doit être DÉRIVÉ du montant lu dans le bail, jamais saisi librement. L'extraction du bail n'est pas une commodité mais un mécanisme de confiance central de la plateforme.
+ÉTAT RÉEL DU CODE (constat audit conv 94) : cette intention n'est PAS câblée. Sur ModifierAnnoncePage, validateStep n'exige AUCUN fichier bail (aucune garde sur bailFileData) ; l'UI présente l'import comme OPTIONNEL (séparateur « ou remplis manuellement »). Dates et prix sont saisissables à la main, l'import n'étant qu'un raccourci de pré-remplissage.
+CONSÉQUENCE : rendre l'import obligatoire + faire du bail la source de vérité du prix (lecture/validation plutôt que saisie libre) est un CHANTIER À PART ENTIÈRE (« Cap B »), distinct de la refonte mécanique du calendrier (Lot 6 / 6c = « Cap A » : on range sans changer le modèle). La fiabilité de l'extraction (dates ET prix) étant critique pour ces garde-fous, ce chantier est couplé à la validation utilisateur des données extraites (DETTE #118). Aucune implémentation avant cadrage produit + prudence bail (avis professionnel).

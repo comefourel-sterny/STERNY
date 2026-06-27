@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-26 (conv 93) — ModifierAnnoncePage Lot 6 (a+a-bis+b) livré et commité (a36f8f0) : planche-semaines cliquable + alignement charte conv 86 (retrait branche propriétaire). Reste 6c (extraire import bail en step 0 + vider le step 4).
+**Dernière mise à jour** : 2026-06-27 (conv 94) — Audit exhaustif zone bail Modifier (6 lectures seules), aucune coupe ; plan 6c stabilisé (Cap A) ; 3 sujets produit tracés (#118, VISION Cap B, parité).
 
 ---
 
@@ -16,6 +16,22 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## 2026-06-27 (conv 94) — Audit exhaustif zone bail ModifierAnnoncePage terminé ; plan 6c re-cadré (AUCUNE coupe de code)
+PALIER : feat/unification-inscription poussée en début de session (51f6faa..85b8a46, 6 commits, main intacte). Puis 6 LECTURES SEULES de la zone bail (states, extraction PDF, persistance, payload, validateStep) — zéro écriture, zéro commit de code.
+CARTE ÉTABLIE (sans surprise restante) :
+- Extraction PDF Modifier → dates bail (start/end/durée) + pricing (prix/caution/chargeMode). PAS de dpe/propertyInfo (≠ Creer). PDF jamais stocké (bailFileData write-only ; note Storage DETTE #118).
+- Dates/durée = MULTI-SOURCES : extraction PDF (handleBailUpload l.1006) + réhydratation base (l.575) + saisie manuelle ; toutes persistées via bail_info. → ne PAS mettre bail_info à null (corrige une fausse piste de début de session).
+- Moteur de cycle = mort, cluster fermé (handlers dates→processRhythmDates→finalizeBailDates/choisirDimanche↔modale Dimanche). rhythmStartDate/EndDate : 1 seule lecture vivante = fallback date_fin l.1532, qui part sans perte (bailEndDate reste la source).
+- Payload écrit encore type_alternance/rythme_pattern (l.1554-1555, dépréciées, invariant 5) → à retirer en 6c.
+- Import PDF NON obligatoire dans le code (aucune garde validateStep sur bailFileData ; UI « ou remplis manuellement »). Intention « import obligatoire » NON câblée (logée VISION conv 94).
+- COUPLAGE EMPLACEMENT↔VALIDATION + BUG LATENT seuil ≥7 : voir DETTE #119.
+3 SUJETS PRODUIT SORTIS, tracés et reportés APRÈS 6c (ne pas mélanger à une passe de propreté) : (1) obligation d'import + bail source de vérité du prix → VISION « Cap B » ; (2) validation utilisateur des données extraites (dates ET prix) → DETTE #118 ; (3) parité Creer/Modifier sur la persistance bail.
+CAP RETENU 6c = CAP A (technique pur : ranger sans changer le modèle de confiance). PLAN 6c STABILISÉ (sans angle mort) :
+- 6c-① : retirer le mort — modale Dimanche + sélecteur de rythme abstrait + moteur de cycle complet (≈13 fonctions + useEffect cycle l.1156 + states cycle) + colonnes dépréciées type_alternance/rythme_pattern du payload. GARDER : inputs dates bail, bail_info intact, zone import, planche.
+- 6c-② : créer le step 0 « Bail » (design Creer, recopier les 20 classes ca-bail-* depuis CreerAnnoncePage.css, JSX inline → classes), Y DÉPLACER import + dates + leurs CHECKS validateStep, recâbler stepper 1..5 → 0..5, label « Bail », retirer commentaire mort « (locataires only) », corriger le seuil planche ≥1 (DETTE #119).
+- 6c-③ : retirer le bypass DEV #117, re-tester la validation complète des champs, commit + push, MAJ docs.
+AUCUN fichier de code modifié cette session. ModifierAnnoncePage.jsx (2385 l.) NON never-stage (committable). Sauvegardes hors-git de conv 93 toujours valides.
 
 ## 2026-06-26 (conv 93) — ModifierAnnoncePage : Lot 6 (a + a-bis + b) livré, commité, validé runtime
 COMMITS DE LA SESSION (branche feat, NON poussés — feat ahead de 5) :

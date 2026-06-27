@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-25 (conv 91) — MAJ DETTE #113 : grappes 1-2 du retrait mort CreerAnnonce sorties (grille jour-par-jour + nav) ; découverte step 4 = sélecteur de rythme abstrait non gated (viole invariants 5/6), retrait grappes 3/4/5.
+**Dernière mise à jour** : 2026-06-27 (conv 94) — DETTE #118 (validation données bail extraites dates+prix) + #119 (seuil validateStep ≥7 vestige) ; audit zone bail Modifier terminé, plan 6c re-cadré (Cap A).
 
 ## Nomenclature des bugs
 
@@ -1325,3 +1325,18 @@ DÉPENDANCE : registre semaines_reservees (#93, gelé avocat) pour savoir si une
 Pour développer/tester la planche (Lot 6) sans remplir tous les champs obligatoires du wizard, validateStep retourne true en LOCAL via `if (import.meta.env.DEV) return true`. Contrairement aux bypass DEV de CreerAnnoncePage (return true inconditionnel → never-stage), celui-ci est conditionné à import.meta.env.DEV : false automatiquement au build prod (npm run build), donc la validation des champs revient seule en production et la page RESTE commitable.
 À RETIRER quand la refonte de ModifierAnnoncePage (Lot 6 + design) est terminée et qu'on veut re-tester la validation complète des champs. Grep de contrôle : `grep -n "import.meta.env.DEV" sterny-react/src/pages/annonce/ModifierAnnoncePage.jsx`.
 NOTE : ne PAS confondre avec les bypass DEV inconditionnels de CreerAnnoncePage (#1-4) qui imposent le never-stage. Celui-ci est sûr en prod.
+
+## DETTE #118 — Validation utilisateur des données de bail extraites du PDF (dates ET prix) — CreerAnnoncePage + ModifierAnnoncePage
+**Statut : OUVERTE (soulevé conv 94, 27 juin 2026). Décision produit + design, à traiter APRÈS la refonte 6c (Cap B). Touche au bail → prudence, avis professionnel avant prod.**
+CONSTAT : l'extraction PDF du bail (dates début/fin, durée, prix/caution) n'est pas fiable à 100 % (cf. plafonds parser DETTE #37/#41/#43). Aujourd'hui les valeurs extraites partent en base sans relecture explicite → risque de DONNÉE FAUSSE SILENCIEUSE. Deux enjeux : DATES (une date erronée touche au contractuel : date d'effet, durée d'engagement) ; PRIX (le loyer extrait porte le futur garde-fou ANTI-GONFLAGE — cf. VISION « import bail = double garde-fou » — un prix mal lu = garde-fou contourné par accident).
+CADRE §145 : §145 interdit la SAISIE d'une date de contrat à l'édition d'annonce (fixée à la signature), mais N'INTERDIT PAS la VALIDATION d'une date/prix EXTRAITS — c'est le principe déjà acté pour le rythme (VISION §4 : « l'IA pré-remplit, l'utilisateur valide »). Valider ≠ saisir.
+À CADRER (non tranché) : (a) forme — champs pré-remplis éditables / bandeau « on a lu X, c'est bon ? » / case à cocher ; (b) bloquant ou non (reco : au moins un accusé de lecture) ; (c) comportement si extraction échoue ou document non-bail ; (d) cas saisie sans import (aujourd'hui l'import est OPTIONNEL, constat conv 94).
+NOTE STORAGE : le PDF du bail (bailFileData) n'est JAMAIS stocké (write-only en mémoire ; seul .upload() = photos vers bucket annonces-photos). Conserver le document (vérification d'annonce) = feature future Storage + RGPD (bail = données personnelles), à cadrer séparément, hors 6c.
+PARITÉ : concerne Creer + Modifier. Lié au Cap B (ETAT-COURANT conv 94).
+PRUDENCE BAIL : ne rien présumer ; faire valider wording + caractère bloquant par un professionnel avant prod.
+
+## DETTE #119 — validateStep(4) de ModifierAnnoncePage exige selectedDates.length ≥ 7 (vestige jour-par-jour)
+**Statut : OUVERTE (constat conv 94, 27 juin 2026). Bug latent masqué par le bypass DEV #117. À corriger PENDANT 6c.**
+CONSTAT (audit lecture seule conv 94) : validateStep step 4 exige selectedDates.length ≥ 1 ET ≥ 7 (l.~1399). Le ≥ 7 est un VESTIGE de la grille jour-par-jour (7 jours = 1 semaine). Depuis la planche, selectedDates contient des LUNDIS ISO (1 entrée = 1 semaine) → exige en réalité 7 SEMAINES au lieu d'1. Bug réel en prod, INVISIBLE en local (bypass DEV #117 court-circuite la validation).
+FIX (en 6c-②, au recâblage du step 4) : remplacer par ≥ 1 (miroir CreerAnnoncePage conv 87). Vérifier après retrait du bypass #117 (6c-③), sinon non vérifié runtime.
+COUPLAGE EMPLACEMENT↔VALIDATION : validateStep(4) exige aussi les dates bail (bailStartDate + bailEndDate|bailDuree). Quand les dates passent au step 0 (6c-②), leurs CHECKS validateStep doivent SUIVRE vers le step 0, sinon le step 4 valide des champs absents de son écran (utilisateur bloqué par erreur invisible). Le step 4 ne garde que le check planche (selectedDates ≥ 1).
