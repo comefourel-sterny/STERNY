@@ -1,6 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import { Agentation } from 'agentation'
 import PasswordGate from './components/PasswordGate'
 
 function ScrollToTop() {
@@ -192,8 +191,6 @@ export default function App() {
           <Route path="/messages" element={<MessagesPage />} />
         </Route>
       </Routes>
-
-      {import.meta.env.DEV && <Agentation endpoint="http://localhost:4747" />}
     </PasswordGate>
   )
 }

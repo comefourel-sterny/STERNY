@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react'
-import { Agentation } from 'agentation'
 import { supabaseClient } from '../config/supabase'
 import PasswordRevealButton from './PasswordRevealButton'
 
@@ -195,7 +194,6 @@ export default function PasswordGate({ children }) {
       </button>
 
       <style>{`input::placeholder { color: rgba(255,255,255,0.3) !important; }`}</style>
-      <Agentation endpoint="http://localhost:4747" />
     </div>
   )
 }
