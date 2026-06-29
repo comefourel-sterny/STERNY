@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-27 (conv 94) — Audit exhaustif zone bail Modifier (6 lectures seules), aucune coupe ; plan 6c stabilisé (Cap A) ; 3 sujets produit tracés (#118, VISION Cap B, parité).
+**Dernière mise à jour** : 2026-06-29 (conv 95) — 6c-①a + ①b-1 faits (build vert, NON commités) ; DETTE #120 (save gèle = bug PRÉ-EXISTANT hors 6c, ①b-1 innocenté) ; reste 6c-①b-2.
 
 ---
 
@@ -16,6 +16,23 @@ Reste du socle recherche :
 - (5) nettoyage UI recherche : SOLDÉ — barre = Ville seule (5b-1) en look pilule clone homepage + hero aligné (5b-2), colonnes dépréciées retirées. Reste 5b-3 (composant <SearchBar> partagé) différé.
 
 ---
+
+## Écosystème / Partenaires
+
+Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal daté ci-dessous. Entrée la plus récente en premier.
+
+**26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
+
+---
+
+## 2026-06-29 (conv 95) — 6c-① : ①a (coupe JSX) + ①b-1 (débranchement coutures) FAITS, build vert, NON commités ; bug de save #120 découvert (pré-existant, hors 6c)
+ÉTAT CODE : ModifierAnnoncePage.jsx contient ①a + ①b-1 dans le working tree (NON commité, conforme règle « pas de commit non validé runtime »). Backups hors-git frais : ~/sterny-backups/ModifierAnnoncePage.jsx.bak-* (états ①a, ①b-1, AVANT-STASH). Branche feat/unification-inscription, e05ef2a en tête de remote.
+FAIT cette session :
+- 6c-①a (coupe JSX) : modale Dimanche + sélecteur de rythme abstrait retirés. Build vert, validé navigateur (planche + dates bail OK, sélecteur/modale disparus).
+- 6c-①b-1 (débranchement des 3 coutures vivantes) : 5 str_replace ancrés — (A/B) retrait de la dernière ligne processRhythmDates des 2 handlers dates (calcul date↔durée conservé) ; (C) removeBailFile nettoyé (3 lignes cycle retirées) ; (D) 2 onChange nettoyés de dimancheChoixFaitRef ; (E) payload : colonnes dépréciées type_alternance/rythme_pattern retirées + fallback rhythmEndDate simplifié. Build vert. Le cluster mort est désormais TOTALEMENT ISOLÉ (zéro appelant vivant).
+RESTE 6c-① : ①b-2 = retrait en bloc du cluster mort (≈13 fonctions + useEffect cycle l.~1156 + states cycle), suppression mécanique sans appelant vivant. PUIS 6c-② (step 0 Bail) et 6c-③ (retrait bypass #117).
+BUG DÉCOUVERT #120 (sauvegarde gèle, étape Prix) : test causal git stash mené → le SAVE gèle AUSSI sur le committé conv 93 (sans nos coupes) → bug PRÉ-EXISTANT, ①b-1 INNOCENTÉ. Le gel survient notamment quand les dates de bail sont renseignées (annonce de test : dates incohérentes 2027→2035). Pistes : toolbar « agentation » App.jsx:196 (localhost:4747, ERR_CONNECTION_REFUSED en boucle) + rebond redirection /dashboard/proprietaire (déjà noté conv 93). NON bloquant pour finir 6c-① en local (bypass DEV #117 court-circuite validateStep). À diagnostiquer en session dédiée.
+DÉCISION ACTÉE : 6c-① peut se terminer normalement (①b-2) malgré #120, car #120 est hors périmètre et non bloquant en local. La validation runtime du SAVE de bout en bout restera toutefois suspendue à la résolution de #120 avant tout commit du code annonce.
 
 ## 2026-06-27 (conv 94) — Audit exhaustif zone bail ModifierAnnoncePage terminé ; plan 6c re-cadré (AUCUNE coupe de code)
 PALIER : feat/unification-inscription poussée en début de session (51f6faa..85b8a46, 6 commits, main intacte). Puis 6 LECTURES SEULES de la zone bail (states, extraction PDF, persistance, payload, validateStep) — zéro écriture, zéro commit de code.

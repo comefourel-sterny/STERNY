@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-27 (conv 94) — DETTE #118 (validation données bail extraites dates+prix) + #119 (seuil validateStep ≥7 vestige) ; audit zone bail Modifier terminé, plan 6c re-cadré (Cap A).
+**Dernière mise à jour** : 2026-06-29 (conv 95) — DETTE #120 (sauvegarde ModifierAnnoncePage gèle/n'écrit pas, étape Prix) : diagnostic en cours, cause non établie, bloque la validation runtime de 6c-①b-1 ; NE PAS committer ①b-1 tant que non résolu.
 
 ## Nomenclature des bugs
 
@@ -1340,3 +1340,11 @@ PRUDENCE BAIL : ne rien présumer ; faire valider wording + caractère bloquant 
 CONSTAT (audit lecture seule conv 94) : validateStep step 4 exige selectedDates.length ≥ 1 ET ≥ 7 (l.~1399). Le ≥ 7 est un VESTIGE de la grille jour-par-jour (7 jours = 1 semaine). Depuis la planche, selectedDates contient des LUNDIS ISO (1 entrée = 1 semaine) → exige en réalité 7 SEMAINES au lieu d'1. Bug réel en prod, INVISIBLE en local (bypass DEV #117 court-circuite la validation).
 FIX (en 6c-②, au recâblage du step 4) : remplacer par ≥ 1 (miroir CreerAnnoncePage conv 87). Vérifier après retrait du bypass #117 (6c-③), sinon non vérifié runtime.
 COUPLAGE EMPLACEMENT↔VALIDATION : validateStep(4) exige aussi les dates bail (bailStartDate + bailEndDate|bailDuree). Quand les dates passent au step 0 (6c-②), leurs CHECKS validateStep doivent SUIVRE vers le step 0, sinon le step 4 valide des champs absents de son écran (utilisateur bloqué par erreur invisible). Le step 4 ne garde que le check planche (selectedDates ≥ 1).
+
+## DETTE #120 — Sauvegarde de ModifierAnnoncePage gèle et n'écrit pas en base (étape Prix)
+**Statut : OUVERTE (constat conv 95, 29 juin 2026). Cause = bug PRÉ-EXISTANT hors 6c, confirmé par test causal git stash : le SAVE gèle AUSSI sur le committé conv 93 (sans les coupes ①b-1). ①b-1 INNOCENTÉ. Le gel survient notamment quand les dates de bail sont renseignées (annonce de test : dates incohérentes 2027→2035). NON bloquant pour finir 6c-① en local (bypass DEV #117 court-circuite validateStep). À diagnostiquer en session dédiée.**
+CONSTAT : sur l'état ①b-1 (working tree, non commité), cliquer « Enregistrer les modifications » à l'étape Prix (loyer + caution remplis, ex. 800/800) NE sauvegarde PAS : les champs reviennent vides après rechargement forcé (Cmd+Shift+R), la page gèle (défilement bloqué), et un rebond dashboard→modifier est observé. Testé 2 fois, reproductible.
+NON ÉTABLI : la cause. Le test causal (comparer le SAVE sur le committé conv 93 vs sur ①b-1 via git stash) n'a PAS pu être mené — interrompu par des pannes réseau Anthropic (401/502). À reprendre en priorité en session fraîche.
+PISTES À EXPLORER (lecture seule d'abord, ne rien présumer) : (1) régression de nos coupes ①b-1 sur le payload (E1 colonnes retirées / E2 fallback rhythmEndDate simplifié) — à tester en premier via le stash ; (2) bug pré-existant indépendant de 6c : toolbar de feedback « agentation » monté dans App.jsx:196 (POST localhost:4747/sessions, ERR_CONNECTION_REFUSED en boucle) ; (3) redirection /dashboard/proprietaire de l'hôte (déjà notée ETAT-COURANT conv 93) comme cause du rebond.
+MÉTHODE DE REPRISE : git stash push -- ModifierAnnoncePage.jsx → tester SAVE sur le committé → git stash pop. Si le committé sauvegarde bien → cause = nos coupes (auditer E1/E2). Si le committé gèle aussi → bug pré-existant, hors 6c, à isoler séparément.
+NE PAS committer ①b-1 tant que ce bug n'est pas résolu (règle : pas de commit non validé runtime).
