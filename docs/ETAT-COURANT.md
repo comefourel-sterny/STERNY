@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-29 (conv 98) — Retrait agentation (DETTE #122) commité+poussé (4eb9ce2). Agentation INNOCENTÉ du gel modale. Bug réel = boucle de re-rendu SPÉCIFIQUE à ModifierAnnoncePage (effets continuent de logger après démontage) ; fix #120 [user?.id] insuffisant. Cause à corriger : dépendance objet/tableau non mémoïsée. Non corrigé (tête reposée).
+**Dernière mise à jour** : 2026-06-30 (conv 99) — Verrou #123 LEVÉ (modale de save masquee par collision CSS globale .modal-overlay vs #86, pas une boucle). Fix a3c1761 (.ma-confirm-overlay scopee) + 6c-① commite (b8f47dc). #120 confirme. Branche ahead de 2, non poussee.
 
 ---
 
@@ -24,6 +24,15 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## 2026-06-30 (conv 99) — Verrou #123 LEVÉ : modale de save = collision CSS globale (pas une boucle) ; 6c-① + fix #123 commités
+CAUSE TROUVÉE APRÈS 2 JOURS : le gel "au save" n'etait ni agentation (#122, innocente conv 98) ni une boucle de re-rendu. La modale de confirmation utilisait la classe globale .modal-overlay, masquee par .modal-overlay{display:none} de ContratLocationPage.css (#86) → modale rendue mais invisible + scroll bloque (overflow:hidden). Methode : 4 audits LECTURE SEULE successifs (effets/deps, checkUserAndLoadAnnonce, chemin save, CSS) — aucun moteur de boucle interne au fichier → pivot vers la piste CSS.
+PIÈGE CONV 98 ÉLUCIDÉ : le "gel au chargement" + "[6a] en rafale" + "fix #120 insuffisant" = artefact de bundle Vite perime (HMR ne reapplique pas un changement de deps useEffect). Bundle frais → chargement calme, [6a] x2 (StrictMode) puis stop. Fix #120 CONFIRME.
+FIX #123 : renommage .modal-overlay → .ma-confirm-overlay (classe scopee unique, .jsx + .css), miroir du remede InvitationModal (.inv-overlay). Commit a3c1761. Valide runtime : modale affichee, save execute jusqu'a la garde identite.
+COMMITS DE LA SESSION (branche feat, ahead de 2, NON poussés) : a3c1761 fix #123 (modale scopee, CSS entier + 1 ligne JSX extraite via git apply --cached, methode #120) ; b8f47dc refactor 6c-① (retrait moteur de cycle mort, ~398 lignes, colonnes depreciees type_alternance/rythme_pattern retirees du payload). ModifierAnnoncePage.jsx desormais CLEAN cote working tree.
+ÉTAT 6c : 6c-① TERMINÉ et commité (rendu + chemin save valides runtime). RESTE : 6c-② (step 0 "Bail" : deplacer import+dates hors step 4, classes ca-bail-*, stepper 0→5, seuil planche ≥1 = DETTE #119) ; 6c-③ (retrait bypass DEV #117 + validation complete champs + push + MAJ docs).
+RESTE OUVERT (hors 6c, a la main de Côme) : (1) push des 2 commits ; (2) npm uninstall agentation + commit package.json/lockfile (#122, code deja retire conv 98) ; (3) test d'ecriture REELLE du save = composer un compte de test identite_verifiee='verifiee' (la garde identite bloque l'ecriture finale, comportement NORMAL) ; (4) #124 PASSWORD_HASH (securite, hors chantier annonce).
+PROCHAINE SESSION : soit 6c-② (suite refonte annonce), soit push + nettoyage #122. Verrou #123 n'existe plus.
 
 ## 2026-06-29 (conv 98) — Retrait agentation (DETTE #122) commité+poussé ; gel modale = boucle de re-rendu LOCALISÉE à ModifierAnnoncePage, non corrigée
 PUSH DÉBUT DE SESSION : 3 commits conv 95/97 poussés (ea6c753), puis ce soir commit 4eb9ce2. Branche synchro origin (0/0). main intacte.
