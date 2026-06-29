@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-29 (conv 97) — DETTE #120 RÉSOLUE côté ModifierAnnoncePage (boucle de re-rendu, fix dep [user?.id], validé runtime) ; ouverture #121 (racine useAuth) et #122 (agentation casse le rendu de modale + monté sans garde DEV dans PasswordGate).
+**Dernière mise à jour** : 2026-06-29 (conv 98) — #122 agentation retiré du code (commité 4eb9ce2) mais INNOCENTÉ du gel modale ; npm uninstall encore à faire. Gel modale reclassé en #123 (boucle de re-rendu locale ModifierAnnoncePage). Note sécurité PASSWORD_HASH ajoutée (#124).
 
 ## Nomenclature des bugs
 
@@ -820,6 +820,8 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 **Référence** : `App.jsx:188`.
 
+MAJ conv 98 : le composant <Agentation> a été retiré du CODE (commit 4eb9ce2). La dépendance npm reste déclarée (uninstall à faire). #71 et #122 décrivaient bien le même mécanisme (appel localhost:4747 quand le serveur est éteint).
+
 ## DETTE #72 — Ligne `users` CF périmée (données de test à nettoyer)
 
 **Statut au 31 mai 2026 (conv 23)** : créée.
@@ -1356,7 +1358,18 @@ FIX LOCAL DÉJÀ POSÉ (#120) : ModifierAnnoncePage utilise [user?.id]. Mais c'e
 FIX RACINE (à cadrer, NON fait) : options à étudier — (a) ne `setUser` que si l'id change (comparaison avant set) ; (b) mémoïser la value du context. PRUDENCE : useAuth est central (auth de toute la plateforme) → audit de TOUS les consommateurs + tests multi-parcours (connexion, dashboard, recherche…) avant tout changement. Ne pas mélanger à un autre chantier.
 
 ## DETTE #122 — Toolbar dev `agentation` : casse le rendu de la modale + montée SANS garde DEV dans PasswordGate
-**Statut : OUVERTE (constat conv 97, 29 juin 2026). Bloque l'affichage de la modale de confirmation du save en dev. Risque prod à vérifier.**
+**Statut : PARTIELLEMENT TRAITÉ (conv 98). Code agentation RETIRÉ et commité (4eb9ce2) → risque prod (montage sans garde DEV dans PasswordGate) ÉCARTÉ. MAIS agentation N'ÉTAIT PAS la cause du gel de la modale : après retrait, le symptôme persiste → voir #123. RESTE : `npm uninstall agentation` + commit package.json/lockfile (la dépendance est encore déclarée).**
 CONSTAT 1 (rendu cassé) : la toolbar `agentation` (endpoint http://localhost:4747) lève `TypeError: Failed to fetch` dans un effet React (commitHookEffectListMount) quand aucun serveur n'écoute sur 4747. Cette erreur interrompt le cycle de rendu → la modale de confirmation du save (showConfirmModal=true, overflow:hidden bien posé) n'est JAMAIS peinte dans le DOM (vérifié : aucun <div class="modal-overlay"> dans le body, seulement le CSS dans les <style>). Le code de la modale est CORRECT (audit conv 97) — c'est agentation qui casse le rendu. Symptôme : clic « Enregistrer » → rien à l'écran, scroll bloqué.
 CONSTAT 2 (risque prod) : `<Agentation>` est monté avec garde `import.meta.env.DEV` dans App.jsx (l.~196), MAIS SANS garde dans PasswordGate.jsx (l.~198, inconditionnel). À vérifier : la prod passe-t-elle par PasswordGate ? Si oui, un outil de dev partirait en production.
 À FAIRE (session dédiée, PRIORITAIRE avant de reprendre le test save) : (a) neutraliser/configurer agentation en dev (lancer son serveur, ou conditionner son montage, ou le retirer) ; (b) corriger le montage inconditionnel dans PasswordGate.jsx (ajouter la garde DEV) ; (c) re-tester l'affichage de la modale — attendu : elle s'affiche SANS toucher à ModifierAnnoncePage. PRUDENCE : agentation est une lib tierce, comprendre son rôle avant de la retirer.
+
+## DETTE #123 — ModifierAnnoncePage : boucle de re-rendu / composant non démonté (gel de la page + modale de save jamais peinte)
+**Statut : OUVERTE (conv 98, 29 juin 2026). Bug réel derrière l'ancien symptôme attribué à tort à agentation (#122). PRIORITAIRE : bloque le test du save et la fin de 6c.**
+SYMPTÔME : au CHARGEMENT de ModifierAnnoncePage (avant tout clic), la page se fige ; la modale de confirmation du save n'est jamais peinte. Console : "Navigated to .../annonce/modifier" + "[6a] hostProfile chargé" en rafale.
+ACQUIS (test runtime conv 98) : boucle SPÉCIFIQUE à cette page (/recherche + home = calmes) → PAS un composant global (NE PAS re-suspecter PasswordGate/useAuth/routeur). Les logs ModifierAnnoncePage.jsx continuent APRÈS navigation ailleurs → le composant ne se démonte pas, un useEffect boucle sans nettoyage. AUCUN window.location/reload dans le chemin de chargement (écarté). Le fix #120 ([user?.id]) n'a PAS suffi.
+HYPOTHÈSE : dépendance OBJET/TABLEAU recréée à chaque rendu (manifestation locale de #121). SUSPECTS : useEffect l.~297 (deps [hostProfile, natureLogement, semainesLibres]) et useEffect l.~404 (deps [user?.id]). Re-localiser par grep (numéros décalés depuis retrait agentation).
+À FAIRE : lire les 2 effets + production de leurs deps ; stabiliser la dep instable (useMemo / primitive) ; valider runtime. Lié à #121 (racine useAuth).
+
+## DETTE #124 — PASSWORD_HASH en dur dans le front (PasswordGate.jsx)
+**Statut : OUVERTE (constat conv 98, 29 juin 2026). Sécurité, hors chantier annonce. À examiner séparément.**
+CONSTAT : PasswordGate.jsx contient une constante PASSWORD_HASH (hash SHA-256) en dur (~l.6). Un hash dans le bundle front est visible par quiconque inspecte le code livré ; selon l'usage (gate landing de pré-prod), le risque est limité mais réel. À arbitrer : déplacer la vérification côté serveur, ou accepter le risque pour une simple gate temporaire. PRUDENCE : ne rien changer sans cadrer l'usage exact de la gate.

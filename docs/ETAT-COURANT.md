@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-29 (conv 97) — DETTE #120 (save gèle) DIAGNOSTIQUÉE et RÉSOLUE côté ModifierAnnoncePage : boucle de re-rendu (dep useEffect [user] instable, entretenue par refresh token). Fix [user?.id] validé runtime, commité à part (fix:). 6c-① toujours non commité. Ouvertures : #121 (racine useAuth), #122 (agentation casse modale + risque prod PasswordGate).
+**Dernière mise à jour** : 2026-06-29 (conv 98) — Retrait agentation (DETTE #122) commité+poussé (4eb9ce2). Agentation INNOCENTÉ du gel modale. Bug réel = boucle de re-rendu SPÉCIFIQUE à ModifierAnnoncePage (effets continuent de logger après démontage) ; fix #120 [user?.id] insuffisant. Cause à corriger : dépendance objet/tableau non mémoïsée. Non corrigé (tête reposée).
 
 ---
 
@@ -24,6 +24,17 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## 2026-06-29 (conv 98) — Retrait agentation (DETTE #122) commité+poussé ; gel modale = boucle de re-rendu LOCALISÉE à ModifierAnnoncePage, non corrigée
+PUSH DÉBUT DE SESSION : 3 commits conv 95/97 poussés (ea6c753), puis ce soir commit 4eb9ce2. Branche synchro origin (0/0). main intacte.
+FAIT & COMMITÉ (4eb9ce2, chore) : retrait de l'outil de dev agentation = 2 imports + 2 montages <Agentation> (App.jsx l.3+196, PasswordGate.jsx l.2+198). Le montage PasswordGate était SANS garde import.meta.env.DEV alors que PasswordGate enveloppe toute l'app en prod → risque prod écarté. Build vert, console nettoyée du localhost:4747. Backups hors-git faits.
+RESTE sur agentation : la DÉPENDANCE npm "agentation":"^3.0.2" est ENCORE dans package.json → `npm uninstall agentation` + commit package.json/lockfile = étape séparée non faite.
+DIAGNOSTIC DU GEL (le vrai sujet, NON résolu) : agentation INNOCENTÉ — après son retrait, le symptôme PERSISTE (modale de save jamais peinte + page figée). Bug PRÉEXISTANT (≥4h, antérieur aux modifs du jour).
+CAUSE LOCALISÉE PAR TEST RUNTIME (acquis solide) : la boucle est SPÉCIFIQUE à ModifierAnnoncePage. Test décisif : sur /recherche et la home, AUCUNE boucle (pages calmes). Donc PAS un composant global (PasswordGate/useAuth/routeur) — NE PAS re-creuser cette piste.
+SIGNATURE : les logs ModifierAnnoncePage.jsx (l.414 hostProfile, l.296 nature) CONTINUENT d'apparaître même après navigation vers /recherche → le composant NE SE DÉMONTE PAS proprement, un useEffect boucle et n'est jamais nettoyé. Le "Navigated to" en rafale n'est PAS un window.location/reload (aucun dans le chemin de chargement, vérifié) : c'est un effet qui se relance sans fin et fait ré-émettre des rendus/navigations.
+FIX #120 INSUFFISANT : la dep [user?.id] n'a pas éteint la boucle. Hypothèse forte = une dépendance OBJET/TABLEAU recréée à chaque rendu (motif #121 en local). SUSPECTS À LIRE EN PRIORITÉ : useEffect l.~297 (deps [hostProfile, natureLogement, semainesLibres]) et useEffect chargement l.~404 (deps [user?.id]). Vérifier comment hostProfile/natureLogement/semainesLibres sont produits (useState vs recalcul/useMemo).
+PROCHAINE SESSION (reprendre ICI) : (1) lire EN ENTIER les 2 effets suspects + la production de leurs deps ; (2) identifier la dep instable ; (3) la stabiliser (useMemo / dépendance primitive) ; (4) valider runtime (console propre, modale s'affiche) ; (5) PUIS reprendre le test du save, puis 6c-②. Toucher un useEffect = à froid, pas fatigué.
+COMPTE DE TEST utilisé ce soir : come.fourel@rennes.archi.fr (profil hote, Rennes), annonce id aaaaaaaa-... (seed). Boucle présente dès le chargement, avant tout clic.
 
 ## 2026-06-29 (conv 97) — DETTE #120 diagnostiquée (lecture seule + runtime) et RÉSOLUE côté page ; fix commité à part ; modale + useAuth + agentation ouverts en dette
 VERROU #120 LEVÉ. Session dédiée diagnostic, méthode lecture seule puis mesures runtime, sans présumer.
