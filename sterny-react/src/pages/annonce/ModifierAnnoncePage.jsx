@@ -44,9 +44,6 @@ const PATTERNS_SUSPECTS = [
   /(.)\1{5,}/
 ]
 
-const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
-const dayNames = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 
 const joursNoms = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
 
@@ -339,20 +336,8 @@ export default function ModifierAnnoncePage() {
   const [bailStartDate, setBailStartDate] = useState('')
   const [bailEndDate, setBailEndDate] = useState('')
   const [bailDuree, setBailDuree] = useState('')
-  const [rhythmStartDate, setRhythmStartDate] = useState('')
-  const [rhythmEndDate, setRhythmEndDate] = useState('')
-  const [rhythmType, setRhythmType] = useState('')
-  const [rhythmPattern, setRhythmPattern] = useState('')
-  const [cycleStartDate, setCycleStartDate] = useState('')
   const [selectedDates, setSelectedDates] = useState([])
-  const [calendarMode, setCalendarMode] = useState('idle')
-  const [cycleAnchorDate, setCycleAnchorDate] = useState(null)
   const [showEditCalendar, setShowEditCalendar] = useState(false)
-  const [startMonthIndex, setStartMonthIndex] = useState(new Date().getMonth())
-  const [startYear, setStartYear] = useState(new Date().getFullYear())
-  const [showDimancheModal, setShowDimancheModal] = useState(false)
-  const [dimancheData, setDimancheData] = useState({ jour: '', precedent: null, suivant: null, bailStart: null, bailEnd: null })
-  const dimancheChoixFaitRef = useRef(false)
 
   // --- Lot 6b — Planche-semaines cliquable (calendrier unique, charte invariant 4/7) ---
   // Union : semaines libres de l'hôte + semaines déjà proposées dans l'annonce (orphelines incluses),
@@ -574,24 +559,12 @@ export default function ModifierAnnoncePage() {
       if (bail.duree_mois) {
         setBailDuree(String(bail.duree_mois))
       }
-      if (bail.date_debut && bail.date_fin) {
-        const bailStartParsed = new Date(bail.date_debut + 'T00:00:00')
-        const bailEndParsed = new Date(bail.date_fin + 'T00:00:00')
-        setRhythmStartDate(formatDateForInput(bailStartParsed))
-        setRhythmEndDate(formatDateForInput(bailEndParsed))
-      }
     }
 
     if (annonce.disponibilites_pattern && Array.isArray(annonce.disponibilites_pattern)) {
       const dates = [...annonce.disponibilites_pattern].sort()
       setSelectedDates(dates)
       ouvertureDispoRef.current = dates
-      if (dates.length > 0) {
-        const [y, m] = dates[0].split('-').map(Number)
-        setStartMonthIndex(m - 1)
-        setStartYear(y)
-      }
-      setCalendarMode('editing')
       setShowEditCalendar(true)
     }
 
@@ -1061,9 +1034,6 @@ export default function ModifierAnnoncePage() {
     setBailStartDate('')
     setBailEndDate('')
     setBailDuree('')
-    dimancheChoixFaitRef.current = false
-    setRhythmStartDate('')
-    setRhythmEndDate('')
     setShowPricingBanner(false)
   }
 
@@ -1095,151 +1065,6 @@ export default function ModifierAnnoncePage() {
     return Math.ceil(selectedDates.length / 7)
   }
 
-  function shiftMonths(offset) {
-    setStartMonthIndex(prev => {
-      let newMonth = prev + offset
-      if (newMonth < 0) { newMonth += 12; setStartYear(y => y - 1) }
-      else if (newMonth >= 12) { newMonth -= 12; setStartYear(y => y + 1) }
-      return newMonth
-    })
-  }
-
-  function selectDate(dateStr, dateObj) {
-    if (calendarMode === 'cycle_selection') {
-      const dayOfWeek = dateObj.getDay()
-      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-      const monday = new Date(dateObj)
-      monday.setDate(dateObj.getDate() + mondayOffset)
-      setCycleAnchorDate(toLocalISODate(monday))
-      setCycleStartDate(formatDateForInput(monday))
-      setCalendarMode('editing')
-      return
-    }
-
-    const dayOfWeek = dateObj.getDay()
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-    const monday = new Date(dateObj)
-    monday.setDate(dateObj.getDate() + mondayOffset)
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayDow = today.getDay()
-    const mondayOfThisWeek = new Date(today)
-    mondayOfThisWeek.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1))
-    mondayOfThisWeek.setHours(0, 0, 0, 0)
-    const sundayOfClickedWeek = new Date(monday)
-    sundayOfClickedWeek.setDate(monday.getDate() + 6)
-    if (sundayOfClickedWeek < mondayOfThisWeek) {
-      showNotificationFn('Semaine passée', 'Tu ne peux pas sélectionner une semaine entièrement passée.', 'warning')
-      return
-    }
-
-    const weekDates = []
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(monday)
-      d.setDate(monday.getDate() + i)
-      weekDates.push(toLocalISODate(d))
-    }
-
-    setSelectedDates(prev => {
-      const alreadySelected = weekDates.filter(d => prev.includes(d)).length > weekDates.length / 2
-      let newDates
-      if (alreadySelected) {
-        newDates = prev.filter(d => !weekDates.includes(d))
-      } else {
-        newDates = [...prev, ...weekDates.filter(d => !prev.includes(d))]
-      }
-      return newDates.sort()
-    })
-  }
-
-  useEffect(() => {
-    if (calendarMode === 'editing' && cycleAnchorDate && rhythmPattern && rhythmStartDate && rhythmEndDate) {
-      generateRhythmDatesFromAnchor()
-    }
-  }, [calendarMode, cycleAnchorDate])
-
-  function generateRhythmDatesFromAnchor() {
-    if (!rhythmPattern || !rhythmStartDate || !rhythmEndDate || !cycleAnchorDate) return
-    const start = parseDate(rhythmStartDate)
-    const end = parseDate(rhythmEndDate)
-    if (!start || !end) return
-
-    const [workWeeks, schoolWeeks] = rhythmPattern.split('-').map(Number)
-    const cycleLength = workWeeks + schoolWeeks
-    const cycleStart = new Date(cycleAnchorDate + 'T00:00:00')
-    const startDow = start.getDay()
-    const mondayOfStart = new Date(start)
-    const mondayOffset = startDow === 0 ? -6 : 1 - startDow
-    mondayOfStart.setDate(start.getDate() + mondayOffset)
-    mondayOfStart.setHours(0, 0, 0, 0)
-
-    const diffMs = mondayOfStart.getTime() - cycleStart.getTime()
-    const diffWeeks = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000))
-    const cycleOffset = ((diffWeeks % cycleLength) + cycleLength) % cycleLength
-
-    const newDates = []
-    let weekIndex = 0
-    let weekMonday = new Date(mondayOfStart)
-    while (weekMonday <= end) {
-      const posInCycle = (weekIndex + cycleOffset) % cycleLength
-      const isWorkWeek = posInCycle < workWeeks
-      for (let d = 0; d < 7; d++) {
-        const currentDate = new Date(weekMonday.getFullYear(), weekMonday.getMonth(), weekMonday.getDate() + d)
-        if (currentDate > end) break
-        if (isWorkWeek && currentDate >= start) newDates.push(toLocalISODate(currentDate))
-      }
-      weekMonday = new Date(weekMonday.getFullYear(), weekMonday.getMonth(), weekMonday.getDate() + 7)
-      weekIndex++
-    }
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayDow = today.getDay()
-    const mondayOfThisWeek = new Date(today)
-    mondayOfThisWeek.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1))
-    const mondayThisWeekStr = toLocalISODate(mondayOfThisWeek)
-
-    const filtered = newDates.filter(d => d >= mondayThisWeekStr).sort()
-    setSelectedDates(filtered)
-
-    showNotificationFn('Calendrier généré', `${filtered.length} jours sélectionnés. Clique sur les jours pour ajuster.`, 'success')
-  }
-
-  function handleGenerateClick() {
-    if (rhythmType === 'custom') {
-      if (!rhythmStartDate || !rhythmEndDate) {
-        showNotificationFn('Dates manquantes', 'Remplis d\'abord les dates de ton bail.', 'warning')
-        return
-      }
-      setSelectedDates([])
-      setCalendarMode('editing')
-      setShowEditCalendar(true)
-    }
-  }
-
-  function enterCycleSelectionMode() {
-    if (!rhythmStartDate || !rhythmEndDate) {
-      showNotificationFn('Dates manquantes', 'Remplis d\'abord les dates de ton bail ci-dessus.', 'warning')
-      return
-    }
-    setCalendarMode('cycle_selection')
-    setCycleAnchorDate(null)
-    setSelectedDates([])
-    setCycleStartDate('')
-    const now = new Date()
-    setStartMonthIndex(now.getMonth())
-    setStartYear(now.getFullYear())
-    setShowEditCalendar(true)
-  }
-
-  function resetToCycleSelection() {
-    setCalendarMode('cycle_selection')
-    setCycleAnchorDate(null)
-    setSelectedDates([])
-    setCycleStartDate('')
-  }
-
   function clearAllDates() {
     if (confirm('Effacer toutes les dates sélectionnées ?')) {
       setSelectedDates([])
@@ -1254,7 +1079,6 @@ export default function ModifierAnnoncePage() {
     const bailEnd = new Date(start)
     bailEnd.setMonth(bailEnd.getMonth() + dureeMois)
     setBailEndDate(formatDateForInput(bailEnd))
-    processRhythmDates(start, bailEnd)
   }
 
   function handleBailFromDates() {
@@ -1265,65 +1089,6 @@ export default function ModifierAnnoncePage() {
     const diffMonths = Math.round((end - start) / (1000 * 60 * 60 * 24 * 30.44))
     const closestOption = [3, 6, 9, 10, 12, 24].reduce((prev, curr) => Math.abs(curr - diffMonths) < Math.abs(prev - diffMonths) ? curr : prev)
     if (Math.abs(closestOption - diffMonths) <= 1) setBailDuree(String(closestOption))
-    processRhythmDates(start, end)
-  }
-
-  function processRhythmDates(start, bailEnd) {
-    const endDate = new Date(bailEnd)
-    const endDayOfWeek = endDate.getDay()
-
-    if (dimancheChoixFaitRef.current && rhythmStartDate && rhythmEndDate) {
-      finalizeBailDates(start, parseDate(rhythmEndDate))
-      return
-    }
-
-    if (endDayOfWeek !== 0) {
-      const dimPrec = new Date(endDate)
-      dimPrec.setDate(endDate.getDate() - endDayOfWeek)
-      const dimSuiv = new Date(endDate)
-      dimSuiv.setDate(endDate.getDate() + (7 - endDayOfWeek))
-
-      setDimancheData({
-        jour: joursNoms[endDayOfWeek],
-        precedent: dimPrec,
-        suivant: dimSuiv,
-        bailStart: start,
-        bailEnd: bailEnd
-      })
-      setShowDimancheModal(true)
-    } else {
-      finalizeBailDates(start, bailEnd)
-      showNotificationFn('Parfait !', 'Ton bail se termine un dimanche.', 'success')
-    }
-  }
-
-  function choisirDimanche(choix) {
-    const dimancheChoisi = choix === 'precedent' ? dimancheData.precedent : dimancheData.suivant
-    if (!dimancheChoisi) return
-    setShowDimancheModal(false)
-    dimancheChoixFaitRef.current = true
-    finalizeBailDates(dimancheData.bailStart, dimancheChoisi)
-    setBailEndDate(formatDateForInput(dimancheChoisi))
-  }
-
-  function finalizeBailDates(bailStart, bailEnd) {
-    let rhythmStart = new Date(bailStart)
-    const startDow = rhythmStart.getDay()
-    if (startDow !== 1) {
-      const daysToMonday = startDow === 0 ? 1 : (8 - startDow)
-      rhythmStart.setDate(rhythmStart.getDate() + daysToMonday)
-    }
-    const rhythmEnd = new Date(bailEnd)
-    if (rhythmEnd <= rhythmStart) {
-      showNotificationFn('Durée insuffisante', 'Il ne reste pas assez de temps pour au moins une semaine.', 'warning')
-      return
-    }
-    setRhythmStartDate(formatDateForInput(rhythmStart))
-    setRhythmEndDate(formatDateForInput(rhythmEnd))
-
-    if (rhythmPattern) {
-      setTimeout(() => enterCycleSelectionMode(), 200)
-    }
   }
 
   // ==========================================
@@ -1529,7 +1294,7 @@ export default function ModifierAnnoncePage() {
       let bailInfo = null
       if (userType === 'locataire') {
         const startParsed = parseDate(bailStartDate)
-        const endParsed = parseDate(bailEndDate) || parseDate(rhythmEndDate)
+        const endParsed = parseDate(bailEndDate)
         const dureeMois = bailDuree ? parseInt(bailDuree) : null
         bailInfo = {
           date_debut: startParsed ? toLocalISODate(startParsed) : null,
@@ -1551,8 +1316,6 @@ export default function ModifierAnnoncePage() {
         equipements: equips, regles, charges_info: chargesInfo, bail_info: bailInfo,
         disponibilites_debut: selectedDates.length > 0 ? selectedDates[0] : null,
         disponibilites_pattern: selectedDates.length > 0 ? selectedDates : null,
-        type_alternance: rhythmType || null,
-        rythme_pattern: rhythmPattern || null,
         adresse_verifiee: addressVerified,
         latitude: verifiedCoordinates ? verifiedCoordinates[1] : null,
         longitude: verifiedCoordinates ? verifiedCoordinates[0] : null,
@@ -1608,85 +1371,6 @@ export default function ModifierAnnoncePage() {
     }
   }
 
-  // ==========================================
-  // CALENDAR RENDERING
-  // ==========================================
-
-  function renderMonthGrid(monthIndex, year) {
-    const firstDay = new Date(year, monthIndex, 1)
-    let startingDay = firstDay.getDay()
-    startingDay = startingDay === 0 ? 6 : startingDay - 1
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    const emptyCells = Array.from({ length: startingDay }, (_, i) => (
-      <div key={`empty-${i}`} className="day-cell empty" />
-    ))
-
-    const dayCells = Array.from({ length: daysInMonth }, (_, i) => {
-      const day = i + 1
-      const dayDate = new Date(year, monthIndex, day)
-      dayDate.setHours(0, 0, 0, 0)
-      const dateStr = toLocalISODate(dayDate)
-      const isPast = dayDate < today
-      const isSelected = selectedDates.includes(dateStr)
-
-      let className = 'day-cell available'
-      if (isPast) className += ' past'
-      if (isSelected) className += ' selected'
-
-      return (
-        <div
-          key={day}
-          className={className}
-          data-date={dateStr}
-          onClick={() => selectDate(dateStr, dayDate)}
-          onMouseEnter={() => {
-            if (calendarMode === 'cycle_selection') {
-              const cells = getWeekCells(dateStr, dayDate)
-              cells.forEach(c => { const el = document.querySelector(`[data-date="${c}"]`); if (el) el.classList.add('week-hover') })
-            }
-          }}
-          onMouseLeave={() => {
-            if (calendarMode === 'cycle_selection') {
-              const cells = getWeekCells(dateStr, dayDate)
-              cells.forEach(c => { const el = document.querySelector(`[data-date="${c}"]`); if (el) el.classList.remove('week-hover') })
-            }
-          }}
-        >
-          {day}
-        </div>
-      )
-    })
-
-    return (
-      <div key={`month-${monthIndex}-${year}`} className="calendar-month">
-        <div className="month-header">{monthNames[monthIndex]} {year}</div>
-        <div className="weekdays">{dayNames.map((d, i) => <div key={i} className="weekday">{d}</div>)}</div>
-        <div className="days-grid">{emptyCells}{dayCells}</div>
-      </div>
-    )
-  }
-
-  function getWeekCells(dateStr, dateObj) {
-    const dayOfWeek = dateObj.getDay()
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-    const monday = new Date(dateObj)
-    monday.setDate(dateObj.getDate() + mondayOffset)
-    const cells = []
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(monday)
-      d.setDate(monday.getDate() + i)
-      cells.push(toLocalISODate(d))
-    }
-    return cells
-  }
-
-  const endMonthIdx = (startMonthIndex + 2) % 12
-  const endYr = startYear + Math.floor((startMonthIndex + 2) / 12)
-  const calendarPeriodText = `${monthNames[startMonthIndex]} - ${monthNames[endMonthIdx]} ${endYr}`
-
   const nbSemaines = getSelectedWeeksCount()
   let summaryDebut = '-', summaryFin = '-', summaryDebutJour = '', summaryFinJour = ''
   if (selectedDates.length > 0) {
@@ -1716,33 +1400,6 @@ export default function ModifierAnnoncePage() {
   let recapPeriode = '\u2014'
   if (selectedDates.length > 0) {
     recapPeriode = `${summaryDebut} \u2192 ${summaryFin}`
-  }
-
-  function getRhythmOptions() {
-    if (rhythmType === 'symmetric') {
-      return [
-        { value: '1-1', label: '1 semaine / 1 semaine' },
-        { value: '2-2', label: '2 semaines / 2 semaines' },
-        { value: '3-3', label: '3 semaines / 3 semaines' },
-        { value: '4-4', label: '4 semaines / 4 semaines' },
-        { value: '5-5', label: '5 semaines / 5 semaines' },
-        { value: '6-6', label: '6 semaines / 6 semaines' },
-        { value: '8-8', label: '8 semaines / 8 semaines' }
-      ]
-    }
-    if (rhythmType === 'asymmetric') {
-      return [
-        { value: '2-1', label: '2 sem. entreprise / 1 sem. école' },
-        { value: '1-2', label: '1 sem. entreprise / 2 sem. école' },
-        { value: '3-1', label: '3 sem. entreprise / 1 sem. école' },
-        { value: '1-3', label: '1 sem. entreprise / 3 sem. école' },
-        { value: '4-2', label: '4 sem. entreprise / 2 sem. école' },
-        { value: '2-4', label: '2 sem. entreprise / 4 sem. école' },
-        { value: '3-2', label: '3 sem. entreprise / 2 sem. école' },
-        { value: '2-3', label: '2 sem. entreprise / 3 sem. école' }
-      ]
-    }
-    return []
   }
 
   function handleDateInput(value, setter) {
@@ -2059,46 +1716,18 @@ export default function ModifierAnnoncePage() {
             </div>
             <div className="form-group">
               <label>Date de fin du bail <span className="required">*</span></label>
-              <input type="text" value={bailEndDate} onChange={e => { handleDateInput(e.target.value, setBailEndDate); dimancheChoixFaitRef.current = false }} onBlur={handleBailFromDates} placeholder="JJ/MM/AAAA" style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px' }} />
+              <input type="text" value={bailEndDate} onChange={e => handleDateInput(e.target.value, setBailEndDate)} onBlur={handleBailFromDates} placeholder="JJ/MM/AAAA" style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px' }} />
               <div className="input-hint">Dernier jour de ton bail</div>
             </div>
           </div>
 
           <div className="form-group" style={{ marginBottom: '24px' }}>
             <label>Durée prédéfinie</label>
-            <select value={bailDuree} onChange={e => { setBailDuree(e.target.value); dimancheChoixFaitRef.current = false; setTimeout(handleBailEndDateCalc, 0) }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
+            <select value={bailDuree} onChange={e => { setBailDuree(e.target.value); setTimeout(handleBailEndDateCalc, 0) }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
               <option value="" disabled>Choisis la durée de ton bail</option>
               {[3, 6, 9, 10, 12, 24].map(d => <option key={d} value={d}>{d} mois{d === 9 ? ' (année scolaire)' : d === 12 ? ' (1 an)' : d === 24 ? ' (2 ans)' : ''}</option>)}
             </select>
           </div>
-
-          <div style={{ borderTop: '1.5px solid #E8EAF0', margin: '32px 0' }} />
-
-          <div style={{ marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#1F2937', marginBottom: '24px' }}>Quel est ton rythme d'alternance ?</h3>
-            <div className="form-group" style={{ marginBottom: '20px' }}>
-              <label>Type d'alternance</label>
-              <select value={rhythmType} onChange={e => { setRhythmType(e.target.value); setRhythmPattern(''); setShowEditCalendar(false); setCalendarMode('idle'); setSelectedDates([]) }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
-                <option value="" disabled>Choisis ton type</option>
-                <option value="symmetric">Symétrique (même durée)</option>
-                <option value="asymmetric">Asymétrique (durées différentes)</option>
-                <option value="custom">Personnalisé (sélection manuelle)</option>
-              </select>
-            </div>
-            {(rhythmType === 'symmetric' || rhythmType === 'asymmetric') && (
-              <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label>Rythme</label>
-                <select value={rhythmPattern} onChange={e => { setRhythmPattern(e.target.value); if (e.target.value) enterCycleSelectionMode() }} style={{ width: '100%', padding: '14px 16px', border: '1.5px solid #E8EAF0', borderRadius: '12px', fontSize: '15px', background: 'white' }}>
-                  <option value="" disabled>Choisis la durée</option>
-                  {getRhythmOptions().map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
-            )}
-          </div>
-
-          {rhythmType === 'custom' && (
-            <button className="btn btn-primary" onClick={handleGenerateClick} style={{ width: '100%', marginBottom: '24px' }}>Générer mon calendrier</button>
-          )}
 
           {showEditCalendar && (
             <div className="calendar-container">
@@ -2338,30 +1967,6 @@ export default function ModifierAnnoncePage() {
             <div className="modal-confirm-actions">
               <button className="modal-btn-cancel" onClick={closeConfirmationModal}>Annuler</button>
               <button className="modal-btn-publish" onClick={enregistrerModifications}>Enregistrer les modifications</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DIMANCHE CHOICE MODAL */}
-      {showDimancheModal && (
-        <div className="custom-notification show" style={{ zIndex: 10000 }}>
-          <div className="notification-content" style={{ maxWidth: '440px' }}>
-            <div className="notification-icon" style={{ background: '#FFF4ED', color: '#E8622A' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-            </div>
-            <div className="notification-title">Ton bail se termine en milieu de semaine</div>
-            <div className="notification-message" style={{ marginBottom: '16px' }}>
-              Sur STERNY, les réservations fonctionnent à la semaine. Ton bail se termine un <strong style={{ color: '#1E293B' }}>{dimancheData.jour}</strong>.
-            </div>
-            <div style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 500, marginBottom: '16px' }}>Que préfères-tu ?</div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => choisirDimanche('precedent')} style={{ flex: 1, padding: '16px 12px', border: '1.5px solid #E8EAF0', borderRadius: '12px', background: 'white', color: '#1E293B', fontWeight: 600, fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Dimanche précédent<br /><span style={{ fontWeight: 500, fontSize: '13px', color: '#E8622A', display: 'block', marginTop: '4px' }}>{dimancheData.precedent ? formatDateForInput(dimancheData.precedent) : '-'}</span>
-              </button>
-              <button onClick={() => choisirDimanche('suivant')} style={{ flex: 1, padding: '16px 12px', border: '1.5px solid #E8EAF0', borderRadius: '12px', background: 'white', color: '#1E293B', fontWeight: 600, fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Dimanche suivant<br /><span style={{ fontWeight: 500, fontSize: '13px', color: '#E8622A', display: 'block', marginTop: '4px' }}>{dimancheData.suivant ? formatDateForInput(dimancheData.suivant) : '-'}</span>
-              </button>
             </div>
           </div>
         </div>
