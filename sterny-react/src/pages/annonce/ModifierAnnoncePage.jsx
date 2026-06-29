@@ -2314,7 +2314,7 @@ export default function ModifierAnnoncePage() {
 
       {/* CONFIRMATION MODAL */}
       {showConfirmModal && (
-        <div className="modal-overlay">
+        <div className="ma-confirm-overlay">
           <div className="modal-content-confirm">
             <div className="modal-confirm-title">Confirmer les modifications ?</div>
             <p className="modal-confirm-subtitle">Les modifications seront immédiatement visibles sur ton annonce.</p>

@@ -1076,7 +1076,7 @@ input[type="number"] {
 }
 
 /* MODAL */
-.modal-overlay {
+.ma-confirm-overlay {
     position: fixed;
     top: 0;
     left: 0;
