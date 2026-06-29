@@ -419,7 +419,7 @@ export default function ModifierAnnoncePage() {
   useEffect(() => {
     if (!user) return
     checkUserAndLoadAnnonce()
-  }, [user])
+  }, [user?.id])
 
   async function checkUserAndLoadAnnonce() {
     try {
