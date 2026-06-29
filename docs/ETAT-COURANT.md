@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-29 (conv 95) — 6c-①a + ①b-1 faits (build vert, NON commités) ; DETTE #120 (save gèle = bug PRÉ-EXISTANT hors 6c, ①b-1 innocenté) ; reste 6c-①b-2.
+**Dernière mise à jour** : 2026-06-29 (conv 97) — DETTE #120 (save gèle) DIAGNOSTIQUÉE et RÉSOLUE côté ModifierAnnoncePage : boucle de re-rendu (dep useEffect [user] instable, entretenue par refresh token). Fix [user?.id] validé runtime, commité à part (fix:). 6c-① toujours non commité. Ouvertures : #121 (racine useAuth), #122 (agentation casse modale + risque prod PasswordGate).
 
 ---
 
@@ -24,6 +24,32 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## 2026-06-29 (conv 97) — DETTE #120 diagnostiquée (lecture seule + runtime) et RÉSOLUE côté page ; fix commité à part ; modale + useAuth + agentation ouverts en dette
+VERROU #120 LEVÉ. Session dédiée diagnostic, méthode lecture seule puis mesures runtime, sans présumer.
+CAUSE RACINE PROUVÉE : boucle de re-rendu / requêtes infinie. useEffect de chargement de ModifierAnnoncePage dépendait de l'OBJET `user` ; useAuth recrée `user` (= session.user, nouvelle réf) à chaque event auth ; autoRefreshToken → refresh token en boucle → 4000+ requêtes sans interaction, page gelée, save inopérant.
+FIX : dep [user] → [user?.id] (l.~407, chaîne stable). Validé sûr par audit (user lu seulement via véracité + .id). Validé runtime : console [6a]=0 sur fenêtre propre, plus de rafale token, page fluide.
+COMMIT : fix isolé du travail 6c-① (même fichier) via extraction de hunk (git apply --cached, add -p étant interactif/non supporté), message fix: dédié (8521ca9). 6c-① reste NON commité (non validé runtime de bout en bout).
+PIÈGES de diagnostic notés (DETTE #120) : compteur Network cumulé (Preserve log) trompeur → mesurer le débit sur fenêtre vidée ; HMR Vite ne réapplique pas un changement de deps useEffect → redémarrer npm run dev.
+RESTE OUVERT (3 sujets distincts, NON traités) :
+- DETTE #121 racine useAuth (fragilité globale, tout useEffect([user])) → session dédiée, fichier central.
+- DETTE #122 agentation : casse le rendu de la modale de confirmation du save en dev (erreur Failed to fetch dans un effet React → modale jamais peinte ; code modale CORRECT par ailleurs) + montée SANS garde DEV dans PasswordGate.jsx (risque prod) → PRIORITAIRE avant de reprendre le test du save.
+- Test du vrai SAVE jamais mené jusqu'au bout : bloqué d'abord par #120, puis par #122 (modale invisible). + gate identité (compte de test non_verifiee) à composer pour tester une écriture réelle.
+PROCHAINE SESSION : (1) #122 agentation (débloquer la modale + sécuriser PasswordGate) ; (2) tester le save ; (3) reprendre 6c-② (step 0 Bail). 6c-① toujours dans le working tree, non commité.
+
+## 2026-06-29 (conv 96) — 6c-①b-2 : retrait en bloc du moteur de cycle mort TERMINÉ (build + rendu validés, NON commité)
+ÉTAT CODE : ModifierAnnoncePage.jsx contient ①a + ①b-1 + ①b-2 dans le working tree (NON commité, conforme règle « pas de commit non validé runtime » + gel #120). Backups hors-git frais : ~/sterny-backups/ModifierAnnoncePage.jsx.bak-6c1b2-{G1,G2,G3}-<timestamp>. Branche feat/unification-inscription, e1706b4 en tête (clôture conv 95), ahead de 1 (non poussé). main intacte.
+FAIT cette session — 6c-①b-2 en 3 groupes, build vert entre chaque :
+- G1 : retrait des CORPS morts — 12 fonctions (processRhythmDates, finalizeBailDates, choisirDimanche, generateRhythmDatesFromAnchor, enterCycleSelectionMode, handleGenerateClick, getRhythmOptions, selectDate, getWeekCells, renderMonthGrid, shiftMonths, resetToCycleSelection) + useEffect de cycle (deps [calendarMode, cycleAnchorDate]) + bloc const endMonthIdx/endYr/calendarPeriodText. 3 fonctions VIVANTES intercalées préservées (clearAllDates, handleBailEndDateCalc, handleBailFromDates).
+- G2 : retrait des 5 ÉCRITURES de réhydratation alimentant des states morts — bloc rhythmStart/EndDate (ancien if bail.date_debut && bail.date_fin) + bloc startMonthIndex/startYear + setCalendarMode('editing'). PRÉSERVÉS : setBailStartDate/EndDate/Duree, setSelectedDates, ouvertureDispoRef (Réinitialiser), setShowEditCalendar (affichage planche).
+- G3 : retrait des 12 déclarations de states morts + 2 constantes orphelines (monthNames, dayNames, dont les seuls lecteurs renderMonthGrid/calendarPeriodText sont partis en G1).
+→ ~398 lignes de code mort retirées au total. Moteur de cycle entièrement disparu.
+PREUVE DE MORT : verrou G1 re-prouvé (grep -nw des 12 fonctions = vide → zéro référence fantôme). Vérif prioritaire rhythmStartDate/rhythmEndDate : aucun lecteur vivant hors cluster (seules occurrences hors cluster = déclarations + setters de réhydratation, jamais une lecture). Condition d'arrêt NON déclenchée.
+VALIDÉ : npm run build vert à G1/G2/G3 + smoke-test navigateur (come.fourel@rennes.archi.fr, annonce id aaaa…, étape Disponibilités) : planche affichée (cal. 2025-2026, 6 semaines cochées), dates de bail intactes, Réinitialiser présent, sélecteur de rythme + modale Dimanche disparus. Aucune erreur console imputable à 6c-①b-2 (seuls bruits pré-existants : toolbar agentation localhost:4747 #120, modèle TensorFlow QUIC).
+NON validé au SAVE : gel #120 (pré-existant, hors 6c) toujours là → commit du code annonce reste gelé.
+ÉCART DE PÉRIMÈTRE ASSUMÉ : retrait de monthNames/dayNames non listé au plan conv 94 (qui ne citait que « ~13 fonctions + states »). Justifié : dernières miettes du même cluster mort, preuve de mort faite. Aucune autre extension.
+RESTE 6c : ①b-2 fini → 6c-② (step 0 « Bail » : déplacer import + dates hors step 4, recopier 20 classes ca-bail-*, recâbler stepper 1..5→0..5, déplacer checks validateStep dates bail vers step 0, corriger seuil planche ≥1 = DETTE #119) ; puis 6c-③ (retrait bypass DEV #117 + validation complète des champs + commit feat + push + MAJ docs).
+VERROU PERSISTANT : DETTE #120 (save gèle) = à diagnostiquer en session dédiée, lecture seule. Reste le verrou avant tout commit du code annonce.
 
 ## 2026-06-29 (conv 95) — 6c-① : ①a (coupe JSX) + ①b-1 (débranchement coutures) FAITS, build vert, NON commités ; bug de save #120 découvert (pré-existant, hors 6c)
 ÉTAT CODE : ModifierAnnoncePage.jsx contient ①a + ①b-1 dans le working tree (NON commité, conforme règle « pas de commit non validé runtime »). Backups hors-git frais : ~/sterny-backups/ModifierAnnoncePage.jsx.bak-* (états ①a, ①b-1, AVANT-STASH). Branche feat/unification-inscription, e05ef2a en tête de remote.
