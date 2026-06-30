@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-30 (conv 99) — #123 RESOLU (collision classe CSS globale .modal-overlay vs #86 ; fix a3c1761 = .ma-confirm-overlay scopee). #120 confirme (le "gel chargement" conv 98 = artefact bundle Vite perime). 6c-① commite (b8f47dc).
+**Dernière mise à jour** : 2026-06-30 (conv 100) — Ajout #125 (divergence bail_info Creer/Modifier, contractuel, BLOQUE 6c-② sous-pas 3), #126 (extraction PDF Modifier en retard), #127 (helpers bail dupliqués non-DRY).
 
 ## Nomenclature des bugs
 
@@ -1378,3 +1378,27 @@ VALIDE RUNTIME : clic Enregistrer → modale affichee centree avec recap, consol
 ## DETTE #124 — PASSWORD_HASH en dur dans le front (PasswordGate.jsx)
 **Statut : OUVERTE (constat conv 98, 29 juin 2026). Sécurité, hors chantier annonce. À examiner séparément.**
 CONSTAT : PasswordGate.jsx contient une constante PASSWORD_HASH (hash SHA-256) en dur (~l.6). Un hash dans le bundle front est visible par quiconque inspecte le code livré ; selon l'usage (gate landing de pré-prod), le risque est limité mais réel. À arbitrer : déplacer la vérification côté serveur, ou accepter le risque pour une simple gate temporaire. PRUDENCE : ne rien changer sans cadrer l'usage exact de la gate.
+
+## DETTE #125 — Divergence bail_info Créer vs Modifier (dates de bail écrites en base) — contractuel, arbitrage produit requis
+**Statut : OUVERTE (constat audit parité conv 100, 30 juin 2026). BLOQUE le sous-pas 3 de 6c-② (déplacement des inputs dates). Touche au contractuel → prudence bail, avis professionnel logement avant de trancher.**
+CONSTAT (audit parité lecture seule, chaîne 3) : pour une même annonce d'alternant, l'objet bail_info écrit en base DIFFÈRE selon la page qui l'écrit.
+- CreerAnnoncePage (l.~1448) force date_debut=null, date_fin=null, duree_mois=null (commentaire « marqueur annonce d'alternant »). Conforme à VISION §145 : les dates de bail se figent à la SIGNATURE, pas à la création — bail_info n'est qu'un marqueur de type.
+- ModifierAnnoncePage (l.~1294) écrit les VRAIES dates saisies (date_debut/date_fin en ISO via toLocalISODate, duree_mois nombre).
+Mêmes 5 clés des 2 côtés (date_debut, date_fin, duree_mois, nb_semaines_presence, prix_total_sejour), même format quand non-null. L'écart n'est PAS un bug de format mais une INCOHÉRENCE DE COMPORTEMENT : Modifier écrit ce que Creer s'interdit d'écrire.
+ENJEU 6c-② : déplacer/pérenniser les inputs de dates manuels au step 0 de Modifier (option a) perpétue cette divergence et contredit potentiellement §145. L'option b (step 0 = upload seul, miroir Creer) serait cohérente avec « dates à la signature » mais retire la saisie manuelle.
+À TRANCHER (décision produit, pas de dev) : la modification d'une annonce a-t-elle le droit de fixer des dates de bail en base, ou doit-elle s'aligner sur Creer (null) ? Dates de bail = date d'effet + durée d'engagement = contractuel. NE PAS présumer ; avis professionnel logement recommandé avant de pérenniser un comportement.
+LIENS : VISION §145, DETTE #118 (validation données extraites / Cap B), DETTE #119 (seuil planche).
+
+## DETTE #126 — Extraction PDF du bail dans Modifier en retard sur Creer (robustesse)
+**Statut : OUVERTE (constat audit parité conv 100, 30 juin 2026). Hors périmètre 6c-②.**
+CONSTAT (chaîne 1) : extraction 100% client (pdf.js) des 2 côtés, mais Modifier plus pauvre/ancienne que Creer :
+- WORKER pdf.js : Modifier = CDN avec version EN DUR (cdnjs … pdf.js/3.11.174/pdf.worker.min.js) ; Creer = bundle LOCAL Vite (import 'pdfjs-dist/build/pdf.worker.min.mjs?url', versionné avec le package). → risque mismatch worker/lib + dépendance réseau.
+- ROBUSTESSE : Creer cape à 10 pages + timeout 8s/page + try/catch par page + logs ; Modifier boucle sur TOUTES les pages, sans cap/timeout/try-catch → peut bloquer sur gros PDF.
+- RICHESSE : Creer extrait aussi dpe + propertyInfo (et pré-remplit) ; Modifier non.
+Parsing des DATES (toLocalISODate, parseDate, findDatesInText) IDENTIQUE des 2 côtés → format des dates cohérent. L'écart porte sur robustesse/richesse, pas le format.
+À FAIRE (chantier séparé) : aligner l'extraction de Modifier sur Creer (worker local, cap, timeout). Lié #127.
+
+## DETTE #127 — Helpers bail/date dupliqués entre Creer et Modifier (non-DRY)
+**Statut : OUVERTE (constat audit parité conv 100, 30 juin 2026). Hors périmètre 6c-②.**
+CONSTAT (chaîne 4) : toLocalISODate, parseDate, findDatesInText, verifierDocumentBail définis LOCALEMENT (copiés-collés) dans CreerAnnoncePage ET ModifierAnnoncePage — aucun util commun (seul import partagé = utils/addressVerification, hors bail). IDENTIQUES aujourd'hui (diff ligne à ligne) mais duplication = risque de divergence silencieuse future.
+À FAIRE (chantier séparé) : extraire dans un util commun (ex. utils/bailParsing.js). Coordonner avec #126 (même zone). Prudence : CreerAnnoncePage est never-stage (bypass DEV) → l'extraction touchera ce fichier, à cadrer.

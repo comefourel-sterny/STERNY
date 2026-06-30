@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-30 (conv 99) — Verrou #123 LEVÉ (modale de save masquee par collision CSS globale .modal-overlay vs #86, pas une boucle). Fix a3c1761 (.ma-confirm-overlay scopee) + 6c-① commite (b8f47dc). #120 confirme. Branche ahead de 2, non poussee.
+**Dernière mise à jour** : 2026-06-30 (conv 100) — 6c-② avancé jusqu'à 2a (mécanique step 0 « Bail », commité feat) ; sous-pas 3 GELÉ sur arbitrage contractuel §145 (DETTE #125, écart bail_info Creer↔Modifier). Dettes #126/#127 ouvertes.
 
 ---
 
@@ -24,6 +24,19 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## 2026-06-30 (conv 100) — 6c-② avancé jusqu'à 2a (mécanique step 0 « Bail »), sous-pas 3 GELÉ sur arbitrage contractuel §145 (#125)
+FAIT & VALIDÉ RUNTIME, COMMITÉ (feat) : demi-pas 1 (CSS) + sous-pas 2a (mécanique stepper).
+- Demi-pas 1 : 13 classes .ma-bail-* ajoutées à ModifierAnnoncePage.css (reprises de CreerAnnoncePage.css, préfixe scopé ca-→ma- anti-collision #86/#123). ORPHELINES à ce stade (aucun JSX ne les utilise) — volontaire.
+- Sous-pas 2a : stepper [1..5]→[0..5], step 0 « Bail » placeholder (en-tête + nav), totalSteps 5→6 (x2), progressGridCols repeat(6,1fr), getProgressWidth recalculé pour [0..5] (stepPosition=currentStep), prevStep borne quitter currentStep===0, num affiché index+1 (1..6). Validé écran : barre 6 cases (Bail·1 … Prix·6), démarrage sur Informations (useState(1) conservé = voulu, page d'ÉDITION), navigation 0↔5 fluide, une seule section affichée, barre orange correcte, console calme.
+NON TOUCHÉ : bloc bail (reste step 4), validateStep, seuil planche #119, bypass DEV #117, useState(currentStep), pastilles section-number (sous-pas 2b non fait).
+ARBITRAGES ACTÉS : (1) step 0 = option (a) upload + dates manuelles (PAS option b) — 6c = Cap A, on range sans changer le modèle ; (2) démarrage sur Informations, pas Bail (édition ≠ création) ; (3) numéro affiché 1..6 via index+1 ; (4) déplacement à l'identique sans conversion .ma-bail-* (style = passe ultérieur, après lecture validée du rendu Creer).
+BLOCAGE → 6c-② SUSPENDU au sous-pas 3 : l'audit de parité bail Creer↔Modifier a trouvé un ÉCART CRITIQUE de comportement en base (DETTE #125) : Creer force les dates bail à null (§145, marqueur), Modifier écrit les vraies dates. Déplacer/pérenniser les inputs dates au step 0 graverait un comportement contredisant peut-être §145. Sujet CONTRACTUEL (date d'effet, durée d'engagement) → ne pas trancher seul, avis professionnel logement recommandé.
+RESTE de 6c-② (après arbitrage #125) : sous-pas 2b (renuméroter pastilles section-number 1..6) ; 3a/3b (déplacer bail vers step 0 + retitrer step 4 « Disponibilités ») ; sous-pas 4 (validateStep : déplacer checks dates step 4→step 0 + fix #119 <7→<1, vérifiable seulement après retrait bypass #117 en 6c-③).
+DETTES OUVERTES cette session : #125 (bail_info, contractuel, BLOQUANT) ; #126 (extraction PDF Modifier en retard) ; #127 (helpers dupliqués).
+CORRECTION note mémoire : « annonce d'alternant via présence de bail_info à la l.~424 » est PÉRIMÉE — depuis l'alignement charte conv 86, detectedType est forcé à 'locataire' (l.448), indépendamment de bail_info. bail_info ne sert qu'à réhydrater (l.549) et sauver (l.1316) les dates.
+PROCHAINE SESSION : trancher §145/#125 à froid (décision produit, éventuel avis pro) AVANT le sous-pas 3. En attente, le sous-pas 2b (cosmétique, sans risque contractuel) est faisable.
+COMMITS conv 100 (branche feat/unification-inscription) : 1 feat (demi-pas 1 + 2a) + 1 docs. Vérifier git log en début de session suivante.
 
 ## 2026-06-30 (conv 99) — Verrou #123 LEVÉ : modale de save = collision CSS globale (pas une boucle) ; 6c-① + fix #123 commités
 CAUSE TROUVÉE APRÈS 2 JOURS : le gel "au save" n'etait ni agentation (#122, innocente conv 98) ni une boucle de re-rendu. La modale de confirmation utilisait la classe globale .modal-overlay, masquee par .modal-overlay{display:none} de ContratLocationPage.css (#86) → modale rendue mais invisible + scroll bloque (overflow:hidden). Methode : 4 audits LECTURE SEULE successifs (effets/deps, checkUserAndLoadAnnonce, chemin save, CSS) — aucun moteur de boucle interne au fichier → pivot vers la piste CSS.
