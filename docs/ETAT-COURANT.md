@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-30 (conv 101) — Refonte ModifierAnnoncePage (6c) MISE EN PAUSE volontaire (dérive vers le bail : conservation/preuve, dépend de réponses pro). #125 tranché à froid (décision produit, pas de code) : bail_info = bail principal de l'hôte, pas la sous-location → aucune tension §145. Nouveau chantier acté (repoussé) : stockage + preuve d'intégrité du bail.
+**Dernière mise à jour** : 2026-06-30 (conv 102) — Refonte ModifierAnnoncePage (6c) MISE EN PAUSE volontaire (dérive vers le bail : conservation/preuve, dépend de réponses pro). #125 tranché à froid (décision produit, pas de code) : bail_info = bail principal de l'hôte, pas la sous-location → aucune tension §145. Nouveau chantier acté (repoussé) : stockage + preuve d'intégrité du bail.
 
 ---
 
