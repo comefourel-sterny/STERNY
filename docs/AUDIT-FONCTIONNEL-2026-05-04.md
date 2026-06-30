@@ -2,6 +2,8 @@
 
 **Statut** : Phase 1 (audit code statique) rédigée par Claude Code le 30 avril 2026 après-midi. Phase 2 (audit fonctionnel manuel) à remplir par Côme du 1er au 3 mai 2026.
 
+> ⚠️ **PARTIELLEMENT PÉRIMÉ — revu le 2026-06-30 (conv 103).** Cet audit date du 30/04→03/05 (HEAD 03eec77, ~2 mois). Le tunnel inscription→remise des clés a été ré-audité en conv 103 (lecture seule) : voir `docs/ETAT-COURANT.md` bloc « 2026-06-30 (conv 103) ». Faits marquants depuis : #14 et #90 RÉSOLUES (trigger candidature corrigé + accept/refus côté hôte câblé) ; #22/#28/#29 toujours ouvertes (re-vérifiées) ; restitution-caution orpheline ; modèle 2 locataires (#93) non exploité à la signature. DÉCISION : gel volontaire de tout l'aval du tunnel + cap design. Se référer à ETAT-COURANT pour l'état courant ; ce document reste utile comme photo Phase 1.
+
 **Périmètre** : 47 pages React (`sterny-react/src/pages/`), 18 Edge Functions Supabase (`supabase/functions/`), 4 fixtures de dev (`sterny-react/src/dev/`). HEAD au moment de l'audit : `03eec77` (post-clôture spike #3 + DETTE #42 + cadrage spike #4).
 
 ---
