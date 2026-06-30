@@ -1192,15 +1192,15 @@ export default function ModifierAnnoncePage() {
   }
 
   function prevStep() {
-    if (currentStep === 1) { navigate('/dashboard/proprietaire'); return }
+    if (currentStep === 0) { navigate('/dashboard/proprietaire'); return }
     let prev = currentStep - 1
     setCurrentStep(prev)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function getProgressWidth() {
-    const totalSteps = 5
-    const stepPosition = currentStep - 1
+    const totalSteps = 6
+    const stepPosition = currentStep
     return (stepPosition / (totalSteps - 1)) * 100
   }
 
@@ -1428,8 +1428,8 @@ export default function ModifierAnnoncePage() {
     return <div className="create-container"><div className="page-header"><h1>Chargement...</h1></div></div>
   }
 
-  const totalSteps = 5
-  const progressGridCols = 'repeat(5, 1fr)'
+  const totalSteps = 6
+  const progressGridCols = 'repeat(6, 1fr)'
   const stepNumber5Text = '5'
 
   return (
@@ -1449,12 +1449,12 @@ export default function ModifierAnnoncePage() {
         {/* PROGRESS BAR */}
         <div className="progress-container">
           <div className="progress-steps" style={{ gridTemplateColumns: progressGridCols }}>
-            {[1, 2, 3, 4, 5].map(s => {
+            {[0, 1, 2, 3, 4, 5].map((s, i) => {
               let cls = 'progress-step'
               if (s < currentStep) cls += ' completed'
               else if (s === currentStep) cls += ' active'
-              const label = s === 1 ? 'Informations' : s === 2 ? 'Détails' : s === 3 ? 'Photos' : s === 4 ? 'Disponibilités' : 'Prix'
-              const num = String(s)
+              const label = s === 0 ? 'Bail' : s === 1 ? 'Informations' : s === 2 ? 'Détails' : s === 3 ? 'Photos' : s === 4 ? 'Disponibilités' : 'Prix'
+              const num = String(i + 1)
               return (
                 <div key={s} className={cls} data-step={s}>
                   <div className="step-number">{num}</div>
@@ -1465,6 +1465,20 @@ export default function ModifierAnnoncePage() {
           </div>
           <div className="progress-bar-track">
             <div className="progress-bar-fill" style={{ width: `${getProgressWidth()}%` }} />
+          </div>
+        </div>
+
+        {/* STEP 0 : Bail (placeholder 6c-② sous-pas 2a — contenu déplacé au sous-pas suivant) */}
+        <div className={`form-section ${currentStep === 0 ? 'active' : ''}`}>
+          <div className="section-header">
+            <div className="section-title"><span className="section-number">1</span>Bail</div>
+            <div className="section-description">Importe ton bail (placeholder — contenu déplacé au sous-pas suivant)</div>
+          </div>
+          <div className="form-navigation">
+            <div className="form-navigation-buttons">
+              <button className="btn btn-secondary" onClick={prevStep}>Retour</button>
+              <button className="btn btn-primary" onClick={nextStep}>Continuer</button>
+            </div>
           </div>
         </div>
 
