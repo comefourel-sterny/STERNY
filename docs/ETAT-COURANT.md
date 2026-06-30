@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-30 (conv 102) — Refonte ModifierAnnoncePage (6c) MISE EN PAUSE volontaire (dérive vers le bail : conservation/preuve, dépend de réponses pro). #125 tranché à froid (décision produit, pas de code) : bail_info = bail principal de l'hôte, pas la sous-location → aucune tension §145. Nouveau chantier acté (repoussé) : stockage + preuve d'intégrité du bail.
+**Dernière mise à jour** : 2026-06-30 (conv 103) — Audit tunnel inscription→remise des clés (lecture seule). Tunnel OK jusqu'à l'EDL signé ; GEL volontaire de tout l'aval (signature/paiement probatoire/EDL stocké/caution/remise clés + modèle 2 locataires #93) jusqu'aux RDV agences/Pépite/avocate. CHANGEMENT DE CAP : design des pages existantes + pages notées-non-faites + alignement design des pages refondues.
 
 ---
 
@@ -24,6 +24,18 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## 2026-06-30 (conv 103) — Audit lecture seule du tunnel inscription → remise des clés (rafraîchissement AUDIT-FONCTIONNEL périmé)
+AUDIT SEUL, ZÉRO code (rapport /tmp/audit-tunnel-2026-06-30.md). Constat : tunnel câblé jusqu'à l'EDL signé, mais s'arrête avant la restitution de caution, et le modèle 2-locataires n'est pas exploité à la signature.
+- Candidature : OK. Trigger #14 RÉSOLU (fix14, a.user_id) → INSERT non bloqué ; hôte approuve/rejette (#90 résolu, handleApprouver/handleRejeter).
+- Signature contrat & EDL : OK fonctionnel mais « maison » (SHA-256 + signatures_audit, mention eIDAS art.1367), SANS prestataire qualifié ni PDF archivé → robustesse probatoire à faire valider (domaine régulé §7).
+- Paiement : OK. Stripe Checkout + stripe-webhook = source de vérité (update contrats/paiements + send-recu-paiement). PaiementSuccessPage lit par session_id sans retrieve serveur (acceptable). Bypass ?demo=true.
+- Restitution caution / remise des clés : NON CÂBLÉE. restitution-caution existe mais 0 appelant (front + backend) → orpheline. Dernière étape manquante.
+- #93 (2 locataires) : socle data présent (semaines_reservees/demandees) mais à la signature ContratLocationPage verrouille TOUTE l'annonce (disponible=false) + auto-refuse les autres candidatures → promesse non tenue au stade clé.
+- Dettes toujours présentes (re-vérifiées) : #22 (doublon /annonce/creer non gardé, App.jsx l.115+164), routes /dev/* en prod (#25), #28 (table fantôme matchs, export-data l.94), #29 (token Mapbox public en dur, RecherchePage l.14). Ouvertes selon doc non re-vérifiées : #17, #23, #24.
+- RÉSERVE : audit repo local seul ; déploiement prod des Edge Functions (#17) et déclenchements cron/Dashboard (restitution-caution, check-*) non vérifiables depuis le repo.
+DÉCISION CÔME : GEL VOLONTAIRE de tout l'aval du tunnel (signature, valeur probatoire du paiement, EDL stocké, caution, remise des clés) ET du modèle 2 locataires (#93) jusqu'aux RDV professionnels (agences, Pépite, avocate) — ces étapes touchent au contractuel/régulé et à des connaissances externes non encore acquises ; les câbler maintenant = construire sur du sable. CHANGEMENT DE CAP en attendant : passer au DESIGN — habillage des pages existantes, traitement des pages notées « non faites », alignement design des pages déjà refondues.
+PROCHAINES ACTIONS POSSIBLES (non tranchées) : ouvrir/MAJ DETTE pour caution orpheline + verrou #93 ; rafraîchir AUDIT-FONCTIONNEL-2026-05-04.
 
 ## 2026-06-30 (conv 102) — Questionnaire étude (demande) : finalisé, habillé, PUBLIÉ — lancement gaté juriste
 **Instrument** : Google Forms canonique (form 1dYJGW1h83h5fHEhwRFmjs68j4r03gepOVzQF5PjHPvg). Tally définitivement abandonné (archive Gx5lbo). Formulaire PUBLIÉ (accepte les réponses, accès « tous les utilisateurs disposant du lien »).
