@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-30 (conv 100) — Ajout #125 (divergence bail_info Creer/Modifier, contractuel, BLOQUE 6c-② sous-pas 3), #126 (extraction PDF Modifier en retard), #127 (helpers bail dupliqués non-DRY).
+**Dernière mise à jour** : 2026-06-30 (conv 103) — Ajout #128 (aval du tunnel non câblé : restitution-caution orpheline, remise des clés absente) ; #93 re-confirmé (verrou mono-locataire toujours actif à la signature). Tout l'aval du tunnel sous GEL volontaire jusqu'aux RDV pros (cf. ETAT-COURANT conv 103).
 
 ## Nomenclature des bugs
 
@@ -1095,6 +1095,7 @@ Même famille que #86 :
 **MAJ 2026-06-12 (conv 54) — TRANCHE 1 (fondation de données) LIVRÉE, validée runtime.** 2 migrations sur feat/unification-inscription : (1) 20260612130950 colonne candidatures.semaines_demandees jsonb NOT NULL DEFAULT '[]' ; (2) 20260612130951 table semaines_reservees (id uuid pk ; annonce_id NOT NULL FK CASCADE ; semaine date ; contrat_id + locataire_id NULLABLES FK CASCADE ; created_at ; UNIQUE(annonce_id, semaine) + CHECK ISODOW=1 ; RLS ENABLE sans policy). seed enrichi (4 lundis dispo, 2 demandées, registre vide). db reset OK ; unicité + check lundi validés en psql. **Dette transitoire** : contrat_id/locataire_id à passer NOT NULL au lot signature. **Reste** : (A) capture UI semaines à la candidature ; (B) refonte verrou signature (supprimer disponible=false/auto-refus/paiement_ok → INSERT registre + NOT NULL + policies RLS registre) ; (C) couverture calculée + visibilité par semaine.
 **Suite OBLIGATOIRE de la tranche A (décision conv 54) — pré-cochage automatique des semaines à la candidature.** La tranche A livre la capture MANUELLE (le locataire coche lui-même les semaines offertes). Une fois ce socle en place, brancher IMPÉRATIVEMENT le pré-cochage automatique : pré-cocher l'intersection rhythm_calendar du locataire (interprété pour la ville de l'annonce) × disponibilites_pattern de l'offre, ajustable (VISION §571, §137). C'est la raison d'être de la capture du rhythm_calendar à l'inscription : la plateforme connaît déjà le rythme, l'utilisateur ne doit jamais le ressaisir (VISION §399). Sans ce pré-cochage, le locataire ressaisit à la main ce que Sterny sait déjà. Dépend du croisement de semaines = matching #48 (l'interprétation rythme×ville touche aussi #76). À faire juste après la tranche A.
 **MAJ 2026-06-12 (conv 54 suite) — tranches RÉORDONNÉES par le changement de cap (priorité recherche).** La tranche C (couverture + visibilité par semaine) migre dans le chantier recherche (#48) ; la tranche A (capture candidature) passe en fin de parcours ; la fondation de données (TRANCHE 1) reste acquise et sert la recherche. Détail : ETAT-COURANT bloc « conv 54 suite — changement de cap ».
+**Re-confirmé conv 103 (2026-06-30) — audit tunnel lecture seule.** Le verrou mono-locataire (annonces.disponible=false + auto-refus des candidatures en_attente + statut 'paiement_ok') est TOUJOURS exécuté à la signature complète dans ContratLocationPage au HEAD courant. La TRANCHE B (refonte du verrou signature) n'est pas faite. Sous gel aval conv 103 → traitement repoussé aux RDV pros.
 
 ## DETTE #94 — Pas d'expéditeur « système » dans la messagerie (limitation RLS)
 **Statut** : ouverte, limitation assumée. Repérée 2026-06-11 (conv 51) pendant le re-route #92.
@@ -1403,3 +1404,10 @@ Parsing des DATES (toLocalISODate, parseDate, findDatesInText) IDENTIQUE des 2 c
 **Statut : OUVERTE (constat audit parité conv 100, 30 juin 2026). Hors périmètre 6c-②.**
 CONSTAT (chaîne 4) : toLocalISODate, parseDate, findDatesInText, verifierDocumentBail définis LOCALEMENT (copiés-collés) dans CreerAnnoncePage ET ModifierAnnoncePage — aucun util commun (seul import partagé = utils/addressVerification, hors bail). IDENTIQUES aujourd'hui (diff ligne à ligne) mais duplication = risque de divergence silencieuse future.
 À FAIRE (chantier séparé) : extraire dans un util commun (ex. utils/bailParsing.js). Coordonner avec #126 (même zone). Prudence : CreerAnnoncePage est never-stage (bypass DEV) → l'extraction touchera ce fichier, à cadrer.
+
+## DETTE #128 — Aval du tunnel (restitution caution / remise des clés) non câblé de bout en bout
+**Statut : OUVERTE (constat audit tunnel conv 103, 2026-06-30). Sous le GEL volontaire de l'aval (cf. ETAT-COURANT conv 103) → pas d'action avant RDV agences/Pépite/avocate.**
+CONSTAT : le tunnel est fonctionnel jusqu'à l'EDL signé, puis s'arrête. La fonction Edge restitution-caution existe mais n'est appelée par AUCUN code (0 appelant front, 0 invoke inter-fonction, 0 ref hors son dossier) → orpheline côté repo. Aucune étape « restitution de caution » ni « remise des clés » câblée dans l'app. EtatDesLieuxPage ne contient aucune logique caution/refund.
+PÉRIMÈTRE DU GEL : cette dette fait partie d'un ensemble aval gelé conv 103 = signature contrat (valeur probatoire), paiement probatoire, stockage du document EDL, restitution caution, remise des clés, ET le modèle 2 locataires (#93). Aucune de ces étapes ne se code avant les réponses externes (contractuel/régulé + connaissances non encore acquises).
+RÉSERVE : déclenchement éventuel par cron/Dashboard non versionné, invérifiable depuis le repo (à confirmer avec l'état de déploiement, cf. #17).
+LIENS : #17 (déploiement Edge Functions), #93 (modèle multi-locataires), VISION (gel aval conv 103).
