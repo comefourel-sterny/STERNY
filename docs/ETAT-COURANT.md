@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-06-30 (conv 103) — Audit tunnel inscription→remise des clés (lecture seule). Tunnel OK jusqu'à l'EDL signé ; GEL volontaire de tout l'aval (signature/paiement probatoire/EDL stocké/caution/remise clés + modèle 2 locataires #93) jusqu'aux RDV agences/Pépite/avocate. CHANGEMENT DE CAP : design des pages existantes + pages notées-non-faites + alignement design des pages refondues.
+**Dernière mise à jour** : 2026-07-01 (conv 104) — Cap design lancé (décidé conv 103). 1re cible : vignette « Ton annonce » du dashboard locataire refaite (pleine hauteur de la carte, coins droits francs, placeholder scopé) — commit 5947875. Cause racine = collision CSS globale .annonce-thumb non scopée (MatchConfirmationPage.css) → DETTE #129. Aval du tunnel toujours sous GEL volontaire (conv 103) jusqu'aux RDV agences/Pépite/avocate.
 
 ---
 
