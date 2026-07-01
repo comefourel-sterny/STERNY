@@ -1411,3 +1411,10 @@ CONSTAT : le tunnel est fonctionnel jusqu'à l'EDL signé, puis s'arrête. La fo
 PÉRIMÈTRE DU GEL : cette dette fait partie d'un ensemble aval gelé conv 103 = signature contrat (valeur probatoire), paiement probatoire, stockage du document EDL, restitution caution, remise des clés, ET le modèle 2 locataires (#93). Aucune de ces étapes ne se code avant les réponses externes (contractuel/régulé + connaissances non encore acquises).
 RÉSERVE : déclenchement éventuel par cron/Dashboard non versionné, invérifiable depuis le repo (à confirmer avec l'état de déploiement, cf. #17).
 LIENS : #17 (déploiement Edge Functions), #93 (modèle multi-locataires), VISION (gel aval conv 103).
+
+## DETTE #129 — Collision CSS globale : .annonce-thumb non scopée (MatchConfirmationPage.css)
+- Symptôme : la règle .annonce-thumb { height:72px; background:#475569 } de MatchConfirmationPage.css n'est PAS scopée (1 classe). Vite bundle tous les CSS en une feuille globale → cette règle fuite sur tout élément .annonce-thumb d'autres pages.
+- Impact constaté (conv 104) : a piégé le fix vignette du dashboard locataire à répétition — fond sombre #475569 sur le placeholder PUIS hauteur 72px bloquant align-items:stretch. Neutralisée LOCALEMENT par scoping .dashboard-container, mais la source demeure.
+- Risque : tout futur composant utilisant la classe .annonce-thumb ailleurs retombera dans le piège.
+- Résolution à la source (non faite) : soit re-scoper la règle de MatchConfirmationPage.css sous son conteneur de page, soit extraire un composant carte annonce partagé avec des classes propres (rejoint l'idée « carte annonce réutilisable », idees-en-attente conv 51).
+- Priorité : moyenne (contournée partout où ça a mordu jusqu'ici, mais nid à régressions).

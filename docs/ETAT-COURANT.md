@@ -25,6 +25,24 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 
 ---
 
+## Conv 104 — 01/07/2026 — Cap design : première cible (vignette annonce dashboard)
+
+**Contexte** : lancement du cap design (décidé conv 103). Première cible choisie par Côme : le rendu de l'annonce dans le dashboard locataire (vignette photo qui s'affichait cassée).
+
+**Fait & validé (runtime, desktop + placeholder + photo réelle)** :
+- Vignette « Ton annonce » (DashboardLocatairePage) refaite : photo pleine hauteur de la carte via align-self:stretch + height:auto, largeur 140px, coins gauches arrondis / coins droits francs (arête de séparation nette avec le texte). Conforme à un croquis fourni par Côme.
+- Placeholder (annonce sans photo) : .annonce-thumb-icon scopé .dashboard-container, icône 56px sur fond clair.
+- Cause racine du bug identifiée : collision CSS globale non scopée depuis MatchConfirmationPage.css (.annonce-thumb{height:72px; background:#475569}) qui imposait fond sombre ET hauteur 72px. Neutralisée localement par scoping .dashboard-container (spécificité 2 classes). → logguée en DETTE (voir DETTE-TECHNIQUE).
+- Commit : 5947875 (fix, DashboardLocatairePage.css seul).
+
+**Décision produit actée (vitrine)** : garder des annonces de démonstration/fausses sur la homepage en pré-lancement, pour éviter une page vide à l'arrivée des visiteurs. La grammaire visuelle des cartes est indépendante du caractère réel ou factice de la donnée.
+
+**Test local en cours** : l'annonce test (id aaaaaaaa-…-aaaaaaaaaaaa) a une URL photo Unsplash injectée en base LOCALE (réversible) pour tester le rendu avec image. À rétablir à photos=[] à la fin du cap design. Commande : UPDATE public.annonces SET photos='[]'::jsonb WHERE id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+**À reprendre en priorité (prochaine conversation)** :
+1. Retirer le bouton « Ajouter une annonce » situé SOUS la carte annonce du dashboard : il fait doublon avec le « + » déjà présent à droite du bouton ville (« Rennes ») en haut de page. → chantier JSX, audit lecture-seule d'abord (repérer le bouton dans DashboardLocatairePage.jsx, confirmer le lien du «+», vérifier aucune autre dépendance).
+2. Suite du cap design (cf. carte A/B/C conv 103).
+
 ## 2026-06-30 (conv 103) — Audit lecture seule du tunnel inscription → remise des clés (rafraîchissement AUDIT-FONCTIONNEL périmé)
 AUDIT SEUL, ZÉRO code (rapport /tmp/audit-tunnel-2026-06-30.md). Constat : tunnel câblé jusqu'à l'EDL signé, mais s'arrête avant la restitution de caution, et le modèle 2-locataires n'est pas exploité à la signature.
 - Candidature : OK. Trigger #14 RÉSOLU (fix14, a.user_id) → INSERT non bloqué ; hôte approuve/rejette (#90 résolu, handleApprouver/handleRejeter).
