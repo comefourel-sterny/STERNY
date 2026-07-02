@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-07-02 (conv 105) — Ajout #130 (règle "1 annonce par ville / plafond 2 villes" non appliquée en dur ; UI au pluriel incohérente). Suite du retrait bouton doublon (commit 54f2324).
+**Dernière mise à jour** : 2026-07-02 (conv 106) — Ajout #131 (suppression annonce inatteignable côté alternant + migration descendante les_deux → simple absente ; touche l'aval gelé #93, avis pro requis).
 
 ## Nomenclature des bugs
 
@@ -1424,3 +1424,12 @@ LIENS : #17 (déploiement Edge Functions), #93 (modèle multi-locataires), VISIO
 CONSTAT : le modèle Sterny impose 1 seul logement proposable par ville et un plafond de 2 villes (école + entreprise) par alternant. Cette règle n'est reflétée NULLE PART dans le code côté dashboard : aucune contrainte, aucun test n'empêche la création d'une 2e annonce dans la même ville. Au contraire, l'UI présuppose du multi-annonces — titre de carte au pluriel `annonces.length <= 1 ? 'Ton annonce' : 'Tes annonces (N)'` (DashboardLocatairePage.jsx l.~904).
 ÉTAT : le retrait du bouton doublon (conv 105, commit 54f2324) MASQUE la voie visible vers une 2e annonce, mais ne FERME PAS la porte techniquement (une route directe /annonce/creer reste ouverte).
 À FAIRE (chantier séparé, prochaine étape) : appliquer la règle en dur (côté page de création et/ou base de données) + rendre l'UI cohérente (retirer/adapter le pluriel "Tes annonces (N)"). Périmètre exact à cadrer : vérifier où la contrainte doit vivre (front garde + DB), et le cas les_deux (2 actions max, 1 par ville).
+
+## DETTE #131 — Suppression d'annonce inatteignable côté alternant + migration descendante les_deux → simple absente
+**Statut : OUVERTE (constat audit conv 106, 02/07/2026). Touche l'aval gelé (#93) → ne pas câbler avant cadrage.**
+CONSTAT (audit conv 106) :
+(1) La suppression d'annonce (hard-delete + purge candidatures + garde bail actif) existe UNIQUEMENT dans DashboardProprietairePage.jsx (handleDeleteAnnonce l.~277, confirmDeleteAnnonce l.~288). L'alternant-hôte n'a AUCUNE affordance pour supprimer sa propre annonce depuis DashboardLocatairePage.jsx (seul retirerFavori existe).
+(2) La migration DESCENDANTE de type_user (les_deux → hote seul ou locataire seul) n'existe NULLE PART. Seule la montée (locataire/hote → les_deux) est câblée. Une "recherche" est stockée dans les colonnes users (ville_ecole/entreprise + statut_ville_*), pas dans une table dédiée ; seule la ville de recherche SECONDAIRE est supprimable (supprimerVilleSecondaire l.~446).
+POURQUOI C'EST LIÉ ET GELÉ : redescendre = retirer une action ; si l'action retirée est l'hébergement, cela implique de supprimer une annonce, ce qui percute candidatures en cours, bail/contrat, registre semaines_reservees (#93), matching confirmé avec un autre alternant. Volet contractuel réel (que devient l'engagement envers l'autre étudiant ?). → sujet partiellement dans l'aval gelé (conv 103), avis pro requis.
+CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce sera ARCHIVER (soft-delete), pas hard-delete. Le hard-delete actuel de DashboardProprietairePage est lui-même à revoir (non-conformité notée en VISION conv 106).
+À FAIRE (chantier séparé, après RDV pros) : cadrer la migration descendante + la suppression/archivage d'annonce côté alternant. Point d'entrée UI naturel : ParametresPage ("changer mon type de compte"). Fichiers impactés recensés : DashboardLocatairePage.jsx, utils/deriveVilleColonnes.js, DashboardProprietairePage.jsx (logique delete), colonnes users, ParametresPage.jsx.
