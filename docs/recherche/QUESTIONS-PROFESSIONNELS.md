@@ -206,6 +206,12 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Contexte** : le corps du questionnaire est neutre, mais la section finale « Reste en contact » contient un teaser + contact@sterny.co, et Forms ajoute un pied « créé dans Sterny ». L'email reste facultatif et dissocié du pitch.
 > **Statut** : à poser
 
+### 2.6 Conservation des données & vérification d'identité (décisions conv 106)
+
+**Q-DPO-022 — Conservation vs effacement des données d'action passée.** Sterny veut ARCHIVER (et non effacer) annonces, recherches, candidatures, messages, emplois du temps, pour préserver une trace en cas de litige ou de réquisition judiciaire. (1) Compatible RGPD, et sous quelle base légale (obligation légale ? intérêt légitime ? défense d'un droit en justice ?) ? (2) Durée de conservation par type de donnée ? (3) Articulation avec le droit à l'effacement d'un utilisateur qui le demande ? (4) Règles spécifiques pièces d'identité et données de mineurs ? (5) Faut-il un journal d'événements immuable distinct (qui a fait quoi, quand) ?
+
+**Q-DPO-023 — Stockage de la vérification d'identité (Stripe Identity).** Sterny prévoit de ne PAS stocker l'image de la pièce (gardée par Stripe ~3 ans, aux USA) mais un enregistrement de preuve minimal (résultat, date, référence vs_/vr_, nom/date de naissance). (1) Ce niveau de conservation est-il conforme et suffisant comme preuve ? (2) Le transfert de données aux États-Unis par Stripe pose-t-il un problème (clauses contractuelles types, etc.) ? (3) Quelles obligations Sterny porte-t-il comme responsable de traitement vis-à-vis de Stripe sous-traitant (contrat de sous-traitance, DPA) ? (4) Faut-il aligner la durée de conservation de Sterny sur celle de Stripe ou définir la nôtre ?
+
 ---
 
 ## 3. Notaire — baux et formalités logement
