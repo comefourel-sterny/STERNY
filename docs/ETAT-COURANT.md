@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-02 (conv 105) — Retrait du bouton doublon "Ajouter une annonce" du dashboard locataire (commit 54f2324) ; ne servait qu'à créer une 2e annonce, interdit par le modèle (1 logement/ville, plafond 2 villes). Reste à fermer la porte en dur (DETTE #130). Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-02 (conv 107) — DETTE #130 étape 1/5 : colonne `annonces.pole` (ecole/entreprise) + contraintes NOT NULL/CHECK/UNIQUE(user_id,pole) + user_id NOT NULL (commit fe013b6, appliqué local via db reset ; db push prod séparé, non fait). Restent 4 étapes #130 (form pôle, garde chargement, masquage entrées UI, pluriel). Aval du tunnel toujours sous GEL volontaire.
 
 ---
 
@@ -24,6 +24,24 @@ Zone de RÉFÉRENCE (contacts, statuts, dates de relance), distincte du journal 
 **26/06/2026 — Suite RDV Le Poool.** Le Poool (Sophie Chatelin + Alexis Roussel) a conseillé deux axes : (1) se rapprocher de Pépite Bretagne ; (2) mener une étude terrain structurée pour qualifier le besoin. Actions faites : réponse envoyée à Sophie ; prise de contact envoyée à Pépite. Marion Lepinay (marion.lepinay@univ-rennes.fr) est en congé maternité jusqu'au 20/08/2026 ; relais pris avec Barbara Prudhomme (barbara.prudhomme@pepitebretagne.fr). Étude terrain à lancer très prochainement (questionnaire alternants + volet propriétaires/agences). Prochaine étape : obtenir un échange avec Pépite (Barbara, ou Marion à son retour).
 
 ---
+
+## Conv 107 — 02/07/2026 — DETTE #130, étape 1/5 : colonne pole créée et contrainte d'unicité posée
+**Fait & validé en local (db reset vert)** : audit lecture seule préalable (routes vers /annonce/creer,
+comportement CreerAnnoncePage au chargement, ville annonce vs ville profil, contrainte DB existante) —
+confirmé porte ouverte à 3 niveaux (UI, page, base). Décision : rattacher chaque annonce à un POLE
+(école/entreprise de l'hôte) au lieu de comparer des textes de ville (évite le piège Rennes/Bruz et
+la fragilité DETTE #78). Vérifié en prod avant migration : 1 annonce, 0 doublon, 0 user_id NULL — terrain
+propre pour un futur db push.
+Livré (commit **fe013b6**) : migration add_pole_annonces (colonne pole + backfill par id + contraintes
+NOT NULL/CHECK/UNIQUE(user_id,pole)) + seed.sql patché (annonce fixture pole='entreprise'). db reset
+local validé, contraintes confirmées via \d annonces. Annonce test Unsplash (aaaaaaaa…) effacée par le
+reset — attendu, sans conséquence (déjà notée à réinitialiser).
+RESTE (4 étapes suivantes du chantier #130) : (2) formulaire CreerAnnoncePage — remplacer la déduction
+ville→pôle par question explicite école/entreprise ; (3) garde au chargement de la page (modal +
+redirect dashboard si pôle déjà occupé) ; (4) masquer/désactiver les 6 points d'entrée UI vers
+/annonce/creer au plafond ; (5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
+Push prod (db push) : étape séparée, non faite, à valider explicitement — vérifier avant push qu'aucune
+autre ligne prod que 7d60be51… n'existe sans backfill (le garde-fou RAISE EXCEPTION bloquera sinon).
 
 ## Conv 105 — 02/07/2026 — Cap design : retrait bouton doublon "Ajouter une annonce" (dashboard locataire)
 **Fait & validé runtime (desktop)** : retrait du `<button>` "Ajouter une annonce" (ex-l.939-947) situé sous la liste dans la branche `annonces.length > 0` de la carte MES ANNONCES (DashboardLocatairePage.jsx). Double audit lecture seule préalable. Motif : ce bouton ouvrait la création d'une 2e annonce, ce que le modèle Sterny interdit (1 logement par ville, plafond structurel 2 villes école/entreprise ; une fois `les_deux`, plafond atteint, plus rien à ajouter = voulu). Le cas "0 annonce" garde son propre CTA (Link "Creer mon annonce", l.912). Retrait pur, aucun handler/state orphelin. Commit **54f2324** (fix, fichier seul).
