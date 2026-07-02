@@ -59,9 +59,9 @@ BEGIN
 
   -- 4) Annonce de l'hôte, à Rennes (piège volontaire : ville_ecole de l'hôte = Nantes)
   INSERT INTO public.annonces
-    (id, user_id, ville, titre, type_logement, prix, disponibilites_pattern)
+    (id, user_id, ville, pole, titre, type_logement, prix, disponibilites_pattern)
   VALUES
-    (v_annonce_id, v_host_id, 'Rennes', 'Studio test Rennes', 'studio', 450, '["2026-09-07","2026-09-21","2026-10-05","2026-10-19"]'::jsonb);
+    (v_annonce_id, v_host_id, 'Rennes', 'entreprise', 'Studio test Rennes', 'studio', 450, '["2026-09-07","2026-09-21","2026-10-05","2026-10-19"]'::jsonb);
 
   -- 5) Candidature du locataire sur l'annonce, en attente (exerce le trigger fix #14)
   INSERT INTO public.candidatures (annonce_id, locataire_id, message, statut, semaines_demandees)
