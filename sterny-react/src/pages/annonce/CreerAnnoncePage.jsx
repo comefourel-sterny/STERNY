@@ -1676,10 +1676,18 @@ export default function CreerAnnoncePage() {
         }
       }
 
+      // DETTE #130 — pôle (ecole/entreprise) dérivé du profil hôte (natureLogement, cf. deduireOffre).
+      // annonces.pole est NOT NULL : bloquer proprement si le pôle n'est pas déterminé (offreHote.length !== 1).
+      if (natureLogement !== 'ecole' && natureLogement !== 'entreprise') {
+        showNotificationFn('Pôle indéterminé', "Impossible de déterminer si ce logement relève de ta ville d'école ou d'entreprise. Vérifie ton profil avant de publier.", 'error')
+        setPublishing(false); setPublishBtnText('Publier l\'annonce'); return
+      }
+
       const annonce = {
         user_id: currentUser.id,
         type_logement: type,
         ville: villeDetectee,
+        pole: natureLogement,
         surface: parseInt(surface),
         pieces: pieces ? parseInt(pieces) : null,
         dpe: dpe || null,
