@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-06-30 (conv 103) — Ajout #128 (aval du tunnel non câblé : restitution-caution orpheline, remise des clés absente) ; #93 re-confirmé (verrou mono-locataire toujours actif à la signature). Tout l'aval du tunnel sous GEL volontaire jusqu'aux RDV pros (cf. ETAT-COURANT conv 103).
+**Dernière mise à jour** : 2026-07-02 (conv 105) — Ajout #130 (règle "1 annonce par ville / plafond 2 villes" non appliquée en dur ; UI au pluriel incohérente). Suite du retrait bouton doublon (commit 54f2324).
 
 ## Nomenclature des bugs
 
@@ -1418,3 +1418,9 @@ LIENS : #17 (déploiement Edge Functions), #93 (modèle multi-locataires), VISIO
 - Risque : tout futur composant utilisant la classe .annonce-thumb ailleurs retombera dans le piège.
 - Résolution à la source (non faite) : soit re-scoper la règle de MatchConfirmationPage.css sous son conteneur de page, soit extraire un composant carte annonce partagé avec des classes propres (rejoint l'idée « carte annonce réutilisable », idees-en-attente conv 51).
 - Priorité : moyenne (contournée partout où ça a mordu jusqu'ici, mais nid à régressions).
+
+## DETTE #130 — Règle "1 annonce par ville / plafond 2 villes" non appliquée en dur
+**Statut : OUVERTE (constat audit conv 105, 02/07/2026). Prochain chantier du cap design.**
+CONSTAT : le modèle Sterny impose 1 seul logement proposable par ville et un plafond de 2 villes (école + entreprise) par alternant. Cette règle n'est reflétée NULLE PART dans le code côté dashboard : aucune contrainte, aucun test n'empêche la création d'une 2e annonce dans la même ville. Au contraire, l'UI présuppose du multi-annonces — titre de carte au pluriel `annonces.length <= 1 ? 'Ton annonce' : 'Tes annonces (N)'` (DashboardLocatairePage.jsx l.~904).
+ÉTAT : le retrait du bouton doublon (conv 105, commit 54f2324) MASQUE la voie visible vers une 2e annonce, mais ne FERME PAS la porte techniquement (une route directe /annonce/creer reste ouverte).
+À FAIRE (chantier séparé, prochaine étape) : appliquer la règle en dur (côté page de création et/ou base de données) + rendre l'UI cohérente (retirer/adapter le pluriel "Tes annonces (N)"). Périmètre exact à cadrer : vérifier où la contrainte doit vivre (front garde + DB), et le cas les_deux (2 actions max, 1 par ville).
