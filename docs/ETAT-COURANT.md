@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-02 (conv 107) — DETTE #130 étape 1/5 : colonne `annonces.pole` (ecole/entreprise) + contraintes NOT NULL/CHECK/UNIQUE(user_id,pole) + user_id NOT NULL (commit fe013b6, appliqué local via db reset ; db push prod séparé, non fait). Restent 4 étapes #130 (form pôle, garde chargement, masquage entrées UI, pluriel). Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-02 (conv 107 suite) — DETTE #130 étape 2/5 : pôle dérivé du profil hôte écrit au payload de création d'annonce + garde bloquante si pôle indéterminé (commit faf0284, build local vert ; staging isolé, never-stage préservé). Étape 1/5 (colonne + contraintes, commit fe013b6) déjà livrée. Restent 3 étapes #130 (garde chargement, masquage entrées UI, pluriel). db push prod séparé, non fait. Aval du tunnel toujours sous GEL volontaire.
 
 ---
 
@@ -42,6 +42,19 @@ redirect dashboard si pôle déjà occupé) ; (4) masquer/désactiver les 6 poin
 /annonce/creer au plafond ; (5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
 Push prod (db push) : étape séparée, non faite, à valider explicitement — vérifier avant push qu'aucune
 autre ligne prod que 7d60be51… n'existe sans backfill (le garde-fou RAISE EXCEPTION bloquera sinon).
+
+## Conv 107 (suite) — 02/07/2026 — DETTE #130, étape 2/5 : pôle dérivé du profil hôte au payload
+Fait & validé build local (commit **faf0284**) : garde bloquante ajoutée avant construction du payload
+(si natureLogement n'est ni 'ecole' ni 'entreprise', publication refusée avec message clair — cas
+défensif où deduireOffre ne renvoie pas exactement 1 ville hôte). Payload annonce enrichi de
+pole: natureLogement (à côté de ville: villeDetectee, non touché). Aucune nouvelle question posée à
+l'utilisateur : le pôle était déjà dérivable du profil chargé au montage (hostProfile), confirmé par
+audit lecture seule préalable (/tmp/audit-creerannonce-etape2.md). npm run build vert. Staging isolé
+via patch construit contre HEAD (fichier never-stage, bypass DEV #117 + refonte bailInfo intacts,
+non commités) — seules ces 8 lignes committées.
+RESTE (3 étapes suivantes du chantier #130) : (3) garde au chargement de la page (modal + redirect si
+pôle déjà occupé) ; (4) masquer/désactiver les 6 points d'entrée UI vers /annonce/creer au plafond ;
+(5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
 
 ## Conv 105 — 02/07/2026 — Cap design : retrait bouton doublon "Ajouter une annonce" (dashboard locataire)
 **Fait & validé runtime (desktop)** : retrait du `<button>` "Ajouter une annonce" (ex-l.939-947) situé sous la liste dans la branche `annonces.length > 0` de la carte MES ANNONCES (DashboardLocatairePage.jsx). Double audit lecture seule préalable. Motif : ce bouton ouvrait la création d'une 2e annonce, ce que le modèle Sterny interdit (1 logement par ville, plafond structurel 2 villes école/entreprise ; une fois `les_deux`, plafond atteint, plus rien à ajouter = voulu). Le cas "0 annonce" garde son propre CTA (Link "Creer mon annonce", l.912). Retrait pur, aucun handler/state orphelin. Commit **54f2324** (fix, fichier seul).
