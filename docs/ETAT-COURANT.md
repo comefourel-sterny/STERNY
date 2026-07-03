@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-02 (conv 107 suite) — DETTE #130 étape 2/5 : pôle dérivé du profil hôte écrit au payload de création d'annonce + garde bloquante si pôle indéterminé (commit faf0284, build local vert ; staging isolé, never-stage préservé). Étape 1/5 (colonne + contraintes, commit fe013b6) déjà livrée. Restent 3 étapes #130 (garde chargement, masquage entrées UI, pluriel). db push prod séparé, non fait. Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-03 (conv 107 suite) — DETTE #130 étape 3/5 : garde au chargement (pôle occupé → modale de blocage) FAITE en working tree + validée runtime, mais NON COMMITÉE (Option A) car imbriquée dans la refonte never-stage de CreerAnnoncePage (non isolable contre HEAD ; à committer en Phase 0bis). Étapes 1/5 (fe013b6) et 2/5 (faf0284) déjà livrées. Restent 4/5 (masquage entrées UI au plafond) et 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. Aval du tunnel toujours sous GEL volontaire.
 
 ---
 
@@ -55,6 +55,24 @@ non commités) — seules ces 8 lignes committées.
 RESTE (3 étapes suivantes du chantier #130) : (3) garde au chargement de la page (modal + redirect si
 pôle déjà occupé) ; (4) masquer/désactiver les 6 points d'entrée UI vers /annonce/creer au plafond ;
 (5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
+
+## Conv 107 (suite) — 03/07/2026 — DETTE #130, étape 3/5 : garde au chargement + modale de blocage (FAITE en working tree, NON commitée)
+Fait & validé runtime (desktop, hote@sterny.test : modale affichée ; contre-test compte sans annonce : formulaire normal).
+Garde dans checkUserType : si le pôle dérivé du profil est déjà occupé par une annonce existante (requête dédiée
+annonces WHERE user_id AND pole, au plus 1 ligne via UNIQUE(user_id,pole)), on affiche une modale de blocage PAR-DESSUS
+le formulaire (qui se monte normalement), sans redirection auto. States poleOccupeBloque + villeBloquee. Modale scopée
+ca-modal-* (anti-collision .modal-overlay / .back-link, familles #86/#123) : titre dynamique avec nom de ville souligné
+orange #F0783E (repris du prénom dashboard .dp-prenom), texte allégé, bouton orange "Retourner à mon espace" (vocabulaire
+aligné sur la nav dominante "Mon espace"). npm run build vert.
+⚠️ NON COMMITÉ (décision Option A) : le code étape 3/5 vit dans CreerAnnoncePage.jsx + .css, qui sont never-stage. Contrairement
+à l'étape 2/5 (payload isolable car présent dans HEAD), l'étape 3/5 touche l'état + checkUserType + la modale, imbriqués
+dans la REFONTE NON COMMITÉE de CreerAnnoncePage (dérivation deduireOffre/natureLogement/hostProfile, réécriture de
+checkUserType) absente de HEAD. Impossible de committer un hunk isolé cohérent (la modale référence des states qui vivent
+dans la refonte). Le code reste en working tree avec le bypass DEV #117 et la refonte, à committer ensemble en Phase 0bis.
+RESTE (2 étapes du chantier #130) : (4) masquer/désactiver les 6 points d'entrée UI vers /annonce/creer au plafond ;
+(5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
+NOTE STRUCTURELLE : les étapes 2→5 de #130 sur CreerAnnoncePage dépendent de la refonte never-stage. La question du
+commit final (lever le never-stage en isolant le bypass DEV, vs Phase 0bis) est à trancher à froid, hors fin de session.
 
 ## Conv 105 — 02/07/2026 — Cap design : retrait bouton doublon "Ajouter une annonce" (dashboard locataire)
 **Fait & validé runtime (desktop)** : retrait du `<button>` "Ajouter une annonce" (ex-l.939-947) situé sous la liste dans la branche `annonces.length > 0` de la carte MES ANNONCES (DashboardLocatairePage.jsx). Double audit lecture seule préalable. Motif : ce bouton ouvrait la création d'une 2e annonce, ce que le modèle Sterny interdit (1 logement par ville, plafond structurel 2 villes école/entreprise ; une fois `les_deux`, plafond atteint, plus rien à ajouter = voulu). Le cas "0 annonce" garde son propre CTA (Link "Creer mon annonce", l.912). Retrait pur, aucun handler/state orphelin. Commit **54f2324** (fix, fichier seul).
