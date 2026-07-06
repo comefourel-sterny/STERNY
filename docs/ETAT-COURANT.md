@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-03 (conv 107 suite) — DETTE #130 étape 3/5 : garde au chargement (pôle occupé → modale de blocage) FAITE en working tree + validée runtime, mais NON COMMITÉE (Option A) car imbriquée dans la refonte never-stage de CreerAnnoncePage (non isolable contre HEAD ; à committer en Phase 0bis). Étapes 1/5 (fe013b6) et 2/5 (faf0284) déjà livrées. Restent 4/5 (masquage entrées UI au plafond) et 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-04 (conv 108) — retard doc ↔ HEAD rattrapé : DETTE #130 étape 4/5 (masquage CTA "proposer un logement" si pôle occupé) est FAITE & COMMITÉE (0c2e195), alors que ce fichier la décrivait encore comme "restante". Étapes 1/5 (fe013b6), 2/5 (faf0284) et 4/5 (0c2e195) livrées ; 3/5 FAITE en working tree mais NON COMMITÉE (Option A, never-stage, Phase 0bis). RESTE la seule étape 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. À clarifier à la reprise : modifs non commitées sur DashboardProprietairePage au-delà de 0c2e195 + fichiers untracked à ranger. Aval du tunnel toujours sous GEL volontaire.
 
 ---
 
@@ -73,6 +73,17 @@ RESTE (2 étapes du chantier #130) : (4) masquer/désactiver les 6 points d'entr
 (5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
 NOTE STRUCTURELLE : les étapes 2→5 de #130 sur CreerAnnoncePage dépendent de la refonte never-stage. La question du
 commit final (lever le never-stage en isolant le bypass DEV, vs Phase 0bis) est à trancher à froid, hors fin de session.
+
+## Conv 108 — 04/07/2026 — DETTE #130, étape 4/5 : masquage CTA "proposer un logement" si pôle occupé
+Fait & commité (0c2e195). Masquage des points d'entrée UI vers /annonce/creer quand le pôle ciblé est
+déjà occupé par une annonce de l'hôte — logique PAR PÔLE (pas un compteur global) : un hôte avec 1 annonce
+école peut encore créer son annonce entreprise, et inversement ; seul le plafond les_deux (2 pôles occupés)
+masque tout. Cohérent avec la garde étape 3/5 (blocage par pôle). Build vert.
+RESTE (dernière étape #130) : (5) corriger pluriel "Tes annonces (N)" (DashboardLocatairePage l.904).
+À CLARIFIER À LA REPRISE : DashboardProprietairePage.jsx + .css portent des modifs non commitées au-delà
+du commit 0c2e195 (à examiner : travail légitime à committer, ou résidus). + fichiers untracked (docs
+d'audit + spikes PDF) à ranger. + rappel : code étape 3/5 toujours en working tree (never-stage, Option A,
+Phase 0bis) ; db push prod migration pole non fait.
 
 ## Conv 105 — 02/07/2026 — Cap design : retrait bouton doublon "Ajouter une annonce" (dashboard locataire)
 **Fait & validé runtime (desktop)** : retrait du `<button>` "Ajouter une annonce" (ex-l.939-947) situé sous la liste dans la branche `annonces.length > 0` de la carte MES ANNONCES (DashboardLocatairePage.jsx). Double audit lecture seule préalable. Motif : ce bouton ouvrait la création d'une 2e annonce, ce que le modèle Sterny interdit (1 logement par ville, plafond structurel 2 villes école/entreprise ; une fois `les_deux`, plafond atteint, plus rien à ajouter = voulu). Le cas "0 annonce" garde son propre CTA (Link "Creer mon annonce", l.912). Retrait pur, aucun handler/state orphelin. Commit **54f2324** (fix, fichier seul).
