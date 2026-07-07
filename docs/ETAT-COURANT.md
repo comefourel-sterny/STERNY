@@ -6,6 +6,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## Conv 109 — 07/07/2026 — Audit lecture seule : modifs non commitées DashboardProprietairePage.jsx/.css
+Audit lecture seule (git diff 0c2e195) sur les fichiers never-stage DashboardProprietairePage.jsx + .css.
+CONSTAT : le diff contient une feature complète et fonctionnelle — bouton "œil" (PasswordRevealButton,
+composant déjà commité ailleurs dans le repo) pour révéler/masquer la saisie dans la modale de
+changement de mot de passe (2 champs : nouveau mdp + confirmation). Dépendances vérifiées OK (composant
+existe, CSS .pw-field bien défini dans PasswordRevealButton.css). Aucun bug détecté, aucun import cassé.
+NON COMMITÉ : DashboardProprietairePage.jsx/.css sont sur la liste never-stage permanente. Origine de
+cette feature (qui l'a codée, quand, pourquoi) NON CONFIRMÉE par Côme — à clarifier avant tout commit,
+au cas où elle serait imbriquée dans une refonte non commitée plus large (comme CreerAnnoncePage).
+RESTE À TRANCHER (prochaine session) :
+1. Pourquoi DashboardProprietairePage.jsx/.css est en never-stage permanent ? (raison non retrouvée
+   dans cette conv — à clarifier avec Côme en tout premier, avant de committer quoi que ce soit dessus)
+2. Une fois la raison connue : committer le bouton œil isolément (si le fichier n'a pas d'autre
+   refonte en cours), ou l'intégrer à un commit groupé plus tard (si never-stage = refonte imbriquée).
+Étape 5/5 de DETTE #130 (pluriel "Tes annonces (N)", DashboardLocatairePage.jsx) TOUJOURS PAS COMMENCÉE.
+Fichiers untracked toujours en attente : docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md +
+docs/spikes/2026-04-28-01-pdf-js-getoperatorlist/ (2 fichiers).
+
+---
+
 Socle recherche — pièce 1 (déduction profil → filtrage) : livrée et validée runtime.
 Pour un alternant connecté, /recherche déduit ses semaines de présence depuis son rythme (rhythm_calendar) et propose les annonces compatibles avec un score de match, sans aucune re-saisie de ville ni de rythme. Source des semaines du croisement : saisie manuelle si présente, sinon déduction du profil (util deduireRecherche → semainesUtilisateur dans RecherchePage). Calcul du score existant inchangé.
 
