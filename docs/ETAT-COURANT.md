@@ -2,7 +2,7 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-04 (conv 108) — retard doc ↔ HEAD rattrapé : DETTE #130 étape 4/5 (masquage CTA "proposer un logement" si pôle occupé) est FAITE & COMMITÉE (0c2e195), alors que ce fichier la décrivait encore comme "restante". Étapes 1/5 (fe013b6), 2/5 (faf0284) et 4/5 (0c2e195) livrées ; 3/5 FAITE en working tree mais NON COMMITÉE (Option A, never-stage, Phase 0bis). RESTE la seule étape 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. À clarifier à la reprise : modifs non commitées sur DashboardProprietairePage au-delà de 0c2e195 + fichiers untracked à ranger. Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-07 (conv 110) — Feuille de route de cadrage modèle multi-logements — retard doc ↔ HEAD rattrapé : DETTE #130 étape 4/5 (masquage CTA "proposer un logement" si pôle occupé) est FAITE & COMMITÉE (0c2e195), alors que ce fichier la décrivait encore comme "restante". Étapes 1/5 (fe013b6), 2/5 (faf0284) et 4/5 (0c2e195) livrées ; 3/5 FAITE en working tree mais NON COMMITÉE (Option A, never-stage, Phase 0bis). RESTE la seule étape 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. À clarifier à la reprise : modifs non commitées sur DashboardProprietairePage au-delà de 0c2e195 + fichiers untracked à ranger. Aval du tunnel toujours sous GEL volontaire.
 
 ---
 
