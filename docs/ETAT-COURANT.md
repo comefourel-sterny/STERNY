@@ -6,6 +6,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-07 (conv 110) — Feuille de route de cadrage : modèle multi-logements (agences → étude fraîche → audit code → compilation pro)
+
+DÉCISION DE MÉTHODE ACTÉE : sur un sujet cœur (ici l'état des lieux entre locataires qui se relaient), NE JAMAIS partir de l'existant pour cadrer. Construire le modèle IDÉAL d'abord (ce qu'on doit faire/avoir), comparer avec le code réel ENSUITE. Ne jamais se fier à un audit ancien (AUDIT-2026-04-22, AUDIT-FONCTIONNEL-2026-05-04) pour conclure sur l'état actuel d'un composant — toujours relire le composant réel au moment du besoin (les audits vieillissent, principe déjà en place mais qui doit s'appliquer aussi au produit/juridique, pas seulement au code).
+
+CONTEXTE : reprise du sujet "un locataire comble son planning avec plusieurs logements" (DETTE #48, matching partiel) + état des lieux multi-occupants (Q-AVO-006 à 009 gelés côté avocat) + frein agences immobilières identifié comme prioritaire par Côme.
+
+CHECKLIST PROGRESSIVE (à cocher au fil des sessions, ordre non interchangeable) :
+- [ ] 1. Agences immobilières — lister et poser les questions réelles (quel est le frein exact, conditions pour qu'elles autorisent le modèle Sterny). Rien de codé à ce jour sur ce sujet.
+- [ ] 2. Étude fraîche du modèle idéal d'état des lieux — SANS regarder le code existant. S'appuyer sur : analyse Airbnb (UX/opérationnel — réservation, litiges, vol ; jamais le cadre juridique, cf. limite déjà actée en VISION : Airbnb = meublé de tourisme ≠ Sterny = sous-location résidence principale) + Studapart/plateformes équivalentes (EDL en ligne). Produit attendu : document du modèle idéal.
+- [ ] 3. Audit du code réel — SEULEMENT après l'étape 2. Relire EtatDesLieuxPage.jsx + table etats_des_lieux (composant réel, pas la doc d'audit), comparer à l'idéal défini en étape 2, lister les écarts.
+- [ ] 4. Compilation avocat/assureur — compléter QUESTIONS-PROFESSIONNELS.md avec les questions informées par 1 à 3, en complément de Q-AVO-006 à 010 déjà présentes.
+
+LIENS : DETTE #48 (matching partiel), Q-AVO-006→010 (QUESTIONS-PROFESSIONNELS.md), gel de l'aval du tunnel (conv 103, ETAT-COURANT).
+
+---
+
 ## Conv 109 — 07/07/2026 — Audit lecture seule : modifs non commitées DashboardProprietairePage.jsx/.css
 Audit lecture seule (git diff 0c2e195) sur les fichiers never-stage DashboardProprietairePage.jsx + .css.
 CONSTAT : le diff contient une feature complète et fonctionnelle — bouton "œil" (PasswordRevealButton,
