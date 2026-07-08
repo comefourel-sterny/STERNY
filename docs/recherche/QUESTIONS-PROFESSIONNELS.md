@@ -102,6 +102,22 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
 
+> **[Q-AVO-011]** Un système d'avis et de notes entre utilisateurs (un alternant note/commente un autre alternant après une occupation successive du même logement) engage-t-il la responsabilité de Sterny sur les contenus publiés (statut d'hébergeur vs éditeur) ? Quelles obligations : modération, droit de réponse de la personne notée, retrait de contenu diffamatoire, signalement ?
+> **Contexte** : la réputation est un pilier du modèle multi-locataires (co-occupants successifs qui ne se croisent jamais mais héritent de l'état laissé par le précédent). Avis positifs ET négatifs envisagés.
+> **Référence** : VISION section "Modèle multi-locataires" ; idees-en-attente (réputation conv 67).
+> **Statut** : à poser
+> **Priorité** : moyenne
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
+> **[Q-AVO-012]** Un avis nominatif sur un utilisateur est une donnée personnelle le concernant. Quelles obligations RGPD (à croiser avec le DPO) : information de la personne notée, droit d'accès/rectification/opposition, durée de conservation des avis, conséquence d'un droit à l'effacement sur un historique de réputation ?
+> **Contexte** : idem Q-AVO-011. Sujet à la frontière avocat/DPO.
+> **Référence** : VISION section "Modèle multi-locataires".
+> **Statut** : à poser
+> **Priorité** : moyenne
+> **Date RDV prévue** : —
+> **Réponse / décision** : —
+
 ---
 
 ## 2. Avocat / DPO — RGPD et données personnelles
@@ -379,6 +395,8 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 | Q-AVO-008 | Bail sur semaines non-continues | 1 | **haute** | à poser | — |
 | Q-AVO-009 | Un contrat par locataire vs multi-parties | 1 | **haute** | à poser | — |
 | Q-AVO-010 | Retrait d'une semaine déjà réservée (modif planning annonce) | 1 | **haute** | à poser | — |
+| Q-AVO-011 | Responsabilité plateforme sur avis/notes utilisateurs | 1 | moyenne | à poser | — |
+| Q-AVO-012 | Avis nominatif = donnée personnelle (RGPD) | 1 | moyenne | à poser | — |
 | Q-DPO-001 | Téléphone obligatoire — finalité | 2 | moyenne | à poser | — |
 | Q-DPO-002 | Date de naissance — minimisation | 2 | moyenne | à poser | — |
 | Q-DPO-003 | Champ sexe — finalité métier | 2 | **haute** | à poser | — |
