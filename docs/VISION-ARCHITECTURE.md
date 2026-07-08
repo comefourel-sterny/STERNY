@@ -630,6 +630,31 @@ Trois pièces :
 
 **Points juridiques soulevés (parqués, gated avocat)** : régime de la sous-location à occupants multiples (ALUR) ; responsabilité/remise entre co-occupants successifs ; bail sur semaines non-continues vs période continue actuelle (`contrats.date_debut`/`date_fin`) ; un contrat par locataire (parallèles sur une annonce) vs contrat multi-parties. Tracés en QUESTIONS-PROFESSIONNELS Q-AVO-006 à 009.
 
+### Demande résiduelle à la semaine = pilier de liquidité du modèle (clarification produit, conv 111, 07/07/2026)
+
+CONSTAT (exemple Côme) : le modèle multi-locataires ne se limite pas à "1 hôte + 1 locataire complémentaire". DEUX types de demande se nourrissent mutuellement :
+- Demande PRINCIPALE : un alternant cherche à couvrir une grande partie de son année (le locataire "gros bloc").
+- Demande RÉSIDUELLE (à la semaine) : un alternant DÉJÀ logé ailleurs à qui il manque 1-2 semaines isolées. Il cherche du bouchage court.
+
+MÉCANISME DE MARCHÉ : les semaines résiduelles d'un hôte (ce qui reste après lui-même + le(s) locataire(s) principal(aux)) sont EXACTEMENT ce que cherche la demande résiduelle. Les trous d'un côté = le besoin de l'autre. Cercle vertueux de liquidité : plus il y a d'alternants, plus les trous se comblent. La location/recherche à la semaine (jusqu'ici classée simple feature d'interface, idees-en-attente conv 53) est RÉÉVALUÉE comme PILIER de liquidité. Elle sert aussi à RASSURER l'hôte : même sans locataire 100% compatible, il pourra combler le reste.
+
+EXEMPLE CANONIQUE : hôte occupe 50% de ses semaines ; locataire principal en couvre 30% ; restent 20%. L'hôte a deux options : (a) laisser tel quel (>la moitié des pertes déjà couvertes, acceptable) ; (b) combler via des chercheurs de semaines isolées. Nombre d'occupants NON PLAFONNÉ (dépend de la difficulté à combler ; 2 fréquent, 4-5 possible). INVARIANT : jamais 2 personnes en même temps (exclusivité par semaine, UNIQUE(annonce_id, semaine)).
+
+DÉCISIONS PRODUIT ACTÉES (conv 111) :
+1. La recherche est TOUJOURS dérivée du rythme (emploi du temps) du chercheur croisé avec les semaines ENCORE À DÉCOUVERT de l'annonce. Conséquence : un hôte ayant déjà son locataire principal ne voit son annonce proposée QU'AUX chercheurs dont les semaines croisent les semaines restantes — souvent des chercheurs de 1-2 semaines. Résultats triés par compatibilité décroissante. (Confirme le modèle #93, ne le change pas.)
+2. Modal pédagogique à l'arrivée sur /recherche (utilisateur CONNECTÉ) : expliquer que trouver un alternant 100% compatible est rare, mais que les semaines restantes se comblent avec d'autres. Wording à écrire plus tard.
+3. Codes couleur du planning à faire évoluer pour DISTINGUER visuellement le locataire principal des chercheurs courte durée (le codage couleur dépend de la surface, cf. charte invariant 7 — à concevoir dans le chantier planning, pas décidé ici).
+4. CONTRÔLE PAR L'HÔTE, PAS DE PATERNALISME : Sterny ne décide JAMAIS à la place de l'hôte s'il doit combler ou non ses trous résiduels. On ne construit PAS d'aide à la décision sur un "seuil d'acceptabilité". On donne le contrôle : un bouton "retirer / mettre en retrait l'annonce" pour l'hôte qui ne veut pas s'embêter à combler (et éviter le risque de tomber sur de mauvaises personnes). Le seuil de satisfaction appartient à l'hôte.
+
+CHANTIER DE CONCEPTION PARQUÉ (NON TRANCHÉ — à reprendre à froid, touche le dev, ne pas décider à la légère) — "ordre d'acceptation & priorité locataire principal vs comblement" :
+- PROBLÈME : accepter un chercheur d'1 semaine sur une semaine qui aurait pu compléter un gros bloc peut FRAGMENTER l'offre au détriment d'un futur locataire principal. L'ordre d'acceptation change la couverture finale. (Prolonge le sous-problème 4 de #48, "tension hôte/locataire".)
+- PISTE ÉVOQUÉE (Côme) : une notion de "ligue 1 / ligue 2" — d'abord réserver l'annonce aux locataires principaux (gros blocs), n'ouvrir aux chercheurs de comblement qu'ensuite, pour éviter les postulations tous azimuts avant qu'un principal soit trouvé.
+- TENSIONS À RÉGLER AVANT DE CODER : (a) STOCKER vs DÉRIVER — un flag "ligue 1/2" figé en base irait contre le principe "couverture calculée, jamais stockée" ; vérifier si l'état "y a-t-il un principal ?" est DÉRIVABLE du registre plutôt que stocké. (b) CAS "JAMAIS DE PRINCIPAL" — certains hôtes ont des semaines libres déjà éparpillées, aucun gros bloc possible ; ne pas bloquer l'annonce en attente d'un principal qui ne viendra jamais.
+- QUESTION OUVERTE CENTRALE : qui décide de passer de "j'attends un principal" à "j'ouvre au comblement" ? Piste privilégiée en séance = l'HÔTE manuellement (cohérent avec le contrôle par l'hôte + règle le cas "jamais de principal"), vs le système automatiquement (à un % signé). NON TRANCHÉ.
+- DÉPENDANCES : chantier recherche #48, modèle #93, refonte planning/codes couleur, retour des agences (le bouton "retrait" et la mécanique de blocage des semaines peuvent dépendre de ce que les agences acceptent).
+
+LIENS : DETTE #48 (matching partiel, demande), DETTE #93 (offre multi-locataires), idees-en-attente (recherche à la semaine conv 53 ; réputation conv 67).
+
 ---
 
 ## Recherche — vitrine visiteur, matching réservé au connecté (décision conv 55, 13 juin 2026)
