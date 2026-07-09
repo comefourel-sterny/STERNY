@@ -6,6 +6,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-09 — Fix recherche ville : soumission sans clic sur suggestion
+
+**Bug** : sur HomePage et RecherchePage, taper le nom exact d'une ville sans cliquer la suggestion affichée empêchait la recherche (loupe et, sur RecherchePage, la touche Entrée aussi — Entrée n'y déclenchait rien du tout, elle fermait juste la liste). Cause : la recherche dépendait d'un state `villeSelectionnee` rempli uniquement au clic sur une suggestion, distinct du texte tapé (`villeInput`).
+
+**Fix** : résolution de secours ajoutée au moment de la soumission (loupe + Entrée) — si `villeSelectionnee` est vide, comparaison du texte tapé aux villes valides (`VILLES_DISPONIBLES` / `VILLES_DISPONIBLES_RECHERCHE`), en ignorant la casse. Match exact trouvé → recherche lancée avec le slug résolu, sans attendre la mise à jour asynchrone du state.
+
+**Fichiers** : `HomePage.jsx` (fonction `rechercher`), `RecherchePage.jsx` (nouveau paramètre `villeOverride` sur `filtrerLogements`, nouvelle fonction `lancerRechercheVille` centralisant loupe + Entrée).
+
+**Non touché** : pas de composant `<SearchBar>` partagé (toujours différé, cf. conv 56) — la logique reste dupliquée entre les 2 pages, corrigée dans les 2 indépendamment.
+
+Commit : c43b4f4 (poussé sur origin/feat/unification-inscription)
+
+---
+
 ## 2026-07-07 (conv 110) — Feuille de route de cadrage : modèle multi-logements (agences → étude fraîche → audit code → compilation pro)
 
 DÉCISION DE MÉTHODE ACTÉE : sur un sujet cœur (ici l'état des lieux entre locataires qui se relaient), NE JAMAIS partir de l'existant pour cadrer. Construire le modèle IDÉAL d'abord (ce qu'on doit faire/avoir), comparer avec le code réel ENSUITE. Ne jamais se fier à un audit ancien (AUDIT-2026-04-22, AUDIT-FONCTIONNEL-2026-05-04) pour conclure sur l'état actuel d'un composant — toujours relire le composant réel au moment du besoin (les audits vieillissent, principe déjà en place mais qui doit s'appliquer aussi au produit/juridique, pas seulement au code).
