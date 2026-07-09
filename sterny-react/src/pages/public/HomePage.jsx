@@ -320,19 +320,41 @@ export default function HomePage() {
   const rechercher = useCallback(() => {
     setSearchError('')
 
+    // Résolution du slug : soit la ville a été sélectionnée dans la liste,
+    // soit l'utilisateur a tapé le nom exact sans cliquer sur une suggestion
+    // (résolution de secours — même logique que le commentaire de selectVille :
+    // on ne dépend pas de villeSelectionnee mis à jour de façon asynchrone).
+    let slug = villeSelectionnee
+    if (!slug) {
+      const val = villeInput.trim()
+      if (val) {
+        const exactMatch = Object.keys(VILLES_DISPONIBLES).find(v =>
+          v.toLowerCase() === val.toLowerCase()
+        )
+        if (exactMatch) {
+          slug = VILLES_DISPONIBLES[exactMatch]
+          // Cohérence d'affichage si l'utilisateur revient sur le champ.
+          setVilleInput(exactMatch)
+          setVilleSelectionnee(slug)
+        }
+      }
+    }
+
     // Conv 55 — la ville seule suffit à lancer la recherche (type/rythme optionnels).
-    if (!villeSelectionnee) {
+    // Erreur seulement si AUCUNE résolution n'a été possible (ni state, ni texte exact).
+    if (!slug) {
       highlightError(villeInputRef)
       setSearchError('Choisis une ville pour lancer ta recherche')
       setTimeout(() => setSearchError(''), 3000)
       return
     }
 
+    // On navigue avec le slug résolu, pas l'état villeSelectionnee (mise à jour asynchrone).
     const params = new URLSearchParams()
-    if (villeSelectionnee) params.set('ville', villeSelectionnee)
+    params.set('ville', slug)
 
     navigate(`/recherche?${params.toString()}`)
-  }, [villeSelectionnee, navigate, highlightError])
+  }, [villeSelectionnee, villeInput, navigate, highlightError])
 
   /* ── Handle Enter key in search bar ── */
   const handleSearchKeyPress = useCallback((e) => {

@@ -365,12 +365,14 @@ export default function RecherchePage() {
 
   // ========== FILTERING ==========
 
-  const filtrerLogements = useCallback(() => {
+  const filtrerLogements = useCallback((villeOverride) => {
     let resultats = [...logements]
 
-    // Ville filter
-    if (villeSelectionnee) {
-      const villesAcceptees = [villeSelectionnee]
+    // Ville filter — villeOverride (slug résolu au lancement) prime sur le state,
+    // qui peut ne pas encore refléter setVilleSelectionnee (mise à jour asynchrone).
+    const villeActive = villeOverride || villeSelectionnee
+    if (villeActive) {
+      const villesAcceptees = [villeActive]
       if (villeSecondaire) villesAcceptees.push(villeSecondaire)
       resultats = resultats.filter(l =>
         villesAcceptees.some(v => v.toLowerCase() === (l.ville || '').toLowerCase())
@@ -577,6 +579,43 @@ export default function RecherchePage() {
       }
     }, 200)
   }, [villeInput, villeSelectionnee])
+
+  // Lancement centralisé de la recherche ville (loupe + touche Entrée).
+  const lancerRechercheVille = useCallback(() => {
+    // Résolution du slug : soit sélection dans la liste, soit texte exact tapé
+    // sans clic sur une suggestion (résolution de secours).
+    let slug = villeSelectionnee
+    if (!slug) {
+      const val = villeInput.trim()
+      if (val) {
+        const exactMatch = Object.keys(VILLES_DISPONIBLES_RECHERCHE).find(v =>
+          v.toLowerCase() === val.toLowerCase()
+        )
+        if (exactMatch) {
+          slug = VILLES_DISPONIBLES_RECHERCHE[exactMatch]
+          // Cohérence d'affichage si l'utilisateur revient sur le champ.
+          setVilleInput(exactMatch)
+          setVilleSelectionnee(slug)
+        }
+      }
+    }
+
+    // Erreur + shake seulement si AUCUNE résolution possible (ni state, ni texte exact).
+    if (!slug) {
+      setSearchError('Complète ta recherche avant de continuer')
+      if (villeInputRef.current) {
+        villeInputRef.current.style.borderColor = '#ff6b6b'
+        villeInputRef.current.style.animation = 'shake 0.4s ease'
+        setTimeout(() => { villeInputRef.current.style.borderColor = ''; villeInputRef.current.style.animation = '' }, 2000)
+      }
+      setTimeout(() => setSearchError(''), 3000)
+      return
+    }
+
+    setShowVilleSuggestions(false)
+    // On filtre avec le slug résolu, pas l'état villeSelectionnee (mise à jour asynchrone).
+    filtrerLogements(slug)
+  }, [villeSelectionnee, villeInput, filtrerLogements])
 
   // ========== DRAWER ==========
 
@@ -1027,6 +1066,7 @@ export default function RecherchePage() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     setShowVilleSuggestions(false)
+                    lancerRechercheVille()
                   }
                 }}
                 placeholder="Dans quelle ville cherches-tu ?"
@@ -1056,19 +1096,7 @@ export default function RecherchePage() {
             </div>
 
             {/* Search button */}
-            <button className="search-btn" aria-label="Rechercher" onClick={() => {
-              if (!villeSelectionnee) {
-                setSearchError('Complète ta recherche avant de continuer')
-                if (villeInputRef.current) {
-                  villeInputRef.current.style.borderColor = '#ff6b6b'
-                  villeInputRef.current.style.animation = 'shake 0.4s ease'
-                  setTimeout(() => { villeInputRef.current.style.borderColor = ''; villeInputRef.current.style.animation = '' }, 2000)
-                }
-                setTimeout(() => setSearchError(''), 3000)
-                return
-              }
-              filtrerLogements()
-            }}>
+            <button className="search-btn" aria-label="Rechercher" onClick={lancerRechercheVille}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
             </button>
           </div>
