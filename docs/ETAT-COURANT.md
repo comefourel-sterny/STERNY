@@ -6,6 +6,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-10 (conv 111) — Gate RGPD levé, formulaire étude de terrain prêt et plan de lancement acté
+
+**Résolution du gate** : réponse écrite de Benoît Guillemin (mail 07/07/2026 + Snapchat 10/07/2026) sur les 6 questions Q-DPO-016→021. Détail des réponses et statuts mis à jour dans QUESTIONS-PROFESSIONNELS.md §2.5.
+
+**Implémentation dans le formulaire** : mention légale complète en intro (section 1 — finalité, contact, durée 24 mois, lien politique de confidentialité), rappel court en section 15 "Avant de terminer". Document de politique de confidentialité détaillé créé (Google Doc, partage "Lecteur" via lien uniquement). Typo contact@sterny.com corrigée en contact@sterny.co.
+
+**Plan de lancement acté** : test restreint à 4 proches de Côme. Si validé : diffusion large immédiate — les 4 proches relaient à leur classe/contacts, Côme sollicite des groupes LinkedIn alternance. Second passage prévu vers octobre 2026 pour capter le point de vue des nouveaux arrivants en alternance.
+
+**Reste hors gate** : volet propriétaires/agences (mentionné par Le Poool, non démarré, gated Q-AVO-006→009).
+
+**Point de vigilance posé** : purge/anonymisation des données à échéance 24 mois (~juillet 2028) — à ajouter dans idees-en-attente.md avec date de rappel (tâche séparée, pas faite ici).
+
+---
+
 ## 2026-07-09 — Fix recherche ville : soumission sans clic sur suggestion
 
 **Bug** : sur HomePage et RecherchePage, taper le nom exact d'une ville sans cliquer la suggestion affichée empêchait la recherche (loupe et, sur RecherchePage, la touche Entrée aussi — Entrée n'y déclenchait rien du tout, elle fermait juste la liste). Cause : la recherche dépendait d'un state `villeSelectionnee` rempli uniquement au clic sur une suggestion, distinct du texte tapé (`villeInput`).
@@ -175,7 +189,7 @@ PROCHAINES ACTIONS POSSIBLES (non tranchées) : ouvrir/MAJ DETTE pour caution or
 **Contenu** : tous les conditionnels montés et testés OK en aperçu (rythme régulier/irrégulier, fréquence, durée des grandes périodes, mono-ville/bi-ville, logement payé, critères choix entreprise, renoncement à une opportunité, contrefactuel de fin). AJOUT : question « Dans quel domaine étudies-tu ? » en section 2 Profil (choix unique + option Autre, obligatoire) — variable de segmentation par secteur.
 **Design** : bannière d'en-tête neutre (navy #1E293B / orange #E8622A, SANS logo ni mention de marque — choix assumé pour préserver la neutralité de l'étude et éviter le biais de désirabilité ; l'en-tête Forms n'est de toute façon pas cliquable). Accroche « Comment fais-tu pour te loger ? », eyebrow « ALTERNANCE & LOGEMENT ». Thème orange #E8622A, fond clair, mots-clés des questions en gras.
 **Neutralité — état réel (corrige l'intention initiale)** : le corps des questions est neutre, mais la neutralité n'est PAS absolue → (a) la section finale « Reste en contact » contient un teaser + contact@sterny.co (nécessaire au droit de suppression), (b) Forms ajoute automatiquement en pied « Ce formulaire a été créé dans Sterny ». Non bloquant (pied + opt-in post-réponse, sans biais sur les réponses), acté pour cohérence.
-**Gate RGPD (ouvert, BLOQUANT)** : wording intro/consentement/fin + champ email facultatif + transfert hors-UE NON validés par un pro → Q-DPO-016→021 (QUESTIONS-PROFESSIONNELS). Un mail de cadrage a été envoyé à un cousin juriste (Benoît Guillemin) avec lien aperçu du formulaire. DÉCISION ACTÉE : aucun lancement tant que le juriste n'a pas répondu — y compris le test restreint. Dès retour OK, lancement (test restreint ~10-15 alternants du réseau, puis diffusion via écoles à la rentrée).
+**Gate RGPD : LEVÉ (10/07/2026)**. Réponse écrite de Benoît Guillemin (mail 07/07/2026 + Snapchat 10/07/2026) sur Q-DPO-016→021 (QUESTIONS-PROFESSIONNELS §2.5) : mécanique de consentement Oui/Non validée, durée de conservation portée à 24 mois (justifiée), mention DPF pour l'hébergement Google, réutilisation anonymisée autorisée si annoncée, mention d'information en double format (courte in-situ + document détaillé). Voir entrée conv 111 ci-dessous pour le détail d'implémentation.
 **Prochaine étape (hors gate)** : questions AGENCES (instrument offre, concept-aware, gated avocat Q-AVO-006→009) + versionner en doc repo la recherche EDL plateformes déjà faite.
 
 ## 2026-06-30 (conv 101) — Refonte ModifierAnnoncePage (6c) MISE EN PAUSE volontaire ; #125 tranché à froid (décision produit, pas de code)

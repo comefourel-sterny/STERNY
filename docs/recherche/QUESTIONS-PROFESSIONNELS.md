@@ -207,20 +207,30 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 
 > **[Q-DPO-016]** Transfert hors-UE : les réponses au questionnaire (Google Forms) sont hébergées par Google, sous-traitant susceptible de stocker/traiter les données hors Union européenne. Quelle base de transfert (clauses contractuelles types, Data Privacy Framework UE–US) et quelles garanties faut-il vérifier/documenter ? Le type de compte Google utilisé (perso vs Workspace) change-t-il la localisation des données ?
 > **Contexte** : étude « demande » (alternants) menée via Google Forms (form actif, PUBLIÉ) ; Tally abandonné (archive). Collecte de données personnelles (réponses + email facultatif).
-> **Statut** : à poser — un mail de cadrage envoyé à un cousin juriste (Benoît Guillemin), en attente de réponse.
-> **Priorité** : haute, bloquante avant TOUT lancement (y compris test restreint)
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : mention DPF (Data Privacy Framework) ajoutée, formule validée par Benoît.
+> **Priorité** : haute, bloquante avant TOUT lancement (y compris test restreint) — RÉSOLU, gate levé le 10/07/2026 (cf. ETAT-COURANT.md conv 111).
 
 > **[Q-DPO-017]** Base légale de la collecte : le consentement, et le wording d'introduction actuel suffit-il (information claire, finalité, caractère facultatif) ? Faut-il une case à cocher dédiée distincte de la simple soumission ?
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : mécanique Oui/Non validée — pas d'obligation de forme, garantit un consentement libre/spécifique/éclairé/univoque.
 
 > **[Q-DPO-018]** Mention d'information à afficher dans le questionnaire (responsable de traitement, finalité = qualification du besoin, destinataires, durée de conservation, droits RGPD, contact, transfert hors-UE) : mention in-situ en tête de formulaire suffisante, ou lien vers une politique de confidentialité requis ? Le formulaire affiche aujourd'hui une mention minimale ("réponses jamais partagées ni revendues" + droit de suppression via contact@sterny.co) — non validée.
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : double format retenu — mention courte in-situ (finalité, contact, durée, lien) + document détaillé séparé (Google Doc, lecture seule).
 
 > **[Q-DPO-019]** Finalité et réutilisation : la finalité est strictement « étude de terrain ». Les réponses peuvent-elles être réutilisées ensuite (partage agrégé/anonyme à des organismes d'accompagnement, pitch, communication) et sous quelles conditions ? Faut-il anonymiser/agréger avant tout usage externe ?
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : réutilisation autorisée à des fins statistiques si annoncée dès la collecte et données anonymisées (art. 5.1.b et 89 RGPD).
 
 > **[Q-DPO-020]** Durée de conservation des réponses et de l'email facultatif : combien de temps les conserver, purge à prévoir une fois l'étude exploitée ? Procédure et garanties de suppression côté Google sur demande d'effacement (art. 17) ?
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : durée portée de 12 à 24 mois (CNIL tolère jusqu'à 3 ans si justifié), justification métier ajoutée dans le document détaillé.
 
 > **[Q-DPO-021]** Sort du champ email facultatif (recueilli pour recontact éventuel / suite étude) : finalité distincte de la réponse anonyme → consentement séparé requis ? Information et droit de retrait des répondants ; non-fusion avec la waitlist landing sans base légale propre.
 > **Contexte** : le corps du questionnaire est neutre, mais la section finale « Reste en contact » contient un teaser + contact@sterny.co, et Forms ajoute un pied « créé dans Sterny ». L'email reste facultatif et dissocié du pitch.
-> **Statut** : à poser
+> **Statut** : RÉPONDU (Benoît Guillemin, mail 07/07/2026 + Snapchat 10/07/2026).
+> **Réponse** : couvert par le mécanisme Oui/Non de Q-DPO-017, section "Reste en contact" séparée et consentement dédié.
 
 ### 2.6 Conservation des données & vérification d'identité (décisions conv 106)
 
