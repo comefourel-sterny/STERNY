@@ -17,11 +17,13 @@ body {
     flex-direction: column;
 }
 
-/* #root doit être un conteneur flex (column) : le Footer se cale en bas du viewport
-   via son margin-top:auto, qui n'a d'effet que dans un parent flex. min-height:100vh
-   fait que #root occupe au moins l'écran, donc sur une page courte le margin-top:auto
-   du footer absorbe l'espace libre et le pousse en bas. Cohérent avec le body flex-column. */
-#root {
+/* Contexte flex du footer SCOPÉ aux pages publiques (Layout.jsx) : ce wrapper est
+   flex-column + min-height:100vh pour que le Footer se cale en bas via son margin-top:auto
+   (qui n'a d'effet que dans un parent flex). NE PAS remonter ces propriétés sur #root global :
+   DashboardLayout.jsx (et toute page hors Layout.jsx) ne les attend pas et casse visuellement
+   — cf. régression PlancheCouverture /mon-calendrier du 11/07 : un <div> centré margin:0 auto
+   devenait un flex-item shrink-to-fit, effondrant les colonnes flex:1 1 0 du calendrier. */
+.public-layout-flex {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -31,7 +33,7 @@ body {
    Décision, après test : forcer min-height:100vh poussait les blocs de conversion
    (compteur d'étudiants compatibles + notification) hors écran sur grand écran. On
    priorise la visibilité de ces blocs. Conséquence assumée : sur les états courts, le
-   footer (calé en bas du viewport via son margin-top:auto dans #root flex-column) peut
+   footer (calé en bas du viewport via son margin-top:auto dans .public-layout-flex) peut
    être visible sans scroll — compromis mineur accepté. */
 .app-content {
     min-height: auto;
