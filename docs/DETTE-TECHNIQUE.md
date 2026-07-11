@@ -1433,3 +1433,13 @@ CONSTAT (audit conv 106) :
 POURQUOI C'EST LIÉ ET GELÉ : redescendre = retirer une action ; si l'action retirée est l'hébergement, cela implique de supprimer une annonce, ce qui percute candidatures en cours, bail/contrat, registre semaines_reservees (#93), matching confirmé avec un autre alternant. Volet contractuel réel (que devient l'engagement envers l'autre étudiant ?). → sujet partiellement dans l'aval gelé (conv 103), avis pro requis.
 CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce sera ARCHIVER (soft-delete), pas hard-delete. Le hard-delete actuel de DashboardProprietairePage est lui-même à revoir (non-conformité notée en VISION conv 106).
 À FAIRE (chantier séparé, après RDV pros) : cadrer la migration descendante + la suppression/archivage d'annonce côté alternant. Point d'entrée UI naturel : ParametresPage ("changer mon type de compte"). Fichiers impactés recensés : DashboardLocatairePage.jsx, utils/deriveVilleColonnes.js, DashboardProprietairePage.jsx (logique delete), colonnes users, ParametresPage.jsx.
+
+## DETTE #132 — DashboardLayout.jsx : même schéma sticky-footer latent que Layout.jsx (non traité)
+
+**Statut au 11 juillet 2026** : créée, lors du fix footer sur les pages publiques (Layout.jsx, ETAT-COURANT conv du 11/07).
+
+**Constat** : `DashboardLayout.jsx` rend probablement un fragment similaire à l'ancien `Layout.jsx` (Navbar/Sidebar + Outlet + pas de wrapper flex), avec le même risque de footer mal positionné sur les pages dashboard courtes — non vérifié, juste repéré par analogie de structure.
+
+**Priorité** : basse — pas de bug signalé côté dashboard à ce jour, aucune urgence.
+
+**Réf** : Layout.jsx (pages publiques, fix appliqué), DashboardLayout.jsx (non audité).

@@ -6,6 +6,35 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-11 — Suggestions ville au focus + footer collé en bas + bloc "Aucun logement" agrandi
+
+**SUJET 1 — Suggestions ville au focus** (commit `68dcd38`)
+
+Sur `/recherche?ville=rennes`, cliquer dans le champ ville déjà pré-rempli ("Rennes") n'affichait aucune suggestion tant qu'on n'avait pas retapé un caractère (les suggestions ne se calculaient qu'au `onChange`). Ajout d'un handler `onFocus` (`handleVilleFocus`) qui recalcule et ré-affiche les suggestions si le champ n'est pas vide. Filtre factorisé dans `computeVilleMatches`, réutilisé par `onChange` et `onFocus`.
+
+**SUJET 2 — Footer + bloc état vide** (commit `6f908b4`, historique d'itérations condensé)
+
+Point de départ : sur l'état vide de `/recherche` (aucun logement), le footer était visible immédiatement sans scroll, collé directement sous un bloc "Aucun logement disponible" trop compact et écrasé.
+
+Plusieurs approches testées avant la version retenue :
+- `min-height: calc(100vh - navbar - footer + marge)` — abandonné, fragile (dépend de mesures en pixels runtime du footer, variables selon le contenu et la taille d'écran ; s'est révélé sans effet réel car le plancher calculé restait plus petit que le contenu naturel).
+- `.app-content { min-height: 100vh }` — techniquement robuste pour repousser le footer hors écran, mais **rejeté** : sur grand écran (ex. Mac plein écran), ça poussait aussi les 2 blocs de conversion en dessous (compteur d'étudiants compatibles + notification) hors du premier écran, ce qui est plus dommageable business que le footer visible.
+
+**Décision finale retenue** : priorité à la visibilité des blocs de conversion plutôt qu'à masquer systématiquement le footer.
+- `.app-content { min-height: auto }` — pas de hauteur forcée, le contenu garde sa taille naturelle.
+- `#root { display:flex; flex-direction:column; min-height:100vh }` — nécessaire pour que le footer (qui a `margin-top: auto` dans son CSS existant) se cale proprement en bas de l'écran sur les pages courtes, plutôt que de rester collé juste après le contenu.
+- **Compromis assumé** : sur les états courts, le footer peut être visible sans scroll (calé en bas de l'écran, pas flottant au milieu). Les blocs de conversion, eux, restent toujours visibles.
+
+**Bloc "Aucun logement disponible" agrandi** (`.nr-enriched` et enfants, `RecherchePage.css`) : padding 48/24/40 → 64/32/56, icône 56px → 64px, titre 20px → 22px, marges ajustées. Valeurs intermédiaires après un premier essai trop généreux (96/32/88, qui masquait les blocs du dessous).
+
+**Fichiers** : `Layout.jsx` (wrapper `.app-content` autour de `<Outlet/>`), `index.css` (`#root`, `.app-content`), `RecherchePage.css` (`.nr-enriched` et enfants), `RecherchePage.jsx` (`computeVilleMatches`, `handleVilleFocus`).
+
+**Non traité, hors scope** : `DashboardLayout.jsx` a le même schéma de sticky-footer latent (pas de wrapper flex) mais n'a pas été touché — pages dashboard, pas publiques. Tracé en DETTE #132.
+
+Commits : `68dcd38`, `6f908b4` (poussés sur `origin/feat/unification-inscription`)
+
+---
+
 ## 2026-07-10 (conv 111) — Gate RGPD levé, formulaire étude de terrain prêt et plan de lancement acté
 
 **Résolution du gate** : réponse écrite de Benoît Guillemin (mail 07/07/2026 + Snapchat 10/07/2026) sur les 6 questions Q-DPO-016→021. Détail des réponses et statuts mis à jour dans QUESTIONS-PROFESSIONNELS.md §2.5.
