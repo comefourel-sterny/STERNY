@@ -131,6 +131,13 @@
 .hero .ville-suggestions::-webkit-scrollbar { width: 5px; }
 .hero .ville-suggestions::-webkit-scrollbar-track { background: transparent; }
 .hero .ville-suggestions::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+.hero .search-error-msg {
+    color: #ff6b6b;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    text-align: center;
+}
 .hero .ville-suggestion-item {
     padding: 13px 18px 13px 36px;
     cursor: pointer;

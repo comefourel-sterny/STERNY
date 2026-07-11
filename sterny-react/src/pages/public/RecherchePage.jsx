@@ -513,6 +513,7 @@ export default function RecherchePage() {
   // ========== VILLE AUTOCOMPLETE ==========
 
   const handleVilleInput = useCallback((e) => {
+    setSearchError('') // efface l'erreur immédiatement à la frappe (sans attendre le minuteur 3s)
     const raw = e.target.value
     const pos = e.target.selectionStart
     const capitalized = capitalizeWords(raw)
@@ -602,6 +603,8 @@ export default function RecherchePage() {
 
     // Erreur + shake seulement si AUCUNE résolution possible (ni state, ni texte exact).
     if (!slug) {
+      setShowVilleSuggestions(false)
+      setShowNoMatch(false)
       setSearchError('Complète ta recherche avant de continuer')
       if (villeInputRef.current) {
         villeInputRef.current.style.borderColor = '#ff6b6b'

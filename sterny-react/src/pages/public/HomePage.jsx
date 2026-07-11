@@ -240,6 +240,7 @@ export default function HomePage() {
 
   /* ── Ville autocomplete handler ── */
   const handleVilleInput = useCallback((e) => {
+    setSearchError('') // efface l'erreur immédiatement à la frappe (sans attendre le minuteur 3s)
     const raw = e.target.value
     const capitalized = capitalizeWords(raw)
     setVilleInput(capitalized)
@@ -343,6 +344,8 @@ export default function HomePage() {
     // Conv 55 — la ville seule suffit à lancer la recherche (type/rythme optionnels).
     // Erreur seulement si AUCUNE résolution n'a été possible (ni state, ni texte exact).
     if (!slug) {
+      setShowNoMatch(false)
+      setShowSuggestions(false)
       highlightError(villeInputRef)
       setSearchError('Choisis une ville pour lancer ta recherche')
       setTimeout(() => setSearchError(''), 3000)

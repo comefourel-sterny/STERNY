@@ -16,6 +16,13 @@
 .recherche-hero .ville-suggestions::-webkit-scrollbar { width: 5px; }
 .recherche-hero .ville-suggestions::-webkit-scrollbar-track { background: transparent; }
 .recherche-hero .ville-suggestions::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+.recherche-hero .search-error-msg {
+    color: #ff6b6b;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    text-align: center;
+}
 .recherche-hero .ville-suggestion-item {
     padding: 13px 18px 13px 36px;
     cursor: pointer;
