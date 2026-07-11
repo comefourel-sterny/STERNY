@@ -1443,3 +1443,22 @@ CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce ser
 **Priorité** : basse — pas de bug signalé côté dashboard à ce jour, aucune urgence.
 
 **Réf** : Layout.jsx (pages publiques, fix appliqué), DashboardLayout.jsx (non audité).
+
+## DETTE #133 — Messages d'erreur Supabase non traduits sur les pages d'inscription (OAuth + mot de passe)
+
+**Statut au 11 juillet 2026** : créée, lors du fix des messages d'erreur anglais sur ConnexionPage (commit 09d437c).
+
+**Constat** : le même antipattern que ConnexionPage (error.message Supabase affiché brut, potentiellement en anglais) existe sur plusieurs pages d'inscription, non corrigées dans ce fix (hors scope) :
+- InscriptionProprietairePage.jsx — OAuth (l.194/211) + mapping inline 'User already registered' (l.259-261)
+- InscriptionAlternantPage.jsx — OAuth (l.187/206)
+- InscriptionRecherchePage.jsx — OAuth (l.240)
+- InscriptionPartagerPage.jsx — mapping inline (l.206)
+- ResetPasswordPage.jsx — check 'same password' (l.121)
+
+**Résolution suggérée** : brancher ces pages sur le même util `traduireErreurAuth` (sterny-react/src/utils/traduireErreurAuth.js) plutôt que de dupliquer un mapping inline par page.
+
+**Distinct de** : l'antipattern similaire sur les pages transaction/annonce (PaiementInitialPage, ContratLocationPage, EtatDesLieuxPage, DossierLocatairePage, ModifierAnnoncePage) — erreurs BDD/paiement, pas auth, nécessiterait un util distinct si traité un jour. CreerAnnoncePage.jsx (never-stage) exclu de toute façon.
+
+**Priorité** : basse — cosmétique (message d'erreur), pas de bug fonctionnel.
+
+**Réf** : traduireErreurAuth.js, ConnexionPage.jsx (fix appliqué).
