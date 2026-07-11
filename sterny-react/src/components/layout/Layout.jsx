@@ -8,7 +8,9 @@ export default function Layout() {
   return (
     <>
       <Navbar variant={isDarkPage ? 'dark' : 'default'} />
-      <Outlet />
+      <div className="app-content">
+        <Outlet />
+      </div>
       <Footer />
     </>
   )

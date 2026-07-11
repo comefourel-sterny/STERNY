@@ -864,9 +864,9 @@
     grid-column: 1 / -1;
     background: white;
     border: 1px solid #E8EAF0;
-    border-radius: 16px;
+    border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    padding: 48px 24px 40px;
+    padding: 64px 32px 56px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -893,23 +893,23 @@
     box-shadow: 0 4px 12px rgba(232, 98, 42, 0.25);
 }
 .nr-full-icon {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     background: #FDF0EB;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 .nr-full-title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: #1E293B;
-    margin: 0 0 6px;
+    margin: 0 0 12px;
 }
 .nr-full-sub {
-    font-size: 14px;
+    font-size: 15px;
     color: #94A3B8;
     margin: 0;
 }
