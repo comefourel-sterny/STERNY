@@ -512,6 +512,16 @@ export default function RecherchePage() {
 
   // ========== VILLE AUTOCOMPLETE ==========
 
+  // Calcule les villes de lancement dont le label commence par le texte saisi.
+  // Factorisé pour être réutilisé par onChange (handleVilleInput) et onFocus (handleVilleFocus).
+  const computeVilleMatches = useCallback((text) => {
+    const query = text.trim().toLowerCase()
+    if (query.length === 0) return []
+    return Object.keys(VILLES_DISPONIBLES_RECHERCHE)
+      .filter(v => v.toLowerCase().startsWith(query))
+      .map(v => ({ label: v, value: VILLES_DISPONIBLES_RECHERCHE[v] }))
+  }, [])
+
   const handleVilleInput = useCallback((e) => {
     setSearchError('') // efface l'erreur immédiatement à la frappe (sans attendre le minuteur 3s)
     const raw = e.target.value
@@ -535,15 +545,10 @@ export default function RecherchePage() {
       return
     }
 
-    const matches = Object.keys(VILLES_DISPONIBLES_RECHERCHE).filter(v =>
-      v.toLowerCase().startsWith(query)
-    )
+    const matches = computeVilleMatches(raw)
 
     if (matches.length > 0) {
-      setVilleSuggestions(matches.map(v => ({
-        label: v,
-        value: VILLES_DISPONIBLES_RECHERCHE[v]
-      })))
+      setVilleSuggestions(matches)
       setShowVilleSuggestions(true)
       setShowNoMatch(false)
     } else {
@@ -555,7 +560,18 @@ export default function RecherchePage() {
         setShowNoMatch(false)
       }
     }
-  }, [])
+  }, [computeVilleMatches])
+
+  // Ré-affiche les suggestions au focus/clic si le champ est déjà rempli
+  // (ex. arrivée sur /recherche?ville=rennes : "Rennes" est pré-rempli sans passer par onChange).
+  const handleVilleFocus = useCallback(() => {
+    if (!villeInput.trim()) return
+    const matches = computeVilleMatches(villeInput)
+    if (matches.length > 0) {
+      setVilleSuggestions(matches)
+      setShowVilleSuggestions(true)
+    }
+  }, [villeInput, computeVilleMatches])
 
   const handleVilleSelect = useCallback((label, value) => {
     setVilleInput(label)
@@ -1065,6 +1081,7 @@ export default function RecherchePage() {
                 ref={villeInputRef}
                 value={villeInput}
                 onChange={handleVilleInput}
+                onFocus={handleVilleFocus}
                 onBlur={handleVilleBlur}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
