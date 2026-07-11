@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabaseClient } from '../../config/supabase'
+import { traduireErreurAuth } from '../../utils/traduireErreurAuth'
 import AuthScreenContainer from '../../components/auth-wizard/AuthScreenContainer'
 import TextInput from '../../components/auth-wizard/TextInput'
 import PrimaryButton from '../../components/auth-wizard/PrimaryButton'
@@ -35,7 +36,7 @@ export default function ConnexionPage() {
       }
     })
     if (error) {
-      setMessage({ type: 'error', text: error.message })
+      setMessage({ type: 'error', text: traduireErreurAuth(error) })
     }
   }
 
@@ -47,7 +48,7 @@ export default function ConnexionPage() {
       }
     })
     if (error) {
-      setMessage({ type: 'error', text: error.message })
+      setMessage({ type: 'error', text: traduireErreurAuth(error) })
     }
   }
 
@@ -94,10 +95,7 @@ export default function ConnexionPage() {
         }
       }, 1000)
     } catch (error) {
-      const msg = error.message === 'Invalid login credentials'
-        ? 'Email ou mot de passe incorrect'
-        : error.message
-      setMessage({ type: 'error', text: msg })
+      setMessage({ type: 'error', text: traduireErreurAuth(error) })
       shakeButton()
       setTimeout(() => setMessage({ type: '', text: '' }), 3000)
       setLoading(false)
