@@ -1462,3 +1462,10 @@ CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce ser
 **Priorité** : basse — cosmétique (message d'erreur), pas de bug fonctionnel.
 
 **Réf** : traduireErreurAuth.js, ConnexionPage.jsx (fix appliqué).
+
+## DETTE #134 — Collision de label mois "Jui" (Juin/Juillet) dans groupByMonth
+
+**Statut** : ouverte, priorité basse. Repérée le 12 juillet 2026 lors de la vérification visuelle de /mon-calendrier suite au refactor academic-year (commit 9020b44).
+**Constat** : `groupByMonth` (utils/academicYear.js, migré depuis PlancheCouverture.jsx dans le commit 9020b44) génère le label du mois via `toLocaleDateString('fr-FR', { month: 'short' }).slice(0,3)`. "juin" et "juillet" (rendu "juil.") donnent tous les deux "jui" une fois tronqué à 3 caractères → colonnes Juin et Juillet affichent le même label sur /mon-calendrier. Bug pré-existant à cette session, pas introduit par le refactor (migration à l'identique, byte pour byte) — seulement rendu visible/repéré à cette occasion.
+**Référence** : la mini-planche de LogementPage.jsx (carte "Disponibilités") n'a pas ce problème — elle utilise un mapping explicite mois→label (LABELS = { '06':'Juin', '07':'Jul', ... }) plutôt que toLocaleDateString.
+**À faire** : remplacer le calcul de label dans groupByMonth par un mapping explicite, sur le modèle de celui de LogementPage.jsx. Petit chantier isolé, non bloquant.
