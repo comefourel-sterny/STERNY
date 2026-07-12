@@ -6,6 +6,28 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-12 — LogementPage : calendrier vestige remplacé par mini-planche 12 mois, gatée connexion (clôt conv 67 du 18 juin)
+
+LIVRÉ (commits 9020b44, 7877b1f) : le calendrier "Disponibilités" jour-par-jour de /logement (vestige location continue, repéré conv 67) est retiré. Remplacé par une mini-planche compacte : 12 colonnes-mois, cases carrées (radius 4px), une case par lundi ISO réel du mois, orange si disponible dans `disponibilites_pattern`, gris sinon. Année scolaire ancrée sur le premier lundi disponible de l'annonce, sans navigation (annonce ponctuelle, pas un calendrier personnel).
+
+DÉCISION — gate connexion : mini-planche visible seulement pour visiteur connecté (`useAuth().user`). Non connecté → CTA "Connecte-toi pour voir si ce logement correspond à ton rythme" + lien /connexion.
+
+Aussi retiré dans le commit 7877b1f : bloc "Disponible du... jusqu'au..." + "Durée minimum X mois" (logique de bail continu, purement supprimée), 3 helpers date orphelins, 198 lignes CSS orphelines.
+
+Refactor connexe (commit 9020b44) : `weeksForAcademicYear`/`groupByMonth`/`formatISO` étaient dupliquées dans `PlancheCouverture.jsx` (elle-même copiée du `RhythmManualBuilder` — donc déjà 2 copies). Extraites vers `utils/academicYear.js` comme source unique, migration à l'identique (byte-identique). `PlancheCouverture.jsx` importe désormais depuis ce util. Duplication historique résorbée, pas seulement déplacée.
+
+Process notable : 3 itérations de mockups visuels (Visualizer, Claude.ai) avant tout code, pour trancher entre liste textuelle / grille compacte restructurée / grille 12-colonnes fidèle à PlancheCouverture — Côme a tranché pour la fidélité au design existant plutôt qu'une redisposition, avec labels 3 lettres.
+
+Vérifié manuellement : /mon-calendrier (aucune régression fonctionnelle) et /logement (3 états : non connecté, connecté avec pattern, connecté sans pattern). Bug pré-existant repéré au passage sur /mon-calendrier (label "Jui" dupliqué Juin/Juillet) → tracé en DETTE #134 (commit 0504e38), non introduit par cette session.
+
+Non touché : carte couverture personnalisée (conv 85), flux candidature, prix.
+
+RESTE de conv 67 : rien — les 3 points constatés (calendrier jour/jour, fenêtre continue, durée minimum) sont désormais traités.
+
+RESTE de cette session : polish visuel du bloc "non connecté" sur la carte Disponibilités (design à affiner, en attente de précisions de Côme).
+
+---
+
 ## 2026-07-11 — Suggestions ville au focus + footer collé en bas + bloc "Aucun logement" agrandi
 
 **SUJET 1 — Suggestions ville au focus** (commit `68dcd38`)
