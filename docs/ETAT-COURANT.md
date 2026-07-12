@@ -6,6 +6,23 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-12 — Disponibilités /logement : système de couleur à 4 états DÉCIDÉ, pas encore implémenté
+
+Suite à la livraison de la mini-planche (commits 9020b44, 7877b1f), 3 itérations de mockups (Visualizer) ont permis de trancher le code couleur définitif pour la vue connectée. Matrice 2×2 (disponible dans `disponibilites_pattern` × dans le rythme du visiteur) :
+
+- **Vert `#22C55E`** — disponible ET correspond au rythme du visiteur ("ça passe")
+- **Rouge `#EF4444` (provisoire, à affiner)** — occupé par l'hôte MAIS le visiteur en aurait besoin ("ça bloque")
+- **Neutre `#F5F6F8` + contour `#E8EAF0`** — disponible mais hors du rythme du visiteur (pas de signal fort)
+- **Orange Sterny `#E8622A` + flou (blur 0.6px, opacity 0.5)** — occupé par l'hôte, hors du rythme du visiteur (le moins important)
+
+DÉCISION DE PRINCIPE (rattachée à la règle conv 63 "couleur = nature/état, jamais la couverture par variation d'opacité d'une même teinte") : chaque état a sa PROPRE couleur, aucun n'est une variante d'opacité d'un autre (sauf le flou, qui est un traitement à part, pas une teinte).
+
+SIMPLIFICATION ACTÉE : pas de garde-fou pour "visiteur sans rythme" — le rythme est obligatoire dès l'inscription (E-5 du parcours), donc un visiteur connecté a toujours un rythme exploitable. Cas où ça ne tiendrait pas (rythme incomplet, profil édge) explicitement PARQUÉ, à traiter seulement s'il se manifeste.
+
+RESTE (chantier à part) : calcul par semaine (pas juste le total `couvertureSemaines()`) croisant `disponibilites_pattern` de l'annonce avec le `rhythm_calendar` du visiteur — nouvelle logique à construire, pas une réutilisation directe de l'existant. + Polish visuel du bloc "non connecté" resté en attente depuis plus tôt dans cette session, précisions non encore données par Côme.
+
+---
+
 ## 2026-07-12 — LogementPage : calendrier vestige remplacé par mini-planche 12 mois, gatée connexion (clôt conv 67 du 18 juin)
 
 LIVRÉ (commits 9020b44, 7877b1f) : le calendrier "Disponibilités" jour-par-jour de /logement (vestige location continue, repéré conv 67) est retiré. Remplacé par une mini-planche compacte : 12 colonnes-mois, cases carrées (radius 4px), une case par lundi ISO réel du mois, orange si disponible dans `disponibilites_pattern`, gris sinon. Année scolaire ancrée sur le premier lundi disponible de l'annonce, sans navigation (annonce ponctuelle, pas un calendrier personnel).
