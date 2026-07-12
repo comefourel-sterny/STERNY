@@ -65,3 +65,42 @@ export function currentMondayISO() {
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
 }
+
+// Format 'YYYY-MM-DD' (UTC) d'un timestamp.
+export function formatISO(ts) {
+  const d = new Date(ts);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+// Semaines d'une année scolaire (sept Y → août Y+1) : depuis son 1er lundi, tant que
+// la semaine appartient encore à cette année (classement par le mois du jeudi).
+export function weeksForAcademicYear(yearStr) {
+  const weeks = [];
+  let mondayTs = firstMondayForAcademicYear(yearStr);
+  while (academicYearForMonday(formatISO(mondayTs)) === yearStr) {
+    weeks.push({ weekStart: formatISO(mondayTs), thursdayTs: mondayTs + 3 * DAY_MS });
+    mondayTs += 7 * DAY_MS;
+  }
+  return weeks;
+}
+
+// Regroupement par mois (mois qui contient le jeudi). 12 colonnes sept→août.
+export function groupByMonth(weeks) {
+  const months = [];
+  const map = new Map();
+  for (const w of weeks) {
+    const t = new Date(w.thursdayTs);
+    const key = `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}`;
+    if (!map.has(key)) {
+      const label = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1))
+        .toLocaleDateString('fr-FR', { month: 'short', timeZone: 'UTC' })
+        .toUpperCase()
+        .slice(0, 3);
+      const bucket = { key, label, weeks: [] };
+      map.set(key, bucket);
+      months.push(bucket);
+    }
+    map.get(key).weeks.push(w);
+  }
+  return months;
+}

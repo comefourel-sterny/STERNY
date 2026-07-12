@@ -5,9 +5,9 @@
 // de saisie : aucune cellule cliquable, aucune saisie, aucune logique multi-années de
 // saisie (DETTE #82). Seule interaction = les flèches qui changent l'année AFFICHÉE.
 //
-// Helpers d'année scolaire importés de utils/academicYear (source unique partagée) ;
-// la construction du squelette (weeksForAcademicYear / groupByMonth) est COPIÉE du
-// builder en version affichage (décision actée : copier le look, pas partager le code).
+// Helpers d'année scolaire ET construction du squelette (weeksForAcademicYear /
+// groupByMonth) importés de utils/academicYear (source unique partagée, extraite ici
+// pour être réutilisée par la mini-planche de LogementPage — plus de copie locale).
 //
 // Composant "NU" (INVENTAIRE 9.4) : ni fond, ni radius, ni ombre, ni titre propres.
 // Posé plus tard dans une .dp-card parent (cf. preview /dev/planche-couverture).
@@ -32,51 +32,11 @@ import {
   computeDefaultAcademicYear,
   nextAcademicYear,
   previousAcademicYear,
-  firstMondayForAcademicYear,
-  academicYearForMonday,
   currentMondayISO,
+  weeksForAcademicYear,
+  groupByMonth,
 } from '../../utils/academicYear';
 import './PlancheCouverture.css';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-function formatISO(ts) {
-  const d = new Date(ts);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-}
-
-// Semaines d'une année scolaire (sept Y → août Y+1) : depuis son 1er lundi, tant que
-// la semaine appartient encore à cette année (classement par le mois du jeudi).
-function weeksForAcademicYear(yearStr) {
-  const weeks = [];
-  let mondayTs = firstMondayForAcademicYear(yearStr);
-  while (academicYearForMonday(formatISO(mondayTs)) === yearStr) {
-    weeks.push({ weekStart: formatISO(mondayTs), thursdayTs: mondayTs + 3 * DAY_MS });
-    mondayTs += 7 * DAY_MS;
-  }
-  return weeks;
-}
-
-// Regroupement par mois (mois qui contient le jeudi). 12 colonnes sept→août.
-function groupByMonth(weeks) {
-  const months = [];
-  const map = new Map();
-  for (const w of weeks) {
-    const t = new Date(w.thursdayTs);
-    const key = `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, '0')}`;
-    if (!map.has(key)) {
-      const label = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1))
-        .toLocaleDateString('fr-FR', { month: 'short', timeZone: 'UTC' })
-        .toUpperCase()
-        .slice(0, 3);
-      const bucket = { key, label, weeks: [] };
-      map.set(key, bucket);
-      months.push(bucket);
-    }
-    map.get(key).weeks.push(w);
-  }
-  return months;
-}
 
 export default function PlancheCouverture({ etatsParSemaine = {}, anneeScolaireInitiale, className = '', onSemaineClick }) {
   const [annee, setAnnee] = useState(anneeScolaireInitiale || computeDefaultAcademicYear());
