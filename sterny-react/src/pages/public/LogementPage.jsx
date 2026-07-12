@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth.jsx';
 import { deduireRecherche } from '../../utils/deduireRecherche';
 import { couvertureSemaines } from '../../utils/matching';
 import { formatWeekRangeFR } from '../../utils/formatters';
+import { academicYearForMonday, weeksForAcademicYear, groupByMonth } from '../../utils/academicYear';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './LogementPage.css';
@@ -159,27 +160,6 @@ const SIGLES_ECOLES = {
 };
 
 // ---- Helper functions ----
-function parseLocalDate(str) {
-  if (!str) return null;
-  const parts = str.split('-');
-  if (parts.length !== 3) return null;
-  const [y, m, d] = parts.map(Number);
-  return new Date(y, m - 1, d);
-}
-
-function formatDateLocal(d) {
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-
-function getLundi(date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  return d;
-}
-
 function formatDuration(seconds) {
   const mins = Math.round(seconds / 60);
   if (mins < 60) return mins + ' min';
@@ -282,17 +262,6 @@ export default function LogementPage() {
   const [annonceProprietaireId, setAnnonceProprietaireId] = useState(null);
   const [badgeText, setBadgeText] = useState('Nouveau');
   const [showBadge, setShowBadge] = useState(true);
-
-  // Calendar state
-  const [currentCalendarMonth, setCurrentCalendarMonth] = useState(() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-  });
-  const [selectedWeeks, setSelectedWeeks] = useState(new Set());
-  const [hostAvailableDates, setHostAvailableDates] = useState(new Set());
-  const [dateDebut, setDateDebut] = useState('01/09/2026');
-  const [dateFin, setDateFin] = useState('31/08/2027');
-  const [dureeMin, setDureeMin] = useState('3 mois');
 
   // Couverture du visiteur connecté (étape 1a : données, pas encore affichées)
   const [couvertureVisiteur, setCouvertureVisiteur] = useState(null);
@@ -425,9 +394,6 @@ export default function LogementPage() {
         setShowBadge(false);
       }
 
-      // Dates
-      processAvailabilityDates(data);
-
       // Load proprietaire
       chargerProprietaire(data.user_id);
 
@@ -438,65 +404,6 @@ export default function LogementPage() {
       console.error('Erreur:', error);
     } finally {
       setLoading(false);
-    }
-  }
-
-  function processAvailabilityDates(data) {
-    try {
-      const pattern = data.disponibilites_pattern;
-      const hasPattern = Array.isArray(pattern) && pattern.length > 0;
-      const hasDebut = !!data.disponibilites_debut;
-
-      if (hasDebut) {
-        const d = parseLocalDate(data.disponibilites_debut);
-        if (d) setDateDebut(d.toLocaleDateString('fr-FR'));
-      }
-
-      let dateFinStr = null;
-      if (hasPattern) {
-        const sorted = [...pattern].sort();
-        dateFinStr = sorted[sorted.length - 1];
-        const df = parseLocalDate(dateFinStr);
-        if (df) setDateFin(df.toLocaleDateString('fr-FR'));
-      } else if (hasDebut) {
-        const df = parseLocalDate(data.disponibilites_debut);
-        if (df) {
-          df.setMonth(df.getMonth() + 6);
-          dateFinStr = formatDateLocal(df);
-          setDateFin(df.toLocaleDateString('fr-FR'));
-        }
-      }
-
-      if (hasDebut) {
-        const availSet = new Set(hasPattern ? pattern : []);
-        setHostAvailableDates(availSet);
-
-        // Pre-select weeks from URL dates param
-        const datesParam = searchParams.get('dates');
-        if (datesParam && datesParam.trim() !== '') {
-          try {
-            const userDates = new Set(datesParam.split(','));
-            const newSelected = new Set();
-            availSet.forEach(dateStr => {
-              if (userDates.has(dateStr)) {
-                const [py, pm, pd] = dateStr.split('-').map(Number);
-                const d = new Date(py, pm - 1, pd);
-                const lundi = getLundi(d);
-                newSelected.add(formatDateLocal(lundi));
-              }
-            });
-            setSelectedWeeks(newSelected);
-          } catch (e) {
-            console.error('Erreur parsing dates:', e);
-          }
-        }
-      }
-
-      if (data.duree_min) {
-        setDureeMin(data.duree_min + ' mois');
-      }
-    } catch (err) {
-      console.error('Erreur calendrier:', err);
     }
   }
 
@@ -1196,114 +1103,6 @@ export default function LogementPage() {
       });
   }
 
-  // ---- Calendar logic ----
-  function isJourSelectionne(dateStr) {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    const lundi = getLundi(date);
-    return selectedWeeks.has(formatDateLocal(lundi));
-  }
-
-  function selectionnerSemaine(date) {
-    const lundi = getLundi(date);
-    const lundiStr = formatDateLocal(lundi);
-    setSelectedWeeks(prev => {
-      const next = new Set(prev);
-      if (next.has(lundiStr)) next.delete(lundiStr);
-      else next.add(lundiStr);
-      return next;
-    });
-  }
-
-  function renderCalendar() {
-    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-    const dayNames = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-
-    const firstDay = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth(), 1);
-    let startingDayOfWeek = firstDay.getDay();
-    startingDayOfWeek = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
-
-    const daysInMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth() + 1, 0).getDate();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const emptyDays = Array.from({ length: startingDayOfWeek }, (_, i) => (
-      <div key={'empty-' + i} className="calendar-day empty" />
-    ));
-
-    const dayElements = [];
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayDate = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth(), day);
-      dayDate.setHours(0, 0, 0, 0);
-
-      const isPast = dayDate < today;
-      const dayDateStr = formatDateLocal(dayDate);
-      const isInPattern = hostAvailableDates.has(dayDateStr);
-      const isUserSelected = isJourSelectionne(dayDateStr);
-
-      let classes = 'calendar-day';
-      if (isUserSelected) {
-        classes += ' user-selected';
-        if (isPast) classes += ' past';
-      } else if (isInPattern && !isPast) {
-        classes += ' host-available';
-      } else if (isInPattern && isPast) {
-        classes += ' past-available';
-      } else if (!isInPattern) {
-        classes += ' host-busy';
-        if (isPast) classes += ' past';
-      }
-
-      if (dayDate.getTime() === today.getTime()) {
-        classes += ' today';
-      }
-
-      const clickable = (isInPattern && !isPast) || isUserSelected;
-
-      dayElements.push(
-        <div
-          key={day}
-          className={classes}
-          onClick={clickable ? () => selectionnerSemaine(dayDate) : undefined}
-          style={clickable ? { cursor: 'pointer' } : undefined}
-        >
-          {day}
-        </div>
-      );
-    }
-
-    return (
-      <div className="calendar-container">
-        <div className="calendar-nav">
-          <button
-            className="calendar-nav-btn"
-            onClick={() => setCurrentCalendarMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-          </button>
-          <div className="calendar-month-title">
-            {monthNames[currentCalendarMonth.getMonth()]} {currentCalendarMonth.getFullYear()}
-          </div>
-          <button
-            className="calendar-nav-btn"
-            onClick={() => setCurrentCalendarMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-          </button>
-        </div>
-
-        <div className="calendar-weekdays">
-          {dayNames.map((d, i) => <div key={i} className="calendar-weekday">{d}</div>)}
-        </div>
-
-        <div className="calendar-grid">
-          {emptyDays}
-          {dayElements}
-        </div>
-      </div>
-    );
-  }
-
   // ---- Render helpers ----
   if (loading) {
     return (
@@ -1516,21 +1315,6 @@ export default function LogementPage() {
               <span className="price-suffix">/ semaine</span>
             </div>
 
-            <div className="sidebar-dates">
-              <div className="sidebar-date-row">
-                <span className="sidebar-date-label">Disponible du</span>
-                <span className="sidebar-date-value">{dateDebut}</span>
-              </div>
-              <div className="sidebar-date-row">
-                <span className="sidebar-date-label">Jusqu&apos;au</span>
-                <span className="sidebar-date-value">{dateFin}</span>
-              </div>
-              <div className="sidebar-date-row">
-                <span className="sidebar-date-label">Durée minimum</span>
-                <span className="sidebar-date-value">{dureeMin}</span>
-              </div>
-            </div>
-
             {!dejaCandidateFlag ? (
               <button onClick={() => { setShowModalCandidature(true); setCandidatureMessage(''); }} className="btn-postuler">
                 Postuler
@@ -1597,26 +1381,53 @@ export default function LogementPage() {
             </div>
           )}
 
-          {/* CARD CALENDRIER */}
-          <div className="calendar-card">
+          {/* CARD DISPONIBILITÉS — liste des semaines de l'annonce (lundis ISO).
+              Remplace le calendrier jour-par-jour vestige. Info brute de l'annonce :
+              affichée pour TOUT visiteur (contrairement à la carte couverture personnalisée). */}
+          <div className="calendar-card" style={{ padding: '18px 14px' }}>
             <div style={{ fontSize: '14px', fontWeight: 600, color: '#1E293B', marginBottom: '12px' }}>Disponibilités</div>
-            <div>
-              {renderCalendar()}
-              <div className="calendar-legend">
-                <div className="legend-item">
-                  <span className="legend-color host-available" />
-                  <span className="legend-text">Disponible</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color host-busy" />
-                  <span className="legend-text">Occupé</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color user-selected" />
-                  <span className="legend-text">Sélectionné</span>
-                </div>
+            {!user ? (
+              <div style={{ fontSize: '13px', color: '#475569' }}>
+                <div style={{ marginBottom: '12px', lineHeight: 1.5 }}>Connecte-toi pour voir si ce logement correspond à ton rythme.</div>
+                <Link to="/connexion" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 24px', background: '#E8622A', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>Se connecter</Link>
               </div>
-            </div>
+            ) : (() => {
+              const dispo = Array.isArray(logement.disponibilites_pattern) ? [...logement.disponibilites_pattern].sort() : [];
+              if (dispo.length === 0) {
+                return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Aucune disponibilité renseignée</div>;
+              }
+              // Année scolaire ancrée sur le 1er lundi disponible ; découpage 12 mois via le util partagé.
+              const mois = groupByMonth(weeksForAcademicYear(academicYearForMonday(dispo[0])));
+              const dispoSet = new Set(dispo);
+              const LABELS = { '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Déc', '01': 'Jan', '02': 'Fév', '03': 'Mar', '04': 'Avr', '05': 'Mai', '06': 'Juin', '07': 'Jul', '08': 'Aoû' };
+              return (
+                <>
+                  {/* Ligne de labels de mois (1 par colonne) */}
+                  <div style={{ display: 'flex', gap: '3px', marginBottom: '4px' }}>
+                    {mois.map((m) => (
+                      <div key={m.key} style={{ flex: 1, textAlign: 'center', fontSize: '8px', color: '#94A3B8', letterSpacing: '-0.2px' }}>
+                        {LABELS[m.key.split('-')[1]]}
+                      </div>
+                    ))}
+                  </div>
+                  {/* Grille 12 colonnes-mois : 1 case carrée par lundi ISO réel du mois */}
+                  <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-start' }}>
+                    {mois.map((m) => (
+                      <div key={m.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        {m.weeks.map((w) => (
+                          <div key={w.weekStart} style={{ aspectRatio: '1', borderRadius: '4px', background: dispoSet.has(w.weekStart) ? '#E8622A' : '#EAECEF' }} />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  {/* Légende */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #E8EAF0', paddingTop: '12px', marginTop: '12px' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#E8622A', flex: '0 0 auto' }} />
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>Semaine disponible</span>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </aside>
       </div>
