@@ -160,6 +160,11 @@ const SIGLES_ECOLES = {
 };
 
 // ---- Helper functions ----
+// Normalise un label de ville pour comparaison robuste (accents strip + minuscules + trim).
+function normalizeVilleLabel(str) {
+  return (str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+}
+
 function formatDuration(seconds) {
   const mins = Math.round(seconds / 60);
   if (mins < 60) return mins + ' min';
@@ -266,6 +271,8 @@ export default function LogementPage() {
   // Couverture du visiteur connecté (étape 1a : données, pas encore affichées)
   const [couvertureVisiteur, setCouvertureVisiteur] = useState(null);
   const [profilVisiteurCharge, setProfilVisiteurCharge] = useState(false);
+  // Semaines de besoin du visiteur SPÉCIFIQUES à cette annonce (pôle + ville) — pour le code couleur 4 états.
+  const [semainesBesoinAnnonce, setSemainesBesoinAnnonce] = useState(new Set());
 
   // Modals
   const [showModalCandidature, setShowModalCandidature] = useState(false);
@@ -532,22 +539,32 @@ export default function LogementPage() {
   useEffect(() => {
     let annule = false;
     (async () => {
-      if (!user || !logement) { setCouvertureVisiteur(null); setProfilVisiteurCharge(false); return; }
+      if (!user || !logement) { setCouvertureVisiteur(null); setProfilVisiteurCharge(false); setSemainesBesoinAnnonce(new Set()); return; }
       const { data: profil, error } = await supabaseClient
         .from('users')
         .select('rhythm_calendar, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise')
         .eq('id', user.id)
         .single();
       if (annule) return;
-      if (error || !profil) { setProfilVisiteurCharge(true); setCouvertureVisiteur(null); console.log('[1a] profil visiteur introuvable', error); return; }
+      if (error || !profil) { setProfilVisiteurCharge(true); setCouvertureVisiteur(null); setSemainesBesoinAnnonce(new Set()); console.log('[1a] profil visiteur introuvable', error); return; }
 
       const recherche = deduireRecherche(profil); // [{ ville, nature, semaines }]
+      // Semaines de besoin du visiteur SPÉCIFIQUES à cette annonce, matchées par VILLE uniquement.
+      // logement.pole décrit le rôle de l'HÔTE (pourquoi il a ce logement), r.nature décrit le rôle du
+      // VISITEUR (pourquoi il cherche ici) — les deux ne sont pas censés être égaux, donc pas de test sur le pôle.
+      // Cas limite parqué : si le visiteur cherche dans la même ville pour école ET entreprise (rare),
+      // on prend l'union des semaines des deux entrées correspondantes.
+      const entreesAnnonce = recherche.filter(
+        (r) => normalizeVilleLabel(r.ville) === normalizeVilleLabel(logement.ville)
+      );
+      const semainesBesoinAnnonceSet = new Set(entreesAnnonce.flatMap((r) => r.semaines));
       // semaines cherchées = union de toutes les villes où le visiteur cherche (futures, déjà filtrées par deduireRecherche)
       const semainesCherchees = [...new Set(recherche.flatMap((r) => r.semaines))];
       const dispo = Array.isArray(logement.disponibilites_pattern) ? logement.disponibilites_pattern : [];
       const cov = couvertureSemaines({ semainesCherchees, disponibilitesOffre: dispo });
 
       setCouvertureVisiteur(cov);
+      setSemainesBesoinAnnonce(semainesBesoinAnnonceSet);
       setProfilVisiteurCharge(true);
       console.log('[1a] COUVERTURE VISITEUR pour annonce', logement.id, '→ couvre', cov.couvertes, 'de tes', cov.totalCherchees, 'semaines');
       console.log('[1a] villes cherchées:', recherche.map((r) => r.ville), '| semaines cherchées:', semainesCherchees.length, '| dispo annonce:', dispo.length);
@@ -1352,7 +1369,7 @@ export default function LogementPage() {
           {/* CARD COUVERTURE (1b-i — badge texte, lecture seule, hors flux candidature) */}
           {profilVisiteurCharge && couvertureVisiteur && couvertureVisiteur.totalCherchees > 0 && (
             <div className="calendar-card">
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#1E293B', marginBottom: '12px' }}>Couverture de tes semaines</div>
+              <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '12px' }}>Couverture de tes semaines</div>
               <div style={{ fontSize: '14px', color: '#475569' }}>
                 couvre <strong style={{ color: '#E8622A', fontWeight: 700 }}>{couvertureVisiteur.couvertes}</strong> de tes {couvertureVisiteur.totalCherchees} semaines
               </div>
@@ -1385,7 +1402,7 @@ export default function LogementPage() {
               Remplace le calendrier jour-par-jour vestige. Info brute de l'annonce :
               affichée pour TOUT visiteur (contrairement à la carte couverture personnalisée). */}
           <div className="calendar-card" style={{ padding: '18px 14px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#1E293B', marginBottom: '12px' }}>Disponibilités</div>
+            <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '12px' }}>Disponibilités</div>
             {!user ? (
               <div style={{ fontSize: '13px', color: '#475569' }}>
                 <div style={{ marginBottom: '12px', lineHeight: 1.5 }}>Connecte-toi pour voir si ce logement correspond à ton rythme.</div>
@@ -1414,16 +1431,45 @@ export default function LogementPage() {
                   <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-start' }}>
                     {mois.map((m) => (
                       <div key={m.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        {m.weeks.map((w) => (
-                          <div key={w.weekStart} style={{ aspectRatio: '1', borderRadius: '4px', background: dispoSet.has(w.weekStart) ? '#E8622A' : '#EAECEF' }} />
-                        ))}
+                        {m.weeks.map((w) => {
+                          const estDisponible = dispoSet.has(w.weekStart);
+                          const correspondRythme = semainesBesoinAnnonce.has(w.weekStart);
+                          // 4 états en fond plein — COULEURS PROVISOIRES, à retravailler.
+                          let caseStyle;
+                          if (correspondRythme && estDisponible) {
+                            caseStyle = { background: '#22C55E' };   // ça colle
+                          } else if (correspondRythme && !estDisponible) {
+                            caseStyle = { background: '#EF4444' };   // ça ne colle pas
+                          } else if (estDisponible) {
+                            caseStyle = { background: '#EAECEF' };   // hors rythme, libre (gris clair)
+                          } else {
+                            caseStyle = { background: '#CBD2D9' };   // hors rythme, occupé par l'hôte (gris plus foncé)
+                          }
+                          return (
+                            <div key={w.weekStart} style={{ aspectRatio: '1', borderRadius: '4px', boxSizing: 'border-box', ...caseStyle }} />
+                          );
+                        })}
                       </div>
                     ))}
                   </div>
-                  {/* Légende */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderTop: '1px solid #E8EAF0', paddingTop: '12px', marginTop: '12px' }}>
-                    <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#E8622A', flex: '0 0 auto' }} />
-                    <span style={{ fontSize: '12px', color: '#64748B' }}>Semaine disponible</span>
+                  {/* Légende — 4 états en grille 2×2 (libellés raccourcis pour tenir sur une colonne à 11px) */}
+                  <div style={{ borderTop: '1px solid #E8EAF0', paddingTop: '12px', marginTop: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: '6px', columnGap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#22C55E', flex: '0 0 auto' }} />
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>Disponible</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#EF4444', flex: '0 0 auto' }} />
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>Indisponible</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#EAECEF', flex: '0 0 auto' }} />
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>Hors de ton rythme</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#CBD2D9', flex: '0 0 auto' }} />
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>Rythme de l&apos;hôte</span>
+                    </div>
                   </div>
                 </>
               );
