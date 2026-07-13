@@ -6,6 +6,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## Disponibilités /logement — 4 états, implémenté et validé visuellement (13/07/2026)
+
+Vert (dispo + correspond au rythme), rouge (occupé + correspond), gris clair (hors rythme), gris foncé (hors rythme + occupé par l'hôte). Matching visiteur↔annonce par ville uniquement (pas par pôle). Titres de carte sidebar en style eyebrow (orange/majuscules/15px, aligné sur "Description"). Légende en grille 2×2, libellés courts choisis par Côme. Plusieurs itérations de couleur testées et écartées en session (contour navy seul, croix, bleu flouté) — retour au fond plein 4 couleurs jugé le plus lisible. Couleurs actuelles provisoires, palette à retravailler.
+
+Fixtures locales (hote@sterny.test, locataire@sterny.test) étendues à un rythme complet 52 semaines pour permettre un test représentatif (les fixtures précédentes, tronquées à 4 entrées, rendaient tout test non représentatif).
+
+DETTE #135, #136, #137 loguées pendant cette session (voir DETTE-TECHNIQUE.md).
+
+Commits : 72c7eb0 (feat), 0c3591e (seed), 877b9ed (dette).
+
+**Prochaine étape (session en cours) :** bouton "agrandir" ouvrant un modal avec le planning en grand format ; refonte du bloc "Couverture de tes semaines" (jugé non adapté, lié à DETTE #135).
+
+---
+
 ## 2026-07-12 — Disponibilités /logement : système de couleur à 4 états DÉCIDÉ, pas encore implémenté
 
 Suite à la livraison de la mini-planche (commits 9020b44, 7877b1f), 3 itérations de mockups (Visualizer) ont permis de trancher le code couleur définitif pour la vue connectée. Matrice 2×2 (disponible dans `disponibilites_pattern` × dans le rythme du visiteur) :
