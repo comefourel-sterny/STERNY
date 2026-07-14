@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth.jsx';
 import { deduireRecherche } from '../../utils/deduireRecherche';
 import { couvertureSemaines } from '../../utils/matching';
 import { formatWeekRangeFR } from '../../utils/formatters';
-import { academicYearForMonday, weeksForAcademicYear, groupByMonth } from '../../utils/academicYear';
+import { academicYearForMonday, previousAcademicYear, nextAcademicYear, currentMondayISO, weeksForAcademicYear, groupByMonth } from '../../utils/academicYear';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './LogementPage.css';
@@ -165,6 +165,71 @@ function normalizeVilleLabel(str) {
   return (str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 }
 
+// Couleur de fond d'une semaine sur la planche Disponibilités (4 états — couleurs provisoires).
+// Extraite pour être partagée entre la mini-planche (sidebar) et le modal grand format.
+function couleurCase(weekStart, dispoSet, semainesBesoinAnnonce) {
+  const estDisponible = dispoSet.has(weekStart);
+  const correspondRythme = semainesBesoinAnnonce.has(weekStart);
+  if (correspondRythme && estDisponible) return '#22C55E';   // ça colle
+  if (correspondRythme && !estDisponible) return '#EF4444';  // ça ne colle pas
+  if (estDisponible) return '#EAECEF';                       // hors rythme, libre (gris clair)
+  return '#CBD2D9';                                          // hors rythme, occupé par l'hôte (gris foncé)
+}
+
+// Icônes SVG pour le modal grand format : loupe reprise à l'identique de PlancheCouverture.css +
+// buste créé ici, même trait (#B4BCC8 / stroke-width 2.2, outline) pour rester cohérent.
+const SVG_LOUPE = `url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%3E%3Ccircle%20cx='10.5'%20cy='10.5'%20r='6.5'/%3E%3Cline%20x1='15.5'%20y1='15.5'%20x2='21'%20y2='21'/%3E%3C/svg%3E")`;
+const SVG_BUSTE = `url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='14'%20height='14'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23B4BCC8'%20stroke-width='2.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M20%2021v-2a4%204%200%200%200-4-4H8a4%204%200%200%200-4%204v2'/%3E%3Ccircle%20cx='12'%20cy='7'%20r='4'/%3E%3C/svg%3E")`;
+
+// Variante buste à stroke foncé pour la vue "hôte" (fond #CBD2D9) — sinon le trait clair se fond.
+const SVG_BUSTE_FONCE = SVG_BUSTE.replace(/%23B4BCC8/g, '%23475569');
+
+// Style "flouté" partagé (calé sur .plc-neutre de PlancheCouverture.css) pour estomper tout ce
+// qui n'est pas l'info principale de la vue courante.
+const FLOUTE = { backgroundColor: '#D9DEE6', filter: 'blur(1.7px)', opacity: 0.45 };
+const GRIS_HOTE_MODAL = '#94A3B8'; // nuance plus foncée que #CBD2D9, réservée à l'affichage modal (mini-planche inchangée)
+
+// Rendu complet d'une cellule du MODAL grand format selon les filtres cochés.
+// Retourne un fragment de style inline. Utilise backgroundColor (pas le raccourci `background`)
+// pour cohabiter proprement avec backgroundImage sur les états à icône.
+// Réservé au modal — la mini-planche sidebar reste sur couleurCase (4 états fixes).
+function rendreCellule(weekStart, dispoSet, semainesBesoinAnnonce, vueActive, anneeCouverte) {
+  const estDisponible = dispoSet.has(weekStart);
+  const correspondRythme = semainesBesoinAnnonce.has(weekStart);
+  const posIcone = { backgroundPosition: 'right 3px bottom 3px', backgroundSize: '11px', backgroundRepeat: 'no-repeat' };
+
+  if (vueActive === 'rythme') {
+    // Le rythme du visiteur n'est pas limité à l'année de l'annonce — logique inchangée, valide sur toutes les années.
+    if (correspondRythme) {
+      return { backgroundColor: '#FFFFFF', border: '1.5px solid #B4BCC8', backgroundImage: SVG_LOUPE, ...posIcone };
+    }
+    return FLOUTE;
+  }
+
+  // Les vues "hote" et "les_deux" dépendent de dispoSet, qui ne couvre QUE l'année native de l'annonce.
+  // Hors de cette année, on ne sait rien → flou partout, jamais "occupé" par défaut.
+  if (!anneeCouverte) {
+    return FLOUTE;
+  }
+
+  if (vueActive === 'hote') {
+    if (!estDisponible) {
+      return { backgroundColor: '#CBD2D9', border: '1.5px solid #94A3B8', backgroundImage: SVG_BUSTE_FONCE, ...posIcone };
+    }
+    return FLOUTE;
+  }
+
+  // vueActive === 'les_deux' — couleur reprise de couleurCase (source unique avec la mini-planche),
+  // mais dans le MODAL on floute les 2 gris (vert/rouge restent nets).
+  const base = couleurCase(weekStart, dispoSet, semainesBesoinAnnonce);
+  if (base === '#EAECEF') return { backgroundColor: base, filter: 'blur(1.7px)', opacity: 0.45 };
+  if (base === '#CBD2D9') return { backgroundColor: GRIS_HOTE_MODAL, filter: 'blur(1.7px)', opacity: 0.45 };
+  return { backgroundColor: base };
+}
+
+// Libellés courts des 12 mois de l'année scolaire (clé = MM de "YYYY-MM").
+const LABELS = { '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Déc', '01': 'Jan', '02': 'Fév', '03': 'Mar', '04': 'Avr', '05': 'Mai', '06': 'Juin', '07': 'Jul', '08': 'Aoû' };
+
 function formatDuration(seconds) {
   const mins = Math.round(seconds / 60);
   if (mins < 60) return mins + ' min';
@@ -278,6 +343,9 @@ export default function LogementPage() {
   const [showModalCandidature, setShowModalCandidature] = useState(false);
   const [showModalMessage, setShowModalMessage] = useState(false);
   const [showModalSignalement, setShowModalSignalement] = useState(false);
+  const [showModalPlanning, setShowModalPlanning] = useState(false);
+  const [vueActive, setVueActive] = useState('les_deux'); // 'les_deux' | 'rythme' | 'hote'
+  const [anneeModal, setAnneeModal] = useState(null); // initialisé à l'ouverture du modal
   const [candidatureMessage, setCandidatureMessage] = useState('');
   const [messageCandidature, setMessageCandidature] = useState('');
   const [contactMessage, setContactMessage] = useState('');
@@ -540,13 +608,19 @@ export default function LogementPage() {
     let annule = false;
     (async () => {
       if (!user || !logement) { setCouvertureVisiteur(null); setProfilVisiteurCharge(false); setSemainesBesoinAnnonce(new Set()); return; }
-      const { data: profil, error } = await supabaseClient
-        .from('users')
-        .select('rhythm_calendar, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise')
-        .eq('id', user.id)
-        .single();
+      const [{ data: profil, error }, { data: reservations, error: erreurReservations }] = await Promise.all([
+        supabaseClient.from('users').select('rhythm_calendar, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise').eq('id', user.id).single(),
+        supabaseClient.from('semaines_reservees').select('semaine').eq('locataire_id', user.id),
+      ]);
+
       if (annule) return;
       if (error || !profil) { setProfilVisiteurCharge(true); setCouvertureVisiteur(null); setSemainesBesoinAnnonce(new Set()); console.log('[1a] profil visiteur introuvable', error); return; }
+
+      // Semaines déjà logées ailleurs (registre semaines_reservees) — à exclure du besoin.
+      // DETTE #138 : table vide + RLS sans policy tant que la Tranche B (#93) n'est pas branchée,
+      // donc reservations sera toujours [] aujourd'hui — ce filtre est un no-op silencieux en attendant.
+      if (erreurReservations) console.log('[1a] semaines_reservees non lisible (attendu tant que #93 est gelé)', erreurReservations);
+      const semainesDejaLogees = new Set((reservations || []).map(r => r.semaine));
 
       const recherche = deduireRecherche(profil); // [{ ville, nature, semaines }]
       // Semaines de besoin du visiteur SPÉCIFIQUES à cette annonce, matchées par VILLE uniquement.
@@ -557,7 +631,9 @@ export default function LogementPage() {
       const entreesAnnonce = recherche.filter(
         (r) => normalizeVilleLabel(r.ville) === normalizeVilleLabel(logement.ville)
       );
-      const semainesBesoinAnnonceSet = new Set(entreesAnnonce.flatMap((r) => r.semaines));
+      const semainesBesoinAnnonceSet = new Set(
+        entreesAnnonce.flatMap((r) => r.semaines).filter((semaine) => !semainesDejaLogees.has(semaine))
+      );
       // semaines cherchées = union de toutes les villes où le visiteur cherche (futures, déjà filtrées par deduireRecherche)
       const semainesCherchees = [...new Set(recherche.flatMap((r) => r.semaines))];
       const dispo = Array.isArray(logement.disponibilites_pattern) ? logement.disponibilites_pattern : [];
@@ -1142,6 +1218,16 @@ export default function LogementPage() {
   const villeLabel = logement.ville ? logement.ville.charAt(0).toUpperCase() + logement.ville.slice(1) : '';
   const photos = logement.photos || [];
 
+  // Planche Disponibilités — calculs remontés au niveau composant (const simples, calcul léger)
+  // pour être partagés entre la mini-planche (sidebar) et le modal grand format.
+  const dispo = Array.isArray(logement.disponibilites_pattern) ? [...logement.disponibilites_pattern].sort() : [];
+  const dispoSet = new Set(dispo);
+  const mois = dispo.length > 0 ? groupByMonth(weeksForAcademicYear(academicYearForMonday(dispo[0]))) : [];
+  // Année affichée par le MODAL (navigable), indépendante de la mini-planche (figée sur l'année de l'annonce).
+  const moisModal = anneeModal ? groupByMonth(weeksForAcademicYear(anneeModal)) : [];
+  // Année native de l'annonce (celle couverte par dispoSet) — pour distinguer "hors données" de "occupé".
+  const anneeAnnonce = dispo.length > 0 ? academicYearForMonday(dispo[0]) : null;
+
   return (
     <div className="logement-page">
       {/* GALERIE PHOTOS */}
@@ -1402,21 +1488,21 @@ export default function LogementPage() {
               Remplace le calendrier jour-par-jour vestige. Info brute de l'annonce :
               affichée pour TOUT visiteur (contrairement à la carte couverture personnalisée). */}
           <div className="calendar-card" style={{ padding: '18px 14px' }}>
-            <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '12px' }}>Disponibilités</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A' }}>Disponibilités</div>
+              {user && dispo.length > 0 && (
+                <button onClick={() => { setAnneeModal(dispo.length > 0 ? academicYearForMonday(dispo[0]) : academicYearForMonday(currentMondayISO())); setShowModalPlanning(true); }} aria-label="Agrandir le planning" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: 0 }}>Agrandir</button>
+              )}
+            </div>
             {!user ? (
               <div style={{ fontSize: '13px', color: '#475569' }}>
                 <div style={{ marginBottom: '12px', lineHeight: 1.5 }}>Connecte-toi pour voir si ce logement correspond à ton rythme.</div>
                 <Link to="/connexion" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 24px', background: '#E8622A', color: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>Se connecter</Link>
               </div>
             ) : (() => {
-              const dispo = Array.isArray(logement.disponibilites_pattern) ? [...logement.disponibilites_pattern].sort() : [];
               if (dispo.length === 0) {
                 return <div style={{ fontSize: '13px', color: '#94A3B8' }}>Aucune disponibilité renseignée</div>;
               }
-              // Année scolaire ancrée sur le 1er lundi disponible ; découpage 12 mois via le util partagé.
-              const mois = groupByMonth(weeksForAcademicYear(academicYearForMonday(dispo[0])));
-              const dispoSet = new Set(dispo);
-              const LABELS = { '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Déc', '01': 'Jan', '02': 'Fév', '03': 'Mar', '04': 'Avr', '05': 'Mai', '06': 'Juin', '07': 'Jul', '08': 'Aoû' };
               return (
                 <>
                   {/* Ligne de labels de mois (1 par colonne) */}
@@ -1431,24 +1517,9 @@ export default function LogementPage() {
                   <div style={{ display: 'flex', gap: '3px', alignItems: 'flex-start' }}>
                     {mois.map((m) => (
                       <div key={m.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        {m.weeks.map((w) => {
-                          const estDisponible = dispoSet.has(w.weekStart);
-                          const correspondRythme = semainesBesoinAnnonce.has(w.weekStart);
-                          // 4 états en fond plein — COULEURS PROVISOIRES, à retravailler.
-                          let caseStyle;
-                          if (correspondRythme && estDisponible) {
-                            caseStyle = { background: '#22C55E' };   // ça colle
-                          } else if (correspondRythme && !estDisponible) {
-                            caseStyle = { background: '#EF4444' };   // ça ne colle pas
-                          } else if (estDisponible) {
-                            caseStyle = { background: '#EAECEF' };   // hors rythme, libre (gris clair)
-                          } else {
-                            caseStyle = { background: '#CBD2D9' };   // hors rythme, occupé par l'hôte (gris plus foncé)
-                          }
-                          return (
-                            <div key={w.weekStart} style={{ aspectRatio: '1', borderRadius: '4px', boxSizing: 'border-box', ...caseStyle }} />
-                          );
-                        })}
+                        {m.weeks.map((w) => (
+                          <div key={w.weekStart} title={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{ aspectRatio: '1', borderRadius: '4px', boxSizing: 'border-box', background: couleurCase(w.weekStart, dispoSet, semainesBesoinAnnonce) }} />
+                        ))}
                       </div>
                     ))}
                   </div>
@@ -1534,6 +1605,100 @@ export default function LogementPage() {
             </form>
 
             {candidatureMessage && <div style={{ marginTop: '15px' }} dangerouslySetInnerHTML={{ __html: candidatureMessage }} />}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PLANNING GRAND FORMAT */}
+      {showModalPlanning && (
+        <div className="logement-modal" role="dialog" aria-modal="true" aria-label="Planning complet des disponibilités" onClick={(e) => { if (e.target === e.currentTarget) setShowModalPlanning(false); }}>
+          <div className="modal-content" style={{
+            maxWidth: 720,
+            background: '#FFFFFF',
+            borderRadius: 26,
+            boxShadow: '0 12px 40px rgba(30,41,59,0.12)',
+            padding: 28,
+          }}>
+            <button className="modal-close" aria-label="Fermer" onClick={() => setShowModalPlanning(false)}>&times;</button>
+            <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '20px' }}>Disponibilités</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', alignItems: 'center', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid #E8EAF0' }}>
+              {[
+                { key: 'les_deux', label: 'Compatibilité' },
+                { key: 'rythme', label: 'Mes semaines à combler' },
+                { key: 'hote', label: 'Rythme de l\'hôte' },
+              ].map((v, i, arr) => (
+                <div key={v.key} style={{ display: 'flex', justifyContent: 'center', borderRight: i < arr.length - 1 ? '1px solid #E8EAF0' : 'none' }}>
+                  <button
+                    onClick={() => setVueActive(v.key)}
+                    style={{
+                      padding: '4px 2px',
+                      border: 'none',
+                      borderBottom: vueActive === v.key ? '2px solid #E8622A' : '2px solid transparent',
+                      background: 'transparent',
+                      color: vueActive === v.key ? '#E8622A' : '#94A3B8',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                  >
+                    {v.label}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
+              <button onClick={() => setAnneeModal((y) => previousAcademicYear(y))} aria-label="Année scolaire précédente" style={{ width: 22, height: 22, borderRadius: 6, border: '1px solid #E8EAF0', background: '#FFFFFF', color: '#1E293B', fontSize: 16, lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#1E293B', minWidth: 92, textAlign: 'center' }}>{anneeModal}</span>
+              <button onClick={() => setAnneeModal((y) => nextAcademicYear(y))} aria-label="Année scolaire suivante" style={{ width: 22, height: 22, borderRadius: 6, border: '1px solid #E8EAF0', background: '#FFFFFF', color: '#1E293B', fontSize: 16, lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+            </div>
+            <div style={{ display: 'flex', gap: '3px', paddingBottom: '8px' }}>
+              {moisModal.map((m) => (
+                <div key={m.key} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 400, letterSpacing: 0, textTransform: 'uppercase', color: '#1E293B', marginBottom: '6px', whiteSpace: 'nowrap' }}>{LABELS[m.key.slice(5,7)]}</div>
+                  {m.weeks.map((w) => (
+                    <div key={w.weekStart} title={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{
+                      width: '100%', aspectRatio: '1', height: 'auto', maxWidth: '40px',
+                      borderRadius: '10px', boxSizing: 'border-box',
+                      ...rendreCellule(w.weekStart, dispoSet, semainesBesoinAnnonce, vueActive, anneeModal === anneeAnnonce),
+                    }} />
+                  ))}
+                </div>
+              ))}
+            </div>
+            {(() => {
+              const item = (swatch, label, key) => (
+                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '16px', height: '16px', borderRadius: '4px', boxSizing: 'border-box', ...swatch }} />
+                  <span style={{ fontSize: '13px', color: '#64748B' }}>{label}</span>
+                </div>
+              );
+              const icone = (svg) => ({ backgroundColor: '#FFFFFF', border: '1.5px solid #B4BCC8', backgroundImage: svg, backgroundPosition: 'center', backgroundSize: '10px', backgroundRepeat: 'no-repeat' });
+              const iconeHote = (svg) => ({ backgroundColor: '#CBD2D9', border: '1.5px solid #94A3B8', backgroundImage: svg, backgroundPosition: 'center', backgroundSize: '10px', backgroundRepeat: 'no-repeat' });
+
+              let entries;
+              if (vueActive === 'les_deux') {
+                entries = [
+                  item({ background: '#22C55E' }, 'Disponible', 'v'),
+                  item({ background: '#EF4444' }, 'Indisponible', 'r'),
+                  item({ background: GRIS_HOTE_MODAL, filter: 'blur(1.7px)', opacity: 0.45 }, 'Rythme de l\'hôte', 'o'),
+                ];
+              } else if (vueActive === 'rythme') {
+                entries = [item(icone(SVG_LOUPE), 'À combler', 'l')];
+              } else {
+                entries = [item(iconeHote(SVG_BUSTE_FONCE), 'Occupé par l\'hôte', 'b')];
+              }
+              return (
+                <div style={{
+                  borderTop: '1px solid #E8EAF0', paddingTop: '14px', marginTop: '20px',
+                  display: 'flex',
+                  justifyContent: vueActive === 'les_deux' ? 'space-between' : 'flex-start',
+                  gap: '24px',
+                }}>
+                  {entries}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
