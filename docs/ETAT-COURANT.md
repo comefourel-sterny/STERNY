@@ -6,6 +6,27 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## Modal grand format Disponibilités /logement — implémenté, testé, commité (14/07/2026)
+
+Bouton "Agrandir" sur la carte Disponibilités ouvre un modal avec le planning en grand format, dimensionnement calé sur PlancheCouverture.css (cellules 40px, radius 10px, gaps 3px). 3 vues via segmented control (état unique vueActive, jamais de vue vide) :
+- Compatibilité (libellé final, après "Les deux" jugé pas assez clair) : identique à la mini-planche (couleurCase partagé), gris floutés dans le modal pour faire ressortir vert/rouge. Gris hôte remappé vers une nuance plus foncée réservée au modal (GRIS_HOTE_MODAL) — mini-planche sidebar inchangée.
+- Mes semaines à combler : style loupe repris de PlancheCouverture (fond blanc, bordure, icône), valide sur toutes les années (rythme non borné).
+- Rythme de l'hôte : style buste (icône créée pour ce chantier, variante stroke foncé pour le contraste).
+
+Navigation d'année (‹ année ›) calée sur PlancheCouverturePage.jsx. Distinction "hors des données de l'annonce" (flou) vs "occupé" — anneeAnnonce (ancrée sur dispo[0]) évite de confondre absence de donnée et occupation réelle en naviguant vers une année sans disponibilites_pattern. Point de vigilance : ce modèle suppose une seule année académique par annonce — à revoir si le modèle de données évolue vers du multi-années (actuellement correct, correspond aux données réelles).
+
+Tooltip (title natif, formatWeekRangeFR) sur chaque semaine des deux planches (sidebar et modal) pour se repérer dans le temps au survol.
+
+Itérations de design écartées en session (traçabilité) : contour navy seul, croix, bleu flouté, checkboxes indépendantes (remplacées par un état unique anti-vide), légende en grille 2×2 avec cases invisibles (simplifiée en une seule ligne après suppression de "Hors de ton rythme", jugée redondante avec les 2 vues dédiées).
+
+DETTE #139 loguée pendant ce chantier (fuite CSS .modal-content, même famille que #137).
+
+Commits : f7740d1 (feat), f0e76ec (dette #138, tour précédent).
+
+**Reste en suspens :** rythme du visiteur à cheval sur 2 années académiques — vérifié correct par construction (semainesDePresence non filtré par année), mais jamais testé visuellement faute de jeu de données adapté. À tester avec un vrai cas quand l'occasion se présente.
+
+---
+
 ## Disponibilités /logement — 4 états, implémenté et validé visuellement (13/07/2026)
 
 Vert (dispo + correspond au rythme), rouge (occupé + correspond), gris clair (hors rythme), gris foncé (hors rythme + occupé par l'hôte). Matching visiteur↔annonce par ville uniquement (pas par pôle). Titres de carte sidebar en style eyebrow (orange/majuscules/15px, aligné sur "Description"). Légende en grille 2×2, libellés courts choisis par Côme. Plusieurs itérations de couleur testées et écartées en session (contour navy seul, croix, bleu flouté) — retour au fond plein 4 couleurs jugé le plus lisible. Couleurs actuelles provisoires, palette à retravailler.
