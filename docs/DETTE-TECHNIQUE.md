@@ -1470,9 +1470,21 @@ CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce ser
 **Référence** : la mini-planche de LogementPage.jsx (carte "Disponibilités") n'a pas ce problème — elle utilise un mapping explicite mois→label (LABELS = { '06':'Juin', '07':'Jul', ... }) plutôt que toLocaleDateString.
 **À faire** : remplacer le calcul de label dans groupByMonth par un mapping explicite, sur le modèle de celui de LogementPage.jsx. Petit chantier isolé, non bloquant.
 
-## DETTE #135 — Carte "Couverture de tes semaines" (/logement) : union toutes-villes, pas filtrée par ville/pôle de l'annonce
+## DETTE #135 — RÉSOLUE (14/07/2026) — Carte "Couverture de tes semaines" filtrée par ville
 
-Le useEffect "1a" de LogementPage.jsx (calcul de semainesCherchees, avant couvertureSemaines) additionne TOUTES les villes de recherche du visiteur, sans jamais croiser avec la ville de l'annonce affichée. Pour un visiteur "les_deux" (cherche dans 2 villes), le compteur "couvre X de tes Y semaines" peut inclure des semaines qui ne concernent pas du tout le logement affiché. Découvert le 12/07/2026 pendant l'implémentation de la carte Disponibilités (commit 72c7eb0, qui référence cette dette sous le numéro #136 par erreur — le numéro correct est #135). Non corrigé : carte déjà en prod, changement de comportement à valider séparément. Refonte de cette carte prévue en session dédiée (bouton agrandir + modal évoqués le 13/07/2026).
+Corrigée : semainesCherchees (LogementPage.jsx, useEffect "1a") réutilise
+désormais entreesAnnonce (déjà filtré par ville, utilisé par la carte
+Disponibilités) au lieu d'additionner toutes les villes de recherche du
+visiteur.
+
+Note découverte pendant la clôture : le scénario qui motivait cette dette
+(un visiteur cherchant dans 2 villes en même temps) n'est en réalité pas
+atteignable avec le modèle de données actuel — deriveVilleColonnes.js
+(commentaire l.4, conv 30) limite volontairement chaque profil à une seule
+ville de recherche active. La correction reste juste et sans risque
+(build vert, aucune régression observée sur le cas actuel à 1 ville) mais
+elle est défensive : elle protège un cas non encore ouvert plutôt que de
+corriger un bug visible aujourd'hui.
 
 ## DETTE #136 — Incohérence accents villes entre pages d'inscription/création
 
@@ -1489,3 +1501,22 @@ semainesBesoinAnnonce (LogementPage.jsx, useEffect "1a") exclut désormais les s
 ## DETTE #139 — Fuite CSS globale .modal-content depuis DashboardProprietairePage.css
 
 DashboardProprietairePage.css définit un .modal-content non scopé (spécificité 0,0,1,0, globale) qui injecte min-height: 480px, display: flex; flex-direction: column et overflow: hidden sur tous les .modal-content de la plateforme dont le style local (scopé ou inline) ne redéfinit pas ces propriétés précises — y compris le modal planning de /logement. Découvert le 13-14/07/2026 en calculant la largeur réelle du modal planning. Même famille que DETTE #137 (fuite .section-title depuis CreerAnnoncePage.css) : classe utilitaire non scopée, écrasant silencieusement d'autres pages via le bundle CSS global. Non corrigé (DashboardProprietairePage.css est un fichier never-stage). À traiter avec #137 en Phase 0bis : scoper .modal-content de DashboardProprietairePage.css (ex. .dashboard-proprio-container .modal-content).
+
+## DETTE #140 — Ajout d'une deuxième ville de recherche non fonctionnel (dashboard)
+
+Le bouton d'ajout de ville sur /dashboard (ex. ajouter "Nantes" en plus de
+"Rennes") affiche visuellement la nouvelle ville mais n'écrit rien en base
+qui affecte la logique de recherche (confirmé le 14/07/2026 : après ajout
+de Nantes via l'UI, les logs [1a] de LogementPage.jsx montrent toujours
+villes cherchées: Array(1)). Cohérent avec la découverte DETTE #135 :
+deriveVilleColonnes limite structurellement à 1 ville de recherche. Décision
+de cap actée en VISION-ARCHITECTURE.md : ouvrir ce combo devient un objectif
+produit — ce bouton sera fonctionnel une fois ce chantier traité.
+
+## DETTE #141 — Modal "profils compatibles" et filtres de /recherche à auditer
+
+Repéré le 14/07/2026 (captures dashboard + /recherche) : la modale "8
+profils compatibles" et les filtres de la page /recherche présentent des
+comportements ou un rendu à vérifier (non détaillé, à auditer en session
+dédiée). Lié à DETTE #140 : la page /recherche pourrait aussi être
+affectée par l'incohérence multi-villes.

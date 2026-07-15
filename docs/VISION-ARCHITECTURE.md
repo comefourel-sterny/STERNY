@@ -794,3 +794,15 @@ CONSTAT DE NON-CONFORMITÉ ACTUELLE : la suppression d'annonce existante (Dashbo
 Choix pressenti : Stripe Identity pour vérifier les pièces d'identité (à ré-évaluer s'il existe mieux). Fait établi (recherche conv 106) : Stripe est SOUS-TRAITANT, Sterny est RESPONSABLE DE TRAITEMENT ; Stripe conserve les images + données extraites ~3 ans (aux États-Unis) ; l'accès aux données sensibles via l'API est limité aux 48h ; Stripe déconseille de recopier l'image de la pièce sur son propre serveur (liens fichiers expirant en 30s).
 DÉCISION D'ARCHITECTURE : côté Sterny, NE PAS stocker l'image brute de la pièce d'identité. Stocker un ENREGISTREMENT DE PREUVE MINIMAL : résultat de vérification (vérifié/non), horodatage, identifiant de session/rapport Stripe (vs_…/vr_…) comme référence, éventuellement verified_outputs (nom, date de naissance). Cela donne une trace opposable et évite le blocage en cas de changement de prestataire (on garde l'historique des vérifications passées), SANS détenir la donnée sensible. Cohérent avec la nuance de sécurité de la doctrine ci-dessus.
 À VALIDER AVEC LE PRO (Q-DPO) : transfert USA, durée 3 ans vs durée propre à Sterny, obligations du responsable de traitement.
+
+### Recherche multi-villes pour un même profil (décision du 14 juillet 2026)
+
+Le modèle actuel (deriveVilleColonnes.js) limite un profil à 1 ville de
+recherche + 1 ville hôte, jamais 2 villes de recherche simultanées. Décision
+de cap : ce combo doit être ouvert — un alternant doit pouvoir chercher un
+logement dans ses 2 villes (école ET entreprise) en même temps. Origine :
+DETTE #140 (bouton d'ajout de 2e ville déjà présent sur le dashboard mais
+non fonctionnel, signal qu'il fallait trancher). Chantier non cadré à ce
+jour : implique deriveVilleColonnes.js, le wizard d'inscription, et tous
+les consommateurs de deduireRecherche (couvertureVisiteur, disponibilites,
+/recherche). À traiter en session dédiée, pas en continuation de DETTE #135.

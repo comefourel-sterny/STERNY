@@ -6,6 +6,30 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-14 — DETTE #135 résolue : carte Couverture filtrée par ville (+ découverte structurelle multi-villes)
+
+Corrigé et testé : semainesCherchees (LogementPage.jsx, useEffect "1a")
+réutilise entreesAnnonce (déjà filtré par ville, existant pour la carte
+Disponibilités) au lieu d'additionner toutes les villes de recherche du
+visiteur. Audit lecture seule préalable (useEffect complet, tous les usages
+de couvertureVisiteur et semainesCherchees) confirmant qu'aucun autre code
+ne dépend du comportement union-toutes-villes. Build vert, testé sans
+régression sur locataire@sterny.test (profil à 1 ville, chiffre inchangé).
+
+Découverte pendant la clôture : le scénario visé par #135 (visiteur
+cherchant dans 2 villes) n'est pas atteignable aujourd'hui —
+deriveVilleColonnes.js limite structurellement un profil à 1 ville de
+recherche. Décision de cap actée en VISION-ARCHITECTURE.md : ouvrir ce
+combo est désormais un objectif produit, à cadrer en session dédiée.
+DETTE #140 (bouton ajout 2e ville dashboard non fonctionnel) et #141
+(modal/filtres /recherche à auditer) loguées en lien.
+
+Prochaine session possible : cadrage du chantier recherche multi-villes
+(lecture seule d'abord : deriveVilleColonnes.js, wizard d'inscription,
+tous les consommateurs de deduireRecherche).
+
+---
+
 ## Modal grand format Disponibilités /logement — implémenté, testé, commité (14/07/2026)
 
 Bouton "Agrandir" sur la carte Disponibilités ouvre un modal avec le planning en grand format, dimensionnement calé sur PlancheCouverture.css (cellules 40px, radius 10px, gaps 3px). 3 vues via segmented control (état unique vueActive, jamais de vue vide) :
