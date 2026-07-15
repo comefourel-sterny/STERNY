@@ -6,6 +6,36 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-15 — Refonte visuelle /logement : carte Compatibilité + tooltip custom + bouton Agrandir + légende
+
+Session de refonte visuelle sur la fiche annonce, itérée via le Visualizer
+(mockups validés par Côme avant chaque patch) :
+
+- Carte "Couverture de tes semaines" renommée "Compatibilité" et compactée :
+  liste de dates remplacée par une barre de progression (compteur + barre +
+  pourcentage), padding et marges resserrés. Décision actée : pas de bouton
+  "voir +" sur cette carte, le détail des semaines reste dans le calendrier
+  Disponibilités juste en dessous (un rôle par carte).
+- Tooltip des cases du calendrier (mini-planche + modal grand format) :
+  remplacement du title natif du navigateur (lent, non stylé) par un tooltip
+  CSS custom (classe .lp-cell, LogementPage.css). Dans le modal, les cases
+  floutées ("hors de ton rythme") ont nécessité une restructuration à deux
+  niveaux (conteneur .lp-cell non flouté + enfant absolute flouté) pour que
+  le tooltip ne soit pas flouté par héritage du filter du parent.
+- Bouton "Agrandir" : passé de majuscules/orange à texte simple gris #94A3B8,
+  sans icône, aligné sur le style du lien "Retour" des pages de connexion
+  (décision explicite : discrétion plutôt que visibilité pour cette action
+  secondaire).
+- Légende de la mini-planche : alignée sur celle du modal (retrait de "Hors
+  de ton rythme", 3 états au lieu de 4), répartie sur toute la largeur
+  (space-between).
+
+Validé visuellement par Côme à chaque étape (captures d'écran). Build vert
+à chaque patch. Aucun changement de logique de calcul — uniquement
+présentation. Commit feat : 53b8d03.
+
+---
+
 ## 2026-07-14 — DETTE #135 résolue : carte Couverture filtrée par ville (+ découverte structurelle multi-villes)
 
 Corrigé et testé : semainesCherchees (LogementPage.jsx, useEffect "1a")
