@@ -1455,34 +1455,18 @@ export default function LogementPage() {
             </div>
           )}
 
-          {/* CARD COUVERTURE (1b-i — badge texte, lecture seule, hors flux candidature) */}
+          {/* CARD COMPATIBILITÉ (refonte 15/07/2026 — barre de progression, remplace la liste de dates de l'ancienne carte "Couverture de tes semaines") */}
           {profilVisiteurCharge && couvertureVisiteur && couvertureVisiteur.totalCherchees > 0 && (
-            <div className="calendar-card">
-              <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '12px' }}>Couverture de tes semaines</div>
-              <div style={{ fontSize: '14px', color: '#475569' }}>
+            <div className="calendar-card" style={{ padding: '16px 20px' }}>
+              <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A', marginBottom: '10px' }}>Compatibilité</div>
+              <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
                 couvre <strong style={{ color: '#E8622A', fontWeight: 700 }}>{couvertureVisiteur.couvertes}</strong> de tes {couvertureVisiteur.totalCherchees} semaines
               </div>
-              <div style={{ marginTop: '16px' }}>
-                {couvertureVisiteur.semainesCouvertes.length === 0 ? (
-                  <div style={{ fontSize: '13px', color: '#94A3B8' }}>Aucune de tes semaines pour le moment</div>
-                ) : (
-                  <>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Semaines comblées :</div>
-                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      {couvertureVisiteur.semainesCouvertes.slice(0, 6).map((lundi) => (
-                        <li key={lundi} style={{ fontSize: '13px', color: '#475569', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E8622A', flex: '0 0 auto' }} />
-                          {formatWeekRangeFR(lundi, { withYear: true })}
-                        </li>
-                      ))}
-                    </ul>
-                    {couvertureVisiteur.semainesCouvertes.length > 6 && (
-                      <div style={{ fontSize: '13px', color: '#94A3B8', marginTop: '6px' }}>
-                        … et {couvertureVisiteur.semainesCouvertes.length - 6} autres
-                      </div>
-                    )}
-                  </>
-                )}
+              <div style={{ width: '100%', height: '6px', background: '#F1F5F9', borderRadius: '999px', overflow: 'hidden', marginBottom: '5px' }}>
+                <div style={{ width: `${Math.round((couvertureVisiteur.couvertes / couvertureVisiteur.totalCherchees) * 100)}%`, height: '100%', background: '#E8622A', borderRadius: '999px' }} />
+              </div>
+              <div style={{ fontSize: '12px', color: '#94A3B8' }}>
+                {Math.round((couvertureVisiteur.couvertes / couvertureVisiteur.totalCherchees) * 100)}% de tes semaines couvertes
               </div>
             </div>
           )}
@@ -1494,7 +1478,7 @@ export default function LogementPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ fontSize: '15px', fontWeight: 300, letterSpacing: '2px', textTransform: 'uppercase', color: '#E8622A' }}>Disponibilités</div>
               {user && dispo.length > 0 && (
-                <button onClick={() => { setAnneeModal(dispo.length > 0 ? academicYearForMonday(dispo[0]) : academicYearForMonday(currentMondayISO())); setShowModalPlanning(true); }} aria-label="Agrandir le planning" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', padding: 0 }}>Agrandir</button>
+                <button onClick={() => { setAnneeModal(dispo.length > 0 ? academicYearForMonday(dispo[0]) : academicYearForMonday(currentMondayISO())); setShowModalPlanning(true); }} aria-label="Agrandir le planning" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: '13px', fontWeight: 400, padding: '6px 4px' }}>Agrandir</button>
               )}
             </div>
             {!user ? (
@@ -1521,13 +1505,13 @@ export default function LogementPage() {
                     {mois.map((m) => (
                       <div key={m.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
                         {m.weeks.map((w) => (
-                          <div key={w.weekStart} title={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{ aspectRatio: '1', borderRadius: '4px', boxSizing: 'border-box', background: couleurCase(w.weekStart, dispoSet, semainesBesoinAnnonce) }} />
+                          <div key={w.weekStart} className="lp-cell" data-tip={formatWeekRangeFR(w.weekStart, { withYear: true })} aria-label={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{ aspectRatio: '1', borderRadius: '4px', boxSizing: 'border-box', background: couleurCase(w.weekStart, dispoSet, semainesBesoinAnnonce) }} />
                         ))}
                       </div>
                     ))}
                   </div>
-                  {/* Légende — 4 états en grille 2×2 (libellés raccourcis pour tenir sur une colonne à 11px) */}
-                  <div style={{ borderTop: '1px solid #E8EAF0', paddingTop: '12px', marginTop: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', rowGap: '6px', columnGap: '10px' }}>
+                  {/* Légende — 3 états sur une ligne (alignée sur la légende du modal, sans "Hors de ton rythme") */}
+                  <div style={{ borderTop: '1px solid #E8EAF0', paddingTop: '12px', marginTop: '12px', display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#22C55E', flex: '0 0 auto' }} />
                       <span style={{ fontSize: '11px', color: '#64748B' }}>Disponible</span>
@@ -1535,10 +1519,6 @@ export default function LogementPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#EF4444', flex: '0 0 auto' }} />
                       <span style={{ fontSize: '11px', color: '#64748B' }}>Indisponible</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#EAECEF', flex: '0 0 auto' }} />
-                      <span style={{ fontSize: '11px', color: '#64748B' }}>Hors de ton rythme</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#CBD2D9', flex: '0 0 auto' }} />
@@ -1660,11 +1640,15 @@ export default function LogementPage() {
                 <div key={m.key} style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px', alignItems: 'center' }}>
                   <div style={{ fontSize: '12px', fontWeight: 400, letterSpacing: 0, textTransform: 'uppercase', color: '#1E293B', marginBottom: '6px', whiteSpace: 'nowrap' }}>{LABELS[m.key.slice(5,7)]}</div>
                   {m.weeks.map((w) => (
-                    <div key={w.weekStart} title={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{
+                    <div key={w.weekStart} className="lp-cell" data-tip={formatWeekRangeFR(w.weekStart, { withYear: true })} aria-label={formatWeekRangeFR(w.weekStart, { withYear: true })} style={{
                       width: '100%', aspectRatio: '1', height: 'auto', maxWidth: '40px',
                       borderRadius: '10px', boxSizing: 'border-box',
-                      ...rendreCellule(w.weekStart, dispoSet, semainesBesoinAnnonce, vueActive, anneeModal === anneeAnnonce),
-                    }} />
+                    }}>
+                      <div style={{
+                        position: 'absolute', inset: 0, borderRadius: '10px',
+                        ...rendreCellule(w.weekStart, dispoSet, semainesBesoinAnnonce, vueActive, anneeModal === anneeAnnonce),
+                      }} />
+                    </div>
                   ))}
                 </div>
               ))}
