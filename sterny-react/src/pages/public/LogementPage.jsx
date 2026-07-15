@@ -634,8 +634,11 @@ export default function LogementPage() {
       const semainesBesoinAnnonceSet = new Set(
         entreesAnnonce.flatMap((r) => r.semaines).filter((semaine) => !semainesDejaLogees.has(semaine))
       );
-      // semaines cherchées = union de toutes les villes où le visiteur cherche (futures, déjà filtrées par deduireRecherche)
-      const semainesCherchees = [...new Set(recherche.flatMap((r) => r.semaines))];
+      // DETTE #135 (résolue) — semaines cherchées filtrées par la ville de CETTE annonce
+      // (même filtre que semainesBesoinAnnonce, l.631-633). Avant : union de toutes les
+      // villes de recherche du visiteur, ce qui gonflait le compteur pour un visiteur
+      // "les_deux" cherchant dans 2 villes.
+      const semainesCherchees = [...new Set(entreesAnnonce.flatMap((r) => r.semaines))];
       const dispo = Array.isArray(logement.disponibilites_pattern) ? logement.disponibilites_pattern : [];
       const cov = couvertureSemaines({ semainesCherchees, disponibilitesOffre: dispo });
 
