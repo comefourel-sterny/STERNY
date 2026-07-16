@@ -149,6 +149,17 @@ que le second est loué. Distinct de la recherche multi-villes (chantier du
 et une question non auditée : le modèle actuel suppose-t-il 1 seule annonce
 par hôte ? À auditer en session dédiée avant tout arbitrage.
 
+### Bascule de mode façon Airbnb (hôte / voyageur)
+
+Piste évoquée le 16/07/2026 : repenser le passage entre "chercher un logement"
+et "proposer un logement" comme une vraie bascule de mode (à la façon du switch
+hôte/voyageur d'Airbnb, où on garde son identité mais on change de contexte
+d'usage), plutôt qu'un simple ajout de colonne/statut en arrière-plan. Intérêt
+relevé : la cohérence d'expérience quand on est déjà cohôte ou hôte ailleurs.
+Probablement plus pertinent pour l'application mobile que pour le web actuel.
+Non cadré, à explorer en session dédiée — distinct du chantier recherche
+multi-villes en cours, à ne pas mélanger.
+
 ## Rappels / échéances
 
 **Rappel — purge/anonymisation questionnaire étude de terrain (échéance ~juillet 2028).** Les réponses au formulaire "Trouver un logement en alternance" (Google Forms) sont conservées 24 mois maximum à compter de la collecte (voir ETAT-COURANT.md conv 111, QUESTIONS-PROFESSIONNELS.md Q-DPO-020). Actions à cette échéance : supprimer l'email de chaque réponse + purger les réponses individuelles côté Google Forms (pas seulement le Sheet lié), OU conserver uniquement des chiffres agrégés. Vérifier aussi qu'aucun champ texte libre ne permet de ré-identifier un répondant avant conservation prolongée.

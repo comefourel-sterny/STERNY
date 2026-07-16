@@ -854,3 +854,16 @@ Portée : les_deux reste HORS périmètre (cf. précision ci-dessus — ses 2 co
 sont déjà occupées, 1 recherche + 1 hôte). Prochaine étape avant tout code : audit
 lecture seule du composant partagé à extraire (API exacte souhaitée), en session
 dédiée.
+
+### Précision sur le comportement du bouton "+" (16/07/2026)
+
+Les deux actions du bouton "+" du dashboard (rechercher / proposer) créent
+uniquement l'écosystème correspondant — écriture de la colonne ville canonique
++ son statut, conversion de type_user en les_deux si nécessaire — et ne
+déclenchent jamais de navigation vers la création d'annonce. Les boutons
+"Créer une annonce" existants restent le seul point d'entrée vers
+CreerAnnoncePage. Corrige le comportement actuel de la branche "Proposer"
+(menu dashboard, DashboardLocatairePage.jsx), qui convertissait le profil ET
+naviguait directement vers /annonce/creer — un raccourci qui cassait la
+symétrie avec la branche "Rechercher" et empêchait de réutiliser le même
+composant partagé pour les deux actions.
