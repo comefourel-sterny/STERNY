@@ -139,6 +139,16 @@ Au moment de candidater sur /logement, afficher le profil de l'hôte avec qui le
 
 - [DETTE #114] Création d'annonce vidée au changement d'onglet/fenêtre — session dédiée après refonte annonce. Auditer la cause (reload / onAuthStateChange focus / état non persisté) avant de coder. Probable besoin de persister le brouillon du wizard.
 
+### Hôte proposant plusieurs logements (2 villes ou plus)
+
+Un hôte pourrait vouloir proposer plusieurs logements, y compris dans des
+villes différentes — notamment pour garder le contrôle sur qui est accepté
+dans chacun, et conserver un usage personnel de son propre logement pendant
+que le second est loué. Distinct de la recherche multi-villes (chantier du
+15/07/2026, réservé au côté locataire). Touche deduireOffre, CreerAnnoncePage,
+et une question non auditée : le modèle actuel suppose-t-il 1 seule annonce
+par hôte ? À auditer en session dédiée avant tout arbitrage.
+
 ## Rappels / échéances
 
 **Rappel — purge/anonymisation questionnaire étude de terrain (échéance ~juillet 2028).** Les réponses au formulaire "Trouver un logement en alternance" (Google Forms) sont conservées 24 mois maximum à compter de la collecte (voir ETAT-COURANT.md conv 111, QUESTIONS-PROFESSIONNELS.md Q-DPO-020). Actions à cette échéance : supprimer l'email de chaque réponse + purger les réponses individuelles côté Google Forms (pas seulement le Sheet lié), OU conserver uniquement des chiffres agrégés. Vérifier aussi qu'aucun champ texte libre ne permet de ré-identifier un répondant avant conservation prolongée.

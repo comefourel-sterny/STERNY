@@ -1502,21 +1502,39 @@ semainesBesoinAnnonce (LogementPage.jsx, useEffect "1a") exclut désormais les s
 
 DashboardProprietairePage.css définit un .modal-content non scopé (spécificité 0,0,1,0, globale) qui injecte min-height: 480px, display: flex; flex-direction: column et overflow: hidden sur tous les .modal-content de la plateforme dont le style local (scopé ou inline) ne redéfinit pas ces propriétés précises — y compris le modal planning de /logement. Découvert le 13-14/07/2026 en calculant la largeur réelle du modal planning. Même famille que DETTE #137 (fuite .section-title depuis CreerAnnoncePage.css) : classe utilitaire non scopée, écrasant silencieusement d'autres pages via le bundle CSS global. Non corrigé (DashboardProprietairePage.css est un fichier never-stage). À traiter avec #137 en Phase 0bis : scoper .modal-content de DashboardProprietairePage.css (ex. .dashboard-proprio-container .modal-content).
 
-## DETTE #140 — Ajout d'une deuxième ville de recherche non fonctionnel (dashboard)
+## DETTE #140 — Bouton d'ajout de 2e ville (dashboard) écrit dans une colonne orpheline
 
 Le bouton d'ajout de ville sur /dashboard (ex. ajouter "Nantes" en plus de
-"Rennes") affiche visuellement la nouvelle ville mais n'écrit rien en base
-qui affecte la logique de recherche (confirmé le 14/07/2026 : après ajout
-de Nantes via l'UI, les logs [1a] de LogementPage.jsx montrent toujours
-villes cherchées: Array(1)). Cohérent avec la découverte DETTE #135 :
-deriveVilleColonnes limite structurellement à 1 ville de recherche. Décision
-de cap actée en VISION-ARCHITECTURE.md : ouvrir ce combo devient un objectif
-produit — ce bouton sera fonctionnel une fois ce chantier traité.
+"Rennes") écrit réellement en base (DashboardLocatairePage.jsx:436, colonne
+ville_recherche_secondaire, confirmée existante en schéma) — reformulation
+suite à l'audit du 15/07/2026, la formulation précédente ("n'écrit rien")
+était imprécise. Le vrai problème : cette colonne est orpheline, lue par
+AUCUN code (ni deduireRecherche, ni /recherche, ni matching, ni aucune
+requête SQL). L'utilisateur voit "Nantes" affiché sur son dashboard sans
+jamais recevoir la moindre annonce de cette ville. Décision actée en
+VISION-ARCHITECTURE.md (15/07/2026) : ce mécanisme sera remplacé par le vrai
+chantier recherche multi-villes (2e ville via ville_ecole/ville_entreprise +
+statut 'recherche'), puis ville_recherche_secondaire et ce bouton seront
+supprimés.
 
-## DETTE #141 — Modal "profils compatibles" et filtres de /recherche à auditer
+## DETTE #141 — Modale "profils compatibles" de /recherche : maquette hardcodée, hors périmètre
 
-Repéré le 14/07/2026 (captures dashboard + /recherche) : la modale "8
-profils compatibles" et les filtres de la page /recherche présentent des
-comportements ou un rendu à vérifier (non détaillé, à auditer en session
-dédiée). Lié à DETTE #140 : la page /recherche pourrait aussi être
-affectée par l'incohérence multi-villes.
+Confirmé par audit le 15/07/2026 (RecherchePage.jsx) : la modale "profils
+compatibles" est alimentée par une constante locale hardcodée (PROFILS_DATA,
+8 profils fictifs, tous villeRecherche: 'Rennes') — aucun appel réseau, aucun
+deduireRecherche/couvertureSemaines, aucun filtrage réel par ville. Incohérence
+propre à la maquette : titre "8 profils compatibles" (compte les clés) mais
+CTA "12 étudiants" codé en dur à 4 endroits (l.1191/1251/1360/1408). Sujet
+distinct du chantier recherche multi-villes — à traiter séparément (probablement
+brancher sur le vrai matching, hors périmètre de cette session).
+
+## DETTE #142 — Filtres de /recherche couplés au modèle mono-ville
+
+Confirmé par audit le 15/07/2026 (RecherchePage.jsx) : semainesUtilisateur
+(l.235-238) fait un fallback mono silencieux (find(...) || deductionRecherche[0]),
+le scoring de couverture (l.434-438) ne reçoit les semaines que d'une seule
+ville. Le filtre ville lui-même (l.374-379) gère déjà un array villeSecondaire
+et est techniquement multi-ville-compatible, mais désaligné avec le fallback
+mono ci-dessus. Dans le périmètre du chantier recherche multi-villes — à
+corriger en même temps que PlancheCouverturePage.jsx (autre lecteur mono
+identifié le même jour).

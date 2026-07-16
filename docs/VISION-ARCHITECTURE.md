@@ -806,3 +806,18 @@ non fonctionnel, signal qu'il fallait trancher). Chantier non cadré à ce
 jour : implique deriveVilleColonnes.js, le wizard d'inscription, et tous
 les consommateurs de deduireRecherche (couvertureVisiteur, disponibilites,
 /recherche). À traiter en session dédiée, pas en continuation de DETTE #135.
+
+### Précision sur "les_deux" et la recherche multi-villes (15/07/2026)
+
+Le chantier recherche multi-villes ne concerne que les profils locataire purs.
+Un profil les_deux garde structurellement 1 ville de recherche + 1 ville hôte
+(jamais 2 recherches) : ses 2 colonnes de ville sont déjà occupées, une pour
+chercher, une pour héberger. Ce n'est pas une limitation oubliée mais la
+conséquence directe du principe fondateur — un alternant a 2 institutions
+(école, entreprise), donc au maximum 2 villes pertinentes dans sa vie. Un
+les_deux qui voudrait chercher dans 2 villes devrait cesser d'héberger, ce
+qui en ferait un locataire pur, pas une variante à ouvrir de les_deux.
+
+Distinct : proposer 2 logements (héberger dans 2 villes) est une capacité à
+part, touchant deduireOffre et la création d'annonce, jamais auditée. Parquée
+dans idees-en-attente.md — ne pas mélanger avec ce chantier.
