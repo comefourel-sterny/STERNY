@@ -6,6 +6,41 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-15 — Chantier recherche multi-villes : plan d'implémentation cadré (audits terminés)
+
+Série d'audits lecture seule menée (wizard E-4 InscriptionAlternantPage, hooks/
+useInscriptionWizard, ModifierProfilPage, RecherchePage + modale profils compatibles,
+bouton dashboard DashboardLocatairePage, deriveVilleColonnes, consommateurs de
+deduireRecherche). Constat central : trois surfaces éditent les villes de façon
+incohérente (wizard via deriveVilleColonnes ; ModifierProfilPage qui édite
+ville_ecole/ville_entreprise SANS toucher les statut_* → bug latent "ville muette",
+DETTE #143 ; bouton dashboard qui écrit la colonne orpheline ville_recherche_secondaire,
+DETTE #140).
+
+Décision de cap : ne pas ajouter de 4e surface, converger vers une logique partagée.
+Plan retenu (détaillé en VISION-ARCHITECTURE.md, décision du 15/07/2026), 5 points :
+1. Extraire un composant partagé "saisie ville + action (recherche/hôte)", réutilisé
+   wizard E-4 locataire + modale dashboard.
+2. Bouton "+" dashboard CONSERVÉ (besoin réel : ajouter une 2e ville après inscription,
+   chercher OU proposer), re-câblé sur la colonne canonique libre + statut_* ;
+   ville_recherche_secondaire supprimée (DETTE #140).
+3. ModifierProfilPage mise à niveau pour toucher aussi statut_ville_* (corrige DETTE #143).
+4. deriveVilleColonnes : autoriser 2 'recherche' (ou 1 recherche + 1 hôte) pour
+   type_user='locataire'.
+5. Corriger les lecteurs mono de deduireRecherche : PlancheCouverturePage.jsx ([0] en
+   dur) et filtres RecherchePage.jsx (DETTE #142).
+
+Portée : les_deux HORS périmètre (ses 2 colonnes sont déjà occupées, 1 recherche +
+1 hôte). Hors périmètre aussi : modale "profils compatibles" (maquette hardcodée,
+DETTE #141) et idée hôte multi-logements (parquée idees-en-attente.md).
+
+**Prochaine étape : audit lecture seule du composant partagé à extraire (API exacte
+souhaitée) avant tout code, en session dédiée.** Points ouverts pour cet audit :
+(a) le composant infère-t-il la nature/colonne cible, ou la capture-t-il ? (b) forme
+exacte réutilisable entre wizard (inline, event {target:{name,value}}) et modale dashboard.
+
+---
+
 ## 2026-07-15 — Refonte visuelle /logement : carte Compatibilité + tooltip custom + bouton Agrandir + légende
 
 Session de refonte visuelle sur la fiche annonce, itérée via le Visualizer

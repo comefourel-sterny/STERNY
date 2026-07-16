@@ -821,3 +821,36 @@ qui en ferait un locataire pur, pas une variante à ouvrir de les_deux.
 Distinct : proposer 2 logements (héberger dans 2 villes) est une capacité à
 part, touchant deduireOffre et la création d'annonce, jamais auditée. Parquée
 dans idees-en-attente.md — ne pas mélanger avec ce chantier.
+
+### Plan d'implémentation multi-villes : surface canonique unique (décision du 15 juillet 2026)
+
+Constat de l'audit (15/07/2026) : trois surfaces éditent les villes de façon
+incohérente — le wizard E-4 (deriveVilleColonnes, convention colonne=nature /
+statut=action), ModifierProfilPage (édite ville_ecole/ville_entreprise SANS
+jamais toucher les statut_*, cf. DETTE #143), et le bouton "+" du dashboard
+(écrit la colonne orpheline ville_recherche_secondaire, cf. DETTE #140).
+Décision de cap : NE PAS ajouter de 4e surface, mais converger vers UNE logique
+partagée. Cinq points :
+
+1. Extraire un composant partagé "saisie ville + action (recherche/hôte)",
+   réutilisé par le wizard E-4 (bloc locataire) ET la modale du bouton dashboard.
+   L'action (statut) est capturée explicitement ; la nature (colonne cible) est
+   déterminée par l'institution — un alternant a exactement 2 villes pertinentes
+   (école + entreprise), donc la 2e ville a une nature imposée, pas ambiguë.
+2. Bouton "+" du dashboard CONSERVÉ (besoin réel : ajouter une 2e ville après
+   inscription, chercher OU proposer). Re-câblé sur la colonne canonique libre
+   (ville_ecole/ville_entreprise) + son statut_*. ville_recherche_secondaire et
+   sa colonne seront supprimées (DETTE #140).
+3. ModifierProfilPage mise à niveau pour toucher aussi statut_ville_* (corrige la
+   "ville muette", DETTE #143) — reste la surface de modification d'une ville
+   existante du profil.
+4. deriveVilleColonnes.js : autoriser, pour type_user='locataire', 2 statuts
+   'recherche' simultanés (ou 1 'recherche' + 1 'hote') — aujourd'hui plafonné à
+   1 statut rempli par construction.
+5. Corriger les lecteurs mono de deduireRecherche : PlancheCouverturePage.jsx
+   ([0] en dur) et les filtres de RecherchePage.jsx (DETTE #142).
+
+Portée : les_deux reste HORS périmètre (cf. précision ci-dessus — ses 2 colonnes
+sont déjà occupées, 1 recherche + 1 hôte). Prochaine étape avant tout code : audit
+lecture seule du composant partagé à extraire (API exacte souhaitée), en session
+dédiée.

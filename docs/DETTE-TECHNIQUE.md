@@ -1502,20 +1502,33 @@ semainesBesoinAnnonce (LogementPage.jsx, useEffect "1a") exclut désormais les s
 
 DashboardProprietairePage.css définit un .modal-content non scopé (spécificité 0,0,1,0, globale) qui injecte min-height: 480px, display: flex; flex-direction: column et overflow: hidden sur tous les .modal-content de la plateforme dont le style local (scopé ou inline) ne redéfinit pas ces propriétés précises — y compris le modal planning de /logement. Découvert le 13-14/07/2026 en calculant la largeur réelle du modal planning. Même famille que DETTE #137 (fuite .section-title depuis CreerAnnoncePage.css) : classe utilitaire non scopée, écrasant silencieusement d'autres pages via le bundle CSS global. Non corrigé (DashboardProprietairePage.css est un fichier never-stage). À traiter avec #137 en Phase 0bis : scoper .modal-content de DashboardProprietairePage.css (ex. .dashboard-proprio-container .modal-content).
 
-## DETTE #140 — Bouton d'ajout de 2e ville (dashboard) écrit dans une colonne orpheline
+## DETTE #140 — Bouton d'ajout de 2e ville (dashboard) : plomberie à re-câbler sur les colonnes canoniques
 
-Le bouton d'ajout de ville sur /dashboard (ex. ajouter "Nantes" en plus de
-"Rennes") écrit réellement en base (DashboardLocatairePage.jsx:436, colonne
-ville_recherche_secondaire, confirmée existante en schéma) — reformulation
-suite à l'audit du 15/07/2026, la formulation précédente ("n'écrit rien")
-était imprécise. Le vrai problème : cette colonne est orpheline, lue par
-AUCUN code (ni deduireRecherche, ni /recherche, ni matching, ni aucune
-requête SQL). L'utilisateur voit "Nantes" affiché sur son dashboard sans
-jamais recevoir la moindre annonce de cette ville. Décision actée en
-VISION-ARCHITECTURE.md (15/07/2026) : ce mécanisme sera remplacé par le vrai
-chantier recherche multi-villes (2e ville via ville_ecole/ville_entreprise +
-statut 'recherche'), puis ville_recherche_secondaire et ce bouton seront
-supprimés.
+Le bouton "+" d'ajout de ville sur /dashboard (DashboardLocatairePage.jsx, header
+de ville : bouton l.681 → modale → confirmerVilleSecondaire l.433-442) écrit
+réellement en base, mais dans la colonne ville_recherche_secondaire
+(update l.436, colonne confirmée existante en schéma remote_schema.sql:353).
+Reformulation suite à l'audit du 15/07/2026 : la formulation initiale ("n'écrit
+rien") était imprécise. Le vrai problème est que cette colonne est ORPHELINE,
+lue par AUCUN code (ni deduireRecherche, ni /recherche, ni matching, ni aucune
+requête SQL). L'utilisateur voit "Nantes" s'afficher sur son dashboard sans
+jamais recevoir la moindre annonce de cette ville : le badge est décoratif.
+
+Décision actée (plan recherche multi-villes, 15/07/2026, cf. VISION-ARCHITECTURE.md) :
+le bouton est CONSERVÉ — le besoin est réel et confirmé : un utilisateur déjà
+inscrit doit pouvoir ajouter une 2e ville après coup, pour y chercher OU y
+proposer un logement. C'est sa PLOMBERIE qui change, pas le bouton. Cible :
+la modale réutilisera le composant partagé "saisie ville + action (recherche/
+hôte)" extrait pour le wizard E-4, et écrira désormais dans la colonne canonique
+LIBRE (ville_ecole ou ville_entreprise, selon celle non encore utilisée par le
+profil) + son statut_* correspondant ('recherche' ou 'hote'), conformément à la
+convention colonne=nature / statut=action (VISION §65-86). Une fois cette
+plomberie en place, la colonne ville_recherche_secondaire n'a plus aucune raison
+d'exister : elle sera SUPPRIMÉE (migration de drop, après vérification qu'aucune
+donnée réelle ne s'y trouve — aujourd'hui seul le compte de test locataire@sterny.test
+la porte, valeur 'Nantes'). Résolution attendue dans le chantier multi-villes,
+en cohérence avec DETTE #142 (lecteurs mono à corriger) et #143 (statuts non
+touchés par ModifierProfilPage).
 
 ## DETTE #141 — Modale "profils compatibles" de /recherche : maquette hardcodée, hors périmètre
 
@@ -1538,3 +1551,21 @@ et est techniquement multi-ville-compatible, mais désaligné avec le fallback
 mono ci-dessus. Dans le périmètre du chantier recherche multi-villes — à
 corriger en même temps que PlancheCouverturePage.jsx (autre lecteur mono
 identifié le même jour).
+
+## DETTE #143 — ModifierProfilPage édite les villes sans jamais toucher leur statut (ville "muette")
+
+Découvert le 15/07/2026 (audit ModifierProfilPage.jsx, src/pages/profil/, 774 l.).
+La page lit ville_ecole/ville_entreprise (l.195-196) et les réécrit à la sauvegarde
+(update l.403), via 2 champs input maison libellés "Ville de ton ecole" / "Ville de
+ton entreprise" (l.639-652). Mais elle ne lit ni n'écrit JAMAIS statut_ville_ecole,
+statut_ville_entreprise ou nature_ville (0 occurrence dans tout le fichier). Elle
+traite donc les 2 colonnes comme des lieux géographiques, sans notion d'action
+(recherche/hôte). Conséquence : un utilisateur peut y renseigner une ville
+(ex. ville_entreprise) dont le statut reste null → la ville est écrite mais reste
+"muette" pour deduireRecherche, qui filtre action==='recherche' et l'ignore.
+Elle peut aussi désynchroniser ville et statut existants. Bug latent (pas de
+crash, donnée silencieusement invisible au matching). À corriger dans le chantier
+recherche multi-villes (point 3 du plan, 15/07/2026) : ModifierProfilPage doit
+toucher aussi statut_ville_* (idéalement via le même composant partagé "ville +
+action" que le wizard E-4 et la modale dashboard #140), pour rester la surface
+canonique de modification d'une ville existante.
