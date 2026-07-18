@@ -1569,3 +1569,43 @@ recherche multi-villes (point 3 du plan, 15/07/2026) : ModifierProfilPage doit
 toucher aussi statut_ville_* (idéalement via le même composant partagé "ville +
 action" que le wizard E-4 et la modale dashboard #140), pour rester la surface
 canonique de modification d'une ville existante.
+
+## DETTE #144 — Villes "de lancement" dupliquées et divergentes, incohérentes avec le wizard (restriction dure vs douce)
+
+Découvert le 18/07/2026 pendant le chantier recherche multi-villes (audit de
+la modale "Ajouter une ville de recherche" du dashboard). Une source partagée
+existe (data/villes-lancement.js, 10 villes bretonnes + Nantes, DETTE #78/conv
+57) avec un plan de branchement explicite sur 6 pages (commentaire en tête du
+fichier), mais seules HomePage et RecherchePage l'utilisent réellement. Les 5
+autres pages (ModifierProfilPage, CompleterProfilPage, InscriptionPartagerPage,
+InscriptionRecherchePage, DashboardLocatairePage) portent chacune leur propre
+copie locale, divergente : le dashboard a 17 villes au lieu de 10 (ajoute
+Ploërmel, Carhaix, Morlaix, Lannion, Douarnenez, Guingamp, Ploufragan, Dinan ;
+retire Fougères), les autres ont 10 villes mais avec ou sans accents selon la
+page.
+
+Incohérence produit sous-jacente, plus large que la duplication : le wizard
+d'inscription (VILLES_FRANCE, 83 villes) n'impose aucune restriction — un
+utilisateur peut saisir n'importe quelle ville en texte libre, y compris hors
+zone de lancement (ex. Ajaccio). Les 6 pages "villes de lancement" imposent au
+contraire une restriction dure (liste fermée, sélection obligatoire, bouton
+désactivé sinon). Conséquence : un utilisateur inscrit avec une ville hors
+zone ne peut ensuite rien faire avec cette ville sur ces 6 pages (ajouter une
+2e ville de recherche, modifier son profil, etc.) — expérience incohérente
+selon la page visitée.
+
+Note de conception : villes-lancement.js n'est pas une simple liste texte —
+elle porte aussi des slugs et coordonnées GPS (VILLES_COORDS) utilisés pour le
+routing /recherche?ville= et le calcul de proximité. Remplacer purement et
+simplement cette liste par VILLES_FRANCE casserait ces usages. La résolution
+n'est donc pas un simple alignement de listes, mais une vraie décision
+produit : faut-il restreindre l'inscription aux villes de lancement (cohérent
+avec les 6 pages), ou ouvrir les 6 pages au texte libre (cohérent avec le
+wizard actuel) ? Question à trancher avant tout code.
+
+Non bloquant pour le chantier recherche multi-villes en cours : la modale
+"Ajouter une ville de recherche" garde volontairement sa restriction actuelle
+(pas de changement de liste de villes) pendant qu'on corrige uniquement son
+écriture en base (DETTE #140) et l'ajout du sélecteur de nature. À traiter en
+session dédiée, distincte de ce chantier — touche 6 pages et une décision
+produit, pas juste du code.
