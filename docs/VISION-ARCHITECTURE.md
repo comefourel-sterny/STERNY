@@ -867,3 +867,28 @@ CreerAnnoncePage. Corrige le comportement actuel de la branche "Proposer"
 naviguait directement vers /annonce/creer — un raccourci qui cassait la
 symétrie avec la branche "Rechercher" et empêchait de réutiliser le même
 composant partagé pour les deux actions.
+
+### Précision sur la nature dans le flux "ajouter une 2e ville" (18/07/2026)
+
+Exception ciblée à la règle du 16/07 (nature toujours captée explicitement) :
+dans le flux "ajouter une 2e ville de recherche" du bouton "+" dashboard, la
+nature est DÉDUITE, pas demandée à l'utilisateur. Ce flux n'est accessible
+que pour un profil ayant déjà exactement 1 ville renseignée (cas normal
+post-wizard) : la case vide restante a alors une nature mécaniquement
+déterminée par élimination (un alternant a 2 institutions, école et
+entreprise — si l'une est déjà occupée, l'autre est forcément la seconde).
+Aucune ambiguïté, donc aucun sélecteur nécessaire ; la modale affiche
+seulement une ligne informative ("[Ville] sera enregistrée comme ta ville
+d'[école/entreprise]").
+
+Garde-fou obligatoire : cette déduction n'est valide QUE si exactement 1 des
+2 colonnes ville_ecole/ville_entreprise est remplie. Si les 2 le sont déjà
+(cas cassé de DETTE #143, ville "muette" sans statut cohérent), il n'y a plus
+de case libre à déduire — le flux "ajouter une 2e ville" ne doit pas
+s'afficher tel quel dans ce cas (à traiter au moment du patch : soit masquer
+le bouton, soit un message différent).
+
+Cette exception reste locale à ce flux précis. La règle générale du 16/07
+(nature toujours explicite ailleurs, notamment dans le wizard E-4) n'est pas
+remise en cause : elle s'applique dès qu'il peut y avoir plus d'une case
+libre ou une situation ambiguë.
