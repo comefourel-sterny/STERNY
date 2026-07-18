@@ -59,6 +59,9 @@ export default function DashboardLocatairePage() {
   const [villeModalInput, setVilleModalInput] = useState('')
   const [villeModalSelected, setVilleModalSelected] = useState('')
   const [showPlusMenu, setShowPlusMenu] = useState(false)
+  // Sélecteur segmenté 2 villes (état purement visuel : ne pilote aucun autre contenu du dashboard).
+  // false = 1ère ville (villesUser[0]) active par défaut à l'ouverture.
+  const [afficheVilleSecondaire, setAfficheVilleSecondaire] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pwdNew, setPwdNew] = useState('')
@@ -675,22 +678,35 @@ export default function DashboardLocatairePage() {
           </div>
         )}
 
-        {/* Ville header for single-ville users */}
+        {/* Ville header — sélecteur segmenté si 2 villes, sinon badge simple + bouton "+" (inchangé) */}
         {!isLesDeux && villesUser.length > 0 && !hasBailActif && (
-          <div className="ville-header-row">
-            <div className="ville-header-badge">
-              <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
-              <span>{villesUser[0]?.ville}</span>
+          villesUser.length === 2 ? (
+            <div className="vhs-container">
+              <button
+                className={`vhs-segment ${!afficheVilleSecondaire ? 'vhs-active' : ''}`}
+                onClick={() => setAfficheVilleSecondaire(false)}
+              >
+                {!afficheVilleSecondaire && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                )}
+                <span>{villesUser[0].ville}</span>
+              </button>
+              <button
+                className={`vhs-segment ${afficheVilleSecondaire ? 'vhs-active' : ''}`}
+                onClick={() => setAfficheVilleSecondaire(true)}
+              >
+                {afficheVilleSecondaire && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                )}
+                <span>{villesUser[1].ville}</span>
+              </button>
             </div>
-            {userData.ville_recherche_secondaire && (
-              <div className="ville-header-secondaire">
-                <div className="ville-header-badge">
-                  <span>{userData.ville_recherche_secondaire}</span>
-                  <button className="ville-header-remove" onClick={supprimerVilleSecondaire}>&times;</button>
-                </div>
+          ) : (
+            <div className="ville-header-row">
+              <div className="ville-header-badge">
+                <svg viewBox="0 -960 960 960" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" /></svg>
+                <span>{villesUser[0]?.ville}</span>
               </div>
-            )}
-            {!userData.ville_recherche_secondaire && (
               <div className="plus-menu-wrapper" ref={plusMenuRef}>
                 <button className="btn-plus-ville" onClick={() => setShowPlusMenu(!showPlusMenu)} title="Ajouter une ville">+</button>
                 {showPlusMenu && (
@@ -726,8 +742,8 @@ export default function DashboardLocatairePage() {
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )
         )}
       </div>
 
