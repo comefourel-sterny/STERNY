@@ -430,11 +430,14 @@ export default function DashboardLocatairePage() {
   }
 
   // === VILLE SECONDAIRE ===
-  async function confirmerVilleSecondaire() {
-    if (!villeModalSelected) return
+  async function confirmerVilleRecherche() {
+    if (!villeModalSelected || !peutAjouterVilleRecherche) return
     try {
-      await supabaseClient.from('users').update({ ville_recherche_secondaire: villeModalSelected }).eq('id', currentUserId)
-      setUserData(prev => ({ ...prev, ville_recherche_secondaire: villeModalSelected }))
+      await supabaseClient.from('users').update({
+        [colonneDeduite]: villeModalSelected,
+        [statutColonneDeduite]: 'recherche',
+      }).eq('id', currentUserId)
+      setUserData(prev => ({ ...prev, [colonneDeduite]: villeModalSelected, [statutColonneDeduite]: 'recherche' }))
       setShowVilleModal(false)
     } catch (error) {
       console.error('Erreur:', error)
@@ -623,6 +626,17 @@ export default function DashboardLocatairePage() {
   // Villes dérivées des 4 colonnes (remplace la colonne dépréciée userData.ville) — #76
   const villesUser = getVillesUtilisateur(userData)
 
+  // Flux "ajouter une 2e ville de recherche" (bouton "+") — nature DÉDUITE, pas demandée (VISION 18/07/2026).
+  // Valide UNIQUEMENT si exactement 1 colonne ville est remplie : la case libre a alors une nature
+  // déterminée par élimination (école ↔ entreprise). Si 2 colonnes remplies (cas cassé DETTE #143,
+  // ville "muette"), plus de case libre → flux masqué (garde-fou).
+  const peutAjouterVilleRecherche = villesUser.length === 1
+  const natureDeduite = peutAjouterVilleRecherche
+    ? (villesUser[0].nature === 'ecole' ? 'entreprise' : 'ecole')
+    : null
+  const colonneDeduite = natureDeduite === 'ecole' ? 'ville_ecole' : 'ville_entreprise'
+  const statutColonneDeduite = natureDeduite === 'ecole' ? 'statut_ville_ecole' : 'statut_ville_entreprise'
+
   // DETTE #130 étape 4/5 : pôle hôte déjà occupé par une annonce existante → masque le CTA de création
   const poleHote = villesUser.find(v => v.action === 'hote')?.nature
   const poleOccupe = !!poleHote && annonces.some(a => a.pole === poleHote)
@@ -681,15 +695,17 @@ export default function DashboardLocatairePage() {
                 <button className="btn-plus-ville" onClick={() => setShowPlusMenu(!showPlusMenu)} title="Ajouter une ville">+</button>
                 {showPlusMenu && (
                   <div className="plus-menu show">
-                    <button className="plus-menu-item" onClick={() => { setShowPlusMenu(false); setShowVilleModal(true); }}>
-                      <div className="plus-menu-icon search">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                      </div>
-                      <div className="plus-menu-text">
-                        <div className="plus-menu-label">Rechercher un logement</div>
-                        <div className="plus-menu-desc">Ajouter une ville de recherche</div>
-                      </div>
-                    </button>
+                    {peutAjouterVilleRecherche && (
+                      <button className="plus-menu-item" onClick={() => { setShowPlusMenu(false); setShowVilleModal(true); }}>
+                        <div className="plus-menu-icon search">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                        </div>
+                        <div className="plus-menu-text">
+                          <div className="plus-menu-label">Rechercher un logement</div>
+                          <div className="plus-menu-desc">Ajouter une ville de recherche</div>
+                        </div>
+                      </button>
+                    )}
                     {!poleOccupe && (
                       <button className="plus-menu-item" onClick={async () => {
                         setShowPlusMenu(false)
@@ -1088,7 +1104,7 @@ export default function DashboardLocatairePage() {
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8622A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
             </div>
             <h3 className="modal-title">Ajouter une ville de recherche</h3>
-            <p className="modal-desc">Tu peux chercher un logement dans une seconde ville.</p>
+            <p className="modal-desc">Cherche aussi dans une autre ville.</p>
             <div className="modal-input-wrapper">
               <input type="text" className="modal-input" placeholder="Ex : Nantes, Brest..." autoComplete="off"
                 value={villeModalInput}
@@ -1107,9 +1123,17 @@ export default function DashboardLocatairePage() {
                 </div>
               )}
             </div>
+            {villeModalSelected && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', margin: '0 0 18px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+                <span style={{ fontSize: '11px', color: '#94A3B8', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  {villeModalSelected} sera enregistrée comme ta ville d'{natureDeduite === 'ecole' ? 'école' : 'entreprise'}
+                </span>
+              </div>
+            )}
             <div className="modal-actions">
               <button className="modal-btn-cancel" onClick={() => setShowVilleModal(false)}>Annuler</button>
-              <button className="modal-btn-confirm" disabled={!villeModalSelected} onClick={confirmerVilleSecondaire}>Ajouter</button>
+              <button className="modal-btn-confirm" disabled={!villeModalSelected} onClick={confirmerVilleRecherche}>Ajouter</button>
             </div>
           </div>
         </div>
