@@ -18,6 +18,7 @@ import BottomAuthLinks from '../../components/auth-wizard/BottomAuthLinks'
 import IntentCardRadio from '../../components/auth-wizard/IntentCardRadio'
 import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
+import VilleNatureField from '../../components/ville/VilleNatureField'
 import WizardProgressBar from '../../components/auth-wizard/WizardProgressBar'
 import RhythmManualBuilder from '../../components/rhythm/RhythmManualBuilder'
 import { computeDefaultAcademicYear, nextAcademicYear, previousAcademicYear } from '../../utils/academicYear'
@@ -532,24 +533,16 @@ export default function InscriptionAlternantPage() {
         {subtitleText && <p className="ial-step-subtitle">{subtitleText}</p>}
         <div className="ial-form">
           {(state.type_user === 'locataire' || state.type_user === 'hote') && (
-            <>
-              <AutocompleteInput
-                name="ville_entreprise"
-                value={state.ville_entreprise ?? ''}
-                onChange={handleE4Change}
-                suggestions={VILLES_FRANCE}
-                placeholder="Tape les premières lettres"
-                required={false}
-              />
-              <p className="ial-step-subtitle ial-nature-question">{natureQuestion}</p>
-              <CustomSelect
-                name="nature_ville"
-                options={natureVilleOptions}
-                value={state.nature_ville}
-                onChange={handleE4Change}
-                placeholder="Sélectionner"
-              />
-            </>
+            // Sous-titre ville rendu à l'extérieur (l. `{subtitleText && <p …>}`), donc pas de villeLabel ici.
+            // VilleNatureField absorbe l'event {target:{name,value}} : on rewrappe pour réutiliser handleE4Change tel quel.
+            <VilleNatureField
+              ville={state.ville_entreprise ?? ''}
+              onVilleChange={(value) => handleE4Change({ target: { name: 'ville_entreprise', value } })}
+              nature={state.nature_ville}
+              onNatureChange={(value) => handleE4Change({ target: { name: 'nature_ville', value } })}
+              naturePrompt={natureQuestion}
+              naturePromptClassName="ial-step-subtitle ial-nature-question"
+            />
           )}
           {state.type_user === 'les_deux' && (
             <>
