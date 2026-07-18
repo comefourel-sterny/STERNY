@@ -2,7 +2,76 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-07 (conv 110) — Feuille de route de cadrage modèle multi-logements — retard doc ↔ HEAD rattrapé : DETTE #130 étape 4/5 (masquage CTA "proposer un logement" si pôle occupé) est FAITE & COMMITÉE (0c2e195), alors que ce fichier la décrivait encore comme "restante". Étapes 1/5 (fe013b6), 2/5 (faf0284) et 4/5 (0c2e195) livrées ; 3/5 FAITE en working tree mais NON COMMITÉE (Option A, never-stage, Phase 0bis). RESTE la seule étape 5/5 (pluriel "Tes annonces (N)"). db push prod séparé, non fait. À clarifier à la reprise : modifs non commitées sur DashboardProprietairePage au-delà de 0c2e195 + fichiers untracked à ranger. Aval du tunnel toujours sous GEL volontaire.
+**Dernière mise à jour** : 2026-07-18 (conv 112) — Chantier recherche multi-villes : composant partagé VilleNatureField branché sur le wizard, modale dashboard réécrite pour écrire dans les colonnes canoniques (DETTE #140 résolue côté écriture), sélecteur segmenté 2 villes livré côté affichage. 3 commits poussés (9b470d4, d78286c, dfe7c6f). DETTE #144 découverte et loguée (villes de lancement divergentes). Reste : deriveVilleColonnes aux 2 statuts recherche, lecteurs mono (DETTE #142), ville muette ModifierProfilPage (DETTE #143) — détail complet dans l'entrée du jour ci-dessous.
+
+---
+
+## 2026-07-18 — Recherche multi-villes : composant partagé, écriture canonique et affichage livrés
+
+Session longue, chantier recherche multi-villes. 3 commits de code, tous
+poussés sur origin/feat/unification-inscription :
+
+**9b470d4 — Composant partagé VilleNatureField (wizard E-4)**
+Composant contrôlé qui capture ville + nature (école/entreprise), jamais
+l'action — décision du 16/07 pour éviter la duplication entre wizard et
+dashboard. Branché dans InscriptionAlternantPage.jsx (bloc locataire/hote),
+zéro changement visuel ni de comportement (validé par Côme en local).
+
+**d78286c — Modale dashboard : écriture canonique (DETTE #140 résolue côté écriture)**
+La modale "Ajouter une ville de recherche" (bouton "+" dashboard) écrit
+désormais dans la colonne canonique libre (ville_ecole/ville_entreprise) +
+son statut_*='recherche', au lieu de la colonne orpheline
+ville_recherche_secondaire. Nature déduite (pas demandée) pour ce flux
+précis : exception documentée le 18/07 à la règle générale du 16/07, valide
+uniquement si exactement 1 colonne est déjà remplie (garde-fou pour le cas
+cassé de DETTE #143). Testé en base sur locataire@sterny.test : Nantes bien
+écrite dans ville_entreprise, statut 'recherche'.
+
+**dfe7c6f — Sélecteur segmenté 2 villes (affichage dashboard)**
+Quand l'utilisateur a 2 villes (villesUser.length === 2), le badge simple +
+bouton "+" sont remplacés par un sélecteur segmenté (conteneur blanc + ombre,
+ville active en pastille orange pâle). État purement visuel pour l'instant —
+ne fait varier aucun autre contenu du dashboard. Itéré en plusieurs passes
+avec Côme (Visualizer + schéma manuscrit) : forme du sélecteur, couleur de
+fond (le premier essai, gris clair, était invisible sur le fond de page
+réel #F4F5F7 — corrigé en blanc+ombre), retrait du focus ring bleu natif
+(remplacé par :focus-visible orange, accessible au clavier).
+
+**Découvertes documentées en cours de route (aucune non résolue oubliée) :**
+- DETTE #144 (nouvelle) : les listes de villes "de lancement" sont dupliquées
+  et divergentes sur 6 pages, avec une incohérence produit plus large
+  (restriction dure sur ces 6 pages vs texte libre dans le wizard) — non
+  bloquant pour ce chantier, la modale garde volontairement sa liste actuelle.
+- VISION-ARCHITECTURE.md précisée à 2 reprises : comportement du bouton "+"
+  (ne doit plus jamais naviguer vers /annonce/creer, corrige la branche
+  "Proposer" — pas encore implémenté, décision actée seulement) ; exception
+  de nature déduite pour le flux "ajouter une 2e ville".
+- idees-en-attente.md : 2 idées parquées (hôte multi-logements ; bascule de
+  mode façon Airbnb hôte/voyageur, plutôt pour l'app mobile).
+
+**Reste au plan (5 points du 15/07), chacun en session dédiée gatée :**
+1. deriveVilleColonnes.js pas encore ouvert aux 2 statuts 'recherche' — le
+   wizard d'inscription ne permet toujours de saisir qu'1 seule ville de
+   recherche à l'inscription (seul le dashboard post-inscription le permet
+   désormais, via la modale corrigée ci-dessus).
+2. Lecteurs mono non corrigés : PlancheCouverturePage.jsx ([0] en dur),
+   filtres de RecherchePage.jsx (DETTE #142).
+3. ModifierProfilPage.jsx toujours sans statut_ville_* (DETTE #143, "ville
+   muette") — bloque aussi la fiabilité de l'inférence de nature ailleurs.
+4. Le sélecteur segmenté est visuel-only : aucune section du dashboard (le
+   calendrier "Ton rythme", les candidatures) ne varie encore selon la ville
+   affichée. Prochaine étape logique si on continue ce fil.
+5. ville_recherche_secondaire et supprimerVilleSecondaire n'ont plus aucun
+   lecteur actif — prêts pour suppression, mais pas encore faits. Le flux de
+   retrait d'une ville (décidé : lien discret dans un menu/paramètres, pas
+   de croix sur le sélecteur) reste à concevoir.
+6. Branche "Proposer" du menu "+" (conversion type_user + navigation directe
+   vers /annonce/creer) : comportement à corriger pour respecter la décision
+   du 16/07 (créer l'écosystème sans naviguer) — non touché cette session.
+
+**Prochaine session possible** : au choix de Côme parmi les 6 points
+ci-dessus — aucun n'est urgent, tous sont des dettes connues et documentées,
+pas des régressions.
 
 ---
 
