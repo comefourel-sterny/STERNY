@@ -5,8 +5,11 @@
 //
 // B2 : alimentée par les VRAIES semaines cherchées du locataire connecté. Branchement
 // repris verbatim de RecherchePage : fetch de la row users → deduireRecherche → semaines
-// (lundis ISO, futur). Mono-ville (1ʳᵉ entrée 'recherche') ; cas 2 villes parqué.
-// La planche s'ouvre sur l'ANNÉE de la 1ʳᵉ semaine cherchée. `couvert` reste false partout :
+// (lundis ISO, futur). Multi-villes : fusionne toutes les entrées 'recherche' de
+// deduireRecherche (DETTE #142 résolue ici, 19/07/2026) — 1 ou 2 villes, sans distinction
+// pour l'utilisateur (« tout ce qu'il te reste à loger »).
+// La planche s'ouvre sur l'ANNÉE de la plus proche semaine cherchée, toutes villes
+// confondues. `couvert` reste false partout :
 // la couverture réelle (semaines logées) dépend des contrats, pas encore branchée.
 
 import { useState, useEffect, useMemo } from 'react';
@@ -68,9 +71,13 @@ export default function PlancheCouverturePage() {
     return () => { annule = true; };
   }, [user]);
 
-  // Mono-ville : 1ʳᵉ entrée 'recherche'. Semaines = lundis ISO (futur, triés) déjà filtrés par deduireRecherche.
-  const entree = deductionRecherche[0];
-  const semaines = useMemo(() => entree?.semaines || [], [entree]);
+  // Multi-villes (DETTE #142) : fusion de toutes les entrées 'recherche' (1 ou 2 villes).
+  // Un lundi ne peut pas être à la fois 'school' et 'company' dans rhythm_calendar,
+  // donc pas de collision possible en fusionnant les semaines des 2 villes.
+  const semaines = useMemo(() => {
+    const toutes = deductionRecherche.flatMap((e) => e.semaines);
+    return Array.from(new Set(toutes)).sort();
+  }, [deductionRecherche]);
 
   // Semaines « en attente » = semaines cherchées sur lesquelles le locataire a candidaté
   // sans contrat signé (candidater ne réserve rien — VISION §381/§621). Une candidature
@@ -92,13 +99,21 @@ export default function PlancheCouverturePage() {
   }, [candidatures, semaines]);
 
   // Chaque semaine cherchée → { nature, cherchee:true, couvert:false, enAttente } (couvert viendra avec les contrats).
+  // Nature portée PAR SEMAINE (pas globale) : indispensable dès qu'on fusionne 2 villes
+  // de natures différentes (école + entreprise).
   const etatsParSemaine = useMemo(() => {
+    const natureParSemaine = {};
+    for (const e of deductionRecherche) {
+      for (const lundi of e.semaines) {
+        natureParSemaine[lundi] = e.nature;
+      }
+    }
     const map = {};
     for (const lundi of semaines) {
-      map[lundi] = { nature: entree.nature, cherchee: true, couvert: false, enAttente: semainesEnAttente.has(lundi) };
+      map[lundi] = { nature: natureParSemaine[lundi], cherchee: true, couvert: false, enAttente: semainesEnAttente.has(lundi) };
     }
     return map;
-  }, [semaines, entree, semainesEnAttente]);
+  }, [semaines, deductionRecherche, semainesEnAttente]);
 
   // Ouvre sur l'année de la 1ʳᵉ semaine cherchée ; sinon undefined → le composant retombe sur son défaut.
   const anneeScolaireInitiale = semaines.length ? academicYearForMonday(semaines[0]) : undefined;
