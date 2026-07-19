@@ -4,6 +4,8 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { getInitials } from '../../utils/formatters'
 import { getVillesUtilisateur } from '../../utils/deriveVilleColonnes'
+import VilleSelecteur from '../../components/ville/VilleSelecteur'
+import '../../components/ville/VilleSelecteur.css'
 import AgendaCard from '../../components/dashboard/AgendaCard'
 import RythmeCarousel from '../../components/rhythm/RythmeCarousel'
 import ChatComponent from '../../components/chat/ChatComponent'
@@ -681,26 +683,11 @@ export default function DashboardLocatairePage() {
         {/* Ville header — sélecteur segmenté si 2 villes, sinon badge simple + bouton "+" (inchangé) */}
         {!isLesDeux && villesUser.length > 0 && !hasBailActif && (
           villesUser.length === 2 ? (
-            <div className="vhs-container">
-              <button
-                className={`vhs-segment ${!afficheVilleSecondaire ? 'vhs-active' : ''}`}
-                onClick={() => setAfficheVilleSecondaire(false)}
-              >
-                {!afficheVilleSecondaire && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                )}
-                <span>{villesUser[0].ville}</span>
-              </button>
-              <button
-                className={`vhs-segment ${afficheVilleSecondaire ? 'vhs-active' : ''}`}
-                onClick={() => setAfficheVilleSecondaire(true)}
-              >
-                {afficheVilleSecondaire && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                )}
-                <span>{villesUser[1].ville}</span>
-              </button>
-            </div>
+            <VilleSelecteur
+              villes={villesUser}
+              value={afficheVilleSecondaire ? 1 : 0}
+              onChange={(index) => setAfficheVilleSecondaire(index === 1)}
+            />
           ) : (
             <div className="ville-header-row">
               <div className="ville-header-badge">
