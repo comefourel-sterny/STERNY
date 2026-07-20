@@ -2,7 +2,63 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-18 (conv 112) — Chantier recherche multi-villes : composant partagé VilleNatureField branché sur le wizard, modale dashboard réécrite pour écrire dans les colonnes canoniques (DETTE #140 résolue côté écriture), sélecteur segmenté 2 villes livré côté affichage. 3 commits poussés (9b470d4, d78286c, dfe7c6f). DETTE #144 découverte et loguée (villes de lancement divergentes). Reste : deriveVilleColonnes aux 2 statuts recherche, lecteurs mono (DETTE #142), ville muette ModifierProfilPage (DETTE #143) — détail complet dans l'entrée du jour ci-dessous.
+**Dernière mise à jour** : 2026-07-20 (conv 114) — Système de pages par ville : VilleActiveContext créé et branché à la racine (Provider sous AuthProvider, au-dessus de <Routes>), puis VilleSelecteur du dashboard branché dessus (sélection de ville persistée localStorage, survit au refresh). 2 commits code (504a093, ffbc63e) + 2 docs (a635632 archi contexte, e7bf1fe DETTE #145) poussés. DETTE #145 loguée (fetch profil dupliqué sur 3 pages). Reste : brancher les 3 autres surfaces (RythmeCarousel, /mon-calendrier, candidatures-favoris, /recherche one-shot), volet hôte, volet les_deux — détail complet dans l'entrée du jour ci-dessous.
+
+---
+
+## 2026-07-20 — Système de pages par ville : contexte partagé créé, branché, testé sur la 1ère surface (dashboard)
+
+Chantier cadré le 19/07 (VISION-ARCHITECTURE.md), démarré aujourd'hui.
+2 commits de code + 2 commits docs, tous poussés sur
+origin/feat/unification-inscription.
+
+**Audits lecture seule menés avant tout code** :
+- RythmeCarousel + candidatures/favoris (aucune notion de ville aujourd'hui ;
+  ville déjà disponible per-item sur les candidatures, exploitable sans
+  nouvelle requête).
+- Fournisseur d'auth (useAuth) : ne contient PAS le profil applicatif
+  (ville_ecole, etc.) — juste l'identité Supabase. Le contexte doit charger
+  le profil séparément.
+
+**Décisions d'architecture actées (VISION-ARCHITECTURE.md, section 20/07)** :
+- Provider à la racine de l'app (au-dessus de <Routes>, sous AuthProvider) —
+  seul emplacement couvrant les 4 surfaces cibles, réparties sur 2 branches
+  de layout distinctes (/recherche sous <Layout/>, les 3 autres sous
+  <DashboardLayout/>).
+- /recherche : la ville active pré-remplit ?ville= au chargement, one-shot —
+  pas de synchronisation permanente avec le filtre de recherche ensuite.
+- getVillesUtilisateur(user) confirmée comme source de données (fonction
+  pure, sans réseau).
+
+**Code livré** :
+- 504a093 — VilleActiveContext créé (src/contexts/VilleActiveContext.jsx)
+  et branché à la racine de App.jsx. Expose { villeActive, villesDisponibles,
+  setVilleActive, loading } via useVilleActive(). Persistance localStorage,
+  clé scopée par userId (sterny_ville_active_${userId}).
+- ffbc63e — VilleSelecteur (dashboard) branché sur le contexte partagé.
+  Remplace l'ancien state local afficheVilleSecondaire (booléen visuel-only,
+  ne survivait pas à un refresh). Testé en local : clic sur 2ème ville +
+  refresh → sélection persistée. ✅
+
+**Dette découverte et loguée** : DETTE #145 — le nouveau contexte fait son
+propre fetch du profil (ville_ecole/statut_*), distinct des fetchs déjà
+faits par DashboardLocatairePage, PlancheCouverturePage et RecherchePage
+(select('*') chacune). Non bloquant, piste de factorisation future
+documentée.
+
+**RESTE (prochaine session)** :
+1. RythmeCarousel ne consomme pas encore la ville active (affiche tout le
+   rhythm_calendar, non filtré) — prochaine surface à brancher.
+2. /mon-calendrier, candidatures/favoris, /recherche (?ville= one-shot) —
+   pas encore branchés.
+3. Volet hôte du chantier (aucune des 4 surfaces n'a d'équivalent hôte) —
+   pas commencé.
+4. Volet les_deux — déjà couvert par construction (action fait partie de
+   villeActive), à vérifier concrètement une fois un profil les_deux
+   disponible en test.
+5. Point de vigilance mineur signalé par Claude Code : bref instant sans
+   segment actif au tout premier chargement de page (avant résolution du
+   profil) — pas gênant à l'usage, à garder en tête si ça devient visible.
 
 ---
 
