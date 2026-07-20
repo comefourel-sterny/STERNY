@@ -1609,3 +1609,21 @@ Non bloquant pour le chantier recherche multi-villes en cours : la modale
 écriture en base (DETTE #140) et l'ajout du sélecteur de nature. À traiter en
 session dédiée, distincte de ce chantier — touche 6 pages et une décision
 produit, pas juste du code.
+
+## DETTE #145 — Fetch du profil utilisateur dupliqué sur plusieurs pages
+
+Constaté le 20/07/2026 en concevant le contexte "ville active". Trois pages
+(DashboardLocatairePage, PlancheCouverturePage, RecherchePage) font chacune
+leur propre requête vers public.users pour récupérer le profil (ville_ecole,
+ville_entreprise, statut_ville_*, etc.), au lieu de partager un seul
+chargement. Fonctionnel, pas de bug — juste redondant (3 requêtes réseau
+au lieu d'1 potentielle).
+
+Piste future : un contexte React global "profil utilisateur", chargé une
+fois après connexion, consommé partout. Le contexte "ville active" (chantier
+en cours) pourrait s'appuyer dessus une fois qu'il existe, au lieu de faire
+son propre fetch minimal comme prévu pour l'instant.
+
+Non bloquant, non urgent. Pas la même chose qu'une fusion des tables auth/
+profil (à ne jamais faire — patterns différents pour de bonnes raisons de
+sécurité et de séparation des responsabilités).
