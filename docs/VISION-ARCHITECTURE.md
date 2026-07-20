@@ -984,3 +984,20 @@ entrées). Base retenue pour alimenter `villesDisponibles` du contexte.
 RESTE : forme exacte de l'API du contexte (nom du hook, structure de
 villeActive, clé de stockage local) — à concevoir en session dédiée avant
 le premier commit de code.
+
+### Précision : RythmeCarousel n'est PAS une surface pilotée par la ville active (20/07/2026)
+
+Corrige une hypothèse de départ du chantier. "Ton rythme" (RythmeCarousel,
+dashboard) affiche le calendrier d'alternance complet de la personne —
+école ET entreprise, chacun avec sa couleur — indépendamment de la ville
+actuellement sélectionnée dans le badge du dashboard. Ce n'est pas une
+5ème surface "par ville" : le rythme est une information globale au profil,
+pas une donnée qui varie selon la ville affichée.
+
+Conséquence : RythmeCarousel ne consomme PAS useVilleActive. Les tentatives
+du 20/07 (filtrage par nature, puis affichage "en retrait" de l'autre
+ville) sont abandonnées et annulées.
+
+Les 4 surfaces réellement pilotées par la ville active restent :
+Dashboard (sélecteur lui-même, pas RythmeCarousel), /mon-calendrier,
+candidatures/favoris, /recherche (?ville= one-shot).
