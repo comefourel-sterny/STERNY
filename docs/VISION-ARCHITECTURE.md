@@ -892,3 +892,61 @@ Cette exception reste locale à ce flux précis. La règle générale du 16/07
 (nature toujours explicite ailleurs, notamment dans le wizard E-4) n'est pas
 remise en cause : elle s'applique dès qu'il peut y avoir plus d'une case
 libre ou une situation ambiguë.
+
+### Système de pages par ville (recherche OU proposition) — cadrage du 19/07/2026
+
+**Principe (métaphore de Côme, "livre à 2 pages")** : chaque ville d'un profil
+n'est pas automatiquement "en recherche" — elle porte une ACTION (recherche
+OU hôte), déjà présente dans le schéma via `getVillesUtilisateur` (colonnes
+`statut_ville_ecole`/`statut_ville_entreprise`). 1 ville = 1 "page" ; chaque
+page a sa propre action, son propre contenu, jamais lues en même temps.
+Rattachées à un seul endroit : le profil (la "couverture" du livre).
+
+Exemples couverts par ce principe :
+- Profil à 1 ville : 1 seule page, pas de sélecteur.
+- Profil à 2 villes, ajoutées progressivement (bouton "+") : l'action de la
+  2ᵉ ville est déduite par élimination au moment de l'ajout (déjà en place,
+  décision du 18/07).
+- Profil `les_deux` : les 2 actions sont connues DÈS L'INSCRIPTION (la
+  personne déclare d'emblée "je cherche ici, je propose là") — même
+  principe de page par ville, mais l'action n'est jamais déduite après
+  coup, elle est saisie directement.
+
+Dans tous les cas, un seul mécanisme de lecture doit s'appliquer : l'action
+par ville vient de `getVillesUtilisateur`, jamais d'un traitement séparé
+pour `les_deux`.
+
+**Hors périmètre** : le rôle `proprietaire` (dashboard différent, ne propose
+jamais d'annonce lui-même — valide/autorise l'annonce de son hôte). Sans
+lien avec ce système. `DashboardProprietairePage.jsx` et `CreerAnnoncePage.jsx`
+restent hors sujet.
+
+**Ampleur reconnue** : ce chantier a grossi en cours de session, du point
+précis "corriger le [0] en dur" (DETTE #142) vers un système à 3 volets :
+1. **Contexte partagé** : une ville active unique, lue par 4 surfaces
+   (Dashboard/RythmeCarousel, /mon-calendrier, /recherche, candidatures-
+   favoris), avec sauvegarde locale navigateur (pas de colonne base, pas de
+   paramètre URL — raisons déjà actées en conv 113).
+2. **Volet hôte** : aucune des 4 surfaces n'a d'équivalent hôte aujourd'hui
+   (la "planche à découper" version hôte — "semaines à compléter" — est une
+   idée PARQUÉE, jamais construite, idees-en-attente.md). Construire ce
+   volet = construire une expérience hôte de zéro sur potentiellement les 4
+   surfaces, pas juste brancher un contexte existant.
+3. **Volet les_deux** : garantir que le système lit l'action par ville de
+   façon uniforme, que l'action vienne d'une déduction (ajout progressif)
+   ou d'une saisie directe (inscription les_deux).
+
+**Décision de méthode** : les 3 volets seront construits, mais PAS dans la
+même session que ce cadrage — trop de contexte déjà accumulé (plusieurs
+pivots cette session : fusion posée puis annulée, sélecteur posé puis
+retiré). Séquencement à choisir en session dédiée fraîche, sur le modèle du
+chantier recherche multi-villes du 15/07 (audits d'abord, ordre discuté
+avec Côme, chaque étape validée avant la suivante).
+
+RESTE (prochaine session, à choisir ensemble) :
+- Auditer RythmeCarousel et la page candidatures/favoris (jamais vus).
+- Choisir l'ordre des 3 volets (contexte partagé / volet hôte / volet
+  les_deux) — dépendances à clarifier avant de trancher.
+- RecherchePage.jsx : scoring par logement (DETTE #142 volet 2, déjà
+  identifié, indépendant de ce système) reste une tâche à part, à ne pas
+  mélanger si elle est traitée avant.
