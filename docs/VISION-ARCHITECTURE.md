@@ -950,3 +950,37 @@ RESTE (prochaine session, à choisir ensemble) :
 - RecherchePage.jsx : scoring par logement (DETTE #142 volet 2, déjà
   identifié, indépendant de ce système) reste une tâche à part, à ne pas
   mélanger si elle est traitée avant.
+
+### Architecture du contexte partagé — décisions du 20/07/2026
+
+Audit ciblé mené (getVillesUtilisateur, routing App.jsx, RecherchePage) avant
+tout code. Deux décisions actées :
+
+**Placement du Provider** : à la racine de l'app (au-dessus des `<Routes>`),
+pas au niveau de `<DashboardLayout/>`. Raison : les 4 surfaces cibles
+(Dashboard/RythmeCarousel, /mon-calendrier, candidatures-favoris, /recherche)
+sont réparties sur 2 branches de layout distinctes — `<Layout/>` public pour
+/recherche, `<DashboardLayout/>` protégé pour les 3 autres. Aucun sous-arbre
+commun ne les couvre exactement sans en couvrir d'autres. Un Provider posé
+au niveau DashboardLayout raterait /recherche, ce qui casserait l'objectif.
+Le coût d'un Provider à la racine est nul tant qu'il n'est pas consommé —
+seul un inconvénient conceptuel (englobe aussi des routes publiques/auth/
+légal qui n'en ont pas besoin), jugé acceptable.
+
+**Relation ville active ↔ `/recherche`** : `/recherche` a sa propre logique
+de ville via les paramètres d'URL `?ville=`/`?ville2=`, indépendante du
+profil (pilote l'affichage des annonces, y compris pour un visiteur non
+connecté). Décision : la ville active du profil **pré-remplit** `?ville=`
+au moment de l'arrivée sur la page (lien depuis le dashboard notamment),
+mais **sans synchronisation permanente** — une fois sur `/recherche`,
+l'utilisateur change librement le filtre sans que ça touche sa ville active
+de profil. Relation à sens unique, one-shot au chargement.
+
+**Source de données confirmée** : `getVillesUtilisateur(user)` (définie dans
+`deriveVilleColonnes.js`) est une fonction pure, sans appel réseau, qui prend
+un `user` déjà chargé et renvoie `{ ville, nature, action }[]` (max 2
+entrées). Base retenue pour alimenter `villesDisponibles` du contexte.
+
+RESTE : forme exacte de l'API du contexte (nom du hook, structure de
+villeActive, clé de stockage local) — à concevoir en session dédiée avant
+le premier commit de code.
