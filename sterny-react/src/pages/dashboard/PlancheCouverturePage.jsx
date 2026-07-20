@@ -5,12 +5,18 @@
 //
 // B2 : alimentée par les VRAIES semaines cherchées du locataire connecté. Branchement
 // repris verbatim de RecherchePage : fetch de la row users → deduireRecherche → semaines
-// (lundis ISO, futur). Multi-villes : fusionne toutes les entrées 'recherche' de
-// deduireRecherche (DETTE #142 résolue ici, 19/07/2026) — 1 ou 2 villes, sans distinction
-// pour l'utilisateur (« tout ce qu'il te reste à loger »).
-// La planche s'ouvre sur l'ANNÉE de la plus proche semaine cherchée, toutes villes
-// confondues. `couvert` reste false partout :
-// la couverture réelle (semaines logées) dépend des contrats, pas encore branchée.
+// (lundis ISO, futur). Multi-villes (DETTE #142, correction du 19/07/2026 après retour
+// visuel Côme) : la fusion des 2 villes en une seule vue faisait perdre la distinction
+// utile école/entreprise (chaque semaine étant forcément l'une ou l'autre, le total
+// fusionné tend vers "toute l'année", peu actionnable). Un seul point de vue affiché
+// à la fois — filtré sur villeActiveIndex (0 par défaut = 1ʳᵉ ville). PAS de sélecteur
+// visible sur cette page (retiré le 19/07/2026) : la bascule doit vivre à un seul
+// endroit dans l'app (le dashboard, point 4 des 6 dettes du 15/07, encore à câbler),
+// pas se dupliquer avec un état indépendant ici. En attendant ce câblage, la page
+// retombe simplement sur la 1ʳᵉ ville trouvée.
+// La planche s'ouvre sur l'ANNÉE de la 1ʳᵉ semaine de la ville active. `couvert` reste
+// false partout : la couverture réelle (semaines logées) dépend des contrats, pas encore
+// branchée.
 
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../hooks/useAuth.jsx';
@@ -46,6 +52,10 @@ export default function PlancheCouverturePage() {
   // Candidatures du locataire → semaines « en attente » (candidaté, pas encore signé).
   const [candidatures, setCandidatures] = useState([]);
   const [chargement, setChargement] = useState(true);
+  // Ville active (index dans deductionRecherche). Fixée à 0 (1ʳᵉ ville) : pas de
+  // sélecteur sur cette page (voir commentaire d'en-tête) — setVilleActiveIndex
+  // n'existe pas encore, rien ne fait varier cet index pour l'instant.
+  const villeActiveIndex = 0;
 
   useEffect(() => {
     if (!user) { setDeductionRecherche([]); setCandidatures([]); setChargement(false); return; }
@@ -71,13 +81,11 @@ export default function PlancheCouverturePage() {
     return () => { annule = true; };
   }, [user]);
 
-  // Multi-villes (DETTE #142) : fusion de toutes les entrées 'recherche' (1 ou 2 villes).
-  // Un lundi ne peut pas être à la fois 'school' et 'company' dans rhythm_calendar,
-  // donc pas de collision possible en fusionnant les semaines des 2 villes.
-  const semaines = useMemo(() => {
-    const toutes = deductionRecherche.flatMap((e) => e.semaines);
-    return Array.from(new Set(toutes)).sort();
-  }, [deductionRecherche]);
+  // Ville active : l'entrée sélectionnée de deductionRecherche. Si l'utilisateur n'a
+  // qu'une seule ville de recherche, villeActiveIndex (toujours 0 par défaut) la
+  // désigne directement sans qu'aucun sélecteur ne soit affiché.
+  const entreeActive = deductionRecherche[villeActiveIndex];
+  const semaines = useMemo(() => entreeActive?.semaines || [], [entreeActive]);
 
   // Semaines « en attente » = semaines cherchées sur lesquelles le locataire a candidaté
   // sans contrat signé (candidater ne réserve rien — VISION §381/§621). Une candidature
@@ -99,21 +107,15 @@ export default function PlancheCouverturePage() {
   }, [candidatures, semaines]);
 
   // Chaque semaine cherchée → { nature, cherchee:true, couvert:false, enAttente } (couvert viendra avec les contrats).
-  // Nature portée PAR SEMAINE (pas globale) : indispensable dès qu'on fusionne 2 villes
-  // de natures différentes (école + entreprise).
+  // Un seul point de vue affiché à la fois → une seule nature pour toute la vue,
+  // celle de la ville active (entreeActive.nature).
   const etatsParSemaine = useMemo(() => {
-    const natureParSemaine = {};
-    for (const e of deductionRecherche) {
-      for (const lundi of e.semaines) {
-        natureParSemaine[lundi] = e.nature;
-      }
-    }
     const map = {};
     for (const lundi of semaines) {
-      map[lundi] = { nature: natureParSemaine[lundi], cherchee: true, couvert: false, enAttente: semainesEnAttente.has(lundi) };
+      map[lundi] = { nature: entreeActive?.nature, cherchee: true, couvert: false, enAttente: semainesEnAttente.has(lundi) };
     }
     return map;
-  }, [semaines, deductionRecherche, semainesEnAttente]);
+  }, [semaines, entreeActive, semainesEnAttente]);
 
   // Ouvre sur l'année de la 1ʳᵉ semaine cherchée ; sinon undefined → le composant retombe sur son défaut.
   const anneeScolaireInitiale = semaines.length ? academicYearForMonday(semaines[0]) : undefined;
