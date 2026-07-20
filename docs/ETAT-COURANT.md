@@ -6,6 +6,33 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-07-19 (conv 113) — DETTE #142 corrigée sur /mon-calendrier ; VilleSelecteur extrait en composant partagé
+
+**DETTE #142 (lecteurs mono de deduireRecherche) close pour PlancheCouverturePage.jsx**, après un aller-retour de conception important — à connaître pour la suite.
+
+**Trois commits locaux, poussés à confirmer** :
+- `5aea0f4` — fix initial : fusion des 2 villes de recherche (union des semaines). **Corrigé par les 2 commits suivants** — la fusion faisait perdre la distinction école/entreprise (chaque semaine étant forcément l'une ou l'autre, le total fusionné tend vers "toute l'année", peu actionnable — retour visuel Côme sur "52 semaines à couvrir").
+- `77ab1c4` — extraction du sélecteur segmenté 2 villes du dashboard (`DashboardLocatairePage.jsx`, commit `dfe7c6f` du 18/07) vers un composant partagé **contrôlé** `src/components/ville/VilleSelecteur.jsx` (+`.css`). Props `villes`/`value`/`onChange`, sans state interne — condition nécessaire pour qu'un parent pilote la sélection. Zéro changement visuel côté dashboard, validé runtime.
+- `46fd4c5` — retour à un affichage **par ville active** sur `/mon-calendrier` (pas de fusion), MAIS **sans afficher `VilleSelecteur` sur cette page** : `villeActiveIndex` y est fixé en dur à `0` (1ʳᵉ ville), le sélecteur a été retiré après un aller-retour (posé puis retiré dans la même session — voir décision ci-dessous).
+
+**DÉCISION ACTÉE (à respecter pour la suite du point 4)** : la bascule de ville ne doit vivre qu'à **un seul endroit** dans l'app, pas se dupliquer avec un état indépendant sur chaque page qui en a besoin. Le dashboard est désigné comme le point de bascule central (précision du point 4, voir plus bas) ; `/mon-calendrier` devra un jour lire cette sélection plutôt que d'avoir la sienne. Tant que ce partage n'est pas câblé, `/mon-calendrier` retombe simplement sur la 1ʳᵉ ville.
+
+**Question d'architecture identifiée, non tranchée** : comment "la ville active" doit-elle être partagée entre le dashboard et `/mon-calendrier` (2 routes séparées, 2 states React isolés aujourd'hui) ? Options identifiées sans arbitrage : paramètre d'URL, colonne en base sur le profil, contexte React partagé au niveau de l'app. À trancher en session dédiée avant de câbler le point 4.
+
+**Précision sur le point 4** (dette du 15/07, "sélecteur visuel-only") : confirmé aujourd'hui que le sélecteur doit devenir fonctionnel — piloter au minimum "Ton rythme" (RythmeCarousel) et potentiellement les candidatures, pas seulement l'esthétique. Direction UX confirmée après recherche sur le pattern Airbnb (bascule hôte/voyageur) : **les 2 villes restent visibles en permanence dans un même sélecteur** (pas de bascule masquée façon menu profil comme le fait Airbnb) — l'inspiration Airbnb porte sur l'idée de bascule de contexte pilotant plusieurs sections, pas sur le masquage de l'option inactive.
+
+**Distinction actée avec l'idée parquée** : ce travail reste dans le périmètre du chantier recherche multi-villes du 15/07 (point 4), **pas** l'idée parquée "bascule de mode façon Airbnb hôte/voyageur" (idees-en-attente.md, 16/07) qui concerne un changement d'identité (locataire ↔ hôte) plutôt qu'un changement de ville de recherche — ces deux sujets restent distincts, à ne pas mélanger.
+
+RESTE (5 points sur les 6 initiaux, le point 2 DETTE #142 est traité pour PlancheCouverturePage — RecherchePage.jsx reste ouvert, scope plus large que prévu, voir ci-dessous) :
+1. deriveVilleColonnes.js pas encore ouvert aux 2 statuts 'recherche' (wizard mono-ville).
+2b. **RecherchePage.jsx (DETTE #142, volet non traité)** : le scoring de couverture compare tous les logements affichés contre les semaines d'une seule ville (variable globale `semainesUtilisateur`), au lieu de comparer chaque logement à sa propre ville. Fix identifié en audit (19/07) : scoring par logement via `deductionRecherche.find(d => d.ville === logement.ville)`. Touche la boucle de scoring (l.423-440), plus gros que 2 lignes — à traiter en session dédiée.
+3. ModifierProfilPage.jsx sans statut_ville_* (DETTE #143).
+4. Sélecteur segmenté fonctionnel (précisé ci-dessus) — architecture "ville active partagée" à trancher avant de coder.
+5. ville_recherche_secondaire / supprimerVilleSecondaire à supprimer ; flux de retrait d'une ville à concevoir.
+6. Branche "Proposer" du bouton "+" à corriger (décision du 16/07).
+
+---
+
 ## 2026-07-18 — Recherche multi-villes : composant partagé, écriture canonique et affichage livrés
 
 Session longue, chantier recherche multi-villes. 3 commits de code, tous
