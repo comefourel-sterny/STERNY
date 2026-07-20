@@ -9,11 +9,12 @@
 // visuel Côme) : la fusion des 2 villes en une seule vue faisait perdre la distinction
 // utile école/entreprise (chaque semaine étant forcément l'une ou l'autre, le total
 // fusionné tend vers "toute l'année", peu actionnable). Un seul point de vue affiché
-// à la fois — filtré sur villeActiveIndex (0 par défaut = 1ʳᵉ ville). PAS de sélecteur
-// visible sur cette page (retiré le 19/07/2026) : la bascule doit vivre à un seul
-// endroit dans l'app (le dashboard, point 4 des 6 dettes du 15/07, encore à câbler),
-// pas se dupliquer avec un état indépendant ici. En attendant ce câblage, la page
-// retombe simplement sur la 1ʳᵉ ville trouvée.
+// à la fois — filtré sur villeActiveIndex, dérivé de la ville active du contexte partagé
+// (VilleActiveContext, branché le 20/07/2026). PAS de sélecteur propre à cette page :
+// elle SUIT le choix de ville fait ailleurs (le sélecteur du dashboard), sans état
+// indépendant. Fallback à la 1ʳᵉ ville tant que villeActive n'est pas résolu (chargement).
+// Si la ville active est une ville hôte, la page affiche un message (volet hôte non
+// construit — cf. idees-en-attente.md).
 // La planche s'ouvre sur l'ANNÉE de la 1ʳᵉ semaine de la ville active. `couvert` reste
 // false partout : la couverture réelle (semaines logées) dépend des contrats, pas encore
 // branchée.
@@ -24,6 +25,7 @@ import { supabaseClient } from '../../config/supabase';
 import { deduireRecherche } from '../../utils/deduireRecherche';
 import { academicYearForMonday } from '../../utils/academicYear';
 import PlancheCouverture from '../../components/rhythm/PlancheCouverture';
+import { useVilleActive } from '../../contexts/VilleActiveContext';
 
 // Wrapper de page minimal (inline) : centrage horizontal + marges de respiration.
 // Aucune classe dashboard, aucun fond artificiel → la page se pose sur le fond réel (#F4F5F7).
@@ -46,16 +48,26 @@ const CHARGEMENT_STYLE = { fontFamily: "'DM Sans', system-ui, -apple-system, san
 
 export default function PlancheCouverturePage() {
   const { user, loading: authLoading } = useAuth();
+  const { villeActive } = useVilleActive();
 
   // Profil connecté → villes/semaines cherchées (branchement repris verbatim de RecherchePage).
   const [deductionRecherche, setDeductionRecherche] = useState([]);
   // Candidatures du locataire → semaines « en attente » (candidaté, pas encore signé).
   const [candidatures, setCandidatures] = useState([]);
   const [chargement, setChargement] = useState(true);
-  // Ville active (index dans deductionRecherche). Fixée à 0 (1ʳᵉ ville) : pas de
-  // sélecteur sur cette page (voir commentaire d'en-tête) — setVilleActiveIndex
-  // n'existe pas encore, rien ne fait varier cet index pour l'instant.
-  const villeActiveIndex = 0;
+  // Index dans deductionRecherche correspondant à la ville active du contexte
+  // partagé. Tant que villeActive n'est pas résolu (chargement initial),
+  // on retombe sur 0 — comportement identique à avant, pas de flash.
+  const villeActiveIndex = villeActive
+    ? Math.max(0, deductionRecherche.findIndex(e => e.nature === villeActive.nature))
+    : 0
+
+  // La ville active est-elle une ville "hôte" (pas de recherche associée) ?
+  // Cette page n'a pas d'équivalent hôte aujourd'hui (idée notée dans
+  // idees-en-attente.md, volet hôte du chantier "système de pages par ville",
+  // pas encore construit) — on affiche un message plutôt qu'une planche vide
+  // ou incohérente.
+  const villeActiveEstHote = villeActive && villeActive.action !== 'recherche'
 
   useEffect(() => {
     if (!user) { setDeductionRecherche([]); setCandidatures([]); setChargement(false); return; }
@@ -81,9 +93,9 @@ export default function PlancheCouverturePage() {
     return () => { annule = true; };
   }, [user]);
 
-  // Ville active : l'entrée sélectionnée de deductionRecherche. Si l'utilisateur n'a
-  // qu'une seule ville de recherche, villeActiveIndex (toujours 0 par défaut) la
-  // désigne directement sans qu'aucun sélecteur ne soit affiché.
+  // Ville active : l'entrée de deductionRecherche désignée par villeActiveIndex, qui
+  // suit la ville active du contexte partagé (0 en fallback tant que villeActive n'est
+  // pas résolu, ou si l'utilisateur n'a qu'une seule ville de recherche).
   const entreeActive = deductionRecherche[villeActiveIndex];
   const semaines = useMemo(() => entreeActive?.semaines || [], [entreeActive]);
 
@@ -125,6 +137,23 @@ export default function PlancheCouverturePage() {
   // États de rendu : chargement → estVide (aucune semaine cherchée) → rempli.
   const enChargement = authLoading || chargement;
   const estVide = !enChargement && semaines.length === 0;
+
+  // Ville active = hôte : pas d'équivalent hôte sur cette page (volet non construit) → message.
+  // UNIQUEMENT après résolution du chargement (sinon le message flasherait pendant le fetch).
+  // Styles inline réutilisés (page 100% inline, pas de fichier .css associé).
+  if (!enChargement && villeActiveEstHote) {
+    return (
+      <div style={PAGE_STYLE}>
+        <div style={CARTE_STYLE}>
+          <h3 style={TITRE_STYLE}>Ton planning</h3>
+          <p style={{ ...CHARGEMENT_STYLE, marginTop: 12 }}>
+            Cette page concerne ta recherche de logement. Bascule sur une autre ville
+            depuis le tableau de bord si tu veux voir ta couverture de recherche.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={PAGE_STYLE}>
