@@ -41,7 +41,23 @@ Gratuit côté modèle : le multi-locataires (DETTE #93) stocke la demande comme
 
 - Recherche — aligner le design des cartes de logement de /recherche sur celui de la homepage (cohérence vitrine). Parqué, post-design planche (conv 63).
 
-- Planche hôte (miroir de la planche locataire) : « semaines à compléter » (semaines libres du logement à remplir) au lieu de « semaines à couvrir ». Même composant/mécanique, sémantique inversée — face offre de #93 (disponibilites_pattern moins le registre). Pour après l'Étape B.
+- Planche hôte (miroir de la planche locataire) : « semaines à compléter » (semaines libres du logement à remplir) au lieu de « semaines à couvrir ». Même composant/mécanique, sémantique inversée — face offre de #93 (disponibilites_pattern moins le registre). Pour après l'Étape B. **Précisée le 20/07/2026, voir bloc ci-dessous.**
+
+## Planche hôte ("semaines à compléter") — précisée le 20/07/2026
+
+Idée initiale déjà parquée, précisée aujourd'hui en préparant le
+branchement de /mon-calendrier sur la ville active : quand la ville
+active est une ville "hôte", la planche devrait afficher :
+- le rythme personnel de l'hôte (école/entreprise), mais visuellement
+  en retrait/flouté — ce n'est pas l'info principale de cette vue
+- une couleur distincte pour les semaines de SON LOGEMENT PROPOSÉ qui
+  restent à combler (pas de candidature acceptée dessus)
+
+Nécessite une nouvelle source de données (candidatures/contrats reçus
+côté hôte sur l'annonce), différente de deduireRecherche. Pas une
+variante de couleur sur PlancheCouverturePage.jsx existante — plutôt
+une vraie planche parallèle, à construire dans le volet hôte du
+chantier "système de pages par ville".
 
 ### 2026-06-18 (conv 67) — Revoir la page Logement (/logement) : vestiges de l'ancien modèle « location continue »
 Constat (Côme, captures) : la page détail annonce porte plusieurs restes du modèle continu (façon Airbnb classique), incohérents avec le modèle Sterny « à la semaine » :
