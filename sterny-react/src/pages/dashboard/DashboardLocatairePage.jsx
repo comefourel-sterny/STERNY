@@ -6,6 +6,7 @@ import { getInitials } from '../../utils/formatters'
 import { getVillesUtilisateur } from '../../utils/deriveVilleColonnes'
 import VilleSelecteur from '../../components/ville/VilleSelecteur'
 import '../../components/ville/VilleSelecteur.css'
+import { useVilleActive } from '../../contexts/VilleActiveContext'
 import AgendaCard from '../../components/dashboard/AgendaCard'
 import RythmeCarousel from '../../components/rhythm/RythmeCarousel'
 import ChatComponent from '../../components/chat/ChatComponent'
@@ -61,9 +62,9 @@ export default function DashboardLocatairePage() {
   const [villeModalInput, setVilleModalInput] = useState('')
   const [villeModalSelected, setVilleModalSelected] = useState('')
   const [showPlusMenu, setShowPlusMenu] = useState(false)
-  // Sélecteur segmenté 2 villes (état purement visuel : ne pilote aucun autre contenu du dashboard).
-  // false = 1ère ville (villesUser[0]) active par défaut à l'ouverture.
-  const [afficheVilleSecondaire, setAfficheVilleSecondaire] = useState(false)
+  // Ville active partagée (VilleActiveContext, persistée localStorage scopée userId) —
+  // remplace l'ancien state local visuel-only afficheVilleSecondaire (ne survivait pas au refresh).
+  const { villeActive, setVilleActive } = useVilleActive()
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pwdNew, setPwdNew] = useState('')
@@ -685,8 +686,8 @@ export default function DashboardLocatairePage() {
           villesUser.length === 2 ? (
             <VilleSelecteur
               villes={villesUser}
-              value={afficheVilleSecondaire ? 1 : 0}
-              onChange={(index) => setAfficheVilleSecondaire(index === 1)}
+              value={villesUser.findIndex(v => v.nature === villeActive?.nature)}
+              onChange={(index) => setVilleActive(villesUser[index].nature)}
             />
           ) : (
             <div className="ville-header-row">
