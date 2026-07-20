@@ -12,6 +12,7 @@ function ScrollToTop() {
 import Layout from './components/layout/Layout'
 import OAuthHandler from './components/OAuthHandler'
 import DashboardLayout from './components/layout/DashboardLayout'
+import { VilleActiveProvider } from './contexts/VilleActiveContext'
 
 // Public pages
 import HomePage from './pages/public/HomePage'
@@ -98,6 +99,7 @@ export default function App() {
     <PasswordGate>
       <ScrollToTop />
       <OAuthHandler />
+      <VilleActiveProvider>
       <Routes>
         {/* Invitation — no layout */}
         <Route path="/invitation/:token" element={<InvitationPage />} />
@@ -191,6 +193,7 @@ export default function App() {
           <Route path="/messages" element={<MessagesPage />} />
         </Route>
       </Routes>
+      </VilleActiveProvider>
     </PasswordGate>
   )
 }
