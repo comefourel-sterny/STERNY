@@ -6,6 +6,7 @@ import { deduireRecherche } from '../../utils/deduireRecherche';
 import { couvertureSemaines } from '../../utils/matching';
 import { formatWeekRangeFR } from '../../utils/formatters';
 import { academicYearForMonday, previousAcademicYear, nextAcademicYear, currentMondayISO, weeksForAcademicYear, groupByMonth } from '../../utils/academicYear';
+import { normalizeVilleLabel } from '../../utils/villes';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './LogementPage.css';
@@ -160,10 +161,7 @@ const SIGLES_ECOLES = {
 };
 
 // ---- Helper functions ----
-// Normalise un label de ville pour comparaison robuste (accents strip + minuscules + trim).
-function normalizeVilleLabel(str) {
-  return (str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-}
+// normalizeVilleLabel déplacé dans utils/villes.js (partagé — DETTE #144).
 
 // Couleur de fond d'une semaine sur la planche Disponibilités (4 états — couleurs provisoires).
 // Extraite pour être partagée entre la mini-planche (sidebar) et le modal grand format.
