@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.jsx'
+import { useVilleActive } from '../../contexts/VilleActiveContext'
 import { supabaseClient } from '../../config/supabase'
 import { RateLimiter } from '../../utils/rateLimiter'
 import { deduireRecherche } from '../../utils/deduireRecherche'
@@ -196,8 +197,9 @@ function getQuartier(adresse, ville) {
 
 export default function RecherchePage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { user } = useAuth()
+  const { villeActive, loading: villeActiveLoading } = useVilleActive()
   const [inviteOpen, setInviteOpen] = useState(true)
 
   // 2a — charge le profil connecté et déduit ses villes/semaines cherchées (carburant du croisement 2b).
@@ -347,6 +349,36 @@ export default function RecherchePage() {
     loadData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Pré-remplissage ONE-SHOT de ?ville= depuis la ville active du profil (décision VISION 20-21/07/2026).
+  // Conditions cumulatives : connecté + contexte chargé + ville active en statut 'recherche' + AUCUNE ville
+  // dans l'URL (ne jamais écraser un lien partagé / retour arrière) + jamais déjà pré-rempli.
+  // Garde-fou = useRef (pas un state) → ne re-déclenche jamais si villeActive change pendant la session.
+  const hasPrefilled = useRef(false)
+  useEffect(() => {
+    if (hasPrefilled.current) return
+    if (!user || villeActiveLoading) return
+    if (!villeActive || villeActive.action !== 'recherche') return
+    if (searchParams.get('ville')) return // ville déjà dans l'URL → ne rien écraser
+
+    const label = villeActive.ville
+    const slug = VILLES_DISPONIBLES_RECHERCHE[label] // label → slug (accès direct, pas de reverse-lookup)
+    if (!slug) {
+      console.warn(`RecherchePage: ville active "${label}" hors liste de recherche connue — pré-remplissage ignoré.`)
+      hasPrefilled.current = true // ne pas retenter en boucle
+      return
+    }
+
+    hasPrefilled.current = true
+    setVilleSelectionnee(slug)
+    setVilleInput(label)
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('ville', slug) // conserve d'éventuels autres params (ex. ville2)
+      return next
+    }, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [villeActive, villeActiveLoading, user])
 
   // Load favorites
   useEffect(() => {
