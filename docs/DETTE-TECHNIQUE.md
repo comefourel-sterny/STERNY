@@ -1641,3 +1641,22 @@ son propre fetch minimal comme prévu pour l'instant.
 Non bloquant, non urgent. Pas la même chose qu'une fusion des tables auth/
 profil (à ne jamais faire — patterns différents pour de bonnes raisons de
 sécurité et de séparation des responsabilités).
+
+## DETTE #146 — Forme du dropdown de suggestions de ville : arrondi perdu, effet "boîte étirée"
+
+Signalé par Côme le 21/07/2026 : la liste de suggestions de ville (dropdown
+sous la barre de recherche) a perdu son arrondi fin d'origine — elle
+apparaît désormais étirée, avec un effet visuel proche d'une boîte de
+pastilles rectangulaire, au lieu de rester ronde et fine comme la pilule de
+la barre de recherche elle-même.
+
+Probablement lié à la même famille de collisions CSS que DETTE #95/#96
+(.search-bar/.search-field/.ville-suggestions dupliquées et non scopées
+sur plusieurs pages, cf. #95 : "4 copies de .ville-suggestions/.ville-
+suggestion-item" et le chantier non fait "supprimer la copie nue
+d'index.css + factoriser un composant <VilleAutocomplete> partagé"). À
+confirmer par audit avant de corriger : pourrait être une régression de ce
+terrain CSS partagé plutôt qu'un bug isolé.
+
+Priorité : basse, visuel non bloquant. Reproduit sur la homepage au moins
+(à vérifier aussi sur /recherche et les autres pages portant ce composant).
