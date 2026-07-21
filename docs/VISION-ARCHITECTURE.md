@@ -976,6 +976,13 @@ mais **sans synchronisation permanente** — une fois sur `/recherche`,
 l'utilisateur change librement le filtre sans que ça touche sa ville active
 de profil. Relation à sens unique, one-shot au chargement.
 
+**Précision (21/07/2026)** : le pré-remplissage ne se déclenche que si la ville
+active du profil est en statut `'recherche'`. Si elle est en statut `'hote'`
+(cas `les_deux`), /recherche reste vide au chargement — pré-remplir avec une
+ville où l'utilisateur loue son propre logement n'aurait pas de sens pour un
+filtre de recherche, et pourrait induire en erreur. L'utilisateur reste libre
+de taper sa ville lui-même dans ce cas.
+
 **Source de données confirmée** : `getVillesUtilisateur(user)` (définie dans
 `deriveVilleColonnes.js`) est une fonction pure, sans appel réseau, qui prend
 un `user` déjà chargé et renvoie `{ ville, nature, action }[]` (max 2
