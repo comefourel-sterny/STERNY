@@ -1610,6 +1610,20 @@ Non bloquant pour le chantier recherche multi-villes en cours : la modale
 session dédiée, distincte de ce chantier — touche 6 pages et une décision
 produit, pas juste du code.
 
+**Piste de résolution structurelle (proposée le 20/07/2026)** : au lieu de
+corriger le problème à la lecture (comparaisons normalisées dispersées dans
+le code, fragiles et à dupliquer partout), le corriger à l'écriture — à
+chaque point de saisie d'une ville (inscription, modification de profil,
+création d'annonce), rapprocher automatiquement la valeur tapée de la
+liste de référence villes-lancement.js (rapprochement flou / fuzzy match)
+et stocker systématiquement la forme canonique en base. Objectif : que
+toute ville déjà en base soit garantie propre, sans jamais avoir besoin de
+deviner une variante en aval. Nécessite : une fonction de rapprochement
+flou, un branchement à TOUS les points de saisie existants, une décision
+sur le comportement si aucune ville ne se rapproche suffisamment (ville
+hors zone de lancement, faute trop grosse). Chantier à part, pas un ajout
+mineur — non traité aujourd'hui.
+
 ## DETTE #145 — Fetch du profil utilisateur dupliqué sur plusieurs pages
 
 Constaté le 20/07/2026 en concevant le contexte "ville active". Trois pages
