@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import { getInitials } from '../../utils/formatters'
 import { getVillesUtilisateur } from '../../utils/deriveVilleColonnes'
+import { normalizeVilleLabel } from '../../utils/villes'
 import VilleSelecteur from '../../components/ville/VilleSelecteur'
 import '../../components/ville/VilleSelecteur.css'
 import { useVilleActive } from '../../contexts/VilleActiveContext'
@@ -647,6 +648,16 @@ export default function DashboardLocatairePage() {
   const poleHote = villesUser.find(v => v.action === 'hote')?.nature
   const poleOccupe = !!poleHote && annonces.some(a => a.pole === poleHote)
 
+  // Filtrage favoris/candidatures par la ville active du contexte partagé, UNIQUEMENT
+  // si c'est une ville de recherche (une ville hôte n'a pas de favoris/candidatures propres).
+  // Comparaison normalisée (accents/casse) via normalizeVilleLabel — DETTE #144 (villes divergentes).
+  const favorisFiltres = villeActive?.action === 'recherche'
+    ? favoris.filter(ann => normalizeVilleLabel(ann.ville) === normalizeVilleLabel(villeActive.ville))
+    : favoris
+  const candidaturesFiltrees = villeActive?.action === 'recherche'
+    ? candidatures.filter(c => c.annonces && normalizeVilleLabel(c.annonces.ville) === normalizeVilleLabel(villeActive.ville))
+    : candidatures
+
   // Ville suggestions
   const villeSuggestions = villeModalInput.trim()
     ? VILLES_DISPONIBLES.filter(v =>
@@ -841,7 +852,7 @@ export default function DashboardLocatairePage() {
               </div>
             ) : (
               <div className="favoris-grid">
-                {favoris.map(ann => (
+                {favorisFiltres.map(ann => (
                   <Link to={`/logement?id=${ann.id}`} className="favori-card" key={ann.id}>
                     <div className="favori-card-image">
                       {ann.photos && ann.photos.length > 0
@@ -889,7 +900,7 @@ export default function DashboardLocatairePage() {
                 </Link>
               </div>
             ) : (
-              candidatures.map(c => {
+              candidaturesFiltrees.map(c => {
                 if (!c.annonces) return null
                 const ann = c.annonces
                 let statutLabel = 'En attente', statutClass = 'en-attente'
