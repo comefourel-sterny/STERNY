@@ -837,9 +837,9 @@ export default function DashboardLocatairePage() {
           <div className="dp-card">
             <div className="dp-card-title">
               Tes favoris
-              {favoris.length > 0 && <span className="favoris-count">{favoris.length}</span>}
+              {favorisFiltres.length > 0 && <span className="favoris-count">{favorisFiltres.length}</span>}
             </div>
-            {favoris.length === 0 ? (
+            {favorisFiltres.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
@@ -886,9 +886,9 @@ export default function DashboardLocatairePage() {
           <div className="dp-card">
             <div className="dp-card-title">
               Tes candidatures
-              {candidatures.length > 0 && <span className="favoris-count">{candidatures.length}</span>}
+              {candidaturesFiltrees.length > 0 && <span className="favoris-count">{candidaturesFiltrees.length}</span>}
             </div>
-            {candidatures.length === 0 ? (
+            {candidaturesFiltrees.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" /></svg>
