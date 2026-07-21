@@ -2,7 +2,63 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-20 (conv 114) — Système de pages par ville : VilleActiveContext créé et branché à la racine (Provider sous AuthProvider, au-dessus de <Routes>), puis VilleSelecteur du dashboard branché dessus (sélection de ville persistée localStorage, survit au refresh). 2 commits code (504a093, ffbc63e) + 2 docs (a635632 archi contexte, e7bf1fe DETTE #145) poussés. DETTE #145 loguée (fetch profil dupliqué sur 3 pages). Reste : brancher les 3 autres surfaces (RythmeCarousel, /mon-calendrier, candidatures-favoris, /recherche one-shot), volet hôte, volet les_deux — détail complet dans l'entrée du jour ci-dessous.
+**Dernière mise à jour** : 2026-07-21 (conv 115) — Système de pages par ville : 3 surfaces sur 4 branchées et testées. /mon-calendrier suit la ville active (5a4b232, cas hôte = message), favoris/candidatures filtrés par ville avec comparaison normalisée (ea9ca7f + 1a905c0 ; normalizeVilleLabel extraite vers utils/villes.js, 5235166). Détour RythmeCarousel (filtrage par ville) tenté puis annulé (git reset --mixed, never-stage saufs) : "Ton rythme" reste global, hors périmètre (décision loguée VISION). DETTE #144 enrichie (résolution à la source) + #146 loguée (dropdown ville dégradé). Reste : /recherche (?ville= one-shot, dernière surface), volet hôte, volet les_deux — détail complet dans l'entrée du jour ci-dessous.
+
+---
+
+## 2026-07-21 — Système de pages par ville : 3 surfaces sur 4 branchées et testées
+
+Suite directe de la session du 20/07. 8 commits supplémentaires poussés sur
+origin/feat/unification-inscription.
+
+**Détour corrigé en cours de route** : tentative de filtrer RythmeCarousel
+par ville active (commit ecd9b64, jamais poussé) — erreur de direction
+produit. "Ton rythme" doit rester une vue globale (école + entreprise),
+pas une vue par ville. Annulé proprement (git reset --mixed, never-stage
+préservés). Décision loguée dans VISION-ARCHITECTURE.md.
+
+**Surfaces branchées et validées visuellement par Côme** :
+- fcb746b (docs) — précision RythmeCarousel hors périmètre.
+- 5a4b232 — /mon-calendrier (PlancheCouverturePage) suit la ville active.
+  Cas "ville active = hôte" géré par un message simple (idée "planche
+  hôte" précisée dans idees-en-attente.md pour le futur volet hôte).
+  Testé : bascule Rennes↔Nantes, grilles différentes, badges candidature
+  cohérents.
+- ea9ca7f + 1a905c0 — favoris/candidatures (dashboard) filtrés par ville
+  active, comparaison normalisée (normalizeVilleLabel extraite de
+  LogementPage.jsx vers utils/villes.js, commit 5235166 — anti-duplication).
+  Compteurs + états vides alignés sur les listes filtrées. Testé : favori
+  Rennes visible côté Rennes, section vide + message côté Nantes.
+- Non touché aujourd'hui : candidaturesRecues (côté hôte) — pas de donnée
+  ville dans sa requête actuelle, hors périmètre (volet hôte).
+
+**Dettes découvertes et loguées** :
+- DETTE #144 enrichie — piste de résolution structurelle proposée par
+  Côme (rapprochement flou + stockage canonique à l'écriture, plutôt que
+  normalisation dispersée à la lecture). Chantier à part, non traité.
+- DETTE #146 — forme du dropdown de suggestions de ville dégradée (arrondi
+  perdu, effet "boîte étirée"). Probablement lié à #95/#96. Basse priorité.
+
+**État des 4 surfaces** :
+| Surface | État |
+|---|---|
+| Dashboard (VilleSelecteur) | ✅ pilote |
+| /mon-calendrier | ✅ suit |
+| Candidatures/favoris | ✅ filtré |
+| /recherche (?ville= one-shot) | ⬜ à brancher |
+
+**RESTE (prochaine session, à froid)** :
+1. /recherche — dernière surface. Décision déjà actée (VISION 20/07) :
+   villeActive pré-remplit ?ville= au chargement, one-shot, pas de sync
+   permanente ensuite. Reste à concevoir l'implémentation exacte (où
+   intercepter le chargement initial, cohabitation avec deduireRecherche
+   qui pilote déjà le matching indépendamment du filtre d'affichage).
+2. Volet hôte (planche "semaines à compléter", candidaturesRecues sans
+   donnée ville) — pas commencé.
+3. Volet les_deux — couvert par construction, jamais testé concrètement
+   (pas de profil de test disponible avec ville hôte active).
+4. DETTE #146 (dropdown) — basse priorité, à traiter quand l'occasion se
+   présente.
 
 ---
 
