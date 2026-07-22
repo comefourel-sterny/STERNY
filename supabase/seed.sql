@@ -8,6 +8,7 @@ DO $$
 DECLARE
   v_host_id    uuid := '11111111-1111-1111-1111-111111111111';
   v_tenant_id  uuid := '22222222-2222-2222-2222-222222222222';
+  v_lesdeux_id uuid := '44444444-4444-4444-4444-444444444444';
   v_annonce_id uuid := '33333333-3333-3333-3333-333333333333';
   v_pwd        text := 'sterny-dev';
 BEGIN
@@ -24,6 +25,10 @@ BEGIN
   ('00000000-0000-0000-0000-000000000000', v_tenant_id, 'authenticated', 'authenticated',
    'locataire@sterny.test', crypt(v_pwd, gen_salt('bf')), now(),
    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, now(), now(),
+   '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', v_lesdeux_id, 'authenticated', 'authenticated',
+   'lesdeux@sterny.test', crypt(v_pwd, gen_salt('bf')), now(),
+   '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, now(), now(),
    '', '', '', '');
 
   -- 2) Identités (relie chaque compte au provider "email" — sans cette ligne, connexion KO)
@@ -35,6 +40,9 @@ BEGIN
    'email', now(), now(), now()),
   (gen_random_uuid(), v_tenant_id, v_tenant_id::text,
    jsonb_build_object('sub', v_tenant_id::text, 'email', 'locataire@sterny.test'),
+   'email', now(), now(), now()),
+  (gen_random_uuid(), v_lesdeux_id, v_lesdeux_id::text,
+   jsonb_build_object('sub', v_lesdeux_id::text, 'email', 'lesdeux@sterny.test'),
    'email', now(), now(), now());
 
   -- 3) Profils publics (ON CONFLICT : robuste si un trigger handle_new_user a déjà créé la ligne)
@@ -60,6 +68,21 @@ BEGIN
   ON CONFLICT (id) DO UPDATE SET
     email=EXCLUDED.email, prenom=EXCLUDED.prenom, nom=EXCLUDED.nom, type_user=EXCLUDED.type_user,
     ville_ecole=EXCLUDED.ville_ecole, statut_ville_ecole=EXCLUDED.statut_ville_ecole,
+    rhythm_calendar=EXCLUDED.rhythm_calendar;
+
+  -- 3bis) Profil les_deux (compte de test bascule ville active recherche↔hôte, ajouté conv suivante) :
+  -- ville_ecole=Rennes en statut 'hote' (il y propose son logement), ville_entreprise=Nantes en statut
+  -- 'recherche' (il y cherche un logement). 2 villes, 2 statuts remplis (contraste avec hote@ = ville muette
+  -- DETTE #143). rhythm_calendar 52 sem. réutilisé du profil locataire (rythme valide, école/entreprise).
+  INSERT INTO public.users
+    (id, email, prenom, nom, type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar)
+  VALUES
+    (v_lesdeux_id, 'lesdeux@sterny.test', 'Dorian', 'Deux', 'les_deux', 'Rennes', 'Nantes', 'hote', 'recherche',
+     '[{"week_start":"2026-08-31","status":"school"},{"week_start":"2026-09-07","status":"company"},{"week_start":"2026-09-14","status":"company"},{"week_start":"2026-09-21","status":"school"},{"week_start":"2026-09-28","status":"school"},{"week_start":"2026-10-05","status":"company"},{"week_start":"2026-10-12","status":"company"},{"week_start":"2026-10-19","status":"school"},{"week_start":"2026-10-26","status":"school"},{"week_start":"2026-11-02","status":"company"},{"week_start":"2026-11-09","status":"company"},{"week_start":"2026-11-16","status":"school"},{"week_start":"2026-11-23","status":"school"},{"week_start":"2026-11-30","status":"company"},{"week_start":"2026-12-07","status":"company"},{"week_start":"2026-12-14","status":"school"},{"week_start":"2026-12-21","status":"school"},{"week_start":"2026-12-28","status":"company"},{"week_start":"2027-01-04","status":"company"},{"week_start":"2027-01-11","status":"school"},{"week_start":"2027-01-18","status":"school"},{"week_start":"2027-01-25","status":"company"},{"week_start":"2027-02-01","status":"company"},{"week_start":"2027-02-08","status":"school"},{"week_start":"2027-02-15","status":"school"},{"week_start":"2027-02-22","status":"company"},{"week_start":"2027-03-01","status":"company"},{"week_start":"2027-03-08","status":"school"},{"week_start":"2027-03-15","status":"school"},{"week_start":"2027-03-22","status":"company"},{"week_start":"2027-03-29","status":"company"},{"week_start":"2027-04-05","status":"school"},{"week_start":"2027-04-12","status":"school"},{"week_start":"2027-04-19","status":"company"},{"week_start":"2027-04-26","status":"company"},{"week_start":"2027-05-03","status":"school"},{"week_start":"2027-05-10","status":"school"},{"week_start":"2027-05-17","status":"company"},{"week_start":"2027-05-24","status":"company"},{"week_start":"2027-05-31","status":"school"},{"week_start":"2027-06-07","status":"school"},{"week_start":"2027-06-14","status":"company"},{"week_start":"2027-06-21","status":"company"},{"week_start":"2027-06-28","status":"school"},{"week_start":"2027-07-05","status":"school"},{"week_start":"2027-07-12","status":"company"},{"week_start":"2027-07-19","status":"company"},{"week_start":"2027-07-26","status":"school"},{"week_start":"2027-08-02","status":"school"},{"week_start":"2027-08-09","status":"company"},{"week_start":"2027-08-16","status":"company"},{"week_start":"2027-08-23","status":"school"}]'::jsonb)
+  ON CONFLICT (id) DO UPDATE SET
+    email=EXCLUDED.email, prenom=EXCLUDED.prenom, nom=EXCLUDED.nom, type_user=EXCLUDED.type_user,
+    ville_ecole=EXCLUDED.ville_ecole, ville_entreprise=EXCLUDED.ville_entreprise,
+    statut_ville_ecole=EXCLUDED.statut_ville_ecole, statut_ville_entreprise=EXCLUDED.statut_ville_entreprise,
     rhythm_calendar=EXCLUDED.rhythm_calendar;
 
   -- 4) Annonce de l'hôte, à Rennes (piège volontaire : ville_ecole de l'hôte = Nantes).
