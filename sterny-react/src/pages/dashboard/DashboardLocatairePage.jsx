@@ -32,6 +32,8 @@ export default function DashboardLocatairePage() {
   const [isHoteOnly, setIsHoteOnly] = useState(false)
   const [currentMode, setCurrentMode] = useState('recherche')
   const [hoteDataLoaded, setHoteDataLoaded] = useState(false)
+  // Garde one-shot : synchronise currentMode depuis VilleActiveContext au montage (DETTE #147)
+  const hasSyncedFromContext = useRef(false)
 
   // Data state
   const [contrats, setContrats] = useState([])
@@ -65,7 +67,7 @@ export default function DashboardLocatairePage() {
   const [showPlusMenu, setShowPlusMenu] = useState(false)
   // Ville active partagée (VilleActiveContext, persistée localStorage scopée userId) —
   // remplace l'ancien state local visuel-only afficheVilleSecondaire (ne survivait pas au refresh).
-  const { villeActive, setVilleActive } = useVilleActive()
+  const { villeActive, setVilleActive, loading: villeActiveLoading } = useVilleActive()
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pwdNew, setPwdNew] = useState('')
@@ -225,6 +227,12 @@ export default function DashboardLocatairePage() {
   // === SWITCH MODE ===
   async function switchMode(mode) {
     setCurrentMode(mode)
+    const natureCible = villesUser.find(v => v.action === (mode === 'recherche' ? 'recherche' : 'hote'))?.nature
+    if (natureCible) {
+      setVilleActive(natureCible)
+    } else {
+      console.warn(`switchMode: aucune ville en action='${mode === 'recherche' ? 'recherche' : 'hote'}' trouvée pour ce profil les_deux — contexte non synchronisé.`)
+    }
     if (mode === 'hote' && !hoteDataLoaded) {
       setHoteDataLoaded(true)
       await verifierMiseEnRelation()
@@ -236,6 +244,25 @@ export default function DashboardLocatairePage() {
       }
     }
   }
+
+  // Synchronise currentMode depuis la ville active du contexte au montage (one-shot).
+  // Effect séparé de l'init profil : couvre le cas où un les_deux arrive sur le
+  // dashboard avec une ville active déjà résolue (persistée localStorage) sans
+  // re-cliquer le mode-switch. Réutilise switchMode pour déclencher le lazy-load
+  // hôte si besoin. switchMode n'est pas mémoïsé : volontairement hors deps, la
+  // ref de garde rend l'effect one-shot (pas de boucle). (DETTE #147)
+  useEffect(() => {
+    if (hasSyncedFromContext.current) return
+    if (!isLesDeux) return
+    if (villeActiveLoading) return
+    if (!villeActive) return
+    hasSyncedFromContext.current = true
+    const modeVoulu = villeActive.action === 'hote' ? 'hote' : 'recherche'
+    if (modeVoulu !== currentMode) {
+      switchMode(modeVoulu)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLesDeux, villeActive, villeActiveLoading])
 
   async function verifierMiseEnRelation(uDataParam) {
     if (!currentUserId) return
