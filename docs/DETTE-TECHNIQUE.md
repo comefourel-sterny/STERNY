@@ -1660,3 +1660,16 @@ terrain CSS partagé plutôt qu'un bug isolé.
 
 Priorité : basse, visuel non bloquant. Reproduit sur la homepage au moins
 (à vérifier aussi sur /recherche et les autres pages portant ce composant).
+
+## DETTE #147 — Dashboard les_deux : bascule ville déconnectée du contexte partagé
+
+Le mode-switch du dashboard les_deux (currentMode/switchMode, DashboardLocatairePage.jsx
+l.676+) pilotait un state local jamais synchronisé avec VilleActiveContext. Diagnostiqué
+le 21-22/07/2026 via 3 sondes console (Provider et persistance confirmés sains — la fuite
+est dans switchMode). Audit du 22/07 : contrairement à la 1ère hypothèse, VilleSelecteur
+(le composant contexte-connecté utilisé pour hote/locataire) ne peut PAS remplacer le
+mode-switch — il porte une vraie sémantique de rôle (recherche↔hôte, avec lazy-load des
+données hôte) que VilleSelecteur ignore. Fix retenu : synchronisation bidirectionnelle
+(switchMode écrit dans le contexte au clic ; le contexte pré-remplit currentMode au
+montage), sans remplacer le mode-switch.
+Statut : CORRIGÉ (commit à suivre).
