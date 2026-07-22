@@ -2,7 +2,52 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-21 (conv 115) — Système de pages par ville : 3 surfaces sur 4 branchées et testées. /mon-calendrier suit la ville active (5a4b232, cas hôte = message), favoris/candidatures filtrés par ville avec comparaison normalisée (ea9ca7f + 1a905c0 ; normalizeVilleLabel extraite vers utils/villes.js, 5235166). Détour RythmeCarousel (filtrage par ville) tenté puis annulé (git reset --mixed, never-stage saufs) : "Ton rythme" reste global, hors périmètre (décision loguée VISION). DETTE #144 enrichie (résolution à la source) + #146 loguée (dropdown ville dégradé). Reste : /recherche (?ville= one-shot, dernière surface), volet hôte, volet les_deux — détail complet dans l'entrée du jour ci-dessous.
+**Dernière mise à jour** : 2026-07-22 (conv 116) — Chantier système de pages par ville CLÔTURÉ : les 4 surfaces du contexte partagé (VilleActiveContext) branchées et testées (dashboard/VilleSelecteur, /mon-calendrier, favoris/candidatures, /recherche). /recherche pré-remplit `?ville=` uniquement en statut recherche, sans écraser une URL existante (5661e6f, 8799ede). DETTE #147 découverte et corrigée en cours de test : le dashboard les_deux (mode-switch local currentMode/switchMode) était désynchronisé du contexte, resynchronisé bidirectionnellement (adc8fe1, 3916f62). Compte de test lesdeux@sterny.test ajouté au seed (7750ad5). Hors périmètre noté : homepage pas encore pilotée par la ville active, filtre PMR à revoir — détail complet dans l'entrée du jour ci-dessous.
+
+---
+
+## 2026-07-22 — Chantier système de pages par ville : clôture
+
+Les 4 surfaces du contexte partagé (VilleActiveContext) sont branchées et
+testées : dashboard/VilleSelecteur (pilote), /mon-calendrier, favoris/
+candidatures, /recherche. Chantier considéré terminé.
+
+**/recherche — pré-remplissage one-shot** : la ville active du profil
+pré-remplit `?ville=` au chargement, uniquement si son statut est
+`'recherche'` (sinon la page reste vide — décision VISION 21/07). N'écrase
+jamais un `?ville=` déjà présent dans l'URL (lien partagé, retour arrière).
+Ne touche pas `?ville2=`, `deduireRecherche`, ni DETTE #142 (indépendants).
+Commits : 5661e6f (docs), 8799ede (code).
+
+**DETTE #147 découverte et corrigée en cours de test** : le dashboard
+`les_deux` avait son propre système de bascule (mode-switch local
+`currentMode`/`switchMode`), jamais synchronisé avec `VilleActiveContext` —
+le badge changeait visuellement sans que `/recherche` (ni aucune autre
+surface) ne le sache. Diagnostiqué via 3 sondes console successives (Provider
+et persistance confirmés sains, la fuite était dans `switchMode` lui-même).
+Fix : synchronisation bidirectionnelle (le clic écrit dans le contexte ; le
+contexte pré-remplit `currentMode` au montage), sans remplacer le
+mode-switch — `VilleSelecteur` ne pouvait pas le remplacer (il porte une
+vraie sémantique de rôle + lazy-load des données hôte que `VilleSelecteur`
+ignore). Commits : adc8fe1 (docs DETTE #147), 3916f62 (code).
+
+**Compte de test créé** : `lesdeux@sterny.test` / `sterny-dev` (Rennes=hôte,
+Nantes=recherche, 52 semaines) — ajouté au seed car `hote@sterny.test` avait
+une ville muette (DETTE #143, non représentatif pour tester un profil
+`les_deux`). Nécessite `supabase db reset` pour être présent en local si pas
+déjà fait.
+
+**Tests manuels validés** (7/7) : prefill connecté, bascule + nouveau
+prefill, lien partagé non écrasé, filtres fonctionnels, ville active hôte →
+page vide, `les_deux` clic → prefill, `les_deux` montage direct → alignement
+automatique sans clic.
+
+**Hors périmètre de ce chantier, noté pour plus tard** :
+- Homepage ("Logements à Rennes") : pas encore pilotée par la ville active
+  du profil — demande de Côme en cours de discussion, périmètre à cadrer
+  séparément (comportement visiteur/hôte à trancher).
+- Filtre "Accessible PMR" : rendu jugé peu soigné (emoji), dette basse
+  priorité, à traiter dans un futur chantier "revue des filtres".
 
 ---
 
