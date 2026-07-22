@@ -2,7 +2,41 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-22 (conv 116) — Chantier système de pages par ville CLÔTURÉ : les 4 surfaces du contexte partagé (VilleActiveContext) branchées et testées (dashboard/VilleSelecteur, /mon-calendrier, favoris/candidatures, /recherche). /recherche pré-remplit `?ville=` uniquement en statut recherche, sans écraser une URL existante (5661e6f, 8799ede). DETTE #147 découverte et corrigée en cours de test : le dashboard les_deux (mode-switch local currentMode/switchMode) était désynchronisé du contexte, resynchronisé bidirectionnellement (adc8fe1, 3916f62). Compte de test lesdeux@sterny.test ajouté au seed (7750ad5). Hors périmètre noté : homepage pas encore pilotée par la ville active, filtre PMR à revoir — détail complet dans l'entrée du jour ci-dessous.
+**Dernière mise à jour** : 2026-07-22 (soir) — Homogénéisation visuelle en prolongement de la clôture ville active : sélecteur ville/mode unifié sur les 3 profils (icônes retirées, actif blanc+ombre — fa8da01), filtre "Accessible PMR" aligné sur le rendu générique des équipements (emoji ♿ + fond pêche retirés — 7837e1e). DETTE #143 corrigée pour hote@sterny.test (statut_ville_ecole='recherche', type_user reste 'hote' — b82ae3f). Décision produit : pas de prefill homepage par ville active tant qu'elle est 100% mock (loguée idees-en-attente.md — bbabdaf). Tout poussé et validé visuellement. Détail dans l'entrée du jour ci-dessous.
+
+---
+
+## 2026-07-22 (soir) — Homogénéisation visuelle sélecteur ville/mode + filtre PMR
+
+Suite de la clôture du chantier ville active (entrée du jour ci-dessous).
+Deux sujets visuels traités en prolongement, hors périmètre initial.
+
+**Sélecteur ville/mode unifié sur les 3 profils** (hôte, locataire, les_deux) :
+retrait des icônes (loupe/maison, jugées too enfantines), état actif aligné
+partout sur fond blanc + ombre portée (au lieu de la teinte orange légère
+initiale de VilleSelecteur). VilleSelecteur.jsx/.css et
+DashboardLocatairePage.jsx/.css. Commit fa8da01.
+
+**DETTE #143 corrigée pour hote@sterny.test** : ajout de
+statut_ville_ecole='recherche' (était NULL, "ville muette"), pour que ce
+compte de test ait ses 2 villes valides et permette de re-tester le
+sélecteur 2-villes. type_user reste 'hote' (décision explicite : le
+contenu du dashboard reste figé en mode hôte, seule la ville active pour
+les autres pages change). Commit b82ae3f.
+
+**Décision produit — pas de prefill homepage par ville active** : la
+homepage reste 100% mock (aucune vraie annonce, données figées dans
+HomePage.jsx), personnaliser un affichage sans vraies données jugé sans
+valeur. Loguée dans idees-en-attente.md, à reconsidérer si/quand la
+homepage est branchée sur de vraies annonces. Commit bbabdaf.
+
+**Filtre "Accessible PMR" uniformisé** : retrait de l'emoji ♿ et du
+traitement visuel à part (fond pêche, texte orange gras) dans le panneau
+Filtres de /recherche — rendu désormais identique aux autres équipements
+(WiFi, Meublé...). RecherchePage.jsx/.css. Commit 7837e1e.
+
+**Rien d'ouvert pour la prochaine session** sur ces 2 sujets — tous
+poussés et validés visuellement par Côme.
 
 ---
 
