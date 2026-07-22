@@ -176,6 +176,17 @@ Probablement plus pertinent pour l'application mobile que pour le web actuel.
 Non cadré, à explorer en session dédiée — distinct du chantier recherche
 multi-villes en cours, à ne pas mélanger.
 
+**Homepage — pas de pré-remplissage par ville active (décision 22/07/2026)**
+Contrairement à /recherche, la homepage reste non personnalisée par la ville
+active du profil. Deux raisons : (1) son contenu ("Logements à Rennes", etc.)
+est 100% mock (données de démo écrites en dur, aucune connexion Supabase,
+commenté "Static test listings data" dans HomePage.jsx) — personnaliser un
+affichage sans vraies données n'a pas de valeur ; (2) la personnalisation
+utile se joue là où il y a de la vraie logique métier (recherche, calendrier,
+favoris/candidatures), déjà couverte. À reconsidérer uniquement si/quand la
+homepage est branchée sur de vraies annonces — nouvelle décision produit à
+ce moment-là, pas un prolongement automatique.
+
 ## Rappels / échéances
 
 **Rappel — purge/anonymisation questionnaire étude de terrain (échéance ~juillet 2028).** Les réponses au formulaire "Trouver un logement en alternance" (Google Forms) sont conservées 24 mois maximum à compter de la collecte (voir ETAT-COURANT.md conv 111, QUESTIONS-PROFESSIONNELS.md Q-DPO-020). Actions à cette échéance : supprimer l'email de chaque réponse + purger les réponses individuelles côté Google Forms (pas seulement le Sheet lié), OU conserver uniquement des chiffres agrégés. Vérifier aussi qu'aucun champ texte libre ne permet de ré-identifier un répondant avant conservation prolongée.
