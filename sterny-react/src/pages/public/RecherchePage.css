@@ -487,16 +487,6 @@
     color: #475569;
     cursor: pointer;
 }
-.checkbox-pmr {
-    background: #FDF0EB;
-    padding: 8px 10px;
-    border-radius: 8px;
-    margin-bottom: 12px;
-}
-.checkbox-pmr label {
-    font-weight: 600;
-    color: #E8622A;
-}
 .equip-search {
     margin-top: 10px;
     position: relative;

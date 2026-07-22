@@ -1600,14 +1600,14 @@ export default function RecherchePage() {
           <div className="filter-group">
             <h4>Équipements</h4>
             {Object.keys(equipementsFilter).map(equip => (
-              <div className={`checkbox-item${equip === 'Accessible PMR' ? ' checkbox-pmr' : ''}`} key={equip}>
+              <div className="checkbox-item" key={equip}>
                 <input
                   type="checkbox"
                   id={`equip-${equip}`}
                   checked={equipementsFilter[equip]}
                   onChange={() => setEquipementsFilter(prev => ({ ...prev, [equip]: !prev[equip] }))}
                 />
-                <label htmlFor={`equip-${equip}`}>{equip === 'Accessible PMR' ? '♿ Accessible PMR' : equip}</label>
+                <label htmlFor={`equip-${equip}`}>{equip}</label>
               </div>
             ))}
             {/* Dynamic equipments */}
