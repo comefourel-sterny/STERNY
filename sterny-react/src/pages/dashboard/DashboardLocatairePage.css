@@ -260,30 +260,36 @@
 }
 
 /* MODE SWITCH */
+/* Aligné sur VilleSelecteur.css (.vhs-container/.vhs-segment) — pilule
+   blanche compacte, segments texte seul. */
 .mode-switch {
     display: inline-flex;
-    background: #F1F5F9;
-    border-radius: 12px;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 14px;
     padding: 4px;
+    gap: 2px;
     margin-top: 12px;
     margin-bottom: 16px;
-    gap: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .mode-btn {
-    padding: 12px 32px;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s;
-    font-family: inherit;
-    background: transparent;
-    color: #6B7280;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 11px;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #94A3B8;
+    outline: none;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .mode-btn:hover {
@@ -291,14 +297,15 @@
 }
 
 .mode-btn.active {
-    background: white;
+    background: #FFFFFF;
     color: #E8622A;
+    font-weight: 600;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.mode-btn svg {
-    width: 18px;
-    height: 18px;
+.mode-btn:focus-visible {
+    outline: 2px solid #E8622A;
+    outline-offset: 2px;
 }
 
 /* VILLE HEADER ROW */
@@ -2788,7 +2795,7 @@
     }
 
     .mode-btn {
-        padding: 8px 20px;
+        padding: 0 12px;
         font-size: 13px;
     }
 
