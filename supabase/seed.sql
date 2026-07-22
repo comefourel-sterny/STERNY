@@ -47,15 +47,15 @@ BEGIN
 
   -- 3) Profils publics (ON CONFLICT : robuste si un trigger handle_new_user a déjà créé la ligne)
   INSERT INTO public.users
-    (id, email, prenom, nom, type_user, ville_ecole, ville_entreprise, statut_ville_entreprise, rhythm_calendar)
+    (id, email, prenom, nom, type_user, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar)
   VALUES
-    (v_host_id, 'hote@sterny.test', 'Hugo', 'Hote', 'hote', 'Nantes', 'Rennes', 'hote',
+    (v_host_id, 'hote@sterny.test', 'Hugo', 'Hote', 'hote', 'Nantes', 'Rennes', 'recherche', 'hote',
      -- Rythme complet année 2026-2027 (52 sem., lundi 31/08/2026 → 23/08/2027), alternance 2 sem. école / 2 sem. entreprise.
      '[{"week_start":"2026-08-31","status":"school"},{"week_start":"2026-09-07","status":"school"},{"week_start":"2026-09-14","status":"company"},{"week_start":"2026-09-21","status":"company"},{"week_start":"2026-09-28","status":"school"},{"week_start":"2026-10-05","status":"school"},{"week_start":"2026-10-12","status":"company"},{"week_start":"2026-10-19","status":"company"},{"week_start":"2026-10-26","status":"school"},{"week_start":"2026-11-02","status":"school"},{"week_start":"2026-11-09","status":"company"},{"week_start":"2026-11-16","status":"company"},{"week_start":"2026-11-23","status":"school"},{"week_start":"2026-11-30","status":"school"},{"week_start":"2026-12-07","status":"company"},{"week_start":"2026-12-14","status":"company"},{"week_start":"2026-12-21","status":"school"},{"week_start":"2026-12-28","status":"school"},{"week_start":"2027-01-04","status":"company"},{"week_start":"2027-01-11","status":"company"},{"week_start":"2027-01-18","status":"school"},{"week_start":"2027-01-25","status":"school"},{"week_start":"2027-02-01","status":"company"},{"week_start":"2027-02-08","status":"company"},{"week_start":"2027-02-15","status":"school"},{"week_start":"2027-02-22","status":"school"},{"week_start":"2027-03-01","status":"company"},{"week_start":"2027-03-08","status":"company"},{"week_start":"2027-03-15","status":"school"},{"week_start":"2027-03-22","status":"school"},{"week_start":"2027-03-29","status":"company"},{"week_start":"2027-04-05","status":"company"},{"week_start":"2027-04-12","status":"school"},{"week_start":"2027-04-19","status":"school"},{"week_start":"2027-04-26","status":"company"},{"week_start":"2027-05-03","status":"company"},{"week_start":"2027-05-10","status":"school"},{"week_start":"2027-05-17","status":"school"},{"week_start":"2027-05-24","status":"company"},{"week_start":"2027-05-31","status":"company"},{"week_start":"2027-06-07","status":"school"},{"week_start":"2027-06-14","status":"school"},{"week_start":"2027-06-21","status":"company"},{"week_start":"2027-06-28","status":"company"},{"week_start":"2027-07-05","status":"school"},{"week_start":"2027-07-12","status":"school"},{"week_start":"2027-07-19","status":"company"},{"week_start":"2027-07-26","status":"company"},{"week_start":"2027-08-02","status":"school"},{"week_start":"2027-08-09","status":"school"},{"week_start":"2027-08-16","status":"company"},{"week_start":"2027-08-23","status":"company"}]'::jsonb)
   ON CONFLICT (id) DO UPDATE SET
     email=EXCLUDED.email, prenom=EXCLUDED.prenom, nom=EXCLUDED.nom, type_user=EXCLUDED.type_user,
     ville_ecole=EXCLUDED.ville_ecole, ville_entreprise=EXCLUDED.ville_entreprise,
-    statut_ville_entreprise=EXCLUDED.statut_ville_entreprise, rhythm_calendar=EXCLUDED.rhythm_calendar;
+    statut_ville_ecole=EXCLUDED.statut_ville_ecole, statut_ville_entreprise=EXCLUDED.statut_ville_entreprise, rhythm_calendar=EXCLUDED.rhythm_calendar;
 
   INSERT INTO public.users
     (id, email, prenom, nom, type_user, ville_ecole, statut_ville_ecole, rhythm_calendar)
