@@ -2,7 +2,42 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-22 (soir) — Homogénéisation visuelle en prolongement de la clôture ville active : sélecteur ville/mode unifié sur les 3 profils (icônes retirées, actif blanc+ombre — fa8da01), filtre "Accessible PMR" aligné sur le rendu générique des équipements (emoji ♿ + fond pêche retirés — 7837e1e). DETTE #143 corrigée pour hote@sterny.test (statut_ville_ecole='recherche', type_user reste 'hote' — b82ae3f). Décision produit : pas de prefill homepage par ville active tant qu'elle est 100% mock (loguée idees-en-attente.md — bbabdaf). Tout poussé et validé visuellement. Détail dans l'entrée du jour ci-dessous.
+**Dernière mise à jour** : 2026-07-23 — Garde RedirectIfAuth : un utilisateur
+connecté qui accède à /connexion ou /inscription/* (URL directe, favori,
+ancien lien) est redirigé vers son dashboard selon son profil (admin/
+propriétaire/autre). Pas de bypass DEV. DETTE #148 loguée (routing dashboard
+dupliqué). Testé et poussé.
+
+---
+
+## 2026-07-23 — Garde "déjà connecté" sur /connexion et /inscription/*
+
+Bug signalé par Côme : un utilisateur connecté pouvait toujours atteindre
+/connexion et les 5 routes /inscription/* (via URL directe, ancien lien
+partagé, favori). Le logo lui-même pointait déjà correctement vers "/",
+sans lien avec ce bug.
+
+**Fix** : nouveau composant `RedirectIfAuth` (src/components/layout/),
+enveloppant les 6 routes auth dans App.jsx. Sur le modèle inversé de
+`DashboardLayout` (useAuth → attendre `loading` → `<Navigate replace>`),
+mais SANS bypass DEV (la redirection s'applique aussi en environnement de
+dev, contrairement à DashboardLayout). Redirection selon profil : is_admin
+→ /dashboard/admin, proprietaire → /dashboard/proprietaire, sinon
+/dashboard. Pendant la résolution de session, le garde rend `null` (pas de
+flash de la page auth).
+
+Commits : 7992c5a (feat), cbaf6b9 (docs DETTE #148).
+
+**DETTE #148 créée** : le branchement is_admin/type_user → route dashboard
+est désormais dupliqué à 3 endroits (ConnexionPage, CompleterProfilPage,
+RedirectIfAuth). Piste : helper `getDashboardRoute(userData)` — chantier à
+part, non traité.
+
+**Testé et validé par Côme en runtime** : connecté + URL directe
+/inscription/alternant et /connexion → redirection dashboard. Non connecté
+→ accès normal préservé.
+
+**Rien d'ouvert** sur ce sujet.
 
 ---
 
