@@ -936,6 +936,17 @@ précis "corriger le [0] en dur" (DETTE #142) vers un système à 3 volets :
    façon uniforme, que l'action vienne d'une déduction (ajout progressif)
    ou d'une saisie directe (inscription les_deux).
 
+**Volet hôte — premier élément construit (23/07/2026)** : "Ton annonce"
+(dashboard hôte) suit désormais la ville active, via `annoncesFiltrees`
+(comparaison directe `ann.ville` / `villeActive.ville`, sans condition
+sur le statut recherche/hôte). Corrige le bug où le sélecteur changeait
+visuellement de ville sans que le contenu ne suive. Reste incomplet :
+candidatures reçues (côté hôte) non filtrées, ville par défaut au
+premier chargement non traitée pour un hôte pur (peut ne pas correspondre
+à la ville de l'annonce). Volet hôte toujours pas construit comme
+ensemble cohérent — cette correction est ponctuelle, pas le chantier
+complet évoqué plus haut.
+
 **Décision de méthode** : les 3 volets seront construits, mais PAS dans la
 même session que ce cadrage — trop de contexte déjà accumulé (plusieurs
 pivots cette session : fusion posée puis annulée, sélecteur posé puis
