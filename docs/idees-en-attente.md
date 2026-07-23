@@ -187,6 +187,12 @@ favoris/candidatures), déjà couverte. À reconsidérer uniquement si/quand la
 homepage est branchée sur de vraies annonces — nouvelle décision produit à
 ce moment-là, pas un prolongement automatique.
 
+**Design de ModifierProfilPage à revoir** — signalé par Côme le 23/07/2026.
+Le rendu wizard 6 étapes actuel ne convient pas. Fusionné avec la décision
+de restructuration en sections cliquables (voir ETAT-COURANT.md, entrée du
+23/07/2026) — les deux sujets seront traités ensemble dans le futur chantier
+dédié.
+
 ## Rappels / échéances
 
 **Rappel — purge/anonymisation questionnaire étude de terrain (échéance ~juillet 2028).** Les réponses au formulaire "Trouver un logement en alternance" (Google Forms) sont conservées 24 mois maximum à compter de la collecte (voir ETAT-COURANT.md conv 111, QUESTIONS-PROFESSIONNELS.md Q-DPO-020). Actions à cette échéance : supprimer l'email de chaque réponse + purger les réponses individuelles côté Google Forms (pas seulement le Sheet lié), OU conserver uniquement des chiffres agrégés. Vérifier aussi qu'aucun champ texte libre ne permet de ré-identifier un répondant avant conservation prolongée.
