@@ -12,6 +12,7 @@ function ScrollToTop() {
 import Layout from './components/layout/Layout'
 import OAuthHandler from './components/OAuthHandler'
 import DashboardLayout from './components/layout/DashboardLayout'
+import RedirectIfAuth from './components/layout/RedirectIfAuth'
 import { VilleActiveProvider } from './contexts/VilleActiveContext'
 
 // Public pages
@@ -133,12 +134,12 @@ export default function App() {
           <Route path="/agences-partenaires" element={<AgencesPartenairesPage />} />
 
           {/* Auth pages */}
-          <Route path="/connexion" element={<ConnexionPage />} />
-          <Route path="/inscription" element={<ChoixInscriptionPage />} />
-          <Route path="/inscription/recherche" element={<InscriptionRecherchePage />} />
-          <Route path="/inscription/proprietaire" element={<InscriptionProprietairePage />} />
-          <Route path="/inscription/partager" element={<InscriptionPartagerPage />} />
-          <Route path="/inscription/alternant" element={<InscriptionAlternantPage />} />
+          <Route path="/connexion" element={<RedirectIfAuth><ConnexionPage /></RedirectIfAuth>} />
+          <Route path="/inscription" element={<RedirectIfAuth><ChoixInscriptionPage /></RedirectIfAuth>} />
+          <Route path="/inscription/recherche" element={<RedirectIfAuth><InscriptionRecherchePage /></RedirectIfAuth>} />
+          <Route path="/inscription/proprietaire" element={<RedirectIfAuth><InscriptionProprietairePage /></RedirectIfAuth>} />
+          <Route path="/inscription/partager" element={<RedirectIfAuth><InscriptionPartagerPage /></RedirectIfAuth>} />
+          <Route path="/inscription/alternant" element={<RedirectIfAuth><InscriptionAlternantPage /></RedirectIfAuth>} />
           <Route path="/completer-profil" element={<CompleterProfilPage />} />
           <Route path="/mot-de-passe-oublie" element={<MotDePasseOubliePage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
