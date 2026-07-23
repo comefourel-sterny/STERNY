@@ -1673,3 +1673,15 @@ données hôte) que VilleSelecteur ignore. Fix retenu : synchronisation bidirect
 (switchMode écrit dans le contexte au clic ; le contexte pré-remplit currentMode au
 montage), sans remplacer le mode-switch.
 Statut : CORRIGÉ (commit à suivre).
+
+## DETTE #148 — Logique de routing dashboard dupliquée
+
+Constatée le 23/07/2026 en construisant RedirectIfAuth (garde "déjà connecté"
+sur /connexion et /inscription/*). Le branchement is_admin/type_user → route
+dashboard (/dashboard/admin, /dashboard/proprietaire, /dashboard) est
+dupliqué dans ConnexionPage.jsx, CompleterProfilPage.jsx, et désormais
+RedirectIfAuth.jsx.
+
+Piste future : factoriser en un helper unique getDashboardRoute(userData),
+réutilisé par les 3 points d'appel. Non traité aujourd'hui — chantier à part,
+ne pas mélanger à un futur patch ponctuel.
