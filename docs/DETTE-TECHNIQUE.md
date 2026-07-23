@@ -1685,3 +1685,30 @@ RedirectIfAuth.jsx.
 Piste future : factoriser en un helper unique getDashboardRoute(userData),
 réutilisé par les 3 points d'appel. Non traité aujourd'hui — chantier à part,
 ne pas mélanger à un futur patch ponctuel.
+
+## DETTE #149 — ModifierProfilPage affiche un succès sans écrire en base
+
+Constatée le 23/07/2026 en testant le fix DETTE #143 (préservation du statut
+de ville). Test réel sur hote@sterny.test : ville_ecole modifiée Nantes →
+Troyes à l'étape 3 du wizard, wizard complété jusqu'au bout (documents
+bidons uploadés, champs garant remplis), écran "profil modifié" avec icône
+validée affiché en sortie.
+
+Vérification directe en base (psql local) : ville_ecole reste "Nantes".
+La modification n'a jamais atteint la base, malgré l'écran de succès.
+Aucune erreur affichée à l'écran ni dans la console — le try/catch de
+enregistrerProfil n'a rien capté, ce qui exclut une erreur Supabase classique.
+
+Cause probable non confirmée : possible closure figée sur une ancienne
+valeur de state (pattern classique si enregistrerProfil est un useCallback
+avec un tableau de dépendances incomplet, ne réagissant pas à un changement
+de villeEcole). À investiguer précisément en session dédiée — ne pas
+supposer, auditer avant de patcher.
+
+Portée probable : pas isolé aux villes — potentiellement tous les champs
+du formulaire sont concernés (à vérifier).
+
+**Bloquant** : le code du fix DETTE #143 (préservation/dérivation du statut
+de ville) est prêt en working tree (non commité), mais invalidable en
+runtime tant que ce bug n'est pas résolu — un code correct ne sert à rien
+si enregistrerProfil n'écrit jamais en base.
