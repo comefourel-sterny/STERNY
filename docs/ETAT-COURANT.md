@@ -2,11 +2,44 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-23 — Garde RedirectIfAuth : un utilisateur
-connecté qui accède à /connexion ou /inscription/* (URL directe, favori,
-ancien lien) est redirigé vers son dashboard selon son profil (admin/
-propriétaire/autre). Pas de bypass DEV. DETTE #148 loguée (routing dashboard
-dupliqué). Testé et poussé.
+**Dernière mise à jour** : 2026-07-23 — Section "Ton annonce" du dashboard
+hôte filtrée par ville active (annoncesFiltrees). Corrige le bug où changer
+de ville dans le sélecteur n'affectait pas l'annonce affichée. Premier
+élément concret du volet hôte, encore incomplet. Testé et poussé.
+
+---
+
+## 2026-07-23 (suite) — Section "Ton annonce" filtrée par ville active
+
+Bug signalé par Côme : sur le dashboard hôte, cliquer Nantes/Rennes animait
+le sélecteur mais "Ton annonce" continuait d'afficher toutes les annonces
+de l'hôte sans filtre — contrairement à favoris/candidatures (côté
+recherche), déjà branchés sur villeActive depuis le chantier "pages par
+ville" du 19-22/07.
+
+**Fix** : nouvelle dérivée `annoncesFiltrees` (DashboardLocatairePage.jsx),
+sur le modèle de favorisFiltres/candidaturesFiltrees — comparaison directe
+`ann.ville` / `villeActive.ville` (normalizeVilleLabel), SANS condition sur
+le statut recherche/hôte (contrairement à favoris/candidatures qui ne
+filtrent que si action==='recherche'). Décision : une ville affichée dans
+le sélecteur reste une ville affichée, peu importe son action.
+
+Commits : ea7987c (feat), f7cab9c (docs VISION-ARCHITECTURE, section
+"pages par ville").
+
+**Point connu, non traité ici** : pour un hôte pur, la ville active par
+défaut au premier chargement peut ne pas correspondre à la ville de
+l'annonce (dépend de l'ordre des villes du profil) — non observé lors du
+test de Côme, mais reste un trou du volet hôte, pas construit comme
+ensemble cohérent (candidatures reçues côté hôte toujours non filtrées).
+
+**Testé et validé par Côme en runtime** : compte hôte pur (Hugo,
+Nantes=recherche/Rennes=hôte) — clic Rennes → Studio test Rennes affiché,
+clic Nantes → état vide "Créer mon annonce" (pas l'annonce Rennes).
+
+**Rien d'ouvert dans l'immédiat** sur ce sujet précis. Le volet hôte
+complet (candidatures reçues, ville par défaut) reste à cadrer en session
+dédiée.
 
 ---
 
