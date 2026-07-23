@@ -684,6 +684,10 @@ export default function DashboardLocatairePage() {
   const candidaturesFiltrees = villeActive?.action === 'recherche'
     ? candidatures.filter(c => c.annonces && normalizeVilleLabel(c.annonces.ville) === normalizeVilleLabel(villeActive.ville))
     : candidatures
+  // Annonces : filtre direct sur la ville active (peu importe le statut recherche/hôte).
+  const annoncesFiltrees = villeActive
+    ? annonces.filter(ann => normalizeVilleLabel(ann.ville) === normalizeVilleLabel(villeActive.ville))
+    : annonces
 
   // Ville suggestions
   const villeSuggestions = villeModalInput.trim()
@@ -963,9 +967,9 @@ export default function DashboardLocatairePage() {
           {/* MES ANNONCES */}
           <div className="dp-card">
             <div className="dp-card-title">
-              {annonces.length <= 1 ? 'Ton annonce' : `Tes annonces (${annonces.length})`}
+              {annoncesFiltrees.length <= 1 ? 'Ton annonce' : `Tes annonces (${annoncesFiltrees.length})`}
             </div>
-            {annonces.length === 0 ? (
+            {annoncesFiltrees.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
@@ -975,7 +979,7 @@ export default function DashboardLocatairePage() {
               </div>
             ) : (
               <div>
-                {annonces.map(ann => (
+                {annoncesFiltrees.map(ann => (
                   <div className="annonce-card" key={ann.id} style={{ marginBottom: '8px' }}>
                     <div className="annonce-thumb">
                       {ann.photos && ann.photos.length > 0
