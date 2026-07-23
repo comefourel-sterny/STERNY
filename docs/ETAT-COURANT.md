@@ -2,10 +2,50 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-23 — Section "Ton annonce" du dashboard
-hôte filtrée par ville active (annoncesFiltrees). Corrige le bug où changer
-de ville dans le sélecteur n'affectait pas l'annonce affichée. Premier
-élément concret du volet hôte, encore incomplet. Testé et poussé.
+**Dernière mise à jour** : 2026-07-23 (suite) — Session "modification/suppression
+de ville" : fix DETTE #143 codé (préservation/dérivation du statut de ville)
+mais NON commité, bloqué par DETTE #149 découverte en testant (le formulaire
+affiche un succès sans écrire en base). Décision : restructurer
+ModifierProfilPage en page à sections cliquables (abandon du wizard),
+chantier qui devra résoudre DETTE #149 en même temps. Rien poussé sur ce
+sujet aujourd'hui.
+
+---
+
+## 2026-07-23 (suite) — Session "modification/suppression de ville" : bloquée par DETTE #149
+
+Objectif de session : traiter la modification d'une ville existante
+(DETTE #143) puis la suppression d'une ville (jamais construite). Volet 1
+(modification) codé, volet 2 (suppression) jamais commencé — la session a
+changé de direction en cours de route.
+
+**Fix DETTE #143 codé, NON commité** : dans ModifierProfilPage.jsx —
+préserve le statut existant d'une ville (jamais modifié par cette page),
+dérive un statut null depuis le vrai type_user (locataire→'recherche',
+hote→'hote'), ne devine jamais rien pour les_deux. Build passe. Reste dans
+le working tree, non commité : voir raison ci-dessous.
+
+**DETTE #149 découverte en testant** : ModifierProfilPage affiche un succès
+("profil modifié") sans écrire en base — vérifié par requête directe
+(hote@sterny.test, Nantes→Troyes resté à Nantes en base après un submit
+"réussi"). Bloque la validation runtime du fix DETTE #143 ET de tout futur
+patch sur cette page. Détail complet dans DETTE-TECHNIQUE.md #149.
+
+**Décision produit actée** : abandon du wizard 6 étapes de ModifierProfilPage
+au profit d'une page à sections cliquables (déjà loguée le 23/07/2026,
+entrée précédente). Le futur chantier de restructuration devra résoudre
+DETTE #149 en même temps que le changement visuel — pas juste déplacer le
+bug. Le lien de suppression d'une ville (volet 2, jamais commencé) attend
+aussi cette refonte.
+
+**Note produit annexe** : ModifierProfilPage utilise encore l'ancien
+système de rythme (dropdown "Type d'alternance"/rythme_pattern), contraire
+à la Charte Fondatrice (rhythm_calendar = source unique). Constaté au
+passage, à traiter dans le même chantier de restructuration ou séparément.
+
+**Rien poussé aujourd'hui** sur ce sujet. Prochaine session dédiée : auditer
+précisément la cause de DETTE #149 avant tout code, puis cadrer la
+restructuration (sections à lister, ordre, ancrages).
 
 ---
 
