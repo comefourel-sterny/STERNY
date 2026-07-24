@@ -123,6 +123,11 @@ export default function ModifierProfilPage() {
   const [rythmeCustom, setRythmeCustom] = useState('')
   const [villeEcole, setVilleEcole] = useState('')
   const [villeEntreprise, setVilleEntreprise] = useState('')
+  // Statuts des villes (DETTE #143) : chargés au prefill, préservés/dérivés à la sauvegarde.
+  // typeUserReel = type_user brut du profil (inclut 'les_deux'), contrairement à userType (l.85).
+  const [statutVilleEcole, setStatutVilleEcole] = useState(null)
+  const [statutVilleEntreprise, setStatutVilleEntreprise] = useState(null)
+  const [typeUserReel, setTypeUserReel] = useState(null)
   const [villeEcoleSuggestions, setVilleEcoleSuggestions] = useState([])
   const [showVilleEcoleSugg, setShowVilleEcoleSugg] = useState(false)
   const [villeEntrepriseSuggestions, setVilleEntrepriseSuggestions] = useState([])
@@ -194,6 +199,9 @@ export default function ModifierProfilPage() {
       }
       if (userData.ville_ecole) setVilleEcole(userData.ville_ecole)
       if (userData.ville_entreprise) setVilleEntreprise(userData.ville_entreprise)
+      setStatutVilleEcole(userData.statut_ville_ecole ?? null)
+      setStatutVilleEntreprise(userData.statut_ville_entreprise ?? null)
+      setTypeUserReel(userData.type_user ?? null)
       if (userData.bio) setBio(userData.bio)
       if (userData.garant_prenom) setGarantPrenom(userData.garant_prenom)
       if (userData.garant_nom) setGarantNom(userData.garant_nom)
@@ -396,11 +404,23 @@ export default function ModifierProfilPage() {
       const updateData = { prenom: prenom.trim(), nom: nom.trim(), telephone: telephone.trim() }
       if (userType !== 'proprietaire') {
         const rythme = typeAlternance === 'custom' ? rythmeCustom.trim() || null : monRythme || null
+        // DETTE #143 : préserve le statut existant, dérive s'il est null (jamais pour les_deux), null si ville vidée.
+        function deriverStatutVille(statutExistant, villeValeur, typeUserReel) {
+          if (!villeValeur) return null
+          if (statutExistant) return statutExistant
+          if (typeUserReel === 'locataire') return 'recherche'
+          if (typeUserReel === 'hote') return 'hote'
+          return statutExistant // les_deux ou autre cas : ne jamais deviner, on garde tel quel (null si null)
+        }
+        const statutVilleEcoleAEcrire = deriverStatutVille(statutVilleEcole, villeEcole, typeUserReel)
+        const statutVilleEntrepriseAEcrire = deriverStatutVille(statutVilleEntreprise, villeEntreprise, typeUserReel)
         Object.assign(updateData, {
           sexe, date_naissance: dateNaissanceISO,
           ecole: ecole.trim(), annee_etudes: anneeEtudes.trim(), filiere: filiere.trim(),
           bio: bio.trim() || null, type_alternance: typeAlternance || null, rythme_alternance: rythme,
           ville_ecole: villeEcole || null, ville_entreprise: villeEntreprise || null,
+          statut_ville_ecole: statutVilleEcoleAEcrire,
+          statut_ville_entreprise: statutVilleEntrepriseAEcrire,
           garant_prenom: garantPrenom.trim() || null, garant_nom: garantNom.trim() || null,
           garant_telephone: garantTelephone.trim() || null, garant_email: garantEmail.trim() || null
         })
