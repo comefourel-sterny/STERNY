@@ -10,6 +10,54 @@ DETTE #143 validé et committé.
 
 ---
 
+## 2026-07-24 (suite 4) — Correction de cap : onglets (pas accordéon), scope réduit à 6 sections profil
+
+Les 3 entrées précédentes de cette session ("suite", "suite 2", "suite 3" — accordéon 9
+sections, divergence 8 ter, style .mp-card) sont CADUQUES, remplacées par ce qui suit.
+Non supprimées de l'historique (doctrine archiver jamais effacer), mais périmées : ne pas
+s'y fier pour la suite du chantier.
+
+**Correction 1 — pattern onglets, pas accordéon.** Côme a corrigé l'interprétation
+initiale ("carte, titres empilés, clic pour déplier") après avoir vu le résultat en
+mockup : ce n'est pas un accordéon, c'est un système d'onglets/segmented control, sur
+le modèle du modal Disponibilités de LogementPage.jsx (state vueActive, soulignement
+orange #E8622A actif / gris #94A3B8 inactif, un seul actif à la fois, jamais vide).
+Audité en lecture seule : ce control est 100% inline, local à LogementPage.jsx (l.1605-
+1630), pas un composant partagé. Différence de fond avec ModifierProfilPage : dans
+LogementPage les onglets recolorent une même grille (pas de swap de panneau) ; dans
+ModifierProfilPage il faut un vrai remplacement de contenu (champs différents par
+section). Décision : le style visuel (soulignement orange, transition) est redéfini
+localement dans ModifierProfilPage, sans dépendance vers LogementPage.jsx — même
+logique que la décision .mp-card (suite 3, caduque sur le fond mais le principe de
+redéfinition locale reste valable). 6 onglets sur une ligne avec défilement horizontal
+(décidé par Côme).
+
+**Correction 2 — chevauchement avec ParametresPage découvert et scope réduit.** Audit de
+ParametresPage.jsx (canonique, hook useAccountActions, route /parametres accessible
+depuis le menu utilisateur) : Mot de passe et Zone danger y sont déjà gérées. Les
+sections correspondantes de ModifierProfilPage sont des DOUBLONS PARTIELS — même
+fonctions (auth.updateUser, Edge Function delete-account) mais réimplémentées inline
+au lieu d'utiliser le hook canonique, avec une divergence de validation mot de passe
+(6 caractères dans ModifierProfilPage vs 8 dans ParametresPage/hook). Décision actée :
+ces 2 sections sont retirées du périmètre de ModifierProfilPage — aucune perte de
+fonctionnalité (déjà couvertes, déjà accessibles), la divergence de validation disparaît
+avec le code supprimé (pas de correction séparée nécessaire).
+
+Préférences email (pas un doublon — absente de ParametresPage aujourd'hui) : décision
+actée de la déplacer vers ParametresPage, nature "compte" plutôt que "profil". Migration
+de code (extraction de sauvegarderPrefsEmail vers ParametresPage) traitée comme une
+tâche séparée, non mêlée à la restructuration onglets — voir DETTE #151.
+
+**Scope final de la restructuration ModifierProfilPage : 6 sections.** Infos
+personnelles, Tes études, Ton alternance, À propos de toi, Tes documents, Ton garant.
+Ordre et contenu de chaque section inchangés par ailleurs (voir entrée "suite" du
+24/07, toujours valable sur ce point).
+
+**RESTE avant tout code** : (1) mockup des onglets à valider en détail (Visualizer,
+itérations en cours avec Côme) ; (2) DETTE #151 (migration Préférences email) ; (3)
+suppression propre du code Mot de passe/Zone danger de ModifierProfilPage.jsx (retrait
+simple, aucune fonctionnalité à préserver ailleurs dans ce fichier).
+
 ## 2026-07-24 (suite 3) — Style de carte de l'accordéon ModifierProfilPage tranché : redéfinition locale
 
 Audit (lecture seule) des pages connectées existantes : un pattern carte + comportement

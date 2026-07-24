@@ -1734,3 +1734,15 @@ l'esprit de RhythmManualBuilder), chantier à part entière. Mélanger cette mig
 restructuration visuelle aurait fait grossir le chantier en cours de route — pattern déjà
 évité sur le chantier multi-villes. À traiter en session dédiée, après validation de la
 restructuration accordéon.
+
+## DETTE #151 — Migration de "Préférences email" de ModifierProfilPage vers ParametresPage
+
+Décidé le 24/07/2026, pendant le cadrage de la restructuration de ModifierProfilPage.
+La section "Préférences email" (sauvegarderPrefsEmail → colonne preferences_email,
+debounce 500ms) est actuellement unique à ModifierProfilPage, absente de ParametresPage.
+Décision produit : cette fonctionnalité est de nature "paramètre de compte", elle doit
+rejoindre ParametresPage (page canonique pour les actions de compte, hook
+useAccountActions). Migration à traiter en session dédiée : extraire la logique vers
+ParametresPage/useAccountActions, retirer la section de ModifierProfilPage. Non traité
+dans le chantier de restructuration onglets en cours (scope volontairement limité aux
+6 sections profil).
