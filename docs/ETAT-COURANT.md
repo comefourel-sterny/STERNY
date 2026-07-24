@@ -10,21 +10,52 @@ DETTE #143 validé et committé.
 
 ---
 
-## 2026-07-24 (suite 2) — Divergence 8 ter validée : accordéon dashboard hors grammaire auth-wizard
+## 2026-07-24 (suite 3) — Style de carte de l'accordéon ModifierProfilPage tranché : redéfinition locale
+
+Audit (lecture seule) des pages connectées existantes : un pattern carte + comportement
+cliquable/dépliable existe déjà (.dp-card + .dp-card-toggle + .dp-card-chevron, défini
+dans DashboardProprietairePage.css, consommé aussi par DashboardLocatairePage — usage
+réel : sections Calendrier/Documents du dashboard propriétaire). Chevron rotatif à
+l'ouverture, carte blanche 16px radius / 24px padding / ombre douce, on-brand.
+
+Problème identifié : .dp-card n'est pas un composant partagé propre — c'est une classe
+physiquement définie dans un fichier CSS qui fuit déjà vers une autre page (couplage de
+fait, dette connue). La réutiliser telle quelle dans ModifierProfilPage aurait ajouté une
+3e page dépendante d'un fichier CSS qui ne lui appartient pas.
+
+Décision actée, validée par Côme (24/07/2026) : redéfinition locale dans
+ModifierProfilPage.css, sous une nomenclature scopée à la page (ex. .mp-card,
+.mp-card-toggle, .mp-card-chevron), reprenant les mêmes valeurs visuelles (rayon,
+padding, ombre, chevron rotatif) pour rester on-brand, sans créer de dépendance vers
+DashboardProprietairePage.css. Aucune page dashboard n'est modifiée par ce chantier.
+La factorisation propre de .dp-card en composant partagé reste une piste valable, mais
+constitue un chantier séparé, non traité ici.
+
+Restent à construire (pas encore présents nulle part dans le code, à concevoir avant le
+premier patch) : (1) la logique "une seule section ouverte à la fois" — le pattern
+.dp-card-toggle existant gère un booléen indépendant par carte, jamais une coordination
+partagée entre plusieurs cartes ; (2) le câblage des 9 sections dans ce nouveau
+conteneur. La Zone danger réutilisera la modale de confirmation déjà présente dans
+ModifierProfilPage (pas une nouvelle .modal-overlay).
+
+## 2026-07-24 (suite 2) — Divergence 8 ter validée : accordéon ModifierProfilPage hors grammaire auth-wizard
 
 Audit de la règle 8 ter mené sur InscriptionAlternantPage.jsx avant toute proposition
 de design pour l'accordéon de ModifierProfilPage. Divergence structurelle confirmée et
 validée par Côme : la grammaire auth-wizard (AuthScreenContainer carte 460px centrée,
 un seul écran à la fois, WizardProgressBar, BottomAuthLinks) est incompatible avec un
-accordéon dashboard (plusieurs en-têtes de section visibles simultanément, une dépliée,
-page large de dashboard, pas un parcours d'auth linéaire).
+accordéon (plusieurs en-têtes de section visibles simultanément, une dépliée, page
+connectée large, pas un parcours d'auth linéaire). Précision : "accordéon" désigne ici
+uniquement le nouveau composant de ModifierProfilPage — cette restructuration ne touche
+à aucune page dashboard existante.
 
 Décision actée : l'accordéon de ModifierProfilPage n'utilise PAS AuthScreenContainer/
 WizardProgressBar/BottomAuthLinks. Les briques de champ layout-agnostiques restent
 réutilisables (TextInput, TextArea, CustomSelect, AutocompleteInput, PrimaryButton,
 PhotoCropperModal). Un nouveau conteneur "carte de section accordéon dashboard" reste
-à définir — avant de le créer, audit des cartes/blocs déjà utilisés dans les pages
-dashboard existantes (en cours, voir entrée suivante).
+à définir — avant de le créer, audit (lecture seule) des cartes/blocs déjà utilisés
+ailleurs dans l'app pour s'en inspirer sans dupliquer un pattern existant, sans modifier
+ces pages (voir entrée suivante).
 
 ## 2026-07-24 (suite) — Cadrage restructuration ModifierProfilPage validé (wizard → accordéon)
 
