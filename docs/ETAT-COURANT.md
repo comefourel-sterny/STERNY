@@ -10,6 +10,30 @@ DETTE #143 validé et committé.
 
 ---
 
+## 2026-07-24 (suite 5) — Layout onglets finalisé (une ligne, sans arrondi) + retrait immédiat de Préférences email
+
+Mockup itéré avec Côme (Visualizer) sur la base de la décision "suite 4". Deux
+corrections actées, "suite 4" caduque sur ces 2 points précis (le reste — 6 sections,
+scope, retrait Mot de passe/Zone danger — reste valable) :
+
+**Correction layout** : "défilement horizontal" (suite 4) remplacé par 6 onglets tenant
+sur une seule ligne sans défilement, répartition à largeur égale (flex:1). Soulignement
+actif orange #E8622A sans arrondi (trait droit, pas de border-radius). Base visuelle
+validée par Côme ("la base est bonne"), des ajustements sont encore attendus par la
+suite (pas un design figé).
+
+**Décision produit — Préférences email retirée immédiatement, pas d'attente de DETTE
+#151** : contrairement à Mot de passe/Zone danger (retirées sans perte, déjà couvertes
+par ParametresPage), Préférences email n'existe nulle part ailleurs pour l'instant.
+Côme a tranché : la retirer de ModifierProfilPage dès cette restructuration plutôt que
+de la garder temporairement le temps de la migration — acceptant une perte de
+fonctionnalité (impossible de gérer ses préférences email) jusqu'à ce que DETTE #151
+soit traitée. DETTE #151 mise à jour en conséquence (passe de "migration à faire" à
+"fonctionnalité en pause, capacité utilisateur réellement perdue").
+
+**Scope final confirmé : 6 sections, 0 section restante hors profil.** Infos
+personnelles, Tes études, Ton alternance, À propos de toi, Tes documents, Ton garant.
+
 ## 2026-07-24 (suite 4) — Correction de cap : onglets (pas accordéon), scope réduit à 6 sections profil
 
 Les 3 entrées précédentes de cette session ("suite", "suite 2", "suite 3" — accordéon 9

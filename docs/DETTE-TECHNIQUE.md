@@ -1742,7 +1742,12 @@ La section "Préférences email" (sauvegarderPrefsEmail → colonne preferences_
 debounce 500ms) est actuellement unique à ModifierProfilPage, absente de ParametresPage.
 Décision produit : cette fonctionnalité est de nature "paramètre de compte", elle doit
 rejoindre ParametresPage (page canonique pour les actions de compte, hook
-useAccountActions). Migration à traiter en session dédiée : extraire la logique vers
-ParametresPage/useAccountActions, retirer la section de ModifierProfilPage. Non traité
-dans le chantier de restructuration onglets en cours (scope volontairement limité aux
-6 sections profil).
+useAccountActions).
+
+**MISE À JOUR (suite 5, même session) : la section est retirée de ModifierProfilPage
+immédiatement**, dans le même chantier que la restructuration onglets — pas gardée
+temporairement. Conséquence assumée par Côme : entre le retrait et le traitement de
+cette dette, aucun utilisateur ne peut modifier ses préférences email sur la
+plateforme (perte de fonctionnalité réelle, pas juste une dette de code). Ça change la
+priorité de cette dette : à traiter rapidement après la restructuration onglets, pas
+"un jour calme".
