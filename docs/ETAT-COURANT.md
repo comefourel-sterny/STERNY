@@ -10,6 +10,22 @@ DETTE #143 validé et committé.
 
 ---
 
+## 2026-07-24 (suite 2) — Divergence 8 ter validée : accordéon dashboard hors grammaire auth-wizard
+
+Audit de la règle 8 ter mené sur InscriptionAlternantPage.jsx avant toute proposition
+de design pour l'accordéon de ModifierProfilPage. Divergence structurelle confirmée et
+validée par Côme : la grammaire auth-wizard (AuthScreenContainer carte 460px centrée,
+un seul écran à la fois, WizardProgressBar, BottomAuthLinks) est incompatible avec un
+accordéon dashboard (plusieurs en-têtes de section visibles simultanément, une dépliée,
+page large de dashboard, pas un parcours d'auth linéaire).
+
+Décision actée : l'accordéon de ModifierProfilPage n'utilise PAS AuthScreenContainer/
+WizardProgressBar/BottomAuthLinks. Les briques de champ layout-agnostiques restent
+réutilisables (TextInput, TextArea, CustomSelect, AutocompleteInput, PrimaryButton,
+PhotoCropperModal). Un nouveau conteneur "carte de section accordéon dashboard" reste
+à définir — avant de le créer, audit des cartes/blocs déjà utilisés dans les pages
+dashboard existantes (en cours, voir entrée suivante).
+
 ## 2026-07-24 (suite) — Cadrage restructuration ModifierProfilPage validé (wizard → accordéon)
 
 Session dédiée au cadrage de l'abandon du wizard 6 étapes de ModifierProfilPage
