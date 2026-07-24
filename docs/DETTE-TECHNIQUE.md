@@ -1712,3 +1712,13 @@ du formulaire sont concernés (à vérifier).
 de ville) est prêt en working tree (non commité), mais invalidable en
 runtime tant que ce bug n'est pas résolu — un code correct ne sert à rien
 si enregistrerProfil n'écrit jamais en base.
+
+**Mise à jour 24/07/2026 — FERMÉ, non reproductible, cause non confirmée** :
+investigation approfondie (closure/useCallback, filtrage liste de villes,
+mauvaise base .env, instrumentation runtime auth+comptage de lignes) a
+écarté toutes les causes de code plausibles. 4 tests consécutifs en
+conditions réelles, dont un rejeu exact du cas d'origine (Troyes) après
+fermeture d'onglet + rechargement forcé, ont tous réussi à écrire en base.
+Hypothèse résiduelle non vérifiable a posteriori : état HMR (rechargement
+à chaud Vite) corrompu au moment du test du 23/07. À rouvrir si le
+symptôme "succès affiché sans écriture" revient.

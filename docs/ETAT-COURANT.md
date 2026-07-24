@@ -2,13 +2,44 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-23 (suite) — Session "modification/suppression
-de ville" : fix DETTE #143 codé (préservation/dérivation du statut de ville)
-mais NON commité, bloqué par DETTE #149 découverte en testant (le formulaire
-affiche un succès sans écrire en base). Décision : restructurer
-ModifierProfilPage en page à sections cliquables (abandon du wizard),
-chantier qui devra résoudre DETTE #149 en même temps. Rien poussé sur ce
-sujet aujourd'hui.
+**Dernière mise à jour** : 2026-07-24 — DETTE #149 investiguée en
+profondeur (5 pistes de code écartées avec certitude), non reproductible
+sur 4 tests runtime consécutifs. Fix DETTE #143 validé et committé.
+
+---
+
+## 2026-07-24 — DETTE #149 investiguée : non reproductible, fix DETTE #143 validé
+
+Session dédiée au diagnostic de DETTE #149 (succès affiché sans écriture
+en base, constaté le 23/07 sur hote@sterny.test, Nantes→Troyes). Audit
+lecture seule puis instrumentation runtime (logs temporaires sur
+auth.uid() et comptage de lignes retournées par l'update), aucun code
+métier modifié avant diagnostic confirmé.
+
+**Pistes écartées avec certitude par audit de code** :
+- Closure figée sur ancien state (enregistrerProfil n'est pas un
+  useCallback, pas de tableau de dépendances)
+- Mauvais déclencheur (le bouton final appelle bien enregistrerProfil)
+- Filtrage silencieux d'une ville hors liste VILLES_DISPONIBLES (champs
+  ville = texte libre, updateData sans filtre de liste)
+- Mauvaise base de données (.env.local pointe bien sur le Supabase
+  local, cohérent avec la vérification psql du 23/07)
+
+**Piste testée en runtime, non reproduite** : 4 tests consécutifs
+(Quimper, Paris, Troyes après fermeture complète de l'onglet +
+rechargement forcé) ont tous réussi — auth.uid() valide, update
+retournant 1 ligne, error: null, changement visible au dashboard. Le cas
+exact du 23/07 (Troyes) a été rejoué à l'identique en environnement frais
+sans reproduire le bug.
+
+**Conclusion honnête** : pas de cause confirmée. Fermé en
+DETTE-TECHNIQUE.md avec le statut "non reproductible", pas "résolu".
+Hypothèse résiduelle non vérifiable a posteriori : état HMR (rechargement
+à chaud Vite) corrompu pendant la session dev longue du 23/07. À rouvrir
+si le symptôme revient — méthode de diagnostic (logs auth.uid() +
+comptage de lignes) réutilisable telle quelle.
+
+**Fix DETTE #143 committé**, validé par ces 4 écritures réelles réussies.
 
 ---
 
