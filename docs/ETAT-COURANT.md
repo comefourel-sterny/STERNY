@@ -2,9 +2,64 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-24 — DETTE #149 investiguée en
-profondeur (5 pistes de code écartées avec certitude), non reproductible
-sur 4 tests runtime consécutifs. Fix DETTE #143 validé et committé.
+**Dernière mise à jour** : 2026-07-24 — Cadrage de la restructuration
+ModifierProfilPage (wizard 6 étapes → accordéon 9 sections) validé par
+Côme. DETTE #149 investiguée en profondeur (5 pistes de code écartées
+avec certitude), non reproductible sur 4 tests runtime consécutifs. Fix
+DETTE #143 validé et committé.
+
+---
+
+## 2026-07-24 (suite) — Cadrage restructuration ModifierProfilPage validé (wizard → accordéon)
+
+Session dédiée au cadrage de l'abandon du wizard 6 étapes de ModifierProfilPage
+au profit d'une page à sections cliquables (décision actée le 23/07/2026).
+Pas de code dans cette session, cadrage uniquement.
+
+**Audit lecture seule préalable** : structure actuelle confirmée (794 lignes,
+6 étapes + 3 sections déjà autonomes hors wizard : préférences email, mot de
+passe, zone danger). enregistrerProfil = un seul update monolithique de tous
+les champs. Aucun composant partagé auth-wizard/ utilisé (page entièrement
+locale). Détail complet du rapport A-E disponible dans l'historique de
+conversation Claude.ai du 24/07/2026.
+
+**Pattern "sections cliquables" vérifié avant réutilisation** : ModifierAnnoncePage
+(pressenti comme référence) s'est avéré être un wizard séquentiel classique
+(currentStep, display:none/block), PAS un accordéon. Écart constaté et
+rapporté au lieu d'être forcé. Le pattern accordéon n'existe nulle part sur
+Sterny — à construire de zéro.
+
+**Accès propriétaire vérifié** : /profil/modifier n'a pas de garde de route
+par type_user, mais ModifierProfilPage redirige côté client (loadData) tout
+type_user === 'proprietaire' vers /profil/modifier-proprietaire (page séparée
+existante). Conséquence : l'accordéon est identique pour tous les utilisateurs
+qui atteignent réellement cette page (locataire/hote/les_deux) — pas de
+version réduite à concevoir. Le garde `userType !== 'proprietaire'` dans
+enregistrerProfil est mort en pratique dans ce fichier (à nettoyer
+naturellement lors du découpage de la sauvegarde par section, pas un chantier
+à part).
+
+**Décisions actées, validées par Côme (24/07/2026)** :
+- Accordéon classique : une seule section ouverte à la fois, la première
+  ouverte par défaut ("Infos personnelles").
+- 9 sections, dans cet ordre : (1) Infos personnelles [ouverte par défaut],
+  (2) Tes études, (3) Ton alternance, (4) À propos de toi, (5) Tes documents,
+  (6) Ton garant, (7) Préférences email, (8) Mot de passe, (9) Zone danger
+  [isolée visuellement en bas, reste un clic → modale de confirmation, pas
+  un accordéon à champs].
+- Ancrages d'URL par section (/profil#documents, etc.) pour permettre un lien
+  direct vers une section précise depuis un futur email/notification.
+- Dépendance actée : enregistrerProfil (aujourd'hui un update monolithique)
+  devra être découpé en sauvegarde par section — conséquence mécanique de
+  l'accordéon, pas un choix à trancher séparément.
+- Dette Charte (type_alternance/rythme_alternance) explicitement reportée,
+  voir DETTE #150 (DETTE-TECHNIQUE.md).
+
+**RESTE avant tout code** : appliquer la règle 8 ter (CONTEXTE-PROJET.md) —
+inventaire des composants auth-wizard/, lecture d'une page de référence
+(InscriptionAlternantPage.jsx ou ConnexionPage.jsx), comparaison de grammaire
+visuelle — avant toute proposition de design pour l'accordéon. Puis maquette
+validée par Côme dans npm run dev avant tout code.
 
 ---
 

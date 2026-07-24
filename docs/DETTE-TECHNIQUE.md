@@ -1722,3 +1722,15 @@ fermeture d'onglet + rechargement forcé, ont tous réussi à écrire en base.
 Hypothèse résiduelle non vérifiable a posteriori : état HMR (rechargement
 à chaud Vite) corrompu au moment du test du 23/07. À rouvrir si le
 symptôme "succès affiché sans écriture" revient.
+
+## DETTE #150 — Restructuration ModifierProfilPage : dette Charte (type_alternance/rythme_alternance) explicitement reportée
+
+Décidé le 24/07/2026, cadrage de la restructuration wizard→accordéon. La section
+"Ton alternance" est reconstruite à l'identique dans le nouveau format (écrit toujours
+type_alternance/rythme_alternance, colonnes dépréciées, ne lit/n'écrit jamais
+rhythm_calendar). Décision volontaire : migrer cette section vers rhythm_calendar
+nécessiterait de construire une interface d'édition du rythme dans l'accordéon (dans
+l'esprit de RhythmManualBuilder), chantier à part entière. Mélanger cette migration à la
+restructuration visuelle aurait fait grossir le chantier en cours de route — pattern déjà
+évité sur le chantier multi-villes. À traiter en session dédiée, après validation de la
+restructuration accordéon.
