@@ -13,7 +13,7 @@ groupes et écoles d'alternants, réponses Alice Dutheil). Règle de distinction
 
 7 sujets à traiter dans l'ordre, validé par Côme. Chaque sujet peut être repris dans une conversation Claude.ai dédiée et fraîche pour garder une conversation performante — cocher au fur et à mesure.
 
-1. [x] Questionnaire — nouvelles questions ("difficultés logement" + "Pourquoi ?") — implémenté, bug d'orphelinage corrigé (11 points de redirection audités), tests de parcours complets en cours
+1. [x] Questionnaire — nouvelles questions ("difficultés logement" + "Pourquoi ?") — implémenté, bug d'orphelinage corrigé (11 points de redirection audités), tests de parcours complets VALIDÉS (9 profils couvrant toutes les branches : rythme régulier/irrégulier, mono/bi-ville, avec/sans famille, tous modes de logement, renoncement à une opportunité) — CLÔTURÉ 25/07/2026
 2. [ ] LinkedIn pro — création/nettoyage
 3. [ ] Titre d'apparition Google
 4. [ ] Inscription Pépite France
