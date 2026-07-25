@@ -2,13 +2,58 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-24 — Cadrage de la restructuration
-ModifierProfilPage (wizard 6 étapes → accordéon 9 sections) validé par
-Côme. DETTE #149 investiguée en profondeur (5 pistes de code écartées
-avec certitude), non reproductible sur 4 tests runtime consécutifs. Fix
-DETTE #143 validé et committé.
+**Dernière mise à jour** : 2026-07-25 — Waitlist : première inscription depuis juin
+qualifiée comme réelle (preuve Resend), et compteur nettoyé de 6 à 3 inscrits réels
+après retrait de 3 lignes internes. Règle d'opération SQL en production ajoutée à
+CONTEXTE-PROJET.md §6.
 
 ---
+
+## 2026-07-25 — Waitlist : 1re inscription depuis juin qualifiée + compteur nettoyé (6 → 3 réels)
+
+Session courte, hors chantier ModifierProfilPage. Aucun code touché, opération de
+données en prod uniquement.
+
+**INSCRIPTION DU 25/07 06:21 (Paris) QUALIFIÉE — vrai humain.** Ping Discord reçu, mais
+par conception il ne transporte AUCUNE donnée perso (texte fixe, décision du 20/06) :
+identifier un inscrit passe donc obligatoirement par la table `waitlist` (SQL editor
+prod, RLS admin-only). Le compteur admin (b104416, toujours non déployé) n'affiche
+qu'un NOMBRE (`head:true`), jamais un email. L'adresse au format alphanumérique
+inhabituel a fait suspecter un robot : écarté. Preuve = mail de bienvenue **Delivered**
+dans Resend, donc Gmail a accepté la boîte.
+
+**MÉTHODE DE QUALIFICATION ACTÉE (réutilisable)** : le statut d'envoi Resend
+(Delivered / Bounced) est le SEUL test admis pour trancher « adresse réelle ou non ».
+Non-intrusif — c'est la lecture de sa propre journalisation d'envoi. INTERDIT : toute
+recherche d'identité à partir d'une adresse collectée (moteur de recherche, réseau
+social, service de lookup) = profilage hors finalité.
+
+**COMPTEUR FAUSSÉ (trouvaille)** : sur 6 lignes, 3 étaient internes — 2 adresses
+appartenant à Côme + 1 placeholder de test (session du 19/02, époque `alertes`).
+Origine : la migration alertes→waitlist du 19/06 a ramené ces lignes ; le nettoyage du
+20/06 ne portait que sur les tests de ce jour-là. Le compteur affichait donc 6 pour
+3 inscrits réels.
+
+**DÉCISION : suppression des 3 lignes internes, pas de colonne de qualification.**
+Motif : aucune donnée de TIERS concernée → Q-DPO-010 et Q-DPO-014 (qui portent sur la
+conservation de données de tiers) NON engagées ; la minimisation RGPD va dans ce sens.
+Une colonne de qualification n'aurait tracé que des tests internes = complexité sans
+valeur. Suppression par EMAIL EXACT, jamais par date, avec RETURNING vérifié (3 lignes).
+Appliquée via SQL editor prod (ledger de migration prod non marqué, assumé pour une
+opération de données). Ledger waitlist : 6 → 3.
+
+**CHIFFRE DE PITCH : 3 inscrits réels (et non 6).** Assumé — un compteur gonflé de
+100 % par des adresses internes est un risque de crédibilité bien supérieur au gain
+d'affichage, en particulier face au Poool et à Emergys.
+
+**INCIDENT `begin;` SANS `commit;`** : la première tentative de suppression affichait
+bien `3`, mais rien n'était persisté (un `count` relancé ensuite renvoyait `6`). Règle
+permanente qui en découle → écrite dans CONTEXTE-PROJET.md §6, section « Règles
+d'opération SQL en production ».
+
+**GARDE POUR LA SUITE** : ne plus jamais tester la landing PROD avec une adresse réelle
+personnelle. Marqueur `test-waitlist@sterny.test` (le domaine de premier niveau `.test`
+n'est pas livrable, donc aucun mail ne part) + suppression ciblée immédiate.
 
 ## 2026-07-24 (suite 5) — Layout onglets finalisé (une ligne, sans arrondi) + retrait immédiat de Préférences email
 

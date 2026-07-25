@@ -159,6 +159,35 @@ Ces règles ont été ajoutées après des erreurs réelles commises par Claude.
 
 - **Fichiers volontairement non-commités** (bypass DEV, tests temporaires) : ne jamais les commiter sans instruction explicite, même s'ils apparaissent "modifiés" dans `git status`. La liste des bypass connus est dans `docs/DETTE-TECHNIQUE.md` section "Bypass DEV en place dans le code".
 
+**Règles d'opération SQL en production** (journal alimenté au fil des sessions)
+
+Comme les règles Git ci-dessus, celles-ci traitent des erreurs réelles, pas des cas
+théoriques.
+
+- **Ne jamais ouvrir de transaction (`begin;`) dans l'éditeur SQL du dashboard
+  Supabase.** L'éditeur exécute tout le bloc d'un seul coup et ne rend jamais la main
+  entre les instructions : le schéma « begin → inspecter le résultat → décider commit
+  ou rollback » est donc INAPPLICABLE. Un bloc ouvrant `begin;` sans `commit;` explicite
+  est intégralement ANNULÉ en fin d'exécution — silencieusement. (Une transaction est un
+  espace de travail temporaire : tant qu'elle n'est pas validée par `commit;`, les
+  modifications ne sont visibles que par la session en cours et disparaissent à la fin.)
+  Origine : suppression waitlist du 25 juillet 2026, où un compteur affichant `3` a fait
+  croire l'opération faite alors que la table en contenait toujours 6.
+
+- **Garde-fous à utiliser à la place d'une transaction**, dans cet ordre :
+  (a) un `select` de vérification préalable qui doit retourner exactement les lignes
+  visées ; (b) un `where` par VALEUR EXACTE (jamais par date, jamais par intervalle) ;
+  (c) `returning` sur la mutation, pour constater les lignes réellement touchées ;
+  (d) un `count(*)` de confirmation dans un ONGLET SÉPARÉ, donc hors de toute
+  transaction.
+
+- **Ne jamais faire confiance à un compteur lu dans le même bloc qu'une mutation.**
+  Toute vérification post-mutation se fait dans une requête indépendante.
+
+- **Exception** : `BEGIN … ROLLBACK` reste valide pour un test volontairement annulé
+  (vérifier qu'un `insert` déclenche bien une erreur de trigger, par exemple), parce que
+  l'annulation y est l'objectif recherché et qu'elle est écrite explicitement.
+
 **Check-list secrets pré-commit**
 
 Obligatoire sur tout fichier issu d'un dump BDD, d'un export, d'un snapshot de schéma, ou de logs copiés. Patterns à tester :
