@@ -330,6 +330,16 @@ Cette consigne s'applique à toute future session Claude.ai sur le projet Sterny
 
 ---
 
+### Deux groupes de sujets distincts, à ne jamais mélanger
+
+Côme travaille en parallèle deux groupes de sujets bien séparés, selon son état de concentration du moment :
+- **[DEV]** — développement de la plateforme web (code, architecture, Supabase, commits, chantiers techniques).
+- **[VRAIE VIE]** — tout ce qui touche au monde réel hors code : démarchage, étude de terrain, relations professionnelles (Alice, Benoît, écoles, Pépite...), LinkedIn, communication externe.
+
+Toute checklist, entrée ETAT-COURANT, ou tâche de suivi doit porter explicitement le tag [DEV] ou [VRAIE VIE] dans son titre. Une session Claude.ai qui reprend un sujet doit identifier de quel groupe il relève avant de proposer quoi que ce soit — les deux ne se substituent jamais l'un à l'autre, même s'ils avancent le même jour.
+
+---
+
 ## 8 bis. Adaptation cognitive
 
 Côme a un TDA/TDAH. Pour les futures sessions Claude.ai sur Sterny, privilégier des réponses structurées visuellement (titres clairs, tableaux, listes courtes, jalons datés) plutôt que des paragraphes denses, pour permettre un scan rapide et limiter la charge cognitive. Une seule action par moment, jamais de tâches concurrentes empilées. Les fichiers de documentation projet (ETAT-COURANT, VISION-ARCHITECTURE, DETTE-TECHNIQUE, INVENTAIRE-PLATEFORME, idees-en-attente) servent de mémoire externe pour décharger la charge mentale — les enrichir activement à chaque session.

@@ -2,12 +2,24 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-25 — Waitlist : première inscription depuis juin
-qualifiée comme réelle (preuve Resend), et compteur nettoyé de 6 à 3 inscrits réels
-après retrait de 3 lignes internes. Règle d'opération SQL en production ajoutée à
-CONTEXTE-PROJET.md §6.
+**Dernière mise à jour** : 2026-07-25 — Checklist de session [VRAIE VIE — hors code]
+ajoutée (7 tâches business : questionnaire, LinkedIn, titre Google, Pépite France,
+groupes et écoles d'alternants, réponses Alice Dutheil). Règle de distinction
+[DEV] / [VRAIE VIE] actée dans CONTEXTE-PROJET.md §8.
 
 ---
+
+## 2026-07-25 — Checklist session [VRAIE VIE — hors code] : tâches business
+
+7 sujets à traiter dans l'ordre, validé par Côme. Chaque sujet peut être repris dans une conversation Claude.ai dédiée et fraîche pour garder une conversation performante — cocher au fur et à mesure.
+
+1. [x] Questionnaire — nouvelles questions ("difficultés logement" + "Pourquoi ?") — implémenté, bug d'orphelinage corrigé (11 points de redirection audités), tests de parcours complets en cours
+2. [ ] LinkedIn pro — création/nettoyage
+3. [ ] Titre d'apparition Google
+4. [ ] Inscription Pépite France
+5. [ ] Contacter groupes d'alternants (partage étude terrain)
+6. [ ] Contacter écoles d'alternance (démarchage + partage étude terrain rentrée)
+7. [ ] Analyser réponses Alice Dutheil (agente immobilière)
 
 ## 2026-07-25 — Waitlist : 1re inscription depuis juin qualifiée + compteur nettoyé (6 → 3 réels)
 
