@@ -77,6 +77,23 @@ personnelles" à décider dans npm run dev, pas sur mockup ; (2) recâblage du m
 "Mon profil" et "Paramètres du compte" pointeront vers la même surface, et le sort de
 ProfilPage (vue lecture seule du profil) reste à trancher à l'étape "recâblage des liens".
 
+**Éléments de ParametresPage à traiter explicitement dans la fusion** (vérifiés contre le
+rapport d'audit du 28/07, oubliés au premier cadrage) :
+- Le bouton "Modifier" de la carte Mon profil (→ editPath) DISPARAÎT : dans une surface
+  unifiée, l'utilisateur est déjà dans la page d'édition. Suppression, pas migration.
+- L'email n'est PAS dans le prefill de ModifierProfilPage : c'est le SELECT de
+  ParametresPage (l.36) qui le charge. La surface fusionnée doit ajouter `email` à son
+  chargement de données, sans quoi la catégorie Compte s'affiche vide.
+- PasswordRevealButton N'EST PLUS un import mort. La décision du chantier onglets (nettoyage
+  au Patch 3, orphelin après retrait de la section Mot de passe) est CADUQUE : ParametresPage
+  l'utilise dans sa modale mot de passe, qui survit à la fusion. Ne pas le supprimer.
+- La garde propriétaire existe EN DOUBLE : redirection client de ModifierProfilPage (l.175)
+  et calcul de editPath dans ParametresPage selon type_user. Après fusion, une seule garde
+  doit subsister — deux gardes concurrentes sur la même surface exposent à une boucle de
+  redirection.
+- getInitials (utilitaire importé par ParametresPage) devient nécessaire pour la carte
+  d'identité en haut de la sidebar. À conserver, pas à réécrire.
+
 **RESTE avant tout code** : rédaction de la séquence de patches, puis validation visuelle
 dans npm run dev avant tout commit feat.
 
