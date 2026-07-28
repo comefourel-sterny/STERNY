@@ -1735,6 +1735,11 @@ restructuration visuelle aurait fait grossir le chantier en cours de route — p
 évité sur le chantier multi-villes. À traiter en session dédiée, après validation de la
 restructuration accordéon.
 
+**MISE À JOUR 28/07/2026 — TOUJOURS VALIDE après le pivot sidebar.** La section "Ton
+alternance" devient une catégorie du même nom dans la surface unique et est reconstruite à
+l'identique (écrit toujours type_alternance/rythme_alternance). Le report reste volontaire
+et inchangé.
+
 ## DETTE #151 — Migration de "Préférences email" de ModifierProfilPage vers ParametresPage
 
 Décidé le 24/07/2026, pendant le cadrage de la restructuration de ModifierProfilPage.
@@ -1751,3 +1756,41 @@ cette dette, aucun utilisateur ne peut modifier ses préférences email sur la
 plateforme (perte de fonctionnalité réelle, pas juste une dette de code). Ça change la
 priorité de cette dette : à traiter rapidement après la restructuration onglets, pas
 "un jour calme".
+
+**MISE À JOUR 28/07/2026 — DETTE REQUALIFIÉE, PERTE DE FONCTIONNALITÉ ANNULÉE.** Le cadrage
+de la surface unique (fusion ModifierProfilPage + ParametresPage) rend la migration sans
+objet : "Préférences email" ne se déplace plus d'une page vers l'autre, elle devient la
+catégorie "Notifications" de la surface unique. La perte de capacité utilisateur actée le
+24/07 (retrait immédiat sans remplacement) N'A PLUS LIEU D'ÊTRE — la fonctionnalité reste
+disponible en continu. Ce qui subsiste de la dette : sauvegarderPrefsEmail (autosave debounce
+500 ms, écriture users.preferences_email) doit être porté dans la nouvelle surface sans
+changement de comportement. La priorité "à traiter rapidement" tombe.
+
+## DETTE #152 — Dépendances CSS cross-fichier des 2 surfaces à fusionner
+
+Découvert le 28/07/2026 (audit lecture seule préalable à la fusion). Trois constats, aucun
+n'est un bug visible aujourd'hui, tous deviennent bloquants au moment de la fusion.
+
+1. **ParametresPage dépend du CSS des dashboards.** ParametresPage.jsx utilise des classes
+NON définies dans ParametresPage.css : .modal-pwd-card, .modal-delete-card,
+.modal-pwd-btn-save, .modal-delete-btn-delete, .modal-delete-icon. Elles ne sont définies
+que dans DashboardProprietairePage.css et DashboardLocatairePage.css. Ses 2 modales
+(mot de passe, suppression) ne s'affichent correctement que parce que le CSS d'une autre
+page est chargé dans le même bundle. Déplacer ou fusionner ParametresPage sans embarquer ces
+styles CASSE visuellement les 2 modales. Aggravant : DashboardProprietairePage.css fait
+partie des fichiers never-stage.
+
+2. **ModifierProfilPage.css est consommé par 2 pages hors périmètre.** Il définit
+.photo-circle / .photo-upload (et voisines), utilisées par ModifierProfilProprietairePage.jsx
+ET CompleterProfilPage.jsx. Ce fichier ne peut donc pas être réécrit ou supprimé librement
+pendant la fusion sans impacter ces 2 pages.
+
+3. **Classes non préfixées nombreuses dans ModifierProfilPage.css** : .form-row, .hint,
+.error-message, .confirmation-*, .toggle-*, .pref-*, .buttons-row, .btn-back, .btn-next,
+.back-link. Risque de collision globale au moment de fusionner 2 feuilles de style dans une
+surface commune.
+
+Distinct de #86 (.modal-overlay sans .active) et de #139 (.modal-content) : il ne s'agit pas
+d'une collision de nom mais d'une dépendance de DÉFINITION. À traiter comme une étape
+explicite et préalable de la séquence de patches (extraction des styles concernés vers un
+emplacement propre), jamais comme un détail de fin de chantier.

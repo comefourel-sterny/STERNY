@@ -2,12 +2,83 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-28 — Pivot architecture ModifierProfilPage :
-l'approche wizard → onglets est abandonnée (mise de côté via git stash, stash@{0}) au
-profit d'un pattern sidebar verticale + zone de contenu, avec fusion ModifierProfilPage +
-ParametresPage en une seule surface. À cadrer en session dédiée.
+**Dernière mise à jour** : 2026-07-28 — Cadrage validé de la surface unique de gestion de
+compte : fusion ModifierProfilPage + ParametresPage sur un pattern sidebar verticale,
+3 groupes / 8 catégories, sauvegarde par bouton explicite. Reste : séquence de patches.
 
 ---
+
+## 2026-07-28 (suite) — Surface unique de gestion de compte : cadrage validé (sidebar, 3 groupes / 8 catégories)
+
+Session de cadrage, aucun code produit. Fait suite au pivot du 28/07 (onglets abandonnés,
+stash@{0} non appliqué).
+
+**Audit lecture seule des 2 fichiers (Claude Code, 28/07)** — faits établis :
+- ModifierProfilPage.jsx 794 l. / .css 202 l. ; ParametresPage.jsx 183 l. / .css 227 l. ;
+  hook useAccountActions.js 109 l. Les 2 pages sont propres (état HEAD).
+- ParametresPage n'écrit rien directement : 1 SELECT de prefill (l.36), toutes les
+  écritures passent par useAccountActions.
+- Trois découvertes non anticipées : (1) le champ email existe DÉJÀ en lecture seule
+  (carte "Mon profil", ParametresPage l.54) — la fusion le préserve, elle ne le crée pas ;
+  (2) ParametresPage contient 2 fonctions jamais listées au scope : export de données
+  (Edge Function export-data) et déconnexion ; (3) ModifierProfilPage.css est consommé par
+  2 AUTRES pages (.photo-* dans ModifierProfilProprietairePage.jsx et CompleterProfilPage.jsx)
+  → ce fichier CSS n'est pas librement réécrivable (voir DETTE #152).
+- Constat annexe : l'email n'est modifiable NULLE PART sur Sterny (aucun
+  auth.updateUser({ email }) dans les 2 fichiers). Manque réel, non traité dans ce chantier.
+
+**Structure validée par Côme — 3 groupes, 8 catégories** :
+- Profil : Infos personnelles / Tes études / Ton alternance / À propos de toi
+- Dossier : Tes documents / Ton garant
+- Compte : Compte (email en lecture, mot de passe, export de données, déconnexion, zone
+  danger) / Notifications (préférences email)
+
+Le garant est classé en Dossier et non en Profil : c'est une pièce administrative privée,
+pas une donnée publique. Les 12 éléments de l'inventaire des 2 pages sont placés, aucune
+perte de fonctionnalité.
+
+**Modèle de sauvegarde validé** : un bouton "Enregistrer" présent sur chacune des 6
+catégories de formulaire (groupes Profil + Dossier), et chaque clic écrit L'INTÉGRALITÉ du
+formulaire, pas seulement le panneau affiché. Motif : l'état vit dans le composant parent,
+donc une modification faite sur un panneau puis abandonnée en changeant de catégorie n'est
+pas silencieusement perdue — c'est le piège classique de la navigation libre.
+PAS d'autosave : divergence assumée par rapport à la référence claude.ai/settings, motivée
+par DETTE #149 (succès affiché sans écriture en base) — la confirmation explicite est le
+seul signal qui avait permis de détecter ce bug.
+Catégorie Compte : aucun bouton (actions immédiates via useAccountActions + modales).
+Catégorie Notifications : aucun bouton (autosave debounce 500 ms déjà en place).
+
+**Conséquence — enregistrerProfil reste monolithique.** Le découpage en sauvegardes par
+section décidé le 24/07 était une conséquence mécanique de l'accordéon puis des onglets.
+Le pattern sidebar + sauvegarde globale l'annule. Un refactor risqué évité, et la logique
+DETTE #143 (préservation des statuts de ville, l.202-203 et 422-423) reste intacte à sa
+place actuelle.
+
+**Traitement du vide sur grand écran** (remarque de Côme sur le mockup) : bloc centré à
+largeur plafonnée (~1040 px : sidebar ~240 + panneau ~780), champs sur 2 colonnes plafonnés
+~520 px, hauteur minimale de panneau ~420 px, et carte d'identité (avatar + nom + type de
+compte) en haut de la sidebar — reprise de la carte "Mon profil" déjà existante dans
+ParametresPage, pas un élément inventé. Valeurs indicatives, à caler visuellement dans
+npm run dev.
+
+**Deux grammaires de ligne assumées** : catégories de formulaire = label au-dessus du champ
+(style Sterny actuel CONSERVÉ) ; catégories d'action = libellé à gauche / contrôle à droite
+(pattern claude.ai/settings). Passer tous les champs au format ligne est une passe de design
+séparée, explicitement hors périmètre.
+
+**Hors périmètre explicite** : catégories Paiements et Contrats (features inexistantes,
+parquées en idees-en-attente.md) ; ModifierProfilProprietairePage (3e page profil, contenu
+structurellement différent — un propriétaire n'a ni rythme, ni école, ni garant) ; refonte
+du style des champs.
+
+**Points ouverts non tranchés, à juger en validation visuelle** : (1) "À propos de toi"
+(1 seul champ) restera la catégorie la plus maigre — fusion éventuelle dans "Infos
+personnelles" à décider dans npm run dev, pas sur mockup ; (2) recâblage du menu burger —
+"Mon profil" et "Paramètres du compte" pointeront vers la même surface, et le sort de
+ProfilPage (vue lecture seule du profil) reste à trancher à l'étape "recâblage des liens".
+
+**RESTE avant tout code** : rédaction de la séquence de patches, puis validation visuelle
+dans npm run dev avant tout commit feat.
 
 ## 2026-07-28 — Pivot architecture ModifierProfilPage : onglets abandonnés au profit sidebar
 

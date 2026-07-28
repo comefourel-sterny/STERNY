@@ -415,6 +415,16 @@ Décision produit actée conv 15. Quand un alternant clique "Candidater" sur une
 
 **Architecture associée — page "Mes documents"** : un nouvel onglet accessible depuis le menu burger du dashboard fusionné (au même niveau que "Modifier mon profil", "Mes annonces", "Mes candidatures") permet à l'alternant de gérer son dossier administratif **indépendamment de toute candidature**. Sépare le profil public (photo, bio, ville, rythme — visible par les autres alternants) du dossier administratif privé. Statuts par document : à fournir / en cours de vérification / vérifié / refusé. Visibilité différenciée : l'alternant voit ses propres docs, l'admin Sterny les voit pour vérifier, l'hôte ne voit qu'un statut "vérifié" agrégé (pas les docs eux-mêmes — sinon problème RGPD majeur).
 
+**AMENDEMENT 28/07/2026 — "Mes documents" devient une catégorie, pas une page.** Le plan
+ci-dessus (onglet autonome accessible depuis le menu burger) n'a jamais été implémenté : au
+28/07/2026 le menu burger contient Mon profil, Paramètres du compte, Besoin d'aide ?,
+Déconnexion — aucune entrée "Mes documents". Il est remplacé par la catégorie "Tes documents"
+du groupe "Dossier" de la surface unique de gestion de compte (voir section dédiée en fin de
+document). Le principe de fond est CONSERVÉ et renforcé : séparation du profil public et du
+dossier administratif privé, avec visibilité différenciée (l'alternant voit ses docs, l'admin
+Sterny les voit pour vérifier, l'hôte ne voit qu'un statut agrégé). Un futur lien
+"Mes documents" depuis le menu pointera vers l'ancrage d'URL de cette catégorie.
+
 **Justification UX** : le pattern résout le dilemme "bloquer le clic = friction et perte d'utilisateur" vs "laisser passer = mauvaise expérience pour l'hôte". Capture l'intention sans compromettre la qualité côté hôte.
 
 **Justification légale (Niveau 2)** : la France encadre strictement les pièces qu'un bailleur peut demander à un candidat locataire (loi ALUR, liste limitative). La nature exacte du contrat Sterny (location ? mise à disposition ? colocation tournante ?) détermine la liste applicable. La vérification d'identité protège Sterny en tant qu'intermédiaire et l'hôte contre la fraude. Le consentement explicite du garant tiers est requis (le garant n'est pas l'utilisateur du service mais ses données sont collectées).
@@ -1019,3 +1029,35 @@ ville) sont abandonnées et annulées.
 Les 4 surfaces réellement pilotées par la ville active restent :
 Dashboard (sélecteur lui-même, pas RythmeCarousel), /mon-calendrier,
 candidatures/favoris, /recherche (?ville= one-shot).
+
+### Surface unique de gestion de compte (décision du 28 juillet 2026)
+
+ModifierProfilPage et ParametresPage fusionnent en UNE seule surface, sur un pattern sidebar
+verticale de catégories + zone de contenu (référence directe : claude.ai/settings). Deux
+motifs : au-delà de ~5 catégories les onglets horizontaux cessent de tenir ; et trois entrées
+de menu distinctes ("Mon profil", "Paramètres du compte", plus une page "Mes documents"
+prévue) fragmentaient une intention utilisateur unique — gérer son compte.
+
+Trois groupes, huit catégories :
+- **Profil** : Infos personnelles, Tes études, Ton alternance, À propos de toi
+- **Dossier** : Tes documents, Ton garant
+- **Compte** : Compte (email en lecture, mot de passe, export de données, déconnexion, zone
+  danger), Notifications (préférences email)
+
+Deux règles de fond qui survivent au détail d'implémentation :
+
+1. **Où un champ s'édite et qui le voit sont deux questions séparées.** Le rangement en
+groupes traduit la NATURE du champ (identité, dossier administratif, accès au compte), jamais
+ses règles de visibilité. Les règles de visibilité restent un chantier distinct, gaté
+professionnel (cf. CONTEXTE-PROJET.md §9).
+
+2. **Pas d'autosave.** Toute écriture de profil est confirmée par un geste explicite de
+l'utilisateur. Divergence assumée par rapport à la référence, motivée par DETTE #149 : un
+écran de succès sans écriture en base n'a été détectable que parce qu'un geste explicite
+existait.
+
+Hors périmètre à l'ouverture : Paiements et Contrats (features inexistantes — parquées dans
+idees-en-attente.md), et ModifierProfilProprietairePage (page propriétaire séparée, contenu
+structurellement différent). Principe : la sidebar groupée absorbe un 4e groupe sans refonte,
+donc ne jamais créer une catégorie dont le contenu n'existe pas encore — un clic mort dans
+une page de réglages est le pire résultat possible.

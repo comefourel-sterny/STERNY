@@ -198,3 +198,15 @@ dédié.
 ## Rappels / échéances
 
 **Rappel — purge/anonymisation questionnaire étude de terrain (échéance ~juillet 2028).** Les réponses au formulaire "Trouver un logement en alternance" (Google Forms) sont conservées 24 mois maximum à compter de la collecte (voir ETAT-COURANT.md conv 111, QUESTIONS-PROFESSIONNELS.md Q-DPO-020). Actions à cette échéance : supprimer l'email de chaque réponse + purger les réponses individuelles côté Google Forms (pas seulement le Sheet lié), OU conserver uniquement des chiffres agrégés. Vérifier aussi qu'aucun champ texte libre ne permet de ré-identifier un répondant avant conservation prolongée.
+
+### Catégories "Paiements" et "Contrats" dans la surface de gestion de compte
+
+Parquées le 28/07/2026 pendant le cadrage de la surface unique. Question ouverte, à trancher
+quand les features existeront : ces catégories relèvent-elles de la CONFIGURATION (moyen de
+paiement enregistré, préférences de prélèvement, documents contractuels de référence → leur
+place est la surface de gestion de compte) ou de l'OPÉRATIONNEL (historique de loyers, baux
+en cours, échéances → leur place est le dashboard) ? Les deux réponses donnent deux
+architectures différentes, et on ne peut pas trancher sans le contenu réel. Ne rien créer
+tant que la feature n'existe pas. La sidebar groupée absorbe un 4e groupe sans dette, donc
+l'attente ne coûte rien. Sujets paiement/contrat = domaines réglementés : ne rien présumer,
+consultation professionnelle requise (cf. CONTEXTE-PROJET.md §9).
