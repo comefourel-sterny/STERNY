@@ -2,12 +2,30 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-25 — Checklist de session [VRAIE VIE — hors code]
-ajoutée (7 tâches business : questionnaire, LinkedIn, titre Google, Pépite France,
-groupes et écoles d'alternants, réponses Alice Dutheil). Règle de distinction
-[DEV] / [VRAIE VIE] actée dans CONTEXTE-PROJET.md §8.
+**Dernière mise à jour** : 2026-07-28 — Pivot architecture ModifierProfilPage :
+l'approche wizard → onglets est abandonnée (mise de côté via git stash, stash@{0}) au
+profit d'un pattern sidebar verticale + zone de contenu, avec fusion ModifierProfilPage +
+ParametresPage en une seule surface. À cadrer en session dédiée.
 
 ---
+
+## 2026-07-28 — Pivot architecture ModifierProfilPage : onglets abandonnés au profit sidebar
+
+L'approche "wizard → onglets" sur
+ModifierProfilPage.jsx (patch structure, non commité) est abandonnée et mise de côté
+via `git stash` (stash@{0} sur feat/unification-inscription : "exploration onglets
+ModifierProfilPage - abandonnee au profit sidebar 28-07-2026").
+
+Recherche menée sur les patterns de settings UI (sidebar catégories vs onglets
+horizontaux ; seuil observé ~5 catégories au-delà duquel la sidebar prend le relais).
+Sterny a 6 sections, au-delà du seuil onglets.
+
+Décision : adopter un pattern sidebar verticale + zone de contenu (référence directe :
+Claude.ai lui-même, claude.ai/settings), et fusionner ModifierProfilPage + ParametresPage
+en une seule surface (au lieu de 2 pages distinctes). Ajout candidat : champ email
+visible en lecture dans une catégorie "Compte".
+
+À cadrer en session dédiée (nouvelle conversation, rituel de démarrage standard).
 
 ## 2026-07-25 — Checklist session [VRAIE VIE — hors code] : tâches business
 
