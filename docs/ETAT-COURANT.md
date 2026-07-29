@@ -2,11 +2,67 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-28 — Cadrage validé de la surface unique de gestion de
-compte : fusion ModifierProfilPage + ParametresPage sur un pattern sidebar verticale,
-3 groupes / 8 catégories, sauvegarde par bouton explicite. Reste : séquence de patches.
+**Dernière mise à jour** : 2026-07-29 — Surface unifiée de gestion de compte : patchs 0
+(prérequis) et 1 (coquille) livrés et validés visuellement sur /compte. Décision actée :
+construction dans un fichier neuf, pas de transformation en place. Reste : patchs 2 à 7.
 
 ---
+
+## 2026-07-29 — Surface unifiée de gestion de compte : patchs 0 et 1 livrés
+
+**Décision structurante actée — fichier neuf, pas de transformation en place.** La surface est
+construite dans `src/pages/compte/GestionComptePage.jsx/.css` (route `/compte`) plutôt qu'en
+transformant ModifierProfilPage sur place. Motif décisif : ModifierProfilPage.css est consommé
+par ModifierProfilProprietairePage.jsx et CompleterProfilPage.jsx — en n'y touchant jamais, le
+risque de casser ces 2 pages ne diminue pas, il disparaît. Bénéfices annexes : les 2 pages
+actuelles restent fonctionnelles pendant tout le chantier, le rollback se réduit à supprimer un
+fichier, et les constats 2 et 3 de DETTE #152 deviennent sans objet. Coût assumé : duplication
+temporaire + un patch de ménage final (patch 7), à enchaîner immédiatement après le recâblage
+et non "un jour calme".
+
+**Patch 0 — prérequis vérifiés (lecture seule).** Préfixe CSS `.gc-` LIBRE (0 occurrence en CSS
+comme en JSX ; alternatives `.cpt-` et `.acc-` également libres). Route `/compte` LIBRE (les
+occurrences de "compte" dans src/ sont du texte d'UI vers /inscription et /connexion).
+`getInitials` : export nommé dans `src/utils/formatters.js` l.12, déjà importée par 4 fichiers.
+Convention d'icônes du projet = SVG inline écrits à la main (viewBox 24×24,
+stroke="currentColor", strokeWidth 1.5) ; `lucide-react` est bien installée mais n'est utilisée
+que dans components/rhythm/RhythmFileUpload.jsx — ce n'est PAS la convention. Précédent de
+sidebar : DashboardAdminPage.jsx (sidebarItems groupés + showSection), à copier dans l'esprit,
+aucun composant partagé n'existe. **Constat critique** : DashboardAdminPage.css définit
+`.sidebar-item`, `.sidebar-section` et `.sidebar-label` SANS préfixe, donc globales — c'est ce
+qui rend le préfixe `.gc-` obligatoire et non cosmétique.
+
+**Patch 1 — coquille livrée et validée visuellement.** Sidebar de 8 catégories en 3 groupes,
+carte d'identité en haut (avatar via photo_profil_url ou initiales), panneau de contenu avec un
+placeholder par catégorie, navigation fonctionnelle. Prefill copié de ParametresPage (SELECT
+prenom, nom, email, telephone, type_user, photo_profil_url). Garde `if (!user) return null`
+reprise de ParametresPage.jsx l.43 — protège de la page blanche en local, où le bypass DEV de
+DashboardLayout laisse rendre la page sans utilisateur. Aucune sauvegarde, aucun bouton
+Enregistrer à ce stade.
+
+**Correction d'alignement post-validation.** Premier rendu déséquilibré : les 2 colonnes
+prenaient leur hauteur naturelle (sidebar ~500 px, panneau 420 px) et le bloc se tassait en haut
+de l'écran. Corrigé par `align-items: stretch` + `min-height: calc(100vh - 160px)` sur
+`.gc-layout`, retrait de `position: sticky` sur `.gc-sidebar` (incompatible avec une colonne
+étirée — une colonne pleine hauteur n'a plus rien contre quoi coller), `min-height: 0` sur
+`.gc-panel`, et `min-height: auto` sous 900 px. Validé visuellement.
+
+**Séquence de patches arrêtée (8 étapes)** : 0 prérequis ✅ · 1 coquille ✅ · 2 groupe Compte +
+Notifications avec CSS de modale scopé `.gc-modal-*` · 3 groupe Profil (4 catégories, photo +
+crop, fix DETTE #143 porté) · 4 groupe Dossier (documents + garant) · 5 enregistrerProfil porté
++ bouton unique sur les 6 catégories de formulaire · 6 recâblage des liens (burger,
+UserDropdown, ProfileMiniBar, ProfilPage, CompleterProfilPage) + redirections des anciennes
+routes · 7 suppression de ModifierProfilPage.jsx et ParametresPage.*, ModifierProfilPage.css
+NON supprimé mais renommé en feuille partagée pour ses 2 consommateurs. L'ordre n'est pas
+cosmétique : le patch 2 traite le plus risqué (les modales) sur la plus petite surface et sans
+aucune logique de sauvegarde.
+
+**Point ouvert reporté** : sous 900 px, `.gc-groupe-label` s'aligne en ligne avec ses items au
+lieu de rester au-dessus (label et items sont frères dans le JSX ; il faudrait un wrapper
+d'items). Fonctionnel mais imparfait — délibérément groupé avec les futurs ajustements de
+largeur/densité plutôt que traité en aller-retour isolé.
+
+**RESTE** : patch 2, puis validation visuelle avant chaque commit feat.
 
 ## 2026-07-28 (suite) — Surface unique de gestion de compte : cadrage validé (sidebar, 3 groupes / 8 catégories)
 

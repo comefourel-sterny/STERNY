@@ -1794,3 +1794,20 @@ Distinct de #86 (.modal-overlay sans .active) et de #139 (.modal-content) : il n
 d'une collision de nom mais d'une dépendance de DÉFINITION. À traiter comme une étape
 explicite et préalable de la séquence de patches (extraction des styles concernés vers un
 emplacement propre), jamais comme un détail de fin de chantier.
+
+**MISE À JOUR 29/07/2026 — non-déterminisme constaté à l'audit CSS.** `.modal-pwd-*` existe en
+deux versions divergentes et non scopées (DashboardProprietairePage.css l.1918,
+DashboardLocatairePage.css l.2621) : `.modal-pwd-msg` est toujours visible dans l'une,
+`display:none` par défaut dans l'autre ; `.modal-pwd-group input` a une transition dans l'une
+seulement. La version réellement appliquée à ParametresPage dépend de l'ordre d'import Vite —
+l'apparence actuelle n'est pas déterminable à la lecture des fichiers. Les blocs
+`.modal-delete-*` sont en revanche identiques valeur pour valeur dans les deux fichiers.
+Conséquence : la redéfinition scopée dans la nouvelle surface est une CORRECTION, pas un
+contournement. Piège associé : ParametresPage ne doit sa visibilité qu'à l'override
+`.parametres-container .modal-overlay { display:flex }` (ParametresPage.css l.227), qui
+neutralise le `display:none` fuyant de ContratLocationPage.css l.539 — la nouvelle surface
+devra redéfinir TOUTES les propriétés de l'overlay (position, fond, backdrop, z-index,
+centrage, padding), pas seulement `display`, sinon DETTE #86 ressurgit sur une page neuve.
+Piège de spécificité : `.modal-pwd-group input` (0-1-1) écrase `.pw-has-reveal` (0-1-0), d'où
+l'override `input.pw-has-reveal { padding-right:44px }` présent en double — à ne pas oublier
+dans la version scopée, sinon l'œil se superpose au texte.
