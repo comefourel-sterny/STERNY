@@ -119,17 +119,397 @@
 }
 
 .gc-panel-titre {
-    font-size: 11px;
-    letter-spacing: 1.2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
     text-transform: uppercase;
     color: #E8622A;
-    font-weight: 700;
-    margin: 0 0 20px;
+    margin: 0 0 28px;
 }
 
 .gc-placeholder {
     font-size: 14px;
     color: #94A3B8;
+}
+
+/* --- Lignes et sous-titres (catégorie Compte) --- */
+.gc-sous-titre {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #94A3B8;
+    font-weight: 700;
+    margin: 28px 0 4px;
+}
+
+.gc-sous-titre-danger {
+    color: #EF4444;
+}
+
+.gc-ligne {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #E8EAF0;
+}
+
+.gc-ligne-cliquable {
+    cursor: pointer;
+    margin-left: -10px;
+    margin-right: -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 10px;
+}
+
+.gc-ligne-cliquable:hover {
+    background: #F8F9FB;
+}
+
+.gc-ligne-label {
+    font-size: 14px;
+    color: #1E293B;
+    font-weight: 500;
+}
+
+.gc-ligne-desc {
+    font-size: 12.5px;
+    color: #64748B;
+    margin-top: 2px;
+}
+
+.gc-ligne-valeur {
+    font-size: 14px;
+    color: #64748B;
+}
+
+.gc-ligne-action {
+    font-size: 13px;
+    color: #1E293B;
+    border: 1px solid #E8EAF0;
+    border-radius: 9px;
+    padding: 7px 14px;
+    background: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    flex: none;
+}
+
+.gc-ligne-action-danger {
+    color: #EF4444;
+    border-color: #FCA5A5;
+}
+
+.gc-logout {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 12px;
+    background: #fff;
+    color: #64748B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.gc-logout:hover {
+    border-color: #1E293B;
+    color: #1E293B;
+}
+
+/* --- Toggles préférences (catégorie Notifications) --- */
+.gc-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex: none;
+}
+
+.gc-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.gc-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #CBD5E1;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+
+.gc-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.gc-toggle input:checked + .gc-toggle-slider {
+    background: #E8622A;
+}
+
+.gc-toggle input:checked + .gc-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.gc-prefs-saved {
+    font-size: 12px;
+    color: #059669;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gc-prefs-saved-visible {
+    opacity: 1;
+}
+
+/* --- Modales scopées (DETTE #152 : overlay entièrement redéfini, aucune dépendance globale) --- */
+.gc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.gc-modal-pwd-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.gc-modal-pwd-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 20px;
+    text-align: center;
+}
+
+.gc-modal-pwd-group {
+    margin-bottom: 14px;
+}
+
+.gc-modal-pwd-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 5px;
+}
+
+.gc-modal-pwd-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    outline: none;
+}
+
+/* Piège de spécificité DETTE #152 : .gc-modal-pwd-group input (0-1-1) écrase
+   .pw-has-reveal (0-1-0) — sans ceci l'œil se superpose au texte. */
+.gc-modal-pwd-group input.pw-has-reveal {
+    padding-right: 44px;
+}
+
+.gc-modal-pwd-group input:focus {
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.08);
+}
+
+.gc-modal-pwd-msg {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.gc-modal-pwd-msg.error {
+    background: rgba(232, 98, 42, 0.08);
+    color: #E8622A;
+}
+
+.gc-modal-pwd-msg.success {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.gc-modal-pwd-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.gc-modal-pwd-btn-cancel {
+    flex: 1;
+    padding: 11px;
+    background: #fff;
+    color: #1E293B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.gc-modal-pwd-btn-cancel:hover {
+    border-color: #1E293B;
+}
+
+.gc-modal-pwd-btn-save {
+    flex: 1;
+    padding: 11px;
+    background: #E8622A;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.gc-modal-pwd-btn-save:hover {
+    background: #d4571f;
+}
+
+.gc-modal-pwd-btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.gc-modal-delete-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.gc-modal-delete-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(239, 68, 68, 0.08);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: #EF4444;
+}
+
+.gc-modal-delete-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.gc-modal-delete-card p {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.gc-modal-delete-confirm-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    text-align: center;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.gc-modal-delete-confirm-input:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.gc-modal-delete-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.gc-modal-delete-btn-cancel {
+    flex: 1;
+    padding: 11px;
+    background: #fff;
+    color: #1E293B;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.gc-modal-delete-btn-cancel:hover {
+    border-color: #1E293B;
+}
+
+.gc-modal-delete-btn-delete {
+    flex: 1;
+    padding: 11px;
+    background: #EF4444;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.gc-modal-delete-btn-delete:hover {
+    background: #DC2626;
+}
+
+.gc-modal-delete-btn-delete:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 @media (max-width: 900px) {
