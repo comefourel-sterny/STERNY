@@ -225,7 +225,9 @@ Arrêtée après 8 itérations. À réutiliser À L'IDENTIQUE sur tous les suppo
 CATÉGORIE CANONIQUE : « plateforme de mise en relation pour le logement des alternants »
 
 TITRE LINKEDIN VALIDÉ (à coller tel quel) :
-Fondateur de Sterny — plateforme de mise en relation pour le logement des alternants
+Fondateur de Sterny | plateforme de mise en relation pour le logement des alternants
+
+CORRECTION 29/07/2026 : le séparateur passe du tiret cadratin (—) à la barre verticale (|). Libellé strictement inchangé, seul le séparateur change. Motif : le tiret cadratin est perçu par Côme comme une signature d'IA sur un support public ; le tiret court entouré d'espaces se lit comme une faute de frappe. La barre verticale est le séparateur le plus courant des titres LinkedIn, sans connotation ni débat typographique. Cette version est désormais la seule canonique — tout support antérieur portant le tiret cadratin est à corriger.
 
 RAISONNEMENT ACTÉ : la catégorie doit précéder le mécanisme — un lecteur classe avant de comprendre. « Fondateur de Sterny » seul ne crée pas de curiosité mais de l'indifférence : c'est le format le plus banal de LinkedIn. Le titre est tronqué à ~60 caractères partout sauf sur la page de profil ; tout second segment n'y travaille qu'en doublon avec la section Infos, qui le porte mieux. « Étudiant en architecture » est volontairement ABSENT du titre : la juxtaposition ferait lire « projet étudiant » par un responsable de formation. Le statut étudiant apparaît dans Infos, dans Formation, et dans la carte d'en-tête.
 
@@ -239,6 +241,92 @@ ERREURS ÉCARTÉES, À NE PAS RÉINTRODUIRE :
 « Mise en relation » est une description COMMERCIALE, sans aucune valeur juridique. Ne protège en rien la qualification réelle de Sterny dans la chaîne locative. Questions Q-AVO sur la sous-location multi-occupants toujours gelées en attente de l'avocate.
 
 RESTE À FAIRE sur le sujet 2 : section Infos (Côme rédige lui-même, Claude corrige et taille — pas de texte pré-fait), photo, bannière, Expérience (Sterny + sauvetage en mer + conciergerie), Licences & certifications (7 diplômes SNSM), Bénévolat, URL personnalisée, réglages de visibilité (voir checklist de sortie).
+
+##### Checklist de sortie LinkedIn (écrite le 29/07/2026)
+
+Cette checklist était renvoyée mais n'avait jamais été rédigée. Réglages à REMETTRE le jour de la publication du profil, le compte étant volontairement en mode invisible pendant toute la phase de conception :
+1. Visibilité lors de la consultation d'autres profils → repasser de "Mode privé" à "Votre nom et titre de profil".
+2. Préférences du profil public → réactiver la visibilité publique (actuellement Désactivé).
+3. Visibilité de l'adresse e-mail → Tout le monde sur LinkedIn.
+4. come@sterny.co en adresse principale, comefourel@gmail.com conservée en secondaire.
+"Partager les mises à jour du profil" reste DÉSACTIVÉ, y compris après publication.
+
+##### Section Infos — v1 en ligne, non retravaillée (29/07/2026)
+
+Texte actuellement publié sur le profil (provisoire, à remplacer) :
+
+"En parallèle de mes études d'architecture à l'ENSAB, je consacre mon temps au développement de Sterny, une plateforme de mise en relation pour le logement des alternants. Parti de zéro, j'ai créé ma micro-entreprise et j'apprends le code depuis plus de 6 mois pour concevoir moi-même l'outil qui résoudra ce problème concret.
+
+Mon quotidien se partage entre mes études, le développement technique de la plateforme, et des missions de concierge Airbnb et de traiteur pour autofinancer l'activité.
+
+À côté de ça, je suis sauveteur en mer au sein de la SNSM depuis 2022. Trois saisons à Saint-Malo, dont deux comme adjoint chef de poste. Cette saison, je dirige mon propre poste de secours. J'ai également participé à des postes de secours sur des événements comme des concerts, festivals ou les matchs du Stade Rennais."
+
+POINTS OUVERTS (7 identifiés, 1 réglé) :
+1. OUVERT — Ouverture plate ("En parallèle de mes études…"). Chantier principal. LinkedIn ne montre que 2-3 lignes avant le "voir plus". Direction arrêtée : ouvrir sur le PROBLÈME, pas sur soi. Le titre a déjà dit qui et quoi ; la question du lecteur à cet instant est "pourquoi ça existe ?".
+2. OUVERT — "ce problème" ne renvoie à rien, aucun problème n'étant nommé avant. Se résout mécaniquement avec le point 1.
+3. OUVERT — Paragraphes 1 et 2 redondants (les deux disent "études + Sterny"). Ne garder que l'autofinancement.
+4. OUVERT — Le mécanisme de Sterny n'apparaît nulle part depuis le raccourcissement du titre. Une phrase manque.
+5. OUVERT — Ligne de contact come@sterny.co : à trancher.
+6. OUVERT — "Je ne suis pas alternant" : à trancher.
+7. RÉGLÉ — Décompte des saisons SNSM. Le paragraphe actuel se lit "3 + celle en cours = 4", ce qui est FAUX. Fait réel donné par Côme le 29/07 : il termine sa 3e saison. Paragraphe à reformuler. Corollaire : les sigles SQ / ACP / CP ne sont pas décodables hors SNSM, à écrire en toutes lettres ou à supprimer.
+
+RÈGLE DE TRAVAIL sur cette section : Côme rédige lui-même, dans ses mots. Claude corrige et taille. Claude ne propose JAMAIS de texte pré-fait à valider. Principe : décrire ce que Côme a FAIT, jamais ce qu'il EST.
+
+##### Décision — Secteur d'activité déclaré (29/07/2026)
+
+Secteur LinkedIn retenu : "Technologie, information et Internet". PAS "Immobilier" ni "Services immobiliers".
+Motif, réutilisable sur TOUT support demandant un secteur d'activité (dossiers, formulaires, annuaires) : les questions Q-AVO sur la qualification réelle de Sterny dans la chaîne locative sont gelées en attente de l'avocate. Aucune auto-classification publique en secteur immobilier tant qu'elles ne sont pas tranchées. Se ranger en immobilier ferait aussi lire Sterny comme une agence.
+Note : le secteur est un choix UNIQUE. "Architecture" a été écarté — le secteur décrit l'activité, pas les études, lesquelles figurent déjà en Formation. Même raisonnement que pour le titre (l'architecture juxtaposée fait lire "projet étudiant").
+
+##### État du profil LinkedIn au 29/07/2026 (remplissage structurel terminé)
+
+Renseigné et enregistré :
+- Titre : version barre verticale ci-dessus.
+- Secteur : Technologie, information et Internet.
+- Lieu : Rennes, Bretagne, France.
+- Pronom personnel : volontairement vide (aucun signal utile en France).
+- URL personnalisée : linkedin.com/in/come-fourel (l'ancienne contenait un accent, qui casse les liens collés en mail, plus un suffixe aléatoire).
+- Formation : ENSAB, Diplôme d'études en architecture (DEEA), Architecture, sept. 2023 – juin 2027, niveau Grade licence. "Afficher l'école dans mon résumé" COCHÉ (décision maintenue : le statut étudiant est absent du titre mais présent en Infos, en Formation et dans la carte d'en-tête).
+- Expérience 1 : Fondateur — Sterny — Indépendant — Rennes — depuis avr. 2026 (date d'immatriculation de la micro-entreprise, source : annuaire-entreprises.data.gouv.fr). Sterny en texte libre, sans logo : aucune Page entreprise n'existe. Les "Sterny" proposés par LinkedIn (STERNYTENT, STERNY LIMITED, The Sterny Way Foundation) sont des tiers, à ne jamais sélectionner.
+- Expérience 2 : Sauveteur en mer — Les Sauveteurs en Mer - SNSM (page officielle, avec logo) — Saint-Malo — depuis sept. 2022. Type d'emploi VOLONTAIREMENT VIDE : aucune option de la liste LinkedIn ne décrit un engagement saisonnier bénévole ; "Intermittent du spectacle" avait été enregistré par défaut et a été retiré. Vide vaut mieux que faux.
+- Expérience 3 : Concierge Airbnb — Particulier employeur (texte libre) — CDI à temps partiel — Rennes — depuis janv. 2026. Rémunération en CESU : l'employeur est un particulier, son nom ne doit JAMAIS apparaître sur un support public.
+- Expérience 4 : traiteur.
+- 6 certifications (voir doctrine ci-dessous).
+- Descriptions d'expérience : toutes VIDES, à rédiger après la section Infos.
+Profil TOUJOURS EN MODE INVISIBLE. "Informer le réseau" désactivé sur chaque ajout.
+
+##### Doctrine certifications (29/07/2026)
+
+Règle : on saisit la date d'obtention LA PLUS RÉCENTE (dernier recyclage) et la date de fin de validité, pas la première obtention. Mise à jour annuelle au rythme des recyclages. Motif : l'ancienneté est déjà portée par l'entrée Expérience SNSM (sept. 2022 – aujourd'hui) ; la section Certifications sert à prouver que la compétence est VALIDE aujourd'hui. Une date de 2022 sans fin de validité ferait lire un diplôme dormant.
+Règle d'écriture : intitulés en toutes lettres, sigle entre parenthèses. Aucun sigle nu — non décodable hors du milieu.
+
+Les 6 publiées :
+1. Premiers secours en équipe de niveau 2 (PSE2) — SNSM — mars 2026 → déc. 2027
+2. Surveillant sauveteur aquatique littoral (SSA littoral) — SNSM — mai 2026 → déc. 2027
+3. Brevet national de sécurité et de sauvetage aquatique (BNSSA) — SNSM — févr. 2023 → déc. 2028
+4. Permis plaisance option côtière — Préfecture d'Ille-et-Vilaine — avr. 2023 — sans expiration
+5. Marine jet niveau 1 — SNSM — juin 2026 — sans expiration
+6. Certificat restreint de radiotéléphoniste (CRR) — nov. 2022 — sans expiration
+
+ÉCARTÉES, avec motif :
+- BNSSA F : préparation à l'examen, pas un diplôme.
+- PSE1 : expiré (31/12/2023) et couvert par le PSE2.
+- FC SSA L MP (mention MP) : expirée au 31/12/2025. À vérifier par Côme avant toute publication.
+- Permis B : écarté délibérément. Ne pèse rien auprès du lectorat prioritaire (écoles, institutions), banal à cet âge, et affaiblit par contraste les 6 certifications de sauvetage en mer.
+
+RÈGLE DE DONNÉES PERSONNELLES : ne jamais saisir de numéro de diplôme ou de titre officiel dans le champ Identifiant. Ces documents (BNSSA, permis plaisance) portent photo, date et lieu de naissance. Aucune valeur pour un lecteur, exposition inutile.
+
+##### Page entreprise LinkedIn Sterny — à créer, sujet distinct
+
+Aucune Page n'existe, donc aucun logo n'apparaît sur l'entrée Expérience Sterny. Création volontairement REPORTÉE APRÈS la publication du profil. Deux motifs : (1) une Page est publique immédiatement, elle ouvrirait une vitrine alors que le profil est délibérément invisible pendant la conception ; (2) une Page vide (sans logo, sans bannière, 0 abonné, aucun post) fait plus de mal que pas de Page. Le rattachement du logo se fera après coup en rééditant le champ Entreprise.
+
+##### RESTE À FAIRE sur le sujet 2 (au 29/07/2026)
+
+- Section Infos : ouverture, mécanisme de Sterny, ligne de contact, "je ne suis pas alternant", reformulation du paragraphe SNSM. → CHANTIER PRINCIPAL, conversation dédiée.
+- Descriptions des expériences (Sterny, SNSM, conciergerie, traiteur).
+- Photo de profil, bannière.
+- Bénévolat, Compétences.
+- Puis : checklist de sortie, publication, et enfin Page entreprise.
 
 #### Sujet 4 [VRAIE VIE] — SNEE / Pépite : voie ouverte, dépôt non engagé (25/07/2026)
 
