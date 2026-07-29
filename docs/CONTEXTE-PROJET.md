@@ -36,9 +36,36 @@ Je suis **Côme Fourel**, solo founder de Sterny, basé à Rennes (Bretagne).
 
 **Point de départ** : je suis parti de l'idée Sterny **sans aucune expérience préalable** — ni en entrepreneuriat, ni en développement, ni en juridique, ni en gestion d'entreprise, ni en administration. J'ai tout appris depuis le début du projet et je continue à apprendre dans chaque domaine.
 
-**Sur le code spécifiquement** : j'ai commencé à coder il y a 3 mois. Je progresse vite mais je ne connais pas les standards tacites de l'industrie. Explications simples et pédagogie bienvenues quand on touche à du jargon technique que je ne maîtrise pas.
+**Sur le code spécifiquement** : je code depuis plus de 6 mois (mention mise à jour le 2026-07-29 — durée relative, à réactualiser). Je progresse vite mais je ne connais pas les standards tacites de l'industrie. Explications simples et pédagogie bienvenues quand on touche à du jargon technique que je ne maîtrise pas.
 
 **Posture** : qualité avant rapidité, toujours. Je préfère attendre 1h qu'un audit soit fait proprement plutôt que de coder dans le vide et recommencer.
+
+---
+
+## 1 bis. Positionnement personnel (à lire avant toute rédaction publique)
+
+Cette section existe parce que son absence a produit quatre erreurs de fond en une seule session (25/07/2026) : des récits inventés sur Côme, présentés comme des faits.
+RÈGLE : ne rien déduire sur Côme. Si l'information n'est pas ici, la demander.
+
+**Ce qui me motive** : résoudre des problèmes concrets que des gens subissent, et aider. L'alternance est tombée là par hasard — ça aurait pu être un tout autre domaine. Le logement n'est PAS une vocation.
+
+**Récit explicitement écarté** : « étudiant en architecture donc passionné d'habitat » est FAUX, je ne l'ai jamais dit. L'architecture ne me plaît pas ; je termine ces études par précaution et parce que c'est une chance d'y être. Dans 3 ans je me vois entrepreneur, pas architecte. L'architecture est un fait de parcours, elle ne porte aucun récit.
+→ Ne JAMAIS écrire publiquement que l'architecture ne me plaît pas : mon école me lira, et Anne-Marie Havard doit être ma référente sur le dossier SNEE.
+
+**Parcours** :
+- ENSAB (École nationale supérieure d'architecture de Bretagne), Rennes. DEEA (Diplôme d'études en architecture, grade licence), 2023-2027. Cursus NON alternant. AUCUN lien personnel avec l'alternance.
+- Sauveteur en mer, SNSM, depuis septembre 2022. Trois saisons de 2 mois à Saint-Malo, dont deux comme adjoint chef de poste (ACP). Saison en cours : je dirige mon propre poste de secours — fonction de chef de poste exercée, grade non accordé par la mairie. Sept diplômes : PSE1, PSE2, BNSSA, SSA mention littoral, permis bateau, CRR, MJ1. Postes de secours (DPS) sur concerts, festivals, matchs du Stade Rennais.
+- Travail d'appoint pour autofinancer Sterny : concierge Airbnb et traiteur.
+- Micro-entreprise créée. Parti de zéro sur tout : entrepreneuriat, développement, juridique, gestion, administration.
+
+**Règle de rédaction publique** : écrire ce que j'ai FAIT, jamais ce que je SUIS. Un trait qu'on s'attribue soi-même ne prouve rien et noie le profil dans la masse. Les faits concrets (saisons, diplômes, responsabilités, micro-entreprise, apprentissage du code) laissent le lecteur conclure — il y croira davantage. Mots à ne pas écrire sur moi : gentil, drôle, passionné, bosseur.
+
+**À ne jamais publier sans arbitrage explicite de Côme** :
+- Mes difficultés scolaires (attention, compréhension) — divulgation publique irréversible, décision strictement personnelle, par défaut NON.
+- Le conflit avec la mairie sur le grade de chef de poste.
+- Tout ce qui concerne Pépite / SNEE / Le Poool tant que ce n'est pas accordé.
+- Un chiffre d'inscrits, une date de lancement, « plateforme lancée ».
+- Quoi que ce soit laissant croire que je suis alternant.
 
 ---
 
@@ -316,11 +343,11 @@ Cas particuliers à connaître :
 
 **Screenshots et copier-coller.** J'envoie souvent des captures d'écran du terminal, du navigateur, des DevTools. Claude.ai doit les lire attentivement. Pour les sorties de terminal, copier-coller en texte est préférable aux screenshots (moins de tokens consommés, plus lisible).
 
-**Pédagogie.** Je code depuis 3 mois. Si j'utilise un terme de travers, ou si je pars hors-contexte technique, explique-moi simplement sans me faire perdre la face. Je préfère apprendre que bluffer.
+**Pédagogie.** Je code depuis plus de 6 mois. Si j'utilise un terme de travers, ou si je pars hors-contexte technique, explique-moi simplement sans me faire perdre la face. Je préfère apprendre que bluffer.
 
 ### Niveau d'explication attendu
 
-Côme code depuis 3 mois. Toute explication technique doit être compréhensible par quelqu'un qui n'a pas de bagage informatique formel. Règles concrètes :
+Côme code depuis plus de 6 mois. Toute explication technique doit être compréhensible par quelqu'un qui n'a pas de bagage informatique formel. Règles concrètes :
 
 - **Pas d'abréviation sans définition à la première mention** dans une conversation. Exemples : ISO (norme internationale, ici une façon standard d'écrire les dates et numéros de semaine), hex code (le code couleur en `#xxxxxx`), CRLF/LF (les fins de ligne dans un fichier texte), BOM (un marqueur invisible en début de fichier qui peut casser la lecture), off-by-one (un décalage de 1 dans un calcul, typiquement quand on commence à compter à 0 au lieu de 1).
 - **Pas de jargon métier qui n'apporte rien à la compréhension**. Préférer la phrase ordinaire à l'expression technique stylée.
@@ -421,6 +448,24 @@ Quand la conversation Claude.ai commence à montrer des signes de saturation (r�
 Quand on prend une décision produit, stratégique ou technique importante au fil de la discussion, Claude signale immédiatement quel doc doit la recevoir (VISION-ARCHITECTURE / ETAT-COURANT / DETTE-TECHNIQUE) et propose le paragraphe exact à ajouter.
 
 Aucune décision importante ne doit se perdre dans le flux de la conversation.
+
+---
+
+## Adresses e-mail de Côme
+
+RÈGLE : ne jamais déduire une adresse d'un nom de domaine. Si une adresse n'est pas listée ici, la demander.
+
+- **come@sterny.co** — PRO. Adresse unique de tout ce qui concerne Sterny : démarchage, institutions (Pépite, Le Poool), partenaires, supports publics (LinkedIn, site) ; et comptes/abonnements de service : Anthropic, Google, Supabase, Resend, Stripe, Mapbox, Vercel, registrar du domaine. Boîte de réception opérationnelle. Domaine sterny.co détenu et payé par Côme. → voir note SPOF ci-dessous.
+- **comefourel@gmail.com** — PERSO. Hors Sterny. Sert aussi de compte de test en base locale : NE PAS confondre les deux usages.
+- **come.fourel@rennes.archi.fr** — ENSAB (scolarité). Sert aussi de compte de test hôte en base locale.
+
+Adresses de service (pas des boîtes personnelles) :
+- **contact@sterny.co** — questionnaire terrain, exercice du droit de suppression RGPD.
+- **noreply@sterny.co** — expéditeur transactionnel Resend.
+
+**Note SPOF** (single point of failure — point de défaillance unique) : come@sterny.co conditionne l'accès ET la récupération de tous les comptes de service de Sterny. Si le domaine expire ou si la boîte devient inaccessible, la récupération devient très difficile voire impossible. Conséquences à tenir : renouvellement automatique du domaine avec moyen de paiement à jour ; adresse de récupération DISTINCTE sur les comptes critiques (comefourel@gmail.com convient — ne jamais mettre come@sterny.co en récupération d'elle-même) ; double authentification activée ; codes de secours conservés hors ligne, hors boîte mail.
+
+Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adresses réelles ci-dessus.
 
 ---
 
