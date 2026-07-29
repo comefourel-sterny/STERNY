@@ -2,9 +2,9 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-29 — Surface unifiée de gestion de compte : patchs 0
-(prérequis) et 1 (coquille) livrés et validés visuellement sur /compte. Décision actée :
-construction dans un fichier neuf, pas de transformation en place. Reste : patchs 2 à 7.
+**Dernière mise à jour** : 2026-07-29 — Surface unifiée de gestion de compte : patchs 0, 1 et 2
+livrés et validés visuellement sur /compte. Les catégories Compte et Notifications sont
+fonctionnelles (modales, export, déconnexion, préférences email). Reste : patchs 3 à 7.
 
 ---
 
@@ -62,7 +62,42 @@ lieu de rester au-dessus (label et items sont frères dans le JSX ; il faudrait 
 d'items). Fonctionnel mais imparfait — délibérément groupé avec les futurs ajustements de
 largeur/densité plutôt que traité en aller-retour isolé.
 
-**RESTE** : patch 2, puis validation visuelle avant chaque commit feat.
+**Patch 2 — catégories Compte et Notifications livrées et validées visuellement.**
+`useAccountActions` réutilisé plutôt qu'une troisième implémentation inline : la divergence de
+validation du mot de passe (minimum 6 caractères dans ModifierProfilPage, 8 dans le hook)
+disparaît de fait sur la nouvelle surface. Structure de `preferences_email` confirmée à
+l'audit : objet à 6 clés booléennes (alertes, messages, candidatures, paiements, baux,
+marketing), lues avec `!== false` (défaut true) ; autosave debounce 500 ms porté sans
+changement de comportement. **Écriture en base vérifiée par bascule d'un toggle puis
+rechargement de page** — le retour visuel seul ne prouve rien, c'est précisément le symptôme
+de DETTE #149. Déconnexion testée réellement (signOut puis tentative de retour sur /compte) :
+fonctionne.
+
+**Pièges DETTE #152 traités par construction.** `.gc-modal-overlay` redéfinit TOUTES les
+propriétés (position, fond, backdrop, z-index, centrage, padding), sans dépendre d'aucune règle
+globale — le `display:none` fuyant de ContratLocationPage.css ne peut plus l'atteindre, et
+aucun override de rattrapage n'est nécessaire. `.gc-modal-pwd-group input.pw-has-reveal
+{ padding-right:44px }` présent, contre l'écrasement de spécificité (0-1-1 vs 0-1-0) qui
+superposerait l'œil au texte. `.gc-modal-pwd-msg` : version toujours visible retenue
+(DashboardProprietairePage) plutôt que la version `display:none` (DashboardLocatairePage) —
+choix explicite du comportement déterministe.
+
+**Hiérarchie typographique du panneau.** Le titre de catégorie était visuellement confondu avec
+les sous-titres de section (tous deux 11 px, majuscules, espacés — seule la couleur les
+distinguait). `.gc-panel-titre` reprend désormais les valeurs de `.aw-screen-title` des pages
+d'auth : DM Sans, 18 px, weight 300, letter-spacing 3px, uppercase, #E8622A. Valeurs
+**recopiées, pas importées** — la nouvelle surface ne crée aucune dépendance vers le CSS des
+pages d'auth. `text-align: center` volontairement non repris (panneau aligné à gauche).
+
+**Décision d'écriture — accents.** La nouvelle surface est intégralement accentuée. Le reste de
+l'application conserve ses textes sans accents ; c'est une habitude héritée, pas une décision
+produit, et elle n'est pas propagée ici. Portée strictement limitée à
+GestionComptePage.jsx — aucune campagne globale. La ligne "Dernière modification inconnue" sous
+le mot de passe a été supprimée : elle exposait une limite technique sans rien apporter à
+l'utilisateur.
+
+**RESTE** : patch 3 (groupe Profil : 4 catégories, photo + crop, fix DETTE #143 porté), puis
+patchs 4 à 7. Validation visuelle avant chaque commit feat.
 
 ## 2026-07-28 (suite) — Surface unique de gestion de compte : cadrage validé (sidebar, 3 groupes / 8 catégories)
 
