@@ -1,0 +1,157 @@
+/* Surface unifiée de gestion de compte — toutes les classes préfixées .gc-, aucune fuite globale. */
+
+.gc-page {
+    background: #F4F5F7;
+    padding: 32px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.gc-layout {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    min-height: calc(100vh - 160px);
+}
+
+.gc-sidebar {
+    width: 240px;
+    flex: none;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 16px 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.gc-panel {
+    flex: 1;
+    min-width: 0;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    min-height: 0;
+}
+
+.gc-identite {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 16px;
+    border-bottom: 1px solid #E8EAF0;
+    margin-bottom: 12px;
+}
+
+.gc-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: none;
+}
+
+.gc-avatar-initiales {
+    background: rgba(232, 98, 42, 0.10);
+    color: #E8622A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.gc-identite-texte {
+    min-width: 0;
+}
+
+.gc-identite-nom {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gc-identite-role {
+    font-size: 12px;
+    color: #94A3B8;
+}
+
+.gc-groupe-label {
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #94A3B8;
+    font-weight: 600;
+    padding: 12px 10px 6px;
+}
+
+.gc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: #64748B;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.gc-item:hover {
+    background: #F8F9FB;
+}
+
+.gc-item-actif {
+    background: rgba(232, 98, 42, 0.08);
+    color: #E8622A;
+    font-weight: 600;
+}
+
+.gc-panel-titre {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #E8622A;
+    font-weight: 700;
+    margin: 0 0 20px;
+}
+
+.gc-placeholder {
+    font-size: 14px;
+    color: #94A3B8;
+}
+
+@media (max-width: 900px) {
+    .gc-layout {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .gc-sidebar {
+        width: 100%;
+        position: static;
+    }
+    .gc-groupe {
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;
+    }
+    .gc-groupe-label {
+        padding: 12px 10px 6px;
+    }
+    .gc-item {
+        width: auto;
+        flex: none;
+        white-space: nowrap;
+    }
+}

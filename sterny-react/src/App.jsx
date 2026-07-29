@@ -53,6 +53,7 @@ import ModifierAnnoncePage from './pages/annonce/ModifierAnnoncePage'
 
 // Parametres
 import ParametresPage from './pages/parametres/ParametresPage'
+import GestionComptePage from './pages/compte/GestionComptePage'
 
 // Profil pages
 import ProfilPage from './pages/profil/ProfilPage'
@@ -172,6 +173,7 @@ export default function App() {
 
           {/* Parametres */}
           <Route path="/parametres" element={<ParametresPage />} />
+          <Route path="/compte" element={<GestionComptePage />} />
 
           {/* Profil */}
           <Route path="/profil" element={<ProfilPage />} />
