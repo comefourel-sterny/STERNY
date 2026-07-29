@@ -44,7 +44,7 @@ Je suis **Côme Fourel**, solo founder de Sterny, basé à Rennes (Bretagne).
 
 ## 2. Ce qu'est Sterny
 
-Sterny (sterny.co) est une plateforme SaaS de logement pour alternants français. Le concept : pairer deux alternants ayant des rythmes école/entreprise opposés pour qu'ils partagent un appartement sans se croiser — chacun ne payant que les semaines où il l'occupe.
+Sterny (sterny.co) est une plateforme de mise en relation pour le logement des alternants français. Un alternant y propose un logement, en cherche un, ou les deux — ces actions sont INDÉPENDANTES l'une de l'autre, et valides dans une ville comme dans les deux. Le modèle repose sur la complémentarité des rythmes : des alternants dont les semaines d'école et d'entreprise s'opposent peuvent occuper successivement le même logement. L'INVARIANT DU PRODUIT est UNE SEULE PERSONNE À LA FOIS dans un logement : les semaines d'occupation sont disjointes, jamais partagées. Un alternant peut combiner PLUSIEURS logements pour couvrir l'ensemble de ses semaines de présence. Chacun ne paie que les semaines qu'il occupe.
 
 La plateforme couvre la chaîne complète : recherche, mise en relation, signature de bail, paiement du loyer (Stripe SEPA), état des lieux, restitution de caution. Elle intègre aussi un parser IA de calendriers scolaires qui extrait automatiquement le rythme d'alternance d'un document uploadé par l'utilisateur.
 
