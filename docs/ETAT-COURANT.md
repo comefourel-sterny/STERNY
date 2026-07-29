@@ -218,6 +218,59 @@ visible en lecture dans une catégorie "Compte".
 6. [ ] Contacter écoles d'alternance (démarchage + partage étude terrain rentrée)
 7. [ ] Analyser réponses Alice Dutheil (agente immobilière)
 
+#### Sujet 2 [VRAIE VIE] — Formulation publique canonique (25/07/2026)
+
+Arrêtée après 8 itérations. À réutiliser À L'IDENTIQUE sur tous les supports publics (LinkedIn, titre Google, mails de démarchage, dossiers). Ne pas reformuler au cas par cas.
+
+CATÉGORIE CANONIQUE : « plateforme de mise en relation pour le logement des alternants »
+
+TITRE LINKEDIN VALIDÉ (à coller tel quel) :
+Fondateur de Sterny — plateforme de mise en relation pour le logement des alternants
+
+RAISONNEMENT ACTÉ : la catégorie doit précéder le mécanisme — un lecteur classe avant de comprendre. « Fondateur de Sterny » seul ne crée pas de curiosité mais de l'indifférence : c'est le format le plus banal de LinkedIn. Le titre est tronqué à ~60 caractères partout sauf sur la page de profil ; tout second segment n'y travaille qu'en doublon avec la section Infos, qui le porte mieux. « Étudiant en architecture » est volontairement ABSENT du titre : la juxtaposition ferait lire « projet étudiant » par un responsable de formation. Le statut étudiant apparaît dans Infos, dans Formation, et dans la carte d'en-tête.
+
+ERREURS ÉCARTÉES, À NE PAS RÉINTRODUIRE :
+- « deux alternants, un logement » : FAUX. Une personne à la fois ; un alternant peut combiner plusieurs logements.
+- « proposer son logement ET en chercher un dans l'autre ville » : FAUX, les deux actions sont indépendantes. Proposer seulement / chercher seulement / les deux, dans une ville ou dans les deux : tous les profils sont valides.
+- « chercher un logement AVEC d'autres alternants » : contresens, « avec » signifie cohabiter.
+- « étudiants » au lieu d'« alternants » : ouvre sur la colocation classique.
+- Tutoiement dans le titre : écarté, lectorat prioritaire = écoles et institutions. Réversible sans coût.
+
+« Mise en relation » est une description COMMERCIALE, sans aucune valeur juridique. Ne protège en rien la qualification réelle de Sterny dans la chaîne locative. Questions Q-AVO sur la sous-location multi-occupants toujours gelées en attente de l'avocate.
+
+RESTE À FAIRE sur le sujet 2 : section Infos (Côme rédige lui-même, Claude corrige et taille — pas de texte pré-fait), photo, bannière, Expérience (Sterny + sauvetage en mer + conciergerie), Licences & certifications (7 diplômes SNSM), Bénévolat, URL personnalisée, réglages de visibilité (voir checklist de sortie).
+
+#### Sujet 4 [VRAIE VIE] — SNEE / Pépite : voie ouverte, dépôt non engagé (25/07/2026)
+
+Blocage potentiel levé : l'ENSAB est connue du dispositif SNEE, confirmé par Valentine Lamiral (Pépite Bretagne) par mail du 02/07/2026. Aucune incompatibilité liée à la tutelle ministère de la Culture.
+
+HISTORIQUE : premier contact le 30/06/2026 sur recommandation de Sophie Chatelin et Alexis Roussel (Le Poool). Un envoi vers contact@pepitebretagne.fr a rebondi le 01/07 (incident temporaire, sans conséquence).
+
+CONTACTS :
+- Valentine Lamiral — Pépite Bretagne, chargée de projets entrepreneuriat (valentine.lamiral@univ-rennes.fr)
+- Sandie Lanoë — Pépite Bretagne, assistante projet entrepreneuriat étudiant (sandie.lanoe@pepitebretagne.fr). Mail process du 17/07/2026.
+- Anne-Marie Havard — enseignante ENSAB (anne-marie.havard@rennes.archi.fr). À indiquer comme enseignante référente sur le dossier, sur recommandation de Pépite. PAS ENCORE CONTACTÉE.
+
+PROCESS : infos sur pepitebretagne.fr/le-snee ; dossier à compléter sur snee.enseignementsup-recherche.gouv.fr/pepite/candidatures ; une fois complété, convocation à un comité d'engagement qui valide ou non. AUCUNE DATE LIMITE communiquée — processus au fil de l'eau.
+
+PROCHAIN JALON : permanence Pépite en visio le 03/09/2026, 12h-13h (inscription sur pepite-bretagne.pepitizy.fr). Permet de poser ses questions sans déposer de dossier.
+
+DÉCISION DE CÔME (25/07) : dépôt volontairement non précipité. Le SNEE engage l'organisation de l'année universitaire ; la décision se prend après information complète, pas dans l'élan.
+
+RÈGLE MAINTENUE : aucune mention du SNEE, de Pépite ou d'un aménagement d'année sur les supports publics tant que le statut n'est pas accordé.
+
+#### Sujet 8 [VRAIE VIE] — Sécurisation de come@sterny.co (SPOF) — NON TRAITÉ
+
+Identifié le 25/07/2026 en marge du sujet 2. Non urgent, à traiter à froid. L'adresse pro conditionne l'accès ET la récupération de tous les comptes de service de Sterny. Sa perte serait difficilement réversible.
+
+À vérifier, un point à la fois :
+1. Renouvellement automatique du domaine sterny.co activé, moyen de paiement valide.
+2. Adresse de récupération distincte sur chaque compte critique (comefourel@gmail.com convient — jamais come@sterny.co en récupération d'elle-même).
+3. Double authentification activée sur les comptes critiques.
+4. Codes de secours téléchargés, conservés hors ligne et hors boîte mail.
+
+Point d'attention : si une boîte Google Workspace est rattachée au domaine, la suspension du domaine coupe aussi l'accès à la boîte, donc à la récupération. D'où le point 2.
+
 ## 2026-07-25 — Waitlist : 1re inscription depuis juin qualifiée + compteur nettoyé (6 → 3 réels)
 
 Session courte, hors chantier ModifierProfilPage. Aucun code touché, opération de
