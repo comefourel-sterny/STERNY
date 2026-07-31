@@ -5,6 +5,7 @@ import { supabaseClient } from '../../config/supabase'
 import useAccountActions from '../../hooks/useAccountActions'
 import { getInitials } from '../../utils/formatters'
 import PasswordRevealButton from '../../components/PasswordRevealButton'
+import { useShakeButton } from '../../components/auth-wizard/useShakeButton'
 import './GestionComptePage.css'
 
 // Icônes SVG inline (style Feather, cohérent avec ParametresPage) — pas de lucide-react.
@@ -70,6 +71,27 @@ const PREFS_EMAIL = [
   { key: 'marketing', label: 'Actualités STERNY', desc: 'Nouveautés et offres de la plateforme' },
 ]
 
+// Recopié verbatim de ModifierProfilPage (fonction locale, non exportée).
+function capitalizeWords(str) { return str.replace(/(?:^|[\s-])([a-zA-ZÀ-ÿ])/g, m => m.toUpperCase()) }
+
+// Bouton d'enregistrement réutilisable (aligné à droite). Grisé tant que rien n'a changé.
+function BoutonEnregistrer({ onSave, modifie, loading, ok, erreur, btnRef }) {
+  return (
+    <div className="gc-actions">
+      {erreur && <span className="gc-erreur">{erreur}</span>}
+      <button
+        ref={btnRef}
+        type="button"
+        className={`gc-btn-save${ok ? ' gc-btn-save-ok' : ''}`}
+        onClick={onSave}
+        disabled={loading || ok || !modifie}
+      >
+        {loading ? 'Enregistrement…' : ok ? 'Enregistré ✓' : 'Enregistrer'}
+      </button>
+    </div>
+  )
+}
+
 export default function GestionComptePage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
@@ -98,22 +120,80 @@ export default function GestionComptePage() {
   const [showPwdNew, setShowPwdNew] = useState(false)
   const [showPwdConfirm, setShowPwdConfirm] = useState(false)
 
+  // Infos personnelles
+  const [prenom, setPrenom] = useState('')
+  const [nom, setNom] = useState('')
+  const [dateNaissance, setDateNaissance] = useState('')
+  const [dateNaissanceISO, setDateNaissanceISO] = useState('')
+  const [sexe, setSexe] = useState('')
+  const [telephone, setTelephone] = useState('')
+  const [valeursInitiales, setValeursInitiales] = useState({ prenom: '', nom: '', dateNaissanceISO: '', sexe: '', telephone: '' })
+  const [infosErreur, setInfosErreur] = useState('')
+  const [erreursChamps, setErreursChamps] = useState({})
+  const [infosLoading, setInfosLoading] = useState(false)
+  const [infosSaved, setInfosSaved] = useState(false)
+
+  // Photo + recadrage (code maison porté à l'identique de ModifierProfilPage — géométrie non modifiée).
+  const [photoFile, setPhotoFile] = useState(null)
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
+  const photoInputRef = useRef(null)
+  const [showCrop, setShowCrop] = useState(false)
+  const [cropImageSrc, setCropImageSrc] = useState('')
+  const cropImageRef = useRef(null)
+  const cropStateRef = useRef({ imgX: 0, imgY: 0, scale: 1, dragging: false, startX: 0, startY: 0, imgStartX: 0, imgStartY: 0 })
+  const [cropZoom, setCropZoom] = useState(100)
+  const [cropZoomMin, setCropZoomMin] = useState(100)
+  const [cropZoomMax, setCropZoomMax] = useState(300)
+  const infosErreurTimeout = useRef(null)
+  const { ref: shakeRef, shake: shakeBouton } = useShakeButton()
+
   useEffect(() => {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, type_user, photo_profil_url, preferences_email')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
         if (!data) return
         setUserData(data)
+        if (data.prenom) setPrenom(data.prenom)
+        if (data.nom) setNom(data.nom)
+        if (data.sexe) setSexe(data.sexe)
+        if (data.telephone) setTelephone(data.telephone)
+        let iso = ''
+        if (data.date_naissance) {
+          const d = new Date(data.date_naissance)
+          setDateNaissance(`${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`)
+          setDateNaissanceISO(data.date_naissance)
+          iso = data.date_naissance
+        }
+        if (data.photo_profil_url) setPhotoPreviewUrl(data.photo_profil_url)
+        setValeursInitiales({ prenom: data.prenom || '', nom: data.nom || '', dateNaissanceISO: iso, sexe: data.sexe || '', telephone: data.telephone || '' })
         if (data.preferences_email) {
           const pe = data.preferences_email
           setPrefs({ alertes: pe.alertes !== false, messages: pe.messages !== false, candidatures: pe.candidatures !== false, paiements: pe.paiements !== false, baux: pe.baux !== false, marketing: pe.marketing !== false })
         }
       })
   }, [user])
+
+  // Listeners globaux du recadrage (drag souris + tactile) — porté verbatim de ModifierProfilPage.
+  useEffect(() => {
+    const mm = e => { const s = cropStateRef.current; if (!s.dragging) return; s.imgX = s.imgStartX + (e.clientX - s.startX); s.imgY = s.imgStartY + (e.clientY - s.startY); clampCropPosition() }
+    const mu = () => { cropStateRef.current.dragging = false }
+    const tm = e => { const s = cropStateRef.current; if (!s.dragging || e.touches.length !== 1) return; s.imgX = s.imgStartX + (e.touches[0].clientX - s.startX); s.imgY = s.imgStartY + (e.touches[0].clientY - s.startY); clampCropPosition() }
+    window.addEventListener('mousemove', mm); window.addEventListener('mouseup', mu)
+    window.addEventListener('touchmove', tm, { passive: true }); window.addEventListener('touchend', mu)
+    return () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); window.removeEventListener('touchmove', tm); window.removeEventListener('touchend', mu) }
+  }, [])
+
+  useEffect(() => () => clearTimeout(infosErreurTimeout.current), [])
+
+  useEffect(() => {
+    if (Object.keys(erreursChamps).length === 0) return
+    const t = setTimeout(() => setErreursChamps({}), 3000)
+    return () => clearTimeout(t)
+  }, [erreursChamps])
 
   // Autosave debounce 500 ms — comportement identique à ModifierProfilPage.sauvegarderPrefsEmail.
   function sauvegarderPrefsEmail(newPrefs) {
@@ -123,6 +203,153 @@ export default function GestionComptePage() {
       const { error } = await supabaseClient.from('users').update({ preferences_email: newPrefs }).eq('id', user.id)
       if (!error) { setPrefsSaved(true); setTimeout(() => setPrefsSaved(false), 2000) }
     }, 500)
+  }
+
+  // --- Date : reformatage JJ/MM/AAAA affiché + ISO envoyé (porté verbatim de ModifierProfilPage) ---
+  function handleDateInput(e) {
+    let value = e.target.value.replace(/\D/g, '')
+    if (value.length > 8) value = value.slice(0, 8)
+    let formatted = ''
+    if (value.length > 0) formatted = value.slice(0, 2)
+    if (value.length > 2) formatted += '/' + value.slice(2, 4)
+    if (value.length > 4) formatted += '/' + value.slice(4, 8)
+    const iso = value.length === 8 ? `${value.slice(4, 8)}-${value.slice(2, 4)}-${value.slice(0, 2)}` : ''
+    setDateNaissance(formatted)
+    setDateNaissanceISO(iso)
+    if (erreursChamps.dateNaissance) validerChamp('dateNaissance', { dateNaissance: formatted, dateNaissanceISO: iso })
+  }
+
+  // --- Photo + recadrage : fonctions portées verbatim, géométrie inchangée (zone 260px, canvas 400px) ---
+  function handlePhotoSelect(e) { if (e.target.files[0]) openCropper(e.target.files[0]) }
+  function openCropper(file) {
+    if (!file.type.match('image.*')) { afficherErreurInfos('Fichier doit être une image'); return }
+    if (file.size > 5 * 1024 * 1024) { afficherErreurInfos('Photo max 5 MB'); return }
+    const reader = new FileReader()
+    reader.onload = ev => { setCropImageSrc(ev.target.result); setShowCrop(true) }
+    reader.readAsDataURL(file)
+  }
+  function handleCropImageLoad() {
+    const img = cropImageRef.current; if (!img) return
+    const areaSize = 260; const ratio = Math.max(areaSize / img.naturalWidth, areaSize / img.naturalHeight)
+    cropStateRef.current.scale = ratio
+    setCropZoomMin(Math.round(ratio * 100)); setCropZoomMax(Math.round(ratio * 300)); setCropZoom(Math.round(ratio * 100))
+    cropStateRef.current.imgX = (areaSize - img.naturalWidth * ratio) / 2
+    cropStateRef.current.imgY = (areaSize - img.naturalHeight * ratio) / 2
+    applyCropTransform()
+  }
+  function applyCropTransform() {
+    const img = cropImageRef.current; const s = cropStateRef.current; if (!img) return
+    img.style.width = img.naturalWidth * s.scale + 'px'; img.style.height = img.naturalHeight * s.scale + 'px'
+    img.style.left = s.imgX + 'px'; img.style.top = s.imgY + 'px'
+  }
+  function clampCropPosition() {
+    const img = cropImageRef.current; const s = cropStateRef.current; if (!img) return
+    const areaSize = 260; const w = img.naturalWidth * s.scale; const h = img.naturalHeight * s.scale
+    if (s.imgX > 0) s.imgX = 0; if (s.imgY > 0) s.imgY = 0
+    if (s.imgX < areaSize - w) s.imgX = areaSize - w; if (s.imgY < areaSize - h) s.imgY = areaSize - h
+    applyCropTransform()
+  }
+  function handleCropZoom(e) {
+    const nz = parseInt(e.target.value); setCropZoom(nz)
+    const s = cropStateRef.current; const img = cropImageRef.current; if (!img) return
+    const oldScale = s.scale; s.scale = nz / 100; const cx = 130; const cy = 130
+    const relX = (cx - s.imgX) / (img.naturalWidth * oldScale); const relY = (cy - s.imgY) / (img.naturalHeight * oldScale)
+    s.imgX = cx - relX * img.naturalWidth * s.scale; s.imgY = cy - relY * img.naturalHeight * s.scale
+    clampCropPosition()
+  }
+  function handleCropMouseDown(e) {
+    e.preventDefault(); const s = cropStateRef.current
+    s.dragging = true; s.startX = e.clientX; s.startY = e.clientY; s.imgStartX = s.imgX; s.imgStartY = s.imgY
+  }
+  function handleCropTouchStart(e) {
+    if (e.touches.length === 1) { const s = cropStateRef.current; s.dragging = true; s.startX = e.touches[0].clientX; s.startY = e.touches[0].clientY; s.imgStartX = s.imgX; s.imgStartY = s.imgY }
+  }
+  function cancelCrop() { setShowCrop(false); if (photoInputRef.current) photoInputRef.current.value = '' }
+  function confirmCrop() {
+    const img = cropImageRef.current; const s = cropStateRef.current
+    const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 400
+    const ctx = canvas.getContext('2d'); const sourceX = -s.imgX / s.scale; const sourceY = -s.imgY / s.scale; const sourceSize = 260 / s.scale
+    ctx.drawImage(img, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 400, 400)
+    canvas.toBlob(blob => {
+      setPhotoFile(new File([blob], 'photo-profil.jpg', { type: 'image/jpeg' }))
+      setPhotoPreviewUrl(URL.createObjectURL(blob)); setShowCrop(false)
+      if (photoInputRef.current) photoInputRef.current.value = ''
+    }, 'image/jpeg', 0.9)
+  }
+
+  function afficherErreurInfos(message) {
+    setInfosErreur(message)
+    shakeBouton()
+    clearTimeout(infosErreurTimeout.current)
+    infosErreurTimeout.current = setTimeout(() => setInfosErreur(''), 3000)
+  }
+
+  // Validation pure — retourne { champ: message } ne contenant QUE les champs en défaut.
+  // Le contrôle d'âge est dans le `else` final : jamais exécuté sur une date absente ou invalide.
+  function validerInfos({ prenom, nom, telephone, dateNaissance, dateNaissanceISO, sexe }) {
+    const e = {}
+    if (!prenom.trim()) e.prenom = 'Merci de renseigner ton prénom'
+    if (!nom.trim()) e.nom = 'Merci de renseigner ton nom'
+    if (!telephone.trim()) e.telephone = 'Merci de renseigner ton téléphone'
+    if (!dateNaissance || dateNaissance.length !== 10) e.dateNaissance = 'Date de naissance incomplète'
+    else if (!dateNaissanceISO) e.dateNaissance = 'Date de naissance invalide'
+    else {
+      const birthDate = new Date(dateNaissanceISO)
+      const today = new Date()
+      let age = today.getFullYear() - birthDate.getFullYear()
+      const md = today.getMonth() - birthDate.getMonth()
+      if (md < 0 || (md === 0 && today.getDate() < birthDate.getDate())) age--
+      if (age < 18) e.dateNaissance = 'Tu dois avoir au moins 18 ans'
+    }
+    if (!sexe) e.sexe = 'Merci de sélectionner ton sexe'
+    return e
+  }
+
+  // Valide UN seul champ (onBlur / saisie). valeurs = surcharge pour lire la frappe courante malgré le décalage d'état React.
+  function validerChamp(champ, valeurs = {}) {
+    const base = { prenom, nom, telephone, dateNaissance, dateNaissanceISO, sexe }
+    const erreurs = validerInfos({ ...base, ...valeurs })
+    setErreursChamps(prev => {
+      const suivant = { ...prev }
+      if (erreurs[champ]) suivant[champ] = erreurs[champ]
+      else delete suivant[champ]
+      return suivant
+    })
+  }
+
+  // Enregistrement "Infos personnelles" — validation étape 1 (sans isAdmin ni branche proprietaire).
+  // Écrit UNIQUEMENT les 6 colonnes de cette catégorie (piège : ne jamais inclure études/alternance/bio/docs/garant).
+  async function enregistrerInfosPersonnelles() {
+    const erreurs = validerInfos({ prenom, nom, telephone, dateNaissance, dateNaissanceISO, sexe })
+    if (Object.keys(erreurs).length > 0) {
+      setErreursChamps(erreurs)
+      shakeBouton()
+      return
+    }
+    setErreursChamps({})
+    setInfosErreur('')
+    setInfosLoading(true)
+    try {
+      const updateData = { prenom: prenom.trim(), nom: nom.trim(), telephone: telephone.trim(), sexe, date_naissance: dateNaissanceISO }
+      if (photoFile) {
+        const ext = photoFile.name.split('.').pop()
+        const fileName = `${user.id}-${Date.now()}.${ext}`
+        const { error: upErr } = await supabaseClient.storage.from('profils').upload(fileName, photoFile, { cacheControl: '3600', upsert: true })
+        if (!upErr) { const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(fileName); updateData.photo_profil_url = urlData.publicUrl }
+      }
+      const { error } = await supabaseClient.from('users').update(updateData).eq('id', user.id)
+      if (error) throw error
+      setUserData(prev => ({ ...prev, ...updateData }))
+      setValeursInitiales({ prenom: prenom.trim(), nom: nom.trim(), dateNaissanceISO, sexe, telephone: telephone.trim() })
+      setPhotoFile(null)
+      setErreursChamps({})
+      setInfosLoading(false)
+      setInfosSaved(true)
+      setTimeout(() => setInfosSaved(false), 2000)
+    } catch (e) {
+      setInfosLoading(false)
+      afficherErreurInfos(e.message || "Erreur lors de l'enregistrement")
+    }
   }
 
   if (!user) return null
@@ -137,6 +364,16 @@ export default function GestionComptePage() {
   const libelleActif = GROUPES
     .flatMap(g => g.items)
     .find(i => i.id === categorieActive)?.libelle || ''
+
+  // Comparaison par valeur : remettre la valeur d'origine annule la modification.
+  const formModifie = (
+    prenom !== valeursInitiales.prenom ||
+    nom !== valeursInitiales.nom ||
+    dateNaissanceISO !== valeursInitiales.dateNaissanceISO ||
+    sexe !== valeursInitiales.sexe ||
+    telephone !== valeursInitiales.telephone ||
+    photoFile !== null
+  )
 
   return (
     <div className="gc-page">
@@ -233,11 +470,80 @@ export default function GestionComptePage() {
             </>
           )}
 
-          {categorieActive !== 'compte' && categorieActive !== 'notifications' && (
+          {categorieActive === 'infos' && (
+            <>
+              <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
+              <div className="gc-ligne gc-ligne-photo">
+                <div
+                  className="gc-photo-circle"
+                  onClick={() => photoInputRef.current?.click()}
+                  title="Modifier ta photo"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); photoInputRef.current?.click() } }}
+                >
+                  {photoPreviewUrl
+                    ? <img src={photoPreviewUrl} alt="Ta photo de profil" />
+                    : <div className="gc-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></div>
+                  }
+                  <div className="gc-photo-voile" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
+                  </div>
+                </div>
+                <button type="button" className="gc-ligne-action" onClick={() => photoInputRef.current?.click()}>
+                  {photoPreviewUrl ? 'Modifier' : 'Ajouter'}
+                </button>
+              </div>
+
+              <div className="gc-form-row">
+                <div className="gc-champ"><label className="gc-label">Prénom <span className="gc-required">*</span></label><input className={`gc-input${erreursChamps.prenom ? ' gc-champ-invalide' : ''}`} type="text" value={prenom} onChange={e => { const v = capitalizeWords(e.target.value); setPrenom(v); if (erreursChamps.prenom) validerChamp('prenom', { prenom: v }) }} placeholder="Prénom" /><div className="gc-champ-erreur-slot">{erreursChamps.prenom && <p className="gc-champ-erreur">{erreursChamps.prenom}</p>}</div></div>
+                <div className="gc-champ"><label className="gc-label">Nom <span className="gc-required">*</span></label><input className={`gc-input${erreursChamps.nom ? ' gc-champ-invalide' : ''}`} type="text" value={nom} onChange={e => { const v = capitalizeWords(e.target.value); setNom(v); if (erreursChamps.nom) validerChamp('nom', { nom: v }) }} placeholder="Nom" /><div className="gc-champ-erreur-slot">{erreursChamps.nom && <p className="gc-champ-erreur">{erreursChamps.nom}</p>}</div></div>
+              </div>
+              <div className="gc-form-row">
+                <div className="gc-champ"><label className="gc-label">Date de naissance <span className="gc-required">*</span></label><input className={`gc-input${erreursChamps.dateNaissance ? ' gc-champ-invalide' : ''}`} type="text" value={dateNaissance} onChange={handleDateInput} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" /><div className="gc-champ-erreur-slot">{erreursChamps.dateNaissance && <p className="gc-champ-erreur">{erreursChamps.dateNaissance}</p>}</div></div>
+                <div className="gc-champ"><label className="gc-label">Sexe <span className="gc-required">*</span></label>
+                  <select className={`gc-select${!sexe ? ' gc-select-placeholder' : ''}${erreursChamps.sexe ? ' gc-champ-invalide' : ''}`} value={sexe} onChange={e => { const v = e.target.value; setSexe(v); if (erreursChamps.sexe) validerChamp('sexe', { sexe: v }) }}>
+                    <option value="" disabled>Sélectionner</option>
+                    <option value="homme">Homme</option>
+                    <option value="femme">Femme</option>
+                    <option value="autre">Autre</option>
+                    <option value="non-precise">Non précisé</option>
+                  </select>
+                  <div className="gc-champ-erreur-slot">{erreursChamps.sexe && <p className="gc-champ-erreur">{erreursChamps.sexe}</p>}</div>
+                </div>
+              </div>
+              <div className="gc-champ gc-champ-moitie"><label className="gc-label">Téléphone <span className="gc-required">*</span></label><input className={`gc-input${erreursChamps.telephone ? ' gc-champ-invalide' : ''}`} type="tel" value={telephone} onChange={e => { const v = e.target.value; setTelephone(v); if (erreursChamps.telephone) validerChamp('telephone', { telephone: v }) }} placeholder="06 12 34 56 78" /><div className="gc-champ-erreur-slot">{erreursChamps.telephone && <p className="gc-champ-erreur">{erreursChamps.telephone}</p>}</div></div>
+
+              <BoutonEnregistrer onSave={enregistrerInfosPersonnelles} modifie={formModifie} loading={infosLoading} ok={infosSaved} erreur={infosErreur} btnRef={shakeRef} />
+            </>
+          )}
+
+          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && (
             <div className="gc-placeholder">Cette section arrive au prochain patch.</div>
           )}
         </section>
       </div>
+
+      {/* Modale de recadrage (code maison porté, classes scopées gc-, rendue conditionnellement) */}
+      {showCrop && (
+        <div className="gc-crop-overlay">
+          <div className="gc-crop-modal">
+            <h3>Recadre ta photo</h3>
+            <p className="gc-crop-hint">Déplace et zoome pour ajuster</p>
+            <div className="gc-crop-area" onMouseDown={handleCropMouseDown} onTouchStart={handleCropTouchStart}>
+              <img ref={cropImageRef} src={cropImageSrc} alt="Photo à recadrer" onLoad={handleCropImageLoad} />
+            </div>
+            <div className="gc-crop-zoom">
+              <label>Zoom</label>
+              <input type="range" min={cropZoomMin} max={cropZoomMax} value={cropZoom} onChange={handleCropZoom} />
+            </div>
+            <div className="gc-crop-actions">
+              <button className="gc-crop-cancel" onClick={cancelCrop}>Annuler</button>
+              <button className="gc-crop-confirm" onClick={confirmCrop}>Valider</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modale mot de passe (balisage repris de ParametresPage, classes scopées gc-) */}
       {showPasswordModal && (

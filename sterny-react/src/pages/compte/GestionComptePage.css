@@ -35,6 +35,8 @@
     padding: 28px 32px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .gc-identite {
@@ -510,6 +512,346 @@
 .gc-modal-delete-btn-delete:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* --- Champs de formulaire (catégorie Infos personnelles) --- */
+.gc-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+}
+
+.gc-champ {
+    margin-bottom: 14px;
+}
+
+.gc-champ-erreur-slot {
+    min-height: 16px;
+    line-height: 16px;
+    margin-top: 4px;
+}
+
+.gc-champ-moitie {
+    max-width: calc(50% - 6px);
+}
+
+.gc-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.gc-required {
+    color: #E8622A;
+}
+
+.gc-input, .gc-select {
+    width: 100%;
+    height: 36px;
+    padding: 0 14px;
+    border: 1.5px solid #E8EAF0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+    background: white;
+    box-sizing: border-box;
+    color: #1E293B;
+}
+
+.gc-input:focus, .gc-select:focus {
+    outline: none;
+    border-color: #E8622A;
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+}
+
+.gc-champ-invalide {
+    border-color: var(--error);
+}
+
+.gc-champ-invalide:focus {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.gc-champ-erreur {
+    font-size: 12px;
+    color: var(--error);
+    font-weight: 500;
+    margin: 0;
+    line-height: 16px;
+    animation: gcErreurFadeIn 0.25s ease both;
+}
+
+.gc-input::placeholder {
+    color: #9CA3AF;
+}
+
+.gc-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 15px;
+    padding-right: 36px;
+}
+
+.gc-select-placeholder {
+    color: #9CA3AF;
+}
+
+.gc-erreur {
+    color: var(--error);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    margin: 0;
+    margin-right: auto;
+    animation: gcErreurFadeIn 0.25s ease both;
+}
+
+@keyframes gcErreurFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Photo + recadrage (valeurs recopiées de ModifierProfilPage) --- */
+.gc-photo-circle {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    border-radius: 50%;
+    background: #F4F5F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+    border: 1.5px solid #E2E5EA;
+    position: relative;
+}
+
+.gc-ligne-photo {
+    margin-bottom: 20px;
+}
+
+.gc-photo-circle:hover {
+    border-color: #E8622A;
+}
+
+.gc-photo-placeholder svg {
+    width: 28px;
+    height: 28px;
+    color: #9CA3AF;
+}
+
+.gc-photo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gc-photo-voile {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.gc-photo-voile svg {
+    width: 22px;
+    height: 22px;
+}
+
+.gc-photo-circle:hover .gc-photo-voile,
+.gc-photo-circle:focus-visible .gc-photo-voile {
+    opacity: 1;
+}
+
+.gc-crop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.gc-crop-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: calc(100% - 40px);
+    text-align: center;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.gc-crop-modal h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 6px;
+}
+
+.gc-crop-hint {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 20px;
+}
+
+.gc-crop-area {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1.5px solid #E8EAF0;
+    cursor: grab;
+    touch-action: none;
+    background: #F4F5F7;
+}
+
+.gc-crop-area:active {
+    cursor: grabbing;
+}
+
+.gc-crop-area img {
+    position: absolute;
+    max-width: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.gc-crop-zoom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+.gc-crop-zoom label {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.gc-crop-zoom input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: #E8EAF0;
+    border-radius: 4px;
+    outline: none;
+}
+
+.gc-crop-zoom input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E8622A;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+}
+
+.gc-crop-zoom input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E8622A;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(232, 98, 42, 0.3);
+}
+
+.gc-crop-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.gc-crop-actions button {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.gc-crop-cancel {
+    background: white;
+    color: #475569;
+    border: 1.5px solid #E2E5EA;
+}
+
+.gc-crop-cancel:hover {
+    border-color: #E8622A;
+    color: #E8622A;
+}
+
+.gc-crop-confirm {
+    background: #1E293B;
+    color: white;
+    border: none;
+}
+
+.gc-crop-confirm:hover {
+    background: #E8622A;
+}
+
+/* --- Bouton Enregistrer (réutilisable) --- */
+.gc-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #E8EAF0;
+}
+
+.gc-btn-save {
+    background: #E8622A;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.gc-btn-save:disabled {
+    background: #E8EAF0;
+    color: #94A3B8;
+    cursor: not-allowed;
+}
+
+.gc-btn-save-ok {
+    background: #059669;
 }
 
 @media (max-width: 900px) {
