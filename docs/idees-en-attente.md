@@ -210,3 +210,13 @@ architectures différentes, et on ne peut pas trancher sans le contenu réel. Ne
 tant que la feature n'existe pas. La sidebar groupée absorbe un 4e groupe sans dette, donc
 l'attente ne coûte rien. Sujets paiement/contrat = domaines réglementés : ne rien présumer,
 consultation professionnelle requise (cf. CONTEXTE-PROJET.md §9).
+
+### Vérification de lancement — routes non couvertes par la page d'attente
+
+Constaté le 31/07/2026. Tant que le site est fermé, la page d'attente
+(« Lancement prochainement ») s'affiche sur toutes les routes, y compris /mot-de-passe-oublie
+et /reset-password. Au moment de l'ouverture, vérifier que les liens de réinitialisation
+envoyés par email atteignent réellement leur page : sinon un utilisateur qui clique dans son
+mail atterrit sur la page d'attente sans pouvoir changer son mot de passe. Étendre la
+vérification à toute route atteinte depuis un email transactionnel (confirmation d'inscription,
+invitation propriétaire). À traiter dans la checklist de lancement, pas avant.

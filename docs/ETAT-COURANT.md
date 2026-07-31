@@ -2,9 +2,9 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-29 — Surface unifiée de gestion de compte : patchs 0, 1 et 2
-livrés et validés visuellement sur /compte. Les catégories Compte et Notifications sont
-fonctionnelles (modales, export, déconnexion, préférences email). Reste : patchs 3 à 7.
+**Dernière mise à jour** : 2026-07-31 — Surface unifiée de gestion de compte : patchs 0 à 3a
+livrés et validés visuellement sur /compte. Infos personnelles fonctionnelle (photo, recadrage,
+5 champs, bouton Enregistrer, erreurs à deux niveaux). Reste : patchs 3b à 7.
 
 ---
 
@@ -96,8 +96,74 @@ GestionComptePage.jsx — aucune campagne globale. La ligne "Dernière modificat
 le mot de passe a été supprimée : elle exposait une limite technique sans rien apporter à
 l'utilisateur.
 
-**RESTE** : patch 3 (groupe Profil : 4 catégories, photo + crop, fix DETTE #143 porté), puis
-patchs 4 à 7. Validation visuelle avant chaque commit feat.
+**Séquence révisée — le bouton Enregistrer arrive avec les premiers champs.** L'ordre logué le
+29/07 plaçait toute la sauvegarde au patch 5 : les patchs 3 et 4 auraient affiché des champs
+invérifiables en base, et le patch 5 aurait concentré le câblage de 6 catégories d'un coup.
+Nouvelle séquence : 3a Infos personnelles + bouton · 3b Tes études + À propos de toi · 3c Ton
+alternance (villes, statuts, DETTE #143) · 4 Dossier · 5 revue finale de la sauvegarde ·
+5 bis garde de sortie · 6 recâblage des liens · 7 ménage. Chaque patch étend la sauvegarde au
+lieu de la reporter.
+
+**Patch 3a — Infos personnelles livrée et validée visuellement.** Photo avec recadrage (code
+maison porté verbatim : géométrie zone 260 px / canvas 400 px, ref de manipulation et
+listeners window copiés ensemble — les séparer casse le glisser), 5 champs, premier bouton
+Enregistrer. Upload dans le bucket `profils` déclenché à l'enregistrement et jamais au
+recadrage : sinon des fichiers orphelins s'accumulent quand l'utilisateur abandonne.
+
+**Piège d'écriture neutralisé.** L'`update` ne porte QUE les 6 colonnes de la catégorie
+(prenom, nom, telephone, sexe, date_naissance, photo_profil_url). Reprendre la structure de
+`enregistrerProfil` telle quelle aurait envoyé école, filière, bio et garant avec des valeurs
+vides — donc détruit des données réelles en base. Vérifié par rechargement de `/profil/modifier`
+après enregistrement.
+
+**Comportement du bouton Enregistrer (décision).** Un par bloc, en bas à droite du panneau,
+grisé tant que le formulaire est identique à son état chargé, actif dès qu'une valeur diffère,
+non cliquable pendant la confirmation. La comparaison se fait par valeur et non par drapeau :
+remettre la valeur d'origine regrise le bouton. Chaque clic écrit l'intégralité du formulaire,
+pas seulement le panneau affiché — c'est ce qui protège une modification faite sur une
+catégorie puis abandonnée en changeant de catégorie.
+
+**Abandon de la redirection après enregistrement (décision).** `enregistrerProfil` affichait un
+écran de confirmation puis redirigeait vers le dashboard après 2 secondes : cohérent pour un
+wizard qu'on termine, absurde sur une surface où l'on enchaîne les catégories. Remplacé par un
+retour visuel de 2 secondes sur le bouton, sans quitter la page. Diverge de la décision du
+24/07.
+
+**Modèle de validation (décision, et leçon).** Validation au clic sur Enregistrer UNIQUEMENT.
+Une validation à la sortie du champ (`onBlur`) a été implémentée puis retirée : elle reproche à
+l'utilisateur un champ qu'il n'a pas encore atteint, et rallume une erreur à chaque changement
+de focus — ce qui donnait l'impression que les messages partaient dans tous les sens. Une fois
+une erreur affichée, chaque champ se revalide pendant la frappe et s'éteint dès qu'il redevient
+valide. **Leçon de méthode** : huit patchs successifs ont porté sur l'affichage des erreurs de
+ce seul formulaire (style, position, durée, secousse, bordure, groupement, emplacement réservé,
+retrait du onBlur). Chacun était justifié isolément, mais le défaut était de conception, pas de
+style. Trancher le modèle d'interaction AVANT de régler le rendu.
+
+**Erreurs à deux niveaux.** Erreur de champ : message sous le champ + bordure rouge, les deux
+pilotés par le même état donc effacés ensemble. Erreur globale (échec d'écriture, photo
+invalide) : ligne du bouton. Les deux disparaissent après 3 secondes, durée alignée sur le
+comportement dominant des pages d'auth (vérifié : 3000 ms partout sauf InscriptionPartagerPage
+à 5000). Emplacement du message réservé en permanence (`.gc-champ-erreur-slot`, hauteur fixe)
+pour qu'aucune apparition ne déplace le formulaire ; l'espacement vertical vient d'une source
+unique (`.gc-champ`), sinon les écarts s'additionnent différemment selon qu'un message est
+affiché ou non. Secousse du bouton : hook `useShakeButton` existant réutilisé — il était défini
+dans le projet mais importé nulle part.
+
+**Traitements repris de l'auth, recopiés et non importés** : `.aw-textinput.has-error`
+(bordure rouge + halo au focus), `.aw-textinput-error` (message sous le champ),
+`emFadeIn` (apparition en fondu, renommée `gcErreurFadeIn` pour éviter toute collision
+globale). Aucune dépendance CSS créée vers les pages d'auth.
+
+**Garde de sortie — périmètre réduit.** Changer de catégorie n'est PAS une navigation (simple
+changement d'état interne) : rien n'est perdu, rien à protéger. La garde ne concerne que la
+sortie de `/compte`. Obstacle identifié : le projet utilise `<BrowserRouter>` classique et non
+un data router (`createBrowserRouter` + `RouterProvider`), donc `useBlocker` n'est pas garanti
+en React Router 7.13 — à valider empiriquement au patch dédié, sans migrer le routeur (ça
+toucherait toute l'application pour un besoin local). Repli : avertissement natif du navigateur
+via `beforeunload`, non stylable. Aucune garde n'existe aujourd'hui dans le projet.
+
+**RESTE** : style du menu déroulant (le `<select>` natif affiche le menu système de macOS —
+aligner sur les pages d'inscription), puis patch 3b (Tes études + À propos de toi).
 
 ## 2026-07-28 (suite) — Surface unique de gestion de compte : cadrage validé (sidebar, 3 groupes / 8 catégories)
 
