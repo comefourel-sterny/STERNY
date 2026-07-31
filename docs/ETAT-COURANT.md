@@ -251,26 +251,32 @@ Cette checklist était renvoyée mais n'avait jamais été rédigée. Réglages 
 4. come@sterny.co en adresse principale, comefourel@gmail.com conservée en secondaire.
 "Partager les mises à jour du profil" reste DÉSACTIVÉ, y compris après publication.
 
-##### Section Infos — v1 en ligne, non retravaillée (29/07/2026)
+##### Section Infos — VERSION DÉFINITIVE, en ligne (31/07/2026)
 
-Texte actuellement publié sur le profil (provisoire, à remplacer) :
+Texte publié :
 
-"En parallèle de mes études d'architecture à l'ENSAB, je consacre mon temps au développement de Sterny, une plateforme de mise en relation pour le logement des alternants. Parti de zéro, j'ai créé ma micro-entreprise et j'apprends le code depuis plus de 6 mois pour concevoir moi-même l'outil qui résoudra ce problème concret.
+"En parallèle de mes études d'architecture à l'ENSAB, je consacre mon temps au développement de Sterny, une plateforme de mise en relation pour le logement des alternants.
 
-Mon quotidien se partage entre mes études, le développement technique de la plateforme, et des missions de concierge Airbnb et de traiteur pour autofinancer l'activité.
+Parti de zéro, j'apprends à coder pour concevoir l'outil moi-même, tout en allant sur le terrain échanger avec des alternants et des professionnels du logement pour donner vie au projet. À côté, je cumule plusieurs emplois pour le financer.
 
-À côté de ça, je suis sauveteur en mer au sein de la SNSM depuis 2022. Trois saisons à Saint-Malo, dont deux comme adjoint chef de poste. Cette saison, je dirige mon propre poste de secours. J'ai également participé à des postes de secours sur des événements comme des concerts, festivals ou les matchs du Stade Rennais."
+Je suis aussi secouriste et sauveteur en mer à la SNSM depuis 2022, en saison à Saint-Malo comme sur des postes de secours événementiels."
 
-POINTS OUVERTS (7 identifiés, 1 réglé) :
-1. OUVERT — Ouverture plate ("En parallèle de mes études…"). Chantier principal. LinkedIn ne montre que 2-3 lignes avant le "voir plus". Direction arrêtée : ouvrir sur le PROBLÈME, pas sur soi. Le titre a déjà dit qui et quoi ; la question du lecteur à cet instant est "pourquoi ça existe ?".
-2. OUVERT — "ce problème" ne renvoie à rien, aucun problème n'étant nommé avant. Se résout mécaniquement avec le point 1.
-3. OUVERT — Paragraphes 1 et 2 redondants (les deux disent "études + Sterny"). Ne garder que l'autofinancement.
-4. OUVERT — Le mécanisme de Sterny n'apparaît nulle part depuis le raccourcissement du titre. Une phrase manque.
-5. OUVERT — Ligne de contact come@sterny.co : à trancher.
-6. OUVERT — "Je ne suis pas alternant" : à trancher.
-7. RÉGLÉ — Décompte des saisons SNSM. Le paragraphe actuel se lit "3 + celle en cours = 4", ce qui est FAUX. Fait réel donné par Côme le 29/07 : il termine sa 3e saison. Paragraphe à reformuler. Corollaire : les sigles SQ / ACP / CP ne sont pas décodables hors SNSM, à écrire en toutes lettres ou à supprimer.
+Les 7 points ouverts sont CLOS. Arbitrages retenus :
 
-RÈGLE DE TRAVAIL sur cette section : Côme rédige lui-même, dans ses mots. Claude corrige et taille. Claude ne propose JAMAIS de texte pré-fait à valider. Principe : décrire ce que Côme a FAIT, jamais ce qu'il EST.
+- Point 1 — La direction "ouvrir sur le problème, pas sur soi" est ÉCARTÉE. Motif : la section Infos est un descriptif de PERSONNE, pas une accroche produit. Ouvrir sur le problème la faisait lire comme un pitch d'entreprise. Ouverture à la première personne conservée telle que Côme l'avait écrite.
+- Point 2 — Sans objet, se réglait mécaniquement avec le point 1.
+- Point 3 — Redondance supprimée : la comptabilité du temps n'est plus faite deux fois. L'ENSAB est dite une seule fois, en phrase 1.
+- Point 4 — Le mécanisme de Sterny N'EST PAS dans la section Infos, décision assumée. Motif : c'est du détail, et le détail appartient aux descriptions d'expérience. CONSÉQUENCE À TRAITER : le mécanisme n'apparaît donc nulle part sur le profil tant que la description d'expérience Sterny est vide.
+- Point 5 — Ligne de contact come@sterny.co : ÉCARTÉE du texte. L'adresse sera visible via le panneau Coordonnées après application de la checklist de sortie.
+- Point 6 — "Je ne suis pas alternant" : ÉCARTÉ du texte. Le fait est déjà lisible en Formation (ENSAB, cursus classique) ; écrit noir sur blanc, il ouvrirait une question dont la seule réponse disponible est un récit explicitement écarté (CONTEXTE-PROJET §1 bis). La légitimité est portée par un fait : Côme est allé interroger des alternants.
+- Point 7 — Réglé : aucun décompte de saisons SNSM dans le texte, donc aucun risque d'erreur ni de péremption.
+
+RÈGLES DE RÉDACTION DÉGAGÉES, réutilisables :
+- Test de tri appliqué à chaque item : "est-ce que ça décrit Sterny ou est-ce que ça décrit Côme ?" Ce qui décrit Sterny descend en description d'expérience. Trois items ont été coupés à ce titre (création de la micro-entreprise — déjà lisible dans le bloc Expérience ; étude de terrain ; échanges avec les professionnels).
+- Aucune durée relative dans un texte de profil ("depuis six mois" périme et impose une maintenance mensuelle). Présent simple ou date absolue.
+- Champ Infos = texte brut. Trois blocs séparés par une ligne vide, aucun retour à la ligne en milieu de phrase, aucun émoji ni puce (lectorat prioritaire = écoles et institutions).
+
+RÉSERVE ASSUMÉE, non corrigée : le paragraphe 2 compte trois compléments de but ("pour concevoir", "pour donner vie", "pour le financer") et le texte porte trois marqueurs d'addition ("en parallèle de", "à côté", "aussi"). Signalé à Côme, maintenu par choix. Si resserrage un jour : "pour donner vie au projet" est le premier à sauter, il n'énonce aucun fait.
 
 ##### Décision — Secteur d'activité déclaré (29/07/2026)
 
@@ -320,10 +326,10 @@ RÈGLE DE DONNÉES PERSONNELLES : ne jamais saisir de numéro de diplôme ou de 
 
 Aucune Page n'existe, donc aucun logo n'apparaît sur l'entrée Expérience Sterny. Création volontairement REPORTÉE APRÈS la publication du profil. Deux motifs : (1) une Page est publique immédiatement, elle ouvrirait une vitrine alors que le profil est délibérément invisible pendant la conception ; (2) une Page vide (sans logo, sans bannière, 0 abonné, aucun post) fait plus de mal que pas de Page. Le rattachement du logo se fera après coup en rééditant le champ Entreprise.
 
-##### RESTE À FAIRE sur le sujet 2 (au 29/07/2026)
+##### RESTE À FAIRE sur le sujet 2 (au 31/07/2026)
 
-- Section Infos : ouverture, mécanisme de Sterny, ligne de contact, "je ne suis pas alternant", reformulation du paragraphe SNSM. → CHANTIER PRINCIPAL, conversation dédiée.
-- Descriptions des expériences (Sterny, SNSM, conciergerie, traiteur).
+- Section Infos : FAIT — version définitive en ligne le 31/07/2026 (cf. bloc ci-dessus), les 7 points ouverts sont clos.
+- Descriptions des expériences (Sterny, SNSM, conciergerie, traiteur). PRIORITÉ Sterny : depuis que le mécanisme est sorti de la section Infos (point 4), la description d'expérience Sterny est le SEUL endroit du profil où il peut apparaître — tant qu'elle est vide, le mécanisme n'est nulle part.
 - Photo de profil, bannière.
 - Bénévolat, Compétences.
 - Puis : checklist de sortie, publication, et enfin Page entreprise.
