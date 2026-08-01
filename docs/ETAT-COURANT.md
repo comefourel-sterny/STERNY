@@ -283,6 +283,7 @@ visible en lecture dans une catégorie "Compte".
 5. [ ] Contacter groupes d'alternants (partage étude terrain)
 6. [ ] Contacter écoles d'alternance (démarchage + partage étude terrain rentrée)
 7. [ ] Analyser réponses Alice Dutheil (agente immobilière)
+8. [ ] Marque Sterny — contacter Le Poool / Pépite / INPI (antériorité identifiée, cf. Sujet 3)
 
 #### Sujet 2 [VRAIE VIE] — Formulation publique canonique (25/07/2026)
 
@@ -399,6 +400,56 @@ Aucune Page n'existe, donc aucun logo n'apparaît sur l'entrée Expérience Ster
 - Photo de profil, bannière.
 - Bénévolat, Compétences.
 - Puis : checklist de sortie, publication, et enfin Page entreprise.
+
+#### Sujet 3 [VRAIE VIE] — Marque « Sterny » : antériorité identique identifiée, dépôt NON engagé (31/07/2026)
+
+CONTEXTE : question ouverte par Côme — faut-il déposer la marque maintenant ou attendre ? Crainte exprimée : qu'un tiers dépose avant lui.
+
+CORRECTION DE VOCABULAIRE ACTÉE : on ne « rachète » pas une marque, on la DÉPOSE auprès de l'INPI (Institut national de la propriété industrielle). C'est un enregistrement, pas un achat à un vendeur.
+
+ORDRES DE GRANDEUR (tarifs INPI 2026, vérifiés le 31/07/2026) : dépôt électronique 190 € pour une classe, +40 € par classe supplémentaire. Protection 10 ans, renouvellement 290 €. Aucune redevance remboursée en cas de refus. Le coût réel n'est PAS le dépôt : recherche d'antériorité approfondie et honoraires d'un conseil en propriété industrielle pèsent bien davantage. CONSÉQUENCE : l'argument « attendre d'être sûr du projet avant d'engager la dépense » ne tient pas à ce niveau de prix. Le seul vrai gaspillage serait de déposer sans préparation.
+
+DISTINCTIONS À NE JAMAIS CONFONDRE :
+- Nom commercial (déclaré à l'immatriculation) ≠ marque déposée.
+- Nom de domaine (sterny.co) ≠ marque déposée. Détenir le domaine ne donne AUCUN droit de marque.
+- Une marque ne protège que pour les CLASSES visées au dépôt (45 classes au total, classification de Nice), pas « en général ».
+
+RECHERCHE EFFECTUÉE le 31/07/2026 sur data.inpi.fr, onglet Marques.
+PIÈGE RENCONTRÉ, à ne pas refaire : le moteur de recherche de inpi.fr cherche dans les PAGES DU SITE, pas dans le registre. Il avait renvoyé « aucun résultat », ce qui ne voulait rien dire. Le registre des marques est sur data.inpi.fr.
+
+RÉSULTAT — une marque antérieure IDENTIQUE existe :
+Marque : STERNY
+N° : 1493243 (dépôt international, origine WO)
+Enregistrement : 20/08/2019
+Origine : enregistrement suisse n° 734963 du 28/02/2019, priorité CH
+Titulaire : MARC STERN Perfumes AG, Rue du Château 23, CH-2034 Peseux, Suisse
+Mandataire : P&TS Marques SA, Neuchâtel, Suisse (cabinet spécialisé en propriété industrielle)
+Territoires désignés : Union européenne, Japon, États-Unis, Chine, Russie
+Classes : 06 et 21 — PRODUITS uniquement, aucun service
+  - 06 : métaux communs, matériaux de construction métalliques, serrurerie et quincaillerie, tuyaux, coffres-forts, bouteilles métalliques, contenants métalliques pour parfums et eaux de toilette, bouchons et fermetures métalliques
+  - 21 : ustensiles et récipients pour le ménage ou la cuisine, brosses, verrerie, porcelaine, faïence, flacons, bouteilles, vaporisateurs et pulvérisateurs à parfum, flasques, bougeoirs
+Statut : NON DÉTERMINÉ depuis la fiche publique. L'historique alterne refus provisoires (total et partiel) et déclarations d'octroi de protection, dossier par dossier, sans correspondance territoire/dossier lisible. On ne sait donc PAS si la protection est effectivement accordée dans l'Union européenne, ni pour quel périmètre exact.
+
+DEUX POINTS STRUCTURANTS :
+1. L'Union européenne figure parmi les territoires désignés — donc la France est concernée. Ce n'est pas une marque suisse sans effet en France.
+2. Recherche d'IDENTIQUES uniquement. AUCUNE recherche de similitudes n'a été faite. Les noms proches (Sterni, Sternly, etc.) comptent tout autant et restent inconnus à ce stade. L'INPI affiche lui-même sur la page de résultats qu'il ne faut pas déposer sur la base de ce seul résultat.
+
+RAISONNEMENT EXPLICITEMENT INTERDIT, à ne réintroduire dans AUCUNE session future :
+« Classes 06 et 21, c'est un parfumeur avec de la quincaillerie et des ustensiles de cuisine, aucun rapport avec une plateforme de logement, donc la voie est libre. »
+Ce raisonnement part d'un principe juste (une marque ne protège que pour certaines activités) mais son application à un cas concret relève de l'analyse juridique, pas du bon sens. Trois motifs de refus : (a) l'appréciation de la proximité entre activités obéit à des règles propres ; (b) les classes que Sterny doit viser ne sont pas encore déterminées, donc il n'y a rien à comparer ; (c) le titulaire est représenté par un cabinet spécialisé, ce qui implique une probable surveillance des dépôts proches. Claude n'a aucune compétence pour trancher ce point et ne doit pas le faire.
+
+DÉCISION ACTÉE : ne PAS déposer, ne PAS conclure seul. Passer par un professionnel. Questions consignées en série Q-CPI dans QUESTIONS-PROFESSIONNELS.md.
+
+ÉCHÉANCE, pas urgence : l'exposition publique de Sterny augmente (sterny.co indexé, profil LinkedIn à publier, démarchage écoles à la rentrée). La fenêtre où « attendre » est sans conséquence se referme d'elle-même.
+
+À SAVOIR : un dépôt est lui-même une publication (nom du déposant et classes visées deviennent consultables). À mettre en regard de la doctrine public/privé.
+
+PROCHAINES ACTIONS [VRAIE VIE] :
+- Contacter Le Poool (Sophie Chatelin / Alexis Roussel) en premier — relation déjà établie, mail court.
+- Contacter Pépite Bretagne (Valentine Lamiral / Sandie Lanoë) — dossier déjà en cours.
+- Demander un rendez-vous d'information INPI.
+- Benoît Guillemin : premier cadrage SEULEMENT. La propriété industrielle est une spécialité distincte, ne pas lui faire porter la décision.
+- Conseil en propriété industrielle (professionnel spécialisé) si les étapes précédentes ne suffisent pas.
 
 #### Sujet 4 [VRAIE VIE] — SNEE / Pépite : voie ouverte, dépôt non engagé (25/07/2026)
 

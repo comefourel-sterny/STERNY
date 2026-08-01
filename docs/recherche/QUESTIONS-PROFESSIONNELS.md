@@ -391,7 +391,41 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 
 ---
 
-## 9. Suivi
+## 9. Conseil en propriété industrielle (CPI) — marque Sterny
+
+**Contexte de la série** : micro-entreprise Fourel Côme, SIREN 102 047 578, début d'activité 01/04/2026, APE 6312Z (portails internet). Sterny = nom commercial, aucune marque déposée. Domaine sterny.co détenu. Antériorité identique identifiée le 31/07/2026 : marque internationale STERNY n° 1493243 (MARC STERN Perfumes AG, classes 06 et 21, UE parmi les territoires désignés) — cf. ETAT-COURANT.md Sujet 3.
+
+> **[Q-CPI-001]** La marque internationale STERNY n° 1493243 (MARC STERN Perfumes AG, classes 06 et 21, UE parmi les territoires désignés) est-elle effectivement protégée en France aujourd'hui, et pour quel périmètre exact de produits ? L'historique public alterne refus provisoires et octrois sans correspondance territoire/dossier lisible.
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-002]** Cette antériorité fait-elle obstacle au dépôt de « Sterny » pour une plateforme de mise en relation en ligne pour le logement des alternants ? Si non, sous quelles conditions ?
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-003]** Quelles classes de la classification de Nice faut-il viser pour cette activité ? Une seule suffit-elle, ou faut-il en couvrir plusieurs ?
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-004]** Une recherche de similitudes est-elle nécessaire avant tout dépôt, et à quel coût ? Seule une recherche d'identiques a été faite.
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-005]** Quelles seraient les options de Sterny si un tiers déposait le nom avant elle, alors que le nom commercial est utilisé depuis avril 2026 et le domaine sterny.co détenu ? (Question centrale pour Côme.)
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-006]** La micro-entreprise est-elle éligible au SME Fund (fonds de subvention européen allégeant les frais de dépôt pour les PME) ?
+>
+> **Statut** : OUVERTE
+
+> **[Q-CPI-007]** Le dépôt étant une publication (déposant et classes consultables), quelles précautions prendre compte tenu de l'exposition publique croissante du projet ?
+>
+> **Statut** : OUVERTE
+
+---
+
+## 10. Suivi
 
 | Identifiant | Sujet | Section | Priorité | Statut | Date RDV |
 |---|---|---|---|---|---|
@@ -422,6 +456,13 @@ Réservé aux sujets qui nécessitent une décision conjointe entre plusieurs ca
 | Q-DEV-005 | Sécurité et RGPD côté tech | 7 | — | à poser | — |
 | Q-DEV-006 | Performance, scaling, coûts | 7 | — | à poser | — |
 | Q-DEV-007 | Dette technique priorisation | 7 | — | à poser | — |
+| Q-CPI-001 | Protection effective en France de la marque STERNY n° 1493243 | 9 | **haute** | à poser | — |
+| Q-CPI-002 | Antériorité STERNY : obstacle au dépôt pour plateforme de mise en relation ? | 9 | **haute** | à poser | — |
+| Q-CPI-003 | Classes de Nice à viser pour l'activité Sterny | 9 | **haute** | à poser | — |
+| Q-CPI-004 | Recherche de similitudes : nécessaire ? à quel coût ? | 9 | **haute** | à poser | — |
+| Q-CPI-005 | Options si un tiers dépose le nom avant Sterny | 9 | **haute** | à poser | — |
+| Q-CPI-006 | Éligibilité de la micro-entreprise au SME Fund | 9 | basse | à poser | — |
+| Q-CPI-007 | Dépôt = publication : précautions liées à l'exposition du projet | 9 | basse | à poser | — |
 
 ---
 
