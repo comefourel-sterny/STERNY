@@ -65,8 +65,81 @@ RÈGLE : ne rien déduire sur Côme. Si l'information n'est pas ici, la demander
 - Mes difficultés scolaires (attention, compréhension) — divulgation publique irréversible, décision strictement personnelle, par défaut NON.
 - Le conflit avec la mairie sur le grade de chef de poste.
 - Tout ce qui concerne Pépite / SNEE / Le Poool tant que ce n'est pas accordé.
-- Un chiffre d'inscrits, une date de lancement, « plateforme lancée ».
 - Quoi que ce soit laissant croire que je suis alternant.
+- Pour tout ce qui concerne le PROJET (chiffres, mécaniques, prix, partenaires nommés, calendrier), voir §1 ter — doctrine public/privé. §1 bis ne traite que de moi.
+
+---
+
+## 1 ter. Doctrine public/privé (à lire avant toute publication sur Sterny)
+
+Cette section tranche ce qui peut être dit publiquement DE STERNY et ce qui reste en échange privé. Elle vaut pour TOUS les supports, sans exception : LinkedIn (profil et Page), site sterny.co, titre d'apparition Google, mails de démarchage, dossiers d'accompagnement (Pépite, Le Poool, BPI, Initiative Rennes), échanges avec les écoles et les agences, publications futures.
+
+Ce qui concerne **Côme la personne** relève de §1 bis, pas d'ici. §1 ter traite du **projet**. Dès qu'un élément touche au personnel (parcours, difficultés, engagements, santé, relations), §1 bis reprend la main et prime.
+
+### Le test, en une question
+
+Avant d'écrire une phrase sur un support, se demander :
+
+> **Est-ce que cette phrase décrit un CONSTAT ou une RÉALISATION — ou est-ce qu'elle livre un PARAMÈTRE D'EXÉCUTION ?**
+
+- Un constat ou une réalisation (le problème observé, la catégorie du produit, ce que j'ai fait, où en est le projet) → **PUBLIC**.
+- Un paramètre d'exécution (comment ça marche techniquement, combien ça coûte, combien ils sont, avec qui, à quelle date) → **PRIVÉ**.
+
+Si le test ne tranche pas, la question n'est pas encore mûre : ne pas publier, et l'inscrire comme point ouvert plutôt que d'improviser.
+
+### Colonne PUBLIQUE
+
+- **Le problème** : les alternants ne trouvent pas de logement adapté à un rythme qui alterne école et entreprise ; ils paient à l'année un logement qu'ils n'occupent qu'une partie du temps.
+- **La catégorie** : « plateforme de mise en relation pour le logement des alternants ». Formulation canonique arrêtée, à reprendre à l'identique (cf. ETAT-COURANT, Sujet 2).
+- **Ce que j'ai fait** : appris à coder et construit l'outil moi-même, mené une étude de terrain auprès d'alternants, échangé avec des professionnels du logement, créé la micro-entreprise.
+- **Où en est le projet** : en construction, en phase d'étude de terrain. Un état qualitatif, jamais un jalon chiffré ni daté.
+- **Mon parcours** : public, mais sous le régime de §1 bis (écrire ce que j'ai FAIT, jamais ce que je SUIS ; liste d'exclusions personnelles à respecter).
+
+### Colonne PRIVÉE
+
+- **Les mécaniques de matching et le modèle de données** : le rythme déclaré comme source unique, le raisonnement en semaines-lundis ISO, la dérivation offre/demande, la couverture de semaines. Un support public dit QUE Sterny met en relation selon le rythme d'alternance ; il ne dit pas COMMENT.
+- **La structure de commission et les prix** : taux, répartition, part de chacun, mode de facturation.
+- **Les résultats chiffrés de l'étude de terrain** : nombre de répondants, pourcentages, verbatims attribuables. L'existence de l'étude est publique ; ses résultats ne le sont pas tant qu'ils ne sont pas exploités.
+- **Les partenariats nommés en négociation** : aucun tiers n'est nommé publiquement tant que la relation n'est pas actée et l'accord du tiers obtenu. Vaut pour Pépite, Le Poool, écoles, agences, professionnels. C'est une règle de courtoisie autant que de prudence : nommer un interlocuteur qui n'a rien signé l'engage sans son consentement. DOUBLON VOLONTAIRE : Pépite / SNEE / Le Poool figurent AUSSI dans la liste d'exclusions de §1 bis. Ce n'est pas un oubli et ce n'est pas à « corriger » au nom de la discipline anti-redondance de §8 bis — la règle a deux fondements distincts (le respect d'un tiers ici, ma situation personnelle d'accompagnement là-bas) et elle est trop coûteuse à enfreindre pour risquer qu'elle disparaisse d'une des deux sections.
+- **Le calendrier de lancement daté** : aucune date de lancement, aucune échéance, aucune formule laissant croire que la plateforme est ouverte.
+- **Tout chiffre d'inscrits ou d'utilisateurs**.
+
+Ces deux derniers items étaient auparavant listés en §1 bis. Ils décrivent le projet, pas la personne : ils vivent ici.
+
+### Privé pour toujours ≠ privé pour l'instant
+
+Deux régimes distincts, à ne pas confondre :
+
+- **Privé structurellement** : mécaniques, modèle de données, commission et prix. Ils ne deviendront pas publics avec le temps.
+- **Privé pour l'instant** : partenariats en négociation, résultats de l'étude, calendrier. Ils basculeront en public quand ils seront actés, accordés, ou exploités — et cette bascule se décide explicitement, elle ne se produit jamais par usure ou par enthousiasme dans une conversation.
+
+### Pourquoi publier plutôt que se taire — le raisonnement, à ne pas reconstruire
+
+La conclusion de cette doctrine est contre-intuitive et je l'ai d'abord refusée. Ma crainte était qu'on me vole l'idée. Trois arguments l'ont retournée. Ils sont consignés ici pour qu'aucune session future ne les reconstruise de travers, et pour que mes propres retours de panique repartent d'ici plutôt que de zéro.
+
+1. **Contre le vrai risque, la visibilité protège mieux que le silence.** Le risque qui compte n'est pas qu'on me copie : c'est qu'un tiers sorte vite un produit bâclé sur la même promesse et décrédibilise le sujet avant que mon travail existe aux yeux de qui que ce soit. Ce qui protège de ça, c'est d'avoir été visible et daté AVANT. Me taire me prive de la preuve.
+
+2. **Ce qui est coûteux à reproduire ne tient pas dans un texte de présentation.** L'idée se raconte en une phrase. Ce qui coûte, c'est le modèle de données par semaines réelles, la qualification juridique de la chaîne locative, la construction de l'offre côté propriétaires, et l'amorçage d'une place de marché à deux côtés. Rien de tout cela ne se prend en lisant une page de profil.
+
+3. **La porte est déjà ouverte.** sterny.co est en ligne et indexé. Verrouiller un support revient à fermer une fenêtre dans une maison dont la porte est ouverte : le coût est réel (personne ne me trouve, personne ne me prend au sérieux), le bénéfice est nul. À mon stade, l'obscurité coûte plus cher que la copie.
+
+**Conséquence opérationnelle** : en cas de doute sur un élément de la colonne publique, le défaut est de publier. En cas de doute sur un élément de la colonne privée, le défaut est de ne pas publier. La doctrine n'est pas un plaidoyer pour tout dire — elle sépare ce qui me rend trouvable de ce qui me rend copiable.
+
+### Rattachement — le dépôt de marque est lui-même une publication
+
+Déposer une marque n'est pas un acte discret : le nom du déposant et les classes visées deviennent consultables au registre. Un dépôt relève donc de cette doctrine autant que d'une décision juridique, et les classes visées révèlent le périmètre d'activité envisagé. Voir ETAT-COURANT, Sujet 3 (marque « Sterny »), qui renvoie explicitement ici. Décision actée sur ce sujet : ne pas déposer et ne pas conclure seul, questions consignées en série Q-CPI.
+
+### Ce que cette doctrine ne fait PAS
+
+Elle ne tranche aucune question juridique. Elle dit ce qui peut être DIT, jamais ce qui est VRAI en droit.
+
+Aucune formulation publique ne qualifie Sterny dans la chaîne locative tant que les questions Q-AVO sont gelées en attente de l'avocate — c'est déjà le motif du secteur d'activité déclaré (« Technologie, information et Internet », jamais « Immobilier »). « Mise en relation » est une description commerciale, sans aucune valeur juridique.
+
+De même, tant que les questions Q-CPI ne sont pas tranchées, aucun support public n'affirme ni ne suggère que « Sterny » est une marque déposée : pas de symbole ®, pas de mention « marque déposée », aucune formule équivalente en pied de page, bannière, signature ou mentions légales. Sterny est un nom commercial. Même logique que pour le secteur d'activité déclaré : ne rien affirmer publiquement sur un statut qu'un professionnel n'a pas confirmé.
+
+### Règle pour Claude
+
+Avant de corriger, tailler ou valider un texte destiné à un support public, appliquer le test ci-dessus phrase par phrase et signaler explicitement tout élément de la colonne privée qui s'y serait glissé. Ne jamais assouplir la doctrine dans le flux d'une conversation : une bascule privé → public se décide par une décision datée et loguée, pas par un arbitrage improvisé.
 
 ---
 
