@@ -364,6 +364,25 @@ Session du 29 avril 2026, lors de la saisie de la vérité terrain Martin. Une r
 
 ---
 
+## 6 ter. Entretien du corpus documentaire
+
+Trois étagères, une seule règle de chargement : **ce qui est à la racine de `docs/` est uploadé dans le project knowledge, le reste jamais.**
+
+- `docs/` — le SOCLE. Quatre documents lus à chaque session et tenus à jour en permanence : CONTEXTE-PROJET.md, VISION-ARCHITECTURE.md, ETAT-COURANT.md, DETTE-TECHNIQUE.md. Rien d'autre ne vit à la racine.
+- `docs/ponctuels/` — vivants, mais inutiles à la plupart des sessions. Uploadés à la demande, pour la session concernée seulement.
+- `docs/archives/` — chantiers terminés. Jamais uploadés. Conservés dans le repo et lisibles par Claude Code sur demande explicite.
+- `docs/_audit/` — gitignoré, hors de tout ce qui précède. Ne pas y toucher : l'en sortir rendrait ces fichiers suivis par git, changement de statut décidé par accident.
+
+**Règle 1 — aucun nouveau document ne naît à la racine de `docs/`.** Un document de chantier naît dans `docs/ponctuels/`. La racine est réservée aux quatre du socle, définitivement.
+
+**Règle 2 — un chantier terminé archive son document DANS SON COMMIT DE CLÔTURE**, jamais plus tard. Un document qu'on archivera « un jour calme » ne s'archive jamais. C'est exactement ce qui a produit la situation du 3 août 2026 : 15 documents chargés à chaque session, dont 11 décrivaient des chantiers finis depuis mai.
+
+**Règle 3 — une entrée datée ne se corrige jamais.** Un chemin de fichier cité à l'intérieur d'une entrée de session d'`ETAT-COURANT.md` décrit un état passé. On ne le met pas à jour quand le fichier bouge : le corriger falsifierait le log. Seuls les documents de règles et le code vivant voient leurs chemins corrigés lors d'un déplacement.
+
+Origine : rangement du 3 août 2026. Charge par session passée de 15 632 à environ 6 200 lignes.
+
+---
+
 ## 7. Gestion des secrets et tokens
 
 **Aucun token ne doit apparaître en clair dans une conversation Claude.ai ou Claude Code.**

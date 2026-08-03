@@ -382,7 +382,7 @@ Tutoiement « tu », texte statique (pas d'amorce variable), 1 seul bouton prima
 
 **Bloquant pré-production** : oui. Aucun lancement opérationnel ne peut être fait tant que ce modèle n'est pas tranché et implémenté, sinon le premier utilisateur qui revient pour son année 2 trouve un système qui ne sait pas quoi faire.
 
-**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées pour cadrer le modèle. Premier livrable : un document `docs/recherche/MODELE-MULTI-ANNEES.md` qui décrit les scénarios, les options de modèle, et tranche par grand bloc (stockage, matching, transitions, contrats). À programmer après la démo Le Poool, en priorité haute (avant tout codage du flux contrat/paiement, qui dépend de ce modèle).
+**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées pour cadrer le modèle. Premier livrable : un document `docs/ponctuels/MODELE-MULTI-ANNEES.md` qui décrit les scénarios, les options de modèle, et tranche par grand bloc (stockage, matching, transitions, contrats). À programmer après la démo Le Poool, en priorité haute (avant tout codage du flux contrat/paiement, qui dépend de ce modèle).
 
 ## DETTE #47 — Barre de recherche homepage propose un rythme abstrait obsolète + flow visiteur non-connecté à repenser
 
@@ -442,7 +442,7 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 **Bloquant pré-production** : oui — sans ce mécanisme, le produit ne tient pas sa promesse pour la majorité des utilisateurs réels. Aucun lancement opérationnel ne peut se faire tant que le matching partiel et la composition multi-logements ne sont pas conçus, implémentés et testés.
 
-**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées post-Poool, livrant un document `docs/recherche/MATCHING-PARTIEL.md` qui couvre les 6 sous-problèmes ci-dessus avec scénarios, options, et tranches par grand bloc (algorithme, UX, copywriting, modèle contractuel multi-logements). À séquencer en priorité haute aux côtés de DETTE #46 (multi-années) et DETTE #47 (refonte barre recherche). Ces 3 dettes forment ensemble le "noyau produit pré-lancement" — aucune ne peut être skipée.
+**Plan de résolution** : 1 ou 2 sessions Claude.ai dédiées post-Poool, livrant un document `docs/ponctuels/MATCHING-PARTIEL.md` qui couvre les 6 sous-problèmes ci-dessus avec scénarios, options, et tranches par grand bloc (algorithme, UX, copywriting, modèle contractuel multi-logements). À séquencer en priorité haute aux côtés de DETTE #46 (multi-années) et DETTE #47 (refonte barre recherche). Ces 3 dettes forment ensemble le "noyau produit pré-lancement" — aucune ne peut être skipée.
 
 **Pistes d'enrichissement (brainstorm conv 40, à approfondir post-MVP) :**
 1. **Complétion ciblée depuis le dashboard.** Un match couvrant ~80 % des semaines : l'utilisateur clique sur les semaines manquantes → lance une recherche pré-filtrée sur exactement cette période résiduelle.
@@ -1841,3 +1841,9 @@ Inventaire au 2026-08-03 :
 Le champ Sexe était rendu de 3 façons différentes selon la page ; `/compte` est aligné depuis d1d80fb, `ModifierProfilPage` reste en natif (suppression prévue patch 7).
 Résolution : convergence progressive vers le composant partagé, page par page, jamais en campagne globale. Prérequis : DETTE #155 (prop d'erreur), sans quoi chaque adoption crée une nouvelle surcouche locale.
 Découverte : 2026-08-03.
+
+## DETTE #157 — DETTE-TECHNIQUE mélange deux formats d'entrée, les dettes #1 à #41 sont introuvables au grep
+Les entrées #42 à #156 sont des sections de niveau 2 (`## DETTE #N — titre`), repérables par `grep "^## DETTE #"`. Les entrées #1 à #41 n'ont aucun titre propre : ce sont des puces numérotées à l'intérieur de rubriques thématiques (« Bypass DEV en place dans le code », « Bugs préexistants ailleurs dans le code », « Audits du 25 avril 2026 », etc.).
+Conséquence : une session qui cherche DETTE #30 ou #37 par grep sur le format de titre ne trouve rien et peut conclure à tort que la dette n'existe pas. Or #1-#8 et #30 sont citées comme vivantes dans AUDIT-FONCTIONNEL-2026-05-04, et #37 structure tout l'historique du parser.
+Résolution : convertir les puces #1 à #41 en sections de niveau 2, sans réécrire leur contenu. Session dédiée, jamais en marge d'un autre chantier — une conversion partielle serait pire que l'état actuel.
+Découverte : 2026-08-03, en analysant le corpus documentaire avant le rangement.

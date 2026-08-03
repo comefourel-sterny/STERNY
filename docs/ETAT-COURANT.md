@@ -9,6 +9,79 @@ silencieux corrigé (tout ou rien sur échec partiel). Reste : patchs 3b à 7.
 
 ---
 
+## 2026-08-03 (suite 2) — [DEV] Corpus documentaire rangé : trois étagères, socle réduit de 60 %
+
+**Constat de départ.** 15 documents étaient chargés dans le project knowledge à chaque session,
+environ 15 600 lignes, dont 11 décrivaient des chantiers terminés depuis mai. ETAT-COURANT en
+pesait 5 366 à lui seul. Cause identifiée : aucune règle ne disait quand un document meurt.
+Chaque chantier créait le sien, aucun n'était refermé.
+
+**Doctrine actée — trois étagères, une seule règle de chargement.** Ce qui est à la racine de
+`docs/` est uploadé, le reste jamais. Racine = les 4 du socle. `docs/ponctuels/` = vivants mais
+inutiles à la plupart des sessions, uploadés à la demande. `docs/archives/` = chantiers
+terminés, jamais uploadés, conservés et lisibles sur demande. `docs/_audit/` reste gitignoré et
+hors de tout. Écrite en CONTEXTE-PROJET §6 ter avec trois règles d'entretien.
+
+**Inversion de méthode en cours de chantier, motif décisif.** Le plan initial créait un dossier
+`docs/socle/` et y déplaçait les 4 documents vivants. Abandonné : déplacer les vivants cassait
+toutes les références qui pointent vers eux, à commencer par la liste de démarrage de CLAUDE.md.
+Déplacer les MORTS ne casse presque rien, puisque personne ne cite un chantier terminé. Même
+résultat, une fraction du mouvement. À retenir pour tout rangement futur.
+
+**Commit 1 (`9322ef4`) — 6 renommages à 100 %.** Vers `archives/` : INVENTAIRE-PLATEFORME,
+UNIFICATION-INSCRIPTION, PARSER-AXE-1, AUDIT-FONCTIONNEL-2026-05-04, et par `mv` simple
+AUDIT-2026-04-22 (non suivi, resté non suivi). Vers `ponctuels/` : idees-en-attente,
+QUESTIONS-PROFESSIONNELS. CLAUDE.md : entrée INVENTAIRE retirée de la liste de démarrage,
+« 5 documents » corrigé en 4 à deux endroits, mention de coût en tokens supprimée (un ordre de
+grandeur dans un fichier de règles ne sera jamais tenu à jour). 11 chemins corrigés dans
+VISION-ARCHITECTURE, DETTE-TECHNIQUE, OAuthHandler.jsx et RhythmManualBuilder.jsx.
+
+**Choix assumé — références corrigées DANS le commit de déplacement**, et non dans un commit
+séparé. Un commit qui déplace des fichiers en laissant onze chemins cassés derrière lui n'est
+pas atomique, il est incomplet. Conséquence visible : deux fichiers `.jsx` apparaissent dans un
+commit `docs:`, ce sont des commentaires, rien d'exécutable.
+
+**Commit 2 (`8381728`) — coupe d'ETAT-COURANT.** Socle = août, juillet, juin (2 755 lignes).
+`docs/archives/ETAT-COURANT-ARCHIVE.md` = mai et avant (2 617 lignes). Aucune entrée réécrite ni
+résumée. Contrôle d'intégrité : 2 753 + 2 613 = 5 366 lignes d'origine, et 142 + 50 = 192 titres.
+Chaque ligne est dans exactement un des deux fichiers.
+
+**Exception unique à la coupe.** La section « ## 7. Règle de mise à jour de ce document » a été
+remontée en pied de socle : c'est la procédure de clôture de session du fichier lui-même, pas un
+log. Les sections ## 1 à ## 6 sont parties en archive, dont un bloc « État Git » d'avril figé en
+dur qui affirmait une branche `main` et listait des commits obsolètes — exactement ce que la
+règle « `git log` est la seule source de vérité » vise à éliminer.
+
+**RÈGLE DE MÉTHODE ACTÉE — une entrée datée ne se corrige jamais.** Découverte en séance sur la
+ligne 1529 d'ETAT-COURANT : elle cite un chemin déplacé, elle est dans le socle, et elle n'a PAS
+été corrigée parce qu'elle appartient à une entrée datée du 07/07. Corriger un chemin dans un log
+de session falsifie le log. Portée en CONTEXTE §6 ter Règle 3. Ma consigne initiale disait « au
+delà de la ligne 2739 », critère faux : le vrai critère est l'appartenance à une entrée datée,
+où qu'elle se trouve.
+
+**Deux erreurs de ma part, rattrapées par Claude Code.** (1) Un `git add docs/archives` aurait
+stagé un fichier non suivi que la même consigne interdisait de commiter. (2) Une formule de
+contrôle « T+4 » sous-comptait l'en-tête d'archive à 1 ligne au lieu de 4. Dans les deux cas
+Claude Code s'est arrêté et a signalé l'écart au lieu d'ajuster. C'est le comportement voulu.
+
+**Découverte annexe, loguée en DETTE #157.** DETTE-TECHNIQUE tourne sur deux formats : les
+entrées #42 à #156 sont des titres de niveau 2, les entrées #1 à #41 sont des puces numérotées
+sans titre propre. Un `grep "^## DETTE #30"` ne renvoie rien alors que la dette existe et est
+vivante. Conversion à faire en session dédiée.
+
+**Ménage disque vérifié, pas traité.** Le backup filter-repo de 620 Mo est bien supprimé. Les
+cinq copies du projet subsistent (environ 1,2 Go, toutes figées au 13 avril) et la synchro iCloud
+du Bureau est toujours active. État reporté dans `docs/ponctuels/idees-en-attente.md`, session
+dédiée. Signalé au passage : un dossier `~/Dev/sterny-secrets` non inventorié, non inspecté.
+
+**Résultat.** Project knowledge : 15 fichiers et environ 15 600 lignes → 4 fichiers et environ
+6 200 lignes. Aucune ligne perdue, aucune réécrite.
+
+**RESTE** : reprendre le patch 3b de `/compte` (Tes études + À propos de toi). Question de
+cadrage ouverte avant tout code : recopier `enregistrerInfosPersonnelles` par catégorie ou en
+extraire une fonction commune paramétrée par la liste de colonnes — avec 3b, 3c et 4, six copies
+de la même mécanique sinon.
+
 ## 2026-08-03 (suite) — [DEV] Upload photo silencieux corrigé + doctrine d'échec partiel actée
 
 **DÉCISION PRODUIT STRUCTURANTE — tout ou rien sur un enregistrement multi-étapes.** Quand une
