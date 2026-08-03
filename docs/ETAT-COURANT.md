@@ -3,7 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-08-03
-[VRAIE VIE] Doctrine public/privé actée et loguée en CONTEXTE-PROJET §1 ter. Sujet 1 de la file du 31/07 clos.
+[VRAIE VIE] Doctrine public/privé actée en CONTEXTE-PROJET §1 ter, puis appliquée à la description d'expérience Sterny sur LinkedIn. Sujets 1 et 2 de la file du 31/07 clos.
 [DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés et validés. Upload photo
 silencieux corrigé (tout ou rien sur échec partiel). Reste : patchs 3b à 7.
 
@@ -231,6 +231,54 @@ DÉCOMPTE GIT RECTIFIÉ, point de reprise du 31/07 refermé : le chiffre « 12 c
 SUITE IMMÉDIATE : le sujet 2 (descriptions d'expérience LinkedIn, priorité Sterny) devient déblocable. C'est le premier test réel de §1 ter — la description d'expérience Sterny est le seul endroit du profil où le mécanisme peut apparaître, depuis qu'il a été sorti de la section Infos. Reste également ouvert : mail à Le Poool sur la marque, et la vérification du présent « je cumule plusieurs emplois » en section Infos au regard des dates des entrées Expérience.
 
 POINT ANNEXE À TRAITER PLUS TARD : 3 fichiers non suivis (`??`) traînent dans `docs/`. Hors périmètre, sans effet sur les commits du jour, mais à identifier et trancher — un fichier non suivi finit perdu ou commité par accident.
+
+## 2026-08-01 — [VRAIE VIE] Description d'expérience Sterny publiée sur LinkedIn (sujet 2 clos)
+
+Premier test réel de §1 ter, le jour même de sa création. La description d'expérience sous l'entrée « Fondateur — Sterny » est rédigée et EN LIGNE. Enjeu rappelé : depuis que le mécanisme a été sorti de la section Infos (arbitrage du 31/07, point 4), c'est le SEUL endroit du profil où Sterny peut exister en détail.
+
+TEXTE PUBLIÉ (à ne pas reformuler sans décision explicite) :
+
+Comment se loger quand on est alternant et qu'on partage son année entre deux villes ?
+Cette question m'est venue à la rentrée 2025, quand j'ai écouté mes amis se plaindre de ce problème. J'étais persuadé qu'il existait une plateforme pour ça et en cherchant je n'ai finalement rien trouvé.
+
+Entre la tension du marché locatif et l'éloignement entre l'école et l'entreprise, se loger est compliqué et coûteux. Certains renoncent à des opportunités qui leur correspondent vraiment et restent près de chez eux afin d'éviter les difficultés de logement.
+
+Sterny est une plateforme de mise en relation pour le logement des alternants. Un alternant peut y proposer son logement pendant ses semaines d'absence, en chercher un dans l'une de ses deux villes, ou les deux. Il ne paie que les semaines qu'il occupe.
+
+Tout fonctionne à la semaine, avec une seule personne dans le logement à la fois. La plateforme s'adapte au rythme de chaque alternant. Comme les calendriers ne s'emboîtent jamais parfaitement, chacun peut combiner plusieurs logements pour couvrir toutes ses semaines.
+
+Un alternant ne peut pas proposer son logement sans l'accord de son propriétaire, qui a donc lui aussi un rôle sur la plateforme.
+
+La plateforme est encore en cours de développement, et accompagnée d'une étude de terrain menée auprès d'alternants.
+
+MISE EN FORME : retour SIMPLE après le point d'interrogation (pas de ligne vide), lignes vides entre tous les autres paragraphes. Motif : l'aperçu de profil ne montre que 2 lignes avant « …voir plus » — une ligne vide aurait affiché la question suivie de blanc, sans amorce de récit. 1 324 caractères sur 2 000.
+
+NOUVELLE RÈGLE DE RÉDACTION — RETENUE EN « JE », formulée par Côme et réutilisable sur TOUTES les descriptions à venir : le texte ouvre à la première personne puis laisse le projet occuper l'espace, sans y revenir. Motif de Côme : à 21 ans, un texte qui parle beaucoup de soi se lit comme de l'auto-promotion ; un texte qui ouvre en « je » puis s'efface se lit comme quelqu'un qui a fait des choses. Ce n'est PAS un oubli de rédaction et ce n'est pas à « corriger » par une session future. Conséquence appliquée : une fin en « je » avait été proposée pour boucler le texte, elle a été écartée au nom de cette règle.
+
+BASE DE DÉPART : le formulaire d'inscription Le Poool (5 blocs rédigés par Côme). Blocs 1 (Description), 2 (Problématiques) et 3 (Cible) réutilisés. Blocs 4 et 5 ÉCARTÉS EN ENTIER :
+- Bloc 4 Concurrence — « Sterny n'a pas de concurrent direct » est invérifiable et affiche publiquement qu'un terrain est libre. Nommer Studapart et Airbnb expose sans bénéfice.
+- Bloc 5 Innovation — « l'innovation n'est pas technologique, elle est dans l'usage » contredit le secteur déclaré, invite à conclure que rien n'est difficile à construire, et est faux au regard du travail réel.
+Également coupés : l'ambition « faire de Sterny la référence en France » (auto-proclamée, invérifiable, affaiblit un texte qui ne tient que par des faits) et les plans écoles/agences (intentions, pas réalisations ; l'orientation mutuelle décrit un arrangement commercial).
+
+COUPES DE PRUDENCE, MÊME MOTIF — la seule chose que Côme ne peut pas soutenir lui-même :
+- « la hausse des loyers » RETIRÉE. Vérification faite le 03/08 : la zone tendue couvre ~1 150 communes, mais l'encadrement strict des loyers ne s'applique qu'à 9 territoires (Paris, Lyon-Villeurbanne, Lille, Bordeaux, Montpellier, Grenoble, Pays Basque, Plaine Commune, Est Ensemble) — ni Rennes ni Nantes. Le dispositif expérimental n'est prolongé que jusqu'au 25/11/2026 et un décret de juillet 2026 reconduit le plafonnement des hausses d'un an. Motif de la coupe : PAS la fausseté, mais l'impossibilité de la défendre en rendez-vous, et le fait que le cadre bouge tous les ans. « Tension du marché locatif » conservée (notion officielle) et « coûteux » aussi (un niveau, pas une évolution).
+- « dans toute la France » RETIRÉ de la mention d'étude de terrain. C'est l'objectif, pas encore le fait. Second motif : caractériser l'échantillon ouvre la porte à « combien ? quelles villes ? », dont la réponse est en colonne privée (§1 ter).
+
+ANCRAGE TEMPOREL — piège évité de justesse. La formule « à la rentrée dernière » avait été retenue, puis rattrapée par Côme : on est en août 2026, elle désigne septembre 2025 AUJOURD'HUI mais basculerait sur septembre 2026 dans cinq semaines. Ce n'était pas une maintenance à échéance lointaine, c'était une bombe à retardement. Remplacée par la date absolue « à la rentrée 2025 ». RÈGLE GÉNÉRALISABLE : tout repère calendaire relatif à un cycle scolaire (« la rentrée dernière », « en septembre dernier ») bascule à la date du cycle suivant, pas au 31 décembre. Aucune maintenance ne subsiste sur ce texte.
+
+MOT ÉCARTÉ — « écosystème ». Le terme figurait dans la phrase sur le propriétaire (repris du formulaire Le Poool). Abandonné après vérification : un écosystème suppose des acteurs qui interagissent, or le propriétaire AUTORISE — c'est une condition, pas une interaction. Remplacé par « qui a donc lui aussi un rôle sur la plateforme ». Leçon : ne pas garder un mot conceptuel qui ne décrit pas le fait.
+
+DÉTAIL RÉCLAMÉ PUIS ÉCARTÉ PAR CÔME LUI-MÊME : ajouter que l'alternant renseigne son emploi du temps à l'inscription et que toute la plateforme raisonne ensuite dessus. C'est la dérivation, donc colonne privée de §1 ter, et c'est l'argument n°2 du raisonnement consigné (ce qui coûte à reproduire, c'est le modèle de données). Le mot « emploi du temps » pointe directement vers le parser, l'actif le plus copiable. Remplacé par « La plateforme s'adapte au rythme de chaque alternant » — le bénéfice sans la source. Côme a lui-même écarté « à l'inscription » et « n'a plus à s'en occuper », encore trop proches d'un détail d'exécution. §1 ter a donc fonctionné exactement comme prévu.
+
+DATE DE L'EXPÉRIENCE STERNY MODIFIÉE : de **avr. 2026 → déc. 2025**. Corrige la décision du 29/07 qui alignait la date d'expérience sur l'immatriculation de la micro-entreprise. Motif : le champ Expérience LinkedIn décrit une ACTIVITÉ, pas une personne morale — décembre 2025 est le début réel du travail sur Sterny. Bénéfices : le profil devient cohérent avec la description (question en septembre 2025, travail à partir de décembre, immatriculation en avril 2026) et quatre mois de travail réel deviennent visibles. **AVRIL 2026 RESTE LA DATE À DONNER SUR TOUT DOSSIER ADMINISTRATIF** (incubateur, financement, formulaire officiel) : c'est la date d'immatriculation, elle seule fait foi. Ne pas « corriger » LinkedIn vers avril 2026 dans une session future.
+
+EXCEPTION DE MÉTHODE ACTÉE PAR CÔME (03/08) : la règle « Côme rédige, Claude corrige » (CONTEXTE §1 bis) reste la règle par défaut sur les textes publics. Mais quand Côme demande explicitement à Claude de rédiger, il assume le contournement. Consigne de Côme, mot pour mot : « pars du principe que si je te demande c'est que je suis ok pour contourner une règle, c'est moi qui rédige ces docs, je reste le seul maître de la conv, mais merci de prévenir quand je contredis les docs ». CONDUITE ATTENDUE DE CLAUDE : signaler l'écart UNE FOIS, brièvement, puis exécuter sans y revenir. Ne pas répéter l'objection, ne pas la reformuler au tour suivant.
+
+RESTE À FAIRE SUR LE PROFIL LINKEDIN : photo de profil, bannière, descriptions des expériences SNSM / Concierge Airbnb / CHAPIN TRAITEUR, Bénévolat, Compétences. Puis checklist de sortie (cf. bloc du 29/07), publication, et enfin Page entreprise.
+
+RESTE OUVERT SUR LA FILE DU 31/07 : mail à Le Poool (Sophie Chatelin / Alexis Roussel) sur la marque ; et la question NON TRANCHÉE du présent « je cumule plusieurs emplois » en section Infos, alors que les entrées Concierge Airbnb et CHAPIN TRAITEUR portent des dates de fin (juin 2026). À DEMANDER à Côme, ne rien déduire.
+
+POINT ANNEXE TOUJOURS OUVERT : 3 fichiers non suivis (`??`) dans `docs/`, à identifier et trancher.
 
 ## 2026-07-29 → 07-31 — Surface unifiée de gestion de compte : patchs 0 à 3a livrés
 
