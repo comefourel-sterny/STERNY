@@ -4,7 +4,8 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 **Dernière mise à jour** : 2026-08-03
 [VRAIE VIE] Doctrine public/privé actée et loguée en CONTEXTE-PROJET §1 ter. Sujet 1 de la file du 31/07 clos.
-[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés, champ Sexe porté sur le CustomSelect partagé. Reste : corriger l'upload photo silencieux, puis patch 3b.
+[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés et validés. Upload photo
+silencieux corrigé (tout ou rien sur échec partiel). Reste : patchs 3b à 7.
 
 ---
 
