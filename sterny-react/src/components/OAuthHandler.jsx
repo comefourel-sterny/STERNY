@@ -9,7 +9,7 @@ import { supabaseClient } from '../config/supabase'
 //
 // Le handler intercepte également toute route /inscription/* SAUF
 // /inscription/proprietaire (qui gère son propre callback OAuth, cf.
-// docs/recherche/UNIFICATION-INSCRIPTION.md § 4.5.3 et § 4.10).
+// docs/archives/UNIFICATION-INSCRIPTION.md § 4.5.3 et § 4.10).
 const AUTH_CALLBACK_ROUTES = ['/', '/connexion', '/completer-profil']
 const HANDLER_BYPASS_ROUTES = ['/inscription/proprietaire']
 

@@ -114,7 +114,7 @@ Découvertes lors de la génération de l'audit `docs/_audit/AUDIT-PLATEFORME-20
 
 26. **Chemin obsolète dans `sterny-react/.claude/commands/global.md`** : référence à `/Users/arnaudfourel/Desktop/STERNY/...` au lieu de `/Users/comefourel/Dev/sterny/...`. Ancienne référence d'un autre poste, à corriger pour que le slash-command reste utilisable.
 
-27. **Faux positif "table fantôme `documents`"** dans l'audit Zone 1 Cat. C (rapport `docs/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`). En réalité `documents` n'est pas une table BDD mais un bucket Supabase Storage (`storage.from('documents')` utilisé dans `DossierLocatairePage`, `ModifierProfilPage`, `delete-account`). À reclasser : pas une dette de table fantôme. Le seul vrai cas de table fantôme reste `matchs` (DETTE #28).
+27. **Faux positif "table fantôme `documents`"** dans l'audit Zone 1 Cat. C (rapport `docs/archives/AUDIT-2026-04-22-ZONE-1-DATA-BACKEND.md`). En réalité `documents` n'est pas une table BDD mais un bucket Supabase Storage (`storage.from('documents')` utilisé dans `DossierLocatairePage`, `ModifierProfilPage`, `delete-account`). À reclasser : pas une dette de table fantôme. Le seul vrai cas de table fantôme reste `matchs` (DETTE #28).
 
 28. **Table fantôme `matchs`** référencée dans `supabase/functions/export-data/index.ts:94` (`.from("matchs")`). N'existe pas dans `public.*` du schéma BDD. La fonction `export-data` n'est de toute façon pas déployée en prod (DETTE #17), mais à fixer en même temps que son déploiement. Le terme "match" correspond métier-wise à `candidatures` au statut `acceptee` ou à `mises_en_relation`.
 
@@ -482,7 +482,7 @@ Sterny doit donc présenter un **score de compatibilité partielle** par annonce
 
 ## DETTE #51 — Apple OAuth à implémenter dans le cadre du chantier unification inscription [RÉSOLUE — caduque]
 
-**Statut au 3 mai 2026** : **CADUQUE** suite au cadrage de la section 4 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
+**Statut au 3 mai 2026** : **CADUQUE** suite au cadrage de la section 4 du doc `docs/archives/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
 **Résolution** : la création d'un `AppleAuthHandler.jsx` séparé n'est plus nécessaire. La refonte `GoogleAuthHandler.jsx` → `OAuthHandler.jsx` générique (cf. UNIFICATION-INSCRIPTION § 4.5.2 et § 4.6) gère Google + Apple + toute future méthode OAuth dans un seul composant. Le handler ne lit pas le provider — il s'applique à toute session Auth ouverte. Le pré-remplissage prenom/nom spécifique au provider est fait côté `InscriptionAlternantPage` E-1, pas dans le handler.
 
@@ -524,7 +524,7 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #54 — Refonte responsive RhythmManualBuilder pour intégration card 460px du parcours unifié [RÉSOLUE]
 
-**Statut au 3 mai 2026** : créée par cadrage section 3.9 et section 7.3.8 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
+**Statut au 3 mai 2026** : créée par cadrage section 3.9 et section 7.3.8 du doc `docs/archives/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
 **Constat** : `sterny-react/src/components/rhythm/RhythmManualBuilder.jsx` a été livré le 2 mai après-midi avec un design pleine largeur (12 colonnes mensuelles qui scrollent horizontalement) qui ne tient pas dans la card 460px du parcours d'inscription unifié `InscriptionAlternantPage`.
 
@@ -549,7 +549,7 @@ Tous ces points sont **hors scope Phase 1**. Ils seront traités en **Phase 0bis
 
 ## DETTE #55 — Adaptation parcours proprio post-suppression INSERT OAuthHandler (Q5)
 
-**Statut au 3 mai 2026** : créée par cadrage section 4.10 du doc `docs/recherche/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
+**Statut au 3 mai 2026** : créée par cadrage section 4.10 du doc `docs/archives/UNIFICATION-INSCRIPTION.md` en conv Claude.ai 2.
 
 **Constat** : la décision Q5 (suppression de l'INSERT `users` dans le handler OAuth, cf. UNIFICATION-INSCRIPTION section 4) **casse le parcours proprio Google actuel** qui dépendait de cet INSERT. Aujourd'hui `InscriptionProprietairePage.jsx:72` appelle `signInWithOAuth` avec `sessionStorage.signup_type='proprietaire'` puis le handler `GoogleAuthHandler` INSERT `users` avec `type_user='proprietaire'` au callback. Sans le handler qui fait l'INSERT, le proprio Google se retrouve avec une session Auth active mais aucune ligne `public.users` correspondante.
 

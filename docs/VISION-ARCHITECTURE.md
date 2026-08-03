@@ -388,7 +388,7 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 
 **Ordre d'implémentation prévisionnel** : le chantier unification inscription doit être traité **avant** l'intégration de `RhythmManualBuilder` dans le parcours d'inscription. L'intégration `RhythmManualBuilder` se fera comme une étape du parcours unifié, une fois ce parcours en place. Faire l'inverse créerait du double travail (intégrer `RhythmManualBuilder` dans `CompleterProfilPage` actuel, puis le re-intégrer dans le parcours unifié après refonte).
 
-**Plan de chantier** : 1 session Claude.ai dédiée pour le cadrage (document `docs/recherche/UNIFICATION-INSCRIPTION.md` — modèle BDD final, séquence des étapes, design des écrans, gestion des 3 méthodes auth), puis 2-3 sessions d'implémentation avec commits atomiques par tranche, puis tests bout-en-bout sur 4 `type_user` × 3 méthodes auth = 12 parcours à valider.
+**Plan de chantier** : 1 session Claude.ai dédiée pour le cadrage (document `docs/archives/UNIFICATION-INSCRIPTION.md` — modèle BDD final, séquence des étapes, design des écrans, gestion des 3 méthodes auth), puis 2-3 sessions d'implémentation avec commits atomiques par tranche, puis tests bout-en-bout sur 4 `type_user` × 3 méthodes auth = 12 parcours à valider.
 
 **Bloquant pré-production** : oui. Aucun lancement opérationnel n'est envisageable tant que les 3 méthodes d'inscription ne convergent pas vers le même état BDD.
 
@@ -401,7 +401,7 @@ Objectif : **5 minutes maximum**, aucun concept technique à comprendre. L'utili
 - `users.a_logement` rejoint la liste des colonnes legacy à ne plus écrire (sémantique dérivable de `type_user IN ('hote', 'les_deux')` ou de `statut_ville_* = 'hote'`). Audit ciblé des lectures à mener avant suppression définitive (cohérent avec phase de gel VISION §9).
 - Le sens canonique de `type_user` est aligné sur le choix utilisateur explicite : intent "partage" → `type_user = 'hote'` (plus jamais `'locataire'` + `a_logement=true` comme dans `InscriptionRecherchePage` actuel). Lié à DETTE #50.
 - Photo et bio profil sont toutes deux RETIRÉES du wizard d'inscription (décision conv 26, 2 juin 2026). Le wizard ne capture que les champs structurants (type_user, villes, statuts, rhythm_calendar, date_naissance, sexe). Photo et bio sont demandées en post-inscription via progressive profiling, à deux moments d'incitation : (1) arrivée dashboard (checklist/badge profil complet), (2) au clic « Postuler » (message « augmente tes chances »). Motivation : réduire la friction d'inscription (le drop-off augmente fortement au-delà de 4-5 champs) et demander la photo quand elle devient pertinente. Bénéfice technique : E-7 n'a plus à gérer d'upload fichier entre l'ouverture de session et la RPC, ce qui supprime aussi l'incohérence actuelle d'un upload PhotoCropperModal effectué en E-6 avant ouverture de session. La complétude du profil « public » reste définie par les champs structurants, jamais par photo/bio (niveau cosmétique, candidature partable avec badge « profil basique »).
-- Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/recherche/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
+- Les champs profil `date_naissance`, `sexe`, `ecole`, `annee_etudes`, `filiere` (aujourd'hui dans `CompleterProfilPage`) sont intégrés au parcours unifié. Implications RGPD (`date_naissance`, `sexe` sont des données personnelles potentiellement sensibles) à signaler dans la section 6 du doc de cadrage `docs/archives/UNIFICATION-INSCRIPTION.md` pour consultation DPO.
 - **Simplification mono-ville E-4 (acté conv 12 du 6 mai 2026 soir)** : suite à 5 itérations infructueuses de design sur le toggle école/entreprise du E-4 en conv 11 (DETTE #64), décision produit actée — pour `type_user = locataire` ou `type_user = hote`, on ne demande qu'une seule ville à l'utilisateur ; pour `type_user = les_deux`, deux villes avec labels explicites ("Ville où tu proposes" / "Ville où tu cherches"), sans introduire la notion école/entreprise dans l'UX. Le toggle disparaît du parcours. Convention de stockage BDD associée documentée en §3.
 
 ---
@@ -450,7 +450,7 @@ La garde durcie sur `/inscription/proprietaire` (Q8) n'est pas une fermeture dé
 
 2. **Réversibilité stratégique** : le code de la garde doit être un simple guard isolable (un paramètre / une feature flag / une variable d'environnement, à arbitrer au moment de l'implémentation), pas une logique enchevêtrée dans la page proprio. Cas d'usage anticipé : si la traction Sterny le justifie plus tard, ouverture du parcours proprio au grand public sans nécessiter d'invitation locataire — on doit pouvoir le faire en flippant un flag, pas en refondant.
 
-Ces deux points sont à intégrer dans la tranche d'implémentation "durcissement garde proprio" du chantier UNIFICATION-INSCRIPTION (T5 du plan d'implémentation, cf. `docs/recherche/UNIFICATION-INSCRIPTION.md` § 7.3.5).
+Ces deux points sont à intégrer dans la tranche d'implémentation "durcissement garde proprio" du chantier UNIFICATION-INSCRIPTION (T5 du plan d'implémentation, cf. `docs/archives/UNIFICATION-INSCRIPTION.md` § 7.3.5).
 
 ### Rythme personnel comme moteur de la plateforme
 
@@ -485,7 +485,7 @@ Quand un nouveau planning est détecté pour une période future, l'UI prévient
 
 La spec UNIFICATION-INSCRIPTION §1.5 et §2.5 prévoyait initialement un INSERT `users` à E-1 + UPDATE partiels à chaque "Continuer", pour permettre un pattern de reprise après abandon en cours de parcours. L'implémentation livrée des sous-commits E-1 à E-4 (conv 5 à 12) a dévié de cette spec : aucune écriture BDD avant la RPC finale E-7. Cette dérive a été formalisée en conv 13 du 6 mai 2026 (soir bis) comme amendement définitif : report intégral des écritures à E-7 + miroir `sessionStorage` côté client pour le pattern de reprise.
 
-Conséquence : la RPC `complete_inscription_alternant` à E-7 reste la seule transaction BDD du parcours. Le pattern de reprise vit uniquement côté client via `sessionStorage`. Détails et justification dans `docs/recherche/UNIFICATION-INSCRIPTION.md` §1.5 (encart d'amendement).
+Conséquence : la RPC `complete_inscription_alternant` à E-7 reste la seule transaction BDD du parcours. Le pattern de reprise vit uniquement côté client via `sessionStorage`. Détails et justification dans `docs/archives/UNIFICATION-INSCRIPTION.md` §1.5 (encart d'amendement).
 
 ---
 

@@ -5,7 +5,7 @@
 // émet le calendrier matérialisé via onConfirm(materialized), sans aucune
 // écriture en base ; l'écriture (et le calcul des dates rhythm_start_date /
 // rhythm_end_date) est faite à E-7 par la RPC complete_inscription_alternant.
-// Voir docs/recherche/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
+// Voir docs/archives/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
 //
 // Cadrage : ETAT-COURANT bloc 2026-04-30 soir bis (Q1-Q9) + bloc 2026-05-02
 // après-midi (Q10 sélecteur d'année, Q11 troncature dynamique).
@@ -307,7 +307,7 @@ const RhythmManualBuilder = forwardRef(function RhythmManualBuilder({
     // Capture-only (conv 24) : aucune écriture en base ici. Le builder émet le
     // calendrier ; l'écriture one-pass (et le calcul des dates start/end) est
     // faite à E-7 par la RPC complete_inscription_alternant.
-    // Voir docs/recherche/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
+    // Voir docs/archives/UNIFICATION-INSCRIPTION.md amendement 31 mai 2026.
     setModalOpen(false);
     onConfirm(materialized);
   }, [materialize, clicked, onConfirm]);
