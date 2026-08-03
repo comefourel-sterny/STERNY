@@ -548,7 +548,7 @@
     color: #E8622A;
 }
 
-.gc-input, .gc-select {
+.gc-input {
     width: 100%;
     height: 36px;
     padding: 0 14px;
@@ -562,7 +562,7 @@
     color: #1E293B;
 }
 
-.gc-input:focus, .gc-select:focus {
+.gc-input:focus {
     outline: none;
     border-color: #E8622A;
     box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
@@ -590,20 +590,32 @@
     color: #9CA3AF;
 }
 
-.gc-select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: white;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 15px;
-    padding-right: 36px;
+/* Menu déroulant partagé (CustomSelect) aligné sur les champs gc- */
+.gc-champ-select .aw-customselect-trigger {
+    height: 36px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: normal;
 }
 
-.gc-select-placeholder {
+.gc-champ-select .aw-customselect-trigger:focus,
+.gc-champ-select .aw-customselect-trigger.open {
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+}
+
+.gc-champ-select .aw-customselect-trigger.placeholder .aw-customselect-value {
     color: #9CA3AF;
+}
+
+.gc-champ-select-invalide .aw-customselect-trigger,
+.gc-champ-select-invalide .aw-customselect-trigger:hover:not(:disabled) {
+    border-color: var(--error);
+}
+
+.gc-champ-select-invalide .aw-customselect-trigger:focus,
+.gc-champ-select-invalide .aw-customselect-trigger.open {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .gc-erreur {

@@ -6,6 +6,7 @@ import useAccountActions from '../../hooks/useAccountActions'
 import { getInitials } from '../../utils/formatters'
 import PasswordRevealButton from '../../components/PasswordRevealButton'
 import { useShakeButton } from '../../components/auth-wizard/useShakeButton'
+import CustomSelect from '../../components/auth-wizard/CustomSelect'
 import './GestionComptePage.css'
 
 // Icônes SVG inline (style Feather, cohérent avec ParametresPage) — pas de lucide-react.
@@ -91,6 +92,13 @@ function BoutonEnregistrer({ onSave, modifie, loading, ok, erreur, btnRef }) {
     </div>
   )
 }
+
+const SEXE_OPTIONS = [
+  { value: 'homme', label: 'Homme' },
+  { value: 'femme', label: 'Femme' },
+  { value: 'autre', label: 'Autre' },
+  { value: 'non-precise', label: 'Non précisé' },
+]
 
 export default function GestionComptePage() {
   const { user, signOut } = useAuth()
@@ -502,13 +510,15 @@ export default function GestionComptePage() {
               <div className="gc-form-row">
                 <div className="gc-champ"><label className="gc-label">Date de naissance <span className="gc-required">*</span></label><input className={`gc-input${erreursChamps.dateNaissance ? ' gc-champ-invalide' : ''}`} type="text" value={dateNaissance} onChange={handleDateInput} placeholder="JJ/MM/AAAA" maxLength="10" autoComplete="off" inputMode="numeric" /><div className="gc-champ-erreur-slot">{erreursChamps.dateNaissance && <p className="gc-champ-erreur">{erreursChamps.dateNaissance}</p>}</div></div>
                 <div className="gc-champ"><label className="gc-label">Sexe <span className="gc-required">*</span></label>
-                  <select className={`gc-select${!sexe ? ' gc-select-placeholder' : ''}${erreursChamps.sexe ? ' gc-champ-invalide' : ''}`} value={sexe} onChange={e => { const v = e.target.value; setSexe(v); if (erreursChamps.sexe) validerChamp('sexe', { sexe: v }) }}>
-                    <option value="" disabled>Sélectionner</option>
-                    <option value="homme">Homme</option>
-                    <option value="femme">Femme</option>
-                    <option value="autre">Autre</option>
-                    <option value="non-precise">Non précisé</option>
-                  </select>
+                  <div className={`gc-champ-select${erreursChamps.sexe ? ' gc-champ-select-invalide' : ''}`}>
+                    <CustomSelect
+                      name="sexe"
+                      options={SEXE_OPTIONS}
+                      value={sexe}
+                      onChange={e => { const v = e.target.value; setSexe(v); if (erreursChamps.sexe) validerChamp('sexe', { sexe: v }) }}
+                      placeholder="Sélectionner"
+                    />
+                  </div>
                   <div className="gc-champ-erreur-slot">{erreursChamps.sexe && <p className="gc-champ-erreur">{erreursChamps.sexe}</p>}</div>
                 </div>
               </div>
