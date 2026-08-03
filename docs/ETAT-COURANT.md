@@ -2,11 +2,35 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-07-31 — Surface unifiée de gestion de compte : patchs 0 à 3a
-livrés et validés visuellement sur /compte. Infos personnelles fonctionnelle (photo, recadrage,
-5 champs, bouton Enregistrer, erreurs à deux niveaux). Reste : patchs 3b à 7.
+**Dernière mise à jour** : 2026-08-01
+[VRAIE VIE] Doctrine public/privé actée et loguée en CONTEXTE-PROJET §1 ter. Sujet 1 de la file du 31/07 clos.
+[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés et validés visuellement sur /compte. Reste : patchs 3b à 7.
 
 ---
+
+## 2026-08-01 — [VRAIE VIE] Doctrine public/privé actée et loguée (CONTEXTE-PROJET §1 ter)
+
+Un arbitrage rendu en conversation les jours précédents n'avait jamais été écrit. Il l'est désormais : nouvelle section **§1 ter — Doctrine public/privé** dans CONTEXTE-PROJET.md, insérée après §1 bis (commit `6e7172b`, +74/−1). Elle vaut pour TOUS les supports — LinkedIn, site, titre Google, mails de démarchage, dossiers d'accompagnement, échanges écoles et agences — et pas seulement pour LinkedIn, contrairement à ce que son origine laissait croire.
+
+EMPLACEMENT, MOTIF DU CHOIX : CONTEXTE-PROJET est le document statique des règles de méthode. VISION-ARCHITECTURE porte la direction produit, ETAT-COURANT porte de l'état daté qui se périme. Une règle qui vaut pour tous les supports et ne change pas au fil des semaines appartient au statique, aux côtés des règles Git et des règles SQL. Le placement en prolongement direct de §1 bis évite de créer un nouveau réflexe de lecture : §1 bis était déjà la section à lire avant toute rédaction publique.
+
+LIGNE DE SÉPARATION ACTÉE : **§1 bis = ce qui concerne Côme la personne. §1 ter = ce qui concerne Sterny le projet.** §1 ter renvoie à §1 bis dès qu'un élément touche au personnel. Conséquence appliquée : les items « chiffre d'inscrits » et « date de lancement » ont été RETIRÉS de la liste d'exclusions de §1 bis et descendus en §1 ter — ils décrivent le projet, pas la personne. Un renvoi les remplace en §1 bis.
+
+CONTENU, EN BREF : un test de tri en une question (constat ou réalisation → public ; paramètre d'exécution → privé), une colonne publique, une colonne privée, et une distinction entre « privé structurellement » (mécaniques, modèle de données, commission, prix) et « privé pour l'instant » (partenariats en négociation, résultats de l'étude, calendrier) — cette seconde catégorie ne bascule que par décision explicite, jamais par usure de conversation.
+
+EXCEPTION ASSUMÉE À LA RÈGLE DE RÉDACTION : §1 ter a été rédigée par Claude, pas par Côme. La règle « Côme rédige, Claude corrige » (CONTEXTE §1 bis) vise les textes PUBLICS, où la voix doit être celle de Côme. §1 ter est un document interne de méthode, au même titre que les règles Git. Exception levée explicitement par Côme, à ne pas généraliser aux textes publics.
+
+RAISONNEMENT CONSIGNÉ DANS LA SECTION, ET POURQUOI : la conclusion « publier plutôt que se taire » a été contre-intuitive pour Côme, dont la crainte initiale était le vol d'idée. Les trois arguments qui l'ont retournée sont écrits DANS §1 ter, volontairement, pour qu'aucune session future ne les reconstruise de travers et pour qu'un futur retour d'inquiétude reparte de là plutôt que de zéro. Ne pas les résumer ni les élaguer.
+
+DOUBLON VOLONTAIRE, DOCUMENTÉ : « Pépite / SNEE / Le Poool tant que ce n'est pas accordé » figure à la fois en §1 bis et en §1 ter. Ce n'est pas un oubli et ce n'est PAS à corriger au nom de la discipline anti-redondance de CONTEXTE §8 bis. La règle a deux fondements distincts (respect d'un tiers en §1 ter, situation personnelle d'accompagnement en §1 bis) et son coût d'infraction est trop élevé pour risquer qu'elle disparaisse d'un côté. Le motif est écrit dans §1 ter même.
+
+NOUVEAU GEL DE LANGAGE ACTÉ — pendant Q-CPI du gel Q-AVO : tant que les questions Q-CPI ne sont pas tranchées, aucun support public n'affirme ni ne suggère que « Sterny » est une marque déposée. Pas de symbole ®, pas de mention « marque déposée », aucune formule équivalente en pied de page, bannière, signature ou mentions légales. Sterny est un nom commercial. Même logique que le secteur d'activité déclaré (« Technologie, information et Internet », jamais « Immobilier ») : ne rien affirmer publiquement sur un statut qu'aucun professionnel n'a confirmé. Rattachement fermé dans les deux sens — §1 ter renvoie au Sujet 3 (marque), le Sujet 3 renvoyait déjà à la doctrine.
+
+DÉCOMPTE GIT RECTIFIÉ, point de reprise du 31/07 refermé : le chiffre « 12 commits en attente » annoncé le 31/07 était FAUX. `git log origin/feat/unification-inscription..HEAD --oneline` remonte **2 commits** en avance (`2731ec3` marque, `6e7172b` doctrine). L'écart venait d'un décompte qui ignorait un push antérieur (`2d34fbb..3299c18`) : `e0a9f86` (section Infos LinkedIn) est déjà sur origin. Aucun commit perdu. Leçon de méthode : un décompte annoncé par une session n'est pas un décompte vérifié — exiger la sortie de la commande.
+
+SUITE IMMÉDIATE : le sujet 2 (descriptions d'expérience LinkedIn, priorité Sterny) devient déblocable. C'est le premier test réel de §1 ter — la description d'expérience Sterny est le seul endroit du profil où le mécanisme peut apparaître, depuis qu'il a été sorti de la section Infos. Reste également ouvert : mail à Le Poool sur la marque, et la vérification du présent « je cumule plusieurs emplois » en section Infos au regard des dates des entrées Expérience.
+
+POINT ANNEXE À TRAITER PLUS TARD : 3 fichiers non suivis (`??`) traînent dans `docs/`. Hors périmètre, sans effet sur les commits du jour, mais à identifier et trancher — un fichier non suivi finit perdu ou commité par accident.
 
 ## 2026-07-29 — Surface unifiée de gestion de compte : patchs 0 et 1 livrés
 
