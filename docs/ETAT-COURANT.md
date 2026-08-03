@@ -2,11 +2,31 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-01
+**Dernière mise à jour** : 2026-08-03
 [VRAIE VIE] Doctrine public/privé actée et loguée en CONTEXTE-PROJET §1 ter. Sujet 1 de la file du 31/07 clos.
-[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés et validés visuellement sur /compte. Reste : patchs 3b à 7.
+[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés, champ Sexe porté sur le CustomSelect partagé. Reste : corriger l'upload photo silencieux, puis patch 3b.
 
 ---
+
+## 2026-08-03 — [DEV] Champ Sexe de /compte porté sur le CustomSelect partagé ; upload photo cassé en local
+
+**Patch livré (d1d80fb).** Le `<select>` natif du champ Sexe de `/compte` affichait le menu système de macOS : une balise `<select>` délègue le rendu de sa liste au système d'exploitation, aucun CSS ne peut l'atteindre. Remplacé par le composant partagé `components/auth-wizard/CustomSelect`, déjà consommé par le champ Sexe du tunnel d'inscription avec les mêmes options. Son `onChange` émet `{ target: { name, value } }`, donc le handler existant a été repris verbatim.
+
+**Doctrine de surcouche (décision).** Le composant partagé n'est pas modifié : il est consommé par l'inscription, et changer sa hauteur y produirait une régression invisible depuis `/compte`. Alignement par un wrapper `.gc-champ-select` qui redéclare hauteur (36px au lieu de 44), rayon (10px au lieu de 12), police et ombre de focus, plus l'état d'erreur. La cohérence qui compte est celle des champs voisins de la même carte, pas celle d'une page que l'utilisateur ne regarde pas à ce moment-là.
+Lecture actée de la règle « recopié, jamais importé » : elle vise les feuilles de style de PAGES (volumineuses, non scopées, partagées entre pages), pas les feuilles de COMPOSANT autonomes dont toutes les classes sont préfixées. Importer un composant partagé est ce que la règle 8 ter exige.
+Le prompt d'audit initial supposait deux chemins de fichier au lieu de les localiser par `find` — corrigé avant exécution. La règle « `find` avant `cat` » vaut aussi pour les prompts destinés à Claude Code.
+
+**Nettoyage.** Le champ Sexe étant le seul consommateur de `.gc-select` en JSX, les règles devenues mortes ont été retirées (`.gc-select`, `.gc-select-placeholder`, chevron en `background-image`).
+
+**Upload photo cassé en local — deux défauts distincts (DETTE #153, #154).** Diagnostic par le panneau réseau : `POST /storage/v1/object/profils/...` renvoie `{"statusCode":"404","error":"Bucket not found"}`, tandis que l'`update` de la table `users` renvoie 204. L'écriture en base de `/compte` fonctionne donc ; seul le stockage échoue, faute de bucket versionné en local. Le second défaut est plus grave : l'erreur d'upload est avalée et le bouton affiche « Enregistré ✓ ». Portée production, quatre pages concernées.
+
+**Leçon de méthode.** Le patch 3a a été logué « validé visuellement » et il l'était : la photo s'affichait après recadrage. Ce qui n'a pas été vérifié, c'est la persistance par rechargement — précisément la vérification imposée au patch 2 pour les préférences email, à cause de DETTE #149. La règle existait, elle n'a pas été portée jusqu'à la photo. « Validé visuellement » ne vaut pas « validé » : toute écriture se vérifie par rechargement.
+
+**Faux positif écarté.** La validation de la date de naissance a été soupçonnée de laisser passer une année à 2 chiffres. Vérification faite : « Date de naissance incomplète » s'affiche correctement sur `09/05/05`. L'observation initiale portait sur l'état avant clic sur Enregistrer, ce qui est le comportement voulu. Aucune dette créée.
+
+**Correction du titre du bloc 2026-07-29.** Ce bloc a reçu par insertions successives le contenu des patchs 2 et 3a, sa ligne RESTE étant remplacée à chaque fois. Son titre annonce toujours « patchs 0 et 1 livrés ». À corriger dans ce même commit.
+
+**RESTE** : corriger l'échec d'upload silencieux sur `GestionComptePage` (DETTE #154), puis patch 3b (Tes études + À propos de toi). Chantier buckets en session dédiée.
 
 ## 2026-08-01 — [VRAIE VIE] Doctrine public/privé actée et loguée (CONTEXTE-PROJET §1 ter)
 
@@ -32,7 +52,7 @@ SUITE IMMÉDIATE : le sujet 2 (descriptions d'expérience LinkedIn, priorité St
 
 POINT ANNEXE À TRAITER PLUS TARD : 3 fichiers non suivis (`??`) traînent dans `docs/`. Hors périmètre, sans effet sur les commits du jour, mais à identifier et trancher — un fichier non suivi finit perdu ou commité par accident.
 
-## 2026-07-29 — Surface unifiée de gestion de compte : patchs 0 et 1 livrés
+## 2026-07-29 → 07-31 — Surface unifiée de gestion de compte : patchs 0 à 3a livrés
 
 **Décision structurante actée — fichier neuf, pas de transformation en place.** La surface est
 construite dans `src/pages/compte/GestionComptePage.jsx/.css` (route `/compte`) plutôt qu'en

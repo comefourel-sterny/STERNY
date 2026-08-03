@@ -1811,3 +1811,33 @@ centrage, padding), pas seulement `display`, sinon DETTE #86 ressurgit sur une p
 Piège de spécificité : `.modal-pwd-group input` (0-1-1) écrase `.pw-has-reveal` (0-1-0), d'où
 l'override `input.pw-has-reveal { padding-right:44px }` présent en double — à ne pas oublier
 dans la version scopée, sinon l'œil se superpose au texte.
+
+## DETTE #153 — Buckets de stockage non versionnés : base locale non reproductible
+Les 5 buckets référencés par le code (`profils`, `documents`, `annonces-photos`, `etats-des-lieux`, `rhythm-documents`) n'existent que sur le projet distant, créés à la main via le dashboard. Aucune migration de `supabase/migrations/` ne les crée, `seed.sql` ne les mentionne pas, et la section `[storage.buckets]` de `config.toml` (l.111) est commentée. Les policies RLS qui les référencent vivent dans `supabase/remote_auth_storage.sql`, fichier absent de `migrations/` donc jamais rejoué par `db reset`.
+Conséquence : en local, `storage.buckets` est vide et tout upload renvoie `{"statusCode":"404","error":"Bucket not found"}`. Quatre fonctionnalités sont intestables en local (photo de profil, documents de dossier, photos d'annonce, état des lieux), et tout `supabase db reset` les recasse silencieusement.
+Résolution : session dédiée. Lire d'abord la configuration réelle des 5 buckets en production (public/privé, limite de taille, types MIME autorisés) AVANT d'écrire la migration — les créer à l'aveugle produirait une divergence local/production, soit exactement le défaut à corriger. Traiter au passage le rattachement des policies de `remote_auth_storage.sql` à une migration versionnée.
+Découverte : 2026-08-03, en testant l'upload photo sur /compte.
+
+## DETTE #154 — Échec d'upload photo silencieux : « Enregistré ✓ » affiché malgré la perte du fichier
+`GestionComptePage.jsx` l.345-346 : `const { error: upErr } = await ...storage.from('profils').upload(...)` puis `if (!upErr) { ... updateData.photo_profil_url = ... }`. L'erreur est captée dans `upErr` mais jamais relancée ni affichée. L'`update` des autres colonnes réussit, `if (error) throw error` ne se déclenche pas, et le bouton affiche « Enregistré ✓ » alors que la photo n'a pas été envoyée.
+Même schéma dans `ModifierProfilPage.jsx` l.443-444, `ModifierProfilProprietairePage.jsx` l.231-233, `CompleterProfilPage.jsx` l.752-754.
+Portée production, pas seulement locale : un fichier trop lourd, une coupure réseau ou un quota atteint produiront le même mensonge chez un utilisateur réel.
+Même famille que DETTE #149 (succès affiché sans écriture en base), neutralisée au patch 2 sur les préférences email par vérification au rechargement — vigilance non portée jusqu'à la photo au patch 3a.
+Résolution recommandée : corriger `GestionComptePage` seule (erreur globale sur la ligne du bouton, photo non appliquée, formulaire non réinitialisé). `ModifierProfilPage` et `ParametresPage` sont vouées à la suppression au patch 7 : les corriger serait du travail jeté. `CompleterProfilPage` et `ModifierProfilProprietairePage` restent à trancher.
+Découverte : 2026-08-03.
+
+## DETTE #155 — CustomSelect n'expose pas de prop d'erreur, contrairement aux autres champs auth-wizard
+`components/auth-wizard/TextInput` et `AutocompleteInput` acceptent `hasError`. `components/auth-wizard/CustomSelect.jsx` (props l.11-21) n'a aucun équivalent : ni `hasError`, ni `error`, ni `invalid`, et `CustomSelect.css` ne définit aucune classe d'erreur.
+Contournements en place : le wizard d'inscription n'affiche l'erreur du champ Sexe qu'en bannière globale (`AuthErrorBanner`) ; `/compte` passe par une surcouche locale `.gc-champ-select-invalide` posée sur un wrapper.
+La surcouche a exigé un variant `:hover:not(:disabled)` pour dépasser la spécificité (0,3,0) de la règle de survol du composant — sans quoi la bordure rouge redevenait grise au survol, précisément au moment où l'utilisateur regarde le champ fautif.
+Résolution : ajouter `hasError` au composant partagé, aligné sur la signature de `TextInput`, puis retirer la surcouche de `/compte`. À faire dans une session touchant déjà `auth-wizard/`, jamais depuis un patch local : le composant est consommé par le tunnel d'inscription.
+Découverte : 2026-08-03.
+
+## DETTE #156 — Fragmentation des menus déroulants : 1 composant partagé, 3 copies inline, 13 select natifs
+Inventaire au 2026-08-03 :
+- partagé : `components/auth-wizard/CustomSelect.jsx` (l.11-114, classes `aw-customselect-*`), consommé par `InscriptionAlternantPage`, `VilleNatureField`, `GestionComptePage` et la sandbox dev
+- copies inline non partagées, fonctionnellement équivalentes : `CpSelect` (`pages/auth/CompleterProfilPage.jsx` l.170-223), `CustomSelect` homonyme (`pages/auth/InscriptionRecherchePage.jsx` l.49-116), `CaSelect` (`pages/annonce/CreerAnnoncePage.jsx` l.12-57)
+- 12 `<select>` natifs restants après le patch d1d80fb, répartis sur 8 fichiers
+Le champ Sexe était rendu de 3 façons différentes selon la page ; `/compte` est aligné depuis d1d80fb, `ModifierProfilPage` reste en natif (suppression prévue patch 7).
+Résolution : convergence progressive vers le composant partagé, page par page, jamais en campagne globale. Prérequis : DETTE #155 (prop d'erreur), sans quoi chaque adoption crée une nouvelle surcouche locale.
+Découverte : 2026-08-03.
