@@ -80,6 +80,41 @@ non-écriture n'est valable qu'à partir d'un rechargement préalable et d'un un
 - Messages d'erreur spécifiques (session expirée, connexion instable) non branchés : l'objet
   d'erreur réel n'a pas encore été lu en console.
 
+**Bouton « Retirer » construit puis abandonné (décision).** Un bouton d'annulation de la photo
+sélectionnée a été codé, testé visuellement, puis supprimé sans être commité. Deux motifs :
+il décalait le bouton « Modifier » dans une ligne qui écarte ses éléments aux deux extrémités,
+et surtout il occupait l'interface en permanence pour un cas qui ne survient qu'en cas de panne
+du Storage, dont le contournement est un simple rechargement de page. Variante proposée en
+séance (le bouton « Modifier » rouvre la modale de recadrage sur la photo existante) écartée
+aussi : recadrer une photo déjà enregistrée impose de recharger l'image depuis le Storage
+distant pour la redessiner dans le canvas, ce qui ouvre des questions d'accès aux fichiers
+distants étrangères au sujet. « Modifier » ouvre donc directement le sélecteur de fichiers,
+comme avant. À ne pas reconstruire sans avoir lu ce paragraphe.
+
+**Conséquence assumée du tout-ou-rien, à connaître.** Tant que la photo part au clic sur
+Enregistrer, un utilisateur qui a sélectionné une photo pendant une panne du Storage ne peut
+plus enregistrer ses champs texte : chaque clic rejoue l'upload et rebute sur la même panne,
+et rien ne permet d'annuler la sélection. Sortie de secours : recharger la page. C'est le prix
+direct du choix tout-ou-rien, identifié et accepté, pas un oubli.
+
+**PISTE DE RÉSOLUTION STRUCTURELLE — déplacer l'upload au recadrage (à traiter en session
+dédiée).** La version propre consiste à uploader la photo à la confirmation du recadrage et non
+au clic sur Enregistrer. Enregistrer n'écrirait alors plus que du texte : plus aucun blocage
+possible, la question du tout-ou-rien disparaît d'elle-même, et l'erreur d'upload survient au
+moment et à l'endroit qui l'ont causée. Cela rouvre la décision du 03/08 (upload à
+l'enregistrement pour éviter les fichiers orphelins), dont le motif tombe si le nom du fichier
+passe de `${user.id}-${Date.now()}.${ext}` à un nom fondé sur le seul identifiant utilisateur :
+chaque envoi écrase le précédent, un utilisateur = un fichier, plus d'orphelins. Possible ici
+car le recadrage produit toujours un JPEG, donc l'extension ne varie jamais. POINT À TRAITER
+DANS CETTE SESSION, ne pas le découvrir en production : à nom de fichier constant, l'URL ne
+change plus et le cache navigateur (cacheControl 3600) peut continuer à servir l'ancienne
+image après un changement de photo. Chantier hors périmètre du patch 3b.
+
+**Dette de couleur.** Le gris `#6B7280` retenu pour le bouton abandonné n'a pas été commité,
+mais le constat reste : GestionComptePage.css n'a aucune variable de gris et en utilise trois
+en dur (#9CA3AF, #6B7280, #94A3B8). Rattaché à DETTE #56 (tokenisation des couleurs), aucune
+action isolée à prévoir.
+
 ## 2026-08-03 — [DEV] Champ Sexe de /compte porté sur le CustomSelect partagé ; upload photo cassé en local
 
 **Patch livré (d1d80fb).** Le `<select>` natif du champ Sexe de `/compte` affichait le menu système de macOS : une balise `<select>` délègue le rendu de sa liste au système d'exploitation, aucun CSS ne peut l'atteindre. Remplacé par le composant partagé `components/auth-wizard/CustomSelect`, déjà consommé par le champ Sexe du tunnel d'inscription avec les mêmes options. Son `onChange` émet `{ target: { name, value } }`, donc le handler existant a été repris verbatim.
