@@ -8,6 +8,77 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-08-03 (suite) — [DEV] Upload photo silencieux corrigé + doctrine d'échec partiel actée
+
+**DÉCISION PRODUIT STRUCTURANTE — tout ou rien sur un enregistrement multi-étapes.** Quand une
+partie d'un enregistrement échoue (ici l'envoi du fichier vers le Storage) alors que le reste
+pourrait s'écrire, RIEN ne s'écrit. L'opération est interrompue avant l'écriture en base, un
+message d'erreur explicite s'affiche, et les valeurs saisies restent à l'écran — l'utilisateur
+ne perd aucune saisie. Motif : « Enregistré ✓ » ne doit jamais signifier « enregistré en
+partie », sous peine de rouvrir exactement DETTE #149. Vaut au-delà de la photo : la question
+se reposera à l'identique au patch 4 (documents + garant), et la réponse est déjà tranchée.
+
+**Option écartée, et pourquoi elle a été sérieusement examinée.** Côme a d'abord penché pour
+l'enregistrement partiel (écrire les textes, signaler que la photo n'est pas passée), sur
+l'argument réel qu'un utilisateur ayant modifié cinq champs préfère que son travail parte.
+Écartée après constat que la variante coûtait trois arbitrages supplémentaires (message
+persistant plutôt qu'auto-effacé, cohabitation d'un bouton vert et d'un texte rouge, sort de
+la photo en mémoire) là où le tout-ou-rien n'en coûte aucun, et que l'objection de fond tombe
+puisque les champs ne se vident pas. À ne pas rouvrir sans fait nouveau.
+
+**Fait technique décisif établi par l'audit** : l'upload (l.345) se produit AVANT le .update()
+(l.348). Au moment de l'échec, la base n'a pas encore été touchée — il n'y a donc aucun
+rollback à écrire, seulement une interruption. C'est ce fait qui a rendu le tout-ou-rien
+gratuit et qui a orienté la décision.
+
+**Cause du silence** : l'erreur d'upload était captée dans `upErr` puis lue une seule fois,
+dans un `if (!upErr)`. Aucune branche `sinon` : en cas d'échec la variable était abandonnée,
+le flux continuait, le .update() des colonnes texte réussissait, et le chemin de succès
+s'exécutait jusqu'à `setInfosSaved(true)`. Ni relance, ni affichage, ni console.error.
+
+**Correctif livré (commit `1694626`, GestionComptePage.jsx + .css)** : branche `if (upErr)`
+qui journalise l'objet d'erreur ENTIER en console puis relance une erreur métier, avant le
+.update(). Le catch existant et `afficherErreurInfos` ne sont pas modifiés — le mécanisme
+d'erreur du patch 3a absorbe le cas tel quel.
+
+**Signalement visuel sur le cercle de la photo.** Le message seul, en bas à droite, est trop
+discret quand l'élément fautif est en haut à gauche. État dédié `photoErreur`, volontairement
+distinct de `infosErreur` : ce dernier porte aussi les erreurs d'écriture en base, et le
+cercle rougirait à tort. Instance distincte de `useShakeButton` pour le cercle, le hook
+partagé n'est pas modifié.
+
+**Deux points CSS tranchés, à ne pas re-litiger.** (1) `.gc-photo-invalide` seule perdait
+contre `.gc-photo-circle:hover`, plus spécifique : sélecteur renforcé en
+`.gc-photo-circle.gc-photo-invalide`, à égalité de spécificité et déclaré après, donc
+prioritaire — sans `!important`. (2) Une bordure se trace vers l'INTÉRIEUR et rognait la
+photo : remplacée par `outline` + `outline-offset: 3px`, anneau entièrement extérieur.
+Divergence assumée par rapport à la grammaire des champs (qui utilise une bordure), motivée
+par le fait qu'un cercle contient une image jusqu'au bord, contrairement à un champ de texte.
+
+**Extinction synchronisée** : le timeout unique de 3 s d'`afficherErreurInfos` éteint
+désormais le message ET le cercle. Aucun second timeout créé — deux minuteurs distincts
+finiraient par se désynchroniser.
+
+**Validation par RECHARGEMENT, et faux négatif traversé.** Un premier test a montré le prénom
+conservé après rechargement, ce qui semblait invalider le correctif. Il était faussé : un clic
+Enregistrer antérieur, avant la sélection de la photo, avait déjà écrit la valeur. Rejeu propre
+(rechargement, valeur témoin, une seule sauvegarde) : le prénom revient à sa valeur d'origine,
+rien n'est parti en base. Leçon : sur une page où l'on enchaîne les essais, un test de
+non-écriture n'est valable qu'à partir d'un rechargement préalable et d'un unique clic.
+
+**Constats ouverts, non traités dans ce commit** :
+- Aucun moyen visible de RETIRER une photo déjà recadrée sans recharger la page. Le bouton
+  « Modifier » remplace, il ne retire pas ; `cancelCrop` n'agit qu'avant confirmation. En
+  production, si le Storage tombe, l'utilisateur est bloqué : il ne peut plus enregistrer ses
+  champs texte tant qu'il ne recharge pas.
+- Le bouton Enregistrer apparaît ACTIF juste après un rechargement, alors qu'aucun champ n'a
+  été modifié. La comparaison par valeur considère qu'au moins un champ diffère de son état
+  chargé — format de date suspecté, non vérifié.
+- Non testé : le bouton s'active-t-il quand SEULE la photo change ? La comparaison ne porte
+  que sur les 5 champs texte.
+- Messages d'erreur spécifiques (session expirée, connexion instable) non branchés : l'objet
+  d'erreur réel n'a pas encore été lu en console.
+
 ## 2026-08-03 — [DEV] Champ Sexe de /compte porté sur le CustomSelect partagé ; upload photo cassé en local
 
 **Patch livré (d1d80fb).** Le `<select>` natif du champ Sexe de `/compte` affichait le menu système de macOS : une balise `<select>` délègue le rendu de sa liste au système d'exploitation, aucun CSS ne peut l'atteindre. Remplacé par le composant partagé `components/auth-wizard/CustomSelect`, déjà consommé par le champ Sexe du tunnel d'inscription avec les mêmes options. Son `onChange` émet `{ target: { name, value } }`, donc le handler existant a été repris verbatim.
