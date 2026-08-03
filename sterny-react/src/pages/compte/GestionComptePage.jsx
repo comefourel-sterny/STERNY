@@ -144,6 +144,7 @@ export default function GestionComptePage() {
   // Photo + recadrage (code maison porté à l'identique de ModifierProfilPage — géométrie non modifiée).
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
+  const [photoErreur, setPhotoErreur] = useState(false)
   const photoInputRef = useRef(null)
   const [showCrop, setShowCrop] = useState(false)
   const [cropImageSrc, setCropImageSrc] = useState('')
@@ -154,6 +155,7 @@ export default function GestionComptePage() {
   const [cropZoomMax, setCropZoomMax] = useState(300)
   const infosErreurTimeout = useRef(null)
   const { ref: shakeRef, shake: shakeBouton } = useShakeButton()
+  const { ref: photoShakeRef, shake: photoShake } = useShakeButton()
 
   useEffect(() => {
     if (!user) return
@@ -230,8 +232,8 @@ export default function GestionComptePage() {
   // --- Photo + recadrage : fonctions portées verbatim, géométrie inchangée (zone 260px, canvas 400px) ---
   function handlePhotoSelect(e) { if (e.target.files[0]) openCropper(e.target.files[0]) }
   function openCropper(file) {
-    if (!file.type.match('image.*')) { afficherErreurInfos('Fichier doit être une image'); return }
-    if (file.size > 5 * 1024 * 1024) { afficherErreurInfos('Photo max 5 MB'); return }
+    if (!file.type.match('image.*')) { afficherErreurInfos('Fichier doit être une image'); setPhotoErreur(true); photoShake(); return }
+    if (file.size > 5 * 1024 * 1024) { afficherErreurInfos('Photo max 5 MB'); setPhotoErreur(true); photoShake(); return }
     const reader = new FileReader()
     reader.onload = ev => { setCropImageSrc(ev.target.result); setShowCrop(true) }
     reader.readAsDataURL(file)
@@ -281,6 +283,7 @@ export default function GestionComptePage() {
     canvas.toBlob(blob => {
       setPhotoFile(new File([blob], 'photo-profil.jpg', { type: 'image/jpeg' }))
       setPhotoPreviewUrl(URL.createObjectURL(blob)); setShowCrop(false)
+      setPhotoErreur(false)
       if (photoInputRef.current) photoInputRef.current.value = ''
     }, 'image/jpeg', 0.9)
   }
@@ -289,7 +292,7 @@ export default function GestionComptePage() {
     setInfosErreur(message)
     shakeBouton()
     clearTimeout(infosErreurTimeout.current)
-    infosErreurTimeout.current = setTimeout(() => setInfosErreur(''), 3000)
+    infosErreurTimeout.current = setTimeout(() => { setInfosErreur(''); setPhotoErreur(false) }, 3000)
   }
 
   // Validation pure — retourne { champ: message } ne contenant QUE les champs en défaut.
@@ -336,6 +339,7 @@ export default function GestionComptePage() {
     }
     setErreursChamps({})
     setInfosErreur('')
+    setPhotoErreur(false)
     setInfosLoading(true)
     try {
       const updateData = { prenom: prenom.trim(), nom: nom.trim(), telephone: telephone.trim(), sexe, date_naissance: dateNaissanceISO }
@@ -343,7 +347,14 @@ export default function GestionComptePage() {
         const ext = photoFile.name.split('.').pop()
         const fileName = `${user.id}-${Date.now()}.${ext}`
         const { error: upErr } = await supabaseClient.storage.from('profils').upload(fileName, photoFile, { cacheControl: '3600', upsert: true })
-        if (!upErr) { const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(fileName); updateData.photo_profil_url = urlData.publicUrl }
+        if (upErr) {
+          console.error('[compte] echec upload photo profil', upErr)
+          setPhotoErreur(true)
+          photoShake()
+          throw new Error("Photo non envoyée, rien n'a été enregistré.")
+        }
+        const { data: urlData } = supabaseClient.storage.from('profils').getPublicUrl(fileName)
+        updateData.photo_profil_url = urlData.publicUrl
       }
       const { error } = await supabaseClient.from('users').update(updateData).eq('id', user.id)
       if (error) throw error
@@ -483,7 +494,8 @@ export default function GestionComptePage() {
               <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handlePhotoSelect} />
               <div className="gc-ligne gc-ligne-photo">
                 <div
-                  className="gc-photo-circle"
+                  ref={photoShakeRef}
+                  className={`gc-photo-circle${photoErreur ? ' gc-photo-invalide' : ''}`}
                   onClick={() => photoInputRef.current?.click()}
                   title="Modifier ta photo"
                   role="button"

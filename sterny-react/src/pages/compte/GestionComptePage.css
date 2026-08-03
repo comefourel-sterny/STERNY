@@ -658,6 +658,11 @@
     border-color: #E8622A;
 }
 
+.gc-photo-circle.gc-photo-invalide {
+    outline: 2px solid var(--error);
+    outline-offset: 3px;
+}
+
 .gc-photo-placeholder svg {
     width: 28px;
     height: 28px;
