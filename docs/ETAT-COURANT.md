@@ -2,12 +2,107 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-03
+**Dernière mise à jour** : 2026-08-07
 [VRAIE VIE] Doctrine public/privé actée en CONTEXTE-PROJET §1 ter, puis appliquée à la description d'expérience Sterny sur LinkedIn. Sujets 1 et 2 de la file du 31/07 clos.
-[DEV] Surface unifiée de gestion de compte : patchs 0 à 3a livrés et validés. Upload photo
-silencieux corrigé (tout ou rien sur échec partiel). Reste : patchs 3b à 7.
+[DEV] Surface unifiée de gestion de compte : patchs 0 à 3b livrés et validés. Extinction
+temporisée des erreurs de champ unifiée sur les deux catégories. Reste : patchs 3c à 7.
 
 ---
+
+## 2026-08-07 — [DEV] Patch 3b livré : Tes études + À propos de toi, fonction d'enregistrement commune, extinction temporisée des erreurs de champ
+
+**DÉCISION D'ARCHITECTURE ACTÉE — fonction commune paramétrée par la liste de colonnes.**
+`enregistrerCategorie({ cle, valider, colonnes, avantEcriture, champsInitiaux })` introduite au
+patch 3b et utilisée par les deux nouvelles catégories. `enregistrerInfosPersonnelles` n'est PAS
+migrée : elle venait d'être corrigée et vérifiée, la toucher aurait remis en jeu du code validé.
+Sa migration est portée au patch 5, déjà prévu pour la revue finale de la sauvegarde. Deux
+mécanismes coexistent temporairement, c'est assumé et daté.
+Motif décisif : la liste des colonnes écrites devient un argument déclaré au lieu d'un objet
+construit à la main sous un commentaire d'avertissement. Six objets écrits à la main, c'est six
+occasions de laisser fuir une colonne et de détruire des données en base. Motif secondaire, en
+réalité le plus lourd : chaque catégorie a besoin de cinq états propres (chargement, enregistré,
+erreur globale, erreurs de champ, instance de secousse), soit trente déclarations sur six
+catégories dans un fichier qui en compte déjà plus de 600 lignes.
+Le crochet `avantEcriture` est implémenté mais non utilisé par 3b. Il existe pour que l'upload
+photo (patch 5) et les documents (patch 4) puissent interrompre AVANT toute écriture en base,
+conformément à la doctrine tout-ou-rien du 03/08.
+
+**Prérequis découvert à l'arbitrage, non anticipé dans la séquence.** Le SELECT de chargement ne
+demandait pas ecole, annee_etudes, filiere ni bio. Sans correction, les champs se seraient
+affichés vides malgré des valeurs réelles en base, et le premier enregistrement les aurait
+écrasées. C'est le piège critique par un autre chemin que celui surveillé : il ne suffit pas que
+l'objet écrit soit restreint, il faut aussi que les valeurs affichées soient chargées. À vérifier
+à chaque patch de catégorie restant.
+
+**DÉCISION PRODUIT — extinction temporisée des erreurs de champ, unifiée sur les deux
+catégories.** Une erreur de champ s'éteint désormais seule après 3 secondes, en plus de s'éteindre
+pendant la frappe dès que le champ redevient valide. Argument retenu, formulé par Côme : un
+message permanent capte le regard en continu alors que l'information est comprise en une seconde,
+la correction se fait dans le champ et non dans le message, et un clic sur Enregistrer le
+réaffiche si besoin. J'avais recommandé l'inverse.
+DÉCOUVERTE QUI A TRANCHÉ LE DÉBAT : « Infos personnelles » possédait DÉJÀ cette extinction depuis
+le patch 3a, par un useEffect dépendant de l'objet d'erreurs, jamais relevée. Ce n'était donc pas
+un ajout mais une divergence de 3b à corriger. Toute la discussion préalable, des deux côtés,
+reposait sur une prémisse fausse faute d'avoir lu le code.
+IMPLÉMENTATION — une seule minuterie par catégorie, jamais une par champ : trois minuteries se
+désynchroniseraient et éteindraient les messages un par un, exactement l'effet de dispersion
+corrigé le 03/08. Minuterie armée là où les erreurs sont posées, donc au clic sur Enregistrer,
+et jamais réarmée par la revalidation à la frappe. Le useEffect de « Infos personnelles » a été
+remplacé par ce mécanisme : deux implémentations d'un même comportement finiraient par diverger.
+Remplacement dans du code validé, assumé.
+
+**TROIS FUITES DE MINUTERIE CORRIGÉES INCIDEMMENT.** `prefsSaveTimeout`, `etudesErreurTimeout` et
+`aproposErreurTimeout` n'étaient annulées nulle part au démontage du composant : quitter /compte
+juste après une action laissait une minuterie tenter de modifier un composant disparu. Deux
+venaient du patch 3b, la troisième était antérieure. Le useEffect de nettoyage couvre désormais
+les six références du fichier. Constat de méthode : toute nouvelle référence de minuterie doit
+être ajoutée au nettoyage de démontage dans le même patch qui la crée.
+
+**Composants partagés consommés, jamais modifiés.** AutocompleteInput pour école, année d'études
+et filière (saisie libre à suggestions, comportement de l'ancienne page conservé), TextArea pour
+la bio. AutocompleteInput n'expose aucune prop d'erreur, comme CustomSelect : surcouche locale
+`.gc-champ-autocomplete-invalide`, variant `:hover:not(:disabled)` pour dépasser la spécificité de
+la règle de survol du composant, sans `!important`. DETTE #155 élargie en conséquence.
+
+**Suggestions recopiées, non importées.** Les trois constantes viennent de ModifierProfilPage,
+page vouée à suppression au patch 7. Valeurs conservées SANS accent, identiques à la source :
+les accentuer créerait deux variantes de la même école entre anciens et nouveaux utilisateurs.
+Seuls les libellés de champ sont accentués. Le format « Nom — Ville » des suggestions d'école est
+celui que l'ancienne page écrit réellement en base, vérifié sur pièces.
+
+**Deux défauts corrigés avant validation.** (1) Le garde-fou propriétaire était un useEffect placé
+APRÈS `if (!user) return null`, ce qui viole les règles des hooks React et aurait fait planter la
+page au premier chargement réel. Le build ne le voyait pas. Déplacé avant le retour anticipé.
+(2) Les valeurs partaient en base nettoyées de leurs espaces mais le champ affiché ne l'était pas,
+laissant le bouton actif après un enregistrement réussi. Nettoyage unique en amont, propagé à
+l'état affiché, aux colonnes et à la référence.
+
+**DÉCISION PRODUIT — un propriétaire ne voit ni « Tes études » ni « Ton alternance ».** Il n'est
+pas alternant, il n'a ni école, ni filière, ni rythme. Filtrage à la construction de la sidebar,
+avec repli sur une catégorie visible si la catégorie active vient d'être masquée.
+POINT OUVERT REPORTÉ AU PATCH 4 : un propriétaire voit toujours « Ton garant », qui est une pièce
+de dossier locataire. À trancher quand le patch 4 traitera cette catégorie.
+
+**Champs études obligatoires sur /compte**, comme sur l'ancienne page : un champ vide bloque
+l'enregistrement, message rouge sous le champ, bouton qui tremble, rien n'est écrit. Validation au
+clic sur Enregistrer uniquement. Bio optionnelle, 300 caractères, texte gris statique sans
+compteur, reprise à l'identique de l'existant.
+
+**LEÇON DE MÉTHODE, À RETENIR.** Trois affirmations non vérifiées ont été avancées par Claude.ai
+dans cette session : un format de suggestion supposé au lieu d'être lu, un comportement de
+« Infos personnelles » décrit de mémoire, et une correction demandée sur une prémisse fausse.
+Claude Code les a refusées sur pièces à chaque fois, et c'est le comportement voulu. La règle
+« find avant cat » vaut pour un raisonnement autant que pour un chemin de fichier : une
+affirmation sur le code se vérifie avant d'être écrite dans un prompt.
+
+**Validation par rechargement, protocole complet en 8 points, tous positifs.** Lecture,
+indépendance des deux boutons, retour arrière, refus sur champ vide, écriture vérifiée par
+rechargement, intégrité de /profil/modifier après enregistrement des études, intégrité symétrique
+après enregistrement de la bio, et masquage propriétaire testé par bascule temporaire de type_user
+en base locale puis remise en état. Extinction temporisée validée séparément sur les deux
+catégories.
+
+**RESTE** : patch 3c (Ton alternance, villes et statuts, DETTE #143), puis 4, 5, 5 bis, 6, 7.
 
 ## 2026-08-03 (suite 2) — [DEV] Corpus documentaire rangé : trois étagères, socle réduit de 60 %
 

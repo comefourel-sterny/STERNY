@@ -1832,6 +1832,7 @@ Contournements en place : le wizard d'inscription n'affiche l'erreur du champ Se
 La surcouche a exigé un variant `:hover:not(:disabled)` pour dépasser la spécificité (0,3,0) de la règle de survol du composant — sans quoi la bordure rouge redevenait grise au survol, précisément au moment où l'utilisateur regarde le champ fautif.
 Résolution : ajouter `hasError` au composant partagé, aligné sur la signature de `TextInput`, puis retirer la surcouche de `/compte`. À faire dans une session touchant déjà `auth-wizard/`, jamais depuis un patch local : le composant est consommé par le tunnel d'inscription.
 Découverte : 2026-08-03.
+MISE À JOUR 2026-08-07 : `components/auth-wizard/AutocompleteInput.jsx` n'expose lui non plus aucune prop d'erreur (ni `hasError`, ni `error`, ni `invalid`), contrairement à `TextInput` et `TextArea` qui acceptent tous deux `error`. Le patch 3b a donc dû poser une seconde surcouche locale sur `/compte`, `.gc-champ-autocomplete-invalide`, avec un variant `:hover:not(:disabled)` pour dépasser la spécificité de la règle de survol du composant. La dette porte désormais sur DEUX composants partagés, `CustomSelect` et `AutocompleteInput`. Résolution inchangée : aligner leur signature sur celle de `TextInput`, dans une session touchant déjà `auth-wizard/`, puis retirer les deux surcouches de `/compte`.
 
 ## DETTE #156 — Fragmentation des menus déroulants : 1 composant partagé, 3 copies inline, 13 select natifs
 Inventaire au 2026-08-03 :
@@ -1847,3 +1848,9 @@ Les entrées #42 à #156 sont des sections de niveau 2 (`## DETTE #N — titre`)
 Conséquence : une session qui cherche DETTE #30 ou #37 par grep sur le format de titre ne trouve rien et peut conclure à tort que la dette n'existe pas. Or #1-#8 et #30 sont citées comme vivantes dans AUDIT-FONCTIONNEL-2026-05-04, et #37 structure tout l'historique du parser.
 Résolution : convertir les puces #1 à #41 en sections de niveau 2, sans réécrire leur contenu. Session dédiée, jamais en marge d'un autre chantier — une conversion partielle serait pire que l'état actuel.
 Découverte : 2026-08-03, en analysant le corpus documentaire avant le rangement.
+
+## DETTE #158 — Catégories du groupe Dossier non filtrées par type d'utilisateur
+Le patch 3b masque « Tes études » et « Ton alternance » pour un `type_user` valant `proprietaire`, ces catégories n'ayant aucun sens pour un non-alternant. Le groupe Dossier n'est pas filtré : un propriétaire voit toujours « Tes documents » et « Ton garant ». Le garant est une pièce de dossier locataire, sa pertinence pour un propriétaire n'a pas été tranchée. « Tes documents » n'a pas été examiné du tout.
+Aucune conséquence sur les données : ces catégories sont vides tant que le patch 4 ne les a pas construites.
+Résolution : trancher au patch 4, qui traite ces deux catégories. Le mécanisme de filtrage existe déjà, il suffira d'y ajouter les identifiants concernés.
+Découverte : 2026-08-07, en testant le masquage propriétaire du patch 3b.
