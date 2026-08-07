@@ -7,6 +7,8 @@ import { getInitials } from '../../utils/formatters'
 import PasswordRevealButton from '../../components/PasswordRevealButton'
 import { useShakeButton } from '../../components/auth-wizard/useShakeButton'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
+import AutocompleteInput from '../../components/auth-wizard/AutocompleteInput'
+import TextArea from '../../components/auth-wizard/TextArea'
 import './GestionComptePage.css'
 
 // Icônes SVG inline (style Feather, cohérent avec ParametresPage) — pas de lucide-react.
@@ -100,6 +102,22 @@ const SEXE_OPTIONS = [
   { value: 'non-precise', label: 'Non précisé' },
 ]
 
+// Suggestions recopiées des constantes locales de ModifierProfilPage.jsx (ECOLES_POPULAIRES / ANNEES_ETUDES / FILIERES),
+// page vouée à suppression au patch 7 : recopie plutôt qu'import. AutocompleteInput attend des tableaux de chaînes
+// (il filtre lui-même par sous-chaîne), donc on ne reprend que les valeurs affichées, sans les alias inutiles ici.
+const ECOLES_SUGGESTIONS = [
+  'Universite de Rennes — Rennes', 'Universite Rennes 2 — Rennes', 'INSA Rennes — Rennes',
+  'Sciences Po Rennes — Rennes', 'Rennes School of Business — Rennes', 'IUT de Rennes — Rennes',
+  'EPITECH Rennes — Rennes', 'ENS Rennes — Rennes', 'Nantes Universite — Nantes',
+  'Centrale Nantes — Nantes', 'Audencia — Nantes', 'Universite de Bretagne Occidentale — Brest',
+  'ENIB — Brest', 'Universite Bretagne Sud — Lorient',
+]
+const ANNEES_SUGGESTIONS = ['Bac+1', 'Bac+2', 'Bac+3', 'Bac+4', 'Bac+5', 'Bac+6', 'Bac+7', 'Bac+8']
+const FILIERES_SUGGESTIONS = [
+  'Informatique', 'Commerce', 'Marketing', 'Finance', 'Droit', 'Communication', 'Architecture',
+  'Design', 'Medecine', 'Sciences politiques', 'Economie', 'Data / Intelligence artificielle', 'Cybersecurite',
+]
+
 export default function GestionComptePage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
@@ -154,14 +172,38 @@ export default function GestionComptePage() {
   const [cropZoomMin, setCropZoomMin] = useState(100)
   const [cropZoomMax, setCropZoomMax] = useState(300)
   const infosErreurTimeout = useRef(null)
+  const infosChampErreurTimeout = useRef(null)
   const { ref: shakeRef, shake: shakeBouton } = useShakeButton()
   const { ref: photoShakeRef, shake: photoShake } = useShakeButton()
+
+  // Catégorie "Tes études" — états propres, jamais partagés avec une autre catégorie.
+  const [ecole, setEcole] = useState('')
+  const [anneeEtudes, setAnneeEtudes] = useState('')
+  const [filiere, setFiliere] = useState('')
+  const [etudesInitiales, setEtudesInitiales] = useState({ ecole: '', anneeEtudes: '', filiere: '' })
+  const [erreursEtudes, setErreursEtudes] = useState({})
+  const [etudesErreur, setEtudesErreur] = useState('')
+  const [etudesLoading, setEtudesLoading] = useState(false)
+  const [etudesSaved, setEtudesSaved] = useState(false)
+  const etudesErreurTimeout = useRef(null)
+  const etudesChampErreurTimeout = useRef(null)
+  const { ref: etudesShakeRef, shake: etudesShake } = useShakeButton()
+
+  // Catégorie "À propos de toi" — états propres. (erreursApropos existe par cohérence ; la bio n'a aucune validation.)
+  const [bio, setBio] = useState('')
+  const [aproposInitial, setAproposInitial] = useState({ bio: '' })
+  const [erreursApropos, setErreursApropos] = useState({})
+  const [aproposErreur, setAproposErreur] = useState('')
+  const [aproposLoading, setAproposLoading] = useState(false)
+  const [aproposSaved, setAproposSaved] = useState(false)
+  const aproposErreurTimeout = useRef(null)
+  const { ref: aproposShakeRef, shake: aproposShake } = useShakeButton()
 
   useEffect(() => {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -180,6 +222,13 @@ export default function GestionComptePage() {
         }
         if (data.photo_profil_url) setPhotoPreviewUrl(data.photo_profil_url)
         setValeursInitiales({ prenom: data.prenom || '', nom: data.nom || '', dateNaissanceISO: iso, sexe: data.sexe || '', telephone: data.telephone || '' })
+        // Patch 3b — Tes études + À propos de toi : poser les valeurs ET les références de comparaison.
+        if (data.ecole) setEcole(data.ecole)
+        if (data.annee_etudes) setAnneeEtudes(data.annee_etudes)
+        if (data.filiere) setFiliere(data.filiere)
+        if (data.bio) setBio(data.bio)
+        setEtudesInitiales({ ecole: data.ecole || '', anneeEtudes: data.annee_etudes || '', filiere: data.filiere || '' })
+        setAproposInitial({ bio: data.bio || '' })
         if (data.preferences_email) {
           const pe = data.preferences_email
           setPrefs({ alertes: pe.alertes !== false, messages: pe.messages !== false, candidatures: pe.candidatures !== false, paiements: pe.paiements !== false, baux: pe.baux !== false, marketing: pe.marketing !== false })
@@ -197,13 +246,14 @@ export default function GestionComptePage() {
     return () => { window.removeEventListener('mousemove', mm); window.removeEventListener('mouseup', mu); window.removeEventListener('touchmove', tm); window.removeEventListener('touchend', mu) }
   }, [])
 
-  useEffect(() => () => clearTimeout(infosErreurTimeout.current), [])
-
-  useEffect(() => {
-    if (Object.keys(erreursChamps).length === 0) return
-    const t = setTimeout(() => setErreursChamps({}), 3000)
-    return () => clearTimeout(t)
-  }, [erreursChamps])
+  useEffect(() => () => {
+    clearTimeout(infosErreurTimeout.current)
+    clearTimeout(infosChampErreurTimeout.current)
+    clearTimeout(etudesErreurTimeout.current)
+    clearTimeout(etudesChampErreurTimeout.current)
+    clearTimeout(aproposErreurTimeout.current)
+    clearTimeout(prefsSaveTimeout.current)
+  }, [])
 
   // Autosave debounce 500 ms — comportement identique à ModifierProfilPage.sauvegarderPrefsEmail.
   function sauvegarderPrefsEmail(newPrefs) {
@@ -335,6 +385,8 @@ export default function GestionComptePage() {
     if (Object.keys(erreurs).length > 0) {
       setErreursChamps(erreurs)
       shakeBouton()
+      clearTimeout(infosChampErreurTimeout.current)
+      infosChampErreurTimeout.current = setTimeout(() => setErreursChamps({}), 3000)
       return
     }
     setErreursChamps({})
@@ -371,6 +423,98 @@ export default function GestionComptePage() {
     }
   }
 
+  // Validation pure de "Tes études" — { champ: message } des seuls champs en défaut. La bio n'a aucune validation.
+  function computeErreursEtudes({ ecole, anneeEtudes, filiere }) {
+    const e = {}
+    if (!ecole.trim()) e.ecole = 'Merci de renseigner ton école'
+    if (!anneeEtudes.trim()) e.anneeEtudes = "Merci de renseigner ton année d'études"
+    if (!filiere.trim()) e.filiere = 'Merci de renseigner ta filière'
+    return e
+  }
+
+  // Revalidation d'un seul champ études pendant la frappe (surcharge pour lire la valeur courante).
+  function validerChampEtudes(champ, valeurs = {}) {
+    const erreurs = computeErreursEtudes({ ecole, anneeEtudes, filiere, ...valeurs })
+    setErreursEtudes(prev => {
+      const suivant = { ...prev }
+      if (erreurs[champ]) suivant[champ] = erreurs[champ]
+      else delete suivant[champ]
+      return suivant
+    })
+  }
+
+  // Fonction d'enregistrement COMMUNE paramétrée par la liste de colonnes (patch 3b).
+  // enregistrerInfosPersonnelles n'est PAS migrée ici (prévu patch 5) : deux mécanismes coexistent temporairement.
+  // cle route les états de retour visuel propres à chaque catégorie ; colonnes ne contient QUE les colonnes de la catégorie.
+  async function enregistrerCategorie({ cle, valider, colonnes, avantEcriture, champsInitiaux }) {
+    const ctx = {
+      etudes: { setErrs: setErreursEtudes, shake: etudesShake, setErr: setEtudesErreur, setLoading: setEtudesLoading, setSaved: setEtudesSaved, setInit: setEtudesInitiales, timeout: etudesErreurTimeout, champTimeout: etudesChampErreurTimeout },
+      apropos: { setErrs: setErreursApropos, shake: aproposShake, setErr: setAproposErreur, setLoading: setAproposLoading, setSaved: setAproposSaved, setInit: setAproposInitial, timeout: aproposErreurTimeout },
+    }[cle]
+    const erreurs = valider()
+    if (Object.keys(erreurs).length > 0) {
+      ctx.setErrs(erreurs)
+      ctx.shake()
+      clearTimeout(ctx.champTimeout.current)
+      ctx.champTimeout.current = setTimeout(() => ctx.setErrs({}), 3000)
+      return
+    }
+    ctx.setErrs({})
+    ctx.setErr('')
+    ctx.setLoading(true)
+    try {
+      if (avantEcriture) await avantEcriture()
+      const { error } = await supabaseClient.from('users').update(colonnes).eq('id', user.id)
+      if (error) throw error
+      setUserData(prev => ({ ...prev, ...colonnes }))
+      ctx.setInit(champsInitiaux)
+      ctx.setErrs({})
+      ctx.setLoading(false)
+      ctx.setSaved(true)
+      setTimeout(() => ctx.setSaved(false), 2000)
+    } catch (e) {
+      ctx.setLoading(false)
+      ctx.setErr(e.message || "Erreur lors de l'enregistrement")
+      ctx.shake()
+      clearTimeout(ctx.timeout.current)
+      ctx.timeout.current = setTimeout(() => ctx.setErr(''), 3000)
+    }
+  }
+
+  const enregistrerEtudes = () => {
+    // Nettoyage UNE seule fois, propagé à l'état affiché, aux colonnes ET à la référence : sinon un espace résiduel
+    // laisserait le bouton actif après un enregistrement réussi (état affiché ≠ référence nettoyée).
+    const vals = { ecole: ecole.trim(), anneeEtudes: anneeEtudes.trim(), filiere: filiere.trim() }
+    setEcole(vals.ecole); setAnneeEtudes(vals.anneeEtudes); setFiliere(vals.filiere)
+    return enregistrerCategorie({
+      cle: 'etudes',
+      valider: () => computeErreursEtudes(vals),
+      colonnes: { ecole: vals.ecole, annee_etudes: vals.anneeEtudes, filiere: vals.filiere },
+      champsInitiaux: vals,
+    })
+  }
+
+  const enregistrerApropos = () => {
+    const v = bio.trim()
+    setBio(v)
+    return enregistrerCategorie({
+      cle: 'apropos',
+      valider: () => ({}),
+      colonnes: { bio: v || null },
+      champsInitiaux: { bio: v },
+    })
+  }
+
+  const estProprietaire = userData?.type_user === 'proprietaire'
+
+  // Garde-fou : si la catégorie active vient d'être masquée pour un propriétaire, revenir sur une catégorie visible.
+  // AVANT le retour anticipé `if (!user) return null` — un hook ne doit jamais suivre un return conditionnel.
+  useEffect(() => {
+    if (estProprietaire && (categorieActive === 'etudes' || categorieActive === 'alternance')) {
+      setCategorieActive('infos')
+    }
+  }, [estProprietaire, categorieActive])
+
   if (!user) return null
 
   const roleLabel = userData
@@ -384,7 +528,7 @@ export default function GestionComptePage() {
     .flatMap(g => g.items)
     .find(i => i.id === categorieActive)?.libelle || ''
 
-  // Comparaison par valeur : remettre la valeur d'origine annule la modification.
+  // Comparaison par valeur : remettre la valeur d'origine annule la modification. RÉSERVÉ à "Infos personnelles".
   const formModifie = (
     prenom !== valeursInitiales.prenom ||
     nom !== valeursInitiales.nom ||
@@ -393,6 +537,19 @@ export default function GestionComptePage() {
     telephone !== valeursInitiales.telephone ||
     photoFile !== null
   )
+
+  // Comparaisons par valeur, une par nouvelle catégorie (jamais élargir formModifie).
+  const etudesModifie = (
+    ecole !== etudesInitiales.ecole ||
+    anneeEtudes !== etudesInitiales.anneeEtudes ||
+    filiere !== etudesInitiales.filiere
+  )
+  const aproposModifie = bio !== aproposInitial.bio
+
+  // Masquage catégories pour les propriétaires (ni "Tes études" ni "Ton alternance" : un propriétaire n'est pas alternant).
+  const groupesVisibles = GROUPES
+    .map(g => ({ ...g, items: g.items.filter(i => !(estProprietaire && (i.id === 'etudes' || i.id === 'alternance'))) }))
+    .filter(g => g.items.length > 0)
 
   return (
     <div className="gc-page">
@@ -409,7 +566,7 @@ export default function GestionComptePage() {
             </div>
           </div>
 
-          {GROUPES.map(groupe => (
+          {groupesVisibles.map(groupe => (
             <div key={groupe.label} className="gc-groupe">
               <div className="gc-groupe-label">{groupe.label}</div>
               {groupe.items.map(({ id, libelle, Icone }) => (
@@ -540,7 +697,50 @@ export default function GestionComptePage() {
             </>
           )}
 
-          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && (
+          {categorieActive === 'etudes' && (
+            <>
+              <div className="gc-champ">
+                <label className="gc-label">École / Université <span className="gc-required">*</span></label>
+                <div className={`gc-champ-autocomplete${erreursEtudes.ecole ? ' gc-champ-autocomplete-invalide' : ''}`}>
+                  <AutocompleteInput name="ecole" value={ecole} suggestions={ECOLES_SUGGESTIONS} placeholder="Recherche ton école…"
+                    onChange={e => { const v = e.target.value; setEcole(v); if (erreursEtudes.ecole) validerChampEtudes('ecole', { ecole: v }) }} />
+                </div>
+                <div className="gc-champ-erreur-slot">{erreursEtudes.ecole && <p className="gc-champ-erreur">{erreursEtudes.ecole}</p>}</div>
+              </div>
+              <div className="gc-champ">
+                <label className="gc-label">Année d'études <span className="gc-required">*</span></label>
+                <div className={`gc-champ-autocomplete${erreursEtudes.anneeEtudes ? ' gc-champ-autocomplete-invalide' : ''}`}>
+                  <AutocompleteInput name="anneeEtudes" value={anneeEtudes} suggestions={ANNEES_SUGGESTIONS} placeholder="Ton niveau…"
+                    onChange={e => { const v = e.target.value; setAnneeEtudes(v); if (erreursEtudes.anneeEtudes) validerChampEtudes('anneeEtudes', { anneeEtudes: v }) }} />
+                </div>
+                <div className="gc-champ-erreur-slot">{erreursEtudes.anneeEtudes && <p className="gc-champ-erreur">{erreursEtudes.anneeEtudes}</p>}</div>
+              </div>
+              <div className="gc-champ">
+                <label className="gc-label">Filière / Domaine <span className="gc-required">*</span></label>
+                <div className={`gc-champ-autocomplete${erreursEtudes.filiere ? ' gc-champ-autocomplete-invalide' : ''}`}>
+                  <AutocompleteInput name="filiere" value={filiere} suggestions={FILIERES_SUGGESTIONS} placeholder="Ton domaine…"
+                    onChange={e => { const v = e.target.value; setFiliere(v); if (erreursEtudes.filiere) validerChampEtudes('filiere', { filiere: v }) }} />
+                </div>
+                <div className="gc-champ-erreur-slot">{erreursEtudes.filiere && <p className="gc-champ-erreur">{erreursEtudes.filiere}</p>}</div>
+              </div>
+              <BoutonEnregistrer onSave={enregistrerEtudes} modifie={etudesModifie} loading={etudesLoading} ok={etudesSaved} erreur={etudesErreur} btnRef={etudesShakeRef} />
+            </>
+          )}
+
+          {categorieActive === 'apropos' && (
+            <>
+              <div className="gc-champ">
+                <label className="gc-label">À propos de toi</label>
+                <div className="gc-champ-textarea">
+                  <TextArea name="bio" value={bio} onChange={e => setBio(e.target.value)} placeholder="Parle de toi, tes centres d'intérêts…" maxLength={300} rows={5} />
+                </div>
+                <p className="gc-hint-bio">Optionnel — Max 300 caractères</p>
+              </div>
+              <BoutonEnregistrer onSave={enregistrerApropos} modifie={aproposModifie} loading={aproposLoading} ok={aproposSaved} erreur={aproposErreur} btnRef={aproposShakeRef} />
+            </>
+          )}
+
+          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && (
             <div className="gc-placeholder">Cette section arrive au prochain patch.</div>
           )}
         </section>

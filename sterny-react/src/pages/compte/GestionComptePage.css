@@ -618,6 +618,51 @@
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
+/* Champ à suggestions partagé (AutocompleteInput) aligné sur les champs gc- (patch 3b) */
+.gc-champ-autocomplete .aw-autocomplete-input {
+    height: 36px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: normal;
+}
+
+.gc-champ-autocomplete .aw-autocomplete-input:focus {
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+}
+
+.gc-champ-autocomplete .aw-autocomplete-input::placeholder {
+    color: #9CA3AF;
+}
+
+/* AutocompleteInput n'expose pas de prop d'erreur : surcouche locale, comme pour CustomSelect.
+   Le variant :hover:not(:disabled) (0-4-0) dépasse la règle de survol du composant (0-3-0), sans !important. */
+.gc-champ-autocomplete-invalide .aw-autocomplete-input,
+.gc-champ-autocomplete-invalide .aw-autocomplete-input:hover:not(:disabled) {
+    border-color: var(--error);
+}
+
+.gc-champ-autocomplete-invalide .aw-autocomplete-input:focus {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+/* Zone de texte partagée (TextArea) alignée sur les champs gc- — la bio gère son erreur via sa prop native. */
+.gc-champ-textarea .aw-textarea-input {
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: normal;
+}
+
+.gc-champ-textarea .aw-textarea-input:focus {
+    box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.06);
+}
+
+.gc-hint-bio {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin: 4px 0 0;
+}
+
 .gc-erreur {
     color: var(--error);
     font-size: 13px;
