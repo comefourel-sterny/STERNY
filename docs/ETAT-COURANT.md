@@ -2,13 +2,35 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-08
-[VRAIE VIE] Description d'expérience SNSM publiée sur LinkedIn ; règle de formulation « responsable de poste de secours » actée en CONTEXTE-PROJET §1 bis.
-[VRAIE VIE] Doctrine public/privé actée en CONTEXTE-PROJET §1 ter, puis appliquée à la description d'expérience Sterny sur LinkedIn. Sujets 1 et 2 de la file du 31/07 clos.
-[DEV] Surface unifiée de gestion de compte : patchs 0 à 3b livrés et validés. Extinction
-temporisée des erreurs de champ unifiée sur les deux catégories. Reste : patchs 3c à 7.
+**Dernière mise à jour** : 2026-08-09
+[DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
+[DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
+[VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
 
 ---
+
+## 2026-08-09 — [DEV] Patch 3c livré : Ton alternance, `type_user` dérivé, blocage sur annonce
+
+**CHANGEMENT DE CAP EN COURS DE PATCH.** Les trois champs de rythme abstrait de l'ancienne page (`type_alternance`, `rythme_alternance`, et le champ de saisie associé) ne sont PAS reconstruits sur `/compte`. Ils sont remplacés par les villes et leur fonction. Motif : reconstruire à l'identique une saisie que la Charte interdit depuis l'origine aurait été porter une colonne dépréciée dans une surface neuve. Le planning éditable, lui, arrive au patch 3d.
+Cela révise la décision du 24/07 loguée en DETTE #150, qui prévoyait une reconstruction à l'identique. Le report de la migration vers `rhythm_calendar` reste valide : ce sont les champs abstraits qui sautent, pas le calendrier.
+
+**DÉCOUPAGE 3c / 3d, et son motif.** 3c porte les villes, leur fonction, la dérivation de `type_user` et le blocage sur annonce. 3d portera le planning éditable. Séparer parce que le planning n'est pas un champ de plus dans un formulaire : il impose une fusion avec le rythme existant (voir plus bas), donc une conception à part entière. Les mélanger aurait fait grossir 3c en cours de route, exactement le pattern évité sur le chantier multi-villes puis sur la restructuration du profil.
+
+**DÉCISION STRUCTURANTE — `type_user` devient une donnée dérivée.** Il se déduit désormais des fonctions de ville et n'est plus saisi indépendamment. Jamais écrit pour un `proprietaire`. Décision et règle complète en VISION-ARCHITECTURE, bloc du 09/08/2026. Effet de bord acquis, pas subi : la redescente depuis `les_deux`, écrite « à implémenter » depuis l'origine et jamais construite, existe maintenant sans avoir demandé une seule ligne de feature dédiée. DETTE #131 point (2) mise à jour en conséquence.
+
+**DÉCISION — blocage du changement tant qu'une annonce existe sur le pôle.** Refus sec, aucune dépublication automatique, aucun état intermédiaire. Le périmètre de la décision est écrit explicitement en VISION : elle ne tranche NI le retrait d'annonce, NI le cas d'un logement sous contrat signé, NI les droits du propriétaire. Volet contractuel, à examiner avec un professionnel du droit avant tout code.
+
+**NOUVEAU MODE D'INTERRUPTION dans `enregistrerCategorie`.** La fonction commune introduite au patch 3b accepte désormais un retour `{ interrompu: true }` depuis le crochet `avantEcriture`, distinct du `throw`. Les deux ne disent pas la même chose : le `throw` signale un échec, donc un message d'erreur ; `{ interrompu: true }` signale un refus délibéré et prévu, donc aucun message d'erreur et aucune écriture. Le blocage sur annonce est un refus, pas une panne. Sans cette distinction, un utilisateur qui tente un changement légitimement refusé aurait vu s'afficher une erreur technique.
+
+**CONTRAINTE MAJEURE ÉTABLIE POUR LE PATCH 3d.** Les trois RPC d'écriture du rythme REMPLACENT la colonne entière. Aucune fonction d'ajout n'existe. Conséquence directe : un utilisateur qui viendrait corriger une seule semaine perdrait tout son rythme passé. La fusion devra donc être faite côté page, avant l'appel.
+Ce n'est pas une découverte : la réserve figure en VISION depuis le 05/06/2026 et en DETTE #82 aux statuts du 05/06 et du 07/06, où elle ne visait que `complete_inscription_alternant`. Ce que cette session établit, c'est que la contrainte vaut pour les TROIS RPC, et qu'elle cesse d'être théorique puisque l'écran qui va les appeler est le prochain patch.
+`confirm_rhythm_calendar_manual` existe, valide les lundis ISO et les statuts, et n'est appelée nulle part. Elle est le candidat naturel du 3d. Elle ne fusionne pas pour autant.
+
+**VALIDATION.** Testée par rechargement, protocole en 11 points, tous verts.
+
+**DETTES.** #143 mise à jour, périmée depuis le 24/07 et résolue aussi sur `/compte`. #150 mise à jour, lecteurs vivants et séquence contrainte. #159 créée, ville muette des profils `les_deux`. #160 créée, `annonces.statut` lue mais inexistante. #82 et #131 mises à jour.
+
+**RESTE** : patch 3d (planning éditable, avec fusion du rythme existant), puis 4, 5, 5 bis, 6, 7. La modale de blocage est à retravailler visuellement : elle ne dit pas quelle ville est concernée et n'offre aucun chemin vers le tableau de bord.
 
 ## 2026-08-08 — [VRAIE VIE] Description d'expérience SNSM en ligne
 

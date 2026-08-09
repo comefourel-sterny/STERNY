@@ -152,7 +152,7 @@ Avant de corriger, tailler ou valider un texte destiné à un support public, ap
 
 Sterny (sterny.co) est une plateforme de mise en relation pour le logement des alternants français. Un alternant y propose un logement, en cherche un, ou les deux — ces actions sont INDÉPENDANTES l'une de l'autre, et valides dans une ville comme dans les deux. Le modèle repose sur la complémentarité des rythmes : des alternants dont les semaines d'école et d'entreprise s'opposent peuvent occuper successivement le même logement. L'INVARIANT DU PRODUIT est UNE SEULE PERSONNE À LA FOIS dans un logement : les semaines d'occupation sont disjointes, jamais partagées. Un alternant peut combiner PLUSIEURS logements pour couvrir l'ensemble de ses semaines de présence. Chacun ne paie que les semaines qu'il occupe.
 
-La plateforme couvre la chaîne complète : recherche, mise en relation, signature de bail, paiement du loyer (Stripe SEPA), état des lieux, restitution de caution. Elle intègre aussi un parser IA de calendriers scolaires qui extrait automatiquement le rythme d'alternance d'un document uploadé par l'utilisateur.
+La plateforme couvre la chaîne complète : recherche, mise en relation, signature de bail, paiement du loyer (Stripe SEPA), état des lieux, restitution de caution. Le rythme d'alternance est déclaré par l'utilisateur lui-même à l'inscription, semaine par semaine, dans un calendrier de saisie. L'upload d'emploi du temps et son parser sont abandonnés depuis mi-2026 (voir VISION-ARCHITECTURE §1).
 
 ---
 
@@ -189,7 +189,7 @@ Un utilisateur n'est pas figé dans le type avec lequel il s'est inscrit.
 | Backend | Supabase (Postgres 17 + Auth + Storage + Edge Functions Deno 2) |
 | Paiement | Stripe (Checkout + Subscriptions SEPA + Identity + Refunds) |
 | Cartographie | Mapbox |
-| IA | Claude Sonnet 4.6 via API Anthropic (parser calendriers scolaires) |
+| IA | Claude Sonnet 4.6 via API Anthropic — parser de calendriers scolaires ABANDONNÉ mi-2026 (voir VISION §1) ; aucun autre usage actif recensé à ce jour |
 | OCR | Google Vision (vérification de documents) |
 | Emails transactionnels | Resend |
 | Design system | Navy `#1E293B`, Orange `#E8622A`, Fond `#F4F5F7`, DM Sans, `border-radius: 20px`, `box-shadow: 0 2px 12px rgba(0,0,0,0.06)` |
@@ -585,3 +585,5 @@ Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adres
 ---
 
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
+
+*Dernière modification : 2026-08-09 — abandon de l'upload d'emploi du temps répercuté en §2 et dans la table de stack.*

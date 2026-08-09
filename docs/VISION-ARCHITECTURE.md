@@ -13,7 +13,9 @@ INVARIANTS NON-NÉGOCIABLES :
    "AAAA-MM-JJ" (ISO = écriture standardisée des dates). Jamais un jour isolé,
    jamais un numéro de semaine, jamais une plage continue.
 2. Source unique = rhythm_calendar : liste d'objets { week_start (lundi ISO),
-   status: 'school' | 'company' }. Renseigné à l'inscription.
+   status: 'school' | 'company' }. Renseigné à l'inscription. Le MOYEN de le
+   renseigner n'est PAS un invariant, il a déjà changé une fois, et son état
+   courant est décrit en §1 — nulle part ailleurs dans ce document.
 3. Demande et offre sont symétriques, dérivées du même rythme :
    - locataire (deduireRecherche, villes action='recherche') = semaines de PRÉSENCE.
    - hôte (deduireOffre, villes action='hote') = semaines LIBRES = présence dans la
@@ -52,19 +54,33 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-07-02 (conv 106) — Doctrine "conservation par défaut, conformité par élagage" + principe "archiver jamais effacer" + décision stockage vérification d'identité (Stripe Identity : preuve minimale, pas l'image brute). Questions RGPD routées en Q-DPO.
+**Dernière mise à jour** : 2026-08-09 — Abandon de l'upload d'emploi du temps consigné (§1, Charte, note §7) ; `type_user` dérivé des fonctions de ville ; blocage du changement de fonction ou de ville tant qu'une annonce existe.
 
 ---
 
 ## 1. Principe fondateur
 
-**Le rythme réel de l'alternant, extrait de son emploi du temps scolaire, est la seule source de vérité du matching Sterny.**
+**Le rythme réel de l'alternant, déclaré semaine par semaine à l'inscription, est la seule source de vérité du matching Sterny.**
 
-Tout le reste découle de ce principe. La plateforme ne demande pas à l'utilisateur de décrire son rythme avec des abstractions (rythme symétrique, rythme asymétrique, pattern "4-2", "2-2", etc.). Elle lit directement son planning de cours et en extrait le calendrier semaine par semaine, au jour près.
+Tout le reste découle de ce principe. La plateforme ne demande pas à l'utilisateur de décrire son rythme avec des abstractions (rythme symétrique, rythme asymétrique, pattern "4-2", "2-2", etc.). Elle enregistre le calendrier réel, semaine par semaine, au lundi près.
 
-L'utilisateur ne fait qu'une seule action pour transmettre son rythme à Sterny : uploader son emploi du temps scolaire. Ce qu'il fait en 30 secondes, qu'il a de toute façon reçu de son école. Aucune saisie manuelle, aucun concept à comprendre, aucun formulaire à remplir.
+### Moyen de collecte courant (état au 09/08/2026)
 
-Cette mécanique est l'argument de vente principal de Sterny. Elle doit être défendue dans chaque décision produit future.
+L'alternant renseigne son rythme dans le builder de l'inscription, en désignant ses semaines d'école une par une sur un calendrier. Les semaines restantes du périmètre saisi sont enregistrées en entreprise. Aucun document n'est demandé, aucun rythme n'est à nommer.
+
+Ce paragraphe décrit un MOYEN, pas un principe. Il est destiné à changer, et il doit pouvoir être réécrit seul sans que rien d'autre bouge dans ce document. C'est la raison pour laquelle la Charte renvoie ici : l'état courant du moyen a une adresse unique, et une seule.
+
+### Abandon de l'upload d'emploi du temps (acté mi-2026, consigné le 09/08/2026)
+
+Jusqu'à mi-2026, ce document décrivait la collecte du rythme par upload de l'emploi du temps scolaire, présentée comme une action unique de trente secondes sans aucune saisie, et qualifiée d'« argument de vente principal de Sterny ». Ce mécanisme est abandonné. Motif : le parser n'a pas atteint une fiabilité suffisante pour être placé entre les mains d'un utilisateur.
+
+**Ce qui ne change pas, et c'est l'essentiel.** Le principe fondateur est intact. Le rythme déclaré reste la source de vérité unique, l'unité reste la semaine identifiée par la date de son lundi, et tout ce qui en dérive sans re-saisie reste identique : recherche, dashboard, création et modification d'annonce, matching, couverture des semaines, et à terme le contrat. Ce qui tombe est un moyen de collecte, pas le socle.
+
+**Ce que ce bloc rend caduc.** Les sections suivantes ne décrivent plus le produit et sont conservées à titre historique : la mention « extrait par le parser IA » en §3 ; le §4 entier (pipeline parser, pattern accumulateur) ; le §5 entier (stratégie discriminante par format source), dont les chemins 1 (PDF vectoriel) et 2 (image raster) n'existent plus, le chemin 3 (saisie manuelle assistée) devenant le chemin unique et non plus un repli ; le §6 « Upload-first à l'inscription ». Ces sections portent des mesures empiriques réelles (spikes #1 et #2) qui gardent leur valeur de preuve. Aucune décision produit ne s'appuie plus sur elles. Une session qui les lit sans lire ce bloc reconstruira un produit qui n'existe pas. Le §7 fait exception et n'est PAS caduc : voir la note en tête de cette section.
+
+**Conséquence produit à tenir.** L'inscription ne peut plus se réclamer d'un geste de trente secondes. Le builder n'est plus le filet de sécurité des documents illisibles, il est la seule porte d'entrée du rythme dans Sterny. Un rythme mal saisi est un rythme faux, et il n'existe aucune autre source pour le recouper.
+
+**Réserve de vocabulaire.** La formule « argument de vente principal » disparaît sans être remplacée. Un moyen de collecte relève de la colonne PRIVÉE de CONTEXTE-PROJET §1 ter (mécaniques et modèle de données), il n'a donc rien à faire dans un argumentaire public quel qu'il soit.
 
 ---
 
@@ -490,6 +506,11 @@ Conséquence : la RPC `complete_inscription_alternant` à E-7 reste la seule tra
 ---
 
 ## 7. Dépendance critique à l'IA — analyse du risque
+
+**NOTE DU 09/08/2026 — SECTION CONSERVÉE PARCE QU'ELLE A VU VENIR L'ÉCHEC.**
+L'upload d'emploi du temps est abandonné (voir §1). Cette section n'est pas caduque pour autant : son risque 4, révisé le 27 avril 2026, écrivait déjà que le repli manuel deviendrait « potentiellement le chemin principal » d'entrée du rythme. C'est devenu le chemin unique, et le reste de §7 documente pourquoi.
+Perdent leur objet sur le chemin du rythme : les risques 1 (échec de parsing), 2 (coût API), 3 (dépendance à un fournisseur) et 5 (métadonnées document), puisque plus aucun appel à un modèle n'intervient dans la collecte du rythme. Cette note ne dit RIEN de ce qui subsiste par ailleurs dans le dépôt (Edge Function parse-school-calendar, table rhythm_imports) : question de fait non établie à ce jour, à vérifier avant toute suppression.
+Survit et reste opposable : le principe UX du risque 4, ne jamais promettre une fluidité qui se dément en cours de route, et sa conséquence, une promesse honnête de quelques minutes de saisie plutôt qu'une promesse de trente secondes.
 
 Le principe fondateur de Sterny fait reposer la plateforme sur un parser IA (Claude Sonnet 4.6 via API Anthropic au jour de la rédaction). C'est un choix assumé mais qui crée 4 risques qu'il faut nommer et mitiger explicitement.
 
@@ -1061,3 +1082,42 @@ idees-en-attente.md), et ModifierProfilProprietairePage (page propriétaire sép
 structurellement différent). Principe : la sidebar groupée absorbe un 4e groupe sans refonte,
 donc ne jamais créer une catégorie dont le contenu n'existe pas encore — un clic mort dans
 une page de réglages est le pire résultat possible.
+
+### `type_user` est désormais DÉRIVÉ des fonctions de ville (décision du 09/08/2026, patch 3c)
+
+`users.type_user` cesse d'être une donnée saisie indépendamment. Il est recalculé à chaque enregistrement de la catégorie « Ton alternance », à partir de la fonction déclarée sur chaque ville de l'utilisateur.
+
+Règle de dérivation, sans exception :
+
+| Fonctions déclarées | `type_user` écrit |
+|---|---|
+| deux villes en `recherche` | `locataire` |
+| deux villes en `hote` | `hote` |
+| une de chaque | `les_deux` |
+| une seule ville | la valeur correspondant à sa fonction |
+
+**Jamais écrit si `type_user` vaut `proprietaire`.** Un propriétaire n'est pas un alternant, il n'a ni ville d'école ni ville d'entreprise, et la catégorie qui porte cette dérivation lui est masquée. La dérivation ne doit à aucun moment pouvoir le transformer en alternant par effet de bord.
+
+**Trois motifs, par ordre de poids.**
+
+1. Les états incohérents disparaissent par construction. Le modèle précédent autorisait un compte déclaré `locataire` alors qu'une de ses villes portait la fonction `hote` : deux vérités contradictoires sur la même personne, aucune n'ayant autorité sur l'autre. Dériver supprime la question au lieu d'arbitrer entre les deux.
+
+2. La redescente depuis `les_deux` devient possible. Elle est écrite comme « à implémenter » dans CONTEXTE-PROJET §3 depuis l'origine et n'a jamais existé. Elle ne demande plus de feature dédiée : un utilisateur qui repasse ses deux villes en `recherche` redevient `locataire`, sans écran de migration ni bouton spécifique.
+
+3. Le retrait accidentel d'un rôle encore utilisé est impossible, parce que le changement de fonction est refusé tant qu'une annonce existe sur le pôle concerné (bloc suivant). Sans ce refus, la dérivation serait dangereuse : elle retirerait le rôle `hote` à quelqu'un dont une annonce est en ligne.
+
+**Conséquence structurelle à ne pas perdre de vue.** `type_user` détermine le tableau de bord d'accueil. Changer la fonction d'une ville change donc la page sur laquelle l'utilisateur atterrit. Ce n'est pas un effet de bord, c'est le comportement attendu d'une donnée dérivée, mais toute session qui touchera au routing du dashboard doit savoir qu'une modification faite dans `/compte` peut le déplacer.
+
+### Blocage du changement de fonction ou de ville tant qu'une annonce existe (décision du 09/08/2026, patch 3c)
+
+Le changement de la fonction d'une ville, comme le changement de la ville elle-même, est REFUSÉ tant qu'une annonce existe sur le pôle concerné. Le refus est total et sans contrepartie : aucune annonce n'est dépubliée automatiquement, aucun état intermédiaire n'est créé, aucune donnée n'est modifiée.
+
+**Motif.** Retirer à quelqu'un le rôle sous lequel une annonce est publiée laisserait cette annonce en ligne, rattachée à un profil qui ne la porte plus. Le refus est la seule réponse qui ne crée aucun état à rattraper ensuite. Dépublier automatiquement serait une décision prise à la place de l'utilisateur sur un objet qui engage un tiers.
+
+**PÉRIMÈTRE DE LA DÉCISION, à lire avant tout code aval.** Cette décision tranche UNIQUEMENT le refus du changement. Elle ne tranche PAS, et rien de ce qui suit ne peut en être déduit :
+
+- le retrait ou la suppression d'une annonce par son auteur ;
+- le cas d'un logement déjà sous contrat signé ;
+- les droits du propriétaire sur l'annonce et sur le logement.
+
+Ces trois sujets forment un chantier distinct, à volet contractuel réel. Ils touchent la chaîne locative, l'engagement pris envers un autre alternant, et la responsabilité des parties. Conformément à CONTEXTE-PROJET §9, ils sont à examiner avec un professionnel du droit AVANT tout code. Aucune session ne les tranche dans le flux d'une discussion technique, et le fait que la mécanique de blocage soit simple à écrire n'est pas un argument pour aller plus loin.

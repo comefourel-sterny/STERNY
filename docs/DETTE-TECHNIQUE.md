@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-07-02 (conv 106) — Ajout #131 (suppression annonce inatteignable côté alternant + migration descendante les_deux → simple absente ; touche l'aval gelé #93, avis pro requis).
+**Dernière mise à jour** : 2026-08-09 — Ajout #159 (ville muette des profils les_deux) et #160 (annonces.statut inexistante lue par l'admin) ; MAJ #143, #150, #82, #131 après le patch 3c.
 
 ## Nomenclature des bugs
 
@@ -971,6 +971,10 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 
 **Statut au 2026-06-07 (conv 37) — (a) LIVRÉE + audit dashboard ; (b) recadré et PARQUÉ.** Audit dashboard (lecture seule) : aucune surface de rythme au dashboard (`rhythm_calendar` ni lu/affiché ni édité hors wizard ; `RhythmCalendarPreview` dev-only ; `RhythmManualBuilder` importé seulement par E-5). Seul chemin d'écriture = E-7 (`complete_inscription_alternant`, remplacement total). `confirm_rhythm_calendar` / `_manual` sans appelant front. Aucun lecteur aval de `rhythm_calendar`. → **Point (b) recadré** : « écriture ajout/upsert post-inscription » n'est pas un simple upsert mais une feature dashboard complète (affichage rythme + point d'entrée d'édition + écriture fusionnante) ; **PARQUÉ** jusqu'au dashboard fusionné + moteur lisant `rhythm_calendar` ; ne pas créer de RPC d'ajout orpheline avant qu'un écran l'appelle. **(a) navigation au-delà de 2 ans : LIVRÉE** (commit feat 7f3e782) — flèches E-5 en pas-à-pas (`previousAcademicYear`/`nextAcademicYear`), plancher = année courante, pas de plafond futur ; `candidateAcademicYears` dérivé des données (couvre hydratation + materialize). **Bonus : année académique redéfinie septembre→août** (par mois du JEUDI, ISO) : `firstMondayForAcademicYear` part du 1ᵉʳ jeudi de septembre ; `academicYearForMonday` classe par mois du jeudi ; `weeksForAcademicYear` génère 52 ou 53 semaines (tuilage parfait). Affichage : 12 colonnes SEP→AOÛ identiques, semaine de fin août rattachée à l'année précédente. Aucun impact BDD (lundis absolus stockés, année dérivée). **#82 désormais : seul (b) reste, parqué.**
 
+**MISE À JOUR 09/08/2026 — LE POINT (b) SE DÉPARQUE AU PATCH 3d, ET LA RÉSERVE S'ÉLARGIT.**
+La réserve du 05/06 visait `complete_inscription_alternant`. Constat établi ce jour : les TROIS RPC d'écriture du rythme remplacent la colonne entière, et aucune fonction d'ajout n'existe. Conséquence directe, et non théorique : un utilisateur qui viendrait corriger une seule semaine perdrait tout son rythme passé. La fusion doit donc être faite côté page avant l'appel, ce qui en fait une contrainte de conception du patch 3d et non un détail d'implémentation.
+`confirm_rhythm_calendar_manual` existe, valide les lundis ISO et les statuts, et n'est appelée nulle part. Elle est le candidat naturel de l'écran 3d, ce qui lève la consigne « ne pas créer de RPC d'ajout orpheline avant qu'un écran l'appelle » : l'écran arrive, et la RPC est déjà là. Elle ne fusionne pas pour autant, la fusion reste côté page.
+
 ## DETTE #83 — Généraliser l'œil afficher/masquer à tous les champs mot de passe
 
 **Statut au 2026-06-07 (conv 36)** : créée. L'œil a été ajouté au composant partagé TextInput (conv 36, commit 71c019b) mais ne couvre que les champs password rendus VIA TextInput — aujourd'hui seul E-7 (EtapeCreationCompte).
@@ -1434,6 +1438,11 @@ POURQUOI C'EST LIÉ ET GELÉ : redescendre = retirer une action ; si l'action re
 CONTRAINTE D'ARCHITECTURE (rappel doctrine conv 106) : quand on câblera, ce sera ARCHIVER (soft-delete), pas hard-delete. Le hard-delete actuel de DashboardProprietairePage est lui-même à revoir (non-conformité notée en VISION conv 106).
 À FAIRE (chantier séparé, après RDV pros) : cadrer la migration descendante + la suppression/archivage d'annonce côté alternant. Point d'entrée UI naturel : ParametresPage ("changer mon type de compte"). Fichiers impactés recensés : DashboardLocatairePage.jsx, utils/deriveVilleColonnes.js, DashboardProprietairePage.jsx (logique delete), colonnes users, ParametresPage.jsx.
 
+**MISE À JOUR 09/08/2026 — POINT (2) RÉSOLU POUR LE CAS SANS ANNONCE.**
+La migration descendante existe depuis dc4f3b7, par dérivation : `type_user` se déduit des fonctions de ville, donc repasser ses deux villes en `recherche` redescend un `les_deux` en `locataire`, sans écran de migration ni bouton dédié. Voir VISION-ARCHITECTURE, décision du 09/08/2026.
+Le cas AVEC annonce, qui est exactement la partie contractuelle gelée décrite ci-dessus, passe d'absent à explicitement refusé : le changement de fonction est bloqué tant qu'une annonce existe sur le pôle. Le blocage ne tranche rien du fond, il empêche seulement d'y arriver par accident.
+Le point (1), suppression d'annonce inatteignable côté alternant, est INTACT et OUVERT.
+
 ## DETTE #132 — DashboardLayout.jsx : même schéma sticky-footer latent que Layout.jsx (non traité)
 
 **Statut au 11 juillet 2026** : créée, lors du fix footer sur les pages publiques (Layout.jsx, ETAT-COURANT conv du 11/07).
@@ -1569,6 +1578,12 @@ recherche multi-villes (point 3 du plan, 15/07/2026) : ModifierProfilPage doit
 toucher aussi statut_ville_* (idéalement via le même composant partagé "ville +
 action" que le wizard E-4 et la modale dashboard #140), pour rester la surface
 canonique de modification d'une ville existante.
+
+**MISE À JOUR 09/08/2026 — ENTRÉE PÉRIMÉE DEPUIS LE 24/07, CONSTAT ÉTABLI CE JOUR.**
+ModifierProfilPage touche bien les statuts depuis la restructuration du 24/07 : elle les lit au chargement (l.202-203) et les écrit à la sauvegarde (l.422-423), via un helper local `deriverStatutVille` (défini l.408-414, appelé l.415-416 ; l.407 porte son commentaire d'origine). La description ci-dessus, qui affirme 0 occurrence de `statut_ville_*` dans tout le fichier, ne décrit plus le code depuis cette date.
+CONSÉQUENCE DE MÉTHODE, et c'est la vraie leçon de cette entrée : la mission du patch 3c a été cadrée sur cette description périmée. Une dette qu'on ne referme pas au moment où on la résout ne reste pas inerte dans le fichier, elle oriente activement le travail suivant vers un problème qui n'existe plus.
+RÉSOLUE AUSSI SUR `/compte` depuis dc4f3b7 : la catégorie « Ton alternance » écrit la ville et sa fonction ensemble, jamais l'une sans l'autre.
+Sous-cas qui survit à cette résolution : le profil `les_deux`, dont la ville reste muette non par oubli mais parce que la fonction n'est pas dérivable. Suivi désormais en DETTE #159.
 
 ## DETTE #144 — Villes "de lancement" dupliquées et divergentes, incohérentes avec le wizard (restriction dure vs douce)
 
@@ -1740,6 +1755,11 @@ alternance" devient une catégorie du même nom dans la surface unique et est re
 l'identique (écrit toujours type_alternance/rythme_alternance). Le report reste volontaire
 et inchangé.
 
+**MISE À JOUR 09/08/2026 — LE REPORT NE TIENT PAS QU'AU COÛT DU CHANTIER.**
+Les colonnes dépréciées `type_alternance` et `rythme_alternance` ont des LECTEURS VIVANTS qui les affichent aujourd'hui : ProfilPage (l.304-308) et DashboardProprietairePage (l.907-908 et 946-947, fiche candidat consultée par un propriétaire). Cesser de les écrire sans toucher à ces affichages ne produirait pas une dette de code, mais un propriétaire qui ouvre un dossier de candidature et y trouve deux champs vides, sans qu'aucune erreur ne se déclenche nulle part.
+SÉQUENCE CONTRAINTE, dans cet ordre et jamais l'inverse : retirer d'abord les affichages, cesser ensuite d'écrire les colonnes. L'ordre inverse ouvre une fenêtre pendant laquelle des écrans montrent une donnée qui a cessé d'être alimentée. Cette fenêtre se voit côté propriétaire, elle ne se voit pas côté développement.
+PRÉCISION 09/08/2026 sur le périmètre : les champs de rythme abstrait ne sont PAS reconstruits sur `/compte`, contrairement à ce que prévoyait la mise à jour du 28/07. Le patch 3c les a remplacés par les villes et leur fonction. Le report de la migration vers `rhythm_calendar` reste valide et inchangé : ce sont les champs abstraits qui sautent, pas le calendrier.
+
 ## DETTE #151 — Migration de "Préférences email" de ModifierProfilPage vers ParametresPage
 
 Décidé le 24/07/2026, pendant le cadrage de la restructuration de ModifierProfilPage.
@@ -1854,3 +1874,17 @@ Le patch 3b masque « Tes études » et « Ton alternance » pour un `type_user`
 Aucune conséquence sur les données : ces catégories sont vides tant que le patch 4 ne les a pas construites.
 Résolution : trancher au patch 4, qui traite ces deux catégories. Le mécanisme de filtrage existe déjà, il suffira d'y ajouter les identifiants concernés.
 Découverte : 2026-08-07, en testant le masquage propriétaire du patch 3b.
+
+## DETTE #159 — Profils `les_deux` : statut de ville indérivable, ville muette persistante
+Le helper `deriverStatutVille` ne devine jamais la fonction d'une ville quand `type_user` vaut `les_deux`, et c'est un choix explicite, pas un oubli. Pour tous les autres types, la fonction se déduit du type : un `locataire` cherche, un `hote` propose. Un `les_deux` fait les deux, et rien dans la donnée ne dit laquelle de ses deux villes porte laquelle des deux fonctions. Deviner reviendrait à inscrire une valeur inventée dans une colonne qui pilote le matching.
+Conséquence : sur toute surface qui édite une ville sans demander explicitement sa fonction, un profil `les_deux` produit une ville dont le statut reste nul. La ville est écrite mais reste muette pour `deduireRecherche`, qui filtre sur `action==='recherche'` et l'ignore. Symptôme identique à DETTE #143, cause différente : #143 était une écriture oubliée, #159 est une information que la surface ne possède pas.
+RÉSOLU sur `/compte` depuis dc4f3b7 : la catégorie « Ton alternance » fait choisir la fonction explicitement, il n'y a donc plus rien à deviner.
+TOUJOURS VIVANT sur ModifierProfilPage, et le restera jusqu'à la suppression de cette page au patch 7. C'est la résolution retenue, et elle est délibérée : ne pas réparer une page vouée à disparaître.
+Découverte : 2026-08-09, pendant le cadrage du patch 3c.
+
+## DETTE #160 — DashboardAdminPage lit `annonces.statut`, colonne qui n'existe pas
+`DashboardAdminPage` (`sterny-react/src/pages/dashboard/DashboardAdminPage.jsx`, et non `pages/admin/` où une session a d'abord cherché) lit `annonces.statut` à deux endroits (l.460 et l.467) pour afficher l'état d'une annonce. Cette colonne n'existe pas dans la table. Les seules colonnes d'état sont `disponible` (booléen) et `pole` (contrainte CHECK sur `ecole` | `entreprise`).
+Conséquence : la colonne d'état du tableau d'administration affiche toujours « — ». Aucune erreur n'est levée, la lecture d'une propriété absente renvoie une valeur vide et rien ne le signale. Le défaut est donc invisible autrement qu'en allant le chercher.
+RÉSERVE SUR LE CONSTAT : l'absence de la colonne est établie sur le schéma versionné du dépôt. Une colonne ajoutée à la main en production, hors migration, n'apparaîtrait pas dans cette source. À vérifier sur la base distante avant de conclure, et à ne jamais corriger en supposant.
+Résolution : définir d'abord ce que l'administrateur doit réellement voir. `disponible` et `pole` ne disent pas la même chose que « statut », et personne n'a établi ce que « statut d'une annonce » signifie côté administration. Câbler avant d'avoir tranché produirait un affichage juste techniquement et faux fonctionnellement.
+Découverte : 2026-08-09, pendant le cadrage du patch 3c.
