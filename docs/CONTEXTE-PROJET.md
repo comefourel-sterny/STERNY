@@ -367,6 +367,23 @@ Si Claude se rend compte qu'il a omis ou mal appliqué une règle dans une consi
 
 Session du 29 avril 2026, lors de la saisie de la vérité terrain Martin. Une règle métier réelle (alternant en vacances → `company`) a été invoquée par Claude pour demander des modifications inutiles au CSV, alors que le spike #2 mesure uniquement la performance de classification couleur de l'algo et n'a pas besoin du statut métier final. Côme a dû corriger l'erreur après plusieurs allers-retours.
 
+### Un numéro de ligne du project knowledge n'est pas un numéro de ligne du dépôt
+
+Les fichiers uploadés dans le project knowledge sont une photographie datée. Tout commit
+postérieur les décale, parfois de plusieurs dizaines de lignes, et Claude.ai n'a aucun moyen
+de s'en apercevoir depuis sa copie.
+
+Conséquence : Claude.ai ne donne JAMAIS à Claude Code un point d'insertion sous forme de
+numéro de ligne, et n'ancre jamais une modification sur un repère supposé se trouver en tête
+de fichier. Un point d'insertion s'exprime toujours par une ancre textuelle vérifiable
+(« avant le titre X »), accompagnée de la commande d'audit qui l'établit, et Claude Code
+affiche la structure réelle du fichier avant d'écrire.
+
+Origine : insertion du 08/08/2026 dans ETAT-COURANT.md, ancrée sur un repère lu à la ligne 12
+de la copie et situé à la ligne 107 dans le dépôt. Une entrée du 08/08 s'est retrouvée sous
+une entrée du 07/08 dont Claude.ai ignorait l'existence. Claude Code a détecté la rupture
+d'ordre et s'est arrêté avant commit, ce qui est le comportement voulu.
+
 ---
 
 ## 6 ter. Entretien du corpus documentaire
