@@ -64,6 +64,11 @@ RÈGLE : ne rien déduire sur Côme. Si l'information n'est pas ici, la demander
 **À ne jamais publier sans arbitrage explicite de Côme** :
 - Mes difficultés scolaires (attention, compréhension) — divulgation publique irréversible, décision strictement personnelle, par défaut NON.
 - Le conflit avec la mairie sur le grade de chef de poste.
+- **Le terme « chef de poste » sur un support public.** Écrire « responsable de poste de
+  secours », qui est le mot inscrit quotidiennement sur la main courante : formule factuelle,
+  datée et vérifiable. « Chef de poste » désigne un grade, précisément l'objet du désaccord
+  ci-dessus. Cette règle donne une formulation, elle ne dit rien du statut réel : toute
+  question sur ce qui peut être affiché relève de la délégation SNSM.
 - Tout ce qui concerne Pépite / SNEE / Le Poool tant que ce n'est pas accordé.
 - Quoi que ce soit laissant croire que je suis alternant.
 - Pour tout ce qui concerne le PROJET (chiffres, mécaniques, prix, partenaires nommés, calendrier), voir §1 ter — doctrine public/privé. §1 bis ne traite que de moi.

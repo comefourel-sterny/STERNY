@@ -2,12 +2,39 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-07
+**Dernière mise à jour** : 2026-08-08
+[VRAIE VIE] Description d'expérience SNSM publiée sur LinkedIn ; règle de formulation « responsable de poste de secours » actée en CONTEXTE-PROJET §1 bis.
 [VRAIE VIE] Doctrine public/privé actée en CONTEXTE-PROJET §1 ter, puis appliquée à la description d'expérience Sterny sur LinkedIn. Sujets 1 et 2 de la file du 31/07 clos.
 [DEV] Surface unifiée de gestion de compte : patchs 0 à 3b livrés et validés. Extinction
 temporisée des erreurs de champ unifiée sur les deux catégories. Reste : patchs 3c à 7.
 
 ---
+
+## 2026-08-08 — [VRAIE VIE] Description d'expérience SNSM en ligne
+
+Texte publié, écrit par Côme, corrigé et taillé. Trois paragraphes : entrée en 2022 et
+éventail des expériences, contenu de la formation, fonctions actuelles.
+
+ÉCARTÉ DU TEXTE, motifs valant pour tout support futur : la phrase sur l'engagement, le
+respect et le dévouement (règle §1 bis, écrire ce qu'on a fait et non ce qu'on est) ; le
+décompte de diplômes assorti d'un « plus possible maintenant » (doublon avec la section
+Certifications, et affirmation invérifiable sur ce que la SNSM autorise aujourd'hui) ; le
+paragraphe sur les projets à venir (une description d'expérience raconte ce qui est fait, et
+« être vraiment confronté au danger de la mer » dévalorisait l'activité actuelle).
+
+ERREUR RATTRAPÉE PAR CÔME EN SÉANCE : une version intermédiaire plaçait le pilotage de moto
+nautique dans l'année de formation initiale, alors que cette qualification est postérieure
+(juin 2026). Elle figure en Certifications, pas dans le texte. Leçon : ne pas agréger une
+liste de compétences sans vérifier qu'elles tiennent dans la fenêtre temporelle annoncée.
+
+REPROCHE FONDÉ DE CÔME, à retenir : deux versions successives sortaient de ses mots et
+ajoutaient des formules qu'il n'aurait pas écrites. La règle « Côme rédige, Claude corrige et
+taille » se tient aussi quand le texte brut demande beaucoup de travail. Corriger n'est pas
+réécrire.
+
+RESTE SUR LE PROFIL : descriptions Concierge Airbnb (CHAPIN TRAITEUR volontairement sans
+description), Compétences, arbitrage Bénévolat, photo de profil, puis checklist de sortie et
+publication.
 
 ## 2026-08-07 — [DEV] Patch 3b livré : Tes études + À propos de toi, fonction d'enregistrement commune, extinction temporisée des erreurs de champ
 
