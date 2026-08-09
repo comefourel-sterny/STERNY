@@ -514,6 +514,65 @@
     cursor: not-allowed;
 }
 
+/* --- Modale de blocage annonce (patch 3c) : calquée sur la modale de suppression, sans champ de confirmation --- */
+.gc-modal-bloque-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.gc-modal-bloque-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(245, 158, 11, 0.10);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: #F59E0B;
+}
+
+.gc-modal-bloque-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 8px;
+}
+
+.gc-modal-bloque-card p {
+    font-size: 14px;
+    color: #64748B;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.gc-modal-bloque-buttons {
+    display: flex;
+}
+
+.gc-modal-bloque-btn-ok {
+    flex: 1;
+    padding: 11px;
+    background: #1E293B;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.gc-modal-bloque-btn-ok:hover {
+    background: #0F172A;
+}
+
 /* --- Champs de formulaire (catégorie Infos personnelles) --- */
 .gc-form-row {
     display: grid;

@@ -118,6 +118,17 @@ const FILIERES_SUGGESTIONS = [
   'Design', 'Medecine', 'Sciences politiques', 'Economie', 'Data / Intelligence artificielle', 'Cybersecurite',
 ]
 
+// Villes recopiées VERBATIM de ModifierProfilPage.jsx (VILLES_DISPONIBLES, page vouée à suppression au patch 7).
+// SANS accents et jamais importée : accentuer créerait deux orthographes de la même ville en base selon la date
+// d'inscription (même raisonnement que les suggestions d'école du patch 3b).
+const VILLES_DISPONIBLES = ['Rennes', 'Nantes', 'Brest', 'Quimper', 'Lorient', 'Vannes', 'Saint-Malo', 'Saint-Brieuc', 'Fougeres', 'Vitre']
+
+// Options de la fonction dans une ville (« ce que tu fais »). value = statut_ville_* écrit en base.
+const FONCTION_OPTIONS = [
+  { value: 'recherche', label: 'Je cherche un logement' },
+  { value: 'hote', label: 'Je propose mon logement' },
+]
+
 export default function GestionComptePage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
@@ -199,11 +210,26 @@ export default function GestionComptePage() {
   const aproposErreurTimeout = useRef(null)
   const { ref: aproposShakeRef, shake: aproposShake } = useShakeButton()
 
+  // Catégorie "Ton alternance" — états propres (patch 3c). fonction* = 'recherche' | 'hote' | '' (écrit dans statut_ville_*).
+  const [villeEcole, setVilleEcole] = useState('')
+  const [villeEntreprise, setVilleEntreprise] = useState('')
+  const [fonctionVilleEcole, setFonctionVilleEcole] = useState('')
+  const [fonctionVilleEntreprise, setFonctionVilleEntreprise] = useState('')
+  const [villesInitiales, setVillesInitiales] = useState({ villeEcole: '', villeEntreprise: '', fonctionVilleEcole: '', fonctionVilleEntreprise: '' })
+  const [erreursVilles, setErreursVilles] = useState({})
+  const [villesErreur, setVillesErreur] = useState('')
+  const [villesLoading, setVillesLoading] = useState(false)
+  const [villesSaved, setVillesSaved] = useState(false)
+  const villesErreurTimeout = useRef(null)
+  const villesChampErreurTimeout = useRef(null)
+  const { ref: villesShakeRef, shake: villesShake } = useShakeButton()
+  const [showBloqueModal, setShowBloqueModal] = useState(false)
+
   useEffect(() => {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -229,6 +255,13 @@ export default function GestionComptePage() {
         if (data.bio) setBio(data.bio)
         setEtudesInitiales({ ecole: data.ecole || '', anneeEtudes: data.annee_etudes || '', filiere: data.filiere || '' })
         setAproposInitial({ bio: data.bio || '' })
+        // Patch 3c — Ton alternance : villes + fonction (statut_ville_*). PIÈGE 3b : sans ces colonnes au SELECT,
+        // les champs s'afficheraient vides malgré des valeurs réelles et le 1er enregistrement les écraserait.
+        if (data.ville_ecole) setVilleEcole(data.ville_ecole)
+        if (data.ville_entreprise) setVilleEntreprise(data.ville_entreprise)
+        if (data.statut_ville_ecole) setFonctionVilleEcole(data.statut_ville_ecole)
+        if (data.statut_ville_entreprise) setFonctionVilleEntreprise(data.statut_ville_entreprise)
+        setVillesInitiales({ villeEcole: data.ville_ecole || '', villeEntreprise: data.ville_entreprise || '', fonctionVilleEcole: data.statut_ville_ecole || '', fonctionVilleEntreprise: data.statut_ville_entreprise || '' })
         if (data.preferences_email) {
           const pe = data.preferences_email
           setPrefs({ alertes: pe.alertes !== false, messages: pe.messages !== false, candidatures: pe.candidatures !== false, paiements: pe.paiements !== false, baux: pe.baux !== false, marketing: pe.marketing !== false })
@@ -252,6 +285,8 @@ export default function GestionComptePage() {
     clearTimeout(etudesErreurTimeout.current)
     clearTimeout(etudesChampErreurTimeout.current)
     clearTimeout(aproposErreurTimeout.current)
+    clearTimeout(villesErreurTimeout.current)
+    clearTimeout(villesChampErreurTimeout.current)
     clearTimeout(prefsSaveTimeout.current)
   }, [])
 
@@ -443,6 +478,36 @@ export default function GestionComptePage() {
     })
   }
 
+  // Recopiée VERBATIM de ModifierProfilPage.jsx (jamais réécrite ni simplifiée) : préserve un statut existant,
+  // ne devine jamais pour les_deux, remet à null quand la ville est vidée. Validée runtime depuis le 24/07.
+  function deriverStatutVille(statutExistant, villeValeur, typeUserReel) {
+    if (!villeValeur) return null
+    if (statutExistant) return statutExistant
+    if (typeUserReel === 'locataire') return 'recherche'
+    if (typeUserReel === 'hote') return 'hote'
+    return statutExistant // les_deux ou autre cas : ne jamais deviner, on garde tel quel (null si null)
+  }
+
+  // Validation V2 pure de "Ton alternance" — erreur SOUS le champ fonction si une ville est renseignée sans fonction.
+  // (V1 « au moins une ville » est une erreur GLOBALE, traitée dans enregistrerVilles, pas ici.)
+  function computeErreursVilles({ villeEcole, villeEntreprise, fonctionVilleEcole, fonctionVilleEntreprise }) {
+    const e = {}
+    if (villeEcole.trim() && !fonctionVilleEcole) e.fonctionEcole = 'Indique ce que tu fais dans cette ville.'
+    if (villeEntreprise.trim() && !fonctionVilleEntreprise) e.fonctionEntreprise = 'Indique ce que tu fais dans cette ville.'
+    return e
+  }
+
+  // Revalidation d'un seul champ villes pendant la frappe/sélection (surcharge pour lire la valeur courante).
+  function validerChampVilles(champ, valeurs = {}) {
+    const erreurs = computeErreursVilles({ villeEcole, villeEntreprise, fonctionVilleEcole, fonctionVilleEntreprise, ...valeurs })
+    setErreursVilles(prev => {
+      const suivant = { ...prev }
+      if (erreurs[champ]) suivant[champ] = erreurs[champ]
+      else delete suivant[champ]
+      return suivant
+    })
+  }
+
   // Fonction d'enregistrement COMMUNE paramétrée par la liste de colonnes (patch 3b).
   // enregistrerInfosPersonnelles n'est PAS migrée ici (prévu patch 5) : deux mécanismes coexistent temporairement.
   // cle route les états de retour visuel propres à chaque catégorie ; colonnes ne contient QUE les colonnes de la catégorie.
@@ -450,6 +515,7 @@ export default function GestionComptePage() {
     const ctx = {
       etudes: { setErrs: setErreursEtudes, shake: etudesShake, setErr: setEtudesErreur, setLoading: setEtudesLoading, setSaved: setEtudesSaved, setInit: setEtudesInitiales, timeout: etudesErreurTimeout, champTimeout: etudesChampErreurTimeout },
       apropos: { setErrs: setErreursApropos, shake: aproposShake, setErr: setAproposErreur, setLoading: setAproposLoading, setSaved: setAproposSaved, setInit: setAproposInitial, timeout: aproposErreurTimeout },
+      villes: { setErrs: setErreursVilles, shake: villesShake, setErr: setVillesErreur, setLoading: setVillesLoading, setSaved: setVillesSaved, setInit: setVillesInitiales, timeout: villesErreurTimeout, champTimeout: villesChampErreurTimeout },
     }[cle]
     const erreurs = valider()
     if (Object.keys(erreurs).length > 0) {
@@ -463,7 +529,11 @@ export default function GestionComptePage() {
     ctx.setErr('')
     ctx.setLoading(true)
     try {
-      if (avantEcriture) await avantEcriture()
+      // Deux modes d'interruption du crochet, volontairement distincts : un throw = échec réel (ex. upload photo
+      // patch 5) → géré par le catch (erreur globale inline, shake, minuterie) ; un retour { interrompu: true } =
+      // blocage volontaire par une règle métier (ex. annonce en ligne) → sortie propre, sans erreur ni shake.
+      const resultatAvant = avantEcriture ? await avantEcriture() : null
+      if (resultatAvant?.interrompu) { ctx.setLoading(false); return }
       const { error } = await supabaseClient.from('users').update(colonnes).eq('id', user.id)
       if (error) throw error
       setUserData(prev => ({ ...prev, ...colonnes }))
@@ -502,6 +572,70 @@ export default function GestionComptePage() {
       valider: () => ({}),
       colonnes: { bio: v || null },
       champsInitiaux: { bio: v },
+    })
+  }
+
+  // Crochet avantEcriture (patch 3c) : un pôle est VERROUILLÉ si sa fonction INITIALE valait 'hote' ET que l'une
+  // de ces conditions est vraie — (a) la fonction saisie n'est plus 'hote' (changement de fonction, ou ville vidée) ;
+  // (b) la ville saisie diffère de la ville initiale (comparaison sur valeurs déjà nettoyées des espaces). Un pôle
+  // verrouillé qui porte une annonce bloque : le rapprochement se fait sur annonces.pole ('ecole'|'entreprise',
+  // NOT NULL + UNIQUE user_id,pole), JAMAIS sur un nom de ville (DETTE #144). N'écrit rien, ouvre la modale et
+  // retourne { interrompu: true } ; ne lève aucune exception (le catch de enregistrerCategorie reste intact).
+  async function controleAnnonceBloquante({ vEcole, fEcole, vEntreprise, fEntreprise }) {
+    const verrouille = {
+      ecole: villesInitiales.fonctionVilleEcole === 'hote' && (fEcole !== 'hote' || vEcole !== villesInitiales.villeEcole),
+      entreprise: villesInitiales.fonctionVilleEntreprise === 'hote' && (fEntreprise !== 'hote' || vEntreprise !== villesInitiales.villeEntreprise),
+    }
+    if (!verrouille.ecole && !verrouille.entreprise) return null
+    const { data: annoncesUser } = await supabaseClient.from('annonces').select('id, pole').eq('user_id', user.id)
+    const poles = (annoncesUser || []).map(a => a.pole)
+    const bloque = (verrouille.ecole && poles.includes('ecole')) || (verrouille.entreprise && poles.includes('entreprise'))
+    if (bloque) { setShowBloqueModal(true); return { interrompu: true } }
+    return null
+  }
+
+  const enregistrerVilles = () => {
+    // Nettoyage UNE seule fois (propagé état affiché + colonnes + référence, cf. patch 3b). Fonction remise à ''
+    // si la ville est vide : le champ fonction n'est alors pas affiché, son état ne doit pas rester renseigné.
+    const vEcole = villeEcole.trim()
+    const vEntreprise = villeEntreprise.trim()
+    const fEcole = vEcole ? fonctionVilleEcole : ''
+    const fEntreprise = vEntreprise ? fonctionVilleEntreprise : ''
+    setVilleEcole(vEcole); setVilleEntreprise(vEntreprise)
+    setFonctionVilleEcole(fEcole); setFonctionVilleEntreprise(fEntreprise)
+
+    // V1 (erreur GLOBALE) : au moins une ville renseignée. Minuterie globale dédiée (villesErreurTimeout).
+    if (!vEcole && !vEntreprise) {
+      setVillesErreur('Renseigne au moins une ville.')
+      villesShake()
+      clearTimeout(villesErreurTimeout.current)
+      villesErreurTimeout.current = setTimeout(() => setVillesErreur(''), 3000)
+      return
+    }
+
+    const typeUserReel = userData?.type_user
+    // type_user déduit des deux fonctions présentes (ville renseignée).
+    const fonctionsPresentes = [fEcole, fEntreprise].filter(Boolean)
+    const aRecherche = fonctionsPresentes.includes('recherche')
+    const aHote = fonctionsPresentes.includes('hote')
+    const typeUserDeduit = aRecherche && aHote ? 'les_deux' : aHote ? 'hote' : 'locataire'
+
+    // colonnes : EXACTEMENT ces 5 (jamais une de plus). deriverStatutVille reçoit la fonction saisie comme statut
+    // existant → un choix explicite prime toujours. GARDE-FOU : ne pas écraser un type_user 'proprietaire'.
+    const colonnes = {
+      ville_ecole: vEcole || null,
+      ville_entreprise: vEntreprise || null,
+      statut_ville_ecole: deriverStatutVille(fEcole, vEcole, typeUserReel),
+      statut_ville_entreprise: deriverStatutVille(fEntreprise, vEntreprise, typeUserReel),
+    }
+    if (typeUserReel !== 'proprietaire') colonnes.type_user = typeUserDeduit
+
+    return enregistrerCategorie({
+      cle: 'villes',
+      valider: () => computeErreursVilles({ villeEcole: vEcole, villeEntreprise: vEntreprise, fonctionVilleEcole: fEcole, fonctionVilleEntreprise: fEntreprise }),
+      colonnes,
+      avantEcriture: () => controleAnnonceBloquante({ vEcole, fEcole, vEntreprise, fEntreprise }),
+      champsInitiaux: { villeEcole: vEcole, villeEntreprise: vEntreprise, fonctionVilleEcole: fEcole, fonctionVilleEntreprise: fEntreprise },
     })
   }
 
@@ -545,6 +679,12 @@ export default function GestionComptePage() {
     filiere !== etudesInitiales.filiere
   )
   const aproposModifie = bio !== aproposInitial.bio
+  const villesModifie = (
+    villeEcole !== villesInitiales.villeEcole ||
+    villeEntreprise !== villesInitiales.villeEntreprise ||
+    fonctionVilleEcole !== villesInitiales.fonctionVilleEcole ||
+    fonctionVilleEntreprise !== villesInitiales.fonctionVilleEntreprise
+  )
 
   // Masquage catégories pour les propriétaires (ni "Tes études" ni "Ton alternance" : un propriétaire n'est pas alternant).
   const groupesVisibles = GROUPES
@@ -740,7 +880,49 @@ export default function GestionComptePage() {
             </>
           )}
 
-          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && (
+          {categorieActive === 'alternance' && (
+            <>
+              <div className="gc-champ">
+                <label className="gc-label">Ville de ton école</label>
+                <div className="gc-champ-autocomplete">
+                  <AutocompleteInput name="villeEcole" value={villeEcole} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'école…"
+                    onChange={e => { const v = e.target.value; setVilleEcole(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEcole('') }} />
+                </div>
+                <div className="gc-champ-erreur-slot" />
+              </div>
+              {villeEcole.trim() && (
+                <div className="gc-champ">
+                  <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
+                  <div className={`gc-champ-select${erreursVilles.fonctionEcole ? ' gc-champ-select-invalide' : ''}`}>
+                    <CustomSelect name="fonctionVilleEcole" options={FONCTION_OPTIONS} value={fonctionVilleEcole} placeholder="Sélectionner"
+                      onChange={e => { const v = e.target.value; setFonctionVilleEcole(v); if (erreursVilles.fonctionEcole) validerChampVilles('fonctionEcole', { fonctionVilleEcole: v }) }} />
+                  </div>
+                  <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEcole && <p className="gc-champ-erreur">{erreursVilles.fonctionEcole}</p>}</div>
+                </div>
+              )}
+              <div className="gc-champ">
+                <label className="gc-label">Ville de ton entreprise</label>
+                <div className="gc-champ-autocomplete">
+                  <AutocompleteInput name="villeEntreprise" value={villeEntreprise} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'entreprise…"
+                    onChange={e => { const v = e.target.value; setVilleEntreprise(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEntreprise('') }} />
+                </div>
+                <div className="gc-champ-erreur-slot" />
+              </div>
+              {villeEntreprise.trim() && (
+                <div className="gc-champ">
+                  <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
+                  <div className={`gc-champ-select${erreursVilles.fonctionEntreprise ? ' gc-champ-select-invalide' : ''}`}>
+                    <CustomSelect name="fonctionVilleEntreprise" options={FONCTION_OPTIONS} value={fonctionVilleEntreprise} placeholder="Sélectionner"
+                      onChange={e => { const v = e.target.value; setFonctionVilleEntreprise(v); if (erreursVilles.fonctionEntreprise) validerChampVilles('fonctionEntreprise', { fonctionVilleEntreprise: v }) }} />
+                  </div>
+                  <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEntreprise && <p className="gc-champ-erreur">{erreursVilles.fonctionEntreprise}</p>}</div>
+                </div>
+              )}
+              <BoutonEnregistrer onSave={enregistrerVilles} modifie={villesModifie} loading={villesLoading} ok={villesSaved} erreur={villesErreur} btnRef={villesShakeRef} />
+            </>
+          )}
+
+          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && categorieActive !== 'alternance' && (
             <div className="gc-placeholder">Cette section arrive au prochain patch.</div>
           )}
         </section>
@@ -812,6 +994,25 @@ export default function GestionComptePage() {
             <div className="gc-modal-delete-buttons">
               <button className="gc-modal-delete-btn-cancel" onClick={() => setShowDeleteModal(false)}>Annuler</button>
               <button className="gc-modal-delete-btn-delete" disabled={deleteConfirm.trim() !== 'SUPPRIMER'} onClick={supprimerCompte}>Supprimer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale de blocage (patch 3c) : annonce en ligne sur un pôle qui quitte le statut hôte. Calquée sur la
+          modale de suppression, SANS champ de confirmation, un seul bouton. Réutilise .gc-modal-overlay. */}
+      {showBloqueModal && (
+        <div className="gc-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowBloqueModal(false) }}>
+          <div className="gc-modal-bloque-card">
+            <div className="gc-modal-bloque-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h3>Annonce en ligne</h3>
+            <p>Tu as une annonce en ligne dans cette ville. Tant qu'elle est en ligne, tu ne peux ni changer cette ville ni changer ce que tu y fais. Supprime-la depuis ton tableau de bord si tu veux modifier.</p>
+            <div className="gc-modal-bloque-buttons">
+              <button className="gc-modal-bloque-btn-ok" onClick={() => setShowBloqueModal(false)}>J'ai compris</button>
             </div>
           </div>
         </div>
