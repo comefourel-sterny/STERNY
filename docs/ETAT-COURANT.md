@@ -32,9 +32,51 @@ ajoutaient des formules qu'il n'aurait pas écrites. La règle « Côme rédige,
 taille » se tient aussi quand le texte brut demande beaucoup de travail. Corriger n'est pas
 réécrire.
 
-RESTE SUR LE PROFIL : descriptions Concierge Airbnb (CHAPIN TRAITEUR volontairement sans
-description), Compétences, arbitrage Bénévolat, photo de profil, puis checklist de sortie et
-publication.
+DESCRIPTION CONCIERGE AIRBNB EN LIGNE. Trois paragraphes : gestion d'un studio en location
+courte durée à Rennes, accueil et visite ; remise en état entre deux séjours ; communication
+via la messagerie Airbnb. Écrite par Côme, corrigée et taillée.
+Coupes appliquées, motifs réutilisables : la localisation précise du logement (« en bord de
+Vilaine »), qui combinée à la description du bien restreint trop le nombre de logements
+correspondants sur un support public, alors que le bien n'appartient pas à Côme ; le procédé
+de remise des clés, information de sécurité sur un logement identifiable ; « clients » rendu
+par « voyageurs », les clients au sens strict étant les propriétaires qui confient le bien.
+Aucun chiffre de volume ni de durée : tout chiffre périme sans que Côme s'en aperçoive.
+Rappel permanent : le nom du particulier employeur n'apparaît sur aucun support public.
+
+COMPÉTENCES SAISIES, cinq entrées, chacune rattachée à une expérience :
+Développement web (Sterny), Premiers secours (SNSM), Sauvetage aquatique (SNSM), Gestion
+locative (Concierge Airbnb), Accueil (Concierge Airbnb).
+DOCTRINE DE LA SECTION : la section Compétences n'est pas une section d'affichage mais
+d'indexation, elle sert au moteur de recherche interne de LinkedIn et non au lecteur humain,
+qui juge sur les expériences et les certifications. Conséquences tenues : uniquement des
+savoir-faire vérifiables, jamais de qualités personnelles auto-attribuées (rigueur, esprit
+d'équipe, leadership, gestion du stress, adaptabilité), qui tombent sous la même règle que le
+reste du profil ; toujours choisir l'intitulé du référentiel LinkedIn plutôt qu'un texte libre,
+mieux indexé (une saisie libre « accueil » a dû être refaite en « Accueil ») ; chaque
+compétence rattachée à une expérience.
+ÉCARTÉS, motifs : « Bénévole » et « Entrepreneur », qui sont des statuts ou des postures et non
+des savoir-faire, le second faisant en outre doublon avec le titre du profil ; les logiciels de
+conception de l'ENSAB, non pratiqués depuis plus d'un an, en application du critère « ne rien
+inscrire qu'on ne pourrait pas défendre si on est interrogé dessus » ; les noms de technologies
+côté développement, « Développement web » disant vrai sans exposer.
+
+DÉCISION — PAS DE SECTION BÉNÉVOLAT. L'engagement SNSM occupe déjà une entrée Expérience
+complète, avec description et six certifications rattachées. Une section Bénévolat n'aurait
+qu'un seul élément à recevoir, le même, ce qui ferait apparaître deux fois la même chose sur
+la même page. L'objection « un lecteur pourrait croire à un emploi salarié » ne tient pas : le
+champ Type d'emploi est volontairement vide et le nom de l'organisation est explicite.
+Réouverture possible seulement si un second engagement bénévole, distinct de la SNSM, existe
+un jour.
+
+DÉCISION — BANNIÈRE REPORTÉE. Publication prévue avec la bannière par défaut. Motifs : elle ne
+bloque pas la publication ; une bannière portant logo, slogan ou capture du site devient un
+support public de communication sur Sterny et rouvre la doctrine §1 ter ; aucune charte
+visuelle Sterny n'existe pour ce format. À traiter avec la Page entreprise, même sujet, déjà
+reportée après publication du profil.
+
+RESTE SUR LE PROFIL, dans l'ordre : photo de profil (seul élément bloquant, non faite au
+08/08), puis checklist de sortie et publication. La description CHAPIN TRAITEUR reste
+volontairement vide.
 
 ## 2026-08-07 — [DEV] Patch 3b livré : Tes études + À propos de toi, fonction d'enregistrement commune, extinction temporisée des erreurs de champ
 
