@@ -9,6 +9,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-08-10 — Questionnaire terrain : trou de capture du profil hybride corrigé
+
+**Trou identifié par Côme** en analysant les 15 premières réponses. Section 10 « Sans famille », option « Je loue un logement dans une ville et j'utilise des plateformes de location courte durée pour l'autre » redirigeait vers la section « Ton logement payé », qui ne demande que la dépense du logement principal. Le coût de la courte durée n'était jamais capturé pour ce profil, alors qu'il est le plus fréquent parmi les répondants à ce jour.
+
+**Correction livrée dans le formulaire** : nouvelle section « Ton logement payé + courte durée », insérée après la section 14, atteinte uniquement depuis la section 10 option 3, sortie explicite vers « Difficultés logement ». Quatre questions obligatoires : dépense mensuelle du logement loué (avec description « Uniquement le logement que tu loues, sans compter la courte durée. »), coût d'une semaine en courte durée, nombre de nuits ou semaines en courte durée sur un mois type, semaines par mois où le logement reste vide (0 / 1 / 2 / 3 et plus). Les formulations sont reprises à l'identique des sections 11 et 14 pour que les variables restent comparables entre profils. La section 14 n'est pas modifiée, elle reste partagée avec la section 9 option 3 (profil purement locatif). Le formulaire passe de 24 à 25 sections, renumérotation vérifiée par dump.
+
+**Piège rencontré, à retenir** : l'insertion d'une section a silencieusement réinitialisé la sortie de la section 14 sur « section suivante », ce qui envoyait le profil locatif dans la section vide nouvellement créée. Corrigé dans la foulée. Toute insertion de section dans ce formulaire exige de revérifier la sortie de la section qui précède.
+
+**MÉTHODE ACTÉE — audit du formulaire par dump texte.** La vérification visuelle section par section est abandonnée. Le formulaire s'audite désormais par le script `docs/recherche/audit-formulaire.gs`, en lecture seule, qui imprime les 25 sections, leurs questions, leurs sorties par défaut et les redirections par option. Motif : la lecture d'écran est coûteuse et faillible sur 25 sections, le dump sort la structure complète en une exécution et se compare d'une session à l'autre.
+
+**PIÈGE DE L'API FORMS, tracé pour ne pas le refaire** : le réglage de navigation porté par un `PageBreakItem` décrit la sortie de la section PRÉCÉDENTE, pas celle qu'il ouvre. Un premier dump attribuant le réglage à la section qu'il ouvre a produit quatre faux défauts de branchement, invalidés par une capture d'écran de Côme. Le script versionné recale d'un cran. Point de contrôle obligatoire à chaque exécution : « APRES LA SECTION 7 » doit afficher « SECTION 20 (Choix pro) ».
+
+**Rupture de série assumée** : les 15 réponses antérieures n'ont pas la nouvelle section. Aucun recontact, les adresses ne sont disponibles que pour les répondants ayant coché l'opt-in. Ces 15 réponses constituent une vague distincte à l'analyse.
+
+**Arbitrage écarté** : ne pas ajouter la question des semaines vides à la section « Deux logements ». Motif Côme, le rythme déjà collecté permet de la déduire, et le profil est probablement rare. Réserve tracée : cette déduction ne fonctionne pas pour les rythmes « en journées dans la semaine » ni « imprévisible », qui ne produisent aucun nombre de semaines. À rouvrir si ce profil devient significatif dans les réponses.
+
+**RESTE OUVERT — profil mono-ville.** La section 7 « Mono-ville » sort directement vers « Choix pro ». Ce profil n'est interrogé ni sur sa dépense logement, ni sur ses difficultés. Décision de Côme : lui ajouter la question du loyer et le faire passer par « Difficultés logement ». Non implémenté à ce jour, à traiter en session dédiée car cela modifie le parcours d'un profil entier sur une branche saine.
+
+**L'entrée du 25/07/2026 n'est pas corrigée** (règle du journal, on ne réécrit pas une entrée datée). Elle reste valide : l'audit par dump de ce jour n'a trouvé aucun défaut de branchement sur les 11 points de redirection d'origine.
+
 ## 2026-08-09 — [DEV] Patch 3c livré : Ton alternance, `type_user` dérivé, blocage sur annonce
 
 **CHANGEMENT DE CAP EN COURS DE PATCH.** Les trois champs de rythme abstrait de l'ancienne page (`type_alternance`, `rythme_alternance`, et le champ de saisie associé) ne sont PAS reconstruits sur `/compte`. Ils sont remplacés par les villes et leur fonction. Motif : reconstruire à l'identique une saisie que la Charte interdit depuis l'origine aurait été porter une colonne dépréciée dans une surface neuve. Le planning éditable, lui, arrive au patch 3d.
