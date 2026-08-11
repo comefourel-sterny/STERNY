@@ -14,6 +14,11 @@
 // d'une COPIE du formulaire sans que FORM_ID ait ete change, il dumpe
 // l'ORIGINAL et rien ne le signale. Le dump imprime donc en tete l'identifiant
 // et le titre du formulaire reellement lu. VERIFIER CET EN-TETE EN PREMIER.
+//
+// LIMITE DE LA METHODE (ajoutee le 2026-08-11) : le dump signale qu'une option
+// "Autre" est activee mais ne dit JAMAIS vers quelle section elle redirige.
+// L'API ne l'expose pas de facon lisible. Cette verification reste MANUELLE,
+// question par question, dans l'interface. Le dump ne couvre pas tout.
 
 function dumpStructure() {
   var FORM_ID = '1dYJGW1h83h5fHEhwRFmjs68j4r03gepOVzQF5PjHPvg';
