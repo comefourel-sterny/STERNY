@@ -2,12 +2,39 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-09
+**Dernière mise à jour** : 2026-08-11
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
 [VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
+[VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle (empreinte identique). Reste volets 1 et 2, puis publication de la copie et fermeture de l'original.
 
 ---
+
+## 2026-08-11 — [VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle
+
+**COPIE CRÉÉE.** Identifiant `1GkNDUCR3Su2JC3My5gp08qnD1LU25QklZMHNmMTuxug`. L'original conserve `1dYJGW1h83h5fHEhwRFmjs68j4r03gepOVzQF5PjHPvg`. Les deux formulaires portent le MÊME TITRE, volontairement : dans Google Forms le nom du fichier est aussi le titre lu par le répondant, le renommer aurait fait diverger la copie de l'original dès sa première ligne. La distinction se fait par l'identifiant, jamais par le nom. La copie n'est PAS publiée et le sera seulement une fois le contenu figé.
+
+**PIÈGE DE LA DUPLICATION DU SCRIPT, découvert et neutralisé.** Google Forms copie le projet Apps Script avec le formulaire, et le script emporte son `FORM_ID` en dur. Exécuté depuis l'éditeur de la copie sans repointage, il dumpe l'ORIGINAL sans que rien ne le signale. On aurait comparé deux dumps du même formulaire et conclu à la fidélité de la copie sans l'avoir jamais lue. Neutralisé par un en-tête de dump qui imprime le `FORM_ID` et le titre du formulaire réellement lu. VÉRIFIER CET EN-TÊTE EN PREMIER à chaque exécution, avant même le point de contrôle de la section 7.
+
+**SCRIPT D'AUDIT ENRICHI** (`docs/recherche/audit-formulaire.gs`). Le dump imprime désormais l'en-tête d'identification, les descriptions de formulaire, de section et de question, les options des cases à cocher, le caractère obligatoire de chaque question, et la présence de l'option Autre. Motif : la version précédente ne voyait ni les descriptions ni les options de cases à cocher, donc une comparaison de dumps était aveugle sur ces dimensions. Une description perdue à la duplication serait passée inaperçue.
+
+**LIMITE DE LA MÉTHODE, à ne pas oublier.** Le dump signale qu'une option Autre est activée mais ne dit JAMAIS vers quelle section elle redirige. L'API ne l'expose pas de façon lisible. Cette vérification reste manuelle, question par question. Le dump ne couvre pas tout.
+
+**VALIDATION DE FIDÉLITÉ DE LA COPIE, méthode.** Dump de l'original puis dump de la copie, comparaison mécanique par `diff` et par empreinte `md5`, pas à l'œil. Empreinte identique sur les deux : 25 sections, 41 questions, 25 sorties de section, 32 redirections par option, 24 questions obligatoires, 15 facultatives, 12 descriptions. S'y ajoutent deux vérifications que le dump ne voit pas : redirections de l'option Autre des sections 9 et 10 (les deux pointent vers la section 18, aucun trou), et onglet Paramètres comparé réglage par réglage (identiques). Seule la feuille de réponses n'a pas suivi la copie, ce qui est le comportement normal ; elle sera créée juste avant publication.
+
+**DÉFAUT DÉCOUVERT — le caractère obligatoire est incohérent entre profils.** Invisible avant l'enrichissement du script. « Combien dépenses-tu actuellement par mois pour te loger ? » est facultative en sections 14 et 16, obligatoire en section 15. Même écart sur les deux questions de courte durée (facultatives en 11, obligatoires en 15) et sur les semaines vides (facultative en 14, obligatoire en 15). Conséquence : le taux de réponse à une même variable dépend du profil, pour une raison qui tient au réglage du formulaire et non au comportement des répondants. Comparer les dépenses entre ces profils reviendrait à comparer un groupe complet à des groupes partiels, sans savoir si ceux qui ont sauté la question sont ceux qui paient le plus ou le moins. À aligner sur un régime unique sur la copie. Deux autres questions à regarder au même moment : la section 19 (détail des difficultés) est facultative alors qu'elle porte le qualitatif, et l'adresse mail de la section 25 est facultative, donc un répondant peut répondre « Oui, tiens-moi au courant » puis envoyer sans rien laisser.
+
+**DÉFAUT DÉCOUVERT — les descriptions de la section 15 n'ont pas été reprises.** L'entrée du 10/08 note que les formulations de la section 15 reprennent celles des sections 11 et 14. Les TITRES le sont, les DESCRIPTIONS non. Les deux questions de courte durée de la section 15 n'ont aucune description, là où la section 11 précise le format attendu (« Réponds par un nombre approximatif, ex : 250 » et « Ex : 6 nuits, ou 2 semaines »). Sans elles, un répondant de la section 15 peut écrire « 2 semaines » là où un répondant de la section 11 écrit « 6 », et les deux atterrissent dans la même colonne. Le volet de désambiguïsation porte donc sur les intitulés ET sur les descriptions.
+
+**VOLET 1 PLUS LARGE QUE TRACÉ.** L'entrée du 10/08 relevait deux grappes d'intitulés dupliqués. Le dump enrichi en montre cinq, sur six sections : la dépense mensuelle (14, 15, 16), le coût d'une semaine en courte durée (11, 15), le nombre de nuits en courte durée (11, 15), les semaines vides (14, 15), et les trois questions de trajets identiques mot pour mot entre les sections 12 et 13. Cette dernière grappe est la plus coûteuse des deux nouvelles : la section 12 est le profil sans famille, la section 13 le profil avec famille, soit précisément la segmentation que l'étude cherche à mesurer, actuellement écrasée dans trois colonnes communes.
+
+**ORDRE DE TRAITEMENT CONTRAINT.** Le volet 1 (désambiguïsation) passe AVANT le volet 2 (mono-ville). Ajouter la question du loyer au mono-ville en reprenant l'intitulé existant créerait une quatrième occurrence de la première grappe.
+
+**QUESTION OUVERTE, non tranchée.** Un répondant qui coche « Autre » en section 9 ou 10 est redirigé vers les difficultés sans qu'aucun montant soit capturé, exactement comme le profil mono-ville. Si le volet 2 conclut que le mono-ville doit être interrogé sur son loyer, la même question se pose pour « Autre ». À examiner à l'ouverture du volet 2, après lecture des réponses libres « Autre » des 15 répondants, qui diront si un vrai profil se cache derrière.
+
+**SORT DU LIEN DE L'ORIGINAL — décision de méthode, pas encore exécutée.** L'original est publié et continue de collecter. Reco retenue : désactiver « Accepter les réponses » sur l'original, sans le supprimer, et personnaliser le message de fermeture pour y placer le lien de la copie. Le formulaire reste consultable, les 15 réponses restent intactes, et quiconque détenait l'ancien lien est récupéré. Suppression écartée : l'original reste la référence de comparaison et le support des 15 réponses. ORDRE IMPÉRATIF : finir le contenu de la copie, la publier, PUIS fermer l'original. Fermer avant publication laisserait un trou où plus rien ne collecte. Point non résolu à traiter avant exécution : savoir si le lien de l'original a circulé au-delà d'envois directs, auquel cas il faut aussi le retirer de son support public.
+
+**RESTE** : volet 1 (désambiguïsation des intitulés et des descriptions, plus alignement du caractère obligatoire), volet 2 (mono-ville), dump de contrôle final, création de la feuille de réponses, publication de la copie, fermeture de l'original.
 
 ## 2026-08-10 — Questionnaire terrain : trou de capture du profil hybride corrigé
 
