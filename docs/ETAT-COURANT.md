@@ -29,6 +29,14 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 **L'entrée du 25/07/2026 n'est pas corrigée** (règle du journal, on ne réécrit pas une entrée datée). Elle reste valide : l'audit par dump de ce jour n'a trouvé aucun défaut de branchement sur les 11 points de redirection d'origine.
 
+**DÉCISION DE MÉTHODE — duplication du questionnaire avant la grande diffusion.** Le formulaire actuel a subi au moins trois modifications successives depuis sa publication. Les répondants n'ont donc pas tous répondu au même instrument, ce qui interdit tout calcul agrégé honnête sur l'ensemble des réponses. Décision de Côme : dupliquer le formulaire pour la campagne de diffusion de septembre (groupes d'alternants et écoles), et considérer la copie comme l'instrument gelé de l'étude. Aucune modification ne sera apportée à la copie une fois la diffusion lancée ; un trou découvert en cours de collecte sera noté et assumé, jamais corrigé à chaud.
+
+**Conséquence sur les 15 réponses actuelles** : elles ne servent pas au calcul. Elles conservent leur valeur comme verbatims et comme test de compréhension des formulations. Le formulaire d'origine reste ouvert.
+
+**DÉFAUT STRUCTUREL À CORRIGER SUR LA COPIE, avant toute diffusion.** Plusieurs sections posent des questions à l'intitulé strictement identique : « Combien dépenses-tu actuellement par mois pour te loger ? » figure dans les sections 14, 15 et 16, et les deux questions de courte durée de la section 15 reprennent mot pour mot celles de la section 11. Google Forms regroupe les réponses de même intitulé dans une seule colonne de la feuille de réponses, ce qui rend impossible de distinguer le profil d'origine d'un montant à la lecture. Les intitulés doivent être désambiguïsés sur la copie. Note : ce défaut est antérieur à la session du 10/08, il n'est pas créé par l'ajout de la section 15.
+
+**RÉORDONNANCEMENT — le reste ouvert mono-ville migre sur la copie.** Le traitement du profil mono-ville (ajout de la question du loyer et passage par « Difficultés logement ») ne sera PAS appliqué au formulaire d'origine, puisque celui-ci est abandonné comme instrument de calcul. Il est intégré au chantier de préparation de la copie, avec la désambiguïsation des intitulés et un dump de contrôle complet. Chantier à traiter en session Claude.ai dédiée, avant la campagne de septembre.
+
 ## 2026-08-09 — [DEV] Patch 3c livré : Ton alternance, `type_user` dérivé, blocage sur annonce
 
 **CHANGEMENT DE CAP EN COURS DE PATCH.** Les trois champs de rythme abstrait de l'ancienne page (`type_alternance`, `rythme_alternance`, et le champ de saisie associé) ne sont PAS reconstruits sur `/compte`. Ils sont remplacés par les villes et leur fonction. Motif : reconstruire à l'identique une saisie que la Charte interdit depuis l'origine aurait été porter une colonne dépréciée dans une surface neuve. Le planning éditable, lui, arrive au patch 3d.
