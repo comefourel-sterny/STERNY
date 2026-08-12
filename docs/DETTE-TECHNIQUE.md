@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-08-09 — Ajout #159 (ville muette des profils les_deux) et #160 (annonces.statut inexistante lue par l'admin) ; MAJ #143, #150, #82, #131 après le patch 3c.
+**Dernière mise à jour** : 2026-08-12 — MAJ #82 après le cadrage du patch 3d ; création #161 (vestiges du parser et migration non tracée autour de rhythm_imports).
 
 ## Nomenclature des bugs
 
@@ -975,6 +975,10 @@ Permettre de saisir plusieurs années académiques en une inscription (ex. fin d
 La réserve du 05/06 visait `complete_inscription_alternant`. Constat établi ce jour : les TROIS RPC d'écriture du rythme remplacent la colonne entière, et aucune fonction d'ajout n'existe. Conséquence directe, et non théorique : un utilisateur qui viendrait corriger une seule semaine perdrait tout son rythme passé. La fusion doit donc être faite côté page avant l'appel, ce qui en fait une contrainte de conception du patch 3d et non un détail d'implémentation.
 `confirm_rhythm_calendar_manual` existe, valide les lundis ISO et les statuts, et n'est appelée nulle part. Elle est le candidat naturel de l'écran 3d, ce qui lève la consigne « ne pas créer de RPC d'ajout orpheline avant qu'un écran l'appelle » : l'écran arrive, et la RPC est déjà là. Elle ne fusionne pas pour autant, la fusion reste côté page.
 
+**MISE À JOUR 12/08/2026 — LE CHEMIN D'ÉCRITURE DU 3d EST ARRÊTÉ.**
+`confirm_rhythm_calendar_manual` est retenue, et la fusion se fait côté page avant l'appel : on repart du rythme lu en base, on remplace les seules semaines émises par le builder, on conserve le reste, on trie. La fonction reste un remplacement total, ce qui ne change pas ; c'est la page qui lui fournit un calendrier complet.
+Motif d'avoir écarté un update direct : la fonction maintient aussi `rhythm_start_date`, `rhythm_end_date`, `rhythm_source` et `rhythm_import_id`, qu'une écriture directe laisserait périmées en silence.
+
 ## DETTE #83 — Généraliser l'œil afficher/masquer à tous les champs mot de passe
 
 **Statut au 2026-06-07 (conv 36)** : créée. L'œil a été ajouté au composant partagé TextInput (conv 36, commit 71c019b) mais ne couvre que les champs password rendus VIA TextInput — aujourd'hui seul E-7 (EtapeCreationCompte).
@@ -1888,3 +1892,17 @@ Conséquence : la colonne d'état du tableau d'administration affiche toujours �
 RÉSERVE SUR LE CONSTAT : l'absence de la colonne est établie sur le schéma versionné du dépôt. Une colonne ajoutée à la main en production, hors migration, n'apparaîtrait pas dans cette source. À vérifier sur la base distante avant de conclure, et à ne jamais corriger en supposant.
 Résolution : définir d'abord ce que l'administrateur doit réellement voir. `disponible` et `pole` ne disent pas la même chose que « statut », et personne n'a établi ce que « statut d'une annonce » signifie côté administration. Câbler avant d'avoir tranché produirait un affichage juste techniquement et faux fonctionnellement.
 Découverte : 2026-08-09, pendant le cadrage du patch 3c.
+
+## DETTE #161 — Vestiges du parser abandonné autour de `rhythm_imports`, et migration non tracée qui conditionne le patch 3d
+Deux constats distincts qui portent sur le même objet, et qui doivent être traités ensemble parce que le patch 3d s'appuie sur cet objet.
+
+**(1) Le parser abandonné est toujours branché côté client.** L'Edge Function `parse-school-calendar` existe toujours dans `supabase/functions/`, et `sterny-react/src/components/rhythm/RhythmFileUpload.jsx` l'invoque encore (l.104), alors que l'upload d'emploi du temps est abandonné depuis mi-2026 (VISION §1, consigné le 09/08/2026).
+CE QUI N'EST PAS ÉTABLI, et qui change la nature du problème : `RhythmFileUpload` est-il encore monté dans un parcours atteignable par un utilisateur, ou n'est-il plus qu'un fichier orphelin ? Dans le premier cas, un chemin abandonné est accessible en production et consomme l'API Anthropic ; dans le second, il s'agit de code mort.
+À ÉTABLIR par un simple relevé des importateurs du composant. Ne rien supprimer avant : l'Edge Function et la table `rhythm_imports` sont liées, et cette dernière est utilisée par le chemin d'écriture retenu pour le patch 3d.
+
+**(2) La migration qui rend l'écriture manuelle possible n'est pas tracée.** `20260501113000_rhythm_imports_support_manual_input.sql` porte en tête une note indiquant qu'elle n'a pas été appliquée par le chemin normal, l'état cible ayant été atteint par un script à la main non tracé (famille de la puce #15, migrations locales désynchronisées de la prod). C'est pourtant elle qui rend `llm_provider`, `llm_model` et `source_file_path` facultatifs et qui autorise la valeur `manual_input`. Or `confirm_rhythm_calendar_manual` laisse justement ces colonnes vides.
+Si la base réelle diverge du fichier, la fonction échoue à l'insertion dans `rhythm_imports`. Elle n'a jamais été appelée par aucun code, donc rien ne l'a jamais éprouvé.
+À VÉRIFIER SUR LES DEUX BASES, locale et distante, AVANT TOUTE LIGNE DE CODE DU PATCH 3d. C'est le premier geste de la session d'implémentation.
+Point favorable établi le même jour : la policy d'insertion existe bien (`rhythm_imports_insert_own`, `WITH CHECK (auth.uid() = user_id)`), et aucune contrainte d'unicité n'empêche un même utilisateur d'enregistrer plusieurs fois.
+
+Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.

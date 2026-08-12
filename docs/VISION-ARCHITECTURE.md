@@ -54,7 +54,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-08-09 — Abandon de l'upload d'emploi du temps consigné (§1, Charte, note §7) ; `type_user` dérivé des fonctions de ville ; blocage du changement de fonction ou de ville tant qu'une annonce existe.
+**Dernière mise à jour** : 2026-08-12 — RÈGLE Nº 1 précisée : consommation autorisée du builder de rythme, modification toujours interdite.
 
 ---
 
@@ -1121,3 +1121,15 @@ Le changement de la fonction d'une ville, comme le changement de la ville elle-m
 - les droits du propriétaire sur l'annonce et sur le logement.
 
 Ces trois sujets forment un chantier distinct, à volet contractuel réel. Ils touchent la chaîne locative, l'engagement pris envers un autre alternant, et la responsabilité des parties. Conformément à CONTEXTE-PROJET §9, ils sont à examiner avec un professionnel du droit AVANT tout code. Aucune session ne les tranche dans le flux d'une discussion technique, et le fait que la mécanique de blocage soit simple à écrire n'est pas un argument pour aller plus loin.
+
+### RÈGLE Nº 1 précisée : consommation autorisée, modification toujours interdite (décision du 12/08/2026, patch 3d)
+
+La règle du 15/06/2026 interdisait de toucher `RhythmManualBuilder.jsx/.css` et `academicYear.js`, et interdisait aussi de les partager, au motif que partager finit par conduire à modifier. Elle est précisée, pas levée.
+
+Ce qui reste interdit, sans exception et sans discussion possible dans le flux d'une session : modifier `RhythmManualBuilder.jsx`, `RhythmManualBuilder.css` ou `academicYear.js`. Toute session qui rencontre un besoin de les modifier s'arrête et remonte la question à Côme.
+
+Ce qui devient autorisé : consommer `RhythmManualBuilder` depuis une autre surface, en lecture seule du fichier, via les props d'extension qu'il expose déjà (`renderActions`, `renderYearSelector`, `year`, `onYearChange`, `onChange`, `initialCalendar`, `villeRecherchee`).
+
+Motif. La règle d'origine visait `PlancheCouverture`, composant d'affichage pur dont le modèle d'état n'avait rien de commun avec celui du builder. Copier le look y était le seul geste possible. Le patch 3d fait le geste inverse, il reproduit exactement la même capture. Copier signifierait dupliquer `isWeekBlocked`, l'hydratation, l'inversion selon la ville et `materialize`, c'est-à-dire les quatre fonctions qui produisent la source de vérité unique. La Charte pose qu'une erreur sur ce socle casse tout l'écosystème. Deux implémentations de ces quatre fonctions divergeront, comme deux implémentations de l'extinction des erreurs ont déjà divergé entre les patchs 3a et 3b.
+
+Ce que cette précision ne fait PAS. Elle n'autorise aucune modification, même minime, même « juste une prop en plus ». Un besoin d'adaptation est le signal qu'il faut reposer la question, jamais le feu vert pour ouvrir le fichier.

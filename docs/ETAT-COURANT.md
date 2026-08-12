@@ -2,13 +2,40 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-11
+**Dernière mise à jour** : 2026-08-12
+[DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
 [VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
 [VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle (empreinte identique). Reste volets 1 et 2, puis publication de la copie et fermeture de l'original.
 
 ---
+
+## 2026-08-12 — [DEV] Patch 3d cadré : cinq audits, aucun code
+
+Session d'audit et de conception. Aucun fichier du dépôt modifié, aucun commit de code.
+
+**DÉCISION PRODUIT, PROPOSÉE PAR CÔME — LE RYTHME S'AFFICHE DANS LA PAGE, IL S'ÉDITE DANS UNE MODALE.** La catégorie « Ton alternance » montre le rythme en lecture seule sous le bloc des villes, avec un bouton Modifier qui ouvre une modale plein écran contenant le calendrier éditable et son propre bouton d'enregistrement.
+Trois motifs, par ordre de poids. (1) Deux boutons Enregistrer côte à côte dans une même catégorie sont ambigus : l'utilisateur ne sait pas lequel écrit quoi. La modale sépare les deux écritures sans les afficher ensemble. (2) Consulter son rythme est fréquent, le corriger est rare : la page montre le cas fréquent, la modale n'ouvre le cas rare que sur demande. (3) Cliquer cinquante-deux semaines dans une colonne de page, entre un champ de ville et une barre latérale, est fragile ; en plein écran, le geste est protégé.
+Cette décision remplace la proposition initiale de Claude (deux blocs à boutons séparés dans la page), qui réglait le couplage des écritures mais pas la lisibilité de l'écran.
+
+**AFFICHER UN RYTHME ET LE MODIFIER SONT DEUX BESOINS DISTINCTS, DONC DEUX COMPOSANTS.** Conséquence directe de la décision ci-dessus, et découverte réelle de la session. Affichage : `RhythmCalendar`, seul composant qui rend un `rhythm_calendar` complet avec la distinction école / entreprise sans transformation préalable. Édition : le calendrier de l'inscription, dans la modale.
+Deux réserves assumées sur `RhythmCalendar`. Il n'a jamais tourné en production, ses seuls consommateurs actuels sont des pages de développement : à éprouver sérieusement au test runtime. Et il n'a aucune navigation entre années : la page tiendra l'année affichée, ne lui passera que les semaines de cette année, et posera ses propres flèches. Le composant n'est pas modifié. Symétrie obtenue : les deux calendriers, affichage et édition, sont pilotés par la même année tenue par la page, donc la modale s'ouvre sur l'année regardée.
+Écartés, avec leur motif : le calendrier de la page logement n'est pas un composant mais du code écrit dans la page, travaillant sur les disponibilités d'une annonce et non sur un rythme ; le carrousel du tableau de bord n'affiche que trois semaines autour de la semaine courante ; `PlancheCouverture`, pourtant le composant éprouvé et désigné par la Charte, attend un modèle d'état à trois axes dont deux (semaine cherchée, semaine couverte) n'existent pas quand on affiche un simple rythme, et afficherait donc des icônes qui mentent.
+CONSÉQUENCE SUR DETTE #99 : adopter les couleurs de `RhythmCalendar` sur une surface neuve est une décision de code couleur, prise ici explicitement et non subie.
+
+**L'ÉCRITURE PASSERA PAR `confirm_rhythm_calendar_manual`, PAS PAR UN UPDATE DIRECT.** Motif établi par l'audit et non anticipé au cadrage : la fonction ne se contente pas de valider, elle maintient aussi `rhythm_start_date`, `rhythm_end_date`, `rhythm_source` et `rhythm_import_id`. Une écriture directe laisserait ces quatre colonnes figées sur les valeurs de l'inscription, sans qu'aucune erreur ne se lève nulle part. Elle est en outre atomique, et correctement verrouillée : `SECURITY INVOKER`, agit sur `auth.uid()` et jamais sur un identifiant passé en argument, `REVOKE` sur PUBLIC, `GRANT` au seul rôle authentifié.
+Ses messages de validation sont en anglais et techniques : ils ne doivent jamais atteindre l'écran, une traduction sobre côté page est nécessaire.
+
+**LE CALENDRIER DE L'INSCRIPTION SE CONSOMME, IL NE SE COPIE PAS.** `RhythmManualBuilder` expose déjà les props nécessaires pour être piloté depuis une autre surface et n'écrit rien en base : la modale le consomme sans modifier une ligne de son fichier. Décision et périmètre en VISION-ARCHITECTURE, bloc précisant la RÈGLE Nº 1.
+
+**PRÉREQUIS DE PATCH, DÉCOUVERT PAR LE MÊME CHEMIN QU'AU 3b.** Le SELECT de chargement de la page ne demande pas `rhythm_calendar`. Sans correction, le calendrier s'afficherait vide malgré une donnée réelle en base, et le premier enregistrement l'écraserait. Troisième occurrence de ce piège sur cette page.
+
+**POINTS OUVERTS À TRANCHER AVANT CODE.** (1) Décocher la dernière semaine d'école d'une année n'aurait aucun effet : l'année sort du périmètre émis par le builder, la fusion conserve donc l'ancienne valeur. Se règle en tenant la liste des années réellement ouvertes pendant la session. (2) La fonction valide l'intégralité du calendrier fusionné, semaines anciennes comprises : une donnée héritée non conforme bloquerait définitivement tout enregistrement, sans que l'utilisateur comprenne pourquoi. (3) La semaine en cours reste non modifiable, la borne étant dans le fichier qu'on s'interdit de toucher. (4) L'extension de `enregistrerCategorie` par un paramètre d'écriture optionnel reste la voie recommandée pour ne pas dupliquer les cinq états et les deux minuteries, mais elle sera confirmée au vu des besoins réels de la modale.
+
+**INCIDENT DE MÉTHODE, À RETENIR.** Le point d'insertion de cette entrée, donné par Claude.ai, était faux de deux entrées : deux sessions questionnaire terrain (10/08 et 11/08) avaient été commitées et n'apparaissaient pas dans la copie project knowledge du 09/08. Claude Code a détecté la rupture d'ordre antichronologique et s'est arrêté avant toute écriture. Même scénario que le 08/08/2026 déjà logué en CONTEXTE §6 bis, et même garde-fou efficace. La leçon n'est pas que la règle existe, elle est qu'une ancre issue du project knowledge doit être présentée comme une hypothèse à vérifier, jamais comme un fait.
+
+**RESTE** : patch 3d, puis 4, 5, 5 bis, 6, 7.
 
 ## 2026-08-11 — [VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle
 
