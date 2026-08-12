@@ -7,7 +7,7 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
 [VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
-[VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle (empreinte identique). Reste volets 1 et 2, puis publication de la copie et fermeture de l'original.
+[VRAIE VIE] Questionnaire terrain : copie gelée validée fidèle, caractère obligatoire aligné (35/4). Reste les intitulés du volet 1, puis le volet 2, puis publication de la copie et fermeture de l'original.
 
 ---
 
@@ -36,6 +36,24 @@ Ses messages de validation sont en anglais et techniques : ils ne doivent jamais
 **INCIDENT DE MÉTHODE, À RETENIR.** Le point d'insertion de cette entrée, donné par Claude.ai, était faux de deux entrées : deux sessions questionnaire terrain (10/08 et 11/08) avaient été commitées et n'apparaissaient pas dans la copie project knowledge du 09/08. Claude Code a détecté la rupture d'ordre antichronologique et s'est arrêté avant toute écriture. Même scénario que le 08/08/2026 déjà logué en CONTEXTE §6 bis, et même garde-fou efficace. La leçon n'est pas que la règle existe, elle est qu'une ancre issue du project knowledge doit être présentée comme une hypothèse à vérifier, jamais comme un fait.
 
 **RESTE** : patch 3d, puis 4, 5, 5 bis, 6, 7.
+
+## 2026-08-12 — [VRAIE VIE] Questionnaire terrain : caractère obligatoire aligné sur la copie
+
+**PREMIÈRE MOITIÉ DU VOLET 1 LIVRÉE.** Le caractère obligatoire est désormais homogène entre profils sur la copie (`1GkNDUCR...`). Onze questions basculées en obligatoire, sections 11 (les 2), 12 (les 3), 13 (les 3), 14 (les 2) et 16 (la seule). La section 15 était déjà entièrement obligatoire et n'a pas été touchée : c'est précisément cette exception qui avait révélé le défaut le 11/08. Vérifié par dump du 12/08 à 09:08 : 35 questions obligatoires, 4 facultatives, tout le reste du formulaire inchangé (25 sections, 41 questions, redirections et descriptions intactes, « APRES LA SECTION 7 » toujours sur SECTION 20).
+
+**RÈGLE RETENUE POUR LE CARACTÈRE OBLIGATOIRE.** Obligatoire pour tout ce qui est chiffré ou à choix fermé : montants, nombres de nuits, semaines vides, moyens de transport, temps de trajet. Motif : une donnée manquante de façon inégale entre profils ne se rattrape jamais à l'analyse, alors qu'un montant approximatif reste exploitable, et toutes ces questions demandent déjà un ordre de grandeur et non une comptabilité. Facultatif pour les questions ouvertes et l'adresse mail : sections 19, 21, 23 et 25. Motif : forcer une réponse en texte libre produit des « rien », des « ras » et des points isolés, ce qui abîme le qualitatif au lieu de l'enrichir.
+
+**REVIREMENT ASSUMÉ SUR LA SECTION 19.** L'entrée du 11/08 la signalait comme un défaut à corriger, au motif qu'elle porte le cœur qualitatif de l'étude alors qu'elle est facultative. C'est l'inverse qui est retenu : elle reste facultative, pour la raison énoncée ci-dessus. L'entrée du 11/08 n'est pas corrigée, règle du journal.
+
+**SECTION 25 LAISSÉE FACULTATIVE, après examen.** Un répondant qui a coché « Oui » en section 24 puis se ravise devant le champ d'adresse peut revenir en arrière et cocher « Non merci » : le mécanisme existe. Deux réserves l'emportent malgré tout. Sur mobile, le retour arrière n'est pas un geste évident, et le répondant qui se ravise peut fermer l'onglet, perdant alors sa réponse entière et pas seulement son adresse — une réponse complète vaut plus que l'adresse. Et le fait qu'un chemin de sortie existe n'est pas la même chose que le fait qu'il soit clair pour la personne : cette dimension de consentement sur un champ de donnée personnelle n'est pas tranchée ici et relève de Benoît Guillemin si le sujet se rouvre. Levier sans coût noté et non appliqué : ajouter sous le champ une description du type « Si tu as changé d'avis, reviens en arrière et coche Non merci. »
+
+**DEUX BASCULES INVOLONTAIRES DÉTECTÉES ET CORRIGÉES.** Les sections 19 et 23 sont passées en obligatoire hors liste pendant la manipulation. Détectées par comptage sur le dump de contrôle, pas à la lecture. Il a fallu deux dumps successifs pour tout ramener à l'état voulu, la section 19 n'ayant pas été corrigée du premier coup. Confirme la règle : un dump de contrôle après CHAQUE série de modifications, et vérification par les comptes plutôt qu'à l'œil.
+
+**LIMITE DU DUMP À GARDER EN TÊTE POUR LA SUITE.** Le dump vérifie l'unicité et la présence, jamais la justesse. Sur le chantier des intitulés qui vient, il dira qu'aucun intitulé n'apparaît deux fois, mais il ne dira PAS qu'un suffixe a été appliqué à la mauvaise section. Un intitulé mal attribué produit une colonne mal nommée qui ne se verra qu'à l'analyse, quand il sera trop tard. Relecture manuelle obligatoire en plus du dump.
+
+**RESTE DU VOLET 1, non commencé** : désambiguïsation des intitulés et des descriptions. Cinq grappes sur six sections, propositions de formulation préparées mais NON validées par Côme à ce jour. Rappel de l'ordre contraint : le volet 1 se termine avant l'ouverture du volet 2 (mono-ville).
+
+**RESTE APRÈS LE VOLET 1** : volet 2 (mono-ville), dump de contrôle final, création de la feuille de réponses, publication de la copie, fermeture de l'original en pointant vers la copie.
 
 ## 2026-08-11 — [VRAIE VIE] Questionnaire terrain : copie gelée créée et validée fidèle
 
