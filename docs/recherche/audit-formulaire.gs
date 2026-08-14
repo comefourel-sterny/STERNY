@@ -129,3 +129,109 @@ function dumpStructure() {
   }
   if (buf) Logger.log(buf);
 }
+
+function verifierIntitules() {
+  var FORM_ID = '1GkNDUCR3Su2JC3My5gp08qnD1LU25QklZMHNmMTuxug';
+  var form = FormApp.openById(FORM_ID);
+  var items = form.getItems();
+  var T = FormApp.ItemType;
+  var i;
+
+  function estQuestion(t) {
+    return t == T.TEXT || t == T.PARAGRAPH_TEXT || t == T.MULTIPLE_CHOICE ||
+           t == T.CHECKBOX || t == T.LIST || t == T.SCALE || t == T.DATE ||
+           t == T.TIME || t == T.GRID || t == T.CHECKBOX_GRID;
+  }
+
+  function obligatoire(it) {
+    var t = it.getType();
+    try {
+      if (t == T.TEXT) return it.asTextItem().isRequired();
+      if (t == T.PARAGRAPH_TEXT) return it.asParagraphTextItem().isRequired();
+      if (t == T.MULTIPLE_CHOICE) return it.asMultipleChoiceItem().isRequired();
+      if (t == T.CHECKBOX) return it.asCheckboxItem().isRequired();
+      if (t == T.LIST) return it.asListItem().isRequired();
+      if (t == T.SCALE) return it.asScaleItem().isRequired();
+      if (t == T.DATE) return it.asDateItem().isRequired();
+      if (t == T.TIME) return it.asTimeItem().isRequired();
+      if (t == T.GRID) return it.asGridItem().isRequired();
+      if (t == T.CHECKBOX_GRID) return it.asCheckboxGridItem().isRequired();
+    } catch (e) { return null; }
+    return null;
+  }
+
+  var courante = 1, sections = 1;
+  var nbQ = 0, nbObl = 0, nbFac = 0, nbInd = 0, nbBlocs = 0;
+  var nbDescQ = 0, nbDescS = 0;
+  var titresVus = {}, descVues = {};
+
+  if (form.getDescription()) nbDescS++;
+
+  for (i = 0; i < items.length; i++) {
+    var it = items[i], t = it.getType();
+    if (t == T.PAGE_BREAK) {
+      courante++; sections++;
+      if (it.asPageBreakItem().getHelpText()) nbDescS++;
+      continue;
+    }
+    if (!estQuestion(t)) { nbBlocs++; continue; }
+    nbQ++;
+    var r = obligatoire(it);
+    if (r === true) nbObl++; else if (r === false) nbFac++; else nbInd++;
+    var titre = it.getTitle();
+    if (!titresVus[titre]) titresVus[titre] = [];
+    titresVus[titre].push(courante);
+    var d = it.getHelpText();
+    if (d) {
+      nbDescQ++;
+      if (!descVues[d]) descVues[d] = [];
+      descVues[d].push(courante);
+    }
+  }
+
+  var out = [];
+  out.push('FORMULAIRE LU : ' + form.getTitle());
+  out.push('FORM_ID       : ' + FORM_ID);
+  out.push('CONTROLE      : ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'));
+  out.push('');
+  out.push('--- COMPTES ---');
+  out.push('Sections              : ' + sections);
+  out.push('Questions             : ' + nbQ);
+  out.push('  dont obligatoires   : ' + nbObl);
+  out.push('  dont facultatives   : ' + nbFac);
+  if (nbInd) out.push('  dont INDETERMINEES  : ' + nbInd + '   <-- a examiner');
+  out.push('Blocs texte ou media  : ' + nbBlocs);
+  out.push('Descriptions question : ' + nbDescQ);
+  out.push('Descriptions section  : ' + nbDescS);
+  out.push('');
+  out.push('--- INTITULES EN DOUBLE ---');
+  var n1 = 0;
+  for (var a in titresVus) {
+    if (titresVus[a].length > 1) {
+      n1++;
+      out.push('  x' + titresVus[a].length + '  sections ' + titresVus[a].join(', ') + '  :  ' + a);
+    }
+  }
+  if (!n1) out.push('  aucun');
+  out.push('');
+  out.push('--- DESCRIPTIONS EN DOUBLE ---');
+  var n2 = 0;
+  for (var b in descVues) {
+    if (descVues[b].length > 1) {
+      n2++;
+      out.push('  x' + descVues[b].length + '  sections ' + descVues[b].join(', ') + '  :  ' + b);
+    }
+  }
+  if (!n2) out.push('  aucun');
+  out.push('');
+  out.push('--- ETAT DU FORMULAIRE ---');
+  out.push('Accepte les reponses  : ' + form.isAcceptingResponses());
+  out.push('Reponses enregistrees : ' + form.getResponses().length);
+
+  var buf = '';
+  for (i = 0; i < out.length; i++) {
+    if (buf && buf.length + out[i].length + 1 > 4000) { Logger.log(buf); buf = ''; }
+    buf += (buf ? '\n' : '') + out[i];
+  }
+  if (buf) Logger.log(buf);
+}
