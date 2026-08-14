@@ -21,7 +21,7 @@
 // question par question, dans l'interface. Le dump ne couvre pas tout.
 
 function dumpStructure() {
-  var FORM_ID = '1dYJGW1h83h5fHEhwRFmjs68j4r03gepOVzQF5PjHPvg';
+  var FORM_ID = '1GkNDUCR3Su2JC3My5gp08qnD1LU25QklZMHNmMTuxug';
   var form = FormApp.openById(FORM_ID);
   var items = form.getItems();
   var i, k;
