@@ -2,14 +2,32 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-12
+**Dernière mise à jour** : 2026-08-14
 [DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
 [VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
-[VRAIE VIE] Questionnaire terrain : copie gelée validée fidèle, caractère obligatoire aligné (35/4). Reste les intitulés du volet 1, puis le volet 2, puis publication de la copie et fermeture de l'original.
+[VRAIE VIE] Questionnaire terrain : volet 1 terminé, intitulés désambiguïsés et vérifiés par script. Reste le volet 2 (mono-ville), le test de parcours, la publication de la copie et la fermeture de l'original.
 
 ---
+
+## 2026-08-14 — [VRAIE VIE] Questionnaire terrain : volet 1 terminé, intitulés et descriptions désambiguïsés
+
+**VOLET 1 CLOS.** Les cinq grappes d'intitulés dupliqués sont dissoutes sur la copie (`1GkNDUCR...`). Quinze intitulés réécrits sur six sections (11, 12, 13, 14, 15, 16) et trois descriptions posées en section 15. Contrôle mécanique par `verifierIntitules` : « INTITULES EN DOUBLE : aucun ». Comptes stables, 25 sections, 39 questions, 35 obligatoires, 4 facultatives, 2 blocs texte, 12 descriptions de question. Aucune bascule involontaire du caractère obligatoire cette fois.
+
+**RÈGLE DE DÉSAMBIGUÏSATION RETENUE.** Aucune occurrence ne garde la formulation générique, y compris quand une seule suffirait à lever l'ambiguïté. Motif : un intitulé générique subsistant ne se distingue pas d'un oubli, alors qu'en qualifiant toutes les occurrences le contrôle final devient trivial. Second principe : les qualificatifs sont empruntés au vocabulaire de la question amont qui mène à la section, jamais inventés, pour qu'ils se vérifient en remontant le parcours.
+
+**MOT « LOYER » INTRODUIT.** Les sections 14, 15 et 16 abandonnent « Combien dépenses-tu pour te loger » au profit de formulations en « loyer », plus courtes et plus proches de l'oral. Réserve tracée : « logement principal », écarté au profit de « hors courte durée », ressemblait à « résidence principale », notion juridique. Aucun effet ici, mais le mot n'est pas à réemployer ailleurs sur Sterny sans vérification professionnelle.
+
+**SCRIPT D'AUDIT ENRICHI** (commit eb86e18). Fonction `verifierIntitules` ajoutée, en addition pure, `dumpStructure` non modifiée. Elle imprime les comptes, les intitulés et descriptions en double, l'état d'acceptation des réponses et le nombre de réponses enregistrées. Motif : le script ne détectait aucun doublon, le contrôle central de ce volet n'existait pas et se faisait à l'œil.
+
+**PIÈGE DE LA DUPLICATION, JOUÉ POUR DE VRAI CE JOUR.** Un premier dump a été produit sur l'ORIGINAL. Cause : le projet Apps Script ouvert n'était pas celui du dépôt et portait une version ancienne du script, avec l'identifiant de l'original en dur. Détecté immédiatement par l'en-tête. Aucun dégât, le script est en lecture seule. Précision acquise : le script lisant par `openById`, le formulaire depuis lequel on l'exécute n'a AUCUNE importance ; seule compte la ligne `FORM_ID`. Le piège est un piège de variable, pas de navigation.
+
+**MODIFICATION NON COMMITÉE DU SCRIPT, DÉCOUVERTE CE JOUR.** Le fichier `docs/recherche/audit-formulaire.gs` porte une modification en working tree, antérieure à cette session et sans rapport avec elle. Le bloc de commentaire « LIMITE DE LA METHODE », lui, est bien commité depuis le 11/08 (`8159922`) : l'affirmation contraire, portée par Claude.ai au moment de rédiger cette entrée, venait d'une déduction faite sur une version ancienne du fichier collée en conversation, et non d'une lecture du dépôt. Claude Code l'a corrigée avant commit. À trancher : committer ou écarter cette modif en working tree, après lecture de son contenu réel.
+
+**ÉTAT DE LA COPIE, mesuré et non supposé** : n'accepte pas les réponses, 0 réponse enregistrée. Point de référence pour trancher la question de l'aperçu à l'étape 3.
+
+**RESTE** : volet 2 (mono-ville), test de parcours de bout en bout, création de la feuille de réponses, publication de la copie, fermeture de l'original en pointant vers la copie.
 
 ## 2026-08-12 — [DEV] Patch 3d cadré : cinq audits, aucun code
 
