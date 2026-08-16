@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-08-12 — MAJ #82 après le cadrage du patch 3d ; création #161 (vestiges du parser et migration non tracée autour de rhythm_imports).
+**Dernière mise à jour** : 2026-08-16 — #161 point 2 levé après vérification sur les deux bases ; constat élargi de divergence dépôt/production.
 
 ## Nomenclature des bugs
 
@@ -1906,3 +1906,7 @@ Si la base réelle diverge du fichier, la fonction échoue à l'insertion dans `
 Point favorable établi le même jour : la policy d'insertion existe bien (`rhythm_imports_insert_own`, `WITH CHECK (auth.uid() = user_id)`), et aucune contrainte d'unicité n'empêche un même utilisateur d'enregistrer plusieurs fois.
 
 Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
+
+**POINT 2 LEVÉ le 2026-08-16.** Vérification déclarative menée sur la base locale et sur la production. Les quinze colonnes de `rhythm_imports`, ses six contraintes et les empreintes des deux fonctions concernées sont identiques des deux côtés. Les quatre colonnes du parser sont facultatives, `manual_input` est autorisé, et les trois colonnes non renseignées par la fonction ont toutes une valeur par défaut. Vérifié en outre que la fonction écrit `manual` — et non `manual_input` — dans `users.rhythm_source`, seule valeur acceptée avec `document_import` : une confusion à cet endroit aurait fait échouer l'ensemble, la fonction étant atomique. Le chemin d'écriture du patch 3d est valide. Le point 1 reste ouvert.
+
+**CONSTAT ÉLARGI, MÊME RELEVÉ, HORS PÉRIMÈTRE 3d.** La désynchronisation joue dans les DEUX sens, et pas seulement dans celui décrit au point 2. `complete_inscription_alternant` est présente dans le dépôt et en base locale, et ABSENTE de la base de production. C'est la fonction qui enregistre une inscription d'alternant. Aucun utilisateur réel n'est concerné tant que la plateforme n'est pas ouverte, mais une inscription qui n'aboutit pas rend le site inutilisable dès le premier jour de lancement. À traiter avant toute ouverture. Ce constat ne dit rien des autres fonctions ni des autres tables : seul un relevé complet établirait l'ampleur réelle de l'écart.

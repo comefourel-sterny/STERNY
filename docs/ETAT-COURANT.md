@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-14
+**Dernière mise à jour** : 2026-08-16
+[DEV] Patch 3d : prérequis levé sur les deux bases, le chemin d'écriture par RPC est valide. Divergence dépôt/production élargie, consignée en DETTE #161.
 [DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
@@ -10,6 +11,24 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain : volet 1 terminé, intitulés désambiguïsés et vérifiés par script. Reste le volet 2 (mono-ville), le test de parcours, la publication de la copie et la fermeture de l'original.
 
 ---
+
+## 2026-08-16 — [DEV] Patch 3d : prérequis levé, le chemin d'écriture est valide sur les deux bases
+
+Session de vérification. Aucun fichier de code modifié, aucun commit de code.
+
+**LE PRÉREQUIS DE DETTE #161 POINT 2 EST LEVÉ, SUR LES DEUX BASES.** `rhythm_imports` accepte réellement une écriture manuelle : les quatre colonnes héritées du parser sont facultatives, la contrainte de type de fichier tolère explicitement l'absence de valeur, et la valeur `manual_input` est autorisée. Les trois colonnes que la fonction ne renseigne pas ont toutes une valeur par défaut, `parser_version` comprise, qui est pourtant obligatoire. Aucune contrainte ne s'oppose à l'insertion. La note d'en-tête de la migration `20260501113000` disait vrai en mai et dit toujours vrai aujourd'hui : la base était déjà dans l'état cible avant la tentative, ce qui explique l'erreur qu'elle avait renvoyée.
+
+**PIÈGE DE VOCABULAIRE ÉCARTÉ, DÉCOUVERT PENDANT LA VÉRIFICATION.** Deux colonnes voisines désignent la même chose avec deux mots différents : `rhythm_imports.source` attend `manual_input`, tandis que `users.rhythm_source` n'accepte que `manual` ou `document_import`. La fonction écrit bien `manual` dans la fiche utilisateur, et son propre code porte un commentaire signalant l'écart. Le risque était réel : la fonction étant atomique, un refus sur la fiche utilisateur aurait annulé l'insertion réussie dans l'historique, et le chemin d'écriture serait tombé pour un motif sans rapport avec celui qu'on cherchait.
+
+**LES DEUX BASES PORTENT LE MÊME CODE.** Les empreintes des fonctions `confirm_rhythm_calendar_manual` et `confirm_rhythm_calendar` sont identiques en local et en production. Le test runtime du patch éprouvera donc exactement le code en ligne.
+
+**MÉTHODE RETENUE, ET UN PLAN ABANDONNÉ EN COURS DE ROUTE.** La vérification devait comporter un troisième temps : appeler réellement la fonction en local dans une transaction annulée, en simulant un utilisateur connecté. Il est abandonné. Ce qu'il restait à éprouver — l'identité de l'appelant et les règles de sécurité par ligne — est déjà acquis : la règle d'insertion sur `rhythm_imports` a été relevée le 12/08, et l'écriture sur `users` par un utilisateur connecté est prouvée par les patchs 3a à 3c qui écrivent déjà dans cette table depuis la page. Simuler un jeton d'authentification à la main aurait éprouvé la fidélité de la simulation autant que le code, là où le test runtime avec un compte de test réellement connecté éprouve le même chemin sans rien imiter.
+
+**DIVERGENCE DÉPÔT / PRODUCTION ÉLARGIE, HORS PÉRIMÈTRE DU PATCH.** Le même relevé établit que `complete_inscription_alternant` est présente en local et ABSENTE de la production. Consigné en DETTE #161.
+
+**INCIDENT DE MÉTHODE, TROISIÈME OCCURRENCE.** Le point d'insertion de cette entrée, donné par Claude.ai, était de nouveau faux : une entrée du 14/08 avait été commitée et n'apparaissait pas dans la copie project knowledge. Claude Code s'est arrêté avant toute écriture, comme le 08/08 et le 12/08. Ce qui est neuf, et ce qui justifie de le loguer une troisième fois : aucun numéro de ligne n'avait été donné, la règle de CONTEXTE §6 bis était donc formellement respectée. L'ancre fautive était une DATE — celle de l'entrée la plus récente selon la copie. Une date lue dans le project knowledge est aussi périmable qu'un numéro de ligne, et la règle ne le disait pas. Elle le dit désormais : ne jamais NOMMER l'élément voisin d'un point d'insertion, mais décrire sa POSITION et laisser Claude Code l'identifier sur le fichier réel.
+
+**RESTE SUR LE PATCH 3d** : ajout de `rhythm_calendar` au SELECT de chargement, affichage en lecture seule, modale d'édition, fusion et écriture.
 
 ## 2026-08-14 — [VRAIE VIE] Questionnaire terrain : volet 1 terminé, intitulés et descriptions désambiguïsés
 

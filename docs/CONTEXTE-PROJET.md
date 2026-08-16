@@ -384,6 +384,8 @@ de la copie et situé à la ligne 107 dans le dépôt. Une entrée du 08/08 s'es
 une entrée du 07/08 dont Claude.ai ignorait l'existence. Claude Code a détecté la rupture
 d'ordre et s'est arrêté avant commit, ce qui est le comportement voulu.
 
+Précision du 16/08/2026, après une TROISIÈME occurrence du même incident. Cette règle ne visait que les numéros de ligne, et c'est insuffisant : le point d'insertion fautif du 16/08 était une DATE, celle de l'entrée la plus récente d'ETAT-COURANT.md selon la copie project knowledge, alors qu'une entrée postérieure avait été commitée entre-temps. Aucun numéro de ligne n'avait été donné, la règle était donc formellement respectée. Elle est étendue : AUCUN élément identifiant issu du project knowledge ne sert d'ancre — ni numéro de ligne, ni date, ni titre d'entrée, ni position supposée dans un fichier. Un point d'insertion se décrit par sa POSITION RELATIVE dans le fichier réel (« avant la première entrée du journal, quelle que soit sa date »), et Claude Code établit lui-même l'élément concerné par un grep avant d'écrire. Formuler autrement, c'est transformer une photographie datée en fait. Corollaire de forme, établi le même jour : une ancre textuelle doit tenir sur UNE SEULE ligne du fichier visé. CONTEXTE-PROJET.md et VISION-ARCHITECTURE.md sont écrits avec des retours à la ligne durs, une ancre d'une phrase entière y est donc coupée en deux et introuvable par un grep, alors qu'ETAT-COURANT.md et DETTE-TECHNIQUE.md portent des paragraphes d'un seul tenant. Un grep qui ne trouve pas une ancre dans un fichier à retour dur est un faux négatif probable, à vérifier sur un fragment plus court avant de conclure à son absence.
+
 ---
 
 ## 6 ter. Entretien du corpus documentaire
