@@ -225,11 +225,14 @@ export default function GestionComptePage() {
   const { ref: villesShakeRef, shake: villesShake } = useShakeButton()
   const [showBloqueModal, setShowBloqueModal] = useState(false)
 
+  // Patch 3d — Ton alternance : rythme lu en base, affiché en lecture seule et édité en modale.
+  const [rythmeCalendrier, setRythmeCalendrier] = useState([])
+
   useEffect(() => {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -262,6 +265,8 @@ export default function GestionComptePage() {
         if (data.statut_ville_ecole) setFonctionVilleEcole(data.statut_ville_ecole)
         if (data.statut_ville_entreprise) setFonctionVilleEntreprise(data.statut_ville_entreprise)
         setVillesInitiales({ villeEcole: data.ville_ecole || '', villeEntreprise: data.ville_entreprise || '', fonctionVilleEcole: data.statut_ville_ecole || '', fonctionVilleEntreprise: data.statut_ville_entreprise || '' })
+        // Patch 3d — PIÈGE 3b/3c par le même chemin : sans rhythm_calendar au SELECT, le calendrier s'afficherait vide malgré une donnée réelle et le 1er enregistrement l'écraserait. Garde Array.isArray : la colonne est un jsonb sans contrainte de format.
+        setRythmeCalendrier(Array.isArray(data.rhythm_calendar) ? data.rhythm_calendar : [])
         if (data.preferences_email) {
           const pe = data.preferences_email
           setPrefs({ alertes: pe.alertes !== false, messages: pe.messages !== false, candidatures: pe.candidatures !== false, paiements: pe.paiements !== false, baux: pe.baux !== false, marketing: pe.marketing !== false })
