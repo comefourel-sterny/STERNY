@@ -2,15 +2,35 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-16
+**Dernière mise à jour** : 2026-08-18
 [DEV] Patch 3d : prérequis levé sur les deux bases, le chemin d'écriture par RPC est valide. Divergence dépôt/production élargie, consignée en DETTE #161.
 [DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
 [DEV] Abandon de l'upload d'emploi du temps consigné dans les quatre docs du socle. Le principe fondateur est inchangé, seul le moyen de collecte a changé.
 [VRAIE VIE] Profil LinkedIn : reste la photo de profil, puis checklist de sortie et publication. Doctrine public/privé actée en CONTEXTE-PROJET §1 ter.
-[VRAIE VIE] Questionnaire terrain : volet 1 terminé, intitulés désambiguïsés et vérifiés par script. Reste le volet 2 (mono-ville), le test de parcours, la publication de la copie et la fermeture de l'original.
+[VRAIE VIE] Questionnaire terrain : volets 1 et 2 terminés, contrôlés par script. Reste le test de parcours de bout en bout, la création de la feuille de réponses, la publication de la copie et la fermeture de l'original.
 
 ---
+
+## 2026-08-18 — [VRAIE VIE] Questionnaire terrain : volet 2 clos, profil mono-ville complété
+
+**VOLET 2 LIVRÉ.** La section 7 « Mono-ville » porte désormais une seconde question, obligatoire, sur le loyer mensuel, et sort vers « Difficultés logement » (section 18) au lieu de « Choix pro » (section 20). Ce profil était le seul à traverser le questionnaire sans qu'aucun montant ni aucune difficulté ne soit capturé.
+
+**NOUVEAU REPÈRE DE CONTRÔLE.** « APRES LA SECTION 7 » doit désormais afficher SECTION 18. L'ancien repère SECTION 20, en service depuis le 10/08, est caduc. Voir SECTION 20 réapparaître à cet endroit signale un problème.
+
+**AUCUNE SECTION INSÉRÉE, donc piège n°3 non joué.** La question a été ajoutée dans une section existante. Vérifié sur dump du 18/08 à 10:13 : 25 sections, 40 questions, 36 obligatoires, 4 facultatives, et les 25 sorties de section comparées une à une avec le dump du 14/08 sans écart. La section 6 n'a pas été réinitialisée. Contrôle `verifierIntitules` du 18/08 à 10:15 : « INTITULES EN DOUBLE : aucun », 13 descriptions de question, n'accepte pas les réponses, 0 réponse enregistrée.
+
+**FORMULATION RETENUE.** « Combien paies-tu de loyer par mois dans la ville où tu étudies et travailles ? », qualificatif emprunté à la question amont de la section 6. Description : « Réponds par un nombre approximatif, ex : 450. (Si tu ne paies pas de loyer, réponds 0.) » La seconde phrase absorbe le mono-ville logé chez ses proches, cas courant qu'une question obligatoire aurait sinon bloqué. Un 0 reste exploitable et se distingue seul à l'analyse. Cette phrase rend aussi la description unique, là où celles des sections 14, 15 et 16 sont identiques.
+
+**LES DESCRIPTIONS EN DOUBLE NE SONT PAS UN DÉFAUT.** Le contrôle en signale cinq groupes (sections 11/15, 12/13, 14/15/16). C'est voulu : deux sections qui mesurent la même variable doivent donner le même exemple de format, faute de quoi les répondants écrivent dans deux unités. Seuls les INTITULÉS en double provoquent une fusion de colonnes dans la feuille de réponses. À ne pas « corriger » lors d'un futur contrôle.
+
+**QUESTION « AUTRE » TRANCHÉE — ÉCARTÉE DU VOLET 2.** Ouverte le 11/08, fermée sur pièce : aucune réponse libre « Autre » sur les 15 répondants de l'original, alors que toutes les autres options ont été empruntées. Aucun profil récurrent derrière. Motif de coût, décisif : capturer un montant pour « Autre » imposerait une section neuve, donc une insertion, donc le piège n°3, sur une session qui n'en comportait sinon aucune. Conséquence assumée : un répondant « Autre » de la campagne de septembre n'aura pas de montant, et l'instrument gelé ne sera pas corrigé. La perte est identifiable à l'analyse, pas aveugle.
+
+**PÉRIMÈTRE « AUTRE NON VÉRIFIÉ » RÉDUIT.** Une redirection par option n'existe que sur les questions à choix unique : quatre des huit options Autre du formulaire sont sur des cases à cocher (sections 12, 13, 20) et ne peuvent rien rediriger. Restent cinq questions à choix unique avec Autre : 2 (deux fois), 9, 10, 21. Les sections 9 et 10 sont vérifiées depuis le 11/08. Les trois autres ne portent aucune flèche au dump, ce qui suggère un branchement désactivé sans le prouver — le dump ne voit pas Autre. À constater au test de parcours.
+
+**L'ORIGINAL A ÉTÉ RENOMMÉ « V1 - Trouver un logement en alternance ».** Constaté ce jour, non décidé en session. Dans Google Forms le nom du fichier est aussi le titre lu par le répondant : l'original étant toujours publié, quiconque répond aujourd'hui voit « V1 - » en tête, là où les 15 premiers ne le voyaient pas. Sans conséquence — ces 15 réponses ne servent plus au calcul et l'original sera fermé — mais le renommage aide à distinguer les deux formulaires d'un coup d'œil, ce que le choix du 11/08 (titres identiques) rendait impossible.
+
+**RESTE** : test de parcours de bout en bout, création de la feuille de réponses, publication de la copie, fermeture de l'original en pointant vers la copie. ORDRE IMPÉRATIF sur les trois derniers.
 
 ## 2026-08-16 — [DEV] Patch 3d : prérequis levé, le chemin d'écriture est valide sur les deux bases
 
