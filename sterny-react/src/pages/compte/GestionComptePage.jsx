@@ -4,6 +4,8 @@ import { useAuth } from '../../hooks/useAuth.jsx'
 import { supabaseClient } from '../../config/supabase'
 import useAccountActions from '../../hooks/useAccountActions'
 import { getInitials } from '../../utils/formatters'
+import RhythmCalendar from '../../components/rhythm/RhythmCalendar'
+import { computeDefaultAcademicYear, academicYearForMonday, previousAcademicYear, nextAcademicYear } from '../../utils/academicYear'
 import PasswordRevealButton from '../../components/PasswordRevealButton'
 import { useShakeButton } from '../../components/auth-wizard/useShakeButton'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
@@ -227,6 +229,24 @@ export default function GestionComptePage() {
 
   // Patch 3d — Ton alternance : rythme lu en base, affiché en lecture seule et édité en modale.
   const [rythmeCalendrier, setRythmeCalendrier] = useState([])
+  const [anneeRythme, setAnneeRythme] = useState(computeDefaultAcademicYear())
+  // Années réellement navigables : celles présentes dans le rythme, plus l'année courante.
+  // On ne fabrique aucune semaine absente : RhythmCalendar n'a que deux états, école et
+  // entreprise, peindre une semaine non déclarée serait affirmer un faux rythme.
+  const anneesRythme = Array.from(new Set([
+    computeDefaultAcademicYear(),
+    ...rythmeCalendrier.map((s) => academicYearForMonday(s.week_start)).filter(Boolean),
+  ])).sort()
+  const semainesAnneeRythme = rythmeCalendrier.filter((s) => academicYearForMonday(s.week_start) === anneeRythme)
+  // Patch 3d — l'année académique bascule au 1er septembre : la courante peut être vide
+  // alors que le rythme porte déjà l'année suivante. En consultation, on ouvre sur la
+  // première année qui contient réellement des semaines. Ne se déclenche qu'au chargement
+  // du rythme, jamais en réaction à une navigation de l'utilisateur.
+  useEffect(() => {
+    if (rythmeCalendrier.length === 0) return
+    const anneesPresentes = rythmeCalendrier.map((s) => academicYearForMonday(s.week_start)).filter(Boolean).sort()
+    if (!anneesPresentes.includes(anneeRythme)) setAnneeRythme(anneesPresentes[0])
+  }, [rythmeCalendrier])
 
   useEffect(() => {
     if (!user) return
@@ -887,42 +907,72 @@ export default function GestionComptePage() {
 
           {categorieActive === 'alternance' && (
             <>
-              <div className="gc-champ">
-                <label className="gc-label">Ville de ton école</label>
-                <div className="gc-champ-autocomplete">
-                  <AutocompleteInput name="villeEcole" value={villeEcole} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'école…"
-                    onChange={e => { const v = e.target.value; setVilleEcole(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEcole('') }} />
-                </div>
-                <div className="gc-champ-erreur-slot" />
-              </div>
-              {villeEcole.trim() && (
+              <div className="gc-duo">
                 <div className="gc-champ">
-                  <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
-                  <div className={`gc-champ-select${erreursVilles.fonctionEcole ? ' gc-champ-select-invalide' : ''}`}>
-                    <CustomSelect name="fonctionVilleEcole" options={FONCTION_OPTIONS} value={fonctionVilleEcole} placeholder="Sélectionner"
-                      onChange={e => { const v = e.target.value; setFonctionVilleEcole(v); if (erreursVilles.fonctionEcole) validerChampVilles('fonctionEcole', { fonctionVilleEcole: v }) }} />
+                  <label className="gc-label">Ville de ton école</label>
+                  <div className="gc-champ-autocomplete">
+                    <AutocompleteInput name="villeEcole" value={villeEcole} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'école…"
+                      onChange={e => { const v = e.target.value; setVilleEcole(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEcole('') }} />
                   </div>
-                  <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEcole && <p className="gc-champ-erreur">{erreursVilles.fonctionEcole}</p>}</div>
+                  <div className="gc-champ-erreur-slot" />
                 </div>
-              )}
-              <div className="gc-champ">
-                <label className="gc-label">Ville de ton entreprise</label>
-                <div className="gc-champ-autocomplete">
-                  <AutocompleteInput name="villeEntreprise" value={villeEntreprise} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'entreprise…"
-                    onChange={e => { const v = e.target.value; setVilleEntreprise(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEntreprise('') }} />
-                </div>
-                <div className="gc-champ-erreur-slot" />
+                {villeEcole.trim() && (
+                  <div className="gc-champ">
+                    <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
+                    <div className={`gc-champ-select${erreursVilles.fonctionEcole ? ' gc-champ-select-invalide' : ''}`}>
+                      <CustomSelect name="fonctionVilleEcole" options={FONCTION_OPTIONS} value={fonctionVilleEcole} placeholder="Sélectionner"
+                        onChange={e => { const v = e.target.value; setFonctionVilleEcole(v); if (erreursVilles.fonctionEcole) validerChampVilles('fonctionEcole', { fonctionVilleEcole: v }) }} />
+                    </div>
+                    <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEcole && <p className="gc-champ-erreur">{erreursVilles.fonctionEcole}</p>}</div>
+                  </div>
+                )}
               </div>
-              {villeEntreprise.trim() && (
+              <div className="gc-duo">
                 <div className="gc-champ">
-                  <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
-                  <div className={`gc-champ-select${erreursVilles.fonctionEntreprise ? ' gc-champ-select-invalide' : ''}`}>
-                    <CustomSelect name="fonctionVilleEntreprise" options={FONCTION_OPTIONS} value={fonctionVilleEntreprise} placeholder="Sélectionner"
-                      onChange={e => { const v = e.target.value; setFonctionVilleEntreprise(v); if (erreursVilles.fonctionEntreprise) validerChampVilles('fonctionEntreprise', { fonctionVilleEntreprise: v }) }} />
+                  <label className="gc-label">Ville de ton entreprise</label>
+                  <div className="gc-champ-autocomplete">
+                    <AutocompleteInput name="villeEntreprise" value={villeEntreprise} suggestions={VILLES_DISPONIBLES} placeholder="Ta ville d'entreprise…"
+                      onChange={e => { const v = e.target.value; setVilleEntreprise(v); if (villesErreur) setVillesErreur(''); if (!v.trim()) setFonctionVilleEntreprise('') }} />
                   </div>
-                  <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEntreprise && <p className="gc-champ-erreur">{erreursVilles.fonctionEntreprise}</p>}</div>
+                  <div className="gc-champ-erreur-slot" />
                 </div>
-              )}
+                {villeEntreprise.trim() && (
+                  <div className="gc-champ">
+                    <label className="gc-label">Dans cette ville <span className="gc-required">*</span></label>
+                    <div className={`gc-champ-select${erreursVilles.fonctionEntreprise ? ' gc-champ-select-invalide' : ''}`}>
+                      <CustomSelect name="fonctionVilleEntreprise" options={FONCTION_OPTIONS} value={fonctionVilleEntreprise} placeholder="Sélectionner"
+                        onChange={e => { const v = e.target.value; setFonctionVilleEntreprise(v); if (erreursVilles.fonctionEntreprise) validerChampVilles('fonctionEntreprise', { fonctionVilleEntreprise: v }) }} />
+                    </div>
+                    <div className="gc-champ-erreur-slot">{erreursVilles.fonctionEntreprise && <p className="gc-champ-erreur">{erreursVilles.fonctionEntreprise}</p>}</div>
+                  </div>
+                )}
+              </div>
+              {/* Patch 3d — rythme en lecture seule. RhythmCalendar est consommé sans qu'une ligne de son fichier ne bouge. */}
+              <div className="gc-champ">
+                <label className="gc-label">Ton rythme d'alternance</label>
+                <div className="gc-rythme-entete">
+                  <button
+                    type="button"
+                    className="gc-rythme-nav"
+                    onClick={() => setAnneeRythme(previousAcademicYear(anneeRythme))}
+                    disabled={!anneesRythme.includes(previousAcademicYear(anneeRythme))}
+                    aria-label="Année précédente"
+                  >‹</button>
+                  <span className="gc-rythme-annee">{anneeRythme.replace('-', ' – ')}</span>
+                  <button
+                    type="button"
+                    className="gc-rythme-nav"
+                    onClick={() => setAnneeRythme(nextAcademicYear(anneeRythme))}
+                    disabled={!anneesRythme.includes(nextAcademicYear(anneeRythme))}
+                    aria-label="Année suivante"
+                  >›</button>
+                </div>
+                {semainesAnneeRythme.length > 0 ? (
+                  <RhythmCalendar weeks={semainesAnneeRythme} />
+                ) : (
+                  <p className="gc-rythme-vide">Aucune semaine enregistrée pour cette année.</p>
+                )}
+              </div>
               <BoutonEnregistrer onSave={enregistrerVilles} modifie={villesModifie} loading={villesLoading} ok={villesSaved} erreur={villesErreur} btnRef={villesShakeRef} />
             </>
           )}

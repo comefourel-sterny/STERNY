@@ -998,3 +998,65 @@
         white-space: nowrap;
     }
 }
+
+/* Patch 3d — rythme d'alternance en lecture seule dans « Ton alternance ». */
+.gc-rythme-entete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.gc-rythme-nav {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #E8EAF0;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #1E293B;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.gc-rythme-nav:hover:not(:disabled) {
+  background: #F4F5F7;
+  border-color: #E8622A;
+}
+.gc-rythme-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.gc-rythme-annee {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1E293B;
+  min-width: 110px;
+  text-align: center;
+}
+.gc-rythme-vide {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #64748B;
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+/* Patch 3d — une ville et sa fonction sur une même ligne : le lien entre les deux se voit,
+   et la hauteur récupérée profite au calendrier de rythme en dessous. */
+.gc-duo {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.gc-duo > .gc-champ {
+  flex: 1 1 0;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .gc-duo {
+    display: block;
+  }
+}
