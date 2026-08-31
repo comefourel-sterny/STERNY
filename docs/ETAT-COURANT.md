@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-20
+**Dernière mise à jour** : 2026-08-31
+[DEV] Patch 3d : RhythmCalendar aligné sur la grammaire visuelle des planches, DETTE #162 close. Reste : modale d'édition, fusion, écriture.
 [DEV] Patch 3d : RhythmCalendar aligné sur la géométrie de la planche (douze colonnes-mois, squelette `academicYear.js`, découpage ISO du jeudi, état neutre pour les semaines non renseignées). Rendu de l'état neutre non abouti, consigné en dette. Reste : modale d'édition, fusion, écriture.
 [DEV] Patch 3d : prérequis levé sur les deux bases, le chemin d'écriture par RPC est valide. Divergence dépôt/production élargie, consignée en DETTE #161.
 [DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
@@ -12,6 +13,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-08-31 — [DEV] Patch 3d : RhythmCalendar aligné sur la grammaire visuelle des planches (DETTE #162 close)
+
+**LA COULEUR N'ÉTAIT PAS LE SUJET, LE RÔLE DE L'ÉTAT L'ÉTAIT.** L'entreprise était rendue en navy à 15 % parce que l'en-tête du fichier la définissait comme LE FOND NEUTRE du calendrier, à une époque où il n'avait que deux états. L'état « non renseignée » ajouté le 20/08 occupe ce rôle. Deux états ne peuvent pas être le fond neutre du même calendrier : c'est pourquoi les trois tentatives du 20/08 ont toutes échoué, elles cherchaient à éloigner le neutre de l'entreprise au lieu de rendre à l'entreprise son statut de donnée déclarée. Elle passe en navy plein #1E293B, comme dans RhythmManualBuilder que la modale d'édition affichera sur la même page. Le plancher d'opacité 0.15 inscrit en tête de fichier n'avait plus d'objet, il est retiré.
+
+**LES CASES SONT VIDÉES DE LEUR NUMÉRO DE JOUR, ET C'ÉTAIT LE PREMIER ÉCART VISIBLE À L'ŒIL.** Audit sur pièces des deux surfaces de référence : la planche de LogementPage et PlancheCouverture rendent toutes deux une case sans contenu. RhythmCalendar était le seul calendrier de Sterny à y écrire un chiffre. La semaine reste identifiable au survol par un attribut title déjà présent. Seule la case invalide conserve son « ? », c'est une garde défensive jamais atteinte sur le squelette.
+
+**LA GÉOMÉTRIE A ÉTÉ ROUVERTE, ET L'ENTRÉE DU 20/08 EST CONTREDITE SUR CE POINT.** Cette entrée déclarait la géométrie réglée et validée au runtime, et la consigne d'ouverture de session interdisait d'y revenir. Elle a été rouverte sur constat visuel de Côme, qui trouvait le rendu trop éloigné de la modale de LogementPage. La validation du 20/08 portait sur le DÉCOUPAGE en colonnes-mois et sur l'attribution ISO du jeudi, pas sur la RÉPARTITION DE LA LARGEUR : les deux sujets sont distincts et le second n'avait jamais été examiné. Les colonnes-mois passent de largeur fixe à flex:1 1 0, la case restant plafonnée à 40 px et centrée dans sa colonne. C'est le mécanisme exact de la modale, et c'est de là que vient l'air horizontal entre les mois — pas d'un espacement plus large, les deux surfaces valant 3 px des deux côtés.
+
+**LE PLAFOND DE LARGEUR EST UNE VALEUR MESURÉE, PAS CHOISIE.** Sans plafond, l'air entre les mois croît indéfiniment avec la page. La grille est plafonnée à 664 px et centrée, soit le plafond de 720 px de la modale de LogementPage moins ses deux marges intérieures de 28 px. Sur une carte plus étroite, le plafond ne s'applique pas et la grille se resserre seule.
+
+**LE FLOU A ÉTÉ RETIRÉ PUIS RESTAURÉ LE MÊME JOUR, ET C'EST L'ALLER-RETOUR QUI COMPTE.** Le flou de l'état non renseigné avait été écarté au runtime du 20/08 parce qu'il rendait illisible le numéro de jour inscrit dans la case, ce qui se lisait comme un défaut d'affichage. Il a été retiré le matin du 31/08 par Claude.ai, qui a gravé au passage une interdiction absolue dans l'en-tête du fichier — faute de méthode : on ne grave pas une interdiction pendant la session où le point bouge encore. Les numéros ayant été supprimés dans l'intervalle, le motif du rejet n'existait plus et Côme a demandé sa restauration sur constat visuel. Valeurs identiques à .plc-neutre de PlancheCouverture et à FLOUTE de LogementPage. L'en-tête a dû être réécrit deux fois dans la même session, et consigne désormais l'aller-retour pour qu'aucune session future ne le refasse.
+
+**DEUX ÉCARTS MINEURS ALIGNÉS DANS LE MÊME MOUVEMENT.** La bordure de 1 px de la case est retirée, aucune des deux références n'en porte. La légende passe sous la grille, comme dans la modale, sa marge de 16 px étant convertie de basse en haute pour conserver la même respiration.
+
+**RÉSIDU INERTE ASSUMÉ, PAS UNE DETTE.** Les variables --rc-school-fg et --rc-company-fg et les trois déclarations color posées sur des cases désormais vides n'ont plus d'effet visible. Elles sont conservées volontairement : elles ne coûtent rien et redeviendraient nécessaires si une case portait un jour un contenu. Seule la fonction getDayOfMonth, devenue morte, est supprimée.
+
+**CE QUE CETTE SESSION N'A PAS TRAITÉ.** La légende n'est pas plafonnée à 664 px alors que la grille l'est : sur une carte plus large, leurs bords gauches ne s'alignent pas. Constaté par Claude Code, non corrigé, non observé comme gênant au test. Et Côme trouve la catégorie « Ton alternance » trop haute pour l'écran : l'espacement entre les champs vit dans le CSS de la page, partagé par les huit catégories de /compte, donc hors du périmètre de cette dette. Chantier distinct, à cadrer.
+
+**RESTE SUR LE PATCH 3d** : modale d'édition, fusion, écriture. Les quatre points ouverts du cadrage du 12/08 restent à trancher avant tout code.
 
 ## 2026-08-20 — [DEV] Patch 3d : RhythmCalendar aligné sur la géométrie de la planche
 

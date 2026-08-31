@@ -615,4 +615,4 @@ Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adres
 
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
 
-*Dernière modification : 2026-08-09 — abandon de l'upload d'emploi du temps répercuté en §2 et dans la table de stack.*
+*Dernière modification : 2026-08-20 — §6 : règle de vérification de la base cible avant toute exécution SQL. §6 bis : règle « Épuiser la lecture avant de poser une question ».*
