@@ -1,6 +1,6 @@
 /*
-  DESIGN DECISION (Bloc B Étape 1, 25 avril 2026)
-  ───────────────────────────────────────────────
+  DESIGN DECISION (Bloc B Étape 1, 25 avril 2026 — géométrie réalignée patch 3d)
+  ──────────────────────────────────────────────────────────────────────────────
   École = Orange Sterny plein (#E8622A). C'est l'événement saillant : sur le
   calendrier d'un alternant, les semaines école sont celles qui CRÉENT la
   disponibilité du logement (l'absence). C'est l'info structurellement utile
@@ -15,20 +15,31 @@
   en plein soleil. À 0.08-0.10, le calendrier est perçu "à trous". Si refonte
   esthétique future, ne pas descendre sous 0.15.
 
+  Neutre = gris atténué et flouté (#D9DEE6, blur 1.7px, opacity 0.45) : semaine non
+  renseignée dans le rythme (absente de l'index). Grammaire de la planche (VISION-
+  ARCHITECTURE) : NET = pertinent, FLOU = hors-sujet. Une semaine non renseignée est
+  hors-sujet — elle doit RECULER, pas crier. La correction précédente l'avait mise en
+  blanc à contour, qui est dans la planche l'état « à couvrir » (un état RÉEL, net) : le
+  vide s'y voyait plus qu'une semaine en entreprise. Valeurs reprises telles quelles de
+  l'état hors-sujet de PlancheCouverture ; le numéro de jour reste en navy sous le retrait.
+
+  Géométrie : 12 colonnes-mois (SEP → AOÛT), une colonne par mois, cases
+  empilées verticalement. Identique à PlancheCouverture et RhythmManualBuilder.
   Dimensions exposées en CSS variables pour itération sans refactor JSX :
-  --rc-cell-size, --rc-month-label-width, --rc-gap, --rc-cell-radius.
+  --rc-cell-size, --rc-cell-radius, --rc-cell-gap, --rc-month-gap.
 */
 
 .rc-card {
   --rc-cell-size: 40px;
-  --rc-month-label-width: 80px;
-  --rc-gap: 6px;
-  --rc-cell-radius: 6px;
+  --rc-cell-radius: 10px;
+  --rc-cell-gap: 3px;
+  --rc-month-gap: 3px;
 
   --rc-school-bg: #E8622A;
   --rc-school-fg: #FFFFFF;
   --rc-company-bg: rgba(30, 41, 59, 0.15);
   --rc-company-fg: #1E293B;
+  --rc-neutre-bg: #D9DEE6;
   --rc-invalid-bg: rgba(30, 41, 59, 0.08);
   --rc-cell-border: rgba(30, 41, 59, 0.05);
 
@@ -62,44 +73,48 @@
 
 .rc-legend-swatch.rc-school { background: var(--rc-school-bg); }
 .rc-legend-swatch.rc-company { background: var(--rc-company-bg); }
+.rc-legend-swatch.rc-neutre {
+  background: var(--rc-neutre-bg);
+  filter: blur(1.7px);
+  opacity: 0.45;
+}
 
 .rc-grid {
   display: flex;
-  flex-direction: column;
-  gap: var(--rc-gap);
+  justify-content: center;
+  gap: var(--rc-month-gap);
 }
 
-.rc-month-row {
+.rc-month-column {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: var(--rc-cell-size);
+  align-items: center;
+  gap: var(--rc-cell-gap);
 }
 
 .rc-month-label {
-  width: var(--rc-month-label-width);
   font-size: 12px;
-  color: var(--rc-navy-soft);
-  text-transform: capitalize;
-  flex-shrink: 0;
-  padding-top: 12px;
-  line-height: 1.3;
-}
-
-.rc-month-cells {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--rc-gap);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--rc-navy);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .rc-cell {
-  width: var(--rc-cell-size);
-  height: var(--rc-cell-size);
+  width: 100%;
+  max-width: var(--rc-cell-size);
+  height: auto;
+  aspect-ratio: 1;
   border-radius: var(--rc-cell-radius);
   border: 1px solid var(--rc-cell-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   font-feature-settings: "tnum";
   cursor: default;
@@ -114,6 +129,13 @@
 .rc-cell.rc-company {
   background: var(--rc-company-bg);
   color: var(--rc-company-fg);
+}
+
+.rc-cell.rc-neutre {
+  background: var(--rc-neutre-bg);
+  filter: blur(1.7px);
+  opacity: 0.45;
+  color: var(--rc-navy);
 }
 
 .rc-cell.rc-invalid {
@@ -139,16 +161,4 @@
 
 .rc-meta-sep {
   margin: 0 4px;
-}
-
-@media (max-width: 480px) {
-  .rc-card {
-    --rc-cell-size: 36px;
-    --rc-month-label-width: 60px;
-    --rc-gap: 5px;
-  }
-
-  .rc-month-row {
-    gap: 8px;
-  }
 }
