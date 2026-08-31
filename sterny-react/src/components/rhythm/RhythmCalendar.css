@@ -7,21 +7,14 @@
   pour Sterny. La rendre visuellement dominante permet de lire le calendrier
   en une seconde — "voilà mes semaines de dispo".
 
-  Entreprise = Navy Sterny diaphane (rgba 0.15 minimum). C'est le fond neutre,
-  "présence". Inverser (entreprise en orange plein) déséquilibrerait le sens
-  métier.
-
-  L'opacité 0.15 est un PLANCHER : elle assure la lisibilité même sur mobile
-  en plein soleil. À 0.08-0.10, le calendrier est perçu "à trous". Si refonte
-  esthétique future, ne pas descendre sous 0.15.
-
-  Neutre = gris atténué et flouté (#D9DEE6, blur 1.7px, opacity 0.45) : semaine non
-  renseignée dans le rythme (absente de l'index). Grammaire de la planche (VISION-
-  ARCHITECTURE) : NET = pertinent, FLOU = hors-sujet. Une semaine non renseignée est
-  hors-sujet — elle doit RECULER, pas crier. La correction précédente l'avait mise en
-  blanc à contour, qui est dans la planche l'état « à couvrir » (un état RÉEL, net) : le
-  vide s'y voyait plus qu'une semaine en entreprise. Valeurs reprises telles quelles de
-  l'état hors-sujet de PlancheCouverture ; le numéro de jour reste en navy sous le retrait.
+  Entreprise = Navy Sterny PLEIN #1E293B. École = Orange PLEIN #E8622A. Non renseignée = gris clair #D9DEE6 avec blur(1.7px) et opacity 0.45.
+  DÉCISION DU 31/08/2026, patch 3d, dette #162. Le navy diaphane à 0.15 datait d'un composant à DEUX états, où l'entreprise tenait le rôle de fond neutre. L'état « non renseignée » ajouté le 20/08 occupe désormais ce rôle, et deux états ne peuvent pas être le fond neutre du même calendrier. L'entreprise redevient une donnée déclarée et se rend en plein, comme dans RhythmManualBuilder que la modale d'édition affichera sur la même page. Le plancher d'opacité 0.15 n'a plus d'objet, il est retiré.
+  CASES VIDES, décidé le même jour. La mini-planche de LogementPage et PlancheCouverture rendent toutes deux une case sans contenu. RhythmCalendar était le seul calendrier de Sterny à y écrire un numéro de jour. La semaine reste identifiable au survol par l'attribut title. Seule la case invalide conserve son « ? », c'est une garde défensive.
+  COLONNES ÉTIRÉES, décidé le même jour sur audit de la modale grand format de LogementPage. Les colonnes-mois prennent flex:1 1 0, la case reste plafonnée à --rc-cell-size et se centre dans sa colonne. L'air horizontal entre les mois vient de là, et non d'un espacement plus large : --rc-cell-gap et --rc-month-gap valent 3px des deux côtés. Une colonne de largeur fixe produirait un pavé jointif centré dans une page bien plus large que lui, ce qui était l'état du 20/08. PLAFOND DE LARGEUR, ajouté le 31/08 après test au runtime. Sans plafond, l'air entre les mois croît avec la largeur de la page et le calendrier s'étale hors du bloc. La grille est donc plafonnée à 664px et centrée : c'est la largeur dont dispose la grille de la modale de LogementPage, soit son plafond de 720px moins ses deux marges intérieures de 28px. Valeur mesurée sur la surface de référence, jamais choisie à l'œil. Sur une carte plus étroite, le plafond ne s'applique pas et la grille se resserre seule.
+  FLOU DE L'ÉTAT NON RENSEIGNÉ, aller-retour du 31/08 à consigner pour ne pas le refaire. Le flou avait été écarté au runtime du 20/08 parce qu'il rendait illisible le numéro de jour inscrit dans la case, ce qui se lisait comme un défaut d'affichage. Il a été retiré le 31/08 au matin, puis restauré le même jour une fois les numéros supprimés : sans texte dedans, un aplat flou ne ressemble plus à un bug mais à un retrait. Grammaire de la planche, qui vaut ici : NET = pertinent, FLOU = hors-sujet. Une semaine non renseignée doit reculer, pas crier. Valeurs identiques à .plc-neutre de PlancheCouverture et à FLOUTE de LogementPage.
+  RESTE INTERDIT : rendre l'entreprise en orange plein, ce qui inverserait le sens métier.
+  RESTE INTERDIT : rendre l'état non renseigné en blanc à contour. Dans la grammaire de la planche, ce rendu signifie « à couvrir », un état RÉEL et net : le vide s'y verrait plus qu'une semaine déclarée. Tentative faite et écartée le 20/08.
+  RÈGLE D'ENTRETIEN : toute modification d'un état de case doit être répercutée sur la pastille .rc-legend-swatch correspondante, sous peine de produire une légende qui ment.
 
   Géométrie : 12 colonnes-mois (SEP → AOÛT), une colonne par mois, cases
   empilées verticalement. Identique à PlancheCouverture et RhythmManualBuilder.
@@ -37,8 +30,8 @@
 
   --rc-school-bg: #E8622A;
   --rc-school-fg: #FFFFFF;
-  --rc-company-bg: rgba(30, 41, 59, 0.15);
-  --rc-company-fg: #1E293B;
+  --rc-company-bg: #1E293B;
+  --rc-company-fg: #FFFFFF;
   --rc-neutre-bg: #D9DEE6;
   --rc-invalid-bg: rgba(30, 41, 59, 0.08);
   --rc-cell-border: rgba(30, 41, 59, 0.05);
@@ -53,7 +46,7 @@
 .rc-legend {
   display: flex;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-top: 16px;
   font-size: 13px;
   color: var(--rc-navy-soft);
 }
@@ -83,13 +76,16 @@
   display: flex;
   justify-content: center;
   gap: var(--rc-month-gap);
+  max-width: 664px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .rc-month-column {
   display: flex;
   flex-direction: column;
-  flex: 0 0 auto;
-  width: var(--rc-cell-size);
+  flex: 1 1 0;
+  min-width: 0;
   align-items: center;
   gap: var(--rc-cell-gap);
 }
@@ -110,7 +106,6 @@
   height: auto;
   aspect-ratio: 1;
   border-radius: var(--rc-cell-radius);
-  border: 1px solid var(--rc-cell-border);
   display: flex;
   align-items: center;
   justify-content: center;

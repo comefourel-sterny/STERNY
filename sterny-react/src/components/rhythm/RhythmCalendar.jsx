@@ -6,11 +6,6 @@ import {
   computeDefaultAcademicYear,
 } from '../../utils/academicYear';
 
-function getDayOfMonth(weekStart) {
-  const d = new Date(weekStart + 'T00:00:00');
-  return d.getDate();
-}
-
 function isValidStatus(status) {
   return status === 'school' || status === 'company';
 }
@@ -122,21 +117,6 @@ export default function RhythmCalendar({ weeks, groupLabel, documentMeta, classN
 
   return (
     <div className={`rc-card ${className}`}>
-      <div className="rc-legend">
-        <span className="rc-legend-item">
-          <span className="rc-legend-swatch rc-school" />
-          École
-        </span>
-        <span className="rc-legend-item">
-          <span className="rc-legend-swatch rc-company" />
-          Entreprise
-        </span>
-        <span className="rc-legend-item">
-          <span className="rc-legend-swatch rc-neutre" />
-          Non renseigné
-        </span>
-      </div>
-
       <div className="rc-grid">
         {monthsGrouped.map((month) => (
           <div key={month.key} className="rc-month-column">
@@ -169,13 +149,26 @@ export default function RhythmCalendar({ weeks, groupLabel, documentMeta, classN
                 : `Semaine du ${week.weekStart}`;
 
               return (
-                <div key={week.weekStart} className={`rc-cell ${stateClass}`} title={title}>
-                  {getDayOfMonth(week.weekStart)}
-                </div>
+                <div key={week.weekStart} className={`rc-cell ${stateClass}`} title={title} />
               );
             })}
           </div>
         ))}
+      </div>
+
+      <div className="rc-legend">
+        <span className="rc-legend-item">
+          <span className="rc-legend-swatch rc-school" />
+          École
+        </span>
+        <span className="rc-legend-item">
+          <span className="rc-legend-swatch rc-company" />
+          Entreprise
+        </span>
+        <span className="rc-legend-item">
+          <span className="rc-legend-swatch rc-neutre" />
+          Non renseigné
+        </span>
       </div>
 
       {documentMeta && <DocumentMetaFooter meta={documentMeta} />}
