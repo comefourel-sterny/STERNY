@@ -294,6 +294,17 @@ théoriques.
   (vérifier qu'un `insert` déclenche bien une erreur de trigger, par exemple), parce que
   l'annulation y est l'objectif recherché et qu'elle est écrite explicitement.
 
+- **Vérifier SUR QUELLE BASE on est, avant d'exécuter quoi que ce soit.** Les règles
+  ci-dessus disent comment écrire une requête sûre, elles ne disaient pas où elle allait
+  s'exécuter. Repères : la production est le projet `sterny-plateform` et porte une
+  étiquette PRODUCTION en jaune ; la base locale n'a aucune étiquette et vit sur
+  `127.0.0.1`. En cas de doute, passer par
+  `psql postgresql://postgres:postgres@127.0.0.1:54322/postgres` plutôt que par un onglet
+  de navigateur : l'adresse locale ne peut pas être confondue. Claude annonce la base
+  cible dans chaque prompt SQL. Origine : 20/08/2026, un `select` destiné au local
+  exécuté sur la production, l'onglet ouvert étant le dashboard distant. Sans conséquence
+  — l'instruction suivante était un `update`.
+
 **Check-list secrets pré-commit**
 
 Obligatoire sur tout fichier issu d'un dump BDD, d'un export, d'un snapshot de schéma, ou de logs copiés. Patterns à tester :
@@ -385,6 +396,22 @@ une entrée du 07/08 dont Claude.ai ignorait l'existence. Claude Code a détect�
 d'ordre et s'est arrêté avant commit, ce qui est le comportement voulu.
 
 Précision du 16/08/2026, après une TROISIÈME occurrence du même incident. Cette règle ne visait que les numéros de ligne, et c'est insuffisant : le point d'insertion fautif du 16/08 était une DATE, celle de l'entrée la plus récente d'ETAT-COURANT.md selon la copie project knowledge, alors qu'une entrée postérieure avait été commitée entre-temps. Aucun numéro de ligne n'avait été donné, la règle était donc formellement respectée. Elle est étendue : AUCUN élément identifiant issu du project knowledge ne sert d'ancre — ni numéro de ligne, ni date, ni titre d'entrée, ni position supposée dans un fichier. Un point d'insertion se décrit par sa POSITION RELATIVE dans le fichier réel (« avant la première entrée du journal, quelle que soit sa date »), et Claude Code établit lui-même l'élément concerné par un grep avant d'écrire. Formuler autrement, c'est transformer une photographie datée en fait. Corollaire de forme, établi le même jour : une ancre textuelle doit tenir sur UNE SEULE ligne du fichier visé. CONTEXTE-PROJET.md et VISION-ARCHITECTURE.md sont écrits avec des retours à la ligne durs, une ancre d'une phrase entière y est donc coupée en deux et introuvable par un grep, alors qu'ETAT-COURANT.md et DETTE-TECHNIQUE.md portent des paragraphes d'un seul tenant. Un grep qui ne trouve pas une ancre dans un fichier à retour dur est un faux négatif probable, à vérifier sur un fragment plus court avant de conclure à son absence.
+
+### Épuiser la lecture avant de poser une question
+
+« Visuel = lire, jamais présumer » impose de lire avant de proposer. Cette règle la complète : lire avant de DEMANDER.
+
+Côme tranche le produit, la stratégie, le juridique et tout ce qui l'engage. Il ne tranche pas une question technique dont la réponse est déjà écrite dans un fichier du dépôt. Sur ces questions-là, Claude cherche la solution la plus propre et la plus durable, l'établit sur le code, et arrive avec UNE recommandation fondée.
+
+Avant de poser une question technique à Côme, Claude vérifie trois choses : (1) la réponse est-elle dans un fichier que je peux faire lire ? (2) une surface existante a-t-elle déjà résolu ce problème ? (3) ai-je lu TOUTES les références que j'avais moi-même annoncées ? Si l'une des trois réponses est oui, la question ne se pose pas : on lit.
+
+Corollaire sur l'exhaustivité. Quand Claude annonce un plan d'audit, il le tient en entier. Abandonner une cible en cours de route sans le dire produit une recommandation bancale qui a l'air fondée.
+
+Corollaire sur les références. Quand plusieurs surfaces résolvent déjà le même problème, on les lit TOUTES avant d'arbitrer, y compris celles qu'on s'interdit de modifier — la RÈGLE Nº 1 interdit d'écrire dans un fichier, jamais de le lire.
+
+Corollaire sur les emprunts visuels. Reprendre un rendu d'une surface de référence oblige à reprendre aussi ce qu'il SIGNIFIE. Un blanc à contour emprunté à la planche y veut dire « à couvrir », pas « vide » : le copier sans sa grammaire produit un écran qui ment. Lire la sémantique de l'état, pas seulement ses valeurs.
+
+Origine : session du 20/08/2026, patch 3d. Claude a demandé à Côme de trancher un point que l'audit venait de résoudre, après avoir abandonné sans le dire la lecture d'une des surfaces de référence ; puis a proposé trois corrections visuelles successives dont deux fausses, faute d'avoir lu la grammaire net/flou avant d'emprunter un rendu.
 
 ---
 

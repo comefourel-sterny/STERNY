@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-08-20
+[DEV] Patch 3d : RhythmCalendar aligné sur la géométrie de la planche (douze colonnes-mois, squelette `academicYear.js`, découpage ISO du jeudi, état neutre pour les semaines non renseignées). Rendu de l'état neutre non abouti, consigné en dette. Reste : modale d'édition, fusion, écriture.
 [DEV] Patch 3d : prérequis levé sur les deux bases, le chemin d'écriture par RPC est valide. Divergence dépôt/production élargie, consignée en DETTE #161.
 [DEV] Patch 3d cadré : rythme affiché en lecture seule dans /compte, édition en modale, écriture par RPC avec fusion côté page. Aucun code écrit.
 [DEV] Patch 3c livré : catégorie « Ton alternance », `type_user` dérivé des fonctions de ville, blocage du changement tant qu'une annonce existe. Reste : patchs 3d à 7.
@@ -11,6 +12,30 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-08-20 — [DEV] Patch 3d : RhythmCalendar aligné sur la géométrie de la planche
+
+**LE MAUVAIS RENDU DU 19/08 ÉTAIT STRUCTUREL, ET LA PAGE N'Y ÉTAIT POUR RIEN.** Trois audits en lecture seule. `RhythmCalendar` empilait les mois en bandes horizontales, ce qui donnait un bord droit en escalier et douze bandes de hauteur. La page offrait environ 712 px de large là où le composant en réclamait 132, sans plafond de hauteur : l'hypothèse d'une grille mal contrainte par la colonne est écartée sur pièces.
+
+**LE CHOIX DU 12/08 EST CONFIRMÉ, PAS ROUVERT.** L'objection sémantique qui avait écarté `PlancheCouverture` a été vérifiée sur son code et elle tient : le composant ne connaît que des états de couverture, chacun porteur d'une icône ; le champ `nature` existe dans les données mais le CSS l'annule, école et entreprise partageant la même règle. Afficher un rythme brut y obligerait à poser une loupe « à couvrir » sur une semaine qui n'est pas cherchée.
+
+**IL N'Y AVAIT QU'UNE SEULE GÉOMÉTRIE DE RÉFÉRENCE, PAS DEUX.** Le CSS de `PlancheCouverture` porte en commentaire qu'il est copié de celui de `RhythmManualBuilder`. Les deux calendriers qui fonctionnent partagent le même modèle. Le point à trancher au démarrage de session — `/mon-calendrier` ou le calendrier de l'inscription — n'existait donc pas.
+
+**CE QUI EST LIVRÉ.** Douze colonnes-mois en flex, étiquette en tête de colonne, cases carrées empilées. Le squelette de l'année vient désormais de `academicYear.js`, comme pour les deux autres surfaces : toutes les semaines sont dessinées, les non renseignées prennent un état neutre, et le découpage suit la règle ISO du jeudi. `RhythmCalendar` calculait auparavant le mois d'après le lundi, ce qui rangeait certaines semaines une colonne trop tôt — la même semaine n'apparaissait pas au même endroit selon la page regardée. Trois avertissements console signalent toute semaine reçue non indexée : date invalide, statut inconnu, ou date valide qui n'est pas un lundi, ce dernier cas disparaissant auparavant sans trace.
+
+**PORTÉE, À NE PAS ÉLARGIR.** La décision transporte la GÉOMÉTRIE, pas le code couleur. C'est l'application littérale de l'invariant 7, qui pose que le codage couleur dépend de la surface et se tranche au cas par cas.
+
+**L'IRRÉGULARITÉ 4/5 SEMAINES NE DISPARAÎT PAS, ELLE SE DÉPLACE.** Une colonne de quatre semaines finit une case plus haut que sa voisine de cinq. La planche vit avec ce cran depuis le 25/06 : une arête en bas remplace un escalier sur douze lignes. Comportement attendu, pas un défaut.
+
+**LE RYTHME NE SE DÉCLINE PAS PAR VILLE.** Le calendrier affiche le rythme brut, sans distinguer ville d'école et ville d'entreprise, y compris pour un profil `les_deux`. C'est volontaire et cohérent avec le carrousel du tableau de bord, qui ne consomme pas la ville active pour la même raison. À ne pas rouvrir comme un oubli.
+
+**VALIDÉ SUR DONNÉE IRRÉGULIÈRE, PAS SUR LA DONNÉE DE SEED.** Le rythme fabriqué de `hote@sterny.test` couvrait 52 semaines pleines et n'aurait montré ni l'état neutre ni le décalage corrigé. Treize semaines trouées ont été écrites en base locale à sa place : quatre en septembre, deux isolées en octobre, un mois vide, un décembre irrégulier, et sept mois sans rien. Le test a confirmé les trois apports. Cette donnée remplace celle du seed sur ce compte : une autre surface qui attendrait 52 semaines pleines affichera autre chose.
+
+**RENDU DE L'ÉTAT NEUTRE NON ABOUTI, CONSIGNÉ EN DETTE.** Trois tentatives visuelles ont échoué, la cause réelle ayant été identifiée tardivement. Voir la dette ouverte ce jour.
+
+**INCIDENT, PREMIÈRE OCCURRENCE DE CETTE FAMILLE.** Une requête de lecture destinée à la base locale a été exécutée sur la PRODUCTION, l'onglet ouvert étant celui du dashboard distant. Sans conséquence, c'était un `select`. L'étape suivante était un `update`. Règle ajoutée en CONTEXTE §6.
+
+**RESTE SUR LE PATCH 3d** : modale d'édition, fusion, écriture.
 
 ## 2026-08-20 — [VRAIE VIE] Questionnaire terrain : mis en service, l'original est fermé
 
