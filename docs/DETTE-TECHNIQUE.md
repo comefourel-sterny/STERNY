@@ -1921,3 +1921,17 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Point ouvert secondaire** : les cases neutres portent un numéro de jour, celles de la planche sont vides. À trancher en même temps.
 **Réf** : RhythmCalendar.css (variables de couleur, en-tête DESIGN DECISION), RhythmManualBuilder.css (référence navy plein).
 **CLÔTURE DU 2026-08-31.** La cause n'était pas une valeur d'opacité mal réglée mais un conflit de rôle : l'entreprise avait été conçue comme le fond neutre du calendrier, rôle que l'état « non renseignée » du 20/08 lui a pris. L'entreprise passe en navy plein, le neutre garde le gris flouté de la planche. Le point ouvert secondaire est tranché dans le même geste : les cases sont vidées de leur numéro de jour, les deux surfaces de référence rendant une case sans contenu. Deux constats hors périmètre, laissés ouverts et sans dette dédiée à ce stade : la légende n'est pas plafonnée à 664 px là où la grille l'est, et la hauteur de la catégorie « Ton alternance » dépend d'un espacement de champs partagé par les huit catégories de /compte. Détail complet en ETAT-COURANT, entrée du 31/08.
+
+## DETTE #163 — Dans la modale d'édition, « entreprise » et « non renseignée » sont indistinguables
+**Constat (runtime du 05/09/2026)** : `RhythmManualBuilder` n'a aucun état visuel pour une semaine non renseignée. Une semaine déjà déclarée `company` et une semaine jamais renseignée y rendent toutes deux la classe `rmb-cell-empty`, qui n'a aucune règle CSS propre et prend l'aplat gris clair de la case de base. Sur la même page, le calendrier en lecture seule distingue les deux états depuis la clôture de DETTE #162, la modale non.
+**Pourquoi ce n'est pas corrigible en l'état** : ajouter un état visuel exigerait de modifier `RhythmManualBuilder.jsx/.css`, ce que la RÈGLE Nº 1 interdit sans exception.
+**Conséquence assumée**, pas un oubli : la décision produit du 05/09 pose qu'ouvrir la modale déclare l'année, ce qui rend la distinction moins critique à l'édition qu'à la consultation.
+
+## DETTE #164 — Le sélecteur d'année de la modale ne se lit pas comme un menu
+**Constat (runtime du 05/09/2026)** : le sélecteur d'année interne au builder est un `select` interactif, mais son rendu dans la modale est un rectangle bordé sans marqueur visible. Côme l'a pris pour une étiquette figée et a conclu qu'il était bloqué sur l'année.
+**Pourquoi ce n'est pas corrigible simplement** : le rendu vit dans `RhythmManualBuilder.css`, fichier gelé. Un contournement existe — une règle dans le CSS de la page visant l'intérieur du composant — mais styler les entrailles d'un composant qu'on s'interdit de modifier contourne la RÈGLE Nº 1 par la fenêtre. À trancher explicitement, jamais dans le flux d'une session.
+
+## DETTE #165 — Les années proposées par le builder sont calculées depuis la date du jour, pas depuis le rythme
+**Constat (audit du 05/09/2026)** : le sélecteur ne propose que deux années, `computeDefaultAcademicYear()` et la suivante, câblées en dur dans le composant. Elles ne dépendent ni de `initialCalendar` ni d'aucune prop parent, et aucune prop exposée ne permet d'élargir la liste.
+**Conséquence** : un utilisateur dont le rythme contient une année plus ancienne peut la consulter en lecture seule mais ne peut pas l'ouvrir à l'édition. Sans effet aujourd'hui, l'effet apparaîtra au changement d'année académique.
+**Ne rien corriger sans arbitrage** : la correction passe par le fichier gelé.

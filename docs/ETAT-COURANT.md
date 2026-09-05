@@ -14,6 +14,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 
 ---
 
+## 2026-09-05 — [DEV] Patch 3d livré : modale d'édition du rythme, fusion côté page, écriture par RPC
+
+**LE PATCH EST LIVRÉ ET VALIDÉ AU RUNTIME.** Commit `7ddc2ab`. Un bouton Modifier sous le calendrier en lecture seule de `/compte` ouvre une modale qui consomme `RhythmManualBuilder` par ses props d'extension, sans qu'une ligne de son fichier ne bouge. Deux fichiers touchés, `GestionComptePage.jsx` et `.css`, 208 lignes ajoutées.
+
+**LA FUSION EN QUATRE TEMPS, ET LE MOTIF DE CHACUN.** On part du rythme lu en base. On constitue l'ensemble des années concernées : celles portant au moins une semaine `school` strictement future, PLUS celles apparues dans une charge utile depuis l'ouverture de la modale. On retire de ces années les seules semaines strictement postérieures au lundi courant. On ajoute la charge utile du builder, puis on trie. La première moitié de l'ensemble des années n'est pas redondante avec la seconde : elle traite le cas où l'utilisateur décoche la dernière semaine d'école d'une année comme premier geste, cas où cette année n'apparaît dans aucune charge utile et disparaîtrait sinon de la fusion. Le remède écrit au cadrage du 12/08 — « tenir la liste des années réellement ouvertes » — était insuffisant pour cette raison.
+
+**LA BORNE EST UNE CHARNIÈRE, PAS UNE CONTRAINTE SUBIE.** `isWeekBlocked` bloque les semaines passées ET la semaine en cours, et une semaine bloquée est ABSENTE de la charge utile émise. La fenêtre que le builder émet et la fenêtre que la page remplace doivent donc être la même : strictement postérieure au lundi courant. Un retrait au sens large aurait effacé la semaine en cours sans jamais la réécrire. C'est la propriété qui rend la fusion correcte, et elle a été vérifiée au runtime : la semaine en cours, hachurée dans la modale et jamais transmise, était toujours présente après enregistrement.
+
+**RECOMMANDATION RENVERSÉE EN COURS DE SESSION, SUR PIÈCES.** Claude.ai avait recommandé d'étendre `enregistrerCategorie` par un paramètre d'écriture optionnel, au motif d'éviter de dupliquer six états et trois minuteries. L'audit a établi que cette fonction est entièrement construite autour d'un formulaire à plusieurs champs : erreurs par champ, minuterie d'effacement de ces erreurs, secousse, badge d'enregistrement. La modale n'a aucun champ. L'étendre aurait obligé à fournir huit éléments dont cinq vides. La modale a donc sa propre fonction d'enregistrement, à deux états. Le point 4 du cadrage du 12/08 est tranché dans le sens inverse de celui qui y était pressenti.
+
+**PRÉREQUIS DU 12/08 DÉJÀ LEVÉ.** Le SELECT de chargement de la page demandait déjà `rhythm_calendar`, ajouté lors du patch d'affichage. Le piège signalé comme troisième occurrence sur cette page n'a pas eu lieu.
+
+**PREMIÈRE INVOCATION DE LA RPC PAR DU CODE.** `confirm_rhythm_calendar_manual` n'avait jamais été appelée par aucun client. Elle prend un unique paramètre `p_calendar` de type jsonb. Ses six conditions d'erreur ont été relevées sur la base locale : non authentifié, calendrier nul ou vide ou non-tableau, entrée sans `week_start` ou sans `status`, statut hors `school`/`company`, date qui n'est pas un lundi, doublon de `week_start`. AUCUNE BORNE DE DATE : une semaine passée est acceptée, ce qui rend la fusion conservatrice possible. C'était le risque le plus lourd de l'audit, il est levé.
+
+**AUCUN NETTOYAGE DÉFENSIF, UNE TRADUCTION.** Filtrer silencieusement une semaine non conforme avant l'appel serait une perte de donnée sur la source de vérité unique, à l'opposé de la doctrine « tout ou rien ». Le refus est le comportement voulu. Les messages de la fonction étant en anglais et techniques, l'écran affiche un texte français unique quel que soit le motif, et le message réel part en console.
+
+**SEPT VÉRIFICATIONS AU RUNTIME, TOUTES PASSÉES.** Sur `hote@sterny.test` et son rythme troué de treize semaines : ouverture, semaines passées inertes, Annuler sans écriture, modification enregistrée, persistance après rechargement, conservation du passé, et manifestation de la décision produit. Le sixième test a d'abord été lu comme un échec par Côme : la preuve tenait dans la première case de septembre, semaine en cours conservée alors que la modale annonçait sept semaines sélectionnées là où le calendrier en montrait huit.
+
+**RESTE SUR LA SURFACE `/compte`** : patchs 4 à 7 (documents, garant, compte, notifications).
+
 ## 2026-08-31 — [DEV] Patch 3d : RhythmCalendar aligné sur la grammaire visuelle des planches (DETTE #162 close)
 
 **LA COULEUR N'ÉTAIT PAS LE SUJET, LE RÔLE DE L'ÉTAT L'ÉTAIT.** L'entreprise était rendue en navy à 15 % parce que l'en-tête du fichier la définissait comme LE FOND NEUTRE du calendrier, à une époque où il n'avait que deux états. L'état « non renseignée » ajouté le 20/08 occupe ce rôle. Deux états ne peuvent pas être le fond neutre du même calendrier : c'est pourquoi les trois tentatives du 20/08 ont toutes échoué, elles cherchaient à éloigner le neutre de l'entreprise au lieu de rendre à l'entreprise son statut de donnée déclarée. Elle passe en navy plein #1E293B, comme dans RhythmManualBuilder que la modale d'édition affichera sur la même page. Le plancher d'opacité 0.15 inscrit en tête de fichier n'avait plus d'objet, il est retiré.

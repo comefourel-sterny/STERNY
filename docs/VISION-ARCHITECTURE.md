@@ -1133,3 +1133,17 @@ Ce qui devient autorisé : consommer `RhythmManualBuilder` depuis une autre surf
 Motif. La règle d'origine visait `PlancheCouverture`, composant d'affichage pur dont le modèle d'état n'avait rien de commun avec celui du builder. Copier le look y était le seul geste possible. Le patch 3d fait le geste inverse, il reproduit exactement la même capture. Copier signifierait dupliquer `isWeekBlocked`, l'hydratation, l'inversion selon la ville et `materialize`, c'est-à-dire les quatre fonctions qui produisent la source de vérité unique. La Charte pose qu'une erreur sur ce socle casse tout l'écosystème. Deux implémentations de ces quatre fonctions divergeront, comme deux implémentations de l'extinction des erreurs ont déjà divergé entre les patchs 3a et 3b.
 
 Ce que cette précision ne fait PAS. Elle n'autorise aucune modification, même minime, même « juste une prop en plus ». Un besoin d'adaptation est le signal qu'il faut reposer la question, jamais le feu vert pour ouvrir le fichier.
+
+### Ouvrir la modale sur une année déclare cette année entière (décision du 05/09/2026, patch 3d)
+
+`RhythmManualBuilder` ne connaît que deux réponses : une semaine cochée est `school`, toute autre semaine de l'année est `company`. L'état « non renseignée » n'existe pas dans ce composant. Éditer une année dans la modale déclare donc cette année en entier.
+
+**Une troisième voie a été cherchée et elle ne tient pas.** Filtrer la sortie du builder pour ne conserver que les semaines déjà déclarées, et ainsi protéger les semaines inconnues, rendrait impossible de déclarer une semaine `company` par quelque geste que ce soit — puisque `company` s'obtient par l'ABSENCE de clic. Les trous d'un calendrier deviendraient définitifs. Une modale d'édition qui ne peut pas combler un trou n'est pas une modale d'édition.
+
+**Motifs, par ordre de poids.** (1) C'est déjà la sémantique de l'inscription, écrite en §1 : les semaines restantes du périmètre saisi sont enregistrées en entreprise. Diverger produirait deux règles de matérialisation pour le même composant sur la même donnée. (2) Le déclencheur est un clic, jamais une navigation : une année parcourue sans clic n'est pas émise, donc pas déclarée. (3) L'écriture reste confirmée par un geste explicite.
+
+**Portée réelle, établie sur le code et non supposée.** Une semaine passant de « absente » à `company` entre dans l'offre dérivée par `deduireOffre` seulement si le pôle est de nature école et si la semaine est future. Elle alimente alors un pré-cochage ÉDITABLE dans le formulaire de création d'annonce, qui exige un geste de publication. `deduireOffre` ne publie rien de lui-même et ne réécrit aucune annonce existante. La conséquence est réelle mais bornée : rien ne part en ligne à l'insu de l'utilisateur.
+
+**Conséquence affichée à l'écran, texte arrêté par Côme et à reprendre à l'identique** : « Les semaines que tu ne coches pas seront enregistrées comme des semaines en entreprise, sur toute l'année affichée. » et « Tu ne peux pas modifier les semaines passées ni la semaine en cours. »
+
+**Cas limite tranché dans le même geste.** Décocher TOUTES les semaines d'école d'une année n'émet rien pour cette année : le builder ne transmet que les années portant au moins un clic. L'année redevient donc non renseignée plutôt que d'être déclarée entièrement en entreprise. C'est le choix prudent : une semaine non renseignée n'entre dans aucune offre, une semaine `company` peut y entrer.

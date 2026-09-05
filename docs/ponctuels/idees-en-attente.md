@@ -221,3 +221,11 @@ envoyés par email atteignent réellement leur page : sinon un utilisateur qui c
 mail atterrit sur la page d'attente sans pouvoir changer son mot de passe. Étendre la
 vérification à toute route atteinte depuis un email transactionnel (confirmation d'inscription,
 invitation propriétaire). À traiter dans la checklist de lancement, pas avant.
+
+## Proposer son logement pendant les semaines de vacances
+
+Soulevée par Côme le 05/09/2026, pendant le patch 3d. Un alternant qui part deux semaines à Noël a un logement vide, et Sterny n'a aujourd'hui aucun moyen de le déclarer : le rythme ne connaît que `school` et `company`.
+
+**Ne PAS traiter comme un troisième statut** sans arbitrage lourd. Un troisième statut toucherait `RhythmManualBuilder` (fichier gelé), la RPC d'écriture, `deduireOffre`, le moteur de couverture et l'affichage — c'est-à-dire le socle que la Charte décrit comme cassant tout l'écosystème en cas d'erreur.
+
+**Piste à vérifier en premier, et elle est peu coûteuse** : l'audit du 05/09 a établi que `deduireOffre` alimente un PRÉ-COCHAGE éditable dans le formulaire de création d'annonce, et que ce qui est publié est la liste de dates du formulaire, pas le rythme. Il existe donc peut-être déjà deux couches, la seconde étant faite pour être ajustée à la main. Si le calendrier de l'annonce accepte une semaine hors rythme, le besoin se règle par l'écran sans toucher au modèle de données. S'il la refuse, le sujet devient un chantier à part entière avec son propre cadrage.
