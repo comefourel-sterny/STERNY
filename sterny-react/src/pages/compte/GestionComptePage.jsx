@@ -5,7 +5,8 @@ import { supabaseClient } from '../../config/supabase'
 import useAccountActions from '../../hooks/useAccountActions'
 import { getInitials } from '../../utils/formatters'
 import RhythmCalendar from '../../components/rhythm/RhythmCalendar'
-import { computeDefaultAcademicYear, academicYearForMonday, previousAcademicYear, nextAcademicYear } from '../../utils/academicYear'
+import RhythmManualBuilder from '../../components/rhythm/RhythmManualBuilder'
+import { computeDefaultAcademicYear, academicYearForMonday, previousAcademicYear, nextAcademicYear, currentMondayISO } from '../../utils/academicYear'
 import PasswordRevealButton from '../../components/PasswordRevealButton'
 import { useShakeButton } from '../../components/auth-wizard/useShakeButton'
 import CustomSelect from '../../components/auth-wizard/CustomSelect'
@@ -230,6 +231,13 @@ export default function GestionComptePage() {
   // Patch 3d — Ton alternance : rythme lu en base, affiché en lecture seule et édité en modale.
   const [rythmeCalendrier, setRythmeCalendrier] = useState([])
   const [anneeRythme, setAnneeRythme] = useState(computeDefaultAcademicYear())
+  // Patch 3d — modale d'édition du rythme. brouillonRythme = dernière charge utile reçue du builder
+  // (remplacement, pas cumul) ; anneesTouchees = années apparues dans une charge utile depuis l'ouverture
+  // (jamais vidées pendant la session de modale) ; enregistrementRythme = état de l'appel RPC.
+  const [modaleRythmeOuverte, setModaleRythmeOuverte] = useState(false)
+  const [brouillonRythme, setBrouillonRythme] = useState([])
+  const [anneesTouchees, setAnneesTouchees] = useState([])
+  const [enregistrementRythme, setEnregistrementRythme] = useState({ enCours: false, erreur: '' })
   // Années réellement navigables : celles présentes dans le rythme, plus l'année courante.
   // On ne fabrique aucune semaine absente : RhythmCalendar n'a que deux états, école et
   // entreprise, peindre une semaine non déclarée serait affirmer un faux rythme.
@@ -247,6 +255,77 @@ export default function GestionComptePage() {
     const anneesPresentes = rythmeCalendrier.map((s) => academicYearForMonday(s.week_start)).filter(Boolean).sort()
     if (!anneesPresentes.includes(anneeRythme)) setAnneeRythme(anneesPresentes[0])
   }, [rythmeCalendrier])
+
+  // Patch 3d — modale d'édition du rythme.
+  function ouvrirModaleRythme() {
+    setBrouillonRythme([])
+    setAnneesTouchees([])
+    setEnregistrementRythme({ enCours: false, erreur: '' })
+    setModaleRythmeOuverte(true)
+  }
+
+  function fermerModaleRythme() {
+    setBrouillonRythme([])
+    setAnneesTouchees([])
+    setEnregistrementRythme({ enCours: false, erreur: '' })
+    setModaleRythmeOuverte(false)
+  }
+
+  // Réception d'une charge utile du builder : remplace le brouillon (jamais cumul) et
+  // marque les années apparues comme touchées (union, jamais vidée pendant la session).
+  function recevoirBrouillonRythme(charge) {
+    const payload = Array.isArray(charge) ? charge : []
+    setBrouillonRythme(payload)
+    setAnneesTouchees((prev) => {
+      const s = new Set(prev)
+      for (const w of payload) {
+        const annee = academicYearForMonday(w.week_start)
+        if (annee) s.add(annee)
+      }
+      return [...s]
+    })
+  }
+
+  // Fusion (étape 5) puis écriture par RPC (étape 6).
+  async function enregistrerRythme() {
+    const LUNDI_COURANT = currentMondayISO()
+
+    // 1. Années concernées A : années portant ≥1 semaine 'school' STRICTEMENT future
+    //    dans le rythme existant, plus toutes les années touchées dans la modale.
+    const A = new Set(anneesTouchees)
+    for (const s of rythmeCalendrier) {
+      if (s.status === 'school' && s.week_start > LUNDI_COURANT) {
+        const annee = academicYearForMonday(s.week_start)
+        if (annee) A.add(annee)
+      }
+    }
+
+    // 2. Retrait : on ôte du rythme existant toute semaine STRICTEMENT future dont
+    //    l'année appartient à A. Strictement > : la semaine en cours (jamais émise
+    //    par le builder) ne doit pas être effacée.
+    const conserve = rythmeCalendrier.filter((s) => {
+      const futureEtConcernee = s.week_start > LUNDI_COURANT && A.has(academicYearForMonday(s.week_start))
+      return !futureEtConcernee
+    })
+
+    // 3. Ajout de la totalité du brouillon. 4. Tri par week_start croissant.
+    //    Format {week_start, status} déjà émis tel quel par le builder (étape 0, H1).
+    const fusionne = [...conserve, ...brouillonRythme]
+      .map((s) => ({ week_start: s.week_start, status: s.status }))
+      .sort((a, b) => (a.week_start < b.week_start ? -1 : a.week_start > b.week_start ? 1 : 0))
+
+    setEnregistrementRythme({ enCours: true, erreur: '' })
+    try {
+      const { error } = await supabaseClient.rpc('confirm_rhythm_calendar_manual', { p_calendar: fusionne })
+      if (error) throw error
+      setRythmeCalendrier(fusionne)
+      setUserData((prev) => ({ ...prev, rhythm_calendar: fusionne }))
+      fermerModaleRythme()
+    } catch (e) {
+      console.error('[confirm_rhythm_calendar_manual]', e?.message || e)
+      setEnregistrementRythme({ enCours: false, erreur: "L'enregistrement n'a pas abouti. Ton rythme n'a pas été modifié." })
+    }
+  }
 
   useEffect(() => {
     if (!user) return
@@ -972,6 +1051,7 @@ export default function GestionComptePage() {
                 ) : (
                   <p className="gc-rythme-vide">Aucune semaine enregistrée pour cette année.</p>
                 )}
+                <button type="button" className="gc-rythme-modifier" onClick={ouvrirModaleRythme}>Modifier</button>
               </div>
               <BoutonEnregistrer onSave={enregistrerVilles} modifie={villesModifie} loading={villesLoading} ok={villesSaved} erreur={villesErreur} btnRef={villesShakeRef} />
             </>
@@ -1068,6 +1148,32 @@ export default function GestionComptePage() {
             <p>Tu as une annonce en ligne dans cette ville. Tant qu'elle est en ligne, tu ne peux ni changer cette ville ni changer ce que tu y fais. Supprime-la depuis ton tableau de bord si tu veux modifier.</p>
             <div className="gc-modal-bloque-buttons">
               <button className="gc-modal-bloque-btn-ok" onClick={() => setShowBloqueModal(false)}>J'ai compris</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Patch 3d — modale d'édition du rythme. Réutilise le voile gc-modal-overlay (inchangé). */}
+      {modaleRythmeOuverte && (
+        <div className="gc-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) fermerModaleRythme() }}>
+          <div className="gc-modal-rythme-card">
+            <h3 className="gc-modal-rythme-titre">Modifier ton rythme d'alternance</h3>
+            <p className="gc-modal-rythme-note">Les semaines que tu ne coches pas seront enregistrées comme des semaines en entreprise, sur toute l'année affichée.</p>
+            <p className="gc-modal-rythme-note">Tu ne peux pas modifier les semaines passées ni la semaine en cours.</p>
+            <RhythmManualBuilder
+              year={anneeRythme}
+              onYearChange={setAnneeRythme}
+              initialCalendar={rythmeCalendrier}
+              villeRecherchee="ecole"
+              onChange={recevoirBrouillonRythme}
+              renderActions={false}
+            />
+            {enregistrementRythme.erreur && (
+              <div className="gc-modal-rythme-erreur">{enregistrementRythme.erreur}</div>
+            )}
+            <div className="gc-modal-rythme-buttons">
+              <button type="button" className="gc-modal-rythme-btn-cancel" onClick={fermerModaleRythme}>Annuler</button>
+              <button type="button" className="gc-modal-rythme-btn-save" onClick={enregistrerRythme} disabled={enregistrementRythme.enCours}>{enregistrementRythme.enCours ? 'Enregistrement…' : 'Enregistrer'}</button>
             </div>
           </div>
         </div>
