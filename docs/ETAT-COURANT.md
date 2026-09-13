@@ -2,7 +2,9 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-08-31
+**Dernière mise à jour** : 2026-09-09
+[DEV] Semaines de vacances : audit lecture seule. Stockage, réédition et recherche acceptent déjà une semaine hors rythme ; le seul verrou est la grille de saisie de la création d'annonce. Résolution par un troisième statut, à cadrer pour lui-même.
+[DEV] Patch 3d LIVRÉ et validé au runtime : modale d'édition du rythme dans /compte, fusion côté page, écriture par la RPC. Reste : patchs 4 à 7.
 [DEV] Patch 3d : RhythmCalendar aligné sur la grammaire visuelle des planches, DETTE #162 close. Reste : modale d'édition, fusion, écriture.
 [DEV] Patch 3d : RhythmCalendar aligné sur la géométrie de la planche (douze colonnes-mois, squelette `academicYear.js`, découpage ISO du jeudi, état neutre pour les semaines non renseignées). Rendu de l'état neutre non abouti, consigné en dette. Reste : modale d'édition, fusion, écriture.
 [DEV] Patch 3d : prérequis levé sur les deux bases, le chemin d'écriture par RPC est valide. Divergence dépôt/production élargie, consignée en DETTE #161.
@@ -13,6 +15,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-09 — [DEV] Semaines de vacances : audit lecture seule, un seul verrou et il n'est pas dans le modèle
+
+**LE CHANTIER DE SOCLE REDOUTÉ AU CADRAGE N'EXISTE PAS.** Audit en lecture seule de la chaîne complète. Ce qui part en base à la publication est `selectedDates`, la liste du formulaire, jamais le rythme. La réédition relit `annonce.disponibilites_pattern` et bâtit sa grille sur l'union `semainesLibres ∪ selectedDates`, si bien qu'une semaine hors rythme y survit et reste cliquable. La recherche filtre sur `logement.disponibilites_pattern` et le moteur de couverture reçoit ce même champ : le `rhythm_calendar` de l'hôte n'est jamais consulté côté offre. Stockage, réédition, recherche et couverture laisseraient donc passer une semaine de vacances sans qu'une ligne bouge. L'union de `ModifierAnnoncePage` est aujourd'hui sans effet, aucun chemin d'écran ne faisant entrer une telle semaine dans le pattern : elle a été écrite en anticipation de ce cas.
+
+**LE VERROU EST UNIQUE ET IL EST DANS LA PAGE.** `etatsDispoAnnonce` n'est peuplé qu'en itérant `semainesLibres`. Une semaine sans entrée arrive dans `PlancheCouverture` avec un état indéfini, y devient `neutre`, et la condition `cliquable` exige précisément l'existence de cet état : aucun `onClick` ne lui est attribué. Le bornage ne vient donc ni du handler, qui est un bascule pur sans test d'appartenance, ni du composant d'affichage, dont le contrat est correct : pas d'état, pas d'interaction. Il vient de l'ensemble de semaines qu'on lui fournit.
+
+**LA PISTE D'ÉLARGISSEMENT ÉVIDENTE EST MORTE, ET C'EST LA DÉCISION DU 05/09 QUI LA TUE.** Ouvrir la grille aux semaines futures absentes du `rhythm_calendar` exprimerait « je suis ailleurs, ou rien n'est déclaré » sans jamais contredire une présence déclarée. Mais ouvrir la modale sur une année déclare cette année entière, les semaines non cochées devenant `company`, et c'est déjà la sémantique de l'inscription. À l'intérieur d'une année déclarée, il n'existe aucune semaine absente : l'ensemble visé est vide. L'autre élargissement possible, l'année scolaire complète, autoriserait un hôte à proposer une semaine où son propre rythme le dit présent dans cette ville, contradiction qu'aucun contrôle aval n'attraperait puisque la recherche ne lit jamais le rythme.
+
+**CE QUE LE PROBLÈME EST RÉELLEMENT.** Une semaine de vacances n'est ni école ni entreprise : l'alternant n'est dans aucune de ses deux villes. Le binaire actuel la force dans l'une des deux, ce qui libère toujours un logement et en occupe toujours un autre, à tort. Le cas qui pince est un logement situé dans la ville d'entreprise et des vacances enregistrées `company` : le logement est réputé occupé alors qu'il est vide. Le contournement qu'un utilisateur trouvera seul est de déclarer ses vacances en `school`, c'est-à-dire de mentir dans la source de vérité unique. La résolution passe par un troisième statut, qui touche la contrainte de la RPC, `deduireOffre` et le builder gelé. Chantier à cadrer pour lui-même, non ouvert ce jour.
+
+**PRÉREQUIS ÉTABLI AU PASSAGE.** `CreerAnnoncePage.jsx` est NEVER-STAGE et porte quatre bypass DEV non commités : toute correction dans ce fichier est incommitable en l'état. Solder ces bypass est le premier geste du chantier, pas sa contrariété de fin de session.
+
+**POINT DE RÈGLE À TRANCHER, SIGNALÉ ET NON CORRIGÉ.** `PlancheCouverture.jsx` a été qualifié de fichier gelé pendant l'audit. La RÈGLE Nº 1 ne couvre que `RhythmManualBuilder.jsx/.css` et `academicYear.js`, et la liste NEVER-STAGE ne le contient pas ; les invariants 4 et 7 protègent son design, pas son fichier. À écrire comme règle s'il doit l'être, sous peine qu'une session future hérite d'une contrainte inventée.
 
 ## 2026-09-05 — [DEV] Patch 3d livré : modale d'édition du rythme, fusion côté page, écriture par RPC
 
