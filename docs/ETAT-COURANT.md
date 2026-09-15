@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-15
+[VRAIE VIE] Diffusion de l'étude cadrée : ciblage niveaux 5 à 7, pilote Bretagne, mail en canal principal, LinkedIn Premium Career pendant un mois au lancement. Aucun envoi fait.
 [DEV] Sept commits poussés sur feat/unification-inscription (patch 3d et audit du 09/09), build vérifié sur l'état commité. Reste : patchs 4 à 7.
 [DEV] Semaines de vacances : audit lecture seule. Stockage, réédition et recherche acceptent déjà une semaine hors rythme ; le seul verrou est la grille de saisie de la création d'annonce. Résolution par un troisième statut, à cadrer pour lui-même.
 [DEV] Patch 3d LIVRÉ et validé au runtime : modale d'édition du rythme dans /compte, fusion côté page, écriture par la RPC. Reste : patchs 4 à 7.
@@ -16,6 +17,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-15 — [VRAIE VIE] Diffusion de l'étude : cadrage du ciblage et des canaux
+
+**RECENSEMENT EXHAUSTIF ÉCARTÉ.** Environ 3 700 CFA et plus de 5 000 sites de formation. La base complète est obtenue par l'API Apprentissage (jeton personnel, secret géré comme les autres), puis filtrée. Aucune extraction depuis LinkedIn, interdite par ses conditions d'utilisation.
+
+**CIBLAGE.** Formations entièrement à distance exclues, hors du problème étudié. Priorité aux niveaux 5 à 7. Niveaux 3 et 4 gelés tant que la question des répondants mineurs n'est pas tranchée par Benoît Guillemin. Vague pilote en Bretagne avant tout élargissement.
+
+**CANAUX.** Mail en canal principal, à faible volume, pour protéger la réputation de sterny.co, point de défaillance unique de tous les comptes de service. LinkedIn en appui ciblé. BDE approchés via leurs fédérations (BNEI, BNEM, FAGE) plutôt qu'un par un. Relais nationaux prioritaires : ANAF et FNADIR, délégation Bretagne pour le pilote.
+
+**LINKEDIN PREMIUM, UN MOIS, AU MOMENT DE L'ENVOI.** Le compte gratuit limite les notes personnalisées à cinq demandes de connexion par mois, selon l'aide officielle LinkedIn. Décision : souscrire Premium Career, au mois et jamais à l'année, pour lever cette limite. Premium Business écarté, ses InMails supplémentaires ne justifient pas l'écart de prix. Premium ne relève PAS le plafond hebdomadaire d'invitations, il permet seulement d'expliquer chaque demande. Vérifier d'abord l'éligibilité à l'essai gratuit, qui ne sert en général qu'une fois. Déclenchement uniquement quand trois conditions sont réunies : profil publié, liste de contacts LinkedIn prête, message A et sa version courte de 200 caractères validés. Le jour de la souscription, poser un rappel de résiliation. Résilier sur ordinateur au moins un jour avant le renouvellement, après avoir utilisé les InMails, perdus à la résiliation. Passage en frais de la micro-entreprise : question pour un comptable, non tranchée.
+
+**DEUX MESSAGES.** Un message au relais, écrit par Côme, soumis à la doctrine CONTEXTE-PROJET §1 ter. Un message à transférer aux alternants, neutre, sans argumentaire sur Sterny, pour préserver la neutralité du questionnaire.
+
+**PRÉREQUIS.** Profil LinkedIn publié, export CSV des 15 réponses de l'original, trois questions RGPD transmises à Benoît Guillemin (fichier de démarchage, répondants mineurs, contact direct des membres de BDE).
+
+**SÉQUENCE.** Questions à Benoît Guillemin, publication du profil, compte API et script d'extraction, messages, souscription Premium, vague pilote, ajustement, vague 2.
 
 ## 2026-09-15 — [DEV] Sept commits poussés sur feat/unification-inscription, build vérifié sur l'état commité
 
