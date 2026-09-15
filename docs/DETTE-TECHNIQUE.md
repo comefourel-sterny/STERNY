@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-15 — #166 ouverte : avertissement de build sur la taille des fichiers produits.
+**Dernière mise à jour** : 2026-09-15 — #167 à #170 ouvertes (dossier et documents), #153 corrigée.
 
 ## Nomenclature des bugs
 
@@ -1843,6 +1843,7 @@ Les 5 buckets référencés par le code (`profils`, `documents`, `annonces-photo
 Conséquence : en local, `storage.buckets` est vide et tout upload renvoie `{"statusCode":"404","error":"Bucket not found"}`. Quatre fonctionnalités sont intestables en local (photo de profil, documents de dossier, photos d'annonce, état des lieux), et tout `supabase db reset` les recasse silencieusement.
 Résolution : session dédiée. Lire d'abord la configuration réelle des 5 buckets en production (public/privé, limite de taille, types MIME autorisés) AVANT d'écrire la migration — les créer à l'aveugle produirait une divergence local/production, soit exactement le défaut à corriger. Traiter au passage le rattachement des policies de `remote_auth_storage.sql` à une migration versionnée.
 Découverte : 2026-08-03, en testant l'upload photo sur /compte.
+**MISE À JOUR 2026-09-15.** Constat corrigé : en production, les buckets existants sont `annonces-photos`, `profils`, `public-assets` et `rhythm-documents`. `documents` et `etats-des-lieux` n'y existaient pas non plus, et `public-assets` n'était pas recensé. `documents` est désormais créé sur les deux bases par la migration `20260915120000_dossier_documents_prive.sql` (commit ccf96ed). Le reste de la dette est inchangé.
 
 ## DETTE #154 — Échec d'upload photo silencieux : « Enregistré ✓ » affiché malgré la perte du fichier
 `GestionComptePage.jsx` l.345-346 : `const { error: upErr } = await ...storage.from('profils').upload(...)` puis `if (!upErr) { ... updateData.photo_profil_url = ... }`. L'erreur est captée dans `upErr` mais jamais relancée ni affichée. L'`update` des autres colonnes réussit, `if (error) throw error` ne se déclenche pas, et le bouton affiche « Enregistré ✓ » alors que la photo n'a pas été envoyée.
@@ -1941,3 +1942,28 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : l'essentiel du site est chargé d'un seul bloc au premier affichage, ce qui ralentit l'ouverture, en particulier sur mobile.
 **Piste signalée par l'outil, non étudiée** : découper l'application en morceaux chargés à la demande. Rien à tenter sans cadrage.
 **Non établi** : depuis quand l'avertissement existe.
+
+## DETTE #167 — `verify-document` n'authentifie pas l'appelant
+**Constat (audit du 15/09/2026, patch 4)** : `supabase/functions/verify-document/index.ts` lit directement le corps de la requête, sans vérifier l'utilisateur connecté. Le client l'appelle avec la clé publique du site, qui suffit. La fonction n'enregistre aucune donnée.
+**Conséquence** : n'importe qui détenant la clé publique peut consommer le quota Google Vision de Sterny, à ses frais.
+**Non établi** : le réglage de vérification du jeton de la fonction côté Supabase.
+**Résolution** : vérifier l'utilisateur connecté en tête de fonction. À traiter avant de brancher la vérification dans /compte (patch 4a).
+**Découverte** : 2026-09-15.
+
+## DETTE #168 — `stripe-webhook` répond 200 quand l'écriture « identité vérifiée » échoue
+**Constat (audit du 15/09/2026, patch 4)** : sur l'événement `identity.verification_session.verified`, l'erreur de mise à jour de `users` est seulement journalisée, puis la fonction répond 200 à Stripe. Stripe ne rejoue donc pas l'événement.
+**Conséquence** : un utilisateur vérifié par Stripe peut rester « non vérifié » sans aucun signal. Jusqu'au 15/09/2026, l'écriture échouait systématiquement faute des colonnes `stripe_identity_session_id` et `identite_verifiee_date`, ajoutées par ccf96ed.
+**Résolution** : renvoyer une erreur quand l'écriture échoue, pour déclencher la relance de Stripe. Vérifier le même schéma sur les autres événements du fichier.
+**Découverte** : 2026-09-15.
+
+## DETTE #169 — `DossierLocatairePage` non alignée sur le bucket privé ni sur le tout-ou-rien
+**Constat (audit du 15/09/2026, patch 4)** : la page enregistre des URL publiques (`getPublicUrl`), inutilisables depuis que le bucket `documents` est privé ; un envoi de fichier échoué n'interrompt pas l'enregistrement, qui peut donc être partiel ; la validation du dossier ne vérifie pas la présence des documents obligatoires ; chaque remplacement laisse l'ancien fichier dans le bucket. La valeur `documents_fournis`, lue par ProfilPage, n'est écrite nulle part.
+**Conséquence** : aucune aujourd'hui, la page étant inopérante faute de bucket jusqu'au 15/09. Elle le restera tant qu'elle n'est pas adaptée.
+**Résolution** : chantier dédié, après le patch 4a qui fixe le modèle de référence (chemin en base, URL signée, tout-ou-rien).
+**Découverte** : 2026-09-15.
+
+## DETTE #170 — Export et suppression de compte face au dossier
+**Constat (audit du 15/09/2026, patch 4)** : `export-data` exporte les colonnes du dossier mais aucun fichier, et filtre les annonces sur `proprietaire_id` alors que le reste du code utilise `user_id` (non établi). `delete-account` supprime physiquement toutes les données, et vise une table `documents` absente des deux bases (effet non établi).
+**Conséquence** : portabilité incomplète ; suppression contraire au principe « archiver, jamais effacer », que le droit à l'effacement peut toutefois imposer.
+**Résolution** : arbitrer avec le DPO (questions tracées dans QUESTIONS-PROFESSIONNELS.md), puis corriger les deux fonctions.
+**Découverte** : 2026-09-15.

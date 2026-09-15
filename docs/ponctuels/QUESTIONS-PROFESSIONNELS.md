@@ -238,6 +238,12 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 
 **Q-DPO-023 — Stockage de la vérification d'identité (Stripe Identity).** Sterny prévoit de ne PAS stocker l'image de la pièce (gardée par Stripe ~3 ans, aux USA) mais un enregistrement de preuve minimal (résultat, date, référence vs_/vr_, nom/date de naissance). (1) Ce niveau de conservation est-il conforme et suffisant comme preuve ? (2) Le transfert de données aux États-Unis par Stripe pose-t-il un problème (clauses contractuelles types, etc.) ? (3) Quelles obligations Sterny porte-t-il comme responsable de traitement vis-à-vis de Stripe sous-traitant (contrat de sous-traitance, DPA) ? (4) Faut-il aligner la durée de conservation de Sterny sur celle de Stripe ou définir la nôtre ?
 
+**Q-DPO-024 — Pièce d'identité du garant stockée en fichier.** Le garant est un tiers sans compte. Base légale, recueil de son consentement, durée de conservation, accès de l'administrateur Sterny ? Contexte : décision du 15/09/2026 de construire « Tes documents » avant consultation (VISION, amendement du 15/09).
+
+**Q-DPO-025 — Justificatifs du dossier (scolarité, assurance habitation, RIB, acte de cautionnement).** Liste légalement exigible, durée de conservation, et envoi des fichiers à Google Vision pour la vérification automatique (sous-traitant, lieu de traitement) ?
+
+**Q-DPO-026 — Suppression et export de compte.** La suppression est physique et totale, contraire au principe interne « archiver, jamais effacer » ; l'export ne contient pas les fichiers du dossier. Qu'imposent le droit à l'effacement et le droit à la portabilité ?
+
 ---
 
 ## 3. Notaire — baux et formalités logement

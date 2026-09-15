@@ -54,7 +54,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-08-12 — RÈGLE Nº 1 précisée : consommation autorisée du builder de rythme, modification toujours interdite.
+**Dernière mise à jour** : 2026-09-15 — Patch 4 : dossier construit sans attendre les professionnels, contenu de « Tes documents », stockage privé des documents.
 
 ---
 
@@ -451,6 +451,12 @@ Sterny les voit pour vérifier, l'hôte ne voit qu'un statut agrégé). Un futur
 - Confirmation du mécanisme de consentement explicite du garant tiers.
 
 **Statut** : hors scope du chantier UNIFICATION-INSCRIPTION (T1-T7). Chantier autonome à ouvrir post-T7 ou en parallèle si le besoin métier devient bloquant. À ne pas démarrer avant la consultation des professionnels listés ci-dessus.
+
+**AMENDEMENT 15/09/2026 — les prérequis professionnels ci-dessus ne bloquent plus la construction.** La catégorie « Tes documents » de /compte (patch 4) est construite dès maintenant dans sa version la plus complète et la plus protectrice, conformément à la doctrine « conservation par défaut, conformité par élagage » du 02/07/2026 : un professionnel retire plus facilement qu'il ne repère un oubli. La consultation de l'avocat et du DPO reste obligatoire AVANT tout lancement ; elle n'est plus un préalable au code. La nuance de sécurité de cette doctrine s'applique sans exception : aucune image brute de pièce d'identité du locataire n'est stockée côté Sterny. Chaque choix touchant un sujet régulé est tracé dans QUESTIONS-PROFESSIONNELS.md au moment où il est pris.
+
+**Contenu de « Tes documents » (décision du 15/09/2026, patch 4).** La catégorie reprend les cinq documents du dossier locataire (`DossierLocatairePage`) avec leur vérification automatique et leur statut : certificat de scolarité, assurance habitation, RIB, pièce d'identité du garant, acte de cautionnement. L'identité du locataire n'est PAS collectée sous forme de fichier : la catégorie affiche son statut Stripe Identity (vérifiée, à faire, échec), conformément à la décision du 02/07/2026. L'envoi de la pièce d'identité du locataire par fichier, présent dans ModifierProfilPage, n'est pas repris et disparaîtra avec cette page. La pièce d'identité du garant reste un fichier, le garant n'ayant pas de compte pour passer par Stripe Identity : exception assumée à la nuance de sécurité du 02/07, tracée pour le DPO.
+
+**Stockage des documents de dossier (décision technique du 15/09/2026, patch 4).** Le bucket `documents` n'existait ni en local ni en production : il est créé privé, par migration versionnée, avec plafond de 5 Mo et formats PDF, JPEG, PNG. Les colonnes `doc_*_url` stockent le CHEMIN du fichier dans le bucket, jamais une URL publique ; l'affichage passe par une URL signée à durée courte. Lecture, écriture, mise à jour et suppression sont réservées au propriétaire du fichier (nom préfixé par son identifiant) et à l'admin. Conséquence assumée : `DossierLocatairePage`, qui enregistre des URL publiques, devra être adaptée ; elle était déjà inopérante faute de bucket, aucune régression n'est introduite.
 
 **Non-exclusivité et réversibilité de la décision sur candidature (acté conv 50, 11 juin 2026)** : « accepter » une candidature n'exclut jamais les autres — le modèle fondateur (§1) repose sur des occupations successives et disjointes d'un même logement par des alternants aux rythmes complémentaires — une seule personne à la fois — donc un hôte peut accepter plusieurs candidatures complémentaires sur une même annonce. Toute implémentation qui refuserait automatiquement les autres à l'acceptation est interdite. La décision (acceptée/refusée) est réversible tant qu'aucune étape aval (contrat) n'est engagée : l'hôte peut annuler et repasser la candidature en attente. La capacité réelle d'un logement (combien de locataires, semaines couvertes) reste un modèle de données à concevoir (DETTE #93), pas un effet de bord des boutons.
 

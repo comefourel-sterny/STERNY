@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-15
+[DEV] Patch 4 cadré et audité. Patch 4.0 appliqué sur les deux bases : bucket `documents` privé, colonnes manquantes, policies cloisonnées. Reste : 4a « Tes documents », 4b « Ton garant », puis 5 à 7.
 [VRAIE VIE] Diffusion de l'étude cadrée : ciblage niveaux 5 à 7, pilote Bretagne, mail en canal principal, LinkedIn Premium Career pendant un mois au lancement. Aucun envoi fait.
 [DEV] Sept commits poussés sur feat/unification-inscription (patch 3d et audit du 09/09), build vérifié sur l'état commité. Reste : patchs 4 à 7.
 [DEV] Semaines de vacances : audit lecture seule. Stockage, réédition et recherche acceptent déjà une semaine hors rythme ; le seul verrou est la grille de saisie de la création d'annonce. Résolution par un troisième statut, à cadrer pour lui-même.
@@ -17,6 +18,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-15 — [DEV] Patch 4 cadré et audité ; patch 4.0 (socle de données du dossier) appliqué sur les deux bases
+
+**PÉRIMÈTRE ÉTABLI SUR LE CODE.** Compte et Notifications sont fonctionnels depuis le patch 2. Le patch 4 couvre le groupe Dossier : 4.0 socle de données, 4a « Tes documents », 4b « Ton garant ». La mention « patchs 4 à 7 (documents, garant, compte, notifications) » de l'entrée du 05/09 est erronée ; la séquence valide reste celle de l'entrée du 29-31/07 : 4 Dossier, 5 revue de la sauvegarde, 5 bis garde de sortie, 6 recâblage des liens, 7 ménage.
+
+**TROIS DÉCISIONS, LOGUÉES EN VISION.** Le dossier se construit sans attendre les professionnels, qui le revoient avant tout lancement. « Tes documents » reprend les cinq documents du dossier locataire, l'identité du locataire passant par Stripe Identity et jamais par un fichier. Le bucket est privé, la base stocke des chemins, l'affichage passe par des URL signées.
+
+**TROIS AUDITS EN LECTURE SEULE.** Deux modèles de documents coexistaient : ModifierProfilPage (trois documents dont la pièce d'identité du locataire, sans vérification, échec d'envoi silencieux) et DossierLocatairePage (cinq documents, vérification par OCR, statut par document, écriture partielle possible). Aucun écran n'ouvre un document : l'adresse enregistrée ne sert qu'à tester la présence d'un fichier et à afficher son nom. Passer le bucket en privé ne casse donc aucun affichage.
+
+**LE BUCKET `documents` N'EXISTAIT NULLE PART.** Ni en local ni en production, contrairement à ce qu'affirmait DETTE #153. Aucun fichier de dossier n'a donc jamais été envoyé ni exposé, et tout envoi de document échouait. En production, quatre policies ouvraient pourtant la lecture à tous et l'écriture à tout utilisateur connecté : elles ne protégeaient aucun fichier mais se seraient appliquées dès la création du bucket. Quatre colonnes lues ou écrites par le code manquaient aussi sur les deux bases : `doc_garant_id_url`, `doc_cautionnement_url`, `stripe_identity_session_id`, `identite_verifiee_date`. Les deux dernières faisaient échouer l'écriture « identité vérifiée » du webhook Stripe.
+
+**MIGRATION `20260915120000_dossier_documents_prive.sql`, REJOUABLE, COMMIT ccf96ed.** Ajout des quatre colonnes ; bucket privé, 5 Mo, PDF / JPEG / PNG ; suppression des quatre policies ouvertes ; quatre policies réservées au propriétaire du fichier et à l'admin. Appliquée en local par `psql --single-transaction`, rejouée une seconde fois sans erreur, puis appliquée en production par l'éditeur SQL. État contrôlé avant et après, dans des onglets séparés, sur les deux bases. Écriture choisie rejouable, contrairement à la convention du dépôt, parce qu'elle est appliquée à la main et qu'un `db reset` la rejouera.
+
+**DETTES** : #167 à #170 ouvertes, #153 corrigée. DETTE #158 (ce que voit un propriétaire dans le groupe Dossier) reste à trancher au patch 4a.
+
+**RESTE** : 4a « Tes documents », qui commence par la lecture du rendu réel de /compte et de DossierLocatairePage, puis 4b « Ton garant ». Push à faire avec d157073, ccf96ed et ce commit docs, build de l'état commité compris.
 
 ## 2026-09-15 — [VRAIE VIE] Diffusion de l'étude : cadrage du ciblage et des canaux
 
