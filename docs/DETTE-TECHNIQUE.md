@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-08-16 — #161 point 2 levé après vérification sur les deux bases ; constat élargi de divergence dépôt/production.
+**Dernière mise à jour** : 2026-09-15 — #166 ouverte : avertissement de build sur la taille des fichiers produits.
 
 ## Nomenclature des bugs
 
@@ -1935,3 +1935,9 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Constat (audit du 05/09/2026)** : le sélecteur ne propose que deux années, `computeDefaultAcademicYear()` et la suivante, câblées en dur dans le composant. Elles ne dépendent ni de `initialCalendar` ni d'aucune prop parent, et aucune prop exposée ne permet d'élargir la liste.
 **Conséquence** : un utilisateur dont le rythme contient une année plus ancienne peut la consulter en lecture seule mais ne peut pas l'ouvrir à l'édition. Sans effet aujourd'hui, l'effet apparaîtra au changement d'année académique.
 **Ne rien corriger sans arbitrage** : la correction passe par le fichier gelé.
+
+## DETTE #166 — Avertissement de build : fichiers produits de plus de 500 ko
+**Constat (build du 15/09/2026, état commité `0156cd9`)** : Vite signale des fichiers JavaScript de plus de 500 ko après minification, dont l'un d'environ 3,1 Mo (environ 820 ko compressé) et un second d'environ 726 ko. Le build réussit : c'est un avertissement, pas une erreur.
+**Conséquence** : l'essentiel du site est chargé d'un seul bloc au premier affichage, ce qui ralentit l'ouverture, en particulier sur mobile.
+**Piste signalée par l'outil, non étudiée** : découper l'application en morceaux chargés à la demande. Rien à tenter sans cadrage.
+**Non établi** : depuis quand l'avertissement existe.

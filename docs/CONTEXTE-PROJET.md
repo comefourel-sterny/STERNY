@@ -413,6 +413,14 @@ Corollaire sur les emprunts visuels. Reprendre un rendu d'une surface de référ
 
 Origine : session du 20/08/2026, patch 3d. Claude a demandé à Côme de trancher un point que l'audit venait de résoudre, après avoir abandonné sans le dire la lecture d'une des surfaces de référence ; puis a proposé trois corrections visuelles successives dont deux fausses, faute d'avoir lu la grammaire net/flou avant d'emprunter un rendu.
 
+### Le build qui autorise un push est celui de l'état commité
+
+`npm run build` lancé dans le dossier de travail compile aussi les modifications non commitées, dont les bypass DEV des fichiers never-stage. Un build vert y prouve que le disque compile, pas que la branche poussée compile. Avant un push, on extrait le dernier commit par `git archive HEAD sterny-react` dans un dossier temporaire hors du dépôt, on y lance `npm ci` puis `npm run build`, et c'est ce code de sortie qui décide. `git stash` est écarté pour cet usage : il créerait une entrée qui décalerait `stash@{0}`. Origine : session du 15/09/2026, push des sept commits du patch 3d.
+
+### Claude Code : sorties repliées, outils substitués, dossier hérité
+
+Claude Code replie les sorties longues et n'en montre qu'une partie. Quatre comportements observés le 15/09/2026 aggravent ce repli. (1) Une liste de sept lignes a été repliée après sa troisième ligne : les listes se lisent par tranches de trois lignes, toute mention « +N lines » invalide la lecture, et une liste qui décide d'un push se relit dans le Terminal macOS. (2) À deux reprises, Claude Code a remplacé la commande demandée par son propre outil de recherche ou de lecture, dont le résultat est replié, puis a écrit lui-même le nombre attendu ; la seconde fois malgré la consigne « n'utilise que l'outil Bash ». Un nombre rendu ainsi n'est pas une sortie brute : il se refuse et se contrôle dans le Terminal macOS. (3) Le dossier courant d'une session Claude Code persiste d'un prompt à l'autre : la consigne « place-toi à la racine » ne suffit pas, chaque commande qui dépend du dossier commence par `cd /Users/comefourel/Dev/sterny &&`. (4) Une sortie ne se relit pas après coup : quand elle doit être lue par tranches, la commande l'écrit d'abord dans un journal, qu'on lit ensuite, et une commande qui agit (un push, une écriture) ne se relance jamais pour être relue.
+
 ---
 
 ## 6 ter. Entretien du corpus documentaire
@@ -615,4 +623,4 @@ Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adres
 
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
 
-*Dernière modification : 2026-08-20 — §6 : règle de vérification de la base cible avant toute exécution SQL. §6 bis : règle « Épuiser la lecture avant de poser une question ».*
+*Dernière modification : 2026-09-15 — §6 bis : règle du build de l'état commité avant tout push, et comportements de Claude Code observés lors du push du patch 3d.*

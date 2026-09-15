@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-09
+**Dernière mise à jour** : 2026-09-15
+[DEV] Sept commits poussés sur feat/unification-inscription (patch 3d et audit du 09/09), build vérifié sur l'état commité. Reste : patchs 4 à 7.
 [DEV] Semaines de vacances : audit lecture seule. Stockage, réédition et recherche acceptent déjà une semaine hors rythme ; le seul verrou est la grille de saisie de la création d'annonce. Résolution par un troisième statut, à cadrer pour lui-même.
 [DEV] Patch 3d LIVRÉ et validé au runtime : modale d'édition du rythme dans /compte, fusion côté page, écriture par la RPC. Reste : patchs 4 à 7.
 [DEV] Patch 3d : RhythmCalendar aligné sur la grammaire visuelle des planches, DETTE #162 close. Reste : modale d'édition, fusion, écriture.
@@ -15,6 +16,18 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-15 — [DEV] Sept commits poussés sur feat/unification-inscription, build vérifié sur l'état commité
+
+**LES SEPT COMMITS SONT SUR GITHUB.** Push `be2e34f..0156cd9` sur `origin/feat/unification-inscription`, en avance simple, sans forçage. Commits partis, du plus ancien au plus récent : `f9e2261`, `0ce5787`, `bc66ff5`, `ef31763`, `7ddc2ab`, `6e50674`, `0156cd9`, soit les trois livraisons du patch 3d (20/08, 31/08, 05/09) avec leurs commits docs, et l'audit du 09/09. Après push, aucun commit local absent de GitHub et aucun commit distant absent en local.
+
+**L'ÉTAT DU DÉPÔT A ÉTÉ ÉTABLI AVANT D'ÊTRE SUPPOSÉ.** `git fetch` en premier, puis branche, amont, avance et retard, et liste des commits relue dans le Terminal macOS. Aucun fichier never-stage dans les sept commits, vérifié sur les fichiers réellement contenus et non sur les titres. Aucun fichier en attente de commit. Les cinq fichiers modifiés hors commit sont exactement les cinq fichiers never-stage, restés sur le disque.
+
+**LE BUILD VALIDÉ EST CELUI DE L'ÉTAT COMMITÉ, PAS CELUI DU DISQUE.** Un `npm run build` dans le dossier de travail aurait aussi compilé les bypass DEV des fichiers never-stage, que le push n'envoie pas. Le dernier commit a été extrait par `git archive HEAD sterny-react` dans `/tmp/sterny-build-check/` et compilé après `npm ci` : code de sortie 0, aucune occurrence de « error » dans le journal, contrôle refait dans le Terminal macOS. `git stash` a été écarté pour cet usage, il aurait décalé `stash@{0}`. Règle consignée en CONTEXTE §6 bis.
+
+**UN AVERTISSEMENT DE BUILD, NON BLOQUANT.** Vite signale des fichiers produits de plus de 500 ko, dont l'un d'environ 3,1 Mo. Consigné en DETTE #166.
+
+**RESTE** : patchs 4 à 7 de /compte, prochain chantier recommandé. Le commit docs de cette entrée n'est pas encore poussé.
 
 ## 2026-09-09 — [DEV] Semaines de vacances : audit lecture seule, un seul verrou et il n'est pas dans le modèle
 
