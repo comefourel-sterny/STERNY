@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-16 — #171 à #173 ouvertes (accès à la table users, rechargement au changement d'onglet, statut décidé par le navigateur).
+**Dernière mise à jour** : 2026-09-16 — #171 conçue en deux phases ; #174 à #176 ouvertes (ancienne inscription « recherche », fiche entière entre comptes en relation, jeton d'invitation et type de compte écrits par le navigateur).
 
 ## Nomenclature des bugs
 
@@ -1973,6 +1973,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : données de 12 comptes, dont 5 proches, lisibles avec la seule clé publique de l'application. Le jeton d'invitation lisible permet d'usurper une invitation.
 **Résolution** : audit page par page des lectures de `users`, puis fermeture de la lecture sans connexion et restriction des colonnes lisibles sur les autres comptes. Prochain chantier, avant la reprise de 4a.
 **Découverte** : 2026-09-16.
+**MISE À JOUR 2026-09-16.** Conception validée : aucune lecture sans connexion ; lecture limitée à sa propre ligne, aux comptes en relation réelle (candidature, contrat, message, parrainage, mise en relation validée) et à l'admin ; profil public par une fonction de la base ; ligne `users` créée par la base à l'inscription par email, la règle d'insertion ouverte étant supprimée ; vérification d'existence d'un email abandonnée. Décision consignée en VISION, questions Q-DPO-028 et Q-DPO-029. Réalisation en deux phases : phase A pour ce qui précède, phase B pour la restriction des champs entre comptes en relation (DETTE #175).
 
 ## DETTE #172 — Rechargement des pages au changement d'onglet
 **Constat (audit du 16/09/2026, patch 4a)** : `useAuth` recrée l'objet `user` à chaque événement de connexion, dont le rafraîchissement de session au retour sur un onglet. L'effet de chargement de `GestionComptePage` dépend de `[user]`, celui de `DossierLocatairePage` de `[user, matchId, navigate, showToast]`. Observé sur `DossierLocatairePage` : un document choisi disparaît au retour sur l'onglet.
@@ -1984,4 +1985,22 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Constat (audit du 16/09/2026, patch 4a)** : quand `verify-document` échoue, `DossierLocatairePage` exécute une vérification de secours qui accepte tout PDF valide de plus de 10 Ko sans lire son contenu, puis écrit le statut en base. `verify-document` compare en outre le document à un nom transmis par le navigateur.
 **Conséquence** : l'écriture du statut par le navigateur est refusée depuis le verrou du 16/09/2026 (89870b5). Le défaut de conception reste à corriger avant tout branchement de la vérification.
 **Résolution** : seul le serveur décide et écrit le statut, à partir du nom lu en base. À traiter avec les DETTES #167 et #169.
+**Découverte** : 2026-09-16.
+
+## DETTE #174 — `InscriptionRecherchePage` inopérante après la fermeture de `users`
+**Constat (conception du 16/09/2026, DETTE #171)** : la page écrit elle-même la ligne `users` après l'inscription, donc sans session puisque la confirmation d'email est activée, et vérifie l'existence d'un email en lisant `users` sans connexion. Plus aucun lien du site n'y mène : seule sa route subsiste.
+**Conséquence** : une fois la phase A appliquée, son inscription par email échoue et sa vérification d'email ne détecte plus rien. On ne peut y arriver qu'en tapant son adresse.
+**Résolution** : ne pas la réparer. Supprimer la page et sa route au patch 7 de /compte.
+**Découverte** : 2026-09-16.
+
+## DETTE #175 — Fiche entière visible entre comptes en relation
+**Constat (conception du 16/09/2026, DETTE #171)** : une règle d'accès filtre des lignes, pas des colonnes. Après la phase A, un compte lié à un autre par une candidature, un contrat, un message, un parrainage ou une mise en relation validée lit toujours sa ligne entière, dont la date de naissance, le sexe, le téléphone, l'email, les coordonnées du garant, `invitation_token` et les chemins des documents. Plusieurs pages lisent `select('*')`, dont `DashboardProprietairePage`, fichier never-stage.
+**Conséquence** : exposition supérieure au besoin entre comptes liés (Q-DPO-029).
+**Résolution** : phase B du chantier #171. Prérequis : valider à l'écran et commiter seul le bouton « œil » du lot 2 de la DETTE #83, en attente dans `DashboardProprietairePage.jsx` et `.css`, puis retirer ces deux fichiers de la liste never-stage. Ensuite, décider relation par relation des champs visibles, puis remplacer les lectures larges de `users` page par page.
+**Découverte** : 2026-09-16.
+
+## DETTE #176 — Jeton d'invitation et type de compte écrits par le navigateur
+**Constat (audit du 16/09/2026, DETTE #171)** : `DashboardLocatairePage` tire `invitation_token` dans le navigateur (8 caractères, `Math.random`) et l'écrit lui-même dans `users`. La même page modifie `type_user`. Le verrou du 16/09/2026 (89870b5) ne couvre aucune de ces deux colonnes.
+**Conséquence** : un utilisateur peut choisir son propre jeton ou changer son type de compte hors de tout parcours prévu. `Math.random` ne garantit pas un tirage imprévisible. L'existence d'une contrainte d'unicité sur le jeton n'est pas établie.
+**Résolution** : générer le jeton dans la base, avec unicité garantie, et encadrer le changement de type. À traiter après la phase A, sans l'élargir.
 **Découverte** : 2026-09-16.

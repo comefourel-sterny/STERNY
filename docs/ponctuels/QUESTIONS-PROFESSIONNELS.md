@@ -246,6 +246,10 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 
 **Q-DPO-027 — Table des utilisateurs lisible sans connexion (corrigé le 16/09/2026).** Jusqu'au 16/09/2026, la table des utilisateurs était lisible sans connexion par toute personne disposant de la clé publique de l'application. Le site était alors retiré d'internet. La table contenait les données de 5 proches ayant volontairement créé un compte pour tester une plateforme qu'ils savaient en développement : nom, email, téléphone, parfois date de naissance. Aucun accès par un tiers n'est connu. La faille est corrigée. Cette situation appelle-t-elle une démarche particulière, ou une simple trace interne suffit-elle ?
 
+**Q-DPO-028 — Profil visible par un utilisateur sans relation (décision du 16/09/2026).** Un utilisateur connecté peut consulter le profil d'un compte avec lequel il n'a aucune relation (candidature, contrat, message, parrainage). Ce profil montre le prénom, le nom, la photo, le type de compte, l'école, l'année, la filière, la présentation, les villes et le fait que l'identité est vérifiée ou non. Il ne montre jamais le téléphone, l'email, la date de naissance ni le rythme d'alternance. Sans connexion, seuls restent visibles le prénom, le nom, la photo et le type de l'hôte d'une annonce, ainsi que le prénom et le nom d'un parrain à partir de son lien d'invitation. Ce périmètre est-il proportionné, et doit-il figurer dans la politique de confidentialité ?
+
+**Q-DPO-029 — Données visibles entre comptes en relation (constat du 16/09/2026).** Deux comptes liés par une candidature, un contrat, un message, un parrainage ou une mise en relation validée voient chacun la fiche entière de l'autre, dont la date de naissance, le sexe, le téléphone, l'email et les coordonnées du garant. Une restriction relation par relation est prévue (DETTE #175). Quelles données un hôte ou un propriétaire est-il fondé à voir d'un candidat, puis d'un locataire sous contrat, et à partir de quand les coordonnées du garant lui deviennent-elles accessibles ?
+
 ---
 
 ## 3. Notaire — baux et formalités logement
