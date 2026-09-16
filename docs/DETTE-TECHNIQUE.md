@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-15 — #167 à #170 ouvertes (dossier et documents), #153 corrigée.
+**Dernière mise à jour** : 2026-09-16 — #171 à #173 ouvertes (accès à la table users, rechargement au changement d'onglet, statut décidé par le navigateur).
 
 ## Nomenclature des bugs
 
@@ -1967,3 +1967,21 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : portabilité incomplète ; suppression contraire au principe « archiver, jamais effacer », que le droit à l'effacement peut toutefois imposer.
 **Résolution** : arbitrer avec le DPO (questions tracées dans QUESTIONS-PROFESSIONNELS.md), puis corriger les deux fonctions.
 **Découverte** : 2026-09-15.
+
+## DETTE #171 — Table `users` lisible sans connexion
+**Constat (audit du 16/09/2026, patch 4a)** : la règle `users_select_all` (rôle public, condition vraie) et la règle `Users lisibles par les utilisateurs authentifiés` rendent toutes les colonnes de toutes les lignes lisibles, sans connexion pour la première. Sont concernés le téléphone, l'email, la date de naissance, les données du garant et `invitation_token`. Plusieurs surfaces lisent `users` sans connexion : invitation, logement, recherche, avis, et la vérification d'email à l'inscription.
+**Conséquence** : données de 12 comptes, dont 5 proches, lisibles avec la seule clé publique de l'application. Le jeton d'invitation lisible permet d'usurper une invitation.
+**Résolution** : audit page par page des lectures de `users`, puis fermeture de la lecture sans connexion et restriction des colonnes lisibles sur les autres comptes. Prochain chantier, avant la reprise de 4a.
+**Découverte** : 2026-09-16.
+
+## DETTE #172 — Rechargement des pages au changement d'onglet
+**Constat (audit du 16/09/2026, patch 4a)** : `useAuth` recrée l'objet `user` à chaque événement de connexion, dont le rafraîchissement de session au retour sur un onglet. L'effet de chargement de `GestionComptePage` dépend de `[user]`, celui de `DossierLocatairePage` de `[user, matchId, navigate, showToast]`. Observé sur `DossierLocatairePage` : un document choisi disparaît au retour sur l'onglet.
+**Conséquence** : une saisie non enregistrée est probablement effacée sur /compte au retour sur l'onglet. Non établi sur /compte.
+**Résolution** : confirmer le symptôme sur /compte, puis faire dépendre les effets de l'identifiant de l'utilisateur.
+**Découverte** : 2026-09-16.
+
+## DETTE #173 — Statut « vérifié » décidé par le navigateur
+**Constat (audit du 16/09/2026, patch 4a)** : quand `verify-document` échoue, `DossierLocatairePage` exécute une vérification de secours qui accepte tout PDF valide de plus de 10 Ko sans lire son contenu, puis écrit le statut en base. `verify-document` compare en outre le document à un nom transmis par le navigateur.
+**Conséquence** : l'écriture du statut par le navigateur est refusée depuis le verrou du 16/09/2026 (89870b5). Le défaut de conception reste à corriger avant tout branchement de la vérification.
+**Résolution** : seul le serveur décide et écrit le statut, à partir du nom lu en base. À traiter avec les DETTES #167 et #169.
+**Découverte** : 2026-09-16.

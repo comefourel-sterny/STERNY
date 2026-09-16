@@ -244,6 +244,8 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 
 **Q-DPO-026 — Suppression et export de compte.** La suppression est physique et totale, contraire au principe interne « archiver, jamais effacer » ; l'export ne contient pas les fichiers du dossier. Qu'imposent le droit à l'effacement et le droit à la portabilité ?
 
+**Q-DPO-027 — Table des utilisateurs lisible sans connexion (corrigé le 16/09/2026).** Jusqu'au 16/09/2026, la table des utilisateurs était lisible sans connexion par toute personne disposant de la clé publique de l'application. Le site était alors retiré d'internet. La table contenait les données de 5 proches ayant volontairement créé un compte pour tester une plateforme qu'ils savaient en développement : nom, email, téléphone, parfois date de naissance. Aucun accès par un tiers n'est connu. La faille est corrigée. Cette situation appelle-t-elle une démarche particulière, ou une simple trace interne suffit-elle ?
+
 ---
 
 ## 3. Notaire — baux et formalités logement

@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-15
+**Dernière mise à jour** : 2026-09-16
+[DEV] Patch 4a suspendu : failles d'accès sur `users` établies en production. Verrou d'écriture des colonnes sensibles appliqué sur les deux bases (89870b5). Reste : fermer la lecture publique de `users`, puis reprendre 4a.
 [DEV] Patch 4 cadré et audité. Patch 4.0 appliqué sur les deux bases : bucket `documents` privé, colonnes manquantes, policies cloisonnées. Reste : 4a « Tes documents », 4b « Ton garant », puis 5 à 7.
 [VRAIE VIE] Diffusion de l'étude cadrée : ciblage niveaux 5 à 7, pilote Bretagne, mail en canal principal, LinkedIn Premium Career pendant un mois au lancement. Aucun envoi fait.
 [DEV] Sept commits poussés sur feat/unification-inscription (patch 3d et audit du 09/09), build vérifié sur l'état commité. Reste : patchs 4 à 7.
@@ -18,6 +19,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-16 — [DEV] Patch 4a suspendu : verrou d'écriture sur `users`, appliqué sur les deux bases
+
+**FAILLES ÉTABLIES EN PRODUCTION.** La lecture du rendu de 4a a mis au jour trois failles sur la table `users`. La table est lisible sans connexion (règle `users_select_all`, rôle public, condition vraie). Tout utilisateur connecté pouvait se déclarer administrateur : trois règles de modification ne contrôlaient pas ce qui est écrit, et `is_admin()` lit cette colonne, qui ouvre le bucket `documents`. Tout utilisateur pouvait enfin s'attribuer le statut « vérifié » de ses documents.
+
+**EXPOSITION MESURÉE.** 12 comptes : 3 comptes de Côme, 4 comptes de test et 5 proches ayant testé la plateforme en connaissance de cause. Site retiré d'internet. Aucun document ni fichier stocké. Question consignée pour le DPO (Q-DPO-027).
+
+**VERROU APPLIQUÉ, COMMIT 89870b5.** La migration `20260916090000_users_verrou_colonnes_sensibles.sql` ajoute un déclencheur qui refuse à tout client (rôles `anon` et `authenticated`) l'écriture de `is_admin`, des statuts et motifs de refus des documents, et des trois colonnes d'identité. Le serveur reste libre. Aucune fonction de la base n'écrit ces colonnes et aucune création de compte ne les envoie : l'inscription n'est pas touchée. Seule `DossierLocatairePage`, déjà inopérante, est bloquée (DETTE #169). Appliquée en local, rejouée, testée en 13 cas par transactions annulées, puis appliquée en production. État contrôlé avant et après dans des onglets séparés, fonction identique sur les deux bases par empreinte.
+
+**CONSTATS ANNEXES.** La vérification de secours de `DossierLocatairePage` a accepté comme certificat de scolarité un PDF sans rapport, les fonctions serveur ne tournant pas en local. Les pages dont le chargement dépend de l'objet `user` se rechargent probablement au retour sur l'onglet.
+
+**DETTES** : #171 à #173 ouvertes.
+
+**RESTE** : fermer la lecture publique de `users` après un audit page par page, puis reprendre 4a. Push de 89870b5 et du commit docs à faire, build de l'état commité compris.
 
 ## 2026-09-15 — [DEV] Patch 4 cadré et audité ; patch 4.0 (socle de données du dossier) appliqué sur les deux bases
 
