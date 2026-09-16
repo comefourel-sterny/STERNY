@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-16
+[DEV] Fermeture de `users` : audit et conception validés et logués (92798a4). Reste : phase A, puis phase B, puis reprise de 4a.
 [DEV] Patch 4a suspendu : failles d'accès sur `users` établies en production. Verrou d'écriture des colonnes sensibles appliqué sur les deux bases (89870b5). Reste : fermer la lecture publique de `users`, puis reprendre 4a.
 [DEV] Patch 4 cadré et audité. Patch 4.0 appliqué sur les deux bases : bucket `documents` privé, colonnes manquantes, policies cloisonnées. Reste : 4a « Tes documents », 4b « Ton garant », puis 5 à 7.
 [VRAIE VIE] Diffusion de l'étude cadrée : ciblage niveaux 5 à 7, pilote Bretagne, mail en canal principal, LinkedIn Premium Career pendant un mois au lancement. Aucun envoi fait.
@@ -19,6 +20,41 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-16 — [DEV] Fermeture de la lecture publique de `users` : audit et conception validés (DETTE #171)
+
+**AUDIT EN LECTURE SEULE, TENU EN ENTIER.** 39 fichiers lisent ou écrivent `users`. Sans connexion, trois besoins seulement : l'hôte d'une annonce (LogementPage), le parrain par jeton d'invitation (InvitationPage, InscriptionProprietairePage) et l'existence d'un email (InscriptionRecherchePage). AvisPage exige une connexion. ProfilPage lit n'importe quel compte en entier ; plusieurs pages de transaction et DashboardProprietairePage lisent la fiche entière d'un compte lié. Aucune garde de route : la seule barrière est la base. Les cinq vues qui lisent `users` appliquent les droits de l'appelant et se fermeront avec la table. Local et production sont identiques (11 règles d'accès, droits complets pour `anon` et `authenticated`), à une exception près : `complete_inscription_alternant` est absente de la production (DETTE #161).
+
+**CONFIRMATION D'EMAIL ACTIVÉE SUR LES DEUX BASES.** Les inscriptions Propriétaire et Partager écrivent la ligne `users` sans session. D'où la règle d'insertion ouverte : un anonyme peut aujourd'hui créer une ligne pour n'importe quel identifiant.
+
+**CONCEPTION VALIDÉE, LOGUÉE EN VISION.**
+Phase A :
+- aucune lecture sans connexion ;
+- lecture limitée à sa propre ligne, aux comptes en relation réelle (candidature, contrat, message, parrainage, mise en relation validée) et à l'admin ;
+- profil public et parrain par jeton servis par deux fonctions de la base ;
+- un déclencheur sur `auth.users` crée la ligne à partir d'une liste fermée de champs et retrouve le parrain depuis le jeton ; il n'agit que si ces champs sont transmis, donc Google/Apple et le parcours alternant ne changent pas ;
+- s'il échoue, toute l'inscription échoue : il sera testé en local sur chaque cas, dont un jeton invalide et un type interdit ;
+- règle d'insertion ouverte supprimée, et les 11 règles d'accès remplacées par 6 ;
+- vérification d'email abandonnée ;
+- pages à modifier : LogementPage, InvitationPage, InscriptionProprietairePage, InscriptionPartagerPage, ProfilPage et AvisPage ;
+- InscriptionRecherchePage laissée en l'état (DETTE #174).
+
+Phase B :
+- créer un compte propriétaire de test en local ;
+- valider le bouton œil de la DETTE #83 et le commiter seul ;
+- sortir DashboardProprietairePage de la liste never-stage ;
+- puis restreindre les champs relation par relation.
+
+**DOCS, COMMIT 92798a4.** CONTEXTE §6 bis, point 6 (zsh ne découpe pas une variable), et §6 (un résultat collé dans l'éditeur SQL ne prouve pas l'exécution). Q-DPO-028 et Q-DPO-029 ajoutées. DETTE #171 mise à jour, #174 à #176 ouvertes. Q-DPO-027 affirme déjà la faille corrigée : ce ne sera exact qu'une fois la phase A appliquée en production.
+
+**CONSTATS ANNEXES, À LOGUER EN DETTE.** `/annonce/creer` est aussi déclarée dans le gabarit public (« Temp: test »), donc hors de la garde de connexion. DashboardLayout laisse entrer sans connexion en local. Claude Code a encore retiré le préfixe `cd` deux fois, et a inventé une explication à partir d'un compteur de commits.
+
+**RESTE** :
+- phase A : migration, déclencheur, six pages, tests locaux par transactions annulées, production, test de chaque page connecté et déconnecté ;
+- puis phase B, puis reprise de 4a ;
+- push de 92798a4 et de ce commit docs avec la phase A, build de l'état commité compris ;
+- test de la DETTE #172 non fait ;
+- onglets de l'éditeur SQL de production à fermer.
 
 ## 2026-09-16 — [DEV] Patch 4a suspendu : verrou d'écriture sur `users`, appliqué sur les deux bases
 
