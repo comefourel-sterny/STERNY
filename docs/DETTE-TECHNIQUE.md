@@ -1974,6 +1974,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : audit page par page des lectures de `users`, puis fermeture de la lecture sans connexion et restriction des colonnes lisibles sur les autres comptes. Prochain chantier, avant la reprise de 4a.
 **Découverte** : 2026-09-16.
 **MISE À JOUR 2026-09-16.** Conception validée : aucune lecture sans connexion ; lecture limitée à sa propre ligne, aux comptes en relation réelle (candidature, contrat, message, parrainage, mise en relation validée) et à l'admin ; profil public par une fonction de la base ; ligne `users` créée par la base à l'inscription par email, la règle d'insertion ouverte étant supprimée ; vérification d'existence d'un email abandonnée. Décision consignée en VISION, questions Q-DPO-028 et Q-DPO-029. Réalisation en deux phases : phase A pour ce qui précède, phase B pour la restriction des champs entre comptes en relation (DETTE #175).
+**MISE À JOUR 2026-09-21.** Audit tenu en entier sur la base locale et le code. Conception révisée, validée par Côme le 21/09 et consignée en VISION : elle remplace, dans celle du 16/09, la liste des relations, le déclencheur et la liste des pages. Lecture entre comptes limitée à cinq cas : contrat ou renouvellement commun ; candidature reçue, tout statut ; candidature envoyée et acceptée ; parrainage dans les deux sens ; candidat accepté sur l'annonce d'un hôte lié par parrainage. Messages, mises en relation et avis passent par le profil public. `parrain_id` rejoint le verrou et n'est écrit que par la base. Sept pages modifiées, dont ChatComponent. Les cas fondés sur les candidatures, les annonces et les renouvellements restent falsifiables jusqu'à la phase A bis (DETTE #177), qui précède toute ouverture. Séquence : phase A, phase A bis, phase B (DETTE #175), puis reprise de 4a.
 
 ## DETTE #172 — Rechargement des pages au changement d'onglet
 **Constat (audit du 16/09/2026, patch 4a)** : `useAuth` recrée l'objet `user` à chaque événement de connexion, dont le rafraîchissement de session au retour sur un onglet. L'effet de chargement de `GestionComptePage` dépend de `[user]`, celui de `DossierLocatairePage` de `[user, matchId, navigate, showToast]`. Observé sur `DossierLocatairePage` : un document choisi disparaît au retour sur l'onglet.
@@ -2003,4 +2004,40 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Constat (audit du 16/09/2026, DETTE #171)** : `DashboardLocatairePage` tire `invitation_token` dans le navigateur (8 caractères, `Math.random`) et l'écrit lui-même dans `users`. La même page modifie `type_user`. Le verrou du 16/09/2026 (89870b5) ne couvre aucune de ces deux colonnes.
 **Conséquence** : un utilisateur peut choisir son propre jeton ou changer son type de compte hors de tout parcours prévu. `Math.random` ne garantit pas un tirage imprévisible. L'existence d'une contrainte d'unicité sur le jeton n'est pas établie.
 **Résolution** : générer le jeton dans la base, avec unicité garantie, et encadrer le changement de type. À traiter après la phase A, sans l'élargir.
+**Découverte** : 2026-09-16.
+
+## DETTE #177 — Phase A bis : relations falsifiables par le navigateur
+**Constat (audit du 21/09/2026, DETTE #171)** : plusieurs cas de lecture entre comptes de la phase A reposent sur des lignes que le navigateur écrit sans contrôle. Un candidat peut passer lui-même sa candidature en `acceptee` ; `candidatures` et `contrats` ont des règles d'accès à condition vraie ; une annonce s'insère sans connexion, et `annonces.user_id` n'a aucune clé étrangère ; l'autre partie d'un renouvellement est choisie par son créateur. RenouvellementPage insère en outre une candidature déjà `acceptee`.
+**Conséquence** : un utilisateur peut fabriquer une relation pour lire la ligne entière d'un autre compte (cas b, c et e de la phase A, et cas a pour les renouvellements). Q-DPO-027 reste inexacte tant que ce n'est pas corrigé.
+**Résolution** : phase A bis du chantier #171, après la phase A et avant toute ouverture. Audit du code qui écrit ces quatre tables, puis règles d'accès et, au besoin, fonctions de la base qui réservent chaque transition à la partie concernée.
+**Découverte** : 2026-09-21.
+
+## DETTE #178 — ProfilPage : colonnes absentes et table `signalements` inexistante
+**Constat (audit du 21/09/2026, DETTE #171)** : ProfilPage lit dans `users` des colonnes absentes du schéma local (`description`, `ville_origine`), et dans `annonces` des colonnes absentes (`prix_semaine`, `proprietaire_id`, `statut`). Elle écrit dans une table `signalements` qui n'existe pas. Production non vérifiée.
+**Conséquence** : affichages vides ou requêtes en échec ; le signalement d'un profil ne fonctionne pas. Effet exact à l'écran non établi.
+**Résolution** : hors phase A, qui ne modifie dans cette page que la lecture de `users`. Chantier dédié : pour chaque colonne, la retirer du code ou la créer, et décider du sort du signalement.
+**Découverte** : 2026-09-21.
+
+## DETTE #179 — Avis : colonnes absentes et jointures vers `auth.users`
+**Constat (audit du 21/09/2026, DETTE #171)** : AvisPage et ProfilPage lisent des colonnes d'avis absentes du schéma local (dont `note_communication`) et joignent l'auteur d'un avis par `users!avis_evaluateur_id_fkey`, clé qui vise `auth.users` et non `public.users`.
+**Conséquence** : la jointure est probablement déjà en échec, donc l'affichage des avis probablement cassé sur les deux pages. Non établi à l'écran.
+**Résolution** : en phase A, l'auteur d'un avis passe par le profil public, ce qui supprime la jointure. Les colonnes absentes se traitent à part, après la phase A.
+**Découverte** : 2026-09-21.
+
+## DETTE #180 — DashboardAdminPage : clé `annonces_proprietaire_id_fkey` inexistante
+**Constat (audit du 21/09/2026, DETTE #171)** : DashboardAdminPage joint les annonces à `users` par `annonces_proprietaire_id_fkey`, clé qui n'existe pas : `annonces` n'a aucune clé étrangère, et son auteur est dans `user_id`.
+**Conséquence** : la requête est probablement en échec. Effet à l'écran non établi.
+**Résolution** : après la phase A. Réécrire la jointure sur `user_id`, et décider s'il faut créer la clé étrangère de `annonces.user_id`, à croiser avec la DETTE #177.
+**Découverte** : 2026-09-21.
+
+## DETTE #181 — InscriptionPartagerPage écrit `rythme_alternance`
+**Constat (audit du 21/09/2026, DETTE #171)** : le parcours « Proposer un logement » écrit `rythme_alternance`, colonne dépréciée qui porte un rythme abstrait, contraire à l'invariant 5 de la Charte. Il n'écrit pas `rhythm_calendar`. Le déclencheur de la phase A accepte ce champ dans sa liste fermée pour ne pas changer le comportement de la page.
+**Conséquence** : un hôte inscrit par ce parcours n'a pas de rythme réel, donc pas d'offre dérivable de son rythme (invariant 3).
+**Résolution** : hors phase A. Aligner ce parcours sur la saisie du rythme réel semaine par semaine, puis retirer ce champ de la liste du déclencheur. À rapprocher de la DETTE #150.
+**Découverte** : 2026-09-21.
+
+## DETTE #182 — `DashboardLayout` laisse entrer sans connexion en local
+**Constat (audit du 16/09/2026, consigné le 21/09/2026)** : en local, `DashboardLayout` laisse entrer sans connexion, alors qu'une entrée antérieure de ce document le décrit comme la garde qui redirige vers /connexion. Mécanisme non établi : condition propre au mode développement ou garde défaillante. Rappel : `/annonce/creer` est aussi déclarée sous le gabarit public, donc hors de cette garde (item 22 des audits du 25 avril, toujours présent au 16/09).
+**Conséquence** : si la garde est défaillante, les pages du dashboard s'ouvrent sans connexion, et, une fois la phase A appliquée, s'afficheront vides ou en erreur au lieu de rediriger. Si c'est une condition de développement, elle n'est pas dans la liste « Bypass DEV en place ».
+**Résolution** : lire `DashboardLayout.jsx` et établir le mécanisme. Contournement de développement : l'ajouter à la liste des bypass DEV. Garde défaillante : la corriger. Supprimer la déclaration publique de `/annonce/creer` dans le même mouvement.
 **Découverte** : 2026-09-16.

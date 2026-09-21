@@ -428,7 +428,7 @@ Claude Code replie les sorties longues et n'en montre qu'une partie. Six comport
 
 (5) Dans le shell de Claude Code, `grep` peut désigner `ugrep`, qui échoue sur le motif du scan de secrets (« exceeds complexity limits »). Suivi de `|| true`, cet échec produit une sortie vide lue comme « aucun secret ». Tout scan de secrets s'écrit donc avec `/usr/bin/grep`, et son code de sortie s'affiche : 1 signifie aucun résultat, 2 signifie erreur. Origine : session du 15/09/2026, commit docs du patch 4.
 
-(6) Le Terminal macOS et le shell de Claude Code utilisent zsh, qui ne découpe pas le contenu d'une variable en plusieurs mots : une liste de chemins rangée dans `$F`, ou une commande rangée dans `$P`, est reçue comme un seul mot. Un contrôle écrit ainsi peut afficher « code 0 » ou un résultat vide sans avoir rien lu. Les chemins s'écrivent en toutes lettres, une commande réutilisée se range dans une fonction, et `PIPESTATUS` (absent de zsh) ne sert jamais. Origine : session du 16/09/2026, verrou d'écriture de `users`.
+(6) Le Terminal macOS et le shell de Claude Code utilisent zsh, qui ne découpe pas le contenu d'une variable en plusieurs mots : une liste de chemins rangée dans `$F`, ou une commande rangée dans `$P`, est reçue comme un seul mot. Un contrôle écrit ainsi peut afficher « code 0 » ou un résultat vide sans avoir rien lu. Les chemins s'écrivent en toutes lettres, une commande réutilisée se range dans une fonction, et `PIPESTATUS` (absent de zsh) ne sert jamais. Origine : session du 16/09/2026, verrou d'écriture de `users`. Sous zsh, un motif contenant un point d'exclamation (`!`) s'écrit entre guillemets simples : sans guillemets ou entre guillemets doubles, zsh le lit comme un appel à l'historique des commandes, rejette la ligne entière avec « event not found » et n'exécute rien. Origine : session du 21/09/2026, audit de la fermeture de `users`.
 
 ---
 
@@ -632,4 +632,4 @@ Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adres
 
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
 
-*Dernière modification : 2026-09-16 — §6 bis : zsh et variables (point 6 de la règle sur Claude Code) ; §6 : un résultat collé ne prouve pas l'exécution d'une requête.*
+*Dernière modification : 2026-09-21 — §6 bis : sous zsh, un motif contenant un point d'exclamation s'écrit entre guillemets simples (point 6 de la règle sur Claude Code).*

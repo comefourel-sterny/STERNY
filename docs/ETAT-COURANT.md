@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-16
+**Dernière mise à jour** : 2026-09-21
+[DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée le 21/09 et loguée. Reste : phase A (migration, sept pages, production), puis phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit et conception validés et logués (92798a4). Reste : phase A, puis phase B, puis reprise de 4a.
 [DEV] Patch 4a suspendu : failles d'accès sur `users` établies en production. Verrou d'écriture des colonnes sensibles appliqué sur les deux bases (89870b5). Reste : fermer la lecture publique de `users`, puis reprendre 4a.
 [DEV] Patch 4 cadré et audité. Patch 4.0 appliqué sur les deux bases : bucket `documents` privé, colonnes manquantes, policies cloisonnées. Reste : 4a « Tes documents », 4b « Ton garant », puis 5 à 7.
@@ -20,6 +21,31 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-21 — [DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée (DETTE #171)
+
+**AUDIT EN LECTURE SEULE, TENU EN ENTIER, SUR LA BASE LOCALE ET LE CODE.** 19 tables dans `public`, règles d'accès actives partout, jamais forcées. `supabase_auth_admin`, le rôle qui crée les comptes, n'ignore pas ces règles : un déclencheur sur `auth.users` doit s'exécuter avec les droits de son auteur (SECURITY DEFINER), sinon toute inscription échoue. 11 règles d'accès sur `users`, aucun déclencheur sur `auth.users`. Verrou du 16/09 inchangé, empreinte `md5(pg_get_functiondef(oid))` identique ; il ne couvre pas `parrain_id`. Toute fonction de `public` est exécutable par `anon` et `authenticated` par défaut. `complete_inscription_alternant` écrit la ligne avec les droits de l'appelant : l'insertion et la modification de sa propre ligne doivent rester. Aucune inscription par email ne transmet de métadonnées aujourd'hui.
+
+**LECTURES D'AUTRES COMPTES RELEVÉES PAGE PAR PAGE.** Messagerie (ChatComponent, monté dans les deux dashboards et dans MessagesPage), fiche logement, invitation, profil (`select('*')` d'un compte quelconque), avis, pages de transaction, renouvellement, dashboards locataire, propriétaire et admin. La conception du 16/09 ouvrait la ligne entière sur un simple message ou une mise en relation, et ne prévoyait pas la lecture, par un propriétaire, des candidats acceptés sur les annonces de ses hôtes liés par parrainage.
+
+**CONCEPTION RÉVISÉE, VALIDÉE PAR CÔME LE 21/09, LOGUÉE EN VISION.** Elle remplace, dans celle du 16/09, la liste des relations, le déclencheur et la liste des pages.
+- Lecture entre comptes limitée à cinq cas : contrat ou renouvellement commun ; candidature reçue, tout statut ; candidature envoyée et acceptée ; parrainage dans les deux sens ; candidat accepté sur l'annonce d'un hôte lié par parrainage.
+- Messages, mises en relation et avis passent par le profil public, servi par lot.
+- `parrain_id` ajouté au verrou, renseigné par la base seule.
+- Déclencheur limité aux parcours propriétaire et « Proposer un logement », type déduit du parcours.
+- Sept pages modifiées : LogementPage, InvitationPage, InscriptionProprietairePage, InscriptionPartagerPage, ProfilPage, AvisPage, ChatComponent.
+- Nombre de règles d'accès fixé à la rédaction de la migration.
+
+**LIMITE ASSUMÉE.** Plusieurs cas restent falsifiables tant que la phase A bis n'est pas faite (DETTE #177) : un candidat peut passer lui-même sa candidature en acceptée, candidatures et contrats ont des règles à condition vraie, une annonce s'insère sans connexion, l'autre partie d'un renouvellement est choisie par son créateur. La mention « corrigé » de Q-DPO-027 reste inexacte jusque-là.
+
+**CONSTATS ANNEXES.** DETTE #177 à #182 ouvertes. Deux constats déjà tracés, non redoublés : l'écriture `paiement_ok` de ContratLocationPage (DETTE #93) et la déclaration de `/annonce/creer` sous le gabarit public (item 22, rappelé en #182). Q-DPO-030 ajoutée. CONTEXTE §6 bis, point 6 : sous zsh, un motif contenant un point d'exclamation s'écrit entre guillemets simples.
+
+**RESTE** :
+- phase A : migration, tests locaux par transactions annulées, sept pages, test de l'application connecté et déconnecté, production ;
+- build de l'état commité, puis push de 92798a4, 6f6b253 et des nouveaux commits ;
+- puis phase A bis, phase B, reprise de 4a ;
+- test de la DETTE #172 non fait ;
+- onglets de l'éditeur SQL de production à fermer.
 
 ## 2026-09-16 — [DEV] Fermeture de la lecture publique de `users` : audit et conception validés (DETTE #171)
 
