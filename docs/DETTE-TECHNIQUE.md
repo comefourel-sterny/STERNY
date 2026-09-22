@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-16 — #171 conçue en deux phases ; #174 à #176 ouvertes (ancienne inscription « recherche », fiche entière entre comptes en relation, jeton d'invitation et type de compte écrits par le navigateur).
+**Dernière mise à jour** : 2026-09-22 — #171 phase A codée et testée en local (production non faite) ; #183 à #185 ouvertes (code de parrainage propriétaire, libellés « propriétaire » de LogementPage, registre local des migrations) ; #178, #179 et #181 complétées après le test local.
 
 ## Nomenclature des bugs
 
@@ -1975,6 +1975,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Découverte** : 2026-09-16.
 **MISE À JOUR 2026-09-16.** Conception validée : aucune lecture sans connexion ; lecture limitée à sa propre ligne, aux comptes en relation réelle (candidature, contrat, message, parrainage, mise en relation validée) et à l'admin ; profil public par une fonction de la base ; ligne `users` créée par la base à l'inscription par email, la règle d'insertion ouverte étant supprimée ; vérification d'existence d'un email abandonnée. Décision consignée en VISION, questions Q-DPO-028 et Q-DPO-029. Réalisation en deux phases : phase A pour ce qui précède, phase B pour la restriction des champs entre comptes en relation (DETTE #175).
 **MISE À JOUR 2026-09-21.** Audit tenu en entier sur la base locale et le code. Conception révisée, validée par Côme le 21/09 et consignée en VISION : elle remplace, dans celle du 16/09, la liste des relations, le déclencheur et la liste des pages. Lecture entre comptes limitée à cinq cas : contrat ou renouvellement commun ; candidature reçue, tout statut ; candidature envoyée et acceptée ; parrainage dans les deux sens ; candidat accepté sur l'annonce d'un hôte lié par parrainage. Messages, mises en relation et avis passent par le profil public. `parrain_id` rejoint le verrou et n'est écrit que par la base. Sept pages modifiées, dont ChatComponent. Les cas fondés sur les candidatures, les annonces et les renouvellements restent falsifiables jusqu'à la phase A bis (DETTE #177), qui précède toute ouverture. Séquence : phase A, phase A bis, phase B (DETTE #175), puis reprise de 4a.
+**MISE À JOUR 2026-09-22.** Phase A codée et testée en local, production non faite. Migration `20260922090000_users_fermeture_lecture.sql` (966d293) appliquée en local en deux passes, 57 tests sur 57 avec `postgres` puis avec `supabase_admin`, déclencheur testé sous `supabase_auth_admin`. Sept pages passées au profil public, à `parrain_par_jeton`, à `rattacher_parrain` et à l'inscription créée par la base (b8d90e0). Test de l'application en local, connecté et déconnecté, réussi sur chaque page modifiée et sur le parcours d'inscription alternant. Reste : production (ordre migration / déploiement à arrêter avant toute action), build de l'état commité, push.
 
 ## DETTE #172 — Rechargement des pages au changement d'onglet
 **Constat (audit du 16/09/2026, patch 4a)** : `useAuth` recrée l'objet `user` à chaque événement de connexion, dont le rafraîchissement de session au retour sur un onglet. L'effet de chargement de `GestionComptePage` dépend de `[user]`, celui de `DossierLocatairePage` de `[user, matchId, navigate, showToast]`. Observé sur `DossierLocatairePage` : un document choisi disparaît au retour sur l'onglet.
@@ -2017,12 +2018,14 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : affichages vides ou requêtes en échec ; le signalement d'un profil ne fonctionne pas. Effet exact à l'écran non établi.
 **Résolution** : hors phase A, qui ne modifie dans cette page que la lecture de `users`. Chantier dédié : pour chaque colonne, la retirer du code ou la créer, et décider du sort du signalement.
 **Découverte** : 2026-09-21.
+**MISE À JOUR 2026-09-22 (test local de la phase A).** Constaté à l'écran : les accents de plusieurs textes s'affichent en codes bruts (« Email v\u00e9rifi\u00e9 », « AVIS RE\u00c7US », « appara\u00eetront »), écrits dans le texte JSX sous une forme que React n'interprète pas ; aucune ligne de rôle sous le nom pour un compte `les_deux`. Design de la page à revoir entièrement selon Côme. Défauts antérieurs à la phase A. Le chantier dédié reprend la page entière : colonnes, signalement, accents, rôle et design.
 
 ## DETTE #179 — Avis : colonnes absentes et jointures vers `auth.users`
 **Constat (audit du 21/09/2026, DETTE #171)** : AvisPage et ProfilPage lisent des colonnes d'avis absentes du schéma local (dont `note_communication`) et joignent l'auteur d'un avis par `users!avis_evaluateur_id_fkey`, clé qui vise `auth.users` et non `public.users`.
 **Conséquence** : la jointure est probablement déjà en échec, donc l'affichage des avis probablement cassé sur les deux pages. Non établi à l'écran.
 **Résolution** : en phase A, l'auteur d'un avis passe par le profil public, ce qui supprime la jointure. Les colonnes absentes se traitent à part, après la phase A.
 **Découverte** : 2026-09-21.
+**MISE À JOUR 2026-09-22 (test local de la phase A).** Jointure supprimée (b8d90e0) : le nom de la personne évaluée et l'onglet « Avis reçus » s'affichent. Constaté à l'écran : le formulaire d'AvisPage (annonce, notes, commentaire) ne s'affiche pas, seul le bouton d'envoi apparaît ; laisser un avis est impossible. Piste non vérifiée : ces blocs portent la classe `form-section`, que `InscriptionPartagerPage.css` masque hors de l'étape active. Défaut antérieur à la phase A. Chantier avis dédié : page entière, design compris, et colonnes absentes.
 
 ## DETTE #180 — DashboardAdminPage : clé `annonces_proprietaire_id_fkey` inexistante
 **Constat (audit du 21/09/2026, DETTE #171)** : DashboardAdminPage joint les annonces à `users` par `annonces_proprietaire_id_fkey`, clé qui n'existe pas : `annonces` n'a aucune clé étrangère, et son auteur est dans `user_id`.
@@ -2035,9 +2038,28 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : un hôte inscrit par ce parcours n'a pas de rythme réel, donc pas d'offre dérivable de son rythme (invariant 3).
 **Résolution** : hors phase A. Aligner ce parcours sur la saisie du rythme réel semaine par semaine, puis retirer ce champ de la liste du déclencheur. À rapprocher de la DETTE #150.
 **Découverte** : 2026-09-21.
+**MISE À JOUR 2026-09-22 (test local de la phase A).** La page n'est reliée à aucun bouton de `/inscription` : le parcours alternant unifié l'a remplacée, et VISION a décidé sa suppression le 2 mai 2026 (page fantôme), jamais faite. Constaté à l'écran : elle n'a jamais reçu la refonte des pages d'inscription (cadre dans le cadre, composants communs absents) et les suggestions de ville s'affichent derrière les champs, ce qui rend le formulaire inutilisable ; elle enregistre en outre un rythme abstrait. Résolution révisée, décidée par Côme : supprimer la page, son style, sa route et le lien du menu utilisateur (à confirmer par grep), comme premier chantier après la phase A, avant A bis ; retirer ensuite le parcours « partager » du déclencheur. Cette suppression ferme la présente dette.
 
 ## DETTE #182 — `DashboardLayout` laisse entrer sans connexion en local
 **Constat (audit du 16/09/2026, consigné le 21/09/2026)** : en local, `DashboardLayout` laisse entrer sans connexion, alors qu'une entrée antérieure de ce document le décrit comme la garde qui redirige vers /connexion. Mécanisme non établi : condition propre au mode développement ou garde défaillante. Rappel : `/annonce/creer` est aussi déclarée sous le gabarit public, donc hors de cette garde (item 22 des audits du 25 avril, toujours présent au 16/09).
 **Conséquence** : si la garde est défaillante, les pages du dashboard s'ouvrent sans connexion, et, une fois la phase A appliquée, s'afficheront vides ou en erreur au lieu de rediriger. Si c'est une condition de développement, elle n'est pas dans la liste « Bypass DEV en place ».
 **Résolution** : lire `DashboardLayout.jsx` et établir le mécanisme. Contournement de développement : l'ajouter à la liste des bypass DEV. Garde défaillante : la corriger. Supprimer la déclaration publique de `/annonce/creer` dans le même mouvement.
 **Découverte** : 2026-09-16.
+
+## DETTE #183 — `/inscription/proprietaire` sans garde d'invitation
+**Constat (test local du 22/09/2026, DETTE #171)** : la page affiche le formulaire d'inscription avec ou sans lien d'invitation. La garde décidée en VISION (chantier unification inscription, 2 et 3 mai 2026) n'est pas implémentée : seul un `?r=` avec un jeton valide devait laisser passer, et sans lien la page devait afficher un message d'aide renvoyant vers le locataire. Cette décision n'était suivie ni dans ETAT-COURANT ni dans DETTE.
+**Conséquence** : un propriétaire arrivé sans lien crée un compte sans parrain et atterrit sur un dashboard vide, sans relation avec son locataire. C'est l'abandon probable que la décision voulait éviter.
+**Résolution** : implémenter le code de parrainage obligatoire décrit en VISION (précision du 22/09/2026), avec la DETTE #176 : code généré par la base, court et lisible, transmis par email ou par message, saisi sur la page d'inscription, vérifié par `parrain_par_jeton` puisque `invitation_token` n'est plus lisible depuis la phase A. Interrupteur isolable. Chantier distinct, après la phase A.
+**Découverte** : 2026-09-22.
+
+## DETTE #184 — LogementPage : « propriétaire » au lieu de « hôte »
+**Constat (test local du 22/09/2026, DETTE #171)** : la carte de l'auteur d'une annonce n'écrit « Hôte » que pour un compte de type `hote`, et « Propriétaire » pour tout autre type, dont `les_deux`. Le modal de contact s'intitule « Contacter le propriétaire », et son bouton d'envoi s'affiche écrasé.
+**Conséquence** : l'auteur d'une annonce est présenté comme propriétaire alors qu'il est l'hôte du logement, ce qui contredit le modèle de Sterny.
+**Résolution** : la carte et le modal disent « Hôte » et « Contacter l'hôte », quel que soit le type du compte. Refonte du modal de messagerie dans le même mouvement. Hors phase A.
+**Découverte** : 2026-09-22.
+
+## DETTE #185 — Registre local des migrations incomplet
+**Constat (phase A de la DETTE #171, 22/09/2026)** : les migrations `20260915120000`, `20260916090000` et `20260922090000`, appliquées en local par psql, sont absentes du registre `supabase_migrations.schema_migrations` local, dont la dernière entrée est `20260702173718`.
+**Conséquence** : un `supabase db reset` ou un `supabase db push` se fonderait sur un registre faux : réapplication ou omission de ces migrations. Registre de production non vérifié.
+**Résolution** : comparer les registres local et production aux fichiers de `supabase/migrations/`, puis décider de l'enregistrement des migrations manquantes. Aucune commande `db reset` ou `db push` d'ici là.
+**Découverte** : 2026-09-22.

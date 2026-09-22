@@ -54,7 +54,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-09-21 — Accès à la table `users` révisé : cinq cas de lecture entre comptes, messages, mises en relation et avis renvoyés au profil public, parrain écrit par la base seule.
+**Dernière mise à jour** : 2026-09-22 — Code de parrainage obligatoire pour toute inscription propriétaire (précision du parcours propriétaire).
 
 ---
 
@@ -475,6 +475,8 @@ La garde durcie sur `/inscription/proprietaire` (Q8) n'est pas une fermeture dé
 2. **Réversibilité stratégique** : le code de la garde doit être un simple guard isolable (un paramètre / une feature flag / une variable d'environnement, à arbitrer au moment de l'implémentation), pas une logique enchevêtrée dans la page proprio. Cas d'usage anticipé : si la traction Sterny le justifie plus tard, ouverture du parcours proprio au grand public sans nécessiter d'invitation locataire — on doit pouvoir le faire en flippant un flag, pas en refondant.
 
 Ces deux points sont à intégrer dans la tranche d'implémentation "durcissement garde proprio" du chantier UNIFICATION-INSCRIPTION (T5 du plan d'implémentation, cf. `docs/archives/UNIFICATION-INSCRIPTION.md` § 7.3.5).
+
+**Précision du 22/09/2026 : code de parrainage obligatoire.** Un propriétaire peut arriver sur Sterny par lui-même, mais ne peut créer son compte, quelle que soit la méthode (email, Google, Apple), qu'avec un code de parrainage valide transmis par son locataire. Le code arrive soit dans le lien d'invitation envoyé par email, qui le renseigne automatiquement, soit par message (SMS, messagerie), le propriétaire le saisissant alors sur la page d'inscription. Sans code valide, l'inscription est refusée. Tout compte propriétaire naît donc rattaché à son locataire, et aucun propriétaire n'arrive sur un dashboard vide. Le code est généré par la base, court, lisible et unique (DETTE #176). La réversibilité décidée le 3 mai demeure : l'obligation reste un interrupteur isolable. Cette précision remplace, dans le point 1 ci-dessus, le simple message d'aide par la saisie du code sur la page. Non implémentée au 22/09/2026 (DETTE #183).
 
 ### Rythme personnel comme moteur de la plateforme
 

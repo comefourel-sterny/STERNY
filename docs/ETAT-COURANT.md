@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-21
+**Dernière mise à jour** : 2026-09-22
+[DEV] Fermeture de `users`, phase A : migration appliquée en local (966d293), sept pages modifiées (b8d90e0), test local réussi. Production non faite. Reste : production, build de l'état commité, push, puis suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée le 21/09 et loguée. Reste : phase A (migration, sept pages, production), puis phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit et conception validés et logués (92798a4). Reste : phase A, puis phase B, puis reprise de 4a.
 [DEV] Patch 4a suspendu : failles d'accès sur `users` établies en production. Verrou d'écriture des colonnes sensibles appliqué sur les deux bases (89870b5). Reste : fermer la lecture publique de `users`, puis reprendre 4a.
@@ -21,6 +22,25 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-22 — [DEV] Fermeture de `users`, phase A : migration en local, sept pages, test local réussi (DETTE #171)
+
+**DOCS ET MIGRATION.** Commit docs f37e135 (VISION, ETAT-COURANT, DETTE #171 et #177 à #182, CONTEXTE §6 bis point 6, Q-DPO-030). Migration `supabase/migrations/20260922090000_users_fermeture_lecture.sql` (sha256 0d811ab1bcb45a1764da28eca246fe8396187fbdac4cc381e4cc83ce6d756778), commit 966d293, appliquée en LOCAL seulement, en deux passes par `psql --single-transaction`. 57 tests sur 57, joués avec `postgres` puis avec `supabase_admin`, déclencheur testé sous `supabase_auth_admin`, rien restant. Fichier de tests hors dépôt (sha256 47190a36a235…). État local contrôlé : 6 règles sur `users`, empreinte du verrou `7a4ecfe9314f4c17cce6ded81d5c7645`, déclencheur `sterny_creer_profil_depuis_inscription` sur `auth.users`. PRODUCTION NON TOUCHÉE.
+
+**SEPT PAGES, COMMIT b8d90e0.** Audit en lecture seule des sept pages, puis fichiers modifiés dans le bac à sable de Claude.ai, livrés par archive et contrôlés par empreinte avant copie. LogementPage, ChatComponent et AvisPage lisent les autres comptes par `profils_publics` ; ProfilPage lit la ligne entière si la base l'autorise, sinon le profil public ; les auteurs d'avis passent par `profils_publics` (jointure `users!avis_evaluateur_id_fkey` supprimée) ; InvitationPage lit le parrain par `parrain_par_jeton`. InscriptionProprietairePage : par email, données transmises au `signUp`, plus aucune insertion ; par Google ou Apple, insertion sans `parrain_id` puis `rattacher_parrain`. InscriptionPartagerPage : données transmises au `signUp`, plus aucune insertion. Seule écriture de `parrain_id` restante dans le code : `null` dans InscriptionAlternantPage, permis.
+
+**TEST LOCAL, CONNECTÉ ET DÉCONNECTÉ.** Réussi : carte hôte de l'annonce sans connexion ; invitation valide et invalide ; inscription propriétaire par email avec invitation, ligne `users` créée par la base avec le parrain ; parcours alternant principal par email jusqu'au code de vérification et au dashboard ; messagerie dans les deux sens ; profil d'un compte en relation et d'un compte sans relation ; nom et avis reçus sur AvisPage. `/inscription/partager` : formulaire inutilisable (suggestions masquées), parcours couvert par la relecture du code et par les tests SQL. Test « propriétaire sans lien » abandonné : le produit exclut ce parcours (DETTE #183).
+
+**DÉCISIONS DU 22/09.** Code de parrainage obligatoire pour toute inscription propriétaire, transmis par email ou par message, logué en VISION (DETTE #183). Suppression de `/inscription/partager` (page, style, route, lien du menu utilisateur) comme premier chantier après la phase A, avant A bis (DETTE #181). Les pages d'inscription refaites restent la référence visuelle (CONTEXTE §8 ter), aucune n'est modifiée dans son rendu.
+
+**CONSTATS.** DETTE #183 à #185 ouvertes ; #178 (ProfilPage : accents en codes bruts, design), #179 (AvisPage : formulaire invisible) et #181 complétées. Défauts antérieurs à la phase A.
+
+**RESTE** :
+- production : établir quelle branche sert le site en ligne, puis arrêter l'ordre migration / déploiement AVANT toute action (appliquer la migration pendant que le site sert l'ancien code casse les inscriptions) ; état contrôlé avant et après, empreintes comparées ;
+- build de l'état commité, puis push de 92798a4, 6f6b253, f37e135, 966d293, b8d90e0 et du présent commit docs ;
+- clôture de la phase A de #171, Q-DPO-027 ;
+- puis suppression de `/inscription/partager`, phase A bis (#177), phase B (#175), reprise de 4a ;
+- test de la DETTE #172 non fait ; onglets de l'éditeur SQL de production à fermer.
 
 ## 2026-09-21 — [DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée (DETTE #171)
 
