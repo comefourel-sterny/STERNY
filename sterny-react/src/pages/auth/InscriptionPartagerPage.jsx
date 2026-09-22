@@ -178,34 +178,31 @@ export default function InscriptionPartagerPage() {
     setLoading(true)
 
     try {
-      const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+      // La ligne users est créée par la base à la naissance du compte (DETTE #171) :
+      // type hote et a_logement déduits du parcours, email pris dans le compte.
+      const { error: authError } = await supabaseClient.auth.signUp({
         email: email.trim(),
-        password
+        password,
+        options: {
+          data: {
+            sterny_parcours: 'partager',
+            prenom: prenom.trim(),
+            nom: nom.trim(),
+            telephone: telephone.trim(),
+            ville: villeSelectionnee,
+            rythme: rythmeDetail || rythme
+          }
+        }
       })
 
       if (authError) throw authError
-
-      const { error: profileError } = await supabaseClient
-        .from('users')
-        .insert([{
-          id: authData.user.id,
-          nom: nom.trim(),
-          prenom: prenom.trim(),
-          email: email.trim(),
-          telephone: telephone.trim(),
-          type_user: 'hote',
-          rythme_alternance: rythmeDetail || rythme,
-          ville: villeSelectionnee,
-          a_logement: true
-        }])
-
-      if (profileError) throw profileError
 
       navigate('/dashboard')
     } catch (error) {
       const msg = error.message
       let msgFr = msg
       if (msg === 'User already registered') msgFr = 'Un compte existe déjà avec cet email.'
+      else if (msg.includes('Database error saving new user')) msgFr = 'La création du compte a échoué, réessaie dans un instant'
       else if (msg.includes('only request this after')) msgFr = 'Veuillez patienter quelques secondes avant de réessayer'
       else if (msg.includes('rate limit')) msgFr = 'Trop de tentatives, veuillez réessayer dans un instant'
       else if (msg.includes('invalid email')) msgFr = 'Adresse email invalide'

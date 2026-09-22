@@ -13,16 +13,16 @@ export default function InvitationPage() {
   useEffect(() => {
     if (!token) { setInvalid(true); setLoading(false); return }
 
+    // Parrain retrouvé par la base à partir du jeton (DETTE #171) :
+    // le jeton d'invitation n'est plus lisible dans users.
     supabaseClient
-      .from('users')
-      .select('id, prenom, nom')
-      .eq('invitation_token', token)
-      .single()
+      .rpc('parrain_par_jeton', { p_jeton: token })
       .then(({ data, error }) => {
-        if (error || !data) {
+        const parrainTrouve = Array.isArray(data) ? data[0] : data
+        if (error || !parrainTrouve) {
           setInvalid(true)
         } else {
-          setParrain(data)
+          setParrain(parrainTrouve)
         }
         setLoading(false)
       })

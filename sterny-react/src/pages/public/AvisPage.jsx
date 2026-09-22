@@ -119,12 +119,10 @@ export default function AvisPage() {
       let tuid = searchParams.get('user_id') || user.id;
       setTargetUserId(tuid);
 
-      // Load profile
-      const { data: profileData } = await supabaseClient
-        .from('users')
-        .select('prenom, nom, ecole, annee_etudes, photo_profil_url, type_user')
-        .eq('id', tuid)
-        .single();
+      // Load profile — profil public servi par la base (DETTE #171)
+      const { data: profilsData } = await supabaseClient
+        .rpc('profils_publics', { p_ids: [tuid] });
+      const profileData = Array.isArray(profilsData) ? profilsData[0] : profilsData;
 
       if (profileData) {
         setTargetTypeUser(profileData.type_user || 'locataire');
@@ -165,14 +163,21 @@ export default function AvisPage() {
       setAvisLoading(true);
       const { data } = await supabaseClient
         .from('avis')
-        .select(`
-          id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at, annonce_id,
-          evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
-        `)
+        .select('id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at, annonce_id, evaluateur_id')
         .eq('profil_evalue_id', targetUserId)
         .order('created_at', { ascending: false });
 
-      setAvisList(data || []);
+      // Auteurs des avis : profil public servi par la base (DETTE #171, #179).
+      const avisBruts = data || [];
+      const evaluateurIds = [...new Set(avisBruts.map((a) => a.evaluateur_id).filter(Boolean))];
+      const evaluateursMap = {};
+      if (evaluateurIds.length > 0) {
+        const { data: evaluateursData } = await supabaseClient
+          .rpc('profils_publics', { p_ids: evaluateurIds });
+        if (Array.isArray(evaluateursData)) evaluateursData.forEach((u) => { evaluateursMap[u.id] = u; });
+      }
+
+      setAvisList(avisBruts.map((a) => ({ ...a, evaluateur: evaluateursMap[a.evaluateur_id] || null })));
       setAvisLoading(false);
     })();
   }, [activeTab, targetUserId]);

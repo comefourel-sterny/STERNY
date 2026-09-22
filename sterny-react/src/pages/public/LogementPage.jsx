@@ -480,16 +480,16 @@ export default function LogementPage() {
     }
   }
 
+  // Hôte de l'annonce : profil public servi par la base (DETTE #171).
+  // La ligne users d'un autre compte n'est plus lisible, connecté ou non.
   async function chargerProprietaire(userId) {
     try {
       const { data, error } = await supabaseClient
-        .from('users')
-        .select('prenom, nom, type_user, photo_profil_url')
-        .eq('id', userId)
-        .single();
+        .rpc('profils_publics', { p_ids: [userId] });
 
-      if (data && !error) {
-        setHostData(data);
+      const hote = Array.isArray(data) ? data[0] : data;
+      if (hote && !error) {
+        setHostData(hote);
       }
     } catch (error) {
       console.error('Erreur chargement propriétaire:', error);

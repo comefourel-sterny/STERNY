@@ -61,12 +61,12 @@ export default function ChatComponent({ currentUserId, currentUserType, mode = '
         autreIds.add(msg.expediteur_id === userId ? msg.destinataire_id : msg.expediteur_id)
       })
 
+      // Interlocuteurs : profil public servi par la base (DETTE #171).
+      // Un message n'ouvre pas la lecture de la ligne users de l'autre compte.
       const usersMap = {}
       const { data: usersData } = await supabaseClient
-        .from('users')
-        .select('id, prenom, nom, type_user')
-        .in('id', [...autreIds])
-      if (usersData) usersData.forEach(u => { usersMap[u.id] = u })
+        .rpc('profils_publics', { p_ids: [...autreIds] })
+      if (Array.isArray(usersData)) usersData.forEach(u => { usersMap[u.id] = u })
 
       const conversations = {}
       messages.forEach(msg => {

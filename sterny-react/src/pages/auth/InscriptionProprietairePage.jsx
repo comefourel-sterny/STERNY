@@ -28,24 +28,20 @@ export default function InscriptionProprietairePage() {
   const btnRef = useRef(null)
   const [referrerName, setReferrerName] = useState('')
   const [showReferral, setShowReferral] = useState(false)
-  const [parrainId, setParrainId] = useState(null)
   const oauthCheckedRef = useRef(false)
 
-  // useEffect 1 — Décodage du token de parrainage ?r=<token>
-  // (logique existante, juste nettoyée du fallback sessionStorage referrer_id
-  // qui devient mort suite à T4-A — le handler ne set plus rien en sessionStorage).
+  // useEffect 1 — Affichage du parrain à partir du token ?r=<token>.
+  // Parrain retrouvé par la base (DETTE #171) : le jeton n'est plus lisible dans users.
+  // Affichage seulement : le parrain est enregistré par la base, jamais par la page.
   useEffect(() => {
     const token = searchParams.get('r')
     if (token) {
       supabaseClient
-        .from('users')
-        .select('id, prenom, nom')
-        .eq('invitation_token', token)
-        .single()
+        .rpc('parrain_par_jeton', { p_jeton: token })
         .then(({ data }) => {
-          if (data) {
-            setParrainId(data.id)
-            setReferrerName(`${data.prenom} ${data.nom}`)
+          const parrain = Array.isArray(data) ? data[0] : data
+          if (parrain) {
+            setReferrerName(`${parrain.prenom} ${parrain.nom}`)
             setShowReferral(true)
           }
         })
@@ -81,23 +77,13 @@ export default function InscriptionProprietairePage() {
         }
 
         // CHECK 2 : pas de ligne users → seuls les providers Google/Apple peuvent INSERT ici.
-        // Méthode email : handleSubmit gère son propre signUp + INSERT (workaround DETTE #55).
+        // Méthode email : la ligne users est créée par la base au signUp (DETTE #171).
         const provider = session.user.app_metadata?.provider
         if (provider !== 'google' && provider !== 'apple') return
 
         oauthCheckedRef.current = true
 
-        // Résolution locale du parrainId depuis le token
-        let resolvedParrainId = null
         const token = searchParams.get('r')
-        if (token) {
-          const { data: parrain } = await supabaseClient
-            .from('users')
-            .select('id')
-            .eq('invitation_token', token)
-            .maybeSingle()
-          if (parrain) resolvedParrainId = parrain.id
-        }
 
         // Extraction prenom/nom depuis user_metadata selon provider
         const metadata = session.user.user_metadata || {}
@@ -121,7 +107,7 @@ export default function InscriptionProprietairePage() {
           }
         }
 
-        // INSERT users
+        // INSERT users — sans parrain_id, que la base refuse depuis le navigateur (DETTE #171)
         const { error: insertError } = await supabaseClient
           .from('users')
           .insert([{
@@ -130,7 +116,6 @@ export default function InscriptionProprietairePage() {
             prenom: extractedPrenom || '',
             nom: extractedNom || '',
             type_user: 'proprietaire',
-            parrain_id: resolvedParrainId,
             profil_complet: false
           }])
 
@@ -138,6 +123,16 @@ export default function InscriptionProprietairePage() {
           console.warn('InscriptionProprietairePage OAuth INSERT error:', insertError.message)
           oauthCheckedRef.current = false // permettre une retry
           return
+        }
+
+        // Parrain rattaché par la base à partir du jeton. N'agit que si aucun parrain
+        // n'est enregistré ; un jeton invalide laisse le compte sans parrain.
+        if (token) {
+          const { error: rattachementError } = await supabaseClient
+            .rpc('rattacher_parrain', { p_jeton: token })
+          if (rattachementError) {
+            console.warn('InscriptionProprietairePage rattacher_parrain:', rattachementError.message)
+          }
         }
 
         navigate('/dashboard/proprietaire')
@@ -211,7 +206,8 @@ export default function InscriptionProprietairePage() {
     if (error) showError(error.message)
   }
 
-  // handleSubmit méthode email : INCHANGÉ (workaround DETTE #55).
+  // handleSubmit méthode email : la ligne users est créée par la base à la naissance
+  // du compte (DETTE #171), à partir des métadonnées transmises au signUp.
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!prenom.trim() || !nom.trim() || !email.trim() || !password) {
@@ -230,25 +226,21 @@ export default function InscriptionProprietairePage() {
     setLoading(true)
 
     try {
-      const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+      const token = searchParams.get('r')
+      const donneesInscription = {
+        sterny_parcours: 'proprietaire',
+        prenom: prenom.trim(),
+        nom: nom.trim()
+      }
+      if (token) donneesInscription.jeton_invitation = token
+
+      const { error: authError } = await supabaseClient.auth.signUp({
         email,
-        password
+        password,
+        options: { data: donneesInscription }
       })
 
       if (authError) throw authError
-
-      const { error: insertError } = await supabaseClient
-        .from('users')
-        .insert([{
-          id: authData.user.id,
-          prenom,
-          nom,
-          email,
-          type_user: 'proprietaire',
-          parrain_id: parrainId
-        }])
-
-      if (insertError) throw insertError
 
       setMessage({ type: 'success', text: 'Compte créé ! Redirection...' })
 
@@ -256,9 +248,9 @@ export default function InscriptionProprietairePage() {
         navigate('/dashboard/proprietaire')
       }, 2000)
     } catch (error) {
-      const msg = error.message === 'User already registered'
-        ? 'Un compte existe déjà avec cet email'
-        : error.message
+      let msg = error.message
+      if (error.message === 'User already registered') msg = 'Un compte existe déjà avec cet email'
+      else if (error.message && error.message.includes('Database error saving new user')) msg = 'La création du compte a échoué, réessaie dans un instant'
       showError(msg)
       setLoading(false)
     }

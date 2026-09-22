@@ -85,13 +85,27 @@ export default function ProfilPage() {
     if (!profileUserId) return
 
     const chargerProfil = async () => {
-      const { data, error } = await supabaseClient
+      // Ligne entière si la base l'autorise (sa ligne, admin, compte en relation),
+      // sinon profil public servi par la base (DETTE #171). Une ligne non lisible
+      // rend zéro ligne, sans erreur.
+      const { data: ligne } = await supabaseClient
         .from('users')
         .select('*')
         .eq('id', profileUserId)
-        .single()
+        .maybeSingle()
 
-      if (error || !data) {
+      let data = ligne
+      if (!data) {
+        const { data: publics } = await supabaseClient
+          .rpc('profils_publics', { p_ids: [profileUserId] })
+        const profilPublic = Array.isArray(publics) ? publics[0] : publics
+        if (profilPublic) {
+          // Le profil public rend identite_verifiee en vrai/faux ; la page attend le texte de la table.
+          data = { ...profilPublic, identite_verifiee: profilPublic.identite_verifiee === true ? 'verifiee' : null }
+        }
+      }
+
+      if (!data) {
         alert('Profil introuvable')
         navigate('/')
         return
@@ -147,14 +161,21 @@ export default function ProfilPage() {
       setAvisLoading(true)
       const { data } = await supabaseClient
         .from('avis')
-        .select(`
-          id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at,
-          evaluateur: users!avis_evaluateur_id_fkey(id, prenom, nom, photo_profil_url)
-        `)
+        .select('id, note, note_communication, note_categorie_2, note_categorie_3, commentaire, created_at, evaluateur_id')
         .eq('profil_evalue_id', profileUserId)
         .order('created_at', { ascending: false })
 
-      setAvisList(data || [])
+      // Auteurs des avis : profil public servi par la base (DETTE #171, #179).
+      const avisBruts = data || []
+      const evaluateurIds = [...new Set(avisBruts.map((a) => a.evaluateur_id).filter(Boolean))]
+      const evaluateursMap = {}
+      if (evaluateurIds.length > 0) {
+        const { data: evaluateursData } = await supabaseClient
+          .rpc('profils_publics', { p_ids: evaluateurIds })
+        if (Array.isArray(evaluateursData)) evaluateursData.forEach((u) => { evaluateursMap[u.id] = u })
+      }
+
+      setAvisList(avisBruts.map((a) => ({ ...a, evaluateur: evaluateursMap[a.evaluateur_id] || null })))
       setAvisLoading(false)
     }
 
