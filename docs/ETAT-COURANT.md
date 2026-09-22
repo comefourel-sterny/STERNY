@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-22
+[DEV] Fermeture de `users`, phase A close : migration appliquée seule en production (le site sert `main`, rien n'est déployé), contrôle conforme au local, build de l'état commité réussi, push fait (c9e3b92). Reste : suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users`, phase A : migration appliquée en local (966d293), sept pages modifiées (b8d90e0), test local réussi. Production non faite. Reste : production, build de l'état commité, push, puis suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée le 21/09 et loguée. Reste : phase A (migration, sept pages, production), puis phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit et conception validés et logués (92798a4). Reste : phase A, puis phase B, puis reprise de 4a.
@@ -22,6 +23,26 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-22 — [DEV] Fermeture de `users`, phase A close : migration appliquée seule en production, push fait (DETTE #171)
+
+**CE QUI SERT LE SITE, ÉTABLI EN LECTURE SEULE.** Vercel : production sur la branche `main`, dossier `sterny-react`, déploiement en ligne 56289dc du 22/06. Toute autre branche produit une prévisualisation, protégée par Vercel Authentication (Standard Protection). Un push de `feat` ne met donc rien en ligne. Audit du code de `main` (archive git, sha256 093435e0…) : `PasswordGate` enveloppe toute l'application ; le public ne voit que la landing, qui écrit dans `waitlist` et appelle `send-landing-email`, sans jamais toucher `users`. Le mot de passe est vérifié dans le navigateur, contre une empreinte écrite dans le code : il ne protège pas la base, dont la clé publique est livrée à tout visiteur. `https://sterny.co/` répond et sert l'application, déclarée indexable : la mention « Site retiré d'internet » de l'entrée du 16/09 est inexacte.
+
+**PRODUCTION AVANT.** 11 règles sur `users`, toutes supprimées par leur nom dans la migration. Verrou présent (`7bd8100b…`). `profils_publics`, `parrain_par_jeton`, `rattacher_parrain`, `complete_inscription_alternant` (DETTE #161) et le déclencheur sur `auth.users` absents. Dernière connexion d'un compte autre que l'admin : 28/05. Dépendances de la migration vérifiées : colonnes et types conformes, `users.id` unique, aucun homonyme, `is_admin()` identique au local (`8336d819…`, droits de son auteur), PostgreSQL 17.6 des deux côtés. Registre de production arrêté à `20260425121949` (DETTE #185).
+
+**DÉCISION : MIGRATION SEULE, SANS DÉPLOIEMENT, VALIDÉE PAR CÔME LE 22/09.** Cherry-pick des sept pages sur `main` écarté (491 commits d'écart). Report écarté (faille ouverte jusqu'au lancement). Conséquence assumée : derrière le mot de passe, l'ancien code de `main` perd l'invitation, les inscriptions, le parrainage Google, la carte de l'hôte, les avis et les noms dans la messagerie ; aucun utilisateur n'en dépend (DETTE #186).
+
+**APPLICATION ET CONTRÔLE.** Migration `20260922090000_users_fermeture_lecture.sql` (sha256 0d811ab1…6778) copiée par `pbcopy`, empreinte du presse-papier contrôlée, appliquée dans un nouvel onglet de l'éditeur SQL de sterny-plateform : succès. Contrôle dans un onglet séparé, conforme au local : 7 empreintes identiques (verrou `7a4ecfe9…`, `peut_lire_user`, `profils_publics`, `parrain_par_jeton`, `rattacher_parrain`, `creer_profil_depuis_inscription`, `is_admin`), 6 règles, sécurité par ligne active, déclencheur sur `auth.users`, droits d'appel exacts (profil public et parrain par jeton ouverts à `anon`, le reste fermé), `waitlist` inchangée. Aucune faille testée en production.
+
+**BUILD ET PUSH.** Build de l'état commité (c9e3b92) réussi. Push `fa94e56..c9e3b92` : 92798a4, 6f6b253, f37e135, 966d293, b8d90e0, c9e3b92.
+
+**DOCS.** DETTE #171 (phase A close), #177, #185 (registre de production relevé), #186 ouverte ; Q-DPO-027 corrigée (date de fermeture, site en ligne, 12 comptes) ; rappel de Q-DPO-030 mis à jour.
+
+**RESTE** :
+- push du présent commit docs ;
+- suppression de `/inscription/partager` (DETTE #181), puis phase A bis (#177), phase B (#175), reprise de 4a ;
+- au lancement : déployer le nouveau code sur `main` et créer `complete_inscription_alternant` en production (DETTE #161, #186) ;
+- test de la DETTE #172 non fait ; onglets de l'éditeur SQL de production à fermer.
 
 ## 2026-09-22 — [DEV] Fermeture de `users`, phase A : migration en local, sept pages, test local réussi (DETTE #171)
 
