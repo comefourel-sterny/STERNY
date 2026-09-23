@@ -9,7 +9,6 @@ const IconSearch = () => <svg {...svgProps}><circle cx="11" cy="11" r="8"/><path
 const IconClipboard = () => <svg {...svgProps}><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
 const IconCalendar = () => <svg {...svgProps}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
 const IconMessage = () => <svg {...svgProps}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-const IconHome = () => <svg {...svgProps}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 const IconHeart = () => <svg {...svgProps}><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 21l7.65-7.65.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg>
 const IconEuro = () => <svg {...svgProps}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
 const IconUser = () => <svg {...svgProps}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -82,7 +81,6 @@ export default function UserDropdown() {
   const visitorItems = [
     { icon: <IconLogin />, label: 'Se connecter ou s\'inscrire', to: '/connexion' },
     'separator',
-    { icon: <IconHome />, label: 'Proposer un logement', to: '/inscription/partager', description: 'Trouvez un alternant pour votre logement' },
     { icon: <IconHelp />, label: 'Comment \u00e7a marche', to: '/comment-ca-marche' },
   ]
 

@@ -234,10 +234,6 @@ export default function HamburgerMenu() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                   Comment ca marche
                 </Link>
-                <Link to="/inscription/partager" className="hm-item" onClick={() => setIsOpen(false)}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                  Devenir hote
-                </Link>
                 {!hideSignupCTA && (
                   <Link to="/inscription" className="hm-item hm-item-cta" onClick={() => setIsOpen(false)}>
                     S'inscrire

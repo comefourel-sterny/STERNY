@@ -3,7 +3,7 @@
 // (saisie all-France, data/inscription-options.js) ni avec une dérivation des
 // villes ayant des annonces (notion 3, différée). L'ordre des clés de
 // VILLES_DISPONIBLES pilote l'ordre d'affichage des suggestions : ne pas le changer.
-// Branché : HomePage (conv 57, T2). À brancher : RecherchePage, InscriptionPartagerPage,
+// Branché : HomePage (conv 57, T2). À brancher : RecherchePage,
 // CompleterProfilPage, InscriptionRecherchePage, DashboardLocatairePage, ModifierProfilPage (T3).
 
 /* ── Villes de lancement : { 'Label': 'slug' } ── */

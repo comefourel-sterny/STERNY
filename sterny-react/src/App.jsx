@@ -34,7 +34,6 @@ import ConnexionPage from './pages/auth/ConnexionPage'
 import ChoixInscriptionPage from './pages/auth/ChoixInscriptionPage'
 import InscriptionRecherchePage from './pages/auth/InscriptionRecherchePage'
 import InscriptionProprietairePage from './pages/auth/InscriptionProprietairePage'
-import InscriptionPartagerPage from './pages/auth/InscriptionPartagerPage'
 import InscriptionAlternantPage from './pages/auth/InscriptionAlternantPage'
 import CompleterProfilPage from './pages/auth/CompleterProfilPage'
 import MotDePasseOubliePage from './pages/auth/MotDePasseOubliePage'
@@ -139,7 +138,6 @@ export default function App() {
           <Route path="/inscription" element={<RedirectIfAuth><ChoixInscriptionPage /></RedirectIfAuth>} />
           <Route path="/inscription/recherche" element={<RedirectIfAuth><InscriptionRecherchePage /></RedirectIfAuth>} />
           <Route path="/inscription/proprietaire" element={<RedirectIfAuth><InscriptionProprietairePage /></RedirectIfAuth>} />
-          <Route path="/inscription/partager" element={<RedirectIfAuth><InscriptionPartagerPage /></RedirectIfAuth>} />
           <Route path="/inscription/alternant" element={<RedirectIfAuth><InscriptionAlternantPage /></RedirectIfAuth>} />
           <Route path="/completer-profil" element={<CompleterProfilPage />} />
           <Route path="/mot-de-passe-oublie" element={<MotDePasseOubliePage />} />
