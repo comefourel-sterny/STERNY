@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-23
+[DEV] Ordre révisé le 23/09 : reprise de /compte (4a) d'abord ; phase A bis (#177) et phase B (#175) obligatoires avant tout déploiement sur `main`. Reste : push, puis 4a.
 [DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée en local puis en production, empreintes identiques (805d3c3). DETTE #181 close. Reste : push, puis phase A bis, phase B, reprise de 4a.
 [DEV] Suppression de `/inscription/partager`, partie code faite et poussée (76cc888). Reste : migration du déclencheur, phase A bis, phase B, reprise de 4a.
 [DEV] Fermeture de `users`, phase A close : migration appliquée seule en production (le site sert `main`, rien n'est déployé), contrôle conforme au local, build de l'état commité réussi, push fait (c9e3b92). Reste : suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
@@ -25,6 +26,16 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-23 (suite 2) — [DEV] Ordre révisé : 4a avant les phases A bis et B, obligatoires avant tout déploiement sur `main`
+
+**DÉCISION DE CÔME, 23/09.** Le chantier /compte reprend à 4a « Tes documents ». Les phases A bis (#177) et B (#175) du chantier #171 passent après, mais restent obligatoires avant tout déploiement sur `main`. L'ordre « A bis, B, puis 4a » des entrées précédentes est remplacé.
+
+**RAISON.** Rien du nouveau code n'est en ligne : la production sert `main` (56289dc), l'ancien code derrière `PasswordGate`, dont aucun utilisateur réel ne dépend (#186). A bis et B protègent des utilisateurs qui n'existent pas encore. Les fichiers de 4a vivent dans le bucket `documents` privé, lisible par leur propriétaire et l'admin seulement : une relation fabriquée donne au plus le chemin d'un fichier, jamais le fichier.
+
+**CONDITION DE DÉPLOIEMENT.** Aucun déploiement du nouveau code sur `main` tant que A bis et B ne sont pas faites, en plus de la création de `complete_inscription_alternant` en production (#161, #186).
+
+**RESTE** : build de l'état commité, push de 805d3c3, 4df5298 et du présent commit docs ; puis 4a, qui commence par la lecture du rendu réel de /compte et de DossierLocatairePage.
 
 ## 2026-09-23 (suite) — [DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée sur les deux bases, DETTE #181 close
 

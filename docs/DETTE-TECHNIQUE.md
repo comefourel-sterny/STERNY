@@ -2002,6 +2002,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : exposition supérieure au besoin entre comptes liés (Q-DPO-029).
 **Résolution** : phase B du chantier #171. Prérequis : valider à l'écran et commiter seul le bouton « œil » du lot 2 de la DETTE #83, en attente dans `DashboardProprietairePage.jsx` et `.css`, puis retirer ces deux fichiers de la liste never-stage. Ensuite, décider relation par relation des champs visibles, puis remplacer les lectures larges de `users` page par page.
 **Découverte** : 2026-09-16.
+**MISE À JOUR 2026-09-23 (ordre).** Décision de Côme : la phase B passe après la reprise de /compte (4a), mais reste obligatoire avant tout déploiement du nouveau code sur `main` (voir #186).
 
 ## DETTE #176 — Jeton d'invitation et type de compte écrits par le navigateur
 **Constat (audit du 16/09/2026, DETTE #171)** : `DashboardLocatairePage` tire `invitation_token` dans le navigateur (8 caractères, `Math.random`) et l'écrit lui-même dans `users`. La même page modifie `type_user`. Le verrou du 16/09/2026 (89870b5) ne couvre aucune de ces deux colonnes.
@@ -2014,6 +2015,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : un utilisateur peut fabriquer une relation pour lire la ligne entière d'un autre compte (cas b, c et e de la phase A, et cas a pour les renouvellements). Q-DPO-027 et Q-DPO-030 le mentionnent.
 **Résolution** : phase A bis du chantier #171, après la phase A et avant toute ouverture. Audit du code qui écrit ces quatre tables, puis règles d'accès et, au besoin, fonctions de la base qui réservent chaque transition à la partie concernée.
 **Découverte** : 2026-09-21.
+**MISE À JOUR 2026-09-23 (ordre).** Décision de Côme : la phase A bis passe après la reprise de /compte (4a), mais reste obligatoire avant tout déploiement du nouveau code sur `main` (voir #186).
 
 ## DETTE #178 — ProfilPage : colonnes absentes et table `signalements` inexistante
 **Constat (audit du 21/09/2026, DETTE #171)** : ProfilPage lit dans `users` des colonnes absentes du schéma local (`description`, `ville_origine`), et dans `annonces` des colonnes absentes (`prix_semaine`, `proprietaire_id`, `statut`). Elle écrit dans une table `signalements` qui n'existe pas. Production non vérifiée.
@@ -2075,6 +2077,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : sur `main`, seule la landing fonctionne comme prévu. Aucun utilisateur ne dépend du reste (dernière connexion d'un compte autre que l'admin : 28/05).
 **Résolution** : au lancement, déployer le nouveau code sur `main`, après création de `complete_inscription_alternant` en production (DETTE #161).
 **Découverte** : 2026-09-22.
+**MISE À JOUR 2026-09-23.** Conditions du déploiement du nouveau code sur `main`, toutes obligatoires : `complete_inscription_alternant` créée en production (#161), phase A bis (#177) et phase B (#175) faites. Décision de Côme du 23/09.
 
 ## DETTE #187 — `HamburgerMenu` n'est importé par aucun fichier
 
