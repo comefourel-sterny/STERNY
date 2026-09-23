@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-23
+[DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée en local puis en production, empreintes identiques (805d3c3). DETTE #181 close. Reste : push, puis phase A bis, phase B, reprise de 4a.
 [DEV] Suppression de `/inscription/partager`, partie code faite et poussée (76cc888). Reste : migration du déclencheur, phase A bis, phase B, reprise de 4a.
 [DEV] Fermeture de `users`, phase A close : migration appliquée seule en production (le site sert `main`, rien n'est déployé), contrôle conforme au local, build de l'état commité réussi, push fait (c9e3b92). Reste : suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users`, phase A : migration appliquée en local (966d293), sept pages modifiées (b8d90e0), test local réussi. Production non faite. Reste : production, build de l'état commité, push, puis suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
@@ -24,6 +25,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-23 (suite) — [DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée sur les deux bases, DETTE #181 close
+
+**LECTURE DU CODE.** `creer_profil_depuis_inscription` n'est définie que dans `20260922090000_users_fermeture_lecture.sql`. Seule `InscriptionProprietairePage` envoie `sterny_parcours` (`'proprietaire'`) ; `main` ne l'envoie jamais. Valeurs par défaut vérifiées sur les deux bases : `a_logement=false`, `rythme_alternance=NULL`, soit exactement ce que la fonction écrivait pour un propriétaire. Le retrait de ces deux colonnes ne change donc rien.
+
+**MIGRATION.** `supabase/migrations/20260923090000_creer_profil_sans_partager.sql` (sha256 35f08033…d8a3), commit 805d3c3. La fonction n'agit plus que pour `sterny_parcours = 'proprietaire'`, type écrit en dur, huit colonnes insérées au lieu de dix. Contrôle du prénom et du nom, parrain par jeton, `on conflict` et droits inchangés. Déclencheur non recréé.
+
+**LOCAL.** Appliquée par `psql --single-transaction`. Empreinte `md5(pg_get_functiondef)` : 967da212…d11201 avant, 37ab0e06…1a7886 après. Test annulé par `rollback` : propriétaire créé (rythme NULL, a_logement false), « partager » et absence de parcours ignorés, propriétaire sans nom refusé en 22023 ; aucun résidu.
+
+**PRODUCTION.** État avant (onglet séparé) identique au local : même empreinte, mêmes valeurs par défaut, déclencheur présent, fonction fermée à `anon` et `authenticated`. Fichier commité copié par `pbcopy`, empreinte du presse-papier contrôlée, appliqué dans un onglet dédié. État après, dans un troisième onglet : empreinte 37ab0e06…1a7886, identique au local, déclencheur lié, droits inchangés. Aucun test de comportement en production.
+
+**MÉTHODE.** Claude Code a retiré deux fois le préfixe `cd` malgré la consigne (CONTEXTE §6 bis, point 3) : scan de secrets, indexation et commit faits dans le Terminal macOS.
+
+**RESTE** : build de l'état commité, push de 805d3c3 et du présent commit docs ; puis phase A bis (#177), phase B (#175), reprise de 4a.
 
 ## 2026-09-23 — [DEV] Suppression de `/inscription/partager`, partie code faite et poussée (DETTE #181)
 
