@@ -2041,6 +2041,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : hors phase A. Aligner ce parcours sur la saisie du rythme réel semaine par semaine, puis retirer ce champ de la liste du déclencheur. À rapprocher de la DETTE #150.
 **Découverte** : 2026-09-21.
 **MISE À JOUR 2026-09-22 (test local de la phase A).** La page n'est reliée à aucun bouton de `/inscription` : le parcours alternant unifié l'a remplacée, et VISION a décidé sa suppression le 2 mai 2026 (page fantôme), jamais faite. Constaté à l'écran : elle n'a jamais reçu la refonte des pages d'inscription (cadre dans le cadre, composants communs absents) et les suggestions de ville s'affichent derrière les champs, ce qui rend le formulaire inutilisable ; elle enregistre en outre un rythme abstrait. Résolution révisée, décidée par Côme : supprimer la page, son style, sa route et le lien du menu utilisateur (à confirmer par grep), comme premier chantier après la phase A, avant A bis ; retirer ensuite le parcours « partager » du déclencheur. Cette suppression ferme la présente dette.
+**MISE À JOUR 2026-09-23.** Partie code faite et poussée (76cc888) : page, CSS, import, route, les deux liens visiteur (UserDropdown et HamburgerMenu) et la mention dans le commentaire de `villes-lancement.js`. Aucun résidu de `inscription/partager` dans `sterny-react`. Dette NON close : le déclencheur `creer_profil_depuis_inscription` accepte encore le parcours « partager » et écrit `rythme_alternance` et `a_logement`. Branche morte, sans effet sur `main` qui n'envoie jamais `sterny_parcours`. Reste la migration, en commit séparé, appliquée en local puis en production dans l'éditeur SQL, empreintes `md5(pg_get_functiondef(oid))` comparées. `a_logement` a pour valeur par défaut `false` (remote_schema.sql:342) : la retirer de l'insertion ne change rien pour un propriétaire.
 
 ## DETTE #182 — `DashboardLayout` laisse entrer sans connexion en local
 **Constat (audit du 16/09/2026, consigné le 21/09/2026)** : en local, `DashboardLayout` laisse entrer sans connexion, alors qu'une entrée antérieure de ce document le décrit comme la garde qui redirige vers /connexion. Mécanisme non établi : condition propre au mode développement ou garde défaillante. Rappel : `/annonce/creer` est aussi déclarée sous le gabarit public, donc hors de cette garde (item 22 des audits du 25 avril, toujours présent au 16/09).
@@ -2072,3 +2073,17 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : sur `main`, seule la landing fonctionne comme prévu. Aucun utilisateur ne dépend du reste (dernière connexion d'un compte autre que l'admin : 28/05).
 **Résolution** : au lancement, déployer le nouveau code sur `main`, après création de `complete_inscription_alternant` en production (DETTE #161).
 **Découverte** : 2026-09-22.
+
+## DETTE #187 — `HamburgerMenu` n'est importé par aucun fichier
+
+**Constat (audit du 23/09/2026, chantier #181)** : `git grep -w HamburgerMenu` ne trouve que sa propre ligne de définition. Aucun `import HamburgerMenu`, aucun `<HamburgerMenu />` dans `sterny-react/src`. Le menu mobile est donc mort : son contenu n'est visible par personne. `UserDropdown` est lui bien rendu par `Navbar.jsx:63`.
+
+**Conséquence** : toute modification de ce fichier est sans effet à l'écran, et le composant peut diverger de la Navbar sans que rien ne le signale. Le lien « Devenir hôte » y a tout de même été retiré le 23/09 pour ne pas laisser de lien mort.
+
+**À trancher** : le rebrancher, ou le supprimer. Vérifier d'abord comment la navigation mobile fonctionne aujourd'hui. Hors périmètre de #181.
+
+## DETTE #188 — `ModifierProfilPage` : refonte visuelle non faite, accents perdus
+
+**Constat (test du 23/09/2026, chantier #181)** : la page n'a pas reçu la refonte des pages d'inscription (CONTEXTE §8 ter). Ses libellés perdent leurs accents : « Prenom », « Telephone », « Etape 1 sur 6 ». Même famille de défaut que #178 sur ProfilPage.
+
+**Non bloquant** : les champs et le menu déroulant fonctionnent, le parcours est utilisable. Défaut antérieur à la phase A.

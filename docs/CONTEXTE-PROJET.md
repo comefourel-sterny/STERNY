@@ -325,7 +325,7 @@ Obligatoire sur tout fichier issu d'un dump BDD, d'un export, d'un snapshot de s
 Commande type à intégrer dans chaque prompt de commit :
 `grep -nE "sbp_|sk-ant-|re_[A-Za-z0-9]{6,}|sk_live_|sk_test_|pk_live_|pk_test_|whsec_|pk\.|AIza[0-9A-Za-z_-]{35}|password|secret|token" <fichier>`
 
-Si retour non nul, analyser chaque match avant de commit. Faux positifs fréquents : noms de colonnes SQL (`"secret" "text"`), placeholders. Vrais positifs : valeurs après `Bearer`, `Authorization:`, `API_KEY=`, dans des chaînes JSON ou SQL.
+Si retour non nul, analyser chaque match avant de commit. Faux positifs fréquents : noms de colonnes SQL (`"secret" "text"`), placeholders, `PasswordGate` (nom du composant de mot de passe de la landing, match du motif `password`). Vrais positifs : valeurs après `Bearer`, `Authorization:`, `API_KEY=`, dans des chaînes JSON ou SQL.
 
 **Règle de prévention à la charge de Claude avant tout copier-coller de terminal**
 
@@ -429,6 +429,18 @@ Claude Code replie les sorties longues et n'en montre qu'une partie. Six comport
 (5) Dans le shell de Claude Code, `grep` peut désigner `ugrep`, qui échoue sur le motif du scan de secrets (« exceeds complexity limits »). Suivi de `|| true`, cet échec produit une sortie vide lue comme « aucun secret ». Tout scan de secrets s'écrit donc avec `/usr/bin/grep`, et son code de sortie s'affiche : 1 signifie aucun résultat, 2 signifie erreur. Origine : session du 15/09/2026, commit docs du patch 4.
 
 (6) Le Terminal macOS et le shell de Claude Code utilisent zsh, qui ne découpe pas le contenu d'une variable en plusieurs mots : une liste de chemins rangée dans `$F`, ou une commande rangée dans `$P`, est reçue comme un seul mot. Un contrôle écrit ainsi peut afficher « code 0 » ou un résultat vide sans avoir rien lu. Les chemins s'écrivent en toutes lettres, une commande réutilisée se range dans une fonction, et `PIPESTATUS` (absent de zsh) ne sert jamais. Origine : session du 16/09/2026, verrou d'écriture de `users`. Sous zsh, un motif contenant un point d'exclamation (`!`) s'écrit entre guillemets simples : sans guillemets ou entre guillemets doubles, zsh le lit comme un appel à l'historique des commandes, rejette la ligne entière avec « event not found » et n'exécute rien. Origine : session du 21/09/2026, audit de la fermeture de `users`.
+
+### Ligne d'état de référence
+
+Tout contrôle d'état du dépôt se fait par cette ligne, reprise telle quelle, sans réécriture, dans le Terminal macOS :
+
+```
+cd /Users/comefourel/Dev/sterny && git fetch --quiet origin && echo "branche=$(git branch --show-current) | tete=$(git rev-parse --short HEAD) | github=$(git ls-remote origin refs/heads/feat/unification-inscription | cut -c1-7) | ecart_retard/avance=$(git rev-list --left-right --count origin/feat/unification-inscription...HEAD | tr '\t' '/') | indexes=$(git diff --cached --name-only | wc -l | tr -d ' ') | modifies=$(git diff --name-only | wc -l | tr -d ' ') [$(git diff --name-only | paste -sd, -)] | non_suivis=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ') [$(git ls-files --others --exclude-standard | paste -sd, -)] | main=$(git ls-remote origin refs/heads/main | cut -c1-7)"
+```
+
+Tout contrôle décisif tient sur une seule ligne de sortie : le Terminal et Claude Code replient les sorties longues. Un brief qui renvoie à « la ligne habituelle » renvoie à celle-ci, et n'autorise aucune variante. La lancer depuis un autre répertoire que la racine fausse `non_suivis`, qui est relatif au répertoire courant : d'où le préfixe `cd`, obligatoire.
+
+Origine : session du 22-23/09/2026, suppression de `/inscription/partager`.
 
 ---
 

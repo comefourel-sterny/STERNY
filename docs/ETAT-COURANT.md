@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-22
+**Dernière mise à jour** : 2026-09-23
+[DEV] Suppression de `/inscription/partager`, partie code faite et poussée (76cc888). Reste : migration du déclencheur, phase A bis, phase B, reprise de 4a.
 [DEV] Fermeture de `users`, phase A close : migration appliquée seule en production (le site sert `main`, rien n'est déployé), contrôle conforme au local, build de l'état commité réussi, push fait (c9e3b92). Reste : suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users`, phase A : migration appliquée en local (966d293), sept pages modifiées (b8d90e0), test local réussi. Production non faite. Reste : production, build de l'état commité, push, puis suppression de `/inscription/partager`, phase A bis, phase B et reprise de 4a.
 [DEV] Fermeture de `users` : audit tenu en entier, conception révisée validée le 21/09 et loguée. Reste : phase A (migration, sept pages, production), puis phase A bis, phase B et reprise de 4a.
@@ -23,6 +24,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-23 — [DEV] Suppression de `/inscription/partager`, partie code faite et poussée (DETTE #181)
+
+**AUDIT AVANT SUPPRESSION.** Trois occurrences seulement : la route dans `App.jsx`, le lien visiteur « Proposer un logement » dans `UserDropdown`, le lien « Devenir hôte » dans `HamburgerMenu`. La Navbar n'en portait aucun. `CommentCaMarchePage` et `FaqPage` parlent de « partager » sans lien vers la page.
+
+**RISQUE CSS MESURÉ, PUIS ÉTEINT.** Le fichier supprimé définissait une vingtaine de classes globales, dont `.page-inscription .form-group select`, alors que trois pages vivantes utilisent ce conteneur. Grep : six classes n'appartenaient qu'à la page, toutes les autres sont redéfinies dans leur propre CSS, `fadeIn` compris. Test à l'écran après suppression : InscriptionRecherchePage (scopée `.ir-card`), ModifierProfilProprietairePage (sans menu déroulant) et ModifierProfilPage (styles propres) inchangées.
+
+**HYPOTHÈSE DE #179 INFIRMÉE.** `CreerAnnoncePage.css` et `ModifierAnnoncePage.css` cachent eux aussi `.form-section` pour tout le site. Supprimer le CSS de partager ne répare donc pas le formulaire d'AvisPage : #179 reste entière.
+
+**DÉCISION DU 23/09.** Les deux liens visiteur sont supprimés sans redirection. Ils s'adressaient à un propriétaire, dont l'inscription passera par parrainage seulement (#183) ; les envoyer vers `/inscription` les mettrait dans une impasse. Un point d'entrée hôte est un chantier produit distinct.
+
+**TEST LOCAL.** `/inscription/partager` renvoie la 404. Menu visiteur réduit à « Se connecter ou s'inscrire » et « Comment ça marche ». Les deux comptes propriétaires locaux n'étaient pas confirmés : `proprio-invite@sterny.test` confirmé en base locale pour le test, `proprio-seul` laissé tel quel.
+
+**COMMIT 76cc888, POUSSÉ.** Six fichiers, 712 lignes retirées. Production inchangée : elle sert `main` (56289dc).
+
+**RESTE** : migration retirant le parcours « partager » du déclencheur `creer_profil_depuis_inscription` (locale puis production, commit séparé), puis phase A bis (#177), phase B (#175), reprise de 4a.
 
 ## 2026-09-22 — [DEV] Fermeture de `users`, phase A close : migration appliquée seule en production, push fait (DETTE #171)
 
