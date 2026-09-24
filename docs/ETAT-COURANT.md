@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-23
+**Dernière mise à jour** : 2026-09-24
+[DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872), build de l'état commité réussi. Reste : push, puis 4a-2 (vérification serveur, après #167) et 4a-3 (bouton Stripe Identity, après audit de create-stripe-identity-session).
 [DEV] Ordre révisé le 23/09 : reprise de /compte (4a) d'abord ; phase A bis (#177) et phase B (#175) obligatoires avant tout déploiement sur `main`. Reste : push, puis 4a.
 [DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée en local puis en production, empreintes identiques (805d3c3). DETTE #181 close. Reste : push, puis phase A bis, phase B, reprise de 4a.
 [DEV] Suppression de `/inscription/partager`, partie code faite et poussée (76cc888). Reste : migration du déclencheur, phase A bis, phase B, reprise de 4a.
@@ -26,6 +27,18 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-24 — [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872)
+
+**DÉCISIONS DE CÔME (23/09).** (1) 4a découpé : 4a-1 dépôt et affichage ; 4a-2 vérification automatique côté serveur ; 4a-3 bouton de vérification d'identité. (2) #158 tranchée : documents et garant masqués pour proprietaire seulement. (3) « Tes documents » passe en action immédiate, sans bouton Enregistrer : exception au principe « pas d'autosave », loguée en VISION. (4) Ordre de la vérification : elle se déclenchera côté serveur juste après un dépôt réussi, jamais à la sélection ; la ligne affichera « Vérification en cours… » puis « Vérifié ✓ » ou « Refusé » avec son motif. Motif : un statut ne doit jamais porter sur un fichier absent de la base. (5) L'identité est proposée dès /compte (« Vérifie ton identité pour gagner la confiance des hôtes et des propriétaires. »), bouton livré en 4a-3 seulement.
+
+**LIVRÉ (bbe6872, GestionComptePage.jsx et .css seulement).** Catégorie Tes documents : ligne identité en lecture seule (trois libellés), trois pièces personnelles et deux pièces du garant. Choisir ou Remplacer envoie puis écrit le chemin dans doc_*_url ; Retirer se confirme sur la ligne, base d'abord, fichier ensuite. Tout-ou-rien par fichier. Ancien fichier supprimé après remplacement. Contrôle du type et de la taille avant envoi, extension déduite du type réel. Voir par URL signée de 60 s (première utilisation de createSignedUrl dans le projet). Masquage #158 par une liste partagée entre le filtre et le garde-fou. enregistrerCategorie prouvée identique à HEAD. Aucune colonne _statut ni _motif_rejet touchée. Aucune migration : le bucket et ses policies existent sur les deux bases depuis le 15/09.
+
+**TESTS (local, compte hote@sterny.test, preuves par psql sur la base).** Rendu ordinateur et téléphone ; refus de taille, rien envoyé ; fichier .txt grisé par le navigateur ; dépôt : chemin nu en base, un seul objet de même nom ; remplacement : nouveau chemin, ancien objet supprimé ; retrait avec confirmation : colonne vide, bucket vide ; échec d'envoi réseau coupé : rien en base ; Voir : URL signée avec jeton de 60 s ; masquage vérifié sur proprio-invite@sterny.test.
+
+**MÉTHODE.** Claude Code a encore perdu le préfixe cd trois fois ; les contrôles décisifs sont restés dans le Terminal.
+
+**RESTE.** Commit docs, push de bbe6872 et du commit docs. Puis 4a-2, 4a-3, 4b (Ton garant). Phases A bis (#177) et B (#175) toujours obligatoires avant tout déploiement sur main (#186). Production non touchée, rien n'est déployé.
 
 ## 2026-09-23 (suite 2) — [DEV] Ordre révisé : 4a avant les phases A bis et B, obligatoires avant tout déploiement sur `main`
 

@@ -1876,11 +1876,12 @@ Conséquence : une session qui cherche DETTE #30 ou #37 par grep sur le format d
 Résolution : convertir les puces #1 à #41 en sections de niveau 2, sans réécrire leur contenu. Session dédiée, jamais en marge d'un autre chantier — une conversion partielle serait pire que l'état actuel.
 Découverte : 2026-08-03, en analysant le corpus documentaire avant le rangement.
 
-## DETTE #158 — Catégories du groupe Dossier non filtrées par type d'utilisateur
+## DETTE #158 — Catégories du groupe Dossier non filtrées par type d'utilisateur [RÉSOLUE — bbe6872]
 Le patch 3b masque « Tes études » et « Ton alternance » pour un `type_user` valant `proprietaire`, ces catégories n'ayant aucun sens pour un non-alternant. Le groupe Dossier n'est pas filtré : un propriétaire voit toujours « Tes documents » et « Ton garant ». Le garant est une pièce de dossier locataire, sa pertinence pour un propriétaire n'a pas été tranchée. « Tes documents » n'a pas été examiné du tout.
 Aucune conséquence sur les données : ces catégories sont vides tant que le patch 4 ne les a pas construites.
 Résolution : trancher au patch 4, qui traite ces deux catégories. Le mécanisme de filtrage existe déjà, il suffira d'y ajouter les identifiants concernés.
 Découverte : 2026-08-07, en testant le masquage propriétaire du patch 3b.
+**RÉSOLUE 2026-09-24 (bbe6872).** Décision de Côme du 23/09 : documents et garant masqués pour proprietaire seulement, par ajout au filtre du patch 3b, désormais une liste partagée avec le garde-fou. /compte ne montre que les affaires propres de l'utilisateur, et un propriétaire ne loue jamais. Consulter le dossier et le garant de ses locataires est un autre besoin, hors /compte, qui relève de la phase B (#175) et du DPO. Un hote garde les deux catégories : il peut devoir retrouver ses documents et bascule en les_deux sans que rien ne réapparaisse.
 
 ## DETTE #159 — Profils `les_deux` : statut de ville indérivable, ville muette persistante
 Le helper `deriverStatutVille` ne devine jamais la fonction d'une ville quand `type_user` vaut `les_deux`, et c'est un choix explicite, pas un oubli. Pour tous les autres types, la fonction se déduit du type : un `locataire` cherche, un `hote` propose. Un `les_deux` fait les deux, et rien dans la donnée ne dit laquelle de ses deux villes porte laquelle des deux fonctions. Deviner reviendrait à inscrire une valeur inventée dans une colonne qui pilote le matching.
@@ -1961,6 +1962,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : aucune aujourd'hui, la page étant inopérante faute de bucket jusqu'au 15/09. Elle le restera tant qu'elle n'est pas adaptée.
 **Résolution** : chantier dédié, après le patch 4a qui fixe le modèle de référence (chemin en base, URL signée, tout-ou-rien).
 **Découverte** : 2026-09-15.
+**MISE À JOUR 2026-09-24.** Implémentation de référence disponible depuis bbe6872 : /compte, Tes documents (chemin nu, URL signée, tout-ou-rien par fichier).
 
 ## DETTE #170 — Export et suppression de compte face au dossier
 **Constat (audit du 15/09/2026, patch 4)** : `export-data` exporte les colonnes du dossier mais aucun fichier, et filtre les annonces sur `proprietaire_id` alors que le reste du code utilise `user_id` (non établi). `delete-account` supprime physiquement toutes les données, et vise une table `documents` absente des deux bases (effet non établi).
@@ -2092,3 +2094,43 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Constat (test du 23/09/2026, chantier #181)** : la page n'a pas reçu la refonte des pages d'inscription (CONTEXTE §8 ter). Ses libellés perdent leurs accents : « Prenom », « Telephone », « Etape 1 sur 6 ». Même famille de défaut que #178 sur ProfilPage.
 
 **Non bloquant** : les champs et le menu déroulant fonctionnent, le parcours est utilisable. Défaut antérieur à la phase A.
+
+## DETTE #189 — Navigation de /compte illisible sur téléphone
+
+**Constat (constat de Côme, 23/09/2026, patch 4a)** : sous environ 500 px, la barre de catégories devient trois bandes horizontales (Profil, Dossier, Compte) qui défilent de côté, avec des barres de défilement grises visibles et des libellés tronqués (« Tes étude », « Ton garant »). Rien n'indique qu'il faut faire glisser. Antérieur à 4a, hérité des patchs 3.
+
+**Résolution** : patch dédié après 4a, maquette validée avant tout code. Piste : une liste verticale des catégories comme écran d'entrée sur téléphone, puis la catégorie seule avec un retour. Priorité à fixer avant tout déploiement sur main.
+
+**Découverte** : 2026-09-23.
+
+## DETTE #190 — Libellés du type de compte sans accent
+
+**Constat (patch 4a)** : « Hote », « Proprietaire », « Locataire & Hote » au lieu de « Hôte », « Propriétaire », « Locataire & Hôte ». Deux endroits portent la même table : GestionComptePage (sous le nom dans /compte) et ParametresPage.
+
+**Résolution** : correction triviale, hors 4a.
+
+**Découverte** : 2026-09-23.
+
+## DETTE #191 — Pas d'avertissement en quittant /compte avec des modifications non enregistrées
+
+**Constat (constat de Côme, patch 4a)** : aucune alerte quand on quitte /compte avec des modifications non enregistrées dans une catégorie de champs texte (Tes études, À propos de toi, Infos personnelles, villes). Côme oublie lui-même d'enregistrer.
+
+**Résolution** : à ajouter — avertissement à la sortie de la page et à la navigation interne. Complète le principe « pas d'autosave ».
+
+**Découverte** : 2026-09-23.
+
+## DETTE #192 — Ancienne photo de profil jamais supprimée
+
+**Constat (patch 4a)** : chaque changement de photo crée un nouveau fichier dans le bucket `profils` sans retirer l'ancien. Fichiers orphelins qui s'accumulent. Même famille que #169.
+
+**Résolution** : à traiter au patch 5 (migration d'enregistrerInfosPersonnelles).
+
+**Découverte** : 2026-09-23.
+
+## DETTE #193 — Audit de create-stripe-identity-session, préalable à 4a-3
+
+**Constat (patch 4a)** : la fonction reçoit `user_id` dans le corps de la requête. Si elle ne vérifie pas que l'appelant est ce `user_id`, n'importe qui peut lancer une vérification au nom d'un autre, et le webhook marquerait ce compte vérifié avec la pièce d'identité de l'attaquant. Même nature que #167.
+
+**Résolution** : aucun nouveau point d'entrée Stripe Identity avant cet audit. Coût par vérification à surveiller.
+
+**Découverte** : 2026-09-23.
