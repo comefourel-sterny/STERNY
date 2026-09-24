@@ -67,6 +67,23 @@ const GROUPES = [
   },
 ]
 
+// Catégories masquées pour un propriétaire (ni alternant, ni dossier locataire). Une seule liste, partagée
+// par le filtre de la barre et par le garde-fou qui ramène sur une catégorie visible.
+const CATEGORIES_MASQUEES_PROPRIETAIRE = ['etudes', 'alternance', 'documents', 'garant']
+
+// Catégorie "Tes documents" — pièces du dossier locataire. Aucune n'est obligatoire pour enregistrer ; les colonnes
+// _statut / _motif_rejet sont réservées au serveur (verrou d'écriture) et ne sont ni lues ni écrites ici.
+const DOCS_COMPTE = [
+  { type: 'scolarite', label: 'Certificat de scolarité', col: 'doc_scolarite_url', groupe: 'pieces' },
+  { type: 'assurance', label: 'Assurance habitation', col: 'doc_assurance_url', groupe: 'pieces' },
+  { type: 'rib', label: 'RIB', col: 'doc_rib_url', groupe: 'pieces' },
+  { type: 'garant_id', label: "Pièce d'identité du garant", col: 'doc_garant_id_url', groupe: 'garant' },
+  { type: 'cautionnement', label: 'Acte de cautionnement signé', col: 'doc_cautionnement_url', groupe: 'garant' },
+]
+
+// Extension déduite du type MIME réel (garanti par le contrôle de choisirFichier), jamais du nom de fichier.
+const EXT_PAR_TYPE_DOC = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' }
+
 // Préférences email portées de ModifierProfilPage (mêmes clés, mêmes libellés).
 const PREFS_EMAIL = [
   { key: 'alertes', label: 'Alertes logement', desc: 'Nouveaux logements correspondant à tes critères' },
@@ -228,6 +245,15 @@ export default function GestionComptePage() {
   const { ref: villesShakeRef, shake: villesShake } = useShakeButton()
   const [showBloqueModal, setShowBloqueModal] = useState(false)
 
+  // Catégorie "Tes documents" — action immédiate : Choisir/Remplacer envoie et écrit aussitôt ; Retirer se confirme
+  // sur la ligne puis écrit aussitôt. Tout-ou-rien à l'échelle d'un fichier. Les chemins déposés se lisent dans userData.
+  const [erreursDocuments, setErreursDocuments] = useState({})
+  const [docsEnCours, setDocsEnCours] = useState({})
+  const [confirmRetrait, setConfirmRetrait] = useState(null)
+  const [docsOk, setDocsOk] = useState({})
+  const documentsChampErreurTimeout = useRef(null)
+  const docInputRefs = useRef({})
+
   // Patch 3d — Ton alternance : rythme lu en base, affiché en lecture seule et édité en modale.
   const [rythmeCalendrier, setRythmeCalendrier] = useState([])
   const [anneeRythme, setAnneeRythme] = useState(computeDefaultAcademicYear())
@@ -331,7 +357,7 @@ export default function GestionComptePage() {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar, identite_verifiee, doc_scolarite_url, doc_assurance_url, doc_rib_url, doc_garant_id_url, doc_cautionnement_url')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -743,12 +769,144 @@ export default function GestionComptePage() {
     })
   }
 
+  // ---- Catégorie "Tes documents" ----
+  // Normalisation défensive : accepte un chemin nu OU une ancienne URL publique complète, renvoie toujours le chemin
+  // relatif au bucket (ou null). Un doc_*_url vide, ou une URL sans segment /documents/, donne null.
+  function cheminDocument(valeur) {
+    if (!valeur) return null
+    if (valeur.includes('://')) { const i = valeur.indexOf('/documents/'); return i === -1 ? null : valeur.slice(i + '/documents/'.length) }
+    return valeur
+  }
+
+  // Erreur de ligne, sans secousse (il n'y a plus de bouton d'enregistrement). Éteinte à 3000 ms.
+  function erreurLigneDocument(type, message) {
+    setErreursDocuments(prev => ({ ...prev, [type]: message }))
+    clearTimeout(documentsChampErreurTimeout.current)
+    documentsChampErreurTimeout.current = setTimeout(() => setErreursDocuments({}), 3000)
+  }
+
+  function choisirFichier(type, file, inputEl) {
+    if (inputEl) inputEl.value = ''
+    if (!file) return
+    if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) { erreurLigneDocument(type, 'Format accepté : PDF, JPEG ou PNG.'); return }
+    if (file.size > 5 * 1024 * 1024) { erreurLigneDocument(type, 'Fichier trop lourd : 5 Mo maximum.'); return }
+    deposerDocument(type, file)
+  }
+
+  // Choisir / Remplacer : envoie le fichier puis écrit la colonne aussitôt. Tout-ou-rien à l'échelle d'un fichier —
+  // un échec d'upload ou d'écriture laisse la donnée intacte. setUserData en forme fonctionnelle car deux lignes
+  // peuvent aboutir en même temps.
+  async function deposerDocument(type, file) {
+    const doc = DOCS_COMPTE.find(d => d.type === type)
+    if (!doc) return
+    setDocsEnCours(prev => ({ ...prev, [type]: 'envoi' }))
+    setErreursDocuments(prev => { const n = { ...prev }; delete n[type]; return n })
+    try {
+      const chemin = `${user.id}-${type}-${Date.now()}.${EXT_PAR_TYPE_DOC[file.type]}`
+      const ancien = cheminDocument(userData?.[doc.col])
+      const { error: upErr } = await supabaseClient.storage.from('documents').upload(chemin, file, { upsert: false })
+      if (upErr) { console.error(upErr); erreurLigneDocument(type, "Le document n'a pas pu être envoyé. Réessaie."); return }
+      const { error: dbErr } = await supabaseClient.from('users').update({ [doc.col]: chemin }).eq('id', user.id)
+      if (dbErr) {
+        console.error(dbErr)
+        try { await supabaseClient.storage.from('documents').remove([chemin]) } catch (eRm) { console.error(eRm) }
+        erreurLigneDocument(type, "Le document n'a pas pu être envoyé. Réessaie.")
+        return
+      }
+      setUserData(prev => ({ ...prev, [doc.col]: chemin }))
+      setDocsOk(prev => ({ ...prev, [type]: true }))
+      setTimeout(() => setDocsOk(prev => { const n = { ...prev }; delete n[type]; return n }), 2000)
+      if (ancien) { try { await supabaseClient.storage.from('documents').remove([ancien]) } catch (eOld) { console.error(eOld) } }
+    } finally {
+      setDocsEnCours(prev => { const n = { ...prev }; delete n[type]; return n })
+    }
+  }
+
+  async function voirDocument(type, chemin) {
+    const w = window.open('', '_blank')
+    if (!w) { erreurLigneDocument(type, "Ton navigateur a bloqué l'ouverture. Autorise les fenêtres pour ce site."); return }
+    w.opener = null
+    const { data, error } = await supabaseClient.storage.from('documents').createSignedUrl(chemin, 60)
+    if (error || !data?.signedUrl) { console.error(error); w.close(); erreurLigneDocument(type, "Le fichier n'a pas pu s'ouvrir. Réessaie."); return }
+    w.location.href = data.signedUrl
+  }
+
+  // Retirer : base d'abord, fichier ensuite. Un échec de suppression laisse un fichier orphelin, jamais une donnée fausse.
+  async function retirerDocument(type) {
+    const doc = DOCS_COMPTE.find(d => d.type === type)
+    if (!doc) return
+    setConfirmRetrait(null)
+    setDocsEnCours(prev => ({ ...prev, [type]: 'retrait' }))
+    setErreursDocuments(prev => { const n = { ...prev }; delete n[type]; return n })
+    try {
+      const ancien = cheminDocument(userData?.[doc.col])
+      const { error: dbErr } = await supabaseClient.from('users').update({ [doc.col]: null }).eq('id', user.id)
+      if (dbErr) { console.error(dbErr); erreurLigneDocument(type, "Le document n'a pas pu être retiré. Réessaie."); return }
+      setUserData(prev => ({ ...prev, [doc.col]: null }))
+      if (ancien) { try { await supabaseClient.storage.from('documents').remove([ancien]) } catch (eOld) { console.error(eOld) } }
+    } finally {
+      setDocsEnCours(prev => { const n = { ...prev }; delete n[type]; return n })
+    }
+  }
+
+  function renderLigneDocument(doc) {
+    const enCours = docsEnCours[doc.type]
+    const cheminDepose = cheminDocument(userData?.[doc.col])
+    const erreur = erreursDocuments[doc.type]
+    const ok = docsOk[doc.type]
+    let etat
+    let actions = null
+    if (enCours === 'envoi') {
+      etat = 'Envoi…'
+    } else if (enCours === 'retrait') {
+      etat = 'Retrait…'
+    } else if (confirmRetrait === doc.type) {
+      etat = 'Retirer ce document ?'
+      actions = (
+        <>
+          <button type="button" className="gc-ligne-action gc-ligne-action-danger" onClick={() => retirerDocument(doc.type)}>Oui</button>
+          <button type="button" className="gc-ligne-action" onClick={() => setConfirmRetrait(null)}>Non</button>
+        </>
+      )
+    } else if (ok) {
+      etat = 'Déposé ✓'
+      actions = (
+        <>
+          <button type="button" className="gc-ligne-action" onClick={() => voirDocument(doc.type, cheminDepose)}>Voir</button>
+          <button type="button" className="gc-ligne-action" onClick={() => docInputRefs.current[doc.type]?.click()}>Remplacer</button>
+          <button type="button" className="gc-ligne-action gc-ligne-action-danger" onClick={() => setConfirmRetrait(doc.type)}>Retirer</button>
+        </>
+      )
+    } else if (cheminDepose) {
+      etat = 'Fichier déposé'
+      actions = (
+        <>
+          <button type="button" className="gc-ligne-action" onClick={() => voirDocument(doc.type, cheminDepose)}>Voir</button>
+          <button type="button" className="gc-ligne-action" onClick={() => docInputRefs.current[doc.type]?.click()}>Remplacer</button>
+          <button type="button" className="gc-ligne-action gc-ligne-action-danger" onClick={() => setConfirmRetrait(doc.type)}>Retirer</button>
+        </>
+      )
+    } else {
+      etat = 'Aucun fichier'
+      actions = <button type="button" className="gc-ligne-action" onClick={() => docInputRefs.current[doc.type]?.click()}>Choisir</button>
+    }
+    return (
+      <div className="gc-doc-ligne" key={doc.type}>
+        <div className="gc-ligne-label"><IconDocuments /><span>{doc.label}</span></div>
+        <div className={ok ? 'gc-doc-etat gc-doc-etat-ok' : 'gc-doc-etat'}>{etat}</div>
+        {actions && <div className="gc-doc-actions">{actions}</div>}
+        {erreur && <p className="gc-champ-erreur gc-doc-erreur">{erreur}</p>}
+        <input type="file" accept="application/pdf,image/jpeg,image/png" style={{ display: 'none' }} ref={el => { docInputRefs.current[doc.type] = el }} onChange={e => choisirFichier(doc.type, e.target.files[0], e.target)} />
+      </div>
+    )
+  }
+
   const estProprietaire = userData?.type_user === 'proprietaire'
 
   // Garde-fou : si la catégorie active vient d'être masquée pour un propriétaire, revenir sur une catégorie visible.
   // AVANT le retour anticipé `if (!user) return null` — un hook ne doit jamais suivre un return conditionnel.
   useEffect(() => {
-    if (estProprietaire && (categorieActive === 'etudes' || categorieActive === 'alternance')) {
+    if (estProprietaire && CATEGORIES_MASQUEES_PROPRIETAIRE.includes(categorieActive)) {
       setCategorieActive('infos')
     }
   }, [estProprietaire, categorieActive])
@@ -790,9 +948,9 @@ export default function GestionComptePage() {
     fonctionVilleEntreprise !== villesInitiales.fonctionVilleEntreprise
   )
 
-  // Masquage catégories pour les propriétaires (ni "Tes études" ni "Ton alternance" : un propriétaire n'est pas alternant).
+  // Masquage catégories pour les propriétaires (alternance + dossier locataire) : liste unique partagée avec le garde-fou.
   const groupesVisibles = GROUPES
-    .map(g => ({ ...g, items: g.items.filter(i => !(estProprietaire && (i.id === 'etudes' || i.id === 'alternance'))) }))
+    .map(g => ({ ...g, items: g.items.filter(i => !(estProprietaire && CATEGORIES_MASQUEES_PROPRIETAIRE.includes(i.id))) }))
     .filter(g => g.items.length > 0)
 
   return (
@@ -1057,7 +1215,31 @@ export default function GestionComptePage() {
             </>
           )}
 
-          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && categorieActive !== 'alternance' && (
+          {categorieActive === 'documents' && (
+            <>
+              <div className="gc-sous-titre">Ton identité</div>
+              <div className="gc-doc-ligne">
+                <div className="gc-ligne-label"><IconGarant /><span>Vérification d'identité</span></div>
+                <div className="gc-doc-etat">
+                  {userData?.identite_verifiee === 'verifiee'
+                    ? 'Identité vérifiée'
+                    : userData?.identite_verifiee === 'echec_verification'
+                      ? "La vérification n'a pas abouti. Tu peux recommencer."
+                      : 'Vérifie ton identité pour gagner la confiance des hôtes et des propriétaires.'}
+                </div>
+              </div>
+
+              <div className="gc-sous-titre">Tes pièces</div>
+              {DOCS_COMPTE.filter(d => d.groupe === 'pieces').map(renderLigneDocument)}
+
+              <div className="gc-sous-titre">Pièces de ton garant</div>
+              {DOCS_COMPTE.filter(d => d.groupe === 'garant').map(renderLigneDocument)}
+
+              <div className="gc-doc-hint">PDF, JPEG ou PNG, 5 Mo maximum par fichier.</div>
+            </>
+          )}
+
+          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && categorieActive !== 'alternance' && categorieActive !== 'documents' && (
             <div className="gc-placeholder">Cette section arrive au prochain patch.</div>
           )}
         </section>
