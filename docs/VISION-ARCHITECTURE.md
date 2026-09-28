@@ -54,7 +54,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-09-22 — Code de parrainage obligatoire pour toute inscription propriétaire (précision du parcours propriétaire).
+**Dernière mise à jour** : 2026-09-28 — Vérifications automatiques (documents, identité) inactives jusqu'à la préparation du lancement.
 
 ---
 
@@ -457,6 +457,8 @@ Sterny les voit pour vérifier, l'hôte ne voit qu'un statut agrégé). Un futur
 **Contenu de « Tes documents » (décision du 15/09/2026, patch 4).** La catégorie reprend les cinq documents du dossier locataire (`DossierLocatairePage`) avec leur vérification automatique et leur statut : certificat de scolarité, assurance habitation, RIB, pièce d'identité du garant, acte de cautionnement. L'identité du locataire n'est PAS collectée sous forme de fichier : la catégorie affiche son statut Stripe Identity (vérifiée, à faire, échec), conformément à la décision du 02/07/2026. L'envoi de la pièce d'identité du locataire par fichier, présent dans ModifierProfilPage, n'est pas repris et disparaîtra avec cette page. La pièce d'identité du garant reste un fichier, le garant n'ayant pas de compte pour passer par Stripe Identity : exception assumée à la nuance de sécurité du 02/07, tracée pour le DPO.
 
 **AMENDEMENT 23/09/2026 — identité proposée dès /compte (décision de Côme).** La catégorie invite à vérifier son identité sans attendre la candidature (« Vérifie ton identité pour gagner la confiance des hôtes et des propriétaires. »), avec un bouton de lancement. Le bouton n'est livré qu'après l'audit de create-stripe-identity-session, qui reçoit user_id dans le corps de la requête (risque de même nature que #167). Coût par vérification à surveiller.
+
+**AMENDEMENT 28/09/2026 — vérifications automatiques inactives jusqu'à la préparation du lancement (décision de Côme).** Côme n'engage aucune carte sur un service payant avant la préparation du lancement et la revue par des professionnels. La vérification automatique des documents (Google Vision, facturation non activée) et la vérification d'identité (Stripe Identity, 4a-3) restent donc inactives d'ici là : les documents se déposent et s'affichent, sans verdict. Le code de la vérification des documents est écrit (6bc29af) ; ses tests restants, son branchement dans /compte et son déploiement attendent l'activation (DETTE #194).
 
 **Stockage des documents de dossier (décision technique du 15/09/2026, patch 4).** Le bucket `documents` n'existait ni en local ni en production : il est créé privé, par migration versionnée, avec plafond de 5 Mo et formats PDF, JPEG, PNG. Les colonnes `doc_*_url` stockent le CHEMIN du fichier dans le bucket, jamais une URL publique ; l'affichage passe par une URL signée à durée courte. Lecture, écriture, mise à jour et suppression sont réservées au propriétaire du fichier (nom préfixé par son identifiant) et à l'admin. Conséquence assumée : `DossierLocatairePage`, qui enregistre des URL publiques, devra être adaptée ; elle était déjà inopérante faute de bucket, aucune régression n'est introduite.
 

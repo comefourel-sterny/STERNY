@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-25
+**Dernière mise à jour** : 2026-09-28
+[DEV] Patch 4a-2 suspendu après l'étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests locaux sur 7 réussis. Tests 3, 4 et 6, branchement dans /compte et 4a-3 reportés jusqu'à l'activation des services payants, avant le lancement (DETTE #194). Suite : 4b « Ton garant », sans vérification des pièces. Reste : push.
 [DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents et contrainte statut/motif, appliquées sur les deux bases (d9cf22c). Le push de bbe6872 et 0b80d16 est fait (la mention « Reste : push » du 24/09 est dépassée). Reste : verify-document (#167, #173), branchement dans /compte, push.
 [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872), build de l'état commité réussi. Reste : push, puis 4a-2 (vérification serveur, après #167) et 4a-3 (bouton Stripe Identity, après audit de create-stripe-identity-session).
 [DEV] Ordre révisé le 23/09 : reprise de /compte (4a) d'abord ; phase A bis (#177) et phase B (#175) obligatoires avant tout déploiement sur `main`. Reste : push, puis 4a.
@@ -28,6 +29,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-28 — [DEV] Patch 4a-2, étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests sur 7, patch suspendu
+
+**LIVRÉ (6bc29af, `supabase/functions/verify-document/index.ts` seul, 349 lignes, sha256 1470fe2c84a7…).** Le navigateur n'envoie plus que `docType`. La fonction vérifie le jeton de l'appelant par `getUser(jeton)` avec le compte serveur, n'accepte que scolarite, assurance et rib, lit nom et chemin en base, exige un chemin de la forme `<id>-<docType>-`, télécharge le fichier du bucket privé, établit le format par ses premiers octets, appelle `files:annotate` pour un PDF et `images:annotate` pour une image avec la clé en en-tête, et n'écrit statut et motif, ensemble, que si le chemin vérifié est toujours en place. Réponses sans verdict : 401, 400, 403, 404, 409, 422, 500, 502, 503. `deno check` réussi.
+
+**CHOIX VALIDÉS PAR CÔME.** Nom vide : refus avec motif, sans écriture, car un rejet écrit resterait bloqué après correction du nom (la remise à zéro ne suit que le chemin). Toute erreur renvoyée par Google : aucun verdict. Seuil des 10 Ko supprimé. Motifs au tutoiement.
+
+**TESTS LOCAUX** (compte `hote@sterny.test`, fonction servie avec `--no-verify-jwt` pour que le refus prouvé soit celui du code). Réussis : (1) sans en-tête, et avec la seule clé publique : 401 ; (2) `garant_id` : 400 ; (5) nom vide : 422, rien écrit ; (7) clé absente : 503, rien écrit. Observé en plus : un refus de Google (403) donne 502, rien écrit. Non faits : (3) vrai certificat donne `verifie` ; (4) document sans rapport donne `rejete` avec motif ; (6) chemin changé pendant la vérification, à provoquer en bloquant la ligne `users` dans `psql` par un changement de chemin non validé, puis en validant pendant l'appel : attendu 409, rien écrit.
+
+**BLOCAGE ET DÉCISION DE CÔME.** La facturation Google Cloud n'est pas activée sur le projet STERNY, qui porte une seule clé API (« Clé API Cloud Vison », créée le 28/04/2026), celle qui a servi aux tests. Côme ne l'active pas maintenant : aucune carte engagée sur un service avant la préparation du lancement et la revue par des professionnels. Écart assumé à son propre critère : commit avec 4 tests sur 7, les trois autres étant dus avant tout déploiement. 4a-2 suspendu ; 4a-3 (Stripe Identity, service payant) reporté pour la même raison. DETTE #194.
+
+**NETTOYAGE.** Nom local de `hote@sterny.test` remis à `Hote`, document de test retiré de la base et du bucket, `supabase/functions/.env` effacé. La clé Google n'a pas été supprimée : c'est probablement celle de la production.
+
+**MÉTHODE.** Claude Code, en recopiant le fichier, a doublé l'antislash de l'expression qui retire les accents, puis a affirmé le fichier exact. Défaut trouvé par l'empreinte, corrigé par `perl` dans le Terminal (CONTEXTE §6 bis, point 7). Un fichier montré pour validation a été collé dans l'éditeur SQL de production : refusé dès le premier caractère, rien exécuté.
+
+**RESTE.** Build de l'état commité, push de 6bc29af et du commit docs. Puis 4b.
 
 ## 2026-09-25 — [DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents, appliquée sur les deux bases (d9cf22c)
 

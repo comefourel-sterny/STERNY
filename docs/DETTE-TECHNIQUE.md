@@ -1950,6 +1950,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Non établi** : le réglage de vérification du jeton de la fonction côté Supabase.
 **Résolution** : vérifier l'utilisateur connecté en tête de fonction. À traiter avant de brancher la vérification dans /compte (patch 4a).
 **Découverte** : 2026-09-15.
+**MISE À JOUR 2026-09-28.** Corrigé dans le dépôt (6bc29af) et prouvé en local : sans en-tête comme avec la seule clé publique, le code de la fonction refuse (401). Non déployé, la production garde l'ancienne version. Dette ouverte jusqu'au déploiement, suspendu (DETTE #194).
 
 ## DETTE #168 — `stripe-webhook` répond 200 quand l'écriture « identité vérifiée » échoue
 **Constat (audit du 15/09/2026, patch 4)** : sur l'événement `identity.verification_session.verified`, l'erreur de mise à jour de `users` est seulement journalisée, puis la fonction répond 200 à Stripe. Stripe ne rejoue donc pas l'événement.
@@ -1963,6 +1964,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : chantier dédié, après le patch 4a qui fixe le modèle de référence (chemin en base, URL signée, tout-ou-rien).
 **Découverte** : 2026-09-15.
 **MISE À JOUR 2026-09-24.** Implémentation de référence disponible depuis bbe6872 : /compte, Tes documents (chemin nu, URL signée, tout-ou-rien par fichier).
+**MISE À JOUR 2026-09-28.** Depuis 6bc29af, `verify-document` n'accepte plus le fichier ni le nom envoyés par le navigateur : l'appel de cette page ne fonctionne plus. Sans effet tant que la page reste inopérante ; à reprendre dans ce même chantier.
 
 ## DETTE #170 — Export et suppression de compte face au dossier
 **Constat (audit du 15/09/2026, patch 4)** : `export-data` exporte les colonnes du dossier mais aucun fichier, et filtre les annonces sur `proprietaire_id` alors que le reste du code utilise `user_id` (non établi). `delete-account` supprime physiquement toutes les données, et vise une table `documents` absente des deux bases (effet non établi).
@@ -1993,6 +1995,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : seul le serveur décide et écrit le statut, à partir du nom lu en base. À traiter avec les DETTES #167 et #169.
 **Découverte** : 2026-09-16.
 **MISE À JOUR 2026-09-25.** Côté base, c'est fait sur les deux bases (d9cf22c) : statuts et motifs réservés au serveur, remise à zéro à tout changement de chemin, contrainte de cohérence statut/motif. Reste la fonction `verify-document` elle-même (4a-2, étape 2).
+**MISE À JOUR 2026-09-28.** Fonction réécrite (6bc29af) : nom et chemin lus en base, verdict écrit par le serveur seul et seulement si le chemin est inchangé. Tests 3, 4 et 6 non faits, faute de facturation Google (DETTE #194). Non déployée.
 
 ## DETTE #174 — `InscriptionRecherchePage` inopérante après la fermeture de `users`
 **Constat (conception du 16/09/2026, DETTE #171)** : la page écrit elle-même la ligne `users` après l'inscription, donc sans session puisque la confirmation d'email est activée, et vérifie l'existence d'un email en lisant `users` sans connexion. Plus aucun lien du site n'y mène : seule sa route subsiste.
@@ -2135,3 +2138,15 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : aucun nouveau point d'entrée Stripe Identity avant cet audit. Coût par vérification à surveiller.
 
 **Découverte** : 2026-09-23.
+
+## DETTE #194 — Vérification des documents inactive : facturation Google non activée
+
+**Constat (tests du 28/09/2026, patch 4a-2)** : Google Vision répond 403, facturation requise, sur le projet Google STERNY, dont l'unique clé API a servi aux tests locaux.
+
+**Conséquence** : aucune pièce ne peut être vérifiée. Probable, non établi : ce projet est celui de la clé de production ; si oui, la vérification n'a jamais fonctionné en production, l'ancien code transformant ce refus en « refusé ». Aucun utilisateur concerné (dernière connexion d'un compte autre que l'admin : 28/05).
+
+**Décision de Côme (28/09/2026)** : pas d'activation avant la préparation du lancement et la revue par des professionnels.
+
+**Prérequis de la reprise** : activer la facturation, avec alerte budgétaire et plafond de requêtes par jour ; établir que le secret de production est bien la clé du projet STERNY ; recréer `supabase/functions/.env` ; passer les tests 3, 4 et 6 de 4a-2 (méthode dans ETAT, entrée du 28/09) ; brancher la vérification dans /compte (étape 3) ; décider séparément du déploiement de la fonction.
+
+**Découverte** : 2026-09-28.
