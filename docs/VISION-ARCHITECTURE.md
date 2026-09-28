@@ -1091,6 +1091,8 @@ existait.
 
 **EXCEPTION 23/09/2026 — « Tes documents » en action immédiate (décision de Côme).** Choisir, remplacer ou retirer un document écrit aussitôt, sans bouton « Enregistrer ». Motif : le choix d'un fichier est lui-même un geste explicite, et la confirmation de ligne (« Déposé ✓ ») n'apparaît qu'après l'écriture réelle en base, ce qui préserve l'objectif de DETTE #149. Tout-ou-rien à l'échelle d'un fichier. Retrait confirmé sur la ligne. Les catégories de champs texte gardent « Enregistrer ».
 
+**Statut de vérification des documents (décision du 25/09/2026, patch 4a-2).** Seul le serveur décide et écrit le statut d'un document. En base, il ne connaît que trois valeurs : null (non vérifié), `verifie`, ou `rejete` accompagné d'un motif. « Vérification en cours » est un état d'écran, jamais stocké : aucun statut ne peut rester bloqué. Une panne technique n'écrit aucun verdict. Un statut porte sur un fichier précis : tout changement de chemin le remet à zéro, par la base elle-même, et le serveur n'écrit son verdict que si le chemin vérifié est toujours en place. Les pièces du garant ne sont vérifiées qu'une fois le nom du garant connu (fin de 4b).
+
 Hors périmètre à l'ouverture : Paiements et Contrats (features inexistantes — parquées dans
 idees-en-attente.md), et ModifierProfilProprietairePage (page propriétaire séparée, contenu
 structurellement différent). Principe : la sidebar groupée absorbe un 4e groupe sans refonte,

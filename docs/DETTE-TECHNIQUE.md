@@ -1992,6 +1992,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Conséquence** : l'écriture du statut par le navigateur est refusée depuis le verrou du 16/09/2026 (89870b5). Le défaut de conception reste à corriger avant tout branchement de la vérification.
 **Résolution** : seul le serveur décide et écrit le statut, à partir du nom lu en base. À traiter avec les DETTES #167 et #169.
 **Découverte** : 2026-09-16.
+**MISE À JOUR 2026-09-25.** Côté base, c'est fait sur les deux bases (d9cf22c) : statuts et motifs réservés au serveur, remise à zéro à tout changement de chemin, contrainte de cohérence statut/motif. Reste la fonction `verify-document` elle-même (4a-2, étape 2).
 
 ## DETTE #174 — `InscriptionRecherchePage` inopérante après la fermeture de `users`
 **Constat (conception du 16/09/2026, DETTE #171)** : la page écrit elle-même la ligne `users` après l'inscription, donc sans session puisque la confirmation d'email est activée, et vérifie l'existence d'un email en lisant `users` sans connexion. Plus aucun lien du site n'y mène : seule sa route subsiste.

@@ -294,6 +294,11 @@ théoriques.
   (vérifier qu'un `insert` déclenche bien une erreur de trigger, par exemple), parce que
   l'annulation y est l'objectif recherché et qu'elle est écrite explicitement.
 
+- **Un test de contrainte se lance avec `\set VERBOSITY terse`.** Quand une contrainte
+  refuse une ligne, Postgres affiche la ligne entière dans le message d'erreur
+  (`DETAIL`), avec téléphone, email et date de naissance. Origine : session du
+  25/09/2026, tests de la migration 4a-2.
+
 - **Vérifier SUR QUELLE BASE on est, avant d'exécuter quoi que ce soit.** Les règles
   ci-dessus disent comment écrire une requête sûre, elles ne disaient pas où elle allait
   s'exécuter. Repères : la production est le projet `sterny-plateform` et porte une

@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-24
+**Dernière mise à jour** : 2026-09-25
+[DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents et contrainte statut/motif, appliquées sur les deux bases (d9cf22c). Le push de bbe6872 et 0b80d16 est fait (la mention « Reste : push » du 24/09 est dépassée). Reste : verify-document (#167, #173), branchement dans /compte, push.
 [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872), build de l'état commité réussi. Reste : push, puis 4a-2 (vérification serveur, après #167) et 4a-3 (bouton Stripe Identity, après audit de create-stripe-identity-session).
 [DEV] Ordre révisé le 23/09 : reprise de /compte (4a) d'abord ; phase A bis (#177) et phase B (#175) obligatoires avant tout déploiement sur `main`. Reste : push, puis 4a.
 [DEV] Déclencheur d'inscription sans parcours « partager » : migration appliquée en local puis en production, empreintes identiques (805d3c3). DETTE #181 close. Reste : push, puis phase A bis, phase B, reprise de 4a.
@@ -27,6 +28,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-25 — [DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents, appliquée sur les deux bases (d9cf22c)
+
+**CADRAGE VALIDÉ.** 4a-2 porte sur la vérification serveur des trois pièces personnelles (certificat de scolarité, assurance, RIB). Les pièces du garant seront vérifiées en fin de 4b, faute de nom du garant avant. Un statut en base vaut null (non vérifié), `verifie` ou `rejete` ; « en cours » est un état d'écran. Une panne n'écrit aucun verdict. Le statut est remis à zéro à tout changement de chemin, pour les cinq pièces.
+
+**LECTURE.** Seul appelant de `verify-document` : `DossierLocatairePage`, sur la branche et sur `main` ; le fichier est identique sur les deux. Le réglage de jeton par défaut ne protège rien, puisque la clé publique est un jeton valide. La fonction reçoit le fichier et le nom du navigateur, et l'appel Google utilisé ne lit pas les PDF (le navigateur les convertit) : `files:annotate` sera utilisé. Sans nom fourni, le contrôle du nom réussit. Une panne Google produit un refus. Les colonnes `_statut` n'avaient aucune contrainte et étaient toutes vides sur les deux bases. `supabase/functions/.env` est ignoré par git ; aucune clé Google n'est disponible en local.
+
+**MIGRATION `20260925090000_documents_statut_reinit.sql` (d9cf22c, sha256 f5c22039…).** La fonction du verrou garde ses contrôles client à l'identique (définition du 22/09). Après ces contrôles, pour tout rôle, elle remet à zéro le statut et le motif d'un document dont le chemin change. Cinq contraintes statut/motif, écrites en CASE. La première version (5e36761, jamais poussée) écrivait les contraintes avec des OU : elles laissaient passer un motif sans statut, parce qu'une contrainte évaluée à NULL est considérée comme respectée. Corrigée par amend.
+
+**LOCAL.** Appliquée par `psql --single-transaction`. Empreinte de la fonction : 7a4ecfe9…5c7645 avant, 3d04778f…a11f522 après. 16 cas testés par transactions annulées : remise à zéro sur remplacement et sur retrait (garant compris) ; écriture d'un statut par le client refusée ; verdict du serveur conservé ; combinaisons interdites refusées, dont le motif sans statut ; cas légitime accepté ; `is_admin`, `parrain_id` et identité toujours refusés ; migration rejouée sans erreur. État final identique à l'état initial.
+
+**PRODUCTION.** État avant, dans un onglet séparé : même empreinte que le local avant, 0 contrainte, 1 déclencheur, 12 comptes, 0 ligne incompatible. Fichier commité copié par `pbcopy`, empreinte du presse-papier contrôlée, puis appliqué dans un onglet dédié. État après, dans un troisième onglet : empreinte 3d04778f…, identique au local, 5 contraintes, 1 déclencheur. Aucun test de comportement en production.
+
+**MÉTHODE.** Claude Code a retiré le préfixe `cd` deux fois.
+
+**RESTE.** Étape 2 : `verify-document` (#167, #173). Étape 3 : branchement dans /compte. Build de l'état commité et push. Déploiement de la fonction en production : décision séparée, après avoir établi si la version déployée diffère du dépôt.
 
 ## 2026-09-24 — [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872)
 
