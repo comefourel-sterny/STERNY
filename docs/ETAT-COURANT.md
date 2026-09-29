@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-29
+[DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550) : 39 tests sur 39, production non faite. Reste : nouvelle conversation, application en production, push, puis lot 2.
 [DEV] Audit A bis (#177) fait en lecture seule : production identique au local (32 règles), 1 annonce, 1 candidature, 0 contrat. Lot 1 validé par Côme (relations infalsifiables, une seule migration), lot 2 défini (intégrité des contrats). Reste : lire les fonctions de relation de la phase A, puis écrire et tester le lot 1 en local.
 [DEV] Push de 4b fait (5e85328, build de l'état commité réussi), règle du scan de secrets ajoutée en CONTEXTE §6 (a0ce76f). Ordre révisé le 29/09 : phase A bis (#177) maintenant, puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175). Reste : audit de A bis en lecture seule, qui commence par établir si la production contient des données personnelles réelles de tiers.
 [DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6) : quatre coordonnées du garant dans /compte, en tout ou rien, pièces toujours dans « Tes documents ». Reste : build de l'état commité, push de dbf61e6 et du commit docs, règle du scan de secrets à ajouter dans CONTEXTE §6, puis choix du chantier suivant.
@@ -33,6 +34,22 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-29 (suite 3) — [DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550)
+
+**PUSH.** Build de l'état commité d6b5f65 réussi (code 0). Push 5e85328..d6b5f65 : a0ce76f, bc57b07, d6b5f65.
+
+**LECTURES, EN LECTURE SEULE.** Migration du 22/09 relue (sha256 0d811ab1…6778), seule à définir les fonctions de la phase A : `peut_lire_user(uuid)`, droits de son auteur, appelable par `authenticated` seul, couvre les cas (a) à (e) et fait confiance aux lignes qu'elle lit ; le lot 1 ne la modifie pas. Schéma local des quatre tables relevé : 32 règles en texte intégral, les huit règles ouvertes confirmées ; aucune fonction de la base n'écrit dans ces tables ; statuts autorisés de `candidatures` : `en_attente`, `acceptee`, `refusee` ou vide. `delete-account` (sha256 bca78d1c…8b77) supprime les annonces avant la ligne `users`, et `users` part en cascade avec le compte d'authentification.
+
+**MIGRATION, COMMIT 3c6b550.** `supabase/migrations/20260929200000_relations_infalsifiables.sql` (sha256 a551c3a5b8f08807a92eb31b2575fe3b06b712c1dda686529ccbc07b44ff46ce, 276 lignes), rédigée dans le bac à sable de Claude.ai, copiée par `cp` et contrôlée par empreinte. Huit règles ouvertes supprimées ; fonction `auteur_annonce_lie_par_parrainage` (droits de son auteur) et règle `candidatures_lecture_parrainage` pour le cas (e) ; déclencheurs `sterny_proteger_relations_candidatures`, `sterny_proteger_relations_contrats` et `sterny_proteger_relations_renouvellements`, aux droits de l'appelant, qui laissent passer tout ce qui ne vient pas du navigateur ; clé étrangère `annonces_user_id_fkey` ; contrôle final qui annule tout s'il reste une règle ouverte ou si le total diffère de 25. Appliquée en LOCAL seulement, par `psql --single-transaction` : 25 règles, trois déclencheurs, clé présente. Empreintes locales (8 premiers caractères de `md5(pg_get_functiondef(oid))`) : `auteur_annonce_lie_par_parrainage` d0fa6d12, `proteger_relations_candidatures` e358f3b1, `proteger_relations_contrats` 4ccbdf53, `proteger_relations_renouvellements` 8a90bdff. PRODUCTION NON TOUCHÉE.
+
+**TESTS.** Fichier hors dépôt `tests_abis_lot1.sql` (sha256 863967919582…79db) : 39 tests par transactions annulées, sept personnages fictifs, comptages limités aux annonces de test. Avant la migration : 16 sur 39, les 21 tricheries réussies et les lectures par parrainage trop larges (tests 35 et 36). Après : 39 sur 39, motif de chaque refus vérifié, rien restant dans la base. Validé au préalable sur une base miroir dans le bac à sable de Claude.ai, mêmes résultats. Une première version du fichier s'est arrêtée à la création des personnages : voir DETTE #196.
+
+**DÉCISIONS DE CÔME, 29/09.** (A) Le parcours de renouvellement cesse de fonctionner dans le navigateur, repris avec le lot 2. (B) La clé étrangère de `annonces.user_id` bloque la suppression d'un compte qui a encore une annonce. Détail en DETTE #177.
+
+**À VÉRIFIER, PUIS À LOGUER EN DETTE (complète la liste de l'entrée précédente).** `delete-account` : la garde « bail actif » cherche le statut `actif` dans `candidatures`, qui ne l'autorise pas ; elle ne se déclenche jamais.
+
+**RESTE.** Nouvelle conversation. Appliquer la migration en production : éditeur SQL, empreinte du presse-papier contrôlée, contrôle dans un onglet séparé (25 règles, trois déclencheurs, clé, empreintes identiques au local), puis contrôle des refus en production selon une méthode à arrêter. Build de l'état commité, push de 3c6b550 et du présent commit docs. Mise à jour de VISION (paragraphe « Accès à la table `users` », limite assumée) à la clôture du lot 1 en production. Puis lot 2.
 
 ## 2026-09-29 (suite 2) — [DEV] Audit A bis (#177) en lecture seule, lot 1 validé
 

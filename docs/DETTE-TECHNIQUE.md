@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-29 — #194 et #195 ouvertes le 28/09 (vérification des documents inactive faute de facturation Google, emails automatiques au garant non revus juridiquement) ; #44 complétée le 29/09 après les tests de 4b « Ton garant ».
+**Dernière mise à jour** : 2026-09-29 — #177 mise à jour (lot 1 appliqué et testé en local, décisions A et B) ; #196 ouverte (candidature impossible sur une annonce sans titre).
 
 ## Nomenclature des bugs
 
@@ -2026,6 +2026,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **MISE À JOUR 2026-09-23 (ordre).** Décision de Côme : la phase A bis passe après la reprise de /compte (4a), mais reste obligatoire avant tout déploiement du nouveau code sur `main` (voir #186).
 **MISE À JOUR 2026-09-29 (ordre).** Décision de Côme : la phase A bis passe maintenant, avant la fin de /compte (patchs 5 à 7). Condition de déploiement sur `main` inchangée (#186).
 **MISE À JOUR 2026-09-29 (audit).** Audit en lecture seule tenu, en local et en production (règles identiques). Supprimer les règles ouvertes ne suffit pas : trois chemins de fabrication restent (candidature insérée déjà acceptée, candidature modifiée, contrat inventé). Lot 1 validé par Côme : suppression des huit règles ouvertes, règle étroite pour le cas (e), déclencheur sur `candidatures`, insertion des contrats et des renouvellements liée à la candidature ou au contrat d'origine, clé étrangère `annonces.user_id`. Lot 2 : signatures, statuts des contrats et des renouvellements, ménage des doublons. Détail dans ETAT, entrée du 29/09 (suite 2).
+**MISE À JOUR 2026-09-29 (lot 1 en local).** Migration `20260929200000_relations_infalsifiables.sql` (3c6b550) appliquée et testée en local, 39 tests sur 39 ; production non faite. Deux décisions de Côme. (A) Le parcours de renouvellement cesse de fonctionner dans le navigateur : RenouvellementPage crée une candidature déjà `acceptee`, désormais refusée ; aucun contrat n'existe sur les deux bases ; parcours repris avec le lot 2. (B) La clé étrangère `annonces.user_id` vers `users(id)` bloque la suppression d'un compte qui a encore une annonce, comme pour les contrats et les renouvellements ; `delete-account` supprime les annonces avant le compte : sans effet dans le cas normal, échec visible sinon, au lieu d'une annonce orpheline. Détail dans ETAT, entrée du 29/09 (suite 3).
 
 ## DETTE #178 — ProfilPage : colonnes absentes et table `signalements` inexistante
 **Constat (audit du 21/09/2026, DETTE #171)** : ProfilPage lit dans `users` des colonnes absentes du schéma local (`description`, `ville_origine`), et dans `annonces` des colonnes absentes (`prix_semaine`, `proprietaire_id`, `statut`). Elle écrit dans une table `signalements` qui n'existe pas. Production non vérifiée.
@@ -2164,3 +2165,9 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Résolution** : question à poser à l'avocate et au DPO avant tout lancement. Aucune modification du code avant leur avis.
 
 **Découverte** : 2026-09-28.
+
+## DETTE #196 — Candidature impossible sur une annonce sans titre
+**Constat (tests du lot 1 de la phase A bis, 29/09/2026)** : le déclencheur `trg_notif_candidature` compose le message de notification avec le prénom du candidat et le titre de l'annonce. `annonces.titre` peut être vide ; le message devient alors vide, et `notifications_in_app.message` le refuse. Constaté en local.
+**Conséquence** : toute candidature sur une annonce sans titre échoue, avec un message technique. Effet réel non établi : il dépend de ce que CreerAnnoncePage impose sur le titre.
+**Résolution** : établir si une annonce peut naître sans titre ; puis titre obligatoire à la création, ou message de repli dans le déclencheur. À rapprocher de la consigne du 11/06 (#21) : `notifications_in_app` n'a plus aucun affichage, l'écriture elle-même est peut-être à supprimer.
+**Découverte** : 2026-09-29.
