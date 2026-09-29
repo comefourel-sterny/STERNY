@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-29
+[DEV] Push de 4b fait (5e85328, build de l'état commité réussi), règle du scan de secrets ajoutée en CONTEXTE §6 (a0ce76f). Ordre révisé le 29/09 : phase A bis (#177) maintenant, puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175). Reste : audit de A bis en lecture seule, qui commence par établir si la production contient des données personnelles réelles de tiers.
 [DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6) : quatre coordonnées du garant dans /compte, en tout ou rien, pièces toujours dans « Tes documents ». Reste : build de l'état commité, push de dbf61e6 et du commit docs, règle du scan de secrets à ajouter dans CONTEXTE §6, puis choix du chantier suivant.
 [VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé le 29/09 (candidature 6A99597EA99), référente Gaëlle Gestin-Ligonnière, textes archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md. Reste : réponse du comité, crédits ECTS à voir avec Barbara, mise à jour LinkedIn, CV.
 [DEV] Patch 4a-2 suspendu après l'étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests locaux sur 7 réussis. Tests 3, 4 et 6, branchement dans /compte et 4a-3 reportés jusqu'à l'activation des services payants, avant le lancement (DETTE #194). Suite : 4b « Ton garant », sans vérification des pièces. Push fait (a9d429e), build de l'état commité réussi.
@@ -31,6 +32,16 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-29 (suite) — [DEV] Push de 4b, règle du scan, ordre révisé : A bis, fin de /compte, puis B
+
+**FAIT.** Build de l'état commité 5e85328 réussi (code 0). Push a9d429e..5e85328 : 690e225 (dossier SNEE), dbf61e6 (patch 4b), 5e85328 (docs). Règle du scan limité aux lignes ajoutées ajoutée en CONTEXTE §6, avec le complément sur `cut` ; en-tête de DETTE remis au 29/09 (a0ce76f, non poussé).
+
+**DÉCISION DE CÔME, 29/09.** Ordre : phase A bis (#177) maintenant ; puis fin de /compte, patchs 5, 5 bis, 6, 7 et #189 ; puis phase B (#175). Remplace la suite « A bis et B après 4a » du 23/09. La condition de déploiement du nouveau code sur `main` est inchangée : #161, #177 et #175 faites (#186).
+
+**RAISONS.** (1) /compte ne peut plus avancer sur 4a : la suite de 4a-2 attend la facturation Google et la revue par des professionnels (#194), 4a-3 attend l'audit de Stripe Identity (#193). (2) A bis est le seul verrou lourd du lancement qui ne dépend que du développement, et il ne touche pas /compte. (3) La phase B remplace les lectures larges de `users` page par page ; le patch 7 supprime des pages, dont ModifierProfilPage : B vient donc après le patch 7. (4) Point à établir : le raisonnement du 23/09 (« A bis et B protègent des utilisateurs qui n'existent pas encore ») ne tient que si la base de production ne contient aucune donnée personnelle réelle de tiers. Les règles d'accès y sont actives quel que soit le code servi par `main`, et #186 mentionne des comptes autres que l'admin.
+
+**RESTE.** Audit de A bis en lecture seule. D'abord, en production, un simple comptage, sans afficher aucune donnée, des comptes autres que ceux de Côme et les comptes de test dont les champs personnels sont remplis. Puis le code qui écrit `candidatures`, `contrats`, `annonces` et les renouvellements, et leurs règles d'accès sur les deux bases. Push de a0ce76f et du présent commit docs au prochain push.
 
 ## 2026-09-29 — [DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6)
 
