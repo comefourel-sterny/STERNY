@@ -220,6 +220,20 @@ export default function GestionComptePage() {
   const etudesChampErreurTimeout = useRef(null)
   const { ref: etudesShakeRef, shake: etudesShake } = useShakeButton()
 
+  // Catégorie "Ton garant" — états propres (patch 4b). Les quatre champs vont ensemble : tous remplis, ou tous vides (retrait).
+  const [garantPrenom, setGarantPrenom] = useState('')
+  const [garantNom, setGarantNom] = useState('')
+  const [garantTelephone, setGarantTelephone] = useState('')
+  const [garantEmail, setGarantEmail] = useState('')
+  const [valeursInitialesGarant, setValeursInitialesGarant] = useState({ prenom: '', nom: '', telephone: '', email: '' })
+  const [erreursGarant, setErreursGarant] = useState({})
+  const [garantErreur, setGarantErreur] = useState('')
+  const [garantLoading, setGarantLoading] = useState(false)
+  const [garantSaved, setGarantSaved] = useState(false)
+  const garantErreurTimeout = useRef(null)
+  const garantChampErreurTimeout = useRef(null)
+  const { ref: garantShakeRef, shake: garantShake } = useShakeButton()
+
   // Catégorie "À propos de toi" — états propres. (erreursApropos existe par cohérence ; la bio n'a aucune validation.)
   const [bio, setBio] = useState('')
   const [aproposInitial, setAproposInitial] = useState({ bio: '' })
@@ -357,7 +371,7 @@ export default function GestionComptePage() {
     if (!user) return
     supabaseClient
       .from('users')
-      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar, identite_verifiee, doc_scolarite_url, doc_assurance_url, doc_rib_url, doc_garant_id_url, doc_cautionnement_url')
+      .select('prenom, nom, email, telephone, sexe, date_naissance, type_user, photo_profil_url, preferences_email, ecole, annee_etudes, filiere, bio, ville_ecole, ville_entreprise, statut_ville_ecole, statut_ville_entreprise, rhythm_calendar, identite_verifiee, doc_scolarite_url, doc_assurance_url, doc_rib_url, doc_garant_id_url, doc_cautionnement_url, garant_prenom, garant_nom, garant_telephone, garant_email')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -376,6 +390,9 @@ export default function GestionComptePage() {
         }
         if (data.photo_profil_url) setPhotoPreviewUrl(data.photo_profil_url)
         setValeursInitiales({ prenom: data.prenom || '', nom: data.nom || '', dateNaissanceISO: iso, sexe: data.sexe || '', telephone: data.telephone || '' })
+        // Patch 4b — Ton garant : poser les quatre champs ET la référence de comparaison.
+        setGarantPrenom(data.garant_prenom || ''); setGarantNom(data.garant_nom || ''); setGarantTelephone(data.garant_telephone || ''); setGarantEmail(data.garant_email || '')
+        setValeursInitialesGarant({ prenom: data.garant_prenom || '', nom: data.garant_nom || '', telephone: data.garant_telephone || '', email: data.garant_email || '' })
         // Patch 3b — Tes études + À propos de toi : poser les valeurs ET les références de comparaison.
         if (data.ecole) setEcole(data.ecole)
         if (data.annee_etudes) setAnneeEtudes(data.annee_etudes)
@@ -585,6 +602,71 @@ export default function GestionComptePage() {
     } catch (e) {
       setInfosLoading(false)
       afficherErreurInfos(e.message || "Erreur lors de l'enregistrement")
+    }
+  }
+
+  // Validation pure de "Ton garant" — sur les valeurs sans espaces. Les quatre champs vont ensemble : tous vides
+  // (retrait) sans erreur ; sinon chaque champ vide reçoit « À compléter » ; un email rempli invalide est signalé.
+  function validerGarant({ prenom, nom, telephone, email }) {
+    const vals = { prenom: prenom.trim(), nom: nom.trim(), telephone: telephone.trim(), email: email.trim() }
+    const remplis = Object.values(vals).filter(Boolean).length
+    const e = {}
+    if (remplis === 0) return e
+    if (remplis < 4) {
+      if (!vals.prenom) e.prenom = 'À compléter'
+      if (!vals.nom) e.nom = 'À compléter'
+      if (!vals.telephone) e.telephone = 'À compléter'
+      if (!vals.email) e.email = 'À compléter'
+    }
+    if (vals.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vals.email)) e.email = 'Adresse email invalide'
+    return e
+  }
+
+  // Revalidation d'un seul champ garant pendant la frappe (surcharge pour lire la valeur courante).
+  function validerChampGarant(champ, valeurs = {}) {
+    const erreurs = validerGarant({ prenom: garantPrenom, nom: garantNom, telephone: garantTelephone, email: garantEmail, ...valeurs })
+    setErreursGarant(prev => {
+      const suivant = { ...prev }
+      if (erreurs[champ]) suivant[champ] = erreurs[champ]
+      else delete suivant[champ]
+      return suivant
+    })
+  }
+
+  async function enregistrerGarant() {
+    const erreurs = validerGarant({ prenom: garantPrenom, nom: garantNom, telephone: garantTelephone, email: garantEmail })
+    if (Object.keys(erreurs).length > 0) {
+      setErreursGarant(erreurs)
+      garantShake()
+      clearTimeout(garantChampErreurTimeout.current)
+      garantChampErreurTimeout.current = setTimeout(() => setErreursGarant({}), 3000)
+      if (Object.values(erreurs).includes('À compléter')) {
+        setGarantErreur('Complète les quatre champs, ou vide-les tous pour retirer ton garant.')
+        clearTimeout(garantErreurTimeout.current)
+        garantErreurTimeout.current = setTimeout(() => setGarantErreur(''), 3000)
+      }
+      return
+    }
+    setErreursGarant({})
+    setGarantErreur('')
+    setGarantLoading(true)
+    try {
+      const p = garantPrenom.trim(); const n = garantNom.trim(); const t = garantTelephone.trim(); const em = garantEmail.trim()
+      const colonnes = { garant_prenom: p || null, garant_nom: n || null, garant_telephone: t || null, garant_email: em || null }
+      const { error } = await supabaseClient.from('users').update(colonnes).eq('id', user.id)
+      if (error) throw error
+      setUserData(prev => ({ ...prev, ...colonnes }))
+      setGarantPrenom(p); setGarantNom(n); setGarantTelephone(t); setGarantEmail(em)
+      setValeursInitialesGarant({ prenom: p, nom: n, telephone: t, email: em })
+      setGarantLoading(false)
+      setGarantSaved(true)
+      setTimeout(() => setGarantSaved(false), 2000)
+    } catch (e) {
+      setGarantLoading(false)
+      setGarantErreur(e.message || "Erreur lors de l'enregistrement")
+      garantShake()
+      clearTimeout(garantErreurTimeout.current)
+      garantErreurTimeout.current = setTimeout(() => setGarantErreur(''), 3000)
     }
   }
 
@@ -940,6 +1022,12 @@ export default function GestionComptePage() {
     anneeEtudes !== etudesInitiales.anneeEtudes ||
     filiere !== etudesInitiales.filiere
   )
+  const formGarantModifie = (
+    garantPrenom !== valeursInitialesGarant.prenom ||
+    garantNom !== valeursInitialesGarant.nom ||
+    garantTelephone !== valeursInitialesGarant.telephone ||
+    garantEmail !== valeursInitialesGarant.email
+  )
   const aproposModifie = bio !== aproposInitial.bio
   const villesModifie = (
     villeEcole !== villesInitiales.villeEcole ||
@@ -1239,7 +1327,22 @@ export default function GestionComptePage() {
             </>
           )}
 
-          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && categorieActive !== 'alternance' && categorieActive !== 'documents' && (
+          {categorieActive === 'garant' && (
+            <>
+              <div className="gc-form-row">
+                <div className="gc-champ"><label className="gc-label">Prénom</label><input className={`gc-input${erreursGarant.prenom ? ' gc-champ-invalide' : ''}`} type="text" value={garantPrenom} onChange={e => { const v = capitalizeWords(e.target.value); setGarantPrenom(v); if (erreursGarant.prenom) validerChampGarant('prenom', { prenom: v }) }} placeholder="Prénom" /><div className="gc-champ-erreur-slot">{erreursGarant.prenom && <p className="gc-champ-erreur">{erreursGarant.prenom}</p>}</div></div>
+                <div className="gc-champ"><label className="gc-label">Nom</label><input className={`gc-input${erreursGarant.nom ? ' gc-champ-invalide' : ''}`} type="text" value={garantNom} onChange={e => { const v = capitalizeWords(e.target.value); setGarantNom(v); if (erreursGarant.nom) validerChampGarant('nom', { nom: v }) }} placeholder="Nom" /><div className="gc-champ-erreur-slot">{erreursGarant.nom && <p className="gc-champ-erreur">{erreursGarant.nom}</p>}</div></div>
+              </div>
+              <div className="gc-form-row">
+                <div className="gc-champ"><label className="gc-label">Téléphone</label><input className={`gc-input${erreursGarant.telephone ? ' gc-champ-invalide' : ''}`} type="tel" value={garantTelephone} onChange={e => { const v = e.target.value; setGarantTelephone(v); if (erreursGarant.telephone) validerChampGarant('telephone', { telephone: v }) }} placeholder="06 12 34 56 78" /><div className="gc-champ-erreur-slot">{erreursGarant.telephone && <p className="gc-champ-erreur">{erreursGarant.telephone}</p>}</div></div>
+                <div className="gc-champ"><label className="gc-label">Email</label><input className={`gc-input${erreursGarant.email ? ' gc-champ-invalide' : ''}`} type="email" value={garantEmail} onChange={e => { const v = e.target.value; setGarantEmail(v); if (erreursGarant.email) validerChampGarant('email', { email: v }) }} placeholder="prenom@exemple.fr" /><div className="gc-champ-erreur-slot">{erreursGarant.email && <p className="gc-champ-erreur">{erreursGarant.email}</p>}</div></div>
+              </div>
+              <div className="gc-doc-hint gc-garant-hint">Ses pièces justificatives sont à déposer dans la section « Tes documents ».</div>
+              <BoutonEnregistrer onSave={enregistrerGarant} modifie={formGarantModifie} loading={garantLoading} ok={garantSaved} erreur={garantErreur} btnRef={garantShakeRef} />
+            </>
+          )}
+
+          {categorieActive !== 'compte' && categorieActive !== 'notifications' && categorieActive !== 'infos' && categorieActive !== 'etudes' && categorieActive !== 'apropos' && categorieActive !== 'alternance' && categorieActive !== 'documents' && categorieActive !== 'garant' && (
             <div className="gc-placeholder">Cette section arrive au prochain patch.</div>
           )}
         </section>

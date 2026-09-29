@@ -1212,3 +1212,8 @@
     color: #64748B;
     margin: 16px 0 4px;
 }
+
+/* Ton garant (patch 4b) : phrase d'aide sous les champs, rapprochée (le dernier champ garde sa place d'erreur). */
+.gc-doc-hint.gc-garant-hint {
+    margin-top: -8px;
+}
