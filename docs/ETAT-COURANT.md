@@ -3,8 +3,9 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-29
+[DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6) : quatre coordonnées du garant dans /compte, en tout ou rien, pièces toujours dans « Tes documents ». Reste : build de l'état commité, push de dbf61e6 et du commit docs, règle du scan de secrets à ajouter dans CONTEXTE §6, puis choix du chantier suivant.
 [VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé le 29/09 (candidature 6A99597EA99), référente Gaëlle Gestin-Ligonnière, textes archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md. Reste : réponse du comité, crédits ECTS à voir avec Barbara, mise à jour LinkedIn, CV.
-[DEV] Patch 4a-2 suspendu après l'étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests locaux sur 7 réussis. Tests 3, 4 et 6, branchement dans /compte et 4a-3 reportés jusqu'à l'activation des services payants, avant le lancement (DETTE #194). Suite : 4b « Ton garant », sans vérification des pièces. Reste : push.
+[DEV] Patch 4a-2 suspendu après l'étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests locaux sur 7 réussis. Tests 3, 4 et 6, branchement dans /compte et 4a-3 reportés jusqu'à l'activation des services payants, avant le lancement (DETTE #194). Suite : 4b « Ton garant », sans vérification des pièces. Push fait (a9d429e), build de l'état commité réussi.
 [DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents et contrainte statut/motif, appliquées sur les deux bases (d9cf22c). Le push de bbe6872 et 0b80d16 est fait (la mention « Reste : push » du 24/09 est dépassée). Reste : verify-document (#167, #173), branchement dans /compte, push.
 [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872), build de l'état commité réussi. Reste : push, puis 4a-2 (vérification serveur, après #167) et 4a-3 (bouton Stripe Identity, après audit de create-stripe-identity-session).
 [DEV] Ordre révisé le 23/09 : reprise de /compte (4a) d'abord ; phase A bis (#177) et phase B (#175) obligatoires avant tout déploiement sur `main`. Reste : push, puis 4a.
@@ -30,6 +31,18 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-29 — [DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6)
+
+**LIVRÉ (dbf61e6, `GestionComptePage.jsx` et `.css`).** Les quatre colonnes `garant_prenom`, `garant_nom`, `garant_telephone`, `garant_email` sont lues au chargement de /compte. La catégorie « Ton garant » affiche Prénom et Nom, puis Téléphone et Email, sans astérisque, avec le bouton « Enregistrer » commun. L'écriture ne porte que sur ces quatre colonnes ; un champ vide est écrit `NULL`. Règle tout ou rien : un à trois champs remplis donnent « À compléter » sous les vides et un message près du bouton ; un email mal formé donne « Adresse email invalide ». Espaces de début et de fin retirés. Phrase d'aide sous les champs : « Ses pièces justificatives sont à déposer dans la section « Tes documents ». » (classe `gc-doc-hint gc-garant-hint`, marge haute de -8px, seule règle CSS ajoutée).
+
+**CHOIX DE CÔME.** Pièces du garant laissées dans « Tes documents ». Aucun mécanisme de consentement du garant. Téléphone à gauche, comme dans « Infos personnelles ». Phrase d'aide essayée en tête puis retenue sous les champs, rapprochée.
+
+**TESTS LOCAUX** (compte `hote@sterny.test`, valeurs fictives, preuves par `psql` en base locale). Réussis : (1) chargement des valeurs en base ; (2) enregistrement ; (3) persistance après rechargement ; (4) tout ou rien, rien écrit ; (5) email invalide, rien écrit ; (6) espaces retirés, `Paul` de longueur 4 ; (7) retrait, quatre colonnes `NULL` ; (8) rendu à 392 px conforme aux autres catégories (DETTE #44) ; (9) catégorie absente pour `proprio-invite@sterny.test`.
+
+**OBSERVÉ.** macOS remplace deux espaces tapés à la suite par un point et un espace : un premier essai du test 6 a donné `Paul.`. Sans rapport avec le code. La base locale contenait les vraies coordonnées de Côme comme garant du compte de test ; effacées par le test 7.
+
+**RESTE.** Build de l'état commité, push de dbf61e6 et du commit docs. Ajouter dans CONTEXTE §6, sous la check-list secrets pré-commit : « Sur un diff, le scan ne porte que sur les lignes ajoutées (`grep -E '^\+' | grep -v '^+++'`) : les lignes de contexte ne partent pas avec le commit, et la documentation contient elle-même les mots du motif. Origine : session du 28/09/2026, commit docs de 4a-2. » Puis choix du chantier suivant.
 
 ## 2026-09-29 — [VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé
 Candidature n° 6A99597EA99 envoyée le 29/09/2026 sur la plateforme du MESR. Textes et choix archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md.

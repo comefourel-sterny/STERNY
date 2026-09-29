@@ -54,7 +54,7 @@ Document de référence stratégique. Décrit **où on va** et **pourquoi**, pas
 
 Ce document est la boussole de Sterny. Il doit être lu par toute nouvelle session Claude avant de proposer une évolution technique ou produit. Toute décision qui contredit ce document est un signal d'alarme : soit la décision est mauvaise, soit ce document doit être mis à jour.
 
-**Dernière mise à jour** : 2026-09-28 — Vérifications automatiques (documents, identité) inactives jusqu'à la préparation du lancement.
+**Dernière mise à jour** : 2026-09-29 — « Ton garant » dans /compte : quatre coordonnées en tout ou rien, sans mécanisme de consentement.
 
 ---
 
@@ -459,6 +459,8 @@ Sterny les voit pour vérifier, l'hôte ne voit qu'un statut agrégé). Un futur
 **AMENDEMENT 23/09/2026 — identité proposée dès /compte (décision de Côme).** La catégorie invite à vérifier son identité sans attendre la candidature (« Vérifie ton identité pour gagner la confiance des hôtes et des propriétaires. »), avec un bouton de lancement. Le bouton n'est livré qu'après l'audit de create-stripe-identity-session, qui reçoit user_id dans le corps de la requête (risque de même nature que #167). Coût par vérification à surveiller.
 
 **AMENDEMENT 28/09/2026 — vérifications automatiques inactives jusqu'à la préparation du lancement (décision de Côme).** Côme n'engage aucune carte sur un service payant avant la préparation du lancement et la revue par des professionnels. La vérification automatique des documents (Google Vision, facturation non activée) et la vérification d'identité (Stripe Identity, 4a-3) restent donc inactives d'ici là : les documents se déposent et s'affichent, sans verdict. Le code de la vérification des documents est écrit (6bc29af) ; ses tests restants, son branchement dans /compte et son déploiement attendent l'activation (DETTE #194).
+
+**« Ton garant » dans /compte (décision de Côme du 28/09/2026, patch 4b).** La catégorie porte les quatre coordonnées du garant (prénom, nom, téléphone, email), avec un bouton « Enregistrer ». L'écriture ne touche que ces quatre colonnes. La règle est tout ou rien : les quatre sont remplies, ou les quatre sont vides, et tout vider retire le garant. Les pièces du garant restent dans « Tes documents » (décision du 15/09) ; une phrase d'aide sous les champs y renvoie. Aucun mécanisme de consentement du garant n'est ajouté : une déclaration cochée par l'alternant n'est pas le consentement du tiers. Ce mécanisme reste un prérequis professionnel avant tout lancement.
 
 **Stockage des documents de dossier (décision technique du 15/09/2026, patch 4).** Le bucket `documents` n'existait ni en local ni en production : il est créé privé, par migration versionnée, avec plafond de 5 Mo et formats PDF, JPEG, PNG. Les colonnes `doc_*_url` stockent le CHEMIN du fichier dans le bucket, jamais une URL publique ; l'affichage passe par une URL signée à durée courte. Lecture, écriture, mise à jour et suppression sont réservées au propriétaire du fichier (nom préfixé par son identifiant) et à l'admin. Conséquence assumée : `DossierLocatairePage`, qui enregistre des URL publiques, devra être adaptée ; elle était déjà inopérante faute de bucket, aucune régression n'est introduite.
 

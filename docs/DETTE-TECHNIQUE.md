@@ -287,6 +287,7 @@ Constat verbalisé par Côme en session : « pour le mobile c'est la catastrophe
 **Plan de résolution** : passe dédiée UX mobile à programmer après la démo Le Poool du 4 mai. Audit page-par-page sur navigateur mobile (DevTools → mode responsive Chrome ou Firefox), liste des défauts observés, priorisation des chantiers de refonte. Pas de fix anticipé tant que l'audit n'est pas complet — risque de patcher les symptômes sans traiter les causes (probablement un manque de tokens responsive dans le design system ou des grids qui ne s'adaptent pas).
 
 **Sujet distinct de VISION §10 (app mobile native différée)** : VISION §10 traite de la décision stratégique de différer l'app native iOS/Android. DETTE #44 traite de la qualité responsive du web actuel, qui doit rester utilisable sur mobile en attendant l'app native. Les 2 sujets sont complémentaires.
+**MISE À JOUR 2026-09-29.** Constat sur /compte à 392 px (tests de 4b) : le menu des catégories est coupé et les formulaires restent sur deux colonnes, dans toutes les catégories. « Ton garant » suit volontairement la même grille qu'« Infos personnelles », pour la cohérence. À traiter dans la passe mobile globale, pour toutes les catégories à la fois.
 
 ## DETTE #45 — Wording v1 modale Q8 + pop-up Q9 RhythmManualBuilder à valider par avocat
 
@@ -2148,5 +2149,15 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Décision de Côme (28/09/2026)** : pas d'activation avant la préparation du lancement et la revue par des professionnels.
 
 **Prérequis de la reprise** : activer la facturation, avec alerte budgétaire et plafond de requêtes par jour ; établir que le secret de production est bien la clé du projet STERNY ; recréer `supabase/functions/.env` ; passer les tests 3, 4 et 6 de 4a-2 (méthode dans ETAT, entrée du 28/09) ; brancher la vérification dans /compte (étape 3) ; décider séparément du déploiement de la fonction.
+
+**Découverte** : 2026-09-28.
+
+## DETTE #195 — Emails automatiques au garant en cas d'impayé, non revus juridiquement
+
+**Constat (audit du 28/09/2026, patch 4b)** : `check-loyers-impays` lit les coordonnées du garant et déclenche `send-relance-impaye-email`, qui écrit au garant.
+
+**Conséquence** : un tiers est contacté au sujet de la dette d'un locataire, sans cadre validé (droit du cautionnement, information de la caution, RGPD).
+
+**Résolution** : question à poser à l'avocate et au DPO avant tout lancement. Aucune modification du code avant leur avis.
 
 **Découverte** : 2026-09-28.
