@@ -332,6 +332,8 @@ Commande type à intégrer dans chaque prompt de commit :
 
 Si retour non nul, analyser chaque match avant de commit. Faux positifs fréquents : noms de colonnes SQL (`"secret" "text"`), placeholders, `PasswordGate` (nom du composant de mot de passe de la landing, match du motif `password`). Vrais positifs : valeurs après `Bearer`, `Authorization:`, `API_KEY=`, dans des chaînes JSON ou SQL.
 
+**Scan d'un diff : lignes ajoutées seulement.** Sur un diff, le scan ne porte que sur les lignes ajoutées (`grep -E '^\+' | grep -v '^+++'`) : les lignes de contexte ne partent pas avec le commit, et la documentation contient elle-même les mots du motif. Le grep du motif reste le dernier maillon de la chaîne : aucun `cut` après lui, car le code de sortie affiché devient alors celui de `cut`, qui vaut 0 même sans résultat. Si un `cut` est indispensable pour ne pas afficher une valeur entière, seules les lignes affichées comptent et le code de sortie ne prouve rien. Origine : session du 28/09/2026, commit docs de 4a-2 ; complément sur `cut` le 29/09/2026.
+
 **Règle de prévention à la charge de Claude avant tout copier-coller de terminal**
 
 Avant de demander à Côme de lui coller le résultat d'une commande shell, Claude classe explicitement le risque de la commande dans l'un des 3 niveaux suivants et annonce ce niveau clairement avant de demander le collage :

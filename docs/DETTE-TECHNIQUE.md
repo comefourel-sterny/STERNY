@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-22 — #171 phase A codée et testée en local (production non faite) ; #183 à #185 ouvertes (code de parrainage propriétaire, libellés « propriétaire » de LogementPage, registre local des migrations) ; #178, #179 et #181 complétées après le test local.
+**Dernière mise à jour** : 2026-09-29 — #194 et #195 ouvertes le 28/09 (vérification des documents inactive faute de facturation Google, emails automatiques au garant non revus juridiquement) ; #44 complétée le 29/09 après les tests de 4b « Ton garant ».
 
 ## Nomenclature des bugs
 
