@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-29
+[DEV] Audit A bis (#177) fait en lecture seule : production identique au local (32 règles), 1 annonce, 1 candidature, 0 contrat. Lot 1 validé par Côme (relations infalsifiables, une seule migration), lot 2 défini (intégrité des contrats). Reste : lire les fonctions de relation de la phase A, puis écrire et tester le lot 1 en local.
 [DEV] Push de 4b fait (5e85328, build de l'état commité réussi), règle du scan de secrets ajoutée en CONTEXTE §6 (a0ce76f). Ordre révisé le 29/09 : phase A bis (#177) maintenant, puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175). Reste : audit de A bis en lecture seule, qui commence par établir si la production contient des données personnelles réelles de tiers.
 [DEV] Patch 4b « Ton garant » livré et testé en local (dbf61e6) : quatre coordonnées du garant dans /compte, en tout ou rien, pièces toujours dans « Tes documents ». Reste : build de l'état commité, push de dbf61e6 et du commit docs, règle du scan de secrets à ajouter dans CONTEXTE §6, puis choix du chantier suivant.
 [VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé le 29/09 (candidature 6A99597EA99), référente Gaëlle Gestin-Ligonnière, textes archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md. Reste : réponse du comité, crédits ECTS à voir avec Barbara, mise à jour LinkedIn, CV.
@@ -32,6 +33,24 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-29 (suite 2) — [DEV] Audit A bis (#177) en lecture seule, lot 1 validé
+
+**CONSTAT.** Règles d'accès des quatre tables relevées en local et en production : 32 règles, identiques mot pour mot. Règles à condition vraie : sur `candidatures`, deux modifications (dont une pour `public`, visiteurs non connectés compris) et deux lectures (dont une pour `public`) ; sur `contrats`, insertion, lecture et modification pour tout compte connecté ; sur `annonces`, insertion sans connexion. Aucune clé étrangère sur `annonces.user_id`. Production : 1 annonce, 1 candidature, 0 contrat, 0 renouvellement, aucune annonce orpheline. 12 comptes en production, dont 9 hors adresses de Côme et `@sterny.test`, avec 8 téléphones et 3 dates de naissance : ce sont les comptes des amis de Côme, fait déjà établi le 16/09 (question de notification transmise au DPO). Le « point à établir » de l'entrée précédente était donc superflu.
+
+**INVENTAIRES.** 36 écritures et 51 lectures relevées dans le code (fichiers temporaires, non versionnés). Toutes les écritures du navigateur viennent du locataire ou de l'hôte concerné. Lectures hors partie : la page admin, couverte par `admin_select_all`, et `DashboardProprietairePage.jsx:211`, cas (e) du parrainage, seule à exiger une nouvelle règle. L'insertion d'annonce se fait toujours connecté.
+
+**TROIS CHEMINS DE FABRICATION, MÊME SANS LES RÈGLES OUVERTES.** (1) Insérer sa propre candidature déjà `acceptee` sur l'annonce d'un tiers : cas (c). (2) Modifier une candidature existante : l'hôte change le locataire (cas b), le locataire change l'annonce et s'accepte lui-même (cas c). (3) Créer un contrat entre soi et un tiers avec n'importe quelle candidature existante : cas (a). Supprimer les règles ouvertes ne suffit donc pas.
+
+**LOT 1, VALIDÉ PAR CÔME LE 29/09 : RELATIONS INFALSIFIABLES, UNE SEULE MIGRATION.** (1) Supprimer les huit règles ouvertes : `annonces`, insertion sans connexion ; `candidatures`, deux modifications et deux lectures ; `contrats`, insertion, lecture et modification. (2) Règle de lecture étroite pour le cas (e) : candidatures acceptées sur les annonces d'un hôte lié au lecteur par `parrain_id`, dans les deux sens, en réutilisant la fonction de relation de la phase A. (3) Déclencheur sur `candidatures` : insertion refusée hors statut `en_attente` ; locataire, annonce et champs de renouvellement non modifiables ; passage en `acceptee` ou `refusee` réservé à l'auteur de l'annonce ; fonctions serveur (`service_role`) non concernées. (4) `contrats` : insertion permise seulement si le contrat correspond à une candidature acceptée (même locataire, même annonce, propriétaire égal à l'auteur de l'annonce), par l'une de ces deux personnes ; parties, annonce et candidature non modifiables ensuite. (5) `renouvellements` : insertion par le locataire du contrat d'origine seulement, parties et annonce reprises de ce contrat, non modifiables ensuite. (6) Clé étrangère `annonces.user_id` vers `users`.
+
+**LOT 2, DÉFINI.** Chaque partie ne signe que pour elle dans un contrat ; changements de statut des contrats et des renouvellements réservés à la bonne partie ; ménage des règles en double.
+
+**CRITÈRES DE RÉUSSITE DU LOT 1.** En local, par transactions annulées : refus de chacun des coups ci-dessus, et de la lecture de toutes les candidatures hors partie ; passage des coups normaux : postuler, accepter ou refuser (hôte), retirer (locataire), lecture par le parrain, lecture par l'admin. Puis contrôle identique en production.
+
+**À VÉRIFIER, PUIS À LOGUER EN DETTE.** L'inventaire des écritures, rédigé par un agent, signale des écritures vers des valeurs et des colonnes absentes du schéma : statuts `paiement_ok`, `actif`, `resilie` et `expiree` sur `candidatures`, `resilie` sur `contrats` ; colonnes `approbation_proprietaire`, `proprietaire_id`, `motif_resiliation` et `date_resiliation` sur `candidatures`, `date_resiliation`, `paiement_initial_ok`, `stripe_session_id` et `hote_id` sur `contrats`. Si c'est confirmé, le parcours transaction est en grande partie hors d'usage (même schéma que #178). Les colonnes de l'objet de signature du contrat sont à relire dans le code.
+
+**RESTE.** Nouvelle conversation. Lire en lecture seule les fonctions de relation de la phase A, puis écrire le lot 1, le tester en local et l'appliquer en production. Push de a0ce76f, bc57b07 et du présent commit docs au prochain push, après un build de l'état commité.
 
 ## 2026-09-29 (suite) — [DEV] Push de 4b, règle du scan, ordre révisé : A bis, fin de /compte, puis B
 

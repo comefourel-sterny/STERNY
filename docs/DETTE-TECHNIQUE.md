@@ -2025,6 +2025,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **Découverte** : 2026-09-21.
 **MISE À JOUR 2026-09-23 (ordre).** Décision de Côme : la phase A bis passe après la reprise de /compte (4a), mais reste obligatoire avant tout déploiement du nouveau code sur `main` (voir #186).
 **MISE À JOUR 2026-09-29 (ordre).** Décision de Côme : la phase A bis passe maintenant, avant la fin de /compte (patchs 5 à 7). Condition de déploiement sur `main` inchangée (#186).
+**MISE À JOUR 2026-09-29 (audit).** Audit en lecture seule tenu, en local et en production (règles identiques). Supprimer les règles ouvertes ne suffit pas : trois chemins de fabrication restent (candidature insérée déjà acceptée, candidature modifiée, contrat inventé). Lot 1 validé par Côme : suppression des huit règles ouvertes, règle étroite pour le cas (e), déclencheur sur `candidatures`, insertion des contrats et des renouvellements liée à la candidature ou au contrat d'origine, clé étrangère `annonces.user_id`. Lot 2 : signatures, statuts des contrats et des renouvellements, ménage des doublons. Détail dans ETAT, entrée du 29/09 (suite 2).
 
 ## DETTE #178 — ProfilPage : colonnes absentes et table `signalements` inexistante
 **Constat (audit du 21/09/2026, DETTE #171)** : ProfilPage lit dans `users` des colonnes absentes du schéma local (`description`, `ville_origine`), et dans `annonces` des colonnes absentes (`prix_semaine`, `proprietaire_id`, `statut`). Elle écrit dans une table `signalements` qui n'existe pas. Production non vérifiée.
