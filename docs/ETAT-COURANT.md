@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-28
+**Dernière mise à jour** : 2026-09-29
+[VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé le 29/09 (candidature 6A99597EA99), référente Gaëlle Gestin-Ligonnière, textes archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md. Reste : réponse du comité, crédits ECTS à voir avec Barbara, mise à jour LinkedIn, CV.
 [DEV] Patch 4a-2 suspendu après l'étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests locaux sur 7 réussis. Tests 3, 4 et 6, branchement dans /compte et 4a-3 reportés jusqu'à l'activation des services payants, avant le lancement (DETTE #194). Suite : 4b « Ton garant », sans vérification des pièces. Reste : push.
 [DEV] Patch 4a-2, étape 1 : remise à zéro du statut des documents et contrainte statut/motif, appliquées sur les deux bases (d9cf22c). Le push de bbe6872 et 0b80d16 est fait (la mention « Reste : push » du 24/09 est dépassée). Reste : verify-document (#167, #173), branchement dans /compte, push.
 [DEV] Patch 4a-1 « Tes documents » livré et testé en local (bbe6872), build de l'état commité réussi. Reste : push, puis 4a-2 (vérification serveur, après #167) et 4a-3 (bouton Stripe Identity, après audit de create-stripe-identity-session).
@@ -29,6 +30,14 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-29 — [VRAIE VIE] Dossier SNEE / Pépite Bretagne envoyé
+Candidature n° 6A99597EA99 envoyée le 29/09/2026 sur la plateforme du MESR. Textes et choix archivés dans docs/ponctuels/DOSSIER-SNEE-2026-09.md.
+Référente entrepreneuriat : Gaëlle Gestin-Ligonnière (ENSAB), sur orientation d'Anne-Laure Sourdril (ENSAB). Demande envoyée le 27/09, accord le 28/09. Le formulaire ne demandait qu'une référente : la question d'un enseignant référent distinct (Anne-Marie Havard) est close.
+ECTS : les crédits SNEE ne remplacent aucun crédit du diplôme d'architecture (Sourdril, 16/09). Case « équivalences ECTS de la formation initiale » : Non.
+Choix de rédaction actés : textes construits à partir des textes déjà validés (formulaire Le Poool, description d'expérience LinkedIn). Le principe de fonctionnement y est expliqué, ce qui ne dépasse pas ce qui est déjà public sur LinkedIn : pas d'exception à la doctrine public/privé de CONTEXTE §1 ter. « Rentabiliser » remplacé par « proposer » (sous-location à profit = question réservée à l'avocat). Secteur « Digital et objets connectés » plutôt que « Habitat » ou « Services ».
+Faits corrigés en séance : la micro-entreprise a été créée uniquement pour Sterny. Côme a cumulé plusieurs emplois pour financer le projet ; au 29/09 le traiteur est en pause et la conciergerie Airbnb arrêtée. L'étude de terrain est sur le point d'être lancée.
+RESTE : attendre la réponse de Pépite Bretagne (comité d'engagement). Demander à Barbara comment obtenir des crédits ECTS en plus du diplôme. Mettre à jour LinkedIn avant de rendre le profil visible (Infos : « je cumule » à passer au passé ; expériences conciergerie et traiteur à clore ou marquer en pause). Préparer un CV à jour.
 
 ## 2026-09-28 — [DEV] Patch 4a-2, étape 2 : `verify-document` réécrite et commitée (6bc29af), 4 tests sur 7, patch suspendu
 
