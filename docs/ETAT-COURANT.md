@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-30
+[DEV] Lot 2 de A bis (#177) cadré et validé : signature et renouvellement par des fonctions de la base, contenu du contrat figé, annulation avant la double signature ; états des lieux et formule du loyer hors lot (#197). Reste : nouvelle conversation, audit du lot 2 en lecture seule.
 [DEV] Points « À VÉRIFIER » du 29/09 établis en lecture seule, sur le code et les deux bases : parcours transaction hors schéma (#197), garde de delete-account inopérante (#198), export-data sur une colonne inexistante (#199), objet de signature relevé (#177). Reste : cadrage du lot 2 de #177.
 [DEV] Phase A bis (#177), lot 1 appliqué en production (3c6b550, poussé) : objets identiques au local, refus établis par équivalence, sept écarts de schéma relevés et sans effet sur le lot 1. Reste : lot 2 (signatures, statuts des contrats et des renouvellements), puis fin de /compte.
 [DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550) : 39 tests sur 39, production non faite. Reste : nouvelle conversation, application en production, push, puis lot 2.
@@ -36,6 +37,12 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-30 (suite 2) — [DEV] Lot 2 de A bis (#177) cadré et validé
+
+**DÉCISIONS DE CÔME, 30/09.** Cadrage du lot 2 validé : signature par une fonction de la base et suppression de la modification directe des contrats ; contenu du contrat figé après sa création ; annulation par l'une ou l'autre partie tant que le contrat n'est pas signé par les deux ; renouvellement accepté par une fonction réservée au propriétaire, en tout ou rien ; états des lieux et formule du loyer hors du lot 2 (#197). Détail en DETTE #177, mise à jour « cadrage du lot 2 ».
+
+**RESTE.** Nouvelle conversation. Audit du lot 2 en lecture seule : texte des 25 règles des quatre tables, déclencheur des candidatures du lot 1 (remise en attente d'une candidature décidée), ContratLocationPage et RenouvellementPage en entier, lecture de l'IP et du navigateur par la base. Puis conception finale, migration et tests en local, pages, test dans le navigateur, production. Push de 1e6159d et du présent commit docs après un build de l'état commité, s'il n'est pas fait en fin de session (à établir par la ligne d'état). Puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175).
 
 ## 2026-09-30 (suite) — [DEV] Points « À VÉRIFIER » du 29/09 établis, DETTE #197 à #199 ouvertes
 
