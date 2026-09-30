@@ -2,7 +2,7 @@
 
 Suivi des bugs et bypass DEV à traiter en Phase 0bis (après Phase 1 complète).
 
-**Dernière mise à jour** : 2026-09-29 — #177 mise à jour (lot 1 appliqué et testé en local, décisions A et B) ; #196 ouverte (candidature impossible sur une annonce sans titre).
+**Dernière mise à jour** : 2026-09-30 — #177 mise à jour (lot 1 appliqué en production, refus établis par équivalence) ; #161 complétée (sept écarts de schéma sur quatre tables).
 
 ## Nomenclature des bugs
 
@@ -1916,6 +1916,8 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 
 **CONSTAT ÉLARGI, MÊME RELEVÉ, HORS PÉRIMÈTRE 3d.** La désynchronisation joue dans les DEUX sens, et pas seulement dans celui décrit au point 2. `complete_inscription_alternant` est présente dans le dépôt et en base locale, et ABSENTE de la base de production. C'est la fonction qui enregistre une inscription d'alternant. Aucun utilisateur réel n'est concerné tant que la plateforme n'est pas ouverte, mais une inscription qui n'aboutit pas rend le site inutilisable dès le premier jour de lancement. À traiter avant toute ouverture. Ce constat ne dit rien des autres fonctions ni des autres tables : seul un relevé complet établirait l'ampleur réelle de l'écart.
 
+**MISE À JOUR 2026-09-30 (relevé sur quatre tables).** Relevé objet par objet sur `annonces`, `candidatures`, `contrats` et `renouvellements`, pendant le contrôle du lot 1 de A bis (#177). Absents en production : `annonces.pole`, ses contraintes `annonces_pole_check` et `annonces_user_pole_unique` et l'index du même nom, et `candidatures.semaines_demandees` (migration `20260612130950`). `annonces.user_id` est facultatif en production, obligatoire en local. `trigger_notif_candidature` est dans une version différente (voir #196). Sans effet sur le lot 1 (analyse dans ETAT, entrée du 30/09). La production porte donc aussi un retard de migrations de la branche sur ces tables ; à résorber avant toute ouverture, par un relevé complet.
+
 ## DETTE #162 — Couleur « entreprise » de RhythmCalendar trop proche de tout neutre clair
 **Statut** : CLOSE le 2026-08-31.
 **Constat (test runtime du 20/08/2026)** : sur `/compte`, une semaine « entreprise » et une semaine « non renseignée » ne se distinguent qu'en cherchant. Cause identifiée après trois tentatives infructueuses portant toutes sur le mauvais objet : `RhythmCalendar` rend l'entreprise en navy à 15 % d'opacité, soit un gris pâle. Toute nuance neutre claire lui ressemble. `RhythmManualBuilder` n'a jamais eu ce problème parce qu'il rend l'entreprise en navy PLEIN.
@@ -2027,6 +2029,7 @@ Découverte : 2026-08-12, pendant les audits 4 et 5 du cadrage 3d.
 **MISE À JOUR 2026-09-29 (ordre).** Décision de Côme : la phase A bis passe maintenant, avant la fin de /compte (patchs 5 à 7). Condition de déploiement sur `main` inchangée (#186).
 **MISE À JOUR 2026-09-29 (audit).** Audit en lecture seule tenu, en local et en production (règles identiques). Supprimer les règles ouvertes ne suffit pas : trois chemins de fabrication restent (candidature insérée déjà acceptée, candidature modifiée, contrat inventé). Lot 1 validé par Côme : suppression des huit règles ouvertes, règle étroite pour le cas (e), déclencheur sur `candidatures`, insertion des contrats et des renouvellements liée à la candidature ou au contrat d'origine, clé étrangère `annonces.user_id`. Lot 2 : signatures, statuts des contrats et des renouvellements, ménage des doublons. Détail dans ETAT, entrée du 29/09 (suite 2).
 **MISE À JOUR 2026-09-29 (lot 1 en local).** Migration `20260929200000_relations_infalsifiables.sql` (3c6b550) appliquée et testée en local, 39 tests sur 39 ; production non faite. Deux décisions de Côme. (A) Le parcours de renouvellement cesse de fonctionner dans le navigateur : RenouvellementPage crée une candidature déjà `acceptee`, désormais refusée ; aucun contrat n'existe sur les deux bases ; parcours repris avec le lot 2. (B) La clé étrangère `annonces.user_id` vers `users(id)` bloque la suppression d'un compte qui a encore une annonce, comme pour les contrats et les renouvellements ; `delete-account` supprime les annonces avant le compte : sans effet dans le cas normal, échec visible sinon, au lieu d'une annonce orpheline. Détail dans ETAT, entrée du 29/09 (suite 3).
+**MISE À JOUR 2026-09-30 (lot 1 en production).** Migration appliquée en production par l'éditeur SQL, objets identiques au local (25 règles, empreintes des quatre fonctions, trois déclencheurs, clé). Refus établis par équivalence, sans test en production (détail dans ETAT, entrée du 30/09). Reste le lot 2 : signatures, statuts des contrats et des renouvellements, règles en double, reprise du parcours de renouvellement. #177 reste ouverte jusqu'au lot 2.
 
 ## DETTE #178 — ProfilPage : colonnes absentes et table `signalements` inexistante
 **Constat (audit du 21/09/2026, DETTE #171)** : ProfilPage lit dans `users` des colonnes absentes du schéma local (`description`, `ville_origine`), et dans `annonces` des colonnes absentes (`prix_semaine`, `proprietaire_id`, `statut`). Elle écrit dans une table `signalements` qui n'existe pas. Production non vérifiée.

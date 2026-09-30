@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-29
+**Dernière mise à jour** : 2026-09-30
+[DEV] Phase A bis (#177), lot 1 appliqué en production (3c6b550, poussé) : objets identiques au local, refus établis par équivalence, sept écarts de schéma relevés et sans effet sur le lot 1. Reste : lot 2 (signatures, statuts des contrats et des renouvellements), puis fin de /compte.
 [DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550) : 39 tests sur 39, production non faite. Reste : nouvelle conversation, application en production, push, puis lot 2.
 [DEV] Audit A bis (#177) fait en lecture seule : production identique au local (32 règles), 1 annonce, 1 candidature, 0 contrat. Lot 1 validé par Côme (relations infalsifiables, une seule migration), lot 2 défini (intégrité des contrats). Reste : lire les fonctions de relation de la phase A, puis écrire et tester le lot 1 en local.
 [DEV] Push de 4b fait (5e85328, build de l'état commité réussi), règle du scan de secrets ajoutée en CONTEXTE §6 (a0ce76f). Ordre révisé le 29/09 : phase A bis (#177) maintenant, puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175). Reste : audit de A bis en lecture seule, qui commence par établir si la production contient des données personnelles réelles de tiers.
@@ -34,6 +35,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-30 — [DEV] Phase A bis (#177), lot 1 appliqué en production
+
+**PUSH.** Build de l'état commité cfead8c réussi (code 0). Push d6b5f65..cfead8c : 3c6b550 (migration), cfead8c (docs).
+
+**PRODUCTION, AVANT.** Même requête sur les deux bases, en lecture seule : 32 règles en production, dont les huit à supprimer sous leurs noms ; empreinte des 24 règles non touchées identique au local (47d28206…d45a) ; aucun objet du lot 1 présent ; aucune annonce orpheline ; 1 annonce, 1 candidature, 0 contrat, 0 renouvellement.
+
+**APPLICATION.** Fichier commité (sha256 a551c3a5…46ce) copié par `pbcopy`, empreinte du presse-papier contrôlée, aucun `begin` ni `commit` dans le fichier ; appliqué dans un onglet dédié de l'éditeur SQL. Contrôle dans un onglet séparé, identique au local sur 13 lignes : 25 règles, empreinte des 25 règles 2347cce2…c0fb, fonctions d0fa6d12, e358f3b1, 4ccbdf53 et 8a90bdff, trois déclencheurs actifs (empreinte bd709cbe…d629), clé `annonces_user_id_fkey` validée, données inchangées.
+
+**CONTRÔLE DES REFUS, PAR ÉQUIVALENCE.** Les 39 tests n'ont pas été rejoués en production : ils créent des comptes dans `auth.users`, dont les déclencheurs peuvent appeler l'extérieur (audit jamais fait), ce qu'une annulation ne rattrape pas. Méthode retenue par Côme : établir en lecture seule que tout ce qui détermine un refus est identique sur les deux bases. Identiques : version (17.6), sécurité par ligne des cinq tables, six déclencheurs, droits par table (56), rôles `anon` et `authenticated` sans contournement. Sept écarts, relevés objet par objet : `annonces.pole`, sa contrainte `annonces_pole_check`, la contrainte et l'index `annonces_user_pole_unique`, `candidatures.semaines_demandees`, absents en production ; `annonces.user_id` facultatif en production, obligatoire en local ; `trigger_notif_candidature` dans une version différente. Migration relue : aucun de ces écarts n'affaiblit un refus. Aucune fonction du lot 1 ne cite `pole` ni `semaines_demandees` ; la notification s'exécute après le contrôle du lot 1 et ne peut qu'ajouter un échec ; un auteur vide vaut refus pour la décision sur une candidature et exclut la lecture par parrainage ; en production, 0 annonce sans auteur et `contrats.proprietaire_id` obligatoire. Limite assumée : preuve par équivalence, aucun refus observé en production. Écarts consignés en DETTE #161.
+
+**MÉTHODE.** Une requête destinée à l'éditeur SQL a été collée dans le Terminal : zsh l'a rejetée à l'analyse, rien exécuté.
+
+**RESTE.** Lot 2 (#177) : signatures, statuts des contrats et des renouvellements, ménage des règles en double, reprise du parcours de renouvellement. Les points « À VÉRIFIER » des entrées du 29/09 (suite 2 et suite 3) restent à loguer en DETTE. Puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175).
 
 ## 2026-09-29 (suite 3) — [DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550)
 
