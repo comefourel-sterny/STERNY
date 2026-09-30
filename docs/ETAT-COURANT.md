@@ -3,6 +3,7 @@
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
 **Dernière mise à jour** : 2026-09-30
+[DEV] Points « À VÉRIFIER » du 29/09 établis en lecture seule, sur le code et les deux bases : parcours transaction hors schéma (#197), garde de delete-account inopérante (#198), export-data sur une colonne inexistante (#199), objet de signature relevé (#177). Reste : cadrage du lot 2 de #177.
 [DEV] Phase A bis (#177), lot 1 appliqué en production (3c6b550, poussé) : objets identiques au local, refus établis par équivalence, sept écarts de schéma relevés et sans effet sur le lot 1. Reste : lot 2 (signatures, statuts des contrats et des renouvellements), puis fin de /compte.
 [DEV] Phase A bis (#177), lot 1 appliqué et testé en local (3c6b550) : 39 tests sur 39, production non faite. Reste : nouvelle conversation, application en production, push, puis lot 2.
 [DEV] Audit A bis (#177) fait en lecture seule : production identique au local (32 règles), 1 annonce, 1 candidature, 0 contrat. Lot 1 validé par Côme (relations infalsifiables, une seule migration), lot 2 défini (intégrité des contrats). Reste : lire les fonctions de relation de la phase A, puis écrire et tester le lot 1 en local.
@@ -35,6 +36,14 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-09-30 (suite) — [DEV] Points « À VÉRIFIER » du 29/09 établis, DETTE #197 à #199 ouvertes
+
+**RELEVÉ, EN LECTURE SEULE.** Même requête sur les deux bases (fichier sha256 8e74ec1c…, local par psql, production par l'éditeur SQL) : `candidatures`, `contrats` et `renouvellements` identiques, à `candidatures.semaines_demandees` près (#161) ; huit règles et trois déclencheurs sur `contrats` et `renouvellements`. Code du dépôt lu par recherche dans le Terminal macOS ; DashboardProprietairePage, fichier never-stage, contrôlé dans le dernier commit (même code que sur le disque).
+
+**CONSTATS.** Les points des entrées du 29/09 (suite 2 et suite 3) sont confirmés et élargis : le parcours transaction écrit des statuts et des colonnes absents des deux bases, et ne fonctionne pas au-delà de la signature (#197) ; les deux gardes « bail actif » de `delete-account` ne se déclenchent jamais, et la suppression d'un compte emporte les contrats de l'autre partie (#198) ; `export-data` cherche les annonces par une colonne inexistante (#199). Objet de signature relevé et consigné en #177, avec un point à vérifier sur le lot 1 (remise en attente d'une candidature décidée).
+
+**RESTE.** Cadrage du lot 2 de #177. Puis fin de /compte (patchs 5, 5 bis, 6, 7 et #189), puis phase B (#175).
 
 ## 2026-09-30 — [DEV] Phase A bis (#177), lot 1 appliqué en production
 
