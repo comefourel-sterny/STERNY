@@ -451,6 +451,10 @@ Tout contrôle décisif tient sur une seule ligne de sortie : le Terminal et Cla
 
 Origine : session du 22-23/09/2026, suppression de `/inscription/partager`.
 
+### Aucune commande git depuis le dossier personnel
+
+Jusqu'au 03/10/2026, `/Users/comefourel` était lui-même un dépôt git relié à `STERNY.git`, vestige du premier dépôt AlternHome de février 2026. Toute commande git lancée hors de `~/Dev/sterny` s'y appliquait sans erreur, et un `git add .` ou un `git clean` y aurait touché tout le dossier personnel. Neutralisé par renommage en `~/.git-quarantaine-alternhome`. Règle : toute commande git et toute session Claude Code liée à Sterny partent de `/Users/comefourel/Dev/sterny`, jamais de `~`. En cas de doute, `git rev-parse --show-toplevel` doit renvoyer `/Users/comefourel/Dev/sterny` ; toute autre réponse arrête la session. Origine : session du 03/10/2026.
+
 ---
 
 ## 6 ter. Entretien du corpus documentaire
@@ -653,4 +657,4 @@ Comptes de test (@sterny.test) : voir ETAT-COURANT.md. Aucun lien avec les adres
 
 *Document stable. Si un fait fondamental change (stack, structure de repo, préférences de communication), mettre à jour ce fichier et dater la modification.*
 
-*Dernière modification : 2026-09-28 — §6 bis : point 7 de la règle sur Claude Code (antislash altéré dans un fichier recopié, contrôle par empreinte sha256).*
+*Dernière modification : 2026-10-03 — §6 bis : aucune commande git depuis le dossier personnel (ancien dépôt AlternHome neutralisé).*

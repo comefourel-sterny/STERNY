@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-09-30
+**Dernière mise à jour** : 2026-10-03
+[DEV] `~` était un dépôt git (premier dépôt AlternHome, février 2026, deux pushs vers STERNY) : audit en lecture seule, aucun fichier personnel ni secret poussé, plus aucune référence GitHub n'y mène. `~/.git` renommé en `~/.git-quarantaine-alternhome`. Reste : projet Supabase `gjrhhxxchmdoszlqliga` à vérifier, quarantaine à supprimer plus tard.
 [DEV] Lot 2 de A bis (#177) : audit en lecture seule tenu et conception finale validée par Côme (cinq fonctions de la base, 16 règles sur les quatre tables, un contrat par candidature). Reste : migration et tests en local, pages, test dans le navigateur, production.
 [DEV] Lot 2 de A bis (#177) cadré et validé : signature et renouvellement par des fonctions de la base, contenu du contrat figé, annulation avant la double signature ; états des lieux et formule du loyer hors lot (#197). Reste : nouvelle conversation, audit du lot 2 en lecture seule.
 [DEV] Points « À VÉRIFIER » du 29/09 établis en lecture seule, sur le code et les deux bases : parcours transaction hors schéma (#197), garde de delete-account inopérante (#198), export-data sur une colonne inexistante (#199), objet de signature relevé (#177). Reste : cadrage du lot 2 de #177.
@@ -38,6 +39,20 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-10-03 — [DEV] `~` était un dépôt git : audit en lecture seule, neutralisé par renommage
+
+**DÉCOUVERTE.** En créant un autre projet, Côme a constaté que `git rev-parse --show-toplevel` lancé dans son dossier personnel renvoyait `/Users/comefourel`, avec `origin` pointant vers `comefourel-sterny/STERNY.git`.
+
+**ORIGINE, ÉTABLIE.** `~/.git` créé le 08/02/2026 : premier dépôt du projet, alors nommé AlternHome, code dans `Documents/AlternHome/projet-alternance`. Trois commits (5c3bff3 du 09/02, 78d08da et afaa735 du 16/02), branche `main`, 52 fichiers suivis, tous sous `Documents/AlternHome`. Deux pushs vers GitHub au journal local, `origin/main` y valant afaa735. Aucun de ces commits n'existe dans `~/Dev/sterny` : `main` a depuis été remplacée par l'historique de `~/Dev/sterny`.
+
+**CONTENU POUSSÉ.** Aucun fichier personnel, aucun nom de fichier sensible. Scan des préfixes de jetons (motif de CONTEXTE §6 complété par `eyJ`), valeurs jamais affichées : quatre clés `anon`, publiques par conception, de deux anciens projets Supabase, `cvtpuusnzziqfdgbmiph` (« projet-alternant », en pause, vu par le connecteur Supabase) et `gjrhhxxchmdoszlqliga` (invisible au connecteur, existence non établie) ; un faux positif `re_` dans un script SQL. Aucune clé `service_role`, aucun autre secret.
+
+**GITHUB.** `git ls-remote` : 5 références, toutes connues de `~/Dev/sterny` (historique complet), aucune égale aux trois commits. Plus aucune référence n'y mène. Les commits peuvent subsister chez GitHub comme objets non atteints, accessibles par identifiant aux seuls ayants droit du dépôt privé : purge auprès du support jugée inutile vu le contenu.
+
+**NEUTRALISATION.** `~/Dev/sterny/.git` vérifié comme dossier autonome avant toute action. `~/.git` renommé en `~/.git-quarantaine-alternhome`, réversible par le renommage inverse. Après : `~` n'est plus un dépôt, `~/Dev/sterny` inchangé (feat/unification-inscription, 62a002b).
+
+**RESTE.** Vérifier dans les deux comptes Supabase (come@sterny.co et compte perso) si `gjrhhxxchmdoszlqliga` existe encore ; décider du sort de `cvtpuusnzziqfdgbmiph`. Supprimer `~/.git-quarantaine-alternhome` après quelques semaines sans besoin.
 
 ## 2026-09-30 (suite 3) — [DEV] Lot 2 de A bis (#177) : audit tenu, conception validée
 
