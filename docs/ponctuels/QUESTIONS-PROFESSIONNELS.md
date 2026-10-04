@@ -118,7 +118,7 @@ Ce document est la source unique de référence pour préparer les rendez-vous a
 > **Date RDV prévue** : —
 > **Réponse / décision** : —
 
-> **[Q-AVO-013]** Fin de contrat, annulation et expulsion d'un occupant (ajoutée le 30/09/2026).
+> **[Q-AVO-013]** Fin de contrat, annulation et expulsion d'un occupant (ajoutée le 03/10/2026).
 > **Contexte** : règles provisoires du lot 2 de la DETTE #177. Un contrat qui n'est pas encore signé par les deux parties peut être annulé par l'une ou l'autre ; une fois signé par les deux, aucune fin de contrat n'est possible depuis la plateforme (résiliation traitée plus tard, DETTE #197).
 > **Questions** : (1) Quelles règles encadrent la fin anticipée d'un contrat de sous-location entre alternants : motifs admis, préavis, forme, partie qui peut y mettre fin ? (2) Comment protéger un occupant pendant sa période réservée : qu'est-ce qui interdit de l'évincer, et dans quels délais ? (3) L'annulation par l'une ou l'autre partie avant la double signature est-elle admissible, et à quelles conditions ? (4) Quelles obligations d'information à l'avance envers l'occupant ?
 
