@@ -6,7 +6,7 @@
 // PIEGE DE L'API : le reglage de navigation porte par un PageBreakItem decrit
 // la sortie de la section PRECEDENTE, pas celle qu'il ouvre. Ce script recale
 // d'un cran. Point de controle : "APRES LA SECTION 7" doit afficher
-// "SECTION 20 (Choix pro)". Si ce n'est pas le cas, le dump est decale et
+// "SECTION 18 (Difficultes logement)" (repère en vigueur depuis le 2026-08-18 ; l'ancien repère SECTION 20 est caduc). Si ce n'est pas le cas, le dump est decale et
 // toute conclusion tiree dessus est fausse.
 //
 // PIEGE DE LA DUPLICATION (ajoute le 2026-08-11) : FORM_ID est en dur et le

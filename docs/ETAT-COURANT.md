@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-10-03
+**Dernière mise à jour** : 2026-10-05
+[VRAIE VIE] Questionnaire terrain : controle final fait, question de retour ajoutee, section 26 creee pour supprimer l'ecran intermediaire de Google, envoi reel eprouve, compteur remis a 0. Pret a diffuser. Reste : prerequis du 15/09, decision sur le gel au pilote.
 [DEV] `~` était un dépôt git (premier dépôt AlternHome, février 2026, deux pushs vers STERNY) : audit en lecture seule, aucun fichier personnel ni secret poussé, plus aucune référence GitHub n'y mène. `~/.git` renommé en `~/.git-quarantaine-alternhome`. Reste : projet Supabase `gjrhhxxchmdoszlqliga` à vérifier, quarantaine à supprimer plus tard.
 [DEV] Lot 2 de A bis (#177) : audit en lecture seule tenu et conception finale validée par Côme (cinq fonctions de la base, 16 règles sur les quatre tables, un contrat par candidature). Reste : migration et tests en local, pages, test dans le navigateur, production.
 [DEV] Lot 2 de A bis (#177) cadré et validé : signature et renouvellement par des fonctions de la base, contenu du contrat figé, annulation avant la double signature ; états des lieux et formule du loyer hors lot (#197). Reste : nouvelle conversation, audit du lot 2 en lecture seule.
@@ -39,6 +40,32 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-10-05 — [VRAIE VIE] Questionnaire terrain : controle final avant diffusion, section 26, envoi reel eprouve
+
+**AUCUNE DERIVE DEPUIS LE 18/08.** Dump de 15:31 et `verifierIntitules` de 15:33 sur la copie (`1GkNDUCR...`, en-tete verifie en premier) : 25 sections, 42 questions, 38 obligatoires, 4 facultatives, 14 descriptions de question, « INTITULES EN DOUBLE : aucun », les cinq groupes de descriptions en double voulus, « APRES LA SECTION 7 » sur SECTION 18, accepte les reponses, 0 reponse enregistree. Le lien n'avait encore produit aucune reponse, Discord compris.
+
+**QUESTION DE RETOUR AJOUTEE.** « Est-ce qu'une question t'a paru floue, ou aurais-tu une remarque a nous faire sur ce questionnaire ? », paragraphe, facultative (regle du 12/08 sur les questions ouvertes), sans description. Motif : INTERPRETER les reponses, pas ameliorer l'instrument, qui reste gele. Un repondant qui signale une incomprehension signale aussi que ses montants sont peut-etre faux ; c'est le seul canal par lequel ce defaut peut remonter. Ajoutee a 0 reponse, donc sans rupture de serie. Premiere formulation proposee au vouvoiement, ecartee : tout le questionnaire est au tutoiement.
+
+**TEMPS DE REPONSE.** Parcours le plus long : 26 questions (rythme irregulier par grandes periodes, bi-ville sans famille, logement plus courte duree, difficultes, opportunite, pourquoi, opt-in). Chronometre par Come a 3:30, sans rediger de vrais textes : c'est un minimum, pas une mesure. « Moins de 5 minutes » conserve en section 1, pour deux raisons : les trois champs ouverts sont facultatifs, et le parcours le plus long est minoritaire (un mono-ville sans difficulte repond a environ 15 questions).
+
+**PREMIER ENVOI REEL, ET ECRAN INTERMEDIAIRE DE GOOGLE.** Le clic « Envoyer », jamais exerce jusqu'ici, fonctionne. Mais quand la redirection « Envoyer le formulaire » part d'une section qui n'est PAS la derniere, Google intercale un ecran « Cliquez sur "Envoyer" pour terminer » avec les boutons Retour et Envoyer. Constate sur « Non merci » en section 24. Depuis la derniere section, le bouton envoie directement : constate sur « Oui » puis section 25. Risque : un repondant qui croit avoir fini ferme l'onglet, sa reponse est perdue et rien ne le signale dans la feuille. La documentation Google n'explique pas cet ecran ; la regle vient des deux constats, pas d'un raisonnement.
+
+**CORRECTION : SECTION 26 « Une derniere question ».** Elle recoit la question de retour, deplacee depuis la section 24 (deplacee, jamais recreee, pour conserver le lien avec sa colonne). « Non merci » en section 24 mene desormais a la section 26 ; la section 25 sort vers la section suivante. Tous les parcours finissent dans la derniere section. Verifie en navigation privee, avec envoi, sur les deux fins de parcours : plus d'ecran intermediaire.
+
+**CONTROLE APRES RESTRUCTURATION.** Dump de 16:46 et `verifierIntitules` de 16:47 : 26 sections, 43 questions, 38 obligatoires, 5 facultatives, 14 descriptions de question, 2 blocs texte, aucun intitule en double. Sections 1 a 23 relues contre le dump de 15:43 : identiques. NOUVEAUX REPERES DE CONTROLE, a utiliser desormais : 26 sections et 43 questions ; « APRES LA SECTION 7 » toujours sur SECTION 18 ; section 24, « Non merci » sur SECTION 26 ; « APRES LA SECTION 26 » sur ENVOYER (fin).
+
+**FEUILLE DE REPONSES CONTROLEE SUR CINQ ENVOIS DE TEST.** Chaque valeur sous son intitule, colonnes des sections non traversees vides, aucune fusion. La question de retour a sa colonne en AR, APRES le mail (AQ) alors qu'elle le suit dans le formulaire : la feuille ajoute en fin les questions creees apres sa liaison. Deplacement de la question en section 26 prouve par une valeur ecrite, pas deduit : elle arrive toujours en AR. La feuille est mise en forme en tableau, de A a AS ; AS porte l'en-tete « Colonne 43 », reste vide sur les cinq envois, origine NON etablie. Laissee en place : elle ne gene pas la collecte, et supprimer une colonne d'une feuille liee sans en connaitre l'origine est un risque sans gain. A regarder sur la ligne du premier vrai repondant.
+
+**POLITIQUE DE CONFIDENTIALITE.** Le lien des sections 1 et 24 ouvre le Doc, lisible sans connexion en navigation privee (confirme par Come). Le contenu, valide avec Benoit Guillemin, n'a pas ete rediscute ; la question de retour parait couverte par « Reponses au questionnaire », a lui faire confirmer en cas de doute.
+
+**REMISE A ZERO.** Cinq reponses de test supprimees dans le formulaire et dans la feuille, dont deux portant l'adresse personnelle de Come. `verifierIntitules` de 16:55 : 0 reponse enregistree.
+
+**NON RELEVE.** Texte exact du message de confirmation affiche apres l'envoi.
+
+**POINT OUVERT, PROPOSE ET NON TRANCHE.** La sequence du 15/09 prevoit « vague pilote, ajustement, vague 2 ». Proposition de Claude.ai : le questionnaire est gele des la premiere vraie reponse du pilote, l'ajustement porte uniquement sur la diffusion (cibles, canaux, messages). Motif : modifier l'instrument entre deux vagues rendrait les reponses du pilote non additionnables, comme les 15 de l'original. Coherent avec la regle du 10/08 (un trou decouvert en cours de collecte est note et assume, jamais corrige a chaud). Decision de Come en attente.
+
+**RESTE.** Prerequis du 15/09 : questions RGPD a Benoit Guillemin (fichier de demarchage, repondants mineurs, contact direct des membres de BDE), export CSV des 15 reponses de l'original, publication du profil LinkedIn. Mail de test vers contact@sterny.co (adresse du droit de suppression). Trancher le gel au pilote. Puis sequence de diffusion du 15/09.
 
 ## 2026-10-03 — [DEV] `~` était un dépôt git : audit en lecture seule, neutralisé par renommage
 
