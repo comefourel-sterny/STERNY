@@ -2,7 +2,8 @@
 
 Document vivant. Mis à jour **à chaque changement de conversation Claude.ai saturée** (règle : avant de fermer une conversation, demander à Claude de proposer une mise à jour de ce fichier, puis commit). Permet à toute nouvelle session de savoir immédiatement où on en est sans perte de contexte.
 
-**Dernière mise à jour** : 2026-10-05
+**Dernière mise à jour** : 2026-10-06
+[VRAIE VIE] Questionnaire terrain : défaut du rythme asymétrique corrigé (sections 3 et 5), section 21 clarifiée, validation éprouvée, compteur à 0. Pré-test avec 2 proches le 06/10, lancement et gel le 07/10. Reste : questions RGPD à Benoît Guillemin avant tout démarchage.
 [VRAIE VIE] Questionnaire terrain : controle final fait, question de retour ajoutee, section 26 creee pour supprimer l'ecran intermediaire de Google, envoi reel eprouve, compteur remis a 0. Pret a diffuser. Reste : prerequis du 15/09, decision sur le gel au pilote.
 [DEV] `~` était un dépôt git (premier dépôt AlternHome, février 2026, deux pushs vers STERNY) : audit en lecture seule, aucun fichier personnel ni secret poussé, plus aucune référence GitHub n'y mène. `~/.git` renommé en `~/.git-quarantaine-alternhome`. Reste : projet Supabase `gjrhhxxchmdoszlqliga` à vérifier, quarantaine à supprimer plus tard.
 [DEV] Lot 2 de A bis (#177) : audit en lecture seule tenu et conception finale validée par Côme (cinq fonctions de la base, 16 règles sur les quatre tables, un contrat par candidature). Reste : migration et tests en local, pages, test dans le navigateur, production.
@@ -40,6 +41,30 @@ Document vivant. Mis à jour **à chaque changement de conversation Claude.ai sa
 [VRAIE VIE] Questionnaire terrain MIS EN SERVICE : feuille de réponses créée, copie publiée, original fermé en pointant vers elle. Lien de diffusion : https://forms.gle/wAvGz4yrdPEHkEsJ8
 
 ---
+
+## 2026-10-06 — [VRAIE VIE] Questionnaire terrain : rythme asymétrique, section 21, pré-test et gel au lancement
+
+**CORRECTION DE L'ENTRÉE DU 05/10.** Elle affirme que les cinq réponses de test ont été supprimées « dans le formulaire et dans la feuille ». C'est faux pour la feuille : constaté le 06/10, les cinq lignes y étaient toujours. Supprimer une réponse dans Forms ne supprime PAS sa ligne dans la feuille liée. L'entrée a été rédigée par Claude.ai sans confirmation de l'état de la feuille. Règle : une suppression se vérifie aux deux endroits, et le journal attend la confirmation des deux.
+
+**DÉFAUT TROUVÉ PAR UNE PREMIÈRE RÉPONDANTE.** Une proche de Côme, seule personne à qui le lien avait été envoyé, a bloqué en section 3 sur « Quel est ton rythme ? Ça tourne toutes les combien de semaines ? ». Son rythme : 3 semaines d'école, 6 semaines d'entreprise. Régulier mais asymétrique, il ne tient pas en un seul nombre ; elle a fini par répondre 6, soit ses seules semaines d'entreprise. La question supposait un rythme symétrique. Aucun dump ne pouvait le voir : le script d'audit ne lit ni le sens ni les règles de validation des réponses.
+
+**CORRECTION, SECTIONS 3 ET 5.** Chaque question unique est remplacée par deux questions obligatoires, en réponse courte, avec la description « Réponds par un nombre, ex : 3 » et une validation « Nombre entier » au message « Indique un nombre de semaines (ex : 3) ». Section 3 : « Combien de semaines durent tes périodes d'école ? » et « Combien de semaines durent tes périodes d'entreprise ? ». Section 5 : les mêmes, précédées de « En moyenne, », la section 5 portant sur des rythmes irréguliers. Formulations retenues par Côme : « d'affilée » écarté comme lourd ; une version sans le mot « périodes » écartée, lisible sur l'année. Le refus de « 3 semaines » a été constaté en navigation privée. L'option « Régulier (rythme fixe, ex : 1 semaine école / 1 semaine entreprise) » de la section 2 n'a pas été modifiée : changer le texte d'une option change la valeur enregistrée, et elle porte trois redirections.
+
+**SECTION 21 CLARIFIÉE.** « Dans quelle ville aurais-tu voulu aller ? » ne convenait qu'à l'une des trois options. Renommée « Dans quelle ville se trouvait cette opportunité ? » et rendue OBLIGATOIRE, pour pouvoir compter les villes citées ; c'est cohérent avec les autres questions de ville du formulaire, toutes obligatoires. Réponse en texte libre : les variantes d'un même nom de ville seront à regrouper à la main à l'analyse. Description de section ajoutée : « Si c'est arrivé plusieurs fois, pense à la plus marquante. » Aucune section créée : la question de la ville s'affiche déjà quelle que soit l'option choisie.
+
+**SECTION 4, INTITULÉ RETOUCHÉ PAR CÔME.** « à quelle fréquence tu alternes » devient « à quelle fréquence alternes-tu ». Redirections intactes.
+
+**CONTRÔLE.** `verifierIntitules` du 06/10 à 17:12 puis 17:58 : 26 sections, 45 questions, 41 obligatoires, 4 facultatives, 18 descriptions de question, 3 descriptions de section, aucun intitulé en double. Nouveau groupe voulu de descriptions en double : x4 sur les sections 3 et 5. Dump de 17:26 : sections 3 et 5 vers la SECTION 6, redirections des sections 2 et 4 intactes, reste du formulaire identique au 05/10. NOUVEAUX REPÈRES : 45 questions, 41 obligatoires, 4 facultatives, 3 descriptions de section.
+
+**CONSTAT SUR LA FEUILLE : L'EN-TÊTE D'UNE COLONNE SUIT L'INTITULÉ DE SA QUESTION.** Constaté sur les sections 4 et 21 après renommage. Correspondance colonnes et questions après correction, établie sur deux envois de test : F = section 3, entreprise ; G = section 4 ; H = section 5, école ; AR = question de retour ; puis deux colonnes ajoutées après AR, section 3 école et section 5 entreprise (lettres déduites AS et AT, à confirmer à l'écran) ; « Colonne 43 », vide, est repoussée en fin de tableau. L'ordre des colonnes ne suit donc plus l'ordre du formulaire : à garder sous les yeux à l'analyse.
+
+**RÉPONSE DE LA PREMIÈRE RÉPONDANTE SUPPRIMÉE.** Décision de Côme : sa ligne est supprimée de la feuille et du formulaire, et elle est invitée à répondre à nouveau sur le questionnaire corrigé. Fait notable : dans la question de retour, elle avait écrit « oui sur la fréquence », ce qui confirme l'utilité de cette question dès la première vraie réponse. État au 06/10 à 17:58 : 0 réponse dans le formulaire, feuille vide.
+
+**DÉCISION DE CÔME, 06/10 — PRÉ-TEST PUIS GEL AU LANCEMENT.** Remplace le point ouvert de l'entrée du 05/10. Pré-test avec 2 proches le 06/10, pendant lequel le questionnaire peut encore être corrigé ; lancement de l'étude le 07/10. Le questionnaire est GELÉ dès le lancement : aucune modification ensuite, un trou découvert en cours de collecte est noté et assumé (règle du 10/08). L'ajustement entre la vague pilote et la vague 2 ne porte que sur la diffusion. Réponses du pré-test : conservées si rien n'est modifié après elles ; supprimées aux deux endroits avant le lancement dans le cas contraire. Motif : cette proche a trouvé en une réponse deux défauts que les dumps et les tests de Côme n'avaient pas vus.
+
+**À VÉRIFIER À LA PREMIÈRE RÉPONSE APRÈS REMISE À ZÉRO.** Qu'elle arrive en ligne 2, juste sous les en-têtes, dans le tableau entièrement vidé.
+
+**RESTE.** Questions RGPD à Benoît Guillemin (fichier de démarchage, répondants mineurs, contact direct des membres de BDE) : non posées au 06/10. Tant que la question des mineurs n'est pas tranchée, ne pas diffuser vers des publics pouvant compter des mineurs (niveaux 3 et 4, cf. 15/09), et pas de démarchage par mail avant la réponse sur le fichier de démarchage. Export CSV des 15 réponses de l'original. Texte du message de confirmation, toujours non relevé.
 
 ## 2026-10-05 — [VRAIE VIE] Questionnaire terrain : controle final avant diffusion, section 26, envoi reel eprouve
 
